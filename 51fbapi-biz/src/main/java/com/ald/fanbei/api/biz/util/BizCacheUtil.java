@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +92,30 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveObject", e);
 		}
 	}
+	
+	
+	public void saveMap(final String key, final Map<?, ?> valMap) {
+		try{
+			redisTemplate.opsForHash().putAll(key, valMap);
+			redisTemplate.expire(key, Constants.SECOND_OF_TEN_MINITS, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			logger.error("redis save map error, error info=>{}",e.getMessage());
+		}
+		
+	}
+	
+	public Map<?,?> getMap(final String key) {
+		try{
+			if(redisTemplate.hasKey(key)){
+				return redisTemplate.opsForHash().entries(key);
+			}
+		} catch(Exception e) {
+			logger.error("redis get map error, error info=>{}",e.getMessage());
+		}
+		return null;
+	}
+	
+	
 	
 	/**
 	 * 执行jedis的incr命令

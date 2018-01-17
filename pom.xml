@@ -277,6 +277,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.0.2.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>com.third</groupId>
+			<artifactId>google.guava</artifactId>
+			<version>14.0.1</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>

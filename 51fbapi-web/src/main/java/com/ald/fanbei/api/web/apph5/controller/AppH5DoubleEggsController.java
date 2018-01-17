@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
@@ -36,6 +35,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -43,20 +43,16 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsBuffer;
-import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectDo;
-import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.GoodsForDate;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -68,7 +64,6 @@ import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -162,9 +157,6 @@ public class AppH5DoubleEggsController extends BaseController {
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
 			
-			//get info from afResource;
-//			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
-//			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
 			 List<AfSubjectDo> listAllParentSubjectByTag = afSubjectService.listAllParentSubjectByTag("DOUBLE_EGG");
 			if(listAllParentSubjectByTag != null &&listAllParentSubjectByTag.size()>0){
 			    //long parentId =   afGoodsCategoryDo.getId();
@@ -229,35 +221,6 @@ public class AppH5DoubleEggsController extends BaseController {
 						goodsList.add(goodsInfo);
 		    		}				
 			    }
-//			  //遍历parent_id = xxx的
-//			    //一级分类对应数据表level=2
-//			    AfGoodsCategoryDo queryAfGoodsCategory = new AfGoodsCategoryDo();
-//			    queryAfGoodsCategory.setParentId(parentId);
-//			    queryAfGoodsCategory.setLevel("2");
-//			    List<AfGoodsCategoryDo> afFirstGoodsCategoryList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
-//			    if(afFirstGoodsCategoryList.size()>0){
-//			        for(AfGoodsCategoryDo afFirstGoodsCategoryDo:afFirstGoodsCategoryList){
-//				    
-//				
-//				      //二级分类对应数据表level=3
-//			              queryAfGoodsCategory.setParentId(afFirstGoodsCategoryDo.getId());
-//				      queryAfGoodsCategory.setLevel("3");
-//				      List<AfGoodsCategoryDo> afSecondGoodsCategoList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
-//				      List<Map<String,Object>> secondGoodsCategoryList = new ArrayList<Map<String,Object>>();
-//				      //遍历parent_id = i.id
-//        			      for(AfGoodsCategoryDo afSecondGoodsCategoDo:afSecondGoodsCategoList){
-//                			  Map<String, Object> secondGoodsCategory = new HashMap<String, Object>();
-//                			  secondGoodsCategory.put("secondCategoryId",afSecondGoodsCategoDo.getId());
-//                			  secondGoodsCategory.put("secondCategoryName",afSecondGoodsCategoDo.getName());
-//                			  secondGoodsCategoryList.add(secondGoodsCategory);
-//        			      }
-//        			      Map<String, Object> firstGoodsCategory = new HashMap<String, Object>();
-//        			      firstGoodsCategory.put("firstCategoryId",afFirstGoodsCategoryDo.getId());
-//        			      firstGoodsCategory.put("firstCategoryName",afFirstGoodsCategoryDo.getName());
-//        			      firstGoodsCategory.put("secondCategoryList",secondGoodsCategoryList);
-//				      firstCategoryList.add(firstGoodsCategory);
-//			         }
-//			    }
 			    
 			     for(AfSubjectDo afFirstSubjectDo:listAllParentSubjectByTag){
 				      AfSubjectDo queryAfSubject = new AfSubjectDo();
@@ -314,13 +277,6 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			
-//			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
-//			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			
-//			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
-//			    Long categoryId =  secondCategoryId;
-			    //初始化时查该parentId下的该categoryId 的商品
-			    //List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
 			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListBySubjectId(subjectId);
 			    if(afGoodsList.size()>0){
     				//获取借款分期配置信息
@@ -410,14 +366,26 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 			Long userId = convertUserNameToUserId(context.getUserName());
+			
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			
+			if (activityId == null ) {
+				return H5CommonResponse.getNewInstance(false, "参数会场id获取失败").toString();
+			}
+			
 			// 未登录初始化数据
-			String tag = "_DOUBLE_EGGS_";
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);  
+			
+			
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			String coupons = couponCategory.getCoupons();
+			if(StringUtil.isBlank(coupons)){
+				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
+			}
 			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 
 			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-
+			
 			for (int i = 0; i < couponsArray.size(); i++) {
 				String couponId = (String) couponsArray.getString(i);
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
@@ -432,38 +400,32 @@ public class AppH5DoubleEggsController extends BaseController {
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					// 当前时间
 					Date currentTime = new Date();
+					
+					//new way to get Field isShow
 
-					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "COUPON_TIME");
+					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
 					if (afResourceDo == null) {
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
-					String[] times = afResourceDo.getValue3().split(",");
-
-					if (currentTime.before(dateFormat.parse(times[0]))) {
-							//2017-12-5 10:00号之前
+					
+					String startTime = afResourceDo.getValue();
+					String endTime = afResourceDo.getValue1();
+					
+					if (currentTime.before(dateFormat.parse(startTime))) {
 						afCouponDouble12Vo.setIsShow("N");// 活动未开始
 					}
-
-					if (afCouponDouble12Vo.getIsShow() == null) {
-						for (int j = 0; j < times.length - 1; j = j + 2) {
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[times.length - 1]))) {
-									afCouponDouble12Vo.setIsShow("E");// 活动已结束
-								}
-							}
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[j]))
-										&& currentTime.before(dateFormat.parse(times[j + 1]))) {
-									afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
-								}
-							}
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[j + 1]))
-										&& currentTime.before(dateFormat.parse(times[j + 2]))) {
-									afCouponDouble12Vo.setIsShow("N");// 活动未开始
-								}
-							}
-						}
+					
+					if (currentTime.after(dateFormat.parse(endTime))) {
+						afCouponDouble12Vo.setIsShow("E");// 活动已经结束
+					}
+					
+					String tenMinute = startTime.split(" ")[1];
+					String currentHourMinute = DateUtil.convertDateToString(DateUtil.SHORT_MATCH_PATTERN,currentTime);
+					
+					if(currentHourMinute.compareTo(tenMinute) < 0 ){
+						afCouponDouble12Vo.setIsShow("N");// 活动未开始
+					}else{
+						afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
 					}
 					if (userId == null) {
 						afCouponDouble12Vo.setIsGet("N");// 未领取
@@ -497,6 +459,13 @@ public class AppH5DoubleEggsController extends BaseController {
 		return result;
 	}
 
+	public static void main(String[] args) {
+		Date currentTime = new Date();
+		String currentHourMinute = DateUtil.convertDateToString(DateUtil.SHORT_MATCH_PATTERN,currentTime);
+		System.out.println(currentHourMinute.compareTo("10:10"));;
+		System.out.println(currentHourMinute);
+	}
+	
 	/**
 	 * 
 	 * @Title: convertUserNameToUserId @Description: @param userName @return
@@ -588,8 +557,6 @@ public class AppH5DoubleEggsController extends BaseController {
 								goodsBuffer.setStatus(1);
 							}
 
-
-
 							// format to the fix form
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							goodsBuffer.setStartDate(sdf.format(startDate));
@@ -657,7 +624,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("goodsId = %s",goodsId);
 				logger.info(log);
 				
-				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(goodsId);
+				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
 				log = log + String.format("goodsDo = %s",goodsDo.toString());
 				logger.info(log);
@@ -665,36 +632,49 @@ public class AppH5DoubleEggsController extends BaseController {
 				if (goodsDo != null) {
 
 					//String time = "10";
-					int preTime = 10;//Integer.parseInt(time);
+					//Integer.parseInt(time);
+					int preTime = 20;
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
 					// error"time分钟内无需预约"
 					if (DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())) {
-						result = H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
-						return result;
+						return  H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
+						
 					}
 
 					long doubleGoodsId = goodsDo.getRid();
+					AfGoodsDoubleEggsDo tempDo = new AfGoodsDoubleEggsDo();
+					tempDo.setGoodsId(goodsId);
+					tempDo = afGoodsDoubleEggsService.getByCommonCondition(tempDo);
+					if (tempDo == null ) {
+						result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
+					}
+					
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"
-					if (afGoodsDoubleEggsUserService.isSubscribed(doubleGoodsId, userId) > 0) {
-						result = H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
-						return result;
+					if (afGoodsDoubleEggsUserService.isSubscribed(tempDo.getRid(), userId) > 0) {
+						return H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
+						 
 					}
 
 					AfGoodsDoubleEggsUserDo userDo = new AfGoodsDoubleEggsUserDo();
 					userDo.setDoubleEggsId(doubleGoodsId);
 					userDo.setGmtCreate(now);
 					userDo.setGmtModified(now);
-					userDo.setIsOrdered(1);
+					//for spring festival
+					userDo.setIsOrdered(2);
 					userDo.setUserId(userId);
-
+					
 					log = log + String.format("afGoodsDoubleEggsUserDo for saving = %s",userDo.toString());
 					logger.info(log);
 					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
-
+					
+					//Long fakeNumber = goodsDo.getAlreadyCount();
+					
+					//int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
+					//data.put("number", numberForSF + fakeNumber);
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 					return result;
 				}

@@ -307,7 +307,7 @@ public class PayOrderV1Api implements ApiHandle {
             orderInfo.setLat(lat);
             orderInfo.setLng(lng);
         }
-        afOrderService.updateOrder(orderInfo);
+
 
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
@@ -334,7 +334,8 @@ public class PayOrderV1Api implements ApiHandle {
                 payType = PayType.COMBINATION_PAY.getCode();
                 //组合
             }
-
+            orderInfo.setPayType(payType);
+            afOrderService.updateOrder(orderInfo);
 
             // ----------------
 

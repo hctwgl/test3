@@ -47,12 +47,14 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String curRepayAmount, String outTradeNo);
 	
 	/**
-	 * 检查旧版客户端是否存在新版借钱数据
+	 * 检查旧版客户端是否存在新版借钱数据,兼容判断V1和V2版本搭售
 	 * @param version
 	 * @param borrowId
 	 */
 	void checkIllegalVersionInvoke(Integer version, Long borrowId);
 
 	int updateLegalOrderCashBalanced(AfBorrowLegalOrderCashDo legalOrderCashDo);
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoClosed(Long rid);
 	
 }

@@ -103,6 +103,16 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 map1.put("organCode","095715972");
                 map1.put("userId",-3l);
                 createCompanySeal(mhSeal,map1);
+                AfUserSealDo cxSeal = afESdkService.selectUserSealByUserId(-4l);//浙江楚橡信息科技股份有限公司
+                map1.put("name","浙江楚橡信息科技股份有限公司");
+                map1.put("organCode","328203207");
+                map1.put("userId",-4l);
+                createCompanySeal(cxSeal,map1);
+                AfUserSealDo jtSeal = afESdkService.selectUserSealByUserId(-5l);//金泰嘉鼎（深圳）资产管理有限公司
+                map1.put("name","金泰嘉鼎（深圳）资产管理有限公司");
+                map1.put("organCode","MA5DBLHE8");
+                map1.put("userId",-5l);
+                createCompanySeal(jtSeal,map1);
             }
             logger.info("初始化执行完成...projectId =>{},projectSecret=>{}",projectId,projectSecret);
     }
@@ -115,17 +125,19 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 addSealResult = afESdkService.createSealOrganize(accountId,
                         "STAR", "RED", "", "");
             }else {
-                logger.error("e签宝创建公司账户失败:");
+                logger.error("company seal error =>{}",addSealResult.getMsg());
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
+            logger.info("addSealResult => {},userId =>{}",addSealResult.getMsg(),map.get("userId"));
             AfUserSealDo afUserSealDo1 = new AfUserSealDo();
             afUserSealDo1.setUserAccountId(accountId);
             afUserSealDo1.setUserType("1");
             afUserSealDo1.setUserId((Long)map.get("userId"));
+            afUserSealDo1.setUserName((String)map.get("name"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             }else {
-                logger.error("e签宝创建个人账户失败",addSealResult.getMsg());
+                logger.error("company seal error =>{}",addSealResult.getMsg());
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
             afESdkService.insertUserSeal(afUserSealDo1);
@@ -135,10 +147,12 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             AfUserSealDo afUserSealDo1 = new AfUserSealDo();
             afUserSealDo1.setId(afUserSealDo1.getId());
             afUserSealDo1.setUserId((Long)map.get("userId"));
+            afUserSealDo1.setUserName((String)map.get("name"));
+            logger.info("addSealResult => {},userId =>{}",addSealResult.getMsg(),map.get("userId"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             }else {
-                logger.error("company seal error:",addSealResult.getMsg());
+                logger.error("company seal error =>{}",addSealResult.getMsg());
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
             afESdkService.updateUserSealByUserId(afUserSealDo1);

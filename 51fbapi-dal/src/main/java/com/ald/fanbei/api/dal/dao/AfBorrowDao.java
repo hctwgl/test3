@@ -54,7 +54,9 @@ public interface AfBorrowDao {
 	public String getCurrentLastBorrowNo(String orderNoPre);
 	
 	int updateBorrowStatus(@Param("id")Long id,@Param("status")String status);
-	
+
+	int updateBorrowVersion(@Param("id")Long id,@Param("version")int version);
+
 	/**
      * 通过订单id获取借款信息
      * @param id
@@ -113,6 +115,8 @@ public interface AfBorrowDao {
     HashMap getUserSummary(@Param("userId") Long userId);
 
     HashMap getUserSummaryOrderById(@Param("id") long id);
+
+    HashMap getBolumeSumDataById(@Param("id") long id);
 
 	Integer countNperRepaymentByBorrowId(@Param("id") long id);
 }

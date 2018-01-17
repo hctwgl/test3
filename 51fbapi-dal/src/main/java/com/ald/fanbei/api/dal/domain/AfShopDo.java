@@ -296,6 +296,17 @@ public class AfShopDo extends AbstractSerial {
 	public void setNewLogo(String newLogo) {
 	    this.newLogo = newLogo;
 	}
+	@Override
+	public String toString() {
+		return "AfShopDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", creator="
+				+ creator + ", modifier=" + modifier + ", name=" + name + ", description=" + description + ", type="
+				+ type + ", shopUrl=" + shopUrl + ", icon=" + icon + ", logo=" + logo + ", latestUseIcon="
+				+ latestUseIcon + ", shopActivity=" + shopActivity + ", commissionAmount=" + commissionAmount
+				+ ", commissionUnit=" + commissionUnit + ", rebateAmount=" + rebateAmount + ", rebateUnit=" + rebateUnit
+				+ ", status=" + status + ", platformName=" + platformName + ", serviceProvider=" + serviceProvider
+				+ ", interestFreeId=" + interestFreeId + ", latestOnline=" + latestOnline + ", newIcon=" + newIcon
+				+ ", newLogo=" + newLogo + "]";
+	}
 	
 
 }

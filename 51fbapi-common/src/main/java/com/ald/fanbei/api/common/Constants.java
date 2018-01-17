@@ -114,6 +114,7 @@ public class Constants {
 
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String BORROW_REPAYMENT_NAME_OFFLINE = "线下还款";
+	public static final String COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE = "催收线下还款";
 	public static final String BORROW_REPAYMENT_NAME_AUTO = "代扣付款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// 支付失败信息
