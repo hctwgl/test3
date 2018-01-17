@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,6 @@ public interface AfUserAccountSenceDao extends BaseDao<AfUserAccountSenceDo, Lon
     AfUserAccountSenceDo getByUserIdAndScene(@Param("scene") String scene, @Param("userId") Long userId);
 
     int updateUsedAmount(@Param("scene") String scene, @Param("userId") Long userId, @Param("usedAmount") BigDecimal usedAmount);
+
+    List<AfUserAccountSenceDo> getByUserId(@Param("userId") Long userId);
 }

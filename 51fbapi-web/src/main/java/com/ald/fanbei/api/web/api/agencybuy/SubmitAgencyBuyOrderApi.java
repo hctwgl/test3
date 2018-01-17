@@ -1,9 +1,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +56,8 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfUserVirtualAccountService afUserVirtualAccountService;
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	@Resource
+	AfOrderService afOrderService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -107,7 +107,32 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setUserCouponId(couponId);
 		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
-		AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userId);
+		//下单时所有场景额度使用情况
+		List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();
+		//线上使用情况
+		AfOrderSceneAmountDo onlineSceneAmount = new AfOrderSceneAmountDo();
+		//培训使用情况
+		AfOrderSceneAmountDo trainSceneAmount = new AfOrderSceneAmountDo();
+		//获取所有场景额度
+		List<AfUserAccountSenceDo> list = afUserAccountSenceService.getByUserId(userId);
+		//当前场景额度
+		AfUserAccountSenceDo afUserAccountSenceDo = null;
+
+		for (AfUserAccountSenceDo item:list){
+			if(item.getScene().equals(UserAccountSceneType.ONLINE.getCode())){
+				afUserAccountSenceDo = item;
+				onlineSceneAmount.setAuAmount(item.getAuAmount());
+				onlineSceneAmount.setScene(UserAccountSceneType.ONLINE.getCode());
+				onlineSceneAmount.setUsedAmount(item.getUsedAmount());
+				onlineSceneAmount.setUserId(userId);
+			}
+			if(item.getScene().equals(UserAccountSceneType.TRAIN.getCode())){
+				trainSceneAmount.setAuAmount(item.getAuAmount());
+				trainSceneAmount.setScene(UserAccountSceneType.TRAIN.getCode());
+				trainSceneAmount.setUsedAmount(item.getUsedAmount());
+				trainSceneAmount.setUserId(userId);
+			}
+		}
 		if(afUserAccountSenceDo == null){
 			afUserAccountSenceDo = new AfUserAccountSenceDo();
 			afUserAccountSenceDo.setAuAmount(new BigDecimal(0));
@@ -193,6 +218,24 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
 
 		if (afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper) > 0) {
+			//获取现金贷额度
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+			//现金贷使用情况
+			AfOrderSceneAmountDo cashSceneAmount = new AfOrderSceneAmountDo();
+			cashSceneAmount.setOrderId(afOrder.getRid());
+			cashSceneAmount.setAuAmount(userAccountInfo.getAuAmount());
+			cashSceneAmount.setScene(UserAccountSceneType.CASH.getCode());
+			cashSceneAmount.setUsedAmount(userAccountInfo.getUsedAmount());
+			cashSceneAmount.setUserId(userId);
+
+			onlineSceneAmount.setOrderId(afOrder.getRid());
+			trainSceneAmount.setOrderId(afOrder.getRid());
+			listSceneAmount.add(cashSceneAmount);
+			listSceneAmount.add(onlineSceneAmount);
+			listSceneAmount.add(trainSceneAmount);
+			//添加下单时所有场景额度使用情况
+			afOrderService.addSceneAmount(listSceneAmount);
+
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			data.put("isEnoughAmount", isEnoughAmount);

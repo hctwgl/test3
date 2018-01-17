@@ -20,6 +20,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.*;
 
+import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -545,6 +546,8 @@ public class RiskUtil extends AbstractThird {
             summaryOrderData.put("cardNumber",cardNo);
             summaryOrderData.put("cardName",cardName);
             summaryOrderData.put("payType",payType);
+            List<AfOrderSceneAmountDto> list = orderDao.getSceneAmountByOrderId(orderid);
+            summaryOrderData.put("sceneAmount",list);
         }
         reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");
