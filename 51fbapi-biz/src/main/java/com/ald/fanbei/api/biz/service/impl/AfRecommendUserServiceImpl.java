@@ -221,6 +221,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				final AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getBorrowCash(userId);
 				final AfResourceDo afResourceDo = getRecommendRecourceForBorrow();
 				int borrowDay = registOfDistance(afResourceDo);
+				logger.info("{updateLoanById begin } afBorrowCashDo=,afResourceDo="+afBorrowCashDo.toString(),afResourceDo.toString());
 				if(borrowDay >0){
         				AfUserDo afUserDo = afUserDao.getUserById(userId);
         				Date p = DateUtil.addDays(afUserDo.getGmtCreate(),borrowDay);
@@ -228,7 +229,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         					return 1;
         				}
 				}
-				logger.info("{updateLoanById begin } afBorrowCashDo=,afResourceDo="+afBorrowCashDo.toString(),afResourceDo.toString());
+				
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 					@Override
 					protected void doInTransactionWithoutResult(TransactionStatus status) {
