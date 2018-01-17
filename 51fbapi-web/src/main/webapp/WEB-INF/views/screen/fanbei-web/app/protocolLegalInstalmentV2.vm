@@ -188,7 +188,7 @@
             changeRate: function(num){ // 利率截取最后两位小数
                 var rate=num;
                 rate = rate*100;   //截取小数点后4位
-                // rate = parseFloat(rate);
+                rate = parseFloat(rate).toFixed(2);
                 rate = rate+'%';
                 return rate;
             },
