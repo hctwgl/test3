@@ -475,4 +475,11 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 获取当前用户还款中的数量
+	 * @param userId
+	 * @return
+	 */
+	int getOnRepaymentCountByUserId(@Param("userId")Long userId);
 }

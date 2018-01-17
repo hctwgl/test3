@@ -268,8 +268,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
                         map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
                     }
                 }
-
-
+                int onRepaymentCount = afBorrowBillService.getOnRepaymentCountByUserId(userId);
+                map.put("onRepaymentCount", onRepaymentCount);
                 map.put("auAmount", auAmount);
                 map.put("amount", amount);
                 map.put("overduedMonth", overduedMonth);

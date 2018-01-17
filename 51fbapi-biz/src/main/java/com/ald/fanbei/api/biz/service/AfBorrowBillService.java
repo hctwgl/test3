@@ -386,4 +386,11 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 获取当前用户还款中的数量
+	 * @param userId
+	 * @return
+	 */
+	int getOnRepaymentCountByUserId(Long userId);
 }

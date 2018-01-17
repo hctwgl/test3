@@ -837,4 +837,12 @@
 		</if>
 		AND user_id = #{userId}
 	</select>
+
+	<select id="getOnRepaymentCountByUserId" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		from
+		af_borrow_bill
+		where `status` = 'D'AND is_delete = 0 AND user_id = #{userId}
+	</select>
 </mapper>
