@@ -536,7 +536,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<!-- App内部H5接口 -->
+	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">

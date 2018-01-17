@@ -53,11 +53,11 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 
 	private Logger logger = LoggerFactory.getLogger(ValidationInterceptor.class);
 
-	private static javax.validation.Validator clsValidator;
+	private javax.validation.Validator clsValidator;
 	
-	private static ConvertUtilsBean convertUtils;
+	private ConvertUtilsBean convertUtils;
 	
-	private static ResourceBundle resourceBundle ;
+	private ResourceBundle resourceBundle ;
 
 	@PostConstruct
 	public void init() {
@@ -82,8 +82,8 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
-		ApiHandle methodHandel = apiHandleFactory.getApiHandle(reqData.getMethod());
-		Class<? extends ApiHandle> clazz = methodHandel.getClass();
+		ApiHandle methodHandle = apiHandleFactory.getApiHandle(reqData.getMethod());
+		Class<? extends ApiHandle> clazz = methodHandle.getClass();
 
 		Validator[] validators = getValidatorAnnotation(clazz);
 		if (validators != null) {
