@@ -93,6 +93,7 @@ public class AppH5AllSearchController extends BaseController {
 			}
 
 			FanbeiWebContext context = new FanbeiWebContext();
+			context = doWebCheck(request,false);
 			String userName = context.getUserName();
 
 			// add history
