@@ -1,41 +1,33 @@
-package com.ald.fanbei.api.web.api.bill;
-
-import java.math.BigDecimal;
-import java.util.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+package com.ald.fanbei.api.web.api.auth;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.*;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import jodd.util.ObjectUtil;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
-import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
- * @author yuyue
- * @ClassName: GetMyBorrowV1Api
- * @Description: 用户获取账单主页面的api——账单二期
+ * @author caowu
+ * @ClassName: lookAllQuotaApi
+ * @Description: 查看用户信用中心的全部额度
  * @date 2017年11月13日 上午10:51:12
  */
-@Component("getMyBorrowV1Api")
-public class GetMyBorrowV1Api implements ApiHandle {
+@Component("lookAllQuotaApi")
+public class lookAllQuotaApi implements ApiHandle {
 
     @Resource
     AfUserService afUserService;
@@ -64,17 +56,21 @@ public class GetMyBorrowV1Api implements ApiHandle {
         try {
             Long userId = context.getUserId();
             if (userId == null) {
-                logger.info("getMyBorrowV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
+                logger.info("lookAllQuotaApi userId is null ,RequestDataVo id =" + requestDataVo.getId());
                 resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
                 return resp;
             }
             AfUserDo afUserDo = afUserService.getUserById(userId);
             if (afUserDo == null || afUserDo.getRid() == null) {
-                logger.info("getMyBorrowV1Api user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
+                logger.info("lookAllQuotaApi user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
                 resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
                 return resp;
             }
-            Map<String, Object> map = new HashMap<String, Object>();
+
+            List<Map<String, Object>> mapList =new ArrayList<>();
+            Map<String, Object> cashMap = new HashMap<String, Object>();
+            Map<String, Object> onlineMap = new HashMap<String, Object>();
+            Map<String, Object> trainMap = new HashMap<String, Object>();
 
             AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(userId);
             //加入临时额度
@@ -85,32 +81,14 @@ public class GetMyBorrowV1Api implements ApiHandle {
             if (afInterimAuDo != null) {
                 interimAmount = afInterimAuDo.getInterimAmount();
                 usableAmount = interimAmount.subtract(afInterimAuDo.getInterimUsed());
-                map.put("interimType", 1);//已获取临时额度
-                map.put("interimAmount", afInterimAuDo.getInterimAmount());//临时额度
-                map.put("interimUsed", afInterimAuDo.getInterimUsed());//已使用的额度
-                int failureStatus = 0;//0未失效,1失效
                 if (afInterimAuDo.getGmtFailuretime().getTime() < new Date().getTime()) {
-                    failureStatus = 1;
                     interimAmount = new BigDecimal(0);
                     usableAmount = new BigDecimal(0);
                 }else{
                     interimExist=true;
                 }
-                map.put("failureStatus", failureStatus);
-            } else {
-                map.put("interimType", 0);//未获取临时额度
             }
 
-            //加入漂浮窗信息
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndValue("SUSPENSION_FRAME_SETTING", "0");
-            if (afResourceDo != null) {
-                map.put("floatType", 1);//开启悬浮窗
-                map.put("name", afResourceDo.getName());
-                map.put("pic1", afResourceDo.getPic1());
-                map.put("pic2", afResourceDo.getPic2());
-            } else {
-                map.put("floatType", 0);//未开启悬浮窗
-            }
             //加入线上额度(即购物额度) 线下 add by caowu 2018/1/10 15:25
             AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
             AfUserAccountSenceDo afUserAccountSenceDo1 = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
@@ -128,28 +106,41 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 trainAuAmount=afUserAccountSenceDo1.getAuAmount();
                 trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo1.getUsedAmount());
             }
-            map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
-            map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
+            onlineMap.put("auAmount", onlineAuAmount.add(interimAmount));//线上授予额度
+            onlineMap.put("amount", onlineAmount.add(usableAmount));//线上可用额度
             String onlineDesc="总额度"+onlineAuAmount+"元";
             if(interimExist){//有临时额度下的描述
                 onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元（含"+interimAmount+"临时额度）";
             }
-            map.put("onlineDesc",onlineDesc);//线上描述
-            map.put("onlineStatus","4");
+            onlineMap.put("desc",onlineDesc);//线上描述
+            onlineMap.put("status","4");
+
             //线下
-            map.put("trainAuAmount", trainAuAmount);//线下授予额度
-            map.put("trainAmount", trainAmount);//线下可用额度
+            trainMap.put("auAmount", trainAuAmount);//线下授予额度
+            trainMap.put("amount", trainAmount);//线下可用额度
+            trainMap.put("status","4");
 
             //信用描述
             AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
+            String value2=afResourceDoAuth.getValue2();//线下描述
+            JSONObject jsonObject =JSON.parseObject(value2);
+            String trainTitle = jsonObject.getString("title");
+            String picUrl = jsonObject.getString("picUrl");
+            String jumpUrl = jsonObject.getString("jumpUrl");
+            String trainDesc = jsonObject.getString("desc");
+            trainMap.put("desc",trainDesc);
+            trainMap.put("title",trainTitle);
+            trainMap.put("picUrl",picUrl);
+            trainMap.put("jumpUrl",jumpUrl);
+
             String value3=afResourceDoAuth.getValue3();
             String value4=afResourceDoAuth.getValue4();
             //现金贷 未通过强风控 状态
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
                 List<String> listDesc=getAuthDesc(value3,"three");
-                map.put("showAmount", listDesc.get(0));
-                map.put("desc", listDesc.get(1));
-                map.put("borrowStatus","3");
+                cashMap.put("showAmount", listDesc.get(0));
+                cashMap.put("desc", listDesc.get(1));
+                cashMap.put("status","3");
 
             }else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
@@ -157,12 +148,16 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 //尚未认证状态
                 List<String> listDesc1=getAuthDesc(value3,"one");
                 List<String> listDesc2=getAuthDesc(value4,"one");
-                map.put("showAmount", listDesc1.get(0));
-                map.put("desc", listDesc1.get(1));
-                map.put("borrowStatus","1");
-                map.put("onlineShowAmount", listDesc2.get(0));
-                map.put("onlineDesc", listDesc2.get(1));
-                map.put("onlineStatus","1");
+                cashMap.put("showAmount", listDesc1.get(0));
+                cashMap.put("desc", listDesc1.get(1));
+                cashMap.put("status","1");
+                onlineMap.put("showAmount", listDesc2.get(0));
+                onlineMap.put("desc", listDesc2.get(1));
+                onlineMap.put("status","1");
+
+                trainMap.put("desc",trainDesc);
+                trainMap.put("status","1");
+
             } else{
                 //认证一般中途退出了
                 String status="2";
@@ -172,31 +167,38 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 }
                 List<String> listDesc1=getAuthDesc(value3,"two");
                 List<String> listDesc2=getAuthDesc(value4,"two");
-                map.put("showAmount", listDesc1.get(0));
-                map.put("desc", listDesc1.get(1));
-                map.put("borrowStatus",status);
-                map.put("onlineShowAmount", listDesc2.get(0));
-                map.put("onlineDesc", listDesc2.get(1));
-                map.put("onlineStatus",status);
+                cashMap.put("amount", listDesc1.get(0));
+                cashMap.put("desc", listDesc1.get(1));
+                cashMap.put("status",status);
+                onlineMap.put("showAmount", listDesc2.get(0));
+                onlineMap.put("desc", listDesc2.get(1));
+                onlineMap.put("status",status);
+
+
+                trainMap.put("desc", trainDesc);
+                trainMap.put("status",status);
             }
-            //真实姓名
-            map.put("realName", afUserDo.getRealName()==null ? "":afUserDo.getRealName());
 
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","C");
             if(afUserAuthStatusDo!=null){
                 List<String> listDesc=getAuthDesc(value4,"three");
-                map.put("onlineShowAmount", listDesc.get(0));
-                map.put("onlineDesc", listDesc.get(1));
-                map.put("onlineStatus","3");
+                onlineMap.put("showAmount", listDesc.get(0));
+                onlineMap.put("desc", listDesc.get(1));
+                onlineMap.put("status","3");
             }
-
+            //线下培训 未通过强风控
+            AfUserAuthStatusDo afUserAuthStatusDo1=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"TRAIN","C");
+            if(afUserAuthStatusDo1!=null){
+                trainMap.put("desc", trainDesc);
+                trainMap.put("status","3");
+            }
 
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())) {
                 // 获取用户额度
                 AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
                 if (userAccount == null || userAccount.getRid() == null) {
-                    logger.error("getMyBorrowV1Api error ; userAccount is null and userId = " + userId);
+                    logger.error("lookAllQuotaApi error ; userAccount is null and userId = " + userId);
                     resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
                     return resp;
                 }
@@ -204,83 +206,27 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 BigDecimal auAmount = userAccount.getAuAmount();
                 // 可用额度
                 BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
-                // 获取逾期账单月数量
-                int overduedMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
-                AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
-                query.setUserId(userId);
-                int billCount = afBorrowBillService.countBillByQuery(query);
-                if (billCount < 1) {
-                    map.put("status", "noBill");
-                } else {
-                	map.put("status", "bill");
-                	// 查询下月未出账单
-                	AfBorrowBillQueryNoPage _query = new AfBorrowBillQueryNoPage();
-                	Date strOutDay = DateUtil.getFirstOfMonth(new Date());
-    				strOutDay = DateUtil.addHoures(strOutDay, -12);
-    				Date endOutDay = DateUtil.addMonths(strOutDay, 1);
-    				_query.setUserId(userId);
-    				_query.setIsOut(1);
-    				_query.setOutDayStr(strOutDay);
-    				_query.setOutDayEnd(endOutDay);
-    				int _billCount = afBorrowBillService.countBillByQuery(_query);
-    				if (_billCount < 1) {
-    					// 没有本月已出，查询是否有本月未出未还
-    					_query.setIsOut(0);
-    					_query.setStatus("N");
-    					_billCount = afBorrowBillService.countBillByQuery(_query);
-    					if (_billCount > 0) {
-    						map.put("status", "nextBill");
-    					}else if (_billCount < 1) {
-    						// 没有本月未出，查询下月未出
-    						strOutDay = DateUtil.addMonths(strOutDay, 1);
-    						endOutDay = DateUtil.addMonths(strOutDay, 1);
-    						_query.setOverdueStatus("N");
-    						_billCount = afBorrowBillService.countBillByQuery(_query);
-    						if (_billCount > 0) {
-    							// 有下月未出未还
-    							map.put("status", "nextBill");
-    						}
-    					}
-    				}else if (_billCount > 0) {
-    					// 有本月已出,查询是否有下月未出未还
-    					strOutDay = DateUtil.addMonths(strOutDay, 1);
-    					endOutDay = DateUtil.addMonths(strOutDay, 1);
-    					_query.setIsOut(0);
-    					_query.setStatus("N");
-    					_billCount = afBorrowBillService.countBillByQuery(_query);
-    					if (_billCount > 0) {
-    						// 有下月未出未还
-    						map.put("status", "nextBill");
-    					}
-    				}
-                }
-                // 已出账单
-                query.setIsOut(1);
-                query.setStatus(BorrowBillStatus.NO.getCode());
-                BigDecimal outMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
-                // 未出账单
-                query.setIsOut(0);
-                BigDecimal notOutMoeny = afBorrowBillService.getUserBillMoneyByQuery(query);
-                map.put("lastPayDay", null);
-                if (outMoney.compareTo(new BigDecimal(0)) == 1) {
-                    if (overduedMonth < 1) {
-                        Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
-                        map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
-                    }
-                }
-
-
-                map.put("auAmount", auAmount);
-                map.put("amount", amount);
-                map.put("overduedMonth", overduedMonth);
-                map.put("outMoney", outMoney);
-                map.put("notOutMoeny", notOutMoeny);
-                map.put("borrowStatus","4");
-                map.put("desc", "总额度"+auAmount+"元");
+                cashMap.put("auAmount", auAmount);
+                cashMap.put("amount", amount);
+                cashMap.put("status","4");
+                cashMap.put("desc", "总额度"+auAmount+"元");
             }
-            resp.setResponseData(map);
+            cashMap.put("scene","CASH");
+            cashMap.put("title","借钱额度");
+            cashMap.put("picUrl","");
+            cashMap.put("jumpUrl","");
+            onlineMap.put("scene","ONLINE");
+            onlineMap.put("title","购物额度");
+            onlineMap.put("picUrl","");
+            onlineMap.put("jumpUrl","");
+            trainMap.put("scene","TRAIN");
+            trainMap.put("showAmount","");
+            mapList.add(cashMap);
+            mapList.add(onlineMap);
+            mapList.add(trainMap);
+            resp.setResponseData(mapList);
         } catch (Exception e) {
-            logger.error("getMyBorrowV1Api error :", e);
+            logger.error("lookAllQuotaApi error :", e);
             resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
             return resp;
         }

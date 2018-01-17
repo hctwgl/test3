@@ -356,10 +356,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 
     //调用风控失败
-    CALL_RISK_FAIL("FAIL_RISK_FAIL",7006,"call risk fail","调用风控失败!"),
+    CALL_RISK_FAIL("FAIL_RISK_FAIL",7008,"call risk fail","调用风控失败!"),
     //有过期数据
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
-    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用该功能");
+    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能");
 
 
 

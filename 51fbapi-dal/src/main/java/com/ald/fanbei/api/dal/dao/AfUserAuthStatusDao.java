@@ -3,6 +3,9 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
 /**
  * 额度拆分多场景认证状体记录Dao
  *
@@ -45,12 +48,12 @@ public interface AfUserAuthStatusDao extends BaseDao<AfUserAuthStatusDo, Long>{
 
 
     /**
-     * 根据userId,status查询一个用户认证场景
+     * 根据userId,status查询用户认证场景
      * @param userId
      * @param status
      * @return
      */
-    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(@Param("userId") Long userId,@Param("status") String status);
+    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
 }
 
 
