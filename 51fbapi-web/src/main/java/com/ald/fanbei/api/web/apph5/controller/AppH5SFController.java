@@ -188,7 +188,7 @@ public class AppH5SFController extends BaseController {
 				}
 				
 				int tigerTimes = 1;
-				if (!userId.equals(0L)) {
+				if (userId != null && !userId.equals(0L)) {
 					//login then get the total times or insert one time daily one
 					AfUserCouponTigerMachineDo machineDo = new AfUserCouponTigerMachineDo();
 					machineDo.setUserId(userId);
