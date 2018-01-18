@@ -153,7 +153,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
 
             }else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
-                    &&StringUtil.equals(userAuth.getRealnameStatus(),"N")){
+                    &&StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //尚未认证状态
                 List<String> listDesc1=getAuthDesc(value3,"one");
                 List<String> listDesc2=getAuthDesc(value4,"one");
