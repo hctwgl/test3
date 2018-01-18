@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -53,5 +54,10 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     public AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId) {
 
 	return afUserAccountSenceDao.getByUserIdAndScene(scene, userId);
+    }
+
+    @Override
+    public List<AfUserAccountSenceDo> getByUserId(Long userId) {
+        return afUserAccountSenceDao.getByUserId(userId);
     }
 }

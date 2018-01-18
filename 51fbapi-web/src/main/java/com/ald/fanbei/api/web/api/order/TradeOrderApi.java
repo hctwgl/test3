@@ -128,7 +128,32 @@ public class TradeOrderApi implements ApiHandle {
             rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
             afOrder.setRebateAmount(rebateAmount);
         }
-        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userId);
+        //下单时所有场景额度使用情况
+        List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();
+        //线上使用情况
+        AfOrderSceneAmountDo onlineSceneAmount = new AfOrderSceneAmountDo();
+        //培训使用情况
+        AfOrderSceneAmountDo trainSceneAmount = new AfOrderSceneAmountDo();
+        //获取所有场景额度
+        List<AfUserAccountSenceDo> list = afUserAccountSenceService.getByUserId(userId);
+        //当前场景额度
+        AfUserAccountSenceDo afUserAccountSenceDo = null;
+
+        for (AfUserAccountSenceDo item:list){
+            if(item.getScene().equals(UserAccountSceneType.ONLINE.getCode())){
+                onlineSceneAmount.setAuAmount(item.getAuAmount());
+                onlineSceneAmount.setScene(UserAccountSceneType.ONLINE.getCode());
+                onlineSceneAmount.setUsedAmount(item.getUsedAmount());
+                onlineSceneAmount.setUserId(userId);
+            }
+            if(item.getScene().equals(UserAccountSceneType.TRAIN.getCode())){
+                afUserAccountSenceDo = item;
+                trainSceneAmount.setAuAmount(item.getAuAmount());
+                trainSceneAmount.setScene(UserAccountSceneType.TRAIN.getCode());
+                trainSceneAmount.setUsedAmount(item.getUsedAmount());
+                trainSceneAmount.setUserId(userId);
+            }
+        }
         if(afUserAccountSenceDo == null){
             afUserAccountSenceDo = new AfUserAccountSenceDo();
             afUserAccountSenceDo.setAuAmount(new BigDecimal(0));
@@ -142,6 +167,24 @@ public class TradeOrderApi implements ApiHandle {
 		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹		
         afOrderService.createOrder(afOrder);
+        //获取现金贷额度
+        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+        //现金贷使用情况
+        AfOrderSceneAmountDo cashSceneAmount = new AfOrderSceneAmountDo();
+        cashSceneAmount.setOrderId(afOrder.getRid());
+        cashSceneAmount.setAuAmount(userAccountInfo.getAuAmount());
+        cashSceneAmount.setScene(UserAccountSceneType.CASH.getCode());
+        cashSceneAmount.setUsedAmount(userAccountInfo.getUsedAmount());
+        cashSceneAmount.setUserId(userId);
+
+        onlineSceneAmount.setOrderId(afOrder.getRid());
+        trainSceneAmount.setOrderId(afOrder.getRid());
+        listSceneAmount.add(cashSceneAmount);
+        listSceneAmount.add(onlineSceneAmount);
+        listSceneAmount.add(trainSceneAmount);
+        //添加下单时所有场景额度使用情况
+        afOrderService.addSceneAmount(listSceneAmount);
+
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());
         afTradeOrderDo.setBusinessId(businessId);

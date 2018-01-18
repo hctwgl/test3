@@ -647,7 +647,12 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return afBorrowBillDao.getBillIdListByQuery(query);
 	}
 
-        @Override
+	@Override
+	public int getOnRepaymentCountByUserId(Long userId) {
+		return afBorrowBillDao.getOnRepaymentCountByUserId(userId);
+	}
+
+	@Override
         public int getMaxOverdueCountByBorrowId(Long borrowId) {
     
     		return afBorrowBillDao.getMaxOverdueCountByBorrowId(borrowId);

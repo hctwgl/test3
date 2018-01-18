@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
@@ -25,4 +26,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
     String getBusinessTypeByOrderId(Long orderId);
 
     AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId);
+
+    List<AfUserAccountSenceDo> getByUserId(Long userId);
 }

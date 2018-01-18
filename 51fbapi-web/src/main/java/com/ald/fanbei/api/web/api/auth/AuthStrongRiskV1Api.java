@@ -107,38 +107,95 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		if(sceneArray.length>1){
 			numberOfAuth=true;
 		}
-		riskScene="22";
-//		if("CASH".equals(sceneArray[0])){
-//			riskScene="20";
-//		}else if("ONLINE".equals(sceneArray[0])){
-//			riskScene="21";
-//		}else if("TRAIN".equals(sceneArray[0])){
-//			riskScene="22";
-//		}else{
-//			riskScene="20";
-//			//return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
-//		}
+		//用户认证信息场景
+		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+		afUserAuthStatusDo.setUserId(userId);
+		afUserAuthStatusDo.setScene(sceneArray[0]);
+
+		if("CASH".equals(sceneArray[0])){
+			riskScene="20";
+		}else if("ONLINE".equals(sceneArray[0])){
+			riskScene="21";
+		}else if("TRAIN".equals(sceneArray[0])){
+			riskScene="22";
+		}else{
+			riskScene="20";
+			//return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
+		}
 		JSONObject riskCheckData =riskUtil.authDataCheck(userId,riskScene);
 		String riskCheckStatus = riskCheckData.getString("success");
 		//有数据过期了
 		if("55".equals(riskCheckStatus)){
+		//if(true){
 			ApiHandleResponse apiHandleResponse = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILURE_DATA_ERROR);
 			String failureData= riskCheckData.get("failureData").toString();
+			//String failureData= "operator";
 			String [] failureDataArray = failureData.split(",");
-			JSONArray jsonArray = new JSONArray();
-			for(int i=0;i<failureDataArray.length;i++){
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("auth",failureDataArray[i]);
-				jsonObject.put("status","invalid");//失效状态
-				jsonArray.add(jsonObject);
+			AfUserAuthStatusDo afUserAuthStatusFail= afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+			if(afUserAuthStatusFail==null){
+				JSONArray jsonArray = new JSONArray();
+				for(int i=0;i<failureDataArray.length;i++){
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("auth",failureDataArray[i]);
+					jsonObject.put("status","N");//失效状态
+					jsonArray.add(jsonObject);
+				}
+				afUserAuthStatusDo.setStatus("C");
+				afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+				apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+				return apiHandleResponse;
+			}else{
+				JSONArray jsonArray =JSON.parseArray(afUserAuthStatusFail.getCauseReason());
+				Boolean existJudge=false;//已失败原因里 跟现在失败原因里不相同,直接返回
+				Boolean judge=false;//已失效状态还是已失效状态
+
+				Integer failureDataLength=failureDataArray.length;
+				for(int i=0;i<failureDataLength;i++){
+					Boolean oldEqual=true;//相等过了
+					String failure=failureDataArray[i];
+					for (int j =0;j<jsonArray.size();j++){
+						String failJson=jsonArray.getJSONObject(j).getString("auth");
+						String status=jsonArray.getJSONObject(j).getString("status");
+						if(oldEqual){
+							if(!failure.equals(failJson)){
+								if (j==jsonArray.size()-1){
+									existJudge=true;//已失败原因里 跟现在失败原因里不相同
+									JSONObject jsonObject = new JSONObject();
+									jsonObject.put("auth",failure);
+									jsonObject.put("status","N");//失效状态
+									jsonArray.add(jsonObject);
+									j=j+1;
+								}
+							}else{//已失败原因里 跟现在失败原因里相同,且状态为未失效
+								if("N".equals(status)){
+									judge=true;
+								}
+								oldEqual=false;
+							}
+						}
+
+					}
+					if(existJudge&&(i==failureDataLength-1)){
+						afUserAuthStatusDo.setStatus("C");
+						afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+						apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+						return apiHandleResponse;
+					}
+					if(judge){
+						apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+						return apiHandleResponse;
+					}
+
+				  }
+				}
 			}
-			apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
-			return apiHandleResponse;
+
+		//调用风控失败了
+		if(!"0".equals(riskCheckStatus)){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
 		}
-//		//调用风控失败了
-//		if(!"0".equals(riskCheckStatus)){
-//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
-//		}
 
 		try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -189,12 +246,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 					}
 					authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
-					afUserAuthService.updateUserAuth(authDo);
-
-                    //用户认证信息场景
-					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-					afUserAuthStatusDo.setUserId(userId);
-					afUserAuthStatusDo.setScene(sceneArray[0]);
+					for(int i=0;i<sceneArray.length;i++){
+						if("CASH".equals(sceneArray[i])){
+							afUserAuthService.updateUserAuth(authDo);
+						}
+					}
 
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 							card.getCardNumber(), riskOrderNo,riskScene);
@@ -204,8 +260,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							authDo.setRiskStatus(RiskStatus.A.getCode());
 						}
 						authDo.setBasicStatus(RiskStatus.A.getCode());
-						afUserAuthService.updateUserAuth(authDo);
-
+						for(int i=0;i<sceneArray.length;i++){
+							if("CASH".equals(sceneArray[i])){
+								afUserAuthService.updateUserAuth(authDo);
+							}
+						}
 						afUserAuthStatusDo.setStatus("C");
 						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
@@ -214,8 +273,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						// 提交过信用认证,第一次给用户发放优惠劵
 						HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 						String creditRebateMsg = "";
-						AfUserAuthStatusDo afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
-						if(afUserAuthStatusDoSuccess==null){//判断是否有场景认证通过了,第一次通过发奖品
+						List<AfUserAuthStatusDo> afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
+						if(afUserAuthStatusDoSuccess!=null&&afUserAuthStatusDoSuccess.size()>0){//判断是否有场景认证通过了,第一次通过发奖品
 							if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
 								// 发放优惠劵工作
 								// creditRebateMsg = getCreditAuthMsg(context,
@@ -243,6 +302,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 						//添加用户认证信息成功场景
 						afUserAuthStatusDo.setStatus("Y");
+						afUserAuthStatusDo.setCauseReason("");
 						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
 
@@ -273,7 +333,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 								authDo.setRiskStatus(RiskStatus.A.getCode());
 							}
 							authDo.setBasicStatus(RiskStatus.A.getCode());
-							afUserAuthService.updateUserAuth(authDo);
+							for(int i=0;i<sceneArray.length;i++){//只有现金贷才改变状态
+								if("CASH".equals(sceneArray[i])){
+									afUserAuthService.updateUserAuth(authDo);
+								}
+							}
 							//插入失败认证场景
 							afUserAuthStatusDo.setStatus("C");
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
@@ -283,8 +347,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							// 提交过信用认证,第一次给用户发放优惠劵
 							HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 							String creditRebateMsg = "";
-							AfUserAuthStatusDo afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
-							if(afUserAuthStatusDoSuccess==null){//判断是否有场景认证通过了,第一次通过发奖品
+							List<AfUserAuthStatusDo> afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
+							if(afUserAuthStatusDoSuccess!=null&&afUserAuthStatusDoSuccess.size()>0){//判断是否有场景认证通过了,第一次通过发奖品
 								if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
 									try {
 										Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
@@ -305,6 +369,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 							//添加用户认证信息成功场景
 							afUserAuthStatusDo.setStatus("Y");
+							afUserAuthStatusDo.setCauseReason("");
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
 							if (context.getAppVersion() > 367) {
@@ -318,8 +383,12 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						authDo.setRiskStatus(RiskStatus.A.getCode());
 					}
 					authDo.setBasicStatus(RiskStatus.A.getCode());
-					afUserAuthService.updateUserAuth(authDo);
-					logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
+					for(int i=0;i<sceneArray.length;i++){
+						if("CASH".equals(sceneArray[i])){
+							afUserAuthService.updateUserAuth(authDo);
+						}
+					}
+					logger.error("提交用户认证信息到风控失败,场景" + idNumberDo.getUserId()+","+scene);
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 				}
 				return resp;

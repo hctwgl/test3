@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 	@Resource
 	private AfIdNumberService afIdNumberService;
 	@Resource
-	AfUserAccountSenceService afUserAccountSenceService;
+	AfUserAuthStatusService afUserAuthStatusService;
 
 
 	@Override
@@ -58,16 +59,20 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Date now = new Date();
+		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
+		if("".equals(scene)){
+			scene="CASH";//如果前端所传为空,默认为现金贷
+		}
 		// 账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
+		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion(),scene);
 		resp.setResponseData(data);
 
 		return resp;
 	}
 
-	private Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion) {
+	private Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion,String scene) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> creditModel = new HashMap<String, Object>();
 		Map<String, Object> zmModel = new HashMap<String, Object>();
@@ -299,12 +304,35 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 
 		data.put("isSkipH5", isSkipH5);
 
-		//线上额度
-//		AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
-//		if(afUserAccountSenceDo!=null){
-//
-//		}
+		//是否有数据失败过期状态
+		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+		if(afUserAuthStatusDo!=null){
+			String causeReason = afUserAuthStatusDo.getCauseReason();
+			if(causeReason!=null&&!"".equals(causeReason)) {
+				JSONArray jsonArray = JSON.parseArray(causeReason);
+				for(int i =0;i<jsonArray.size();i++){
+					JSONObject jsonObject =jsonArray.getJSONObject(i);
+					String auth=jsonObject.getString("auth");
+					String status=jsonObject.getString("status");
+					if(YesNoStatus.NO.getCode().equals(status)){
+						if("operator".equals(auth)){//运营商状态已过期
+							data.put("mobileStatus","E");
+						}
+						if("directory".equals(auth)){//通讯录状态已过期
+							data.put("teldirStatus","E");
+						}
+						if("fund".equals(auth)){//公积金状态已过期
+							data.put("fundStatus","E");
+						}
+						if("alipay".equals(auth)){//公积金状态已过期
+							data.put("alipayStatus","E");
+						}
 
+					}
+				}
+
+			}
+		}
 
 		return data;
 	}
