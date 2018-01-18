@@ -2036,9 +2036,19 @@ public class RiskUtil extends AbstractThird {
      * @param consumerNo 用户ID
      * @return
      */
-    public RiskVerifyRespBo getUserLayRate(String consumerNo) {
+    public RiskVerifyRespBo getUserLayRate(String consumerNo,JSONObject params) {
         RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
         reqBo.setConsumerNo(consumerNo);
+        if (params != null){
+            AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+           JSONObject eventObj = new JSONObject();
+           eventObj.put("appName", params.get("appName")+"");
+           eventObj.put("cardNo", card == null ? "":card.getCardNumber());
+           eventObj.put("blackBox",  params.get("blackBox")==null?"":params.get("blackBox"));
+           eventObj.put("ipAddress",  params.get("ipAddress")==null?"":params.get("ipAddress"));
+           eventObj.put("bqsBlackBox",  params.get("bqsBlackBox")+"");
+           reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
+        }
         HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -2444,7 +2454,7 @@ public class RiskUtil extends AbstractThird {
      * @param rate
      * @return
      */
-    public BigDecimal getRiskOriRate(Long userId) {
+    public BigDecimal getRiskOriRate(Long userId,JSONObject param) {
     	List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -2458,7 +2468,7 @@ public class RiskUtil extends AbstractThird {
 			poundageRate = new BigDecimal(poundageRateCash.toString());
 		} else {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(), param);
 				String poundage = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

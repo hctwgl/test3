@@ -180,7 +180,13 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 
-		BigDecimal oriRate = getRiskOriRate(userId);
+		JSONObject params = new JSONObject();
+		String appName1 = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+		params.put("ipAddress",CommonUtil.getIpAddr(request));
+		params.put("appName",appName1);
+		params.put("bqsBlackBox",bqsBlackBox);
+		params.put("blackBox",request.getParameter("blackBox"));
+		BigDecimal oriRate = getRiskOriRate(userId,params);
 		// FIXME 修复网络延迟问题导致搭售商品加载不正确问题
 		try {
 			Long newGoodsId = getTiedGoodsInfo(amountStr, type, userId, oriRate);
@@ -418,7 +424,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 	}
 
-	private BigDecimal getRiskOriRate(Long userId) {
+	private BigDecimal getRiskOriRate(Long userId,JSONObject params) {
 		List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -432,7 +438,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			poundageRate = new BigDecimal(poundageRateCash.toString());
 		} else {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 				String poundage = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

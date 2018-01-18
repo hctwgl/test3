@@ -133,7 +133,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, 
 			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
-		BigDecimal oriRate = riskUtil.getRiskOriRate(userId);
+
+		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = riskUtil.getObjectWithResourceDolist(list);

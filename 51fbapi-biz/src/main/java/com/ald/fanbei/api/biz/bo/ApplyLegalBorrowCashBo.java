@@ -42,6 +42,24 @@ public class ApplyLegalBorrowCashBo {
 	private String deliveryUser;
 	
 	private String deliveryPhone;
+	private String ipAddress;
+	private String appName;
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
 
 	public String getBqsBlackBox() {
 		return bqsBlackBox;
