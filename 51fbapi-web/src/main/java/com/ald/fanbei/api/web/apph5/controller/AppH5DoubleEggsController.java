@@ -538,7 +538,7 @@ public class AppH5DoubleEggsController extends BaseController {
 			
 			if (CollectionUtil.isNotEmpty(dateList)) {
 				
-				log = log + String.format("middle params dateList.size() = %s", dateList.size());
+				log = log + String.format("middle params dateList.size() = %s ,startDate = %s", dateList.size(),startDate.toString());
 				logger.info(log);
 				
 				if(startDate.before(dateList.get(0))){
