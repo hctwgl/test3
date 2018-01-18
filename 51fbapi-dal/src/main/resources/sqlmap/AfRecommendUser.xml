@@ -180,6 +180,7 @@
 		ON a.user_id = b.id
 		WHERE a.parentId = #{parentId}
 		and type = #{type}
+		and a.is_delete = 0
 		<if test="gmtCreate != null">
 		and a.gmt_create <![CDATA[ >= ]]> #{gmtCreate}
 		</if>

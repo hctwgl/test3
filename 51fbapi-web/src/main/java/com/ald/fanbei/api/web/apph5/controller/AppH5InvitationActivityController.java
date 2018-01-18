@@ -618,17 +618,19 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int firstOrder = 1;
 	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
 	        //活动之前是否点过外卖
-	       
-	        NewbieTaskVo newbieTaskForFood =  assignment(foodResource,rebateCount);
-	        if(rebateCount == 0){
-	            AfUserDo   afUser = afUserService.getUserByUserName(context.getUserName());
-	            AfShopDo queryShop = new AfShopDo();
-	            queryShop.setType("WAIMAI");
-	            AfShopDo shopInfo = afShopService.getShopInfoBySecType(queryShop);
-	            String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, afUser.getMobile());
-	            newbieTaskForFood.setUrl(shopUrl);
-	        }
+	        NewbieTaskVo newbieTaskForFood  = new NewbieTaskVo();
+	         newbieTaskForFood =  assignment(foodResource,rebateCount);
+	        if(newbieTaskForFood !=null){
+        	        if(rebateCount == 0){
+        	            AfUserDo   afUser = afUserService.getUserByUserName(context.getUserName());
+        	            AfShopDo queryShop = new AfShopDo();
+        	            queryShop.setType("WAIMAI");
+        	            AfShopDo shopInfo = afShopService.getShopInfoBySecType(queryShop);
+        	            String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, afUser.getMobile());
+        	            newbieTaskForFood.setUrl(shopUrl);
+        	        }
 	        newbieTaskList.add(newbieTaskForFood);
+	        }
 	        //是否信用认证，0否，1是
 	        int auth = 0;
 	        AfUserAuthDo afUserAuthDo  = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -645,25 +647,27 @@ public class AppH5InvitationActivityController extends BaseController {
 	            auth = 1;
 	        }
 	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth);
-	        if("N".equals(afUserAuthDo.getBankcardStatus())){
-	            newbieTaskForAuth.setUrl("/fanbei-web/opennative?name=DO_SCAN_ID");
+	        if(newbieTaskForAuth!=null){
+        	        if("N".equals(afUserAuthDo.getBankcardStatus())){
+        	            newbieTaskForAuth.setUrl("/fanbei-web/opennative?name=DO_SCAN_ID");
+        	        }
+        	        
+        	       
+        	        if(onlineTime != null && riskTime !=null){
+        	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+        	            try {
+        			Date time  = sdf.parse(onlineTime.getValue()) ;
+        			 if(riskTime.before(time)){
+        			     newbieTaskForAuth.setValue1(onlineTime.getValue1());
+        			}
+        		    } catch (ParseException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		    }
+        	        }
+        	        
+        	        newbieTaskList.add(newbieTaskForAuth);
 	        }
-	        
-	       
-	        if(onlineTime != null && riskTime !=null){
-	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-	            try {
-			Date time  = sdf.parse(onlineTime.getValue()) ;
-			 if(riskTime.before(time)){
-			     newbieTaskForAuth.setValue1(onlineTime.getValue1());
-			}
-		    } catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-	        }
-	        
-	        newbieTaskList.add(newbieTaskForAuth);
 	        //商城购物返利
 	        int shopShopping = 0;
 	        //afOrderService.getRebateShopOrderByUserId(userId);
@@ -674,11 +678,12 @@ public class AppH5InvitationActivityController extends BaseController {
 		   firstShopping =1;
 	        }
 	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping);
-	        if(firstShopping == 1){
-	            newbieTaskForFirstShopShopping.setTitle("商城购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
-	        }
-	        newbieTaskList.add(newbieTaskForFirstShopShopping);
-	        
+	        if(newbieTaskForFirstShopShopping !=null){
+        	         if(firstShopping == 1){
+        	             newbieTaskForFirstShopShopping.setTitle("商城购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
+        	         }
+        	         newbieTaskList.add(newbieTaskForFirstShopShopping);
+	       }
 	      
 	        //信用购物
 	        int authShopping = 0;
@@ -695,12 +700,14 @@ public class AppH5InvitationActivityController extends BaseController {
 	        }
 	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
 	          //活动之前借过钱
-		 if(activityBeforeAuthShopping >= 1){
-		     authShopping = 1;
-		     newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
-		     newbieTaskForAuthShopping.setValue1(onlineTime.getValue1());
-		}
-		 newbieTaskList.add(newbieTaskForAuthShopping);
+	        if(newbieTaskForAuthShopping !=null){
+        		 if(activityBeforeAuthShopping >= 1){
+        		     authShopping = 1;
+        		     newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
+        		     newbieTaskForAuthShopping.setValue1(onlineTime.getValue1());
+        		 }
+        		 newbieTaskList.add(newbieTaskForAuthShopping);
+	        }
 	        
 	        //借钱
 	        int borrow = 0;
@@ -716,13 +723,14 @@ public class AppH5InvitationActivityController extends BaseController {
 	        }
 	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow);
 	          //活动之前借过钱
-		 if(activityBeforeBorrow >= 1){
-		     borrow = 1;
-		     newbieTaskForBorrow =  assignment(borrowResource,borrow);
-		     newbieTaskForBorrow.setValue1(onlineTime.getValue1());
-		}
-		 newbieTaskList.add(newbieTaskForBorrow);
-		 
+	        if(newbieTaskForBorrow!=null){
+        		 if(activityBeforeBorrow >= 1){
+        		     borrow = 1;
+        		     newbieTaskForBorrow =  assignment(borrowResource,borrow);
+        		     newbieTaskForBorrow.setValue1(onlineTime.getValue1());
+        		}
+        		 newbieTaskList.add(newbieTaskForBorrow);
+	        }
 		 //活动期间三次商城购物。（自营）
 		 //活动期间商城购物数据
 		 
@@ -732,17 +740,18 @@ public class AppH5InvitationActivityController extends BaseController {
 		     count = acticityShopOrderList.size();
 		}
 		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,count);
-		 if(acticityShopOrderList.size()<3){
-		     newbieTaskForThirdShopping.setValue1("已购物<i>"+acticityShopOrderList.size()+"</i>次");
-		     
-		 }else{
-		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
-		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
-		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
-		           newbieTaskForThirdShopping.setFinish(1);
-		 }
-		 newbieTaskList.add(newbieTaskForThirdShopping);	 
-		 
+		 if(newbieTaskForThirdShopping!=null){
+        		 if(acticityShopOrderList.size()<3){
+        		     newbieTaskForThirdShopping.setValue1("已购物<i>"+acticityShopOrderList.size()+"</i>次");
+        		     
+        		 }else{
+        		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
+        		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
+        		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
+        		           newbieTaskForThirdShopping.setFinish(1);
+        		 }
+        		 newbieTaskList.add(newbieTaskForThirdShopping);	 
+              }
         map.put("newbieTaskList",newbieTaskList);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
@@ -769,31 +778,36 @@ public class AppH5InvitationActivityController extends BaseController {
     
 
     private NewbieTaskVo assignment(AfResourceDo resource,int count) {
+
 	NewbieTaskVo  newbieTaskVo = new NewbieTaskVo();
-	String titleName = resource.getValue();
-	String buttonName = resource.getTypeDesc();
-	String urlName = resource.getDescription();
-	String title[] = titleName.split("@");  
-	String button[] = buttonName.split("@");  
-	String url[] = urlName.split("@");  
+	if(resource ==null){
+	    return null;
+	}
+        	String titleName = resource.getValue();
+        	String buttonName = resource.getTypeDesc();
+        	String urlName = resource.getDescription();
+        	String title[] = titleName.split("@");  
+        	String button[] = buttonName.split("@");  
+        	String url[] = urlName.split("@");  
+        	
+        	newbieTaskVo.setFinish(0);
+        	newbieTaskVo.setTitle(title[0]);
+        	newbieTaskVo.setButton(button[0]);
+        	newbieTaskVo.setUrl(url[0]);
+        	if(count>0){
+        	        newbieTaskVo.setFinish(1);
+        	        newbieTaskVo.setTitle(title[1]);
+        	        newbieTaskVo.setButton(button[1]);
+        	        newbieTaskVo.setUrl(url[1]);
+        	        newbieTaskVo.setValue1(resource.getValue4());
+        	        return newbieTaskVo;
+                }
+        	newbieTaskVo.setValue1(resource.getValue1());
+        	newbieTaskVo.setValue2(resource.getValue2());
+        	newbieTaskVo.setValue3(resource.getValue3());
 	
-	newbieTaskVo.setFinish(0);
-	newbieTaskVo.setTitle(title[0]);
-	newbieTaskVo.setButton(button[0]);
-	newbieTaskVo.setUrl(url[0]);
-	if(count>0){
-	        newbieTaskVo.setFinish(1);
-	        newbieTaskVo.setTitle(title[1]);
-	        newbieTaskVo.setButton(button[1]);
-	        newbieTaskVo.setUrl(url[1]);
-	        newbieTaskVo.setValue1(resource.getValue4());
-	        return newbieTaskVo;
-        }
-	newbieTaskVo.setValue1(resource.getValue1());
-	newbieTaskVo.setValue2(resource.getValue2());
-	newbieTaskVo.setValue3(resource.getValue3());
-	
-	return newbieTaskVo;
+
+        	return newbieTaskVo;
     }
 
     private List<AfResourceDo> getWelfareTableList(){
@@ -817,10 +831,16 @@ public class AppH5InvitationActivityController extends BaseController {
        	   preferential = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
        	   bizCacheUtil.saveObject("recommend:activity:table_preferential", preferential, Constants.SECOND_OF_TEN_MINITS);
        	 }
-      	
-        welfareTableList.add(firstAward);
-        welfareTableList.add(secondAward);
-        welfareTableList.add(preferential);
+      	if(firstAward !=null){
+      	welfareTableList.add(firstAward);
+      	}
+      	if(secondAward !=null){
+      	 welfareTableList.add(secondAward);
+      	}
+      	if(preferential !=null){
+      	welfareTableList.add(preferential);
+      	}
+        
 	return welfareTableList;
 }
     
@@ -853,11 +873,19 @@ public class AppH5InvitationActivityController extends BaseController {
        	   stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "STROLL");
        	   bizCacheUtil.saveObject("recommend:activity:example_stroll", stroll, Constants.SECOND_OF_TEN_MINITS);
        	 }
-       	
-        welfareExampleList.add(auth);
-        welfareExampleList.add(borrow);
-        welfareExampleList.add(shop);
-        welfareExampleList.add(stroll);
+       	if(auth!=null){
+       	 welfareExampleList.add(auth);
+       	}
+       	if(borrow!=null){
+       	 welfareExampleList.add(borrow);
+         }
+       	if(shop!=null){
+       	 welfareExampleList.add(shop);
+        }
+	if(stroll!=null){
+	    welfareExampleList.add(stroll);
+       }
+    
 	return welfareExampleList;
     }
     
@@ -890,11 +918,19 @@ public class AppH5InvitationActivityController extends BaseController {
 	             stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "STROLL");
 		     bizCacheUtil.saveObject("recommend:activity:preferential_stroll", stroll, Constants.SECOND_OF_TEN_MINITS);
 		 }
-	         
-	        preferentialList.add(superValue);
-	        preferentialList.add(fullCut);
-	        preferentialList.add(shop);
-	        preferentialList.add(stroll);
+	         if(superValue !=null){
+	             preferentialList.add(superValue);
+	         }
+                 if(fullCut !=null){
+                     preferentialList.add(fullCut);      
+                 }
+                 if(shop !=null){
+                     preferentialList.add(shop);
+                 }
+                 if(stroll !=null){
+                     preferentialList.add(stroll);  
+                 }
+	      
 	        return preferentialList;
   }
     
@@ -916,13 +952,13 @@ public class AppH5InvitationActivityController extends BaseController {
 		
 	     
 	     List<AfCouponDo> authCoupon = getCommonCouponMap(CouponScene.CREDIT_AUTH);
-	     String value = "借钱";
-	     String value1 = "商城";
-	     String value2 = "吃完住行";
-	     String value3 = "还款优惠";
-	     String value4 = "自营商城";
+	     String value = null;
+	     String value1 = null;
+	     String value2 = null;
+	     String value3 = null;
+	     String value4 = null;
 	    
-	     if(resourceDo != null){
+	     if(resourceDo != null){ 
 		 value = resourceDo.getValue();
 		 value1 = resourceDo.getValue1();
 		 value2 = resourceDo.getValue2();
@@ -934,16 +970,20 @@ public class AppH5InvitationActivityController extends BaseController {
 	     //首次借钱，首次购物
 	     AfCouponDo  firstLoan = getcouponForCategoryTag("_FIRST_LOAN_");
 	     AfCouponDo  firstShopping = getcouponForCategoryTag("_FIRST_SHOPPING_");
-	     HashMap<String,Object> loanMap =new HashMap<>();
-	     loanMap.put("threshold", firstLoan.getLimitAmount());
-	     loanMap.put("couponAmount",firstLoan.getAmount());
-	     loanMap.put("couponName", value3);
-	     HashMap<String,Object> shoppingMap =new HashMap<>();
-	     shoppingMap.put("threshold", firstShopping.getLimitAmount());
-	     shoppingMap.put("couponAmount",firstShopping.getAmount());
-	     shoppingMap.put("couponName", value3);
-	     list1.add(loanMap);
-	     list1.add(shoppingMap);
+	     if(firstLoan !=null){
+        	     HashMap<String,Object> loanMap =new HashMap<>();
+        	     loanMap.put("threshold", firstLoan.getLimitAmount());
+        	     loanMap.put("couponAmount",firstLoan.getAmount());
+        	     loanMap.put("couponName", value3);
+        	     list1.add(loanMap);
+	     }
+	     if(firstShopping !=null){
+        	     HashMap<String,Object> shoppingMap =new HashMap<>();
+        	     shoppingMap.put("threshold", firstShopping.getLimitAmount());
+        	     shoppingMap.put("couponAmount",firstShopping.getAmount());
+        	     shoppingMap.put("couponName", value3);
+        	     list1.add(shoppingMap);
+	     }
 	     
 	     if(authCoupon.size()>0){
 		 for(int i=0;i<authCoupon.size();i++){
@@ -955,7 +995,6 @@ public class AppH5InvitationActivityController extends BaseController {
         		 list1.add(map);
 		 }
 	     }
-	     
 	     map1.put("couponTitle", value);
 	     map1.put("couponList",list1 );
 	     giftPackageList.add(map1);
@@ -971,25 +1010,28 @@ public class AppH5InvitationActivityController extends BaseController {
 		     shopMap.put("couponName", value4);
 		     list2.add(shopMap);
 		}
+		     map2.put("couponTitle", value1);
+		     map2.put("couponList",list2 );
+		     giftPackageList.add(map2);
 	     }
-	     map2.put("couponTitle", value1);
-	     map2.put("couponList",list2 );
-	     giftPackageList.add(map2);
+	    
 	     
 	     List<BoluomeCouponResponseExtBo> bolumeCouponList =  boluomeCouponList();
-	     for(BoluomeCouponResponseExtBo boluomeCoupon:bolumeCouponList){
-		      HashMap<String,Object> ggMap =new HashMap<>();
-		      ggMap.put("threshold", boluomeCoupon.getThreshold());
-		      ggMap.put("couponAmount",boluomeCoupon.getValue());
-		      ggMap.put("couponName",boluomeCoupon.getCouponName() );
-		      list3.add(ggMap);
-	     }
+	     if(bolumeCouponList.size()>0){
+        	     for(BoluomeCouponResponseExtBo boluomeCoupon:bolumeCouponList){
+        		      HashMap<String,Object> ggMap =new HashMap<>();
+        		      ggMap.put("threshold", boluomeCoupon.getThreshold());
+        		      ggMap.put("couponAmount",boluomeCoupon.getValue());
+        		      ggMap.put("couponName",boluomeCoupon.getCouponName() );
+        		      list3.add(ggMap);
+        	     }
+	    
 	     if(list3 !=null){
 		 map3.put("couponTitle", value2); 
 		 map3.put("couponList", list3); 
 	     }
-	     
-	     giftPackageList.add(map3);
+	      giftPackageList.add(map3);
+	     }
 	     return giftPackageList;
     }
     
