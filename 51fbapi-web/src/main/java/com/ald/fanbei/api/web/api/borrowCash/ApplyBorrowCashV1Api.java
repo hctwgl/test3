@@ -721,7 +721,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         if(isNumeric(type)){
             day = Integer.parseInt(type);
         }else{
-            day = numberWordFormat.parse(type);
+            day = numberWordFormat.parse(type.toLowerCase());
         }
         return day;
     }

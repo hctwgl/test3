@@ -862,7 +862,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		if(isNumeric(type)){
 			day = Integer.parseInt(type);
 		}else{
-			day = numberWordFormat.parse(type);
+			day = numberWordFormat.parse(type.toLowerCase());
 		}
 		return day;
 	}

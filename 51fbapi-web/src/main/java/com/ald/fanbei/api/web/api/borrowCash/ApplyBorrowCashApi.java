@@ -360,7 +360,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		if(isNumeric(type)){
 			day = Integer.parseInt(type);
 		}else{
-			day = numberWordFormat.parse(type);
+			day = numberWordFormat.parse(type.toLowerCase());
 		}
 		return day;
 	}
