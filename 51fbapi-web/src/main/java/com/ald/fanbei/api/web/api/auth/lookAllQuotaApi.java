@@ -224,7 +224,10 @@ public class lookAllQuotaApi implements ApiHandle {
             mapList.add(cashMap);
             mapList.add(onlineMap);
             mapList.add(trainMap);
-            resp.setResponseData(mapList);
+            Map<String,Object> data = new HashMap<>();
+            data.put("data",mapList);
+           // resp.setResponseData(mapList);
+            resp.setResponseData(data);
         } catch (Exception e) {
             logger.error("lookAllQuotaApi error :", e);
             resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
