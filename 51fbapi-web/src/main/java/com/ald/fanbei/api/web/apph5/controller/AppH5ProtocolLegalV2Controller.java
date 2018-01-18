@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.*;
@@ -31,6 +32,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author guoshuaiqiang 2017年12月19日下午1:41:05
@@ -73,6 +76,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfContractPdfDao afContractPdfDao;
 	@Resource
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
@@ -223,7 +228,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -261,6 +267,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 	private void getResourceRate(ModelMap model, String type, AfResourceDo afResourceDo, String borrowType) {
 		if (afResourceDo != null && afResourceDo.getValue2() != null) {
+			String oneDay = "";
+			String twoDay = "";
+			if(null != afResourceDo){
+				oneDay = afResourceDo.getTypeDesc().split(",")[0];
+				twoDay = afResourceDo.getTypeDesc().split(",")[1];
+			}
 			JSONArray array = new JSONArray();
 			if ("instalment".equals(borrowType)) {
 				array = JSONObject.parseArray(afResourceDo.getValue3());
@@ -272,6 +284,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("yearRate", jsonObject.get("consumeSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("yearRate", jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(consumeTag)) {//手续费利率
@@ -279,6 +297,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("poundageRate", jsonObject.get("consumeSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("poundageRate", jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(consumeTag)) {//逾期利率
@@ -286,6 +310,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("overdueRate", jsonObject.get("consumeSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("overdueRate", jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("overdueRate", jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("overdueRate", jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 				}
@@ -299,6 +329,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("yearRate", jsonObject.get("borrowSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("yearRate", jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate", jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate", jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
@@ -306,6 +342,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("poundageRate", jsonObject.get("borrowSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
@@ -313,6 +355,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("overdueRate", jsonObject.get("borrowSevenDay"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("overdueRate", jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 				}
@@ -416,7 +464,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -811,4 +860,34 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		return null;
 	}
 
+
+	/**
+	 * 借款时间
+	 *
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowTime(final String type) {
+		Integer day ;
+		if(isNumeric(type)){
+			day = Integer.parseInt(type);
+		}else{
+			day = numberWordFormat.parse(type);
+		}
+		return day;
+	}
+
+	/**
+	 * 是否是数字字符串
+	 * @param type
+	 * @return
+	 */
+	private boolean isNumeric(String type) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		Matcher isNum = pattern.matcher(type);
+		if( !isNum.matches() ){
+			return false;
+		}
+		return true;
+	}
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,6 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -228,6 +226,13 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 	}
 	
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -237,19 +242,19 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
+				if (StringUtils.equals(oneDay, borrowType)) {
 					interestRate = info.getDouble(tag + "SevenDay");
 					totalRate += interestRate;
-				} else {
+				} else if (StringUtils.equals(twoDay, borrowType)){
 					interestRate = info.getDouble(tag + "FourteenDay");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
+				if (StringUtils.equals(oneDay, borrowType)) {
 					serviceRate = info.getDouble(tag + "SevenDay");
 					totalRate += serviceRate;
-				} else {
+				} else if (StringUtils.equals(twoDay, borrowType)){
 					serviceRate = info.getDouble(tag + "FourteenDay");
 					totalRate += serviceRate;
 				}
