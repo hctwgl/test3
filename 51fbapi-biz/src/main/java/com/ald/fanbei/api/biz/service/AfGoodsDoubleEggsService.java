@@ -27,5 +27,6 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 	void updateCountById(Long goodsId);
 	
 	List<AfSFgoodsVo> getFivePictures(Long userId);
+	boolean shouldOnlyAp(Long goodsId);
 
 }

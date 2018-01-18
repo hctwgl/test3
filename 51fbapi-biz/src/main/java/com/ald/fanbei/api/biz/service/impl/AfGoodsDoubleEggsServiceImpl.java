@@ -76,5 +76,11 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 			return afGoodsDoubleEggsDao.getFivePictures(userId);
 		}
 
+		@Override
+		public boolean shouldOnlyAp(Long goodsId) {
+			
+			return afGoodsDoubleEggsDao.shouldOnlyAp(goodsId) > 0 ? true :false;
+		}
+
 
 }

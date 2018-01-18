@@ -374,7 +374,6 @@ public class AppH5SFController extends BaseController {
 				String couponId = (String) couponsArray.getString(i);
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 				if (afCouponDo != null) {
-
 					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
 						avalibleCouponIdList.add(afCouponDo.getRid());
 					} 

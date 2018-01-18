@@ -261,4 +261,15 @@
 			ORDER BY
 				de.goods_id;
     </select>
+    <select id="shouldOnlyAp" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			af_goods_double_eggs
+		WHERE
+			goods_id = #{goodsId}
+		AND is_delete = 0
+		AND start_time BETWEEN '2018-01-20 11:00:00'
+		AND '2018-01-31 11:00:00';
+    </select>
 </mapper>
