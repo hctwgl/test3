@@ -659,10 +659,24 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("goodsId = %s",goodsId);
 				logger.info(log);
 				
+			
+				
 				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
 				log = log + String.format("goodsDo = %s",goodsDo.toString());
 				logger.info(log);
+				
+				//根据goodsId查询商品信息
+				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-goodsDo.getAlreadyCount());//秒杀商品余量
+				
+				log = log + String.format("goodsDouble12Count = %d",goodsDouble12Count);
+				logger.info(log);
+				
+				if(goodsDouble12Count <= 0){
+					//报错提示秒杀商品已售空
+					throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+				}
 				
 				if (goodsDo != null) {
 
