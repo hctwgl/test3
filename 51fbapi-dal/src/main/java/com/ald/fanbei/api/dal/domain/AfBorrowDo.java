@@ -60,8 +60,17 @@ public class AfBorrowDo extends AbstractSerial{
 	private String calculateMethod;//计息方式【DEBX:等额本息 DBDX:等本等息】
 	
 	private Integer freeNper;//免息期数;
-	
-	
+
+	private Integer version;//1：V2版本 0：老版本
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
 	public Long getRid() {
 		return rid;
 	}

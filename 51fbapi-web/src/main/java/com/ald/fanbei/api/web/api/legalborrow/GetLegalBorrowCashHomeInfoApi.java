@@ -252,8 +252,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());
 		} else {
+			data.put("companyName", "浙江名信信息科技有限公司");
 			logger.info("companyName empty");
-			data.put("companyName", "");
 		}
 		// 增加判断，如果前面还有没有还的借款，优先还掉
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
@@ -607,7 +607,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (resource != null) {
 			data.put("companyName", resource.getValue());
 		} else {
-			data.put("companyName", "null");
+			data.put("companyName", "浙江名信信息科技有限公司");
 		}
 		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
