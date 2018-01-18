@@ -49,36 +49,36 @@ public class EdsPayProtocolUtil extends AbstractThird {
 		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
 		try {
 			//获取对应资产方配置信息
-			/*AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
+			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
 			if(assideResourceInfo == null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
 				return notifyRespBo;
 			}
 			//资产方及启用状态校验
-			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+//			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
+			/*if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
-			}
+			}*/
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}*/
+			}
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayBackPdfReqBo edspayBackPdfReqBo  = null;
 			try {
-				realDataJson = AesUtil.decryptFromBase64(data, "2KA4WGA857FFCC65");
+				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
 				edspayBackPdfReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackPdfReqBo.class);
 			} catch (Exception e) {
 				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
 			}finally{
 				logger.info("EdspayController giveBackCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
 			}
-			/*if(edspayBackPdfReqBo==null){
+			if(edspayBackPdfReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
@@ -88,7 +88,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				//验证签名失败
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
-			}*/
+			}
 			edspayBackPdfReqBo = new EdspayBackPdfReqBo();
 			//签名成功,业务处理
 			String orderNo = edspayBackPdfReqBo.getOrderNo();
@@ -97,12 +97,12 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			String investorName = edspayBackPdfReqBo.getInvestorName();
 			String investorCardId = edspayBackPdfReqBo.getInvestorCardId();
 			String investorPhone = edspayBackPdfReqBo.getInvestorPhone();
-			orderNo="jk2018010914473300001";
+			/*orderNo="jk2018010914473300001";
 			debtType=2;
 			investorName="杨海龙";
 			investorCardId="342522199401124538";
 			investorPhone="18268005632";
-			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000000059960459.pdf";
+			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000000059960459.pdf";*/
 			if(orderNo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
