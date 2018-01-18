@@ -198,6 +198,8 @@ public class AppH5SFController extends BaseController {
 					}else{
 						afUserCouponTigerMachineService.addOneTime(userId, "DAILY");
 					}
+				}else{
+					userId = 0L;
 				}
 				
 				data.put("tigerTimes", tigerTimes);
@@ -241,34 +243,33 @@ public class AppH5SFController extends BaseController {
 		String result = "";
 
 		try {
-			context = doWebCheck(request, false);
+			context = doWebCheck(request, true);
 			
-			logger.info("initTigerMachine finished doWebCheck and the context is {}",context.toString());
+			String log = String.format("initTigerMachine finished doWebCheck and the context is %s", context.toString());
+			logger.info(log);
 			
 			String userName = context.getUserName();
-			if (StringUtil.isBlank(userName)) {
-				data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-			}
+
+			log =log + String.format("userName %s", userName);
+			logger.info(log);
+			
 			Long userId = convertUserNameToUserId(userName);
-			if (userId == null) {
-				data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-			}
+			
+			log =log + String.format("userName %s", userName);
+			logger.info(log);
 			
 			//get conpons
 			String tag = "_TIGER_MACHINE_";
 
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+			
+			log =log + String.format("couponCategory %s", couponCategory.toString());
+			logger.info(log);
+			
 			if(couponCategory == null){
 				return H5CommonResponse.getNewInstance(false, "老虎机优惠券没有配置").toString();
 			}
+			
 			String coupons = couponCategory.getCoupons();
 			if (StringUtil.isBlank(coupons)) {
 				return H5CommonResponse.getNewInstance(false, "次活动奖品已经领完").toString();
@@ -297,10 +298,16 @@ public class AppH5SFController extends BaseController {
 				}
 			}
 			
+			log =log + String.format("couponVoList %s", couponVoList.toString());
+			logger.info(log);
+			
 			//get total userTimes
 			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
 			data.put("times", times);
-			logger.info(JSON.toJSONString(couponVoList));
+			
+			log =log + String.format("couponVoList %s", couponVoList);
+			logger.info(log);
+			
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 
