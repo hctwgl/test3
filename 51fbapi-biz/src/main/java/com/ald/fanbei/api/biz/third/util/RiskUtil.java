@@ -182,6 +182,7 @@ public class RiskUtil extends AbstractThird {
     private static String getUrl() {
         if (url == null) {
             url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+            //url = "http://192.168.117.25:8080";
             return url;
         }
         return url;
@@ -410,7 +411,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox) {
         Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
         String directory = "";
         if (directoryCache != null) {
@@ -477,7 +478,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap,String bqsBlackBox) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -495,6 +496,7 @@ public class RiskUtil extends AbstractThird {
         obj.put("appName", appName);
         obj.put("ipAddress", ipAddress);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
 
         reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 
@@ -2032,9 +2034,21 @@ public class RiskUtil extends AbstractThird {
      * @param consumerNo 用户ID
      * @return
      */
-    public RiskVerifyRespBo getUserLayRate(String consumerNo) {
+    public RiskVerifyRespBo getUserLayRate(String consumerNo,JSONObject params) {
         RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
         reqBo.setConsumerNo(consumerNo);
+        if (params != null){
+            AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+           JSONObject eventObj = new JSONObject();
+           eventObj.put("appName", params.get("appName")+"");
+           eventObj.put("cardNo", card == null ? "":card.getCardNumber());
+           eventObj.put("blackBox",  params.get("blackBox")==null?"":params.get("blackBox"));
+           eventObj.put("ipAddress",  params.get("ipAddress")==null?"":params.get("ipAddress"));
+           eventObj.put("bqsBlackBox",  params.get("bqsBlackBox")+"");
+           reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
+        }
+        HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
+        reqBo.setSummaryData(JSON.toJSONString(summaryData));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
         String url = getUrl() + "/modules/api/risk/userRate.htm";
@@ -2068,7 +2082,7 @@ public class RiskUtil extends AbstractThird {
      * @return
      */
     public boolean verifySynLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
-                                  String ip, String phoneType, String networkType, String osType) {
+                                  String ip, String phoneType, String networkType, String osType,String bqsBlackBox) {
 
 //		RiskTrustReqBo reqBo = new RiskTrustReqBo();
         Map<String, String> map = new HashMap<String, String>();
@@ -2078,6 +2092,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("loginType", loginType);
         obj.put("loginTime", loginTime);
@@ -2127,7 +2142,7 @@ public class RiskUtil extends AbstractThird {
      * @return
      */
     public void verifyASyLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
-                               String ip, String phoneType, String networkType, String osType, String result, String event) {
+                               String ip, String phoneType, String networkType, String osType, String result, String event,String bqsBlackBox) {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("consumerNo", consumerNo);
@@ -2136,6 +2151,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("loginResult", result);
         obj.put("loginType", loginType);
@@ -2168,7 +2184,7 @@ public class RiskUtil extends AbstractThird {
      * @param event
      */
     public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid, String registerTime,
-                                  String ip, String phoneType, String networkType, String osType, String event) {
+                                  String ip, String phoneType, String networkType, String osType, String event,String bqsBlackBox) {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("consumerNo", consumerNo);
@@ -2177,6 +2193,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("registerResult", "1");
         obj.put("registerTime", registerTime);
@@ -2428,14 +2445,14 @@ public class RiskUtil extends AbstractThird {
             logger.error("syncOpenId error:", e);
         }
     }
-    
+
     /**
      * 获取用户分层利率
      * @param userId
      * @param rate
      * @return
      */
-    public BigDecimal getRiskOriRate(Long userId) {
+    public BigDecimal getRiskOriRate(Long userId,JSONObject param) {
     	List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -2449,7 +2466,7 @@ public class RiskUtil extends AbstractThird {
 			poundageRate = new BigDecimal(poundageRateCash.toString());
 		} else {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(), param);
 				String poundage = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="
@@ -2467,8 +2484,8 @@ public class RiskUtil extends AbstractThird {
 		BigDecimal oriRate = serviceRate.add(poundageRate);
 		return oriRate;
 	}
-    
-    
+
+
     public  Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list) {
 		Map<String, Object> data = new HashMap<String, Object>();
 
@@ -2516,6 +2533,51 @@ public class RiskUtil extends AbstractThird {
 
 		return data;
 
-	}
+    }
+    public JSONObject getPayCaptal(AfBorrowCashDo afBorrowCashDo, String scene,BigDecimal amountBorrow) {
+        // 查卡号，用于调用风控接口
+        AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
+        String cardNo = card.getCardNumber();
+        String orderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+
+        HashMap summaryData = afBorrowDao.getUserSummaryForCapital(afBorrowCashDo.getUserId());
+        if (summaryData != null){
+            summaryData.put("allDays",summaryData.get("allDays")+"");
+            summaryData.put("allDays1",summaryData.get("allDays1")+"");
+            summaryData.put("borrowAmout",amountBorrow.toString());
+            summaryData.put("over",afBorrowCashDo.getOverdueDay()>0?"true":"false");
+            BigDecimal sumRenewalPoundage = afBorrowCashDo.getSumRenewalPoundage();
+            BigDecimal poundage = afBorrowCashDo.getPoundage();
+            BigDecimal amount = afBorrowCashDo.getAmount();
+            BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
+            BigDecimal sumOverdue = afBorrowCashDo.getSumOverdue();
+            BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
+            BigDecimal sumRate = afBorrowCashDo.getSumRate();
+            BigDecimal repayAmount = afBorrowCashDo.getRepayAmount();
+
+            summaryData.put("amout1",(sumRenewalPoundage.compareTo(BigDecimal.ZERO)>0?sumRenewalPoundage.add(poundage).add(amount).add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount)
+                                        :amount.add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount))+"");
+            summaryData.put("borrowAmout",(amountBorrow.toString())+"");
+            //summaryData.put("orderNo",orderNo);
+            summaryData.put("consumerNo",afBorrowCashDo.getUserId()+"");
+            summaryData.put("signInfo",SignUtil.sign(createLinkString(summaryData), PRIVATE_KEY));
+
+        }
+
+
+        String url = getUrl() + "/modules/api/xj/renew.htm";
+
+        String reqResult = requestProxy.post(url, summaryData);
+
+        logThird(reqResult, "transferBorrow", summaryData);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
+        }
+        JSONObject riskResp = JSONObject.parseObject(reqResult);
+        if(!"100".equals(riskResp.getString("code"))){
+            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
+        }
+        return riskResp;
+    }
 
 }
