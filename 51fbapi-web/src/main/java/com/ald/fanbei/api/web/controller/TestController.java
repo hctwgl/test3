@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -163,6 +164,8 @@ public class TestController {
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private KafkaSync kafkaSync;
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
@@ -277,9 +280,10 @@ public class TestController {
     }
     @RequestMapping("/kafka")
     @ResponseBody
-    public String testKafka(){
-        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC,"13989455976");
-        HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("13962626262")),HashMap.class,"UserDataSummary");
+    public String testKafka() throws Exception{
+       // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
+        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC,KafkaConstants.SYNC_BORROW_CASH,"13989455786");
+        //HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("13962626262")),HashMap.class,"UserDataSummary");
 
         return "测试kafka";
     }

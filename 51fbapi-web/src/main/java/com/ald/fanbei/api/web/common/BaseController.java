@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.commons.lang.ObjectUtils;
@@ -51,6 +52,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author 陈金虎 2017年1月16日 下午11:56:17 @类描述：
@@ -84,7 +86,8 @@ public abstract class BaseController {
 
 	@Resource
 	AfShopService afShopService;
-
+	@Autowired
+	KafkaSync kafkaSync;
 	@Resource
 	private AfResourceService afResourceService;
 
@@ -149,6 +152,13 @@ public abstract class BaseController {
 			resultStr = JSON.toJSONString(exceptionresponse);
 			logger.error("system exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
 		} finally {
+			try{
+				String userName = (String) requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_USERNAME);
+				kafkaSync.syncEvent(userName,request.getRequestURI().toString());
+			}catch (Exception e){
+				logger.error("kafkaSync syncEvent error:",e);
+			}
+
 			try {
 				Calendar calEnd = Calendar.getInstance();
 				if (StringUtils.isNotBlank(reqData)) {
