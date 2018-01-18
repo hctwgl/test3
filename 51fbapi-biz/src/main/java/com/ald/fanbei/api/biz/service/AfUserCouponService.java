@@ -141,7 +141,7 @@ public interface AfUserCouponService {
 
 	void sentUserCoupon(Long userId, String tag, String sourceType);
 
-	int sentUserCoupon(AfOrderDo orderInfo);
+	int sentFirstAuthShoppingUserCoupon(AfOrderDo orderInfo);
 
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 

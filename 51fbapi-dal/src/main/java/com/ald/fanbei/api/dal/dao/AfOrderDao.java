@@ -214,12 +214,13 @@ public interface AfOrderDao {
 
 	int getAuthShoppingByUserId(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
-	HashMap getCountOrderByUserAndOrderType(@Param("userId")Long userId,@Param("orderType") String orderType);
+	HashMap getCountPaidOrderByUserAndOrderType(@Param("userId")Long userId,@Param("orderType") String orderType);
 
 	List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 
 	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId);
+
 
 	
 }

@@ -113,9 +113,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
 					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
-					if (orderTimes == 0) {
+				
     					     int boluomeFinishOrderTimes =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId);
-    					     if(boluomeFinishOrderTimes == 0){
+    					     if(boluomeFinishOrderTimes == 1){
             					     //邀请有礼记录用户订单id
             					    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(userId);
             					     if(afRecommendUserDo != null){
@@ -126,7 +126,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
          						     logger.info(log);
             						 }
             					     }
-    					     }
+    					     
 						rebateDo.setFirstOrder(1);
 
 						// check if the order times for red packet

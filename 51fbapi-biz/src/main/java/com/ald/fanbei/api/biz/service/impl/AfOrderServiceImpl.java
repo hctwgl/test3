@@ -2552,9 +2552,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public HashMap getCountOrderByUserAndOrderType(Long userId, String orderType) {
+    public HashMap getCountPaidOrderByUserAndOrderType(Long userId, String orderType) {
 	// TODO Auto-generated method stub
-	return orderDao.getCountOrderByUserAndOrderType(userId,orderType);
+	return orderDao.getCountPaidOrderByUserAndOrderType(userId,orderType);
     }
 
     @Override

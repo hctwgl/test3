@@ -210,11 +210,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	
-	public int sentUserCoupon(AfOrderDo afOrder){
+	public int sentFirstAuthShoppingUserCoupon(AfOrderDo afOrder){
 	        Long count = 0L;
-		HashMap map = afOrderService.getCountOrderByUserAndOrderType(afOrder.getUserId(),afOrder.getOrderType());
-	
-		
+		HashMap map = afOrderService.getCountPaidOrderByUserAndOrderType(afOrder.getUserId(),afOrder.getOrderType());
 		
 		try {
 			count = (Long) map.get("count");

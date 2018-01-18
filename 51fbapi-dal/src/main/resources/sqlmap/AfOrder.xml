@@ -1149,12 +1149,13 @@
 		AND
 			user_id=#{userId}
 	</select>
-	<select id="getCountOrderByUserAndOrderType" resultType="HashMap">
+	<select id="getCountPaidOrderByUserAndOrderType" resultType="HashMap">
 		 SELECT 	
 		 COUNT(1) 'count' FROM 
 		 af_order WHERE 
 		 user_id = #{userId}
 		 AND order_type = #{orderType}
+		 and pay_status in('P','R')
 		 AND is_delete = 0
 	</select>
 	<select id="getSelfsupportOrderByUserIdOrActivityTime" resultType="AfOrderDo">

@@ -379,7 +379,7 @@ public class PayOrderV1Api implements ApiHandle {
                        if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) ){
                 	   if(payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
         		       try{
-        		           afUserCouponService.sentUserCoupon(orderInfo);
+        		           afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
         		         }catch(Exception e){
         		           logger.error("first selesupport shopping sentUserCoupon error:"+e+orderInfo.toString());
         		       }
