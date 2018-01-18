@@ -130,6 +130,7 @@ public class AppH5SFController extends BaseController {
 					vo.setStartDate(dateStr);
 					vo.setStartTime(date);
 					
+					date = DateUtil.formatDateToYYYYMMdd(date);
 					
 					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
 					if (DateUtil.afterDay(date, temNow)) {
