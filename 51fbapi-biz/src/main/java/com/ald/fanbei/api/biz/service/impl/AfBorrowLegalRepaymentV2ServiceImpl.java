@@ -187,7 +187,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator);
+		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo);
 		
 	}
 	
@@ -198,7 +198,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	 * @return
 	 */
 	@Override
-    public void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator) {
+    public void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator,AfBorrowCashDo cashDo) {
     	try {
     		lock(tradeNo);
     		
@@ -231,7 +231,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 
             if (resultValue == 1L) {
             	notifyUserBySms(repayDealBo);
-            	nofityRisk(repayDealBo);
+            	nofityRisk(repayDealBo,cashDo);
             }
     		
     	}finally {
@@ -241,7 +241,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	@Override
     public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
 		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
-        dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null);
+		final AfBorrowCashDo cashDo = afBorrowCashService.getBorrowCashByrid(repaymentDo.getBorrowId());
+        dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null,cashDo);
     }
     
     /**
@@ -449,7 +450,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     /**
      * 代扣现金贷还款成功短信发送
      * @param mobile
-     * @param nowRepayAmountStr
+     * @param nowRepayAmount
      */
     private boolean sendRepaymentBorrowCashWithHold(String mobile,BigDecimal nowRepayAmount){
     	//模版数据map处理
@@ -462,7 +463,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     /**
      * 用户手动现金贷还款成功短信发送
      * @param mobile
-     * @param nowRepayAmountStr
+     * @param repayMoney
      */
     private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
     	//模版数据map处理
@@ -485,7 +486,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
          }
     }
     
-    private void nofityRisk(RepayDealBo repayDealBo) {
+    private void nofityRisk(RepayDealBo repayDealBo,AfBorrowCashDo cashDo) {
     	String cardNo = repayDealBo.curCardNo;
     	cardNo = StringUtils.isNotBlank(cardNo)?cardNo:String.valueOf(System.currentTimeMillis());
     	
@@ -514,11 +515,12 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
                 if (StringUtil.equals("Y", repayDealBo.cashDo.getOverdueStatus())) {
                     overdueCount = 1;
                 }
+
                 riskUtil.raiseQuota(repayDealBo.userId.toString(), 
                 			repayDealBo.borrowNo, "50", riskOrderNo, 
                 			repayDealBo.sumBorrowAmount,
                 			repayDealBo.sumIncome, 
-                			repayDealBo.overdueDay, overdueCount);
+                			repayDealBo.overdueDay, overdueCount, cashDo.getOverdueDay(), cashDo.getRenewalNum());
             }
         } catch (Exception e) {
             logger.error("notifyRisk.raiseQuota error！", e);
