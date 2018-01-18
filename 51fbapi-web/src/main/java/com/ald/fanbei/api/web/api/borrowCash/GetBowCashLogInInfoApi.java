@@ -13,6 +13,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.bson.BSON;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
@@ -101,11 +107,19 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	RiskUtil riskUtil;
-
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+
+		//region 处理mongodb数据
+		HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("13962626262")),HashMap.class,"UserDataSummary");
+		//endregion
+
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();

@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -28,7 +29,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -154,7 +159,10 @@ public class TestController {
     AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
-
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
@@ -266,6 +274,14 @@ public class TestController {
         // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
 
+    }
+    @RequestMapping("/kafka")
+    @ResponseBody
+    public String testKafka(){
+        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC,"13989455976");
+        HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("13962626262")),HashMap.class,"UserDataSummary");
+
+        return "测试kafka";
     }
 
     @RequestMapping("/transed")

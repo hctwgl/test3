@@ -282,6 +282,33 @@
 			<artifactId>google.guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<version>1.2.3.RELEASE</version>
+			<exclusions>
+				<!-- 建议这里排除掉Kafka依赖，避免版本问题带来困扰-->
+				<exclusion>
+					<groupId>org.apache.kafka</groupId>
+					<artifactId>kafka-clients</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.10.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aliyun.openservices</groupId>
+			<artifactId>ons-sasl-client</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>1.10.1.RELEASE</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
