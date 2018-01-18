@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -125,11 +127,26 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	AfUserOutDayDao afUserOutDayDao;
 	@Resource
 	AfOrderDao afOrderDao;
-
 	@Resource
 	ContractPdfThreadPool contractPdfThreadPool;
+	@Resource
+	KafkaSync kafkaSync;
 
+	@Override
+	public HashMap getUserSummary(Long userId){
+		try{
+			AfResourceDo afResourceDo= afResourceDao.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
+			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+				return kafkaSync.getUserSummarySync(userId);
+			}else{
+				return afBorrowDao.getUserSummary(userId);
+			}
+		}catch (Exception e){
+			logger.error("getUserSummary error:",e);
+			return new HashMap();
+		}
 
+	}
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));

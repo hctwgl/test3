@@ -14,6 +14,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,22 +39,50 @@ public class KafkaSync {
 
     /**
      * url同步事件
+     *
      * @param userName 用户手机号
-     * @param url 当前访问的url
+     * @param url      当前访问的url
      * @throws Exception
      */
-    public void syncEvent(String userName, String url) throws Exception {
+    public void syncEvent(String userName, String url, final boolean force) throws Exception {
         if (userName.length() > 15) {//不是正常的手机号码
             return;
         }
-        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(SYNC_EVENT_DATA_URL);
-        if (afResourceDo == null) {
+        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
+        if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
             return;
         }
-        String triggerUrls = afResourceDo.getValue();
-        if (triggerUrls.contains(url)) {
-            Long userId = afUserService.getUserIdByMobile(userName);
-            syncUserSummary(userId);
+        List<AfResourceDo> dataTypeUrlList = afResourceService.getConfigByTypes(SYNC_EVENT_DATA_URL);
+        for (AfResourceDo resourceDo : dataTypeUrlList) {
+            String type = resourceDo.getValue();
+            String triggerUrls = resourceDo.getValue1();
+            if (triggerUrls.contains(url)) {
+                Long userId = afUserService.getUserIdByMobile(userName);
+                if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
+                    syncUserSummary(userId, force);//同步借钱信息
+                } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
+                    //同步用户基础信息
+                }
+            }
+        }
+    }
+
+    /**
+     * 主动调用同步事件
+     *
+     * @param userId 用户id
+     * @param type   事件类型
+     * @throws Exception
+     */
+    public void syncEvent(Long userId, String type, final boolean force) throws Exception {
+        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
+        if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
+            return;
+        }
+        if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
+            syncUserSummary(userId, force);//同步借钱信息
+        } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
+            //同步用户基础信息
         }
     }
 
@@ -61,14 +90,19 @@ public class KafkaSync {
      * 用户数据 同步事件
      *
      * @param userId 用户id
+     * @param force  是否强制刷新
      */
-    public void syncUserSummary(final Long userId) {
+    private void syncUserSummary(final Long userId, final boolean force) {
         pool.execute(new Runnable() {
             @Override
             public void run() {
-                long count = mongoTemplate.count(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), COLLECTION_USERDATASUMMARY);
-                if (count == 0) {
+                if (force) {
                     kafkaTemplate.send(KafkaConstants.SYNC_TOPIC, KafkaConstants.SYNC_BORROW_CASH, userId.toString());
+                } else {
+                    long count = mongoTemplate.count(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), COLLECTION_USERDATASUMMARY);
+                    if (count == 0) {
+                        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC, KafkaConstants.SYNC_BORROW_CASH, userId.toString());
+                    }
                 }
             }
         });

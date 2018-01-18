@@ -11,9 +11,12 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -123,7 +126,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-
+    @Autowired
+    KafkaSync kafkaSync;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -619,6 +623,14 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             } else {
                 logger.info("collection consumerRepayment not push,borrowCashId=" + currAfBorrowCashDo.getRid());
             }
+            //region 同步kafka消息
+            //同步用户信息
+            try{
+                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            }catch (Exception e){
+                logger.error("kafkaSync error:",e);
+            }
+            //endregion
         }
 
         return resultValue;

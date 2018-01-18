@@ -975,7 +975,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
         final HashMap<String,HashMap> riskDataMap=new HashMap();
 
-        final HashMap summaryData = afBorrowDao.getUserSummary(userId);
+        final HashMap summaryData = afBorrowService.getUserSummary(userId);
         riskDataMap.put("summaryData",summaryData);
 
         if(orderId>0){

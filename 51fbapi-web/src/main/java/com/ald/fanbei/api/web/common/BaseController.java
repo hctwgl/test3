@@ -154,7 +154,7 @@ public abstract class BaseController {
 		} finally {
 			try{
 				String userName = (String) requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_USERNAME);
-				kafkaSync.syncEvent(userName,request.getRequestURI().toString());
+				kafkaSync.syncEvent(userName,request.getRequestURI().toString(),false);//url同步不用强制刷新
 			}catch (Exception e){
 				logger.error("kafkaSync syncEvent error:",e);
 			}

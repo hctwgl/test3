@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,14 +24,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -108,7 +101,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfUserAccountService afUserAccountService;
-	
+	@Resource
+	AfBorrowService afBorrowService;
 	@Resource
 	AfBorrowDao afBorrowDao;
 
@@ -520,7 +514,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		String borrowTime = sdf.format(new Date());
 		HashMap<String, HashMap> riskDataMap = new HashMap();
 
-        HashMap summaryData = afBorrowDao.getUserSummary(userId);
+        HashMap summaryData = afBorrowService.getUserSummary(userId);
         riskDataMap.put("summaryData", summaryData);
         riskDataMap.put("summaryOrderData", new HashMap<>());
 		RiskVerifyRespBo verifyBo = riskUtil.verifyNew(

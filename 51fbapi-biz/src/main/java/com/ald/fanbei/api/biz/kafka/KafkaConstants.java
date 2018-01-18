@@ -16,4 +16,10 @@ public  class KafkaConstants {
     //region kafka 主题
     public static final String SYNC_TOPIC= "PUBLIC_KAFKA_TEST1";
     //endregion kafka 主题
+
+    //region kafka 是否打开
+    public static final String KAFKA_OPEN= "KAFKA_OPEN";
+    public static final String REFRESH_TIME= "refreshTime";
+    //endregion
+
 }

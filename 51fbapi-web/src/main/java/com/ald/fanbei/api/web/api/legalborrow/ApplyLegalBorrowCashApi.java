@@ -342,7 +342,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String borrowTime = sdf.format(new Date());
 				HashMap<String, HashMap> riskDataMap = new HashMap();
-				HashMap summaryData = afBorrowDao.getUserSummary(userId);
+				HashMap summaryData = afBorrowService.getUserSummary(userId);
 				riskDataMap.put("summaryData", summaryData);
 				riskDataMap.put("summaryOrderData", new HashMap<>());
 				RiskVerifyRespBo verifyBo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),

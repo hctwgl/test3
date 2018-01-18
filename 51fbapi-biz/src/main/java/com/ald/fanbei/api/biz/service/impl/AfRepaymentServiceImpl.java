@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -146,7 +148,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     AfInterimAuDao afInterimAuDao;
     @Resource
     AfInterimDetailDao afInterimDetailDao;
-
+    @Resource
+    KafkaSync kafkaSync;
     public void testbackDetail() {
         AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentById(94901l);
         afUserAmountService.addUseAmountDetail(afRepaymentDo);
@@ -563,6 +566,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             //还款成功同步逾期订单
             dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
             fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
+            //同步用户信息
+            try{
+                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            }catch (Exception e){
+               logger.error("kafkaSync error:",e);
+            }
+
         }
         if (result == 1 && isNeedNoticeMsg) {
 
