@@ -1190,36 +1190,36 @@ public class RiskUtil extends AbstractThird {
                 /*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
                                                             如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
             if(au_amount.compareTo(new BigDecimal(0))>0) {
-                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                //if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
                     AfUserAccountDo accountDo = new AfUserAccountDo();
                     accountDo.setUserId(consumerNo);
                     accountDo.setAuAmount(au_amount);
                     afUserAccountService.updateUserAccount(accountDo);
-                }
+                //}
             }
 
             if(onlineAmount.compareTo(new BigDecimal(0))>0) {
-                AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
-                if(afUserAccountOnlineDo!=null) {
-                    if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
-                    }
-                }
-                else{
+//                AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
+//                if(afUserAccountOnlineDo!=null) {
+//                    if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+//                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+//                    }
+//                }
+//                else{
                     afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
-                }
+               // }
             }
             if(offlineAmount.compareTo(new BigDecimal(0))>0) {
-                AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
-                if(afUserAccountOfflineDo!=null) {
-                    if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
-                    }
-                }
-                else
-                {
+//                AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
+//                if(afUserAccountOfflineDo!=null) {
+//                    if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+//                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+//                    }
+//                }
+//                else
+//                {
                     afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
-                }
+                //}
             }
         }
 
