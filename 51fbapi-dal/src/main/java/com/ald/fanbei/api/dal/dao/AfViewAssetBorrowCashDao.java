@@ -47,7 +47,7 @@ public interface AfViewAssetBorrowCashDao {
 	 * @param gmtCreateEnd
 	 * @return
 	 */
-	BigDecimal getSumSevenAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd);
+	BigDecimal getSumMinAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd);
 
 	/**
 	 * 获取指定时间内的14天债权总金额

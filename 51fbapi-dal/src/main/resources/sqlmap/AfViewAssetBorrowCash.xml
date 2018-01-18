@@ -136,7 +136,7 @@
 			gmt_create BETWEEN #{gmtCreateStart} AND #{gmtCreateEnd}
     </select>
     
-    <select id="getSumSevenAmount" resultType="java.math.BigDecimal">
+    <select id="getSumMinAmount" resultType="java.math.BigDecimal">
     	SELECT
 			IFNULL(SUM(amount),0)
 		FROM

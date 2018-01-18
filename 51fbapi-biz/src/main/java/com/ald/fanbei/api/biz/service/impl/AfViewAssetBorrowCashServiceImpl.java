@@ -49,8 +49,8 @@ public class AfViewAssetBorrowCashServiceImpl  implements AfViewAssetBorrowCashS
 	}
 
 	@Override
-	public BigDecimal getSumSevenAmount(Date gmtCreateStart, Date gmtCreateEnd) {
-		return afViewAssetBorrowCashDao.getSumSevenAmount(gmtCreateStart, gmtCreateEnd);
+	public BigDecimal getSumMinAmount(Date gmtCreateStart, Date gmtCreateEnd) {
+		return afViewAssetBorrowCashDao.getSumMinAmount(gmtCreateStart, gmtCreateEnd);
 	}
 
 	@Override
