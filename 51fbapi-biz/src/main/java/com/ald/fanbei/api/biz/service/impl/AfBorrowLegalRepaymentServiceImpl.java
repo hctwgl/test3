@@ -922,7 +922,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		AfBorrowLegalOrderRepaymentDo repayment = new AfBorrowLegalOrderRepaymentDo();
 
 		repayment.setUserId(bo.userId);
-		repayment.setBorrowLegalOrderCashId(bo.borrowOrderId);
+		repayment.setBorrowLegalOrderCashId(bo.borrowOrderCashId);
 		repayment.setRepayAmount(repayAmount);
 		repayment.setActualAmount(actualAmountForOrder);
 		repayment.setName(bo.name);
