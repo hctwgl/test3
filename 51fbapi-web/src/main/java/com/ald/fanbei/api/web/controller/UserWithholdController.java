@@ -76,10 +76,13 @@ public class UserWithholdController extends BaseController {
         //最低代扣金额
         BigDecimal lowCashPrice = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("lowCashPrice")),BigDecimal.ZERO);
         BigDecimal amountRate = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("amountRate")),BigDecimal.ZERO);
+        int isAmount = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("isAmount")),1);
         String borrowStatus = ObjectUtils.toString(request.getParameter("borrowStatus"), null);
 
         BigDecimal repaymentAmount = BigDecimal.ZERO;
+
         Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("borrowId")), 0l);
+
         if (userId == null || borrowId == 0) {
             logger.info("withhold for borrowcash fail for params is null,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
@@ -127,48 +130,59 @@ public class UserWithholdController extends BaseController {
         }
 
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-        if (afBorrowCashDo != null) {
-            BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),
-                    afBorrowCashDo.getSumOverdue(),
-                    afBorrowCashDo.getOverdueAmount(),
-                    afBorrowCashDo.getRateAmount(),
-                    afBorrowCashDo.getSumRate());
+        try{
+            if (afBorrowCashDo != null) {
+                BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),
+                        afBorrowCashDo.getSumOverdue(),
+                        afBorrowCashDo.getOverdueAmount(),
+                        afBorrowCashDo.getRateAmount(),
+                        afBorrowCashDo.getSumRate());
 
-            BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
-                    afBorrowCashDo.getRepayAmount());
-            repaymentAmount = temAmount;
-            if(StringUtils.isNotBlank(borrowStatus)){
-                if("overdue".equals(borrowStatus)){
-                    amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
-                    repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
-                    logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
-                    if(repaymentAmount.compareTo(temAmount)>0){
-                        repaymentAmount = temAmount;
+                BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
+                        afBorrowCashDo.getRepayAmount());
+                repaymentAmount = temAmount;
+                if(StringUtils.isNotBlank(borrowStatus)){
+                    if("overdue".equals(borrowStatus)){
+                        if(isAmount==1){
+                            amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
+                            repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
+                        }
+                        logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
+                        if(repaymentAmount.compareTo(temAmount)>0){
+                            repaymentAmount = temAmount;
                         /*logger.info("withhold for borrowcashOverdue fail for repaymentAmount>temAmount,userId:"+userId + ",borrowId:"+borrowId);
                         JSONObject returnjson = new JSONObject();
                         returnjson.put("success",false);
                         returnjson.put("msg","afBorrowCashDo repaymentAmount>temAmount");
                         return returnjson;*/
+                        }
                     }
                 }
-            }
-            //如果订单已结清或者需还金额为0
-            if(!"TRANSED".equals(afBorrowCashDo.getStatus())||repaymentAmount.compareTo(BigDecimal.ZERO)<=0){
+                //如果订单已结清或者需还金额为0
+                if(!"TRANSED".equals(afBorrowCashDo.getStatus())||repaymentAmount.compareTo(BigDecimal.ZERO)<=0){
+                    //当前无账单
+                    logger.info("withhold for borrowcash fail for afBorrowCashDo is not TRANSED or repaymentAmount is 0,userId:"+userId + ",borrowId:"+borrowId);
+                    JSONObject returnjson = new JSONObject();
+                    returnjson.put("success",false);
+                    returnjson.put("msg","afBorrowCashDo is not TRANSED");
+                    return returnjson;
+                }
+            }else{
                 //当前无账单
-                logger.info("withhold for borrowcash fail for afBorrowCashDo is not TRANSED or repaymentAmount is 0,userId:"+userId + ",borrowId:"+borrowId);
+                logger.info("withhold for borrowcash fail for afBorrowCashDo is null,userId:"+userId + ",borrowId:"+borrowId);
                 JSONObject returnjson = new JSONObject();
                 returnjson.put("success",false);
-                returnjson.put("msg","afBorrowCashDo is not TRANSED");
+                returnjson.put("msg","afBorrowCashDo is null");
                 return returnjson;
             }
-        }else{
-            //当前无账单
-            logger.info("withhold for borrowcash fail for afBorrowCashDo is null,userId:"+userId + ",borrowId:"+borrowId);
+        }catch (Exception e){
+            logger.error("withhold for borrowcash error" + e);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
-            returnjson.put("msg","afBorrowCashDo is null");
+            returnjson.put("msg","afBorrowCashDo error");
             return returnjson;
         }
+
         AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
         if(afUserWithholdDo==null){
             //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
@@ -272,6 +286,7 @@ public class UserWithholdController extends BaseController {
                 if(cardId!=null&&cardId!=0l){
                     AfUserBankcardDo card = afUserBankcardService.getUserBankcardByIdAndStatus(cardId);
                     if (null == card) {
+                        logger.info("withhold for borrowcash fail for card is null,userId:"+userId + ",borrowId:"+borrowId);
                         continue;
                     }
                     try{
