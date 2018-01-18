@@ -198,6 +198,8 @@ public class AppH5SFController extends BaseController {
 					}else{
 						afUserCouponTigerMachineService.addOneTime(userId, "DAILY");
 					}
+				}else{
+					userId = 0L;
 				}
 				
 				data.put("tigerTimes", tigerTimes);
