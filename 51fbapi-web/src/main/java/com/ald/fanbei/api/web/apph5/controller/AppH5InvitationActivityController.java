@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -59,6 +60,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -115,6 +117,8 @@ public class AppH5InvitationActivityController extends BaseController {
     CouponSceneRuleEnginerUtil activeRuleEngineUtil;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    AfShopService afShopService;
     String opennative = "/fanbei-web/opennative?name=";
     
     /**
@@ -614,9 +618,16 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int firstOrder = 1;
 	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
 	        //活动之前是否点过外卖
-	        
 	       
 	        NewbieTaskVo newbieTaskForFood =  assignment(foodResource,rebateCount);
+	        if(rebateCount == 0){
+	            AfUserDo   afUser = afUserService.getUserByUserName(context.getUserName());
+	            AfShopDo queryShop = new AfShopDo();
+	            queryShop.setType("WAIMAI");
+	            AfShopDo shopInfo = afShopService.getShopInfoBySecType(queryShop);
+	            String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, afUser.getMobile());
+	            newbieTaskForFood.setUrl(shopUrl);
+	        }
 	        newbieTaskList.add(newbieTaskForFood);
 	        //是否信用认证，0否，1是
 	        int auth = 0;
