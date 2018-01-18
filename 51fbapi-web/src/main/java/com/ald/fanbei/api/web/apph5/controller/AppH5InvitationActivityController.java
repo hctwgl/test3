@@ -627,13 +627,16 @@ public class AppH5InvitationActivityController extends BaseController {
 	             riskTime = afUserAuthDo.getGmtRisk();
 	             riskStatus = afUserAuthDo.getRiskStatus();
 	        }
+	        
 	       
 	        
 	        if("Y".equals(riskStatus)){
 	            auth = 1;
 	        }
 	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth);
-	        
+	        if("N".equals(afUserAuthDo.getBankcardStatus())){
+	            newbieTaskForAuth.setUrl("/fanbei-web/opennative?name=DO_SCAN_ID");
+	        }
 	        
 	       
 	        if(onlineTime != null && riskTime !=null){
