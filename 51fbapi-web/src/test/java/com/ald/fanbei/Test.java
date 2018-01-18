@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
+import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.common.Constants;
@@ -103,20 +104,21 @@ public class Test {
 //        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?appKey=7887978286&orderId=ala202984909354292&sign=51EED26F1F954FBE0635F56D6DD02BA2&timestamp=1513748955";//"https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
 //        	    System.out.println(HttpUtil.doGet(urlString, 100));        	    
         	    
-//        	    BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
-//        	    reqBo.setOrderId("ala202986318907403");
-//        	    reqBo.setStatus(PushStatus.PAY_SUC.getCode());
-//        	    reqBo.setAmount(new BigDecimal("0.01"));
-//        	    reqBo.setUserId(5891936L);
-//        	    reqBo.setTimestamp(System.currentTimeMillis());
-//        
-//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-//        	    System.out.println(String.format("beforeSignStr params = {}, beforeSign = {}", reqBo, beforeSign));
-//        	    String sign = DigestUtil.MD5(beforeSign);        
-//        	    reqBo.setSign(sign);
-//        	    System.out.println(String.format("pushPayStatus begin, reqBo = {}", reqBo));
-//        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/validation/v1", JSONObject.toJSONString(reqBo));
-//        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
+        	    BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
+        	    reqBo.setOrderId("ala202998187465112");
+        	    reqBo.setStatus(PushStatus.REFUND_SUC.getCode());
+        	    reqBo.setAmount(new BigDecimal("2.5"));
+        	    reqBo.setUserId(5972008L);
+        	    reqBo.setRefundNo("ala202998187465112");
+        	    reqBo.setTimestamp(System.currentTimeMillis());
+        
+        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+        	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
+        	    String sign = DigestUtil.MD5(beforeSign);        
+        	    reqBo.setSign(sign);
+        	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
+        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
+        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
         	    
 //        	    getBoluomeString("ala202987058023378","5885340","7");
 //        	    getBoluomeString("ala202987059088560","5895274","0.01");
