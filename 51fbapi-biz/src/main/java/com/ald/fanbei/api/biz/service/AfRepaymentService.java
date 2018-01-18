@@ -16,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
  */
 public interface AfRepaymentService {
 
+	void testbackDetail();
+
 	Map<String,Object> createRepaymentYiBao( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 									   BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo);
 	/**
@@ -64,4 +66,6 @@ public interface AfRepaymentService {
     int dealSelfSupportOrBoluomeFail(String outTradeNo,String tradeNo);
 
     int updateRepaymentName(Long refId);
+
+	String getProcessingRepayNo(Long userId);
 }

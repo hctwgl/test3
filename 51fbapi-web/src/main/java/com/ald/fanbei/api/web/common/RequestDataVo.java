@@ -17,7 +17,7 @@ public class RequestDataVo extends AbstractSerial{
     private String method;
     private Map<String,Object> system;
     private Map<String,Object> params;
-    
+    private Object paramObj;
     
     public String getId() {
         return id;
@@ -44,11 +44,20 @@ public class RequestDataVo extends AbstractSerial{
     }
     
     public Map<String, Object> getParams() {
-        return params;
+         return params;
     }
     
     public void setParams(Map<String, Object> params) {
         this.params = params;
     }
-    
+
+	public Object getParamObj() {
+		return paramObj;
+	}
+
+	public void setParamObj(Object paramObj) {
+		this.paramObj = paramObj;
+	}
+
+	
 }

@@ -96,6 +96,8 @@ public class AppH5ProtocolController extends BaseController {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
@@ -115,9 +117,9 @@ public class AppH5ProtocolController extends BaseController {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
-//		if (userName == null || !webContext.isLogin()) {
-//			throw new FanbeiException("非法用户");
-//		}
+		if (userName == null || !webContext.isLogin()) {
+			throw new FanbeiException("非法用户");
+		}
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
@@ -146,18 +148,23 @@ public class AppH5ProtocolController extends BaseController {
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
+		Date date = new Date();
+
 		if (null != borrowId && 0 != borrowId) {
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
+			//取当前的分期时间，而不是当前时间
+			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
+			date= afBorrowDo.getGmtCreate();
 		}
+		model.put("gmtStart", date);
+		model.put("gmtEnd", DateUtil.addMonths(date, nper));
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 //		model.put("poundage", consumeDo.getValue1());
 		model.put("poundage", poundage);
-		
-		Date date = new Date();
-		model.put("gmtStart", date);
-		model.put("gmtEnd", DateUtil.addMonths(date, nper));
+
+
 
 		for (NperDo nperDo : list) {
 			if (nperDo.getNper() == nper) {
@@ -185,11 +192,11 @@ public class AppH5ProtocolController extends BaseController {
 	}
 	@RequestMapping(value = { "numProtocol" }, method = RequestMethod.GET)
 	public void numProtocol(HttpServletRequest request, ModelMap model)throws IOException{
-		//FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-//		if(userName == null || !webContext.isLogin() ) {
-//			throw new FanbeiException("非法用户");
-//		}
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -208,11 +215,11 @@ public class AppH5ProtocolController extends BaseController {
 
 	@RequestMapping(value = { "protocolCashLoan" }, method = RequestMethod.GET)
 	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
-		//FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-//		if(userName == null || !webContext.isLogin() ) {
-//			throw new FanbeiException("非法用户");
-//		}
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 
@@ -330,11 +337,11 @@ public class AppH5ProtocolController extends BaseController {
 
 	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)
 	public void protocolRenewal(HttpServletRequest request, ModelMap model) throws IOException {
-		//FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-//		if(userName == null || !webContext.isLogin() ) {
-//			throw new FanbeiException("非法用户");
-//		}
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Long renewalId = NumberUtil.objToLongDefault(request.getParameter("renewalId"), 0l);
 		int renewalDay = NumberUtil.objToIntDefault(request.getParameter("renewalDay"), 0);

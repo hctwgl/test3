@@ -52,7 +52,7 @@ public class GetRepayCashListApi implements ApiHandle {
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("amount", afBorrowCashDo.getRepaymentAmount());
 		data.put("gmtRepay", afBorrowCashDo.getGmtCreate());
-		data.put("repayDec", afBorrowCashDo.getName());
+		data.put("repayDec", afBorrowCashDo.getName().contains("线下")?"线下还款":afBorrowCashDo.getName());
 		data.put("status", afBorrowCashDo.getStatus());
 		data.put("jfbAmount", afBorrowCashDo.getJfbAmount().intValue());
 

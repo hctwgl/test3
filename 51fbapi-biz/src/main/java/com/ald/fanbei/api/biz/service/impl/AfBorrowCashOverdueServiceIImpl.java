@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -54,4 +55,8 @@ public class AfBorrowCashOverdueServiceIImpl implements AfBorrowCashOverdueServi
 		return afBorrowCashOverdueDao.getBorrowCashOverdueByrid(rid);
 	}
 
+	@Override
+	public BigDecimal getAfBorrowCashOverdueDoByBorrowId(long borrowId, long days) {
+		return afBorrowCashOverdueDao.getAfBorrowCashOverdueDoByBorrowId(borrowId, days);
+	}
 }

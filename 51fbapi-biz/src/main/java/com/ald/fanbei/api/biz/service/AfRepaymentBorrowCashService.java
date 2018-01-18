@@ -24,7 +24,7 @@ public interface AfRepaymentBorrowCashService {
 			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo);
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo);
 	
-	public long dealRepaymentFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice,String errorMsg);
+	public long dealRepaymentFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice,String errorMsg,AfRepaymentBorrowCashDo repayment);
 	/**
 	 * 增加记录
 	 * 
@@ -99,4 +99,6 @@ public interface AfRepaymentBorrowCashService {
 	int updateRepaymentBorrowCashName(Long refId);
 
     AfRepaymentBorrowCashDo getRepaymentBorrowCashByTradeNo(Long borrowId, String tradeNo);
+
+	String getProcessingRepayNo(Long userId);
 }

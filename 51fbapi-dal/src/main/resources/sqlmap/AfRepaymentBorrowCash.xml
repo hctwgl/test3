@@ -256,7 +256,9 @@
 	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
 		select repay_no from af_repayment_borrow_cash WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
 	</select>
-
+	<select id="getProcessingRepayNo" resultType="java.lang.String">
+		select repay_no from af_repayment_borrow_cash WHERE `status` ='P' and `rebate_amount` >0 and `user_id` =#{userId} limit 1;
+	</select>
 	<select id="getCurrDayRepayErrorTimes" resultType="java.lang.Integer">
 		SELECT
 		count(*) 
@@ -269,6 +271,7 @@
 		and `status` = 'N'
 		and  gmt_create  >= CURDATE()
 	</select>
+
 	<select id="getCurrDayRepayErrorTimesByUser" resultType="java.lang.Integer">
 		SELECT
 		count(*)

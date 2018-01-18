@@ -16,6 +16,8 @@ public interface AfGoodsDoubleEggsUserDao extends BaseDao<AfGoodsDoubleEggsUserD
 
 	int isExist(@Param("doubleGoodsId")Long doubleGoodsId, @Param("userId")Long userId);
 
-	int isSubscribed(@Param("userId")long userId,@Param("doubleGoodsId") Long doubleGoodsId);
+	int isSubscribed(@Param("doubleGoodsId") Long doubleGoodsId,@Param("userId")Long userId);
+
+	int getSpringFestivalNumber(@Param("goodsId")Long goodsId);
 
 }

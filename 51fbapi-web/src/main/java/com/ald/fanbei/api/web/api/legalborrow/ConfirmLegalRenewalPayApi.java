@@ -90,6 +90,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
         
+        // 对405版本借钱，在低版本续期情况做控制
+     	afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
+        
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
@@ -263,6 +266,11 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                     if (actualAmount.compareTo(new BigDecimal(limitValue)) > 0) {
                         throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
                     }
+                }
+
+                if (com.ald.fanbei.api.common.util.StringUtil.isEmpty(address)) {
+                    logger.info("empty address");
+                    throw new FanbeiException("请先填写收货地址!", true);
                 }
                 map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
 

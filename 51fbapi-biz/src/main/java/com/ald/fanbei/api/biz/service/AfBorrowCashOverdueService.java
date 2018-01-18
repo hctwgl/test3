@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashOverdueDo;
@@ -44,4 +45,13 @@ public interface AfBorrowCashOverdueService {
 	     * @return
 	     */
 	    AfBorrowCashOverdueDo getBorrowCashOverdueByrid(Long rid);
+	    
+	    /**
+	     * 根据天数查询逾期数据
+	     * 
+	     * @param borrowId
+	     * @return 
+	     * **/
+	    
+	    BigDecimal getAfBorrowCashOverdueDoByBorrowId(long borrowId,long days);
 }

@@ -105,4 +105,6 @@ public interface AfRepaymentBorrowCashDao {
     int updateRepaymentBorrowCashName(@Param("refId")Long refId);
 
     int getCurrDayRepayErrorTimesByUser(@Param("userId") Long userId);
+
+    String getProcessingRepayNo(@Param("userId")Long userId);
 }

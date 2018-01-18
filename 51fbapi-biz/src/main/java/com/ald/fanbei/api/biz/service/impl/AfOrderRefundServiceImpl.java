@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.dao.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -15,13 +17,10 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.TradeOrderStatus;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfAftersaleApplyDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfTradeOrderDao;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
@@ -47,6 +46,8 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	AfAftersaleApplyDao afAftersaleApplyDao;
 	@Resource
 	AfTradeOrderDao afTradeOrderDao;
+	@Resource
+	AfSupplierOrderSettlementDao afSupplierOrderSettlementDao;
 	
 	@Override
 	public int addOrderRefund(AfOrderRefundDo orderRefundInfo) {
@@ -83,20 +84,31 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 				try {
 					orderRefundInfo.setStatus(OrderRefundStatus.FINISH.getCode());
 					updateOrderRefund(orderRefundInfo);
-					if(orderRefundInfo.getAftersaleApplyId()>0){
-						AfOrderDo orderT =new AfOrderDo();
-						orderT.setRid(orderInfo.getRid());
-						orderT.setStatus(OrderStatus.CLOSED.getCode());
-						orderInfo.setClosedReason(StringUtil.isBlank(orderInfo.getClosedReason())?"系统关闭":orderInfo.getClosedReason());
-						orderInfo.setClosedDetail(StringUtil.isBlank(orderInfo.getClosedDetail())?"退款完成":orderInfo.getClosedDetail());
-						orderInfo.setGmtClosed(new Date());
-						afOrderDao.updateOrder(orderT);
-
-						AfAftersaleApplyDo saleDo =new AfAftersaleApplyDo();
-						saleDo.setId(orderRefundInfo.getAftersaleApplyId());
-						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
-						afAftersaleApplyDao.updateById(saleDo);
-					}
+                    		    if (!OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+                    			if (orderRefundInfo.getAftersaleApplyId() > 0) {
+                    			    AfOrderDo orderT = new AfOrderDo();
+                    			    orderT.setRid(orderInfo.getRid());
+                    			    orderT.setStatus(OrderStatus.CLOSED.getCode());
+                    			    orderInfo.setClosedReason(StringUtil.isBlank(orderInfo.getClosedReason()) ? "系统关闭" : orderInfo.getClosedReason());
+                    			    orderInfo.setClosedDetail(StringUtil.isBlank(orderInfo.getClosedDetail()) ? "退款完成" : orderInfo.getClosedDetail());
+                    			    orderInfo.setGmtClosed(new Date());
+                    			    afOrderDao.updateOrder(orderT);
+                    
+                    			    AfAftersaleApplyDo saleDo = new AfAftersaleApplyDo();
+                    			    saleDo.setId(orderRefundInfo.getAftersaleApplyId());
+                    			    saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
+                    			    afAftersaleApplyDao.updateById(saleDo);
+                    			}
+                    		    }
+                    		    else {
+                    			 AfOrderDo orderT = new AfOrderDo();
+                 			    orderT.setRid(orderInfo.getRid());
+                 			    orderT.setStatus(OrderStatus.CLOSED.getCode());
+                 			    orderInfo.setClosedReason(StringUtil.isBlank(orderInfo.getClosedReason()) ? "系统关闭" : orderInfo.getClosedReason());
+                 			    orderInfo.setClosedDetail(StringUtil.isBlank(orderInfo.getClosedDetail()) ? "退款完成" : orderInfo.getClosedDetail());
+                 			    orderInfo.setGmtClosed(new Date());
+                 			    afOrderDao.updateOrder(orderT);
+				    }
 				} catch (Exception e) {
 					logger.error("dealWithOrderRefund  error = {}",e);
 					status.setRollbackOnly();
@@ -135,6 +147,7 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
 						afAftersaleApplyDao.updateById(saleDo);
 					}
+					//afSupplierOrderSettlementDao.updateStatusByOrderId(orderInfo.getRid());
 				} catch (Exception e) {
 					logger.error("dealWithSelfGoodsOrderRefund  error: {}",e);
 					status.setRollbackOnly();

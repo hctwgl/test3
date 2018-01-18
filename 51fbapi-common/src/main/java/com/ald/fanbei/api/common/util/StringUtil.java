@@ -288,6 +288,21 @@ public class StringUtil extends StringUtils {
 		return cardNumber.substring(cardNumber.length() - lastLength);
 	}
 
+	public static String joinListToString(List<String> sourceList, String sep) {
+	    	StringBuffer sb = new StringBuffer();
+	    	if(sourceList==null || sourceList.size()==0){
+	    		return "";
+	    	}
+	    	for (int i =0;i<sourceList.size();i++) {
+	    		if(i==sourceList.size()-1){
+	    			sb.append(sourceList.get(i));
+	    		}else{
+	    			sb.append(sourceList.get(i)).append(sep);
+	    		}
+			}
+	    	return sb.toString();
+	}
+	 
 	public static String getDeviceTailNum(String deviceId) {
 		if (StringUtils.isEmpty(deviceId)) {
 			throw new IllegalArgumentException("deviceId can't be empty.");

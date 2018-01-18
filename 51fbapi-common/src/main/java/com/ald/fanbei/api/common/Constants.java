@@ -12,11 +12,14 @@ public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
+	public static final long SECOND_OF_TEN = 10l;//10秒
+	public static final long SECOND_OF_FIFTEEN = 15l;//15秒
 	public static final long SECOND_OF_THREE = 30l;// 30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
-
+	public static final long SECOND_OF_HALF_DAY = 12 * 60 * 60l;
+	
 	public static final int SECOND_OF_HALF_HOUR_INT = 30 * 60;
 	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
@@ -33,7 +36,7 @@ public class Constants {
 	public static final int SELFSUPPORT_PAY_TIMEOUT_HOUR = 1;
 	public static final BigDecimal DECIMAL_MONTH_OF_YEAR = new BigDecimal(Constants.MONTH_OF_YEAR);
 	// 订单下单到截止支付的时间间隔小时
-	public static final int ORDER_PAY_TIME_LIMIT = 24;
+	public static final int ORDER_PAY_TIME_LIMIT = 24;//改为8小时
 	// 申请售后时间限制要求
 	public static final int AFTER_SALE_DAYS = 30;
 	//
@@ -111,6 +114,7 @@ public class Constants {
 
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String BORROW_REPAYMENT_NAME_OFFLINE = "线下还款";
+	public static final String COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE = "催收线下还款";
 	public static final String BORROW_REPAYMENT_NAME_AUTO = "代扣付款";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// 支付失败信息
@@ -434,5 +438,14 @@ public class Constants {
 	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
 
 	public static final int ONE_YEAY_DAYS = 360;
-	public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+	//返呗与资产方对接时的平台标识
+	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
+	  //资产方查询用户借款及逾期信息redis中的key前缀
+	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
+	  //资产包
+	  public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
+	  public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
+	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
+	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 }

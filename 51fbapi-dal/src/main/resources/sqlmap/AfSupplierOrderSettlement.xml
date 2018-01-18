@@ -19,5 +19,14 @@
 		`status` = #{status}
 		WHERE result_id = #{rid}
 	</update>
+
+	<!-- 修改结算订单 结算状态为待打款 hqj -->
+	<update id="updateStatusByOrderId" parameterType="java.lang.Long">
+		UPDATE
+		af_shop_sup_settle_order
+		SET gmt_modified = NOW(),
+		`status` = 0
+		WHERE order_id = #{rid} and order_status=2
+	</update>
 	
 </mapper>

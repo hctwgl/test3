@@ -13,8 +13,10 @@ public enum AfResourceType {
 	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
 	HomeBannerBrand("HOME_BANNER_BRAND","逛逛轮播图"),
 	HomeBannerEcommerce("HOME_BANNER_ECOMMERCE","首页电商轮播图"),
-	HomeBannerNewMost("HOME_BANNER_NEW_MOST", "轮播图（最新）"),
+	HomeBannerNewMost("HOME_BANNER_NEW_MOST", "轮播图（V396）"),
+	HomeBannerNewMostiPhoneX("HOME_BANNER_NEW_MOST_IPHONEX", "轮播图（V396-IPHONEX）"),
 	HomeBannerV401("HOME_BANNER_V401", "轮播图（V401版本）"),
+	HomeBannerV401iPhoneX("HOME_BANNER_V401_IPHONEX", "轮播图（V401版本-IPHONEX）"),
 	HomeFourImageNomalPositon("HOME_FOUR_IMAGE_NOMAL_POSITION","常驻运营位置"),
 	HomeNavigation("HOME_NAVIGATION", "四个导航"),
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
@@ -26,6 +28,8 @@ public enum AfResourceType {
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
+	HomeNavigationUpOneV401("HOME_NAVIGATION_UP_V401","快捷导航上方活动专场"),
+	HomeNavigationDownTwoV401("HOME_NAVIGATION_DOWN_V401","快捷导航下方活动专场"),
 	NewHomeCarouseToMany("NEW_HOME_CAROUSEL_TO_MANY","显示双十一东西"),
 	LimitedPurchaseBanner("LIMITED_PURCHASE_BANNER","限时抢购顶部轮播"),
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
@@ -105,6 +109,8 @@ public enum AfResourceType {
 	YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询配置"),
 	RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 
+	//资产方相关配置
+	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),
 	//登录白名单
 	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");
 

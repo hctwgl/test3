@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -38,6 +39,8 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 	private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 	@Resource
 	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+	@Resource
+	private AfBorrowLegalOrderService afBorrowLegalOrderService;
 	
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
@@ -120,6 +123,20 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 			if (id != null) {
 				throw new FanbeiException(FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
 			}
+			
+			if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
+				throw new FanbeiException(FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+			}
 		}
+	}
+
+	@Override
+	public int updateLegalOrderCashBalanced(AfBorrowLegalOrderCashDo legalOrderCashDo) {
+		return afBorrowLegalOrderCashDao.updateLegalOrderCashBalanced(legalOrderCashDo);
+	}
+
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoClosed(Long rid) {
+		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowIdNoClosed(rid);
 	}
 }

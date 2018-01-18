@@ -109,7 +109,19 @@ public class BuySelfGoodsApi implements ApiHandle {
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
-		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
+		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+		try{
+			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
+			if(resourceDo!=null){
+				order_pay_time_limit=Integer.valueOf(resourceDo.getValue()) ;
+				if(order_pay_time_limit==0){
+					order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+				}
+			}
+		}catch (Exception e){
+			logger.error("resource config error:",e);
+		}
+		Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 //		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {

@@ -240,6 +240,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
 		try {
 			smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+			String title = "本次续借支付失败";
+			String content = "续借支付失败：&errorMsg。";
+			content = content.replace("&errorMsg",errorMsg);
+			pushService.pushUtil(title,content,userDo.getMobile());
 		} catch (Exception e) {
 			logger.error("sendRenewalFailWarnMsg is Fail.",e);
 		}
@@ -366,12 +370,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			try {
 				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {
 					CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
-					logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+					logger.info("collection renewalNotify req success, respinfo={}",respInfo+" ,borrowNo="+currAfBorrowCashDo.getBorrowNo(),respInfo);
 				}else{
 					logger.info("collection renewalNotify req unPush, renewalNo=" + afRenewalDetailDo.getPayTradeNo());
 				}
 			}catch(Exception e){
-				logger.error("向催收平台同步续期信息",e);
+				logger.error("向催收平台同步续期信息:"+currAfBorrowCashDo.getBorrowNo(),e);
 			}
 		}
 		if (resultValue == 1L){

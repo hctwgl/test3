@@ -5,8 +5,51 @@
 
 let finished = 0;//防止多次请求ajax
 
+/**
+ * 
+ * @param {*} tab [first, second, third, fourth]
+ * @param {*} li 
+ */
+let gettab = () => {
+    return getUrl('tab')
+}
+let getlis = () => {
+    return getUrl('lis').split(',').map((a)=>{return a.trim()})
+}
+let initCollapse = (tab, lis)=> {
+    if(tab) {
+        let k = $('#'+tab).index();
+        $('#'+tab).addClass('current')
+        $('#'+tab).siblings().removeClass("current");
+        $('#'+tab).find('i').addClass("bg");
+        $('#'+tab).siblings().find('i').removeClass("bg");
+
+        $(".main_wrap").find("ul").eq(k).removeClass("hide");
+        $(".main_wrap").find('ul').eq(k).siblings().addClass("hide");
+    }
+    
+    if(lis.length) {
+        lis.forEach((a)=>{
+            let li = $('.main_wrap li').filter((b,k)=>{
+                return $(k).data().tit === a
+            })
+            $(li).find("i").toggleClass("arrowUp");
+            $(li).find('.itemContent').toggleClass("hide");
+        })
+    }
+
+    // var str = ''
+    // $('.main_wrap #fourthList li').each((index, item)=>{
+    //     str += `${$(item).find('.title').text().trim()} ${$(item).data().tit}
+    //     `
+    // })
+    // console.log(str)
+}
+
 // 导航tab切换
 $(function(){
+    initCollapse(gettab(), getlis())
+
     // 点击导航事件
     $(".nav li").on('click',function(e){
         e.preventDefault();
