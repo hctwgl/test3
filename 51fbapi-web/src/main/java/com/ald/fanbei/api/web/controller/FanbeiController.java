@@ -155,15 +155,14 @@ public class FanbeiController extends BaseController {
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi","/auth/bindingBankcard","/auth/checkMessages",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
-			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
+			"/auth/authSupplyCertify","/auth/authFund","/auth/authFundNew","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
 			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
-		return this.processRequest(body, request, false);
+		return this.processRequest(body,request, false);
 	}
-
 
     /**
      * 品牌商城相关
@@ -249,9 +248,6 @@ public class FanbeiController extends BaseController {
             system.put(Constants.REQ_SYS_NODE_TIME, time);
             
             reqVo.setSystem(system);
-            
-            
-
             JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
 
@@ -295,7 +291,7 @@ public class FanbeiController extends BaseController {
         }
 	}
 
-	   /**
+	 /**
      * 代扣相关
      * @param body
      * @param request

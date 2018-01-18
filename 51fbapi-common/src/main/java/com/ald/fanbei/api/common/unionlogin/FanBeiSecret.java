@@ -254,7 +254,7 @@ public class FanBeiSecret {
     
     @Test
     public void test02(){
-	    String token = "995e4b8bc4194de5ae7bbc7839da0b60";
+	    String token = "7bb48b11a30f433587ac4e31f97c7884";
         TreeMap<String, String> paramSortedMap = new TreeMap<>();
         paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
         paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
@@ -271,8 +271,8 @@ public class FanBeiSecret {
     
     @Test
     public void test03(){
-       String orderNo="82364cd3-78fb-47b9-a321-659ccb9a16f8";
-       String token = "995e4b8bc4194de5ae7bbc7839da0b60";
+       String orderNo="84fc84d5-cc6e-42e0-89d1-8ca48c5d47db";
+       String token = "7bb48b11a30f433587ac4e31f97c7884";
        TreeMap<String, String> paramSortedMap = new TreeMap<>();
        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
@@ -289,8 +289,8 @@ public class FanBeiSecret {
     
     @Test
     public void test04(){
-      String orderSn = "82364cd3-78fb-47b9-a321-659ccb9a16f8";
-      String token = "995e4b8bc4194de5ae7bbc7839da0b60";
+      String orderSn = "84fc84d5-cc6e-42e0-89d1-8ca48c5d47db";
+      String token = "7bb48b11a30f433587ac4e31f97c7884";
       TreeMap<String, String> paramSortedMap = new TreeMap<>();
       paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
       paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
