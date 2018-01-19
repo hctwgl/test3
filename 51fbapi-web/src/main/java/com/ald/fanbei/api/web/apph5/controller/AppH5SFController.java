@@ -136,17 +136,14 @@ public class AppH5SFController extends BaseController {
 					
 					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
 					
-					int hours = new Date().getHours();
 					
 					if (DateUtil.afterDay(date, temNow)) {
 						vo.setStatus(0);
 					}else if (DateUtil.beforeDay(date, temNow)){
 						vo.setStatus(2);
 					}else {
-						if (hours < 11) {
-							vo.setStatus(0);
-						}else{
-						vo.setStatus(1);}
+						
+						vo.setStatus(1);
 					}
 					
 					dateList.add(vo);
