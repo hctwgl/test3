@@ -388,7 +388,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                         afBorrowCashDo.getCardNumber(), appName, ipAddress,
                         blackBox, riskOrderNo, accountDo.getUserName(), amount,
                         afBorrowCashDo.getPoundage(), borrowTime, "借钱",
-                        StringUtil.EMPTY_STRING, null, null, 0l, card.getBankName(), null, "",riskDataMap);
+                        StringUtil.EMPTY_STRING, null, null, 0l, card.getBankName(), null, "",riskDataMap,null);
 
                 if (verybo.isSuccess()) {
                     delegatePay(verybo.getConsumerNo(), afBorrowCashDo,
