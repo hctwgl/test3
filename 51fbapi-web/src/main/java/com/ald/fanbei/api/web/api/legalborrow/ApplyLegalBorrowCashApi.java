@@ -349,7 +349,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 						afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null, 0l, afBorrowCashDo.getCardName(), null,
-						"",riskDataMap);
+						"",riskDataMap,null);
 
 				if (verifyBo.isSuccess()) {
 					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(),
