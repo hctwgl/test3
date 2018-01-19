@@ -48,6 +48,7 @@ public class AfGoodsDo extends AbstractSerial{
 	private String remark;
 	private String tags;//免息活动标签
 	private String stockCount;//库存
+	private Long primaryCategoryId;
 	
 	public String getStockCount() {
 		return stockCount;
@@ -229,6 +230,15 @@ public class AfGoodsDo extends AbstractSerial{
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public Long getPrimaryCategoryId() {
+		return primaryCategoryId;
+	}
+
+	public void setPrimaryCategoryId(Long primaryCategoryId) {
+		this.primaryCategoryId = primaryCategoryId;
+	}
+
 	/**
 	 * @return the tags
 	 */

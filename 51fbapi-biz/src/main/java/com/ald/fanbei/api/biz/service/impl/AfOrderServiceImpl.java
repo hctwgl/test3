@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -217,6 +218,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
 
+    @Autowired
+    private AfShopDao afShopDao;
+
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -235,6 +239,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Resource
     AfUserAmountService afUserAmountService;
+    @Autowired
+    AfGoodsCategoryDao afGoodsCategoryDao;
 
     @Override
     public int createOrderTrade(final String content) {
@@ -579,7 +585,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param actualAmount --实际支付价格
      * @param goodsId      --商品id
      * @param openId       --商品混淆id
-     * @param numId        --商品数字id
      * @param goodsName    --商品名称
      * @param goodsIcon    --商品图片
      * @param count        --数量
@@ -1289,7 +1294,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param userId           用户id
      * @param amount           分期金额
      * @param nper             分期期数
-     * @param perAmount        每期金额
      * @param status           状态
      * @param orderId          订单id
      * @param orderNo          订单编号
@@ -2147,29 +2151,38 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (orderInfo == null) {
             return resultMap;
         }
+        RiskVirtualProductQuotaRespBo response;
         // 菠萝觅传code，其他的传goodsName
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-            VirtualGoodsCateogy type = VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
-            if (type == null) {
-                return resultMap;
-            }
-            virtualCode = type.getCode();
-            resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
+//            VirtualGoodsCateogy type = VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
+//            if (type == null) {
+//                return resultMap;
+//            }
+//            virtualCode = type.getCode();
+//           resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
 
-            RiskVirtualProductQuotaRespBo response = riskUtil
-                    .virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
+            AfShopDo shopDo= afShopDao.getShopInfoBySecType(orderInfo.getSecType());
+            response = riskUtil
+                    .virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, orderInfo.getOrderType(),orderInfo.getSecType(),shopDo.getName());
             if (response != null) {
-                resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
+                resultMap.put(Constants.VIRTUAL_CODE, orderInfo.getSecType());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
             return null;
         } else {
-            RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(
-                    orderInfo.getUserId() + StringUtils.EMPTY, StringUtils.EMPTY, orderInfo.getGoodsName());
+            AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
+            AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
+            response = riskUtil.virtualProductQuota(
+                    orderInfo.getUserId() + StringUtils.EMPTY, orderInfo.getOrderType(), afGoodsCategoryDo.getName(),afGoodsCategoryDo.getId()+StringUtils.EMPTY);
             if (response != null) {
-                resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
-                resultMap.put(Constants.VIRTUAL_CODE, response.getVirtualCode());
+                resultMap.put(Constants.VIRTUAL_CODE, "");
             }
+        }
+        if (response != null && response.getData() != null) {
+            resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
+            resultMap.put(Constants.VIRTUAL_RECENT_DAY,response.getData().getRecentDay());
+            resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT,response.getData().getTotalAmount());
+            resultMap.put(Constants.VIRTUAL_CHECK,"TRUE");
         }
         return resultMap;
     }
@@ -2247,18 +2260,32 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param orderInfo
      * @param userAccountInfo
      */
-    private void checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
+    private BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
         //获取临时额度
         AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
         if (afInterimAuDo == null) {
             afInterimAuDo = new AfInterimAuDo();
             afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
         }
-        if (afOrderService.isVirtualGoods(resultMap)) {
-            BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
-            String virtualCode = afOrderService.getVirtualCode(resultMap);
-            BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+        if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
+            BigDecimal leftAmount =new BigDecimal(0);
+            if(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)!=null) {
+                String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
+                BigDecimal virtualTotalAmount =new BigDecimal(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
+                Integer virtualRecentDay = new Integer(resultMap.get(Constants.VIRTUAL_RECENT_DAY).toString());
+                //验证累计额度
+                leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
+            }
+            else if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
+                BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+                //验证单词额度
+                if(virtualAmount.compareTo(orderInfo.getActualAmount())<0){
+                    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+                }
+            }
+
             BigDecimal useableAmount = BigDecimal.ZERO;
+
             //判断临时额度是否到期
             if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
                 //获取当前用户可用临时额度
@@ -2273,6 +2300,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
             }
+
+            return leftAmount;
         } else {
             BigDecimal useableAmount = BigDecimal.ZERO;
             //判断临时额度是否到期
@@ -2287,6 +2316,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
             }
+
+            return useableAmount;
         }
     }
 
