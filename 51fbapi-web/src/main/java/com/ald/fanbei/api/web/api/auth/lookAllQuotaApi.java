@@ -181,9 +181,9 @@ public class lookAllQuotaApi implements ApiHandle {
 
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","C");
-            AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
+           // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
 
-            if(afUserAuthStatusDo!=null||afUserAuthStatusSuccess==null){
+            if(afUserAuthStatusDo!=null){
                 List<String> listDesc=getAuthDesc(value4,"three");
                 onlineMap.put("showAmount", listDesc.get(0));
                 onlineMap.put("desc", listDesc.get(1));
@@ -191,8 +191,8 @@ public class lookAllQuotaApi implements ApiHandle {
             }
             //线下培训 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusTrain=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"TRAIN","C");
-            AfUserAuthStatusDo afUserAuthStatusTrainSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
-            if(afUserAuthStatusTrain!=null||afUserAuthStatusTrainSuccess==null){
+           // AfUserAuthStatusDo afUserAuthStatusTrainSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
+            if(afUserAuthStatusTrain!=null){
                 trainMap.put("desc", trainDesc);
                 trainMap.put("status","3");
             }
