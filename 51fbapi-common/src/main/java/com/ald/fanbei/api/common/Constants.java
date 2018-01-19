@@ -349,6 +349,7 @@ public class Constants {
 	public static final String VIRTUAL_TOTAL_AMOUNT = "totalAmount";
 	public static final String VIRTUAL_RECENT_DAY = "recentDay";
 	public static final String VIRTUAL_CHECK = "virtualCheck";
+	public static final String VIRTUAL_CHECK_NAME = "virtualCheckName";
 
 	// 商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
