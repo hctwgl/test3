@@ -145,8 +145,8 @@ public class AppH5SFController extends BaseController {
 					}else {
 						if (hours < 11) {
 							vo.setStatus(0);
-						}
-						vo.setStatus(1);
+						}else{
+						vo.setStatus(1);}
 					}
 					
 					dateList.add(vo);
