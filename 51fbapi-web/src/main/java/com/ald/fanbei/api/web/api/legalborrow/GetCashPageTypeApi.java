@@ -50,7 +50,6 @@ public class GetCashPageTypeApi implements ApiHandle {
 		Long userId = context.getUserId();
 		String pageType = "old";
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
-
 		String isBack = afResourceDo.getValue();
 		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			pageType = "new";
