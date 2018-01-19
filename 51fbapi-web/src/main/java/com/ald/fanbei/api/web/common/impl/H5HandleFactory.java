@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.common.impl;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -22,9 +21,6 @@ import com.ald.fanbei.api.web.common.H5Handle;
 public class H5HandleFactory {
     @Resource
     Map<String,H5Handle>  h5HandleMap;
-    
-    @Resource
-    List<String> h5BeforeLoginList;
   
     public H5Handle getHandle(String method){
         if(StringUtils.isBlank(method)){
@@ -32,9 +28,5 @@ public class H5HandleFactory {
         }
         return h5HandleMap.get(method);
     }
-    
-    public boolean needLogin(String method) {
-    	return !h5BeforeLoginList.contains(method);
-    }
-    
+
 }

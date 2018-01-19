@@ -61,7 +61,7 @@ public abstract class H5BaseController {
 
 	@Resource
 	private AfResourceService afResourceService;
-	
+
 	@Resource
 	private H5HandleFactory h5HandleFactory;
 
@@ -164,27 +164,25 @@ public abstract class H5BaseController {
 	}
 
 	private void checkWebSign(Context context) {
-		String method = context.getMethod();
 		String userName = context.getUserName();
 		Integer appVersion = context.getAppVersion();
-		String sign = (String)context.getSystemsMap().get("sign");
+		String sign = (String) context.getSystemsMap().get("sign");
 		String netType = (String) context.getSystemsMap().get("netType");
 		String time = (String) context.getSystemsMap().get("time");
 		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName="
 				+ userName;
-		if(h5HandleFactory.needLogin(method)) {
-			TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
-			if (token == null) {
-				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-			}
-			signStrBefore = signStrBefore + token.getToken();
+
+		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		if (token == null) {
+			throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 		}
+		signStrBefore = signStrBefore + token.getToken();
+
 		logger.info("signStrBefore = {}", signStrBefore);
 		this.compareSign(signStrBefore, sign);
-		
+
 	}
-	
-	
+
 	private void compareSign(String signStrBefore, String sign) {
 		String sha256Value = DigestUtil.getDigestStr(signStrBefore);
 		if (logger.isDebugEnabled())
@@ -207,7 +205,6 @@ public abstract class H5BaseController {
 					FanbeiExceptionCode.REQUEST_PARAM_SYSTEM_NOT_EXIST);
 		}
 	}
-
 
 	/**
 	 * 记录埋点相关日志日志

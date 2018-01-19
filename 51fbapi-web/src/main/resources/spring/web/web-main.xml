@@ -537,14 +537,7 @@
 	</bean>
 	
 	
-	<!-- 不需要登录接口 -->
-	<bean id="h5BeforeLoginList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>/h5/legalborrowV2/getLegalOrderLogistics</value>
-			</list>
-		</constructor-arg>
-	</bean>
+
 	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
