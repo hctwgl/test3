@@ -1,0 +1,9 @@
+package com.ald.fanbei.api.biz.service;
+
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+
+public interface AfBorrowLegalService extends ParentService<AfBorrowCashDo, Long>{
+	
+	
+	
+}
