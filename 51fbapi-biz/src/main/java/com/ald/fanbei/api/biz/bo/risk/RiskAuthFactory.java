@@ -21,9 +21,9 @@ public class RiskAuthFactory {
 	}
 
 	public static RiskRegisterStrongReqBo createRiskDo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
-														String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+														String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost ,String bqsBlackBox) {
 		if ("ALL".equals(event)) {
-			return new RiskStrong(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost);
+			return new RiskStrong(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox);
 		} else if ("USER".equals(event)) {
 			return new RiskUser(consumerNo, event, afUserDo, accountDo, CHANNEL, PRIVATE_KEY);
 		} else if ("LINKMAN".equals(event)) {
