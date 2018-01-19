@@ -8,10 +8,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -70,6 +73,8 @@ public class AppH5SysController extends BaseController {
 	AfRescourceLogService afRescourceLogService;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
 	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
@@ -187,7 +192,8 @@ public class AppH5SysController extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
@@ -251,7 +257,8 @@ public class AppH5SysController extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -525,6 +532,36 @@ public class AppH5SysController extends BaseController {
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * 借款时间
+	 *
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowTime(final String type) {
+		Integer day ;
+		if(isNumeric(type)){
+			day = Integer.parseInt(type);
+		}else{
+			day = numberWordFormat.parse(type.toLowerCase());
+		}
+		return day;
+	}
+
+	/**
+	 * 是否是数字字符串
+	 * @param type
+	 * @return
+	 */
+	private boolean isNumeric(String type) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		Matcher isNum = pattern.matcher(type);
+		if( !isNum.matches() ){
+			return false;
+		}
+		return true;
 	}
 
 }

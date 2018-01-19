@@ -99,9 +99,9 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		// 获取续期天数
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 		// 允许续期天数
-		BigDecimal allowRenewalDay = new BigDecimal(7);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());
 		
 		// 续借需还本金比例
 		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
@@ -138,11 +138,12 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		data.put("allRenewalAmount", allRenewalAmount);	//所有续借的金额
 		Map map = new HashMap();
 		AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-		if (allowRenewalDay.compareTo(BigDecimal.valueOf(7)) == 0){
-			map.put("type","SEVEN");
-		}else {
-			map.put("type","FOURTEEN");
-		}
+//		if (allowRenewalDay.compareTo(BigDecimal.valueOf(7)) == 0){
+//			map.put("type","SEVEN");
+//		}else {
+//			map.put("type","FOURTEEN");
+//		}
+		map.put("type",resource.getValue());
 		map.put("userName",afUserDo.getUserName());
 		map.put("borrowId",afBorrowCashDo.getRid());
 		map.put("renewalId","");

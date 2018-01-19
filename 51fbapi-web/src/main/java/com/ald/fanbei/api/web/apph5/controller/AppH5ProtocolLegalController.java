@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -39,6 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @类描述：
@@ -74,6 +77,8 @@ public class AppH5ProtocolLegalController extends BaseController {
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	@Resource
 	AfUserSealDao afUserSealDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
 	@RequestMapping(value = {"protocolLegalInstalment"}, method = RequestMethod.GET)
@@ -135,11 +140,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 		model.put("poundage", poundage);
 		
 		model.put("gmtStart", date);
-		if ("SEVEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 6));
-		}else if ("FOURTEEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 13));
-		}
+		model.put("gmtEnd", DateUtil.addDays(date, borrowTime(type)));
+//		if ("SEVEN".equals(type)){
+//			model.put("gmtEnd", DateUtil.addDays(date, 6));
+//		}else if ("FOURTEEN".equals(type)){
+//			model.put("gmtEnd", DateUtil.addDays(date, 13));
+//		}
 
 		int repayDay = 20;
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
@@ -207,7 +213,8 @@ public class AppH5ProtocolLegalController extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -232,6 +239,8 @@ public class AppH5ProtocolLegalController extends BaseController {
 	private void getResourceRate(ModelMap model, String type,AfResourceDo afResourceDo,String borrowType) {
 		if (afResourceDo != null && afResourceDo.getValue2() != null){
 			JSONArray array = new JSONArray();
+			String oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			String twoDay = afResourceDo.getTypeDesc().split(",")[1];
 			if ("instalment".equals(borrowType)){
 				array = JSONObject.parseArray(afResourceDo.getValue3());
 				for (int i = 0; i < array.size(); i++) {
@@ -242,6 +251,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("yearRate",jsonObject.get("consumeSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("yearRate",jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
@@ -249,6 +264,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("poundageRate",jsonObject.get("consumeSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate",jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
@@ -256,6 +277,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("overdueRate",jsonObject.get("consumeSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("overdueRate",jsonObject.get("consumeSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+							}
 						}
 					}
 				}
@@ -269,6 +296,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("yearRate",jsonObject.get("borrowSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("yearRate",jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate",jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate",jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(borrowTag)){//手续费利率
@@ -276,6 +309,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("poundageRate",jsonObject.get("borrowSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("poundageRate",jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate",jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate",jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(borrowTag)){//逾期利率
@@ -283,6 +322,12 @@ public class AppH5ProtocolLegalController extends BaseController {
 							model.put("overdueRate",jsonObject.get("borrowSevenDay"));
 						}else if ("FOURTEEN".equals(type)){
 							model.put("overdueRate",jsonObject.get("borrowFourteenDay"));
+						}else if(isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("overdueRate",jsonObject.get("borrowSevenDay"));
+							}else if(twoDay.equals(type)){
+								model.put("overdueRate",jsonObject.get("borrowFourteenDay"));
+							}
 						}
 					}
 				}
@@ -359,7 +404,8 @@ public class AppH5ProtocolLegalController extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -659,6 +705,35 @@ public class AppH5ProtocolLegalController extends BaseController {
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	/**
+	 * 借款时间
+	 *
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowTime(final String type) {
+		Integer day ;
+		if(isNumeric(type)){
+			day = Integer.parseInt(type);
+		}else{
+			day = numberWordFormat.parse(type.toLowerCase());
+		}
+		return day;
+	}
+
+	/**
+	 * 是否是数字字符串
+	 * @param type
+	 * @return
+	 */
+	private boolean isNumeric(String type) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		Matcher isNum = pattern.matcher(type);
+		if( !isNum.matches() ){
+			return false;
+		}
+		return true;
 	}
 
 }

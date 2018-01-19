@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -9,6 +10,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -107,6 +110,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
     BizCacheUtil bizCacheUtil;
     @Resource
     AfBorrowDao afBorrowDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
+
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -114,7 +120,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-
         String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
                 "amount"));
         String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
@@ -137,7 +142,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
                 "couponId"));
         if (StringUtils.isBlank(amountStr)
-                || AfBorrowCashType.findRoleTypeByCode(type) == null
+                || (!isNumeric(type))
                 || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
                 || StringUtils.isBlank(longitude)
                 || StringUtils.isBlank(blackBox)) {
@@ -501,8 +506,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     UserAccountLogType.BorrowCash.getCode(),
                     afBorrowCashDo.getRid() + "");
             cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
-                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+            Integer day = borrowTime(afBorrowCashDo.getType());
+//            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
+//                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
             Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo
                     .getGmtArrival());
             Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
@@ -613,8 +619,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         afBorrowCashDo.setCity(city);
         afBorrowCashDo.setProvince(province);
         afBorrowCashDo.setCounty(county);
-        afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type)
-                .getName());
+        afBorrowCashDo.setType(type);
         afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
         afBorrowCashDo.setUserId(userId);
         afBorrowCashDo.setRateAmount(rateAmount);
@@ -703,6 +708,36 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         } catch (Exception e) {
             logger.error("userBorrowCashApply maidian logger error", e);
         }
+    }
+
+    /**
+     * 借款时间
+     *
+     * @param afBorrowCashDo
+     * @return
+     */
+    public int borrowTime(final String type) {
+        Integer day ;
+        if(isNumeric(type)){
+            day = Integer.parseInt(type);
+        }else{
+            day = numberWordFormat.parse(type.toLowerCase());
+        }
+        return day;
+    }
+
+    /**
+     * 是否是数字字符串
+     * @param type
+     * @return
+     */
+    private boolean isNumeric(String type) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(type);
+        if( !isNum.matches() ){
+            return false;
+        }
+        return true;
     }
 
     // /**

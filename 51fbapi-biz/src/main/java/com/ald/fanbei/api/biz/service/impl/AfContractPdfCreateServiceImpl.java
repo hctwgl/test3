@@ -1,10 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.EviDoc;
-import com.ald.fanbei.api.biz.util.OssUploadResult;
-import com.ald.fanbei.api.biz.util.PdfCreateUtil;
+import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -40,6 +37,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service("afContractPdfCreateService")
@@ -55,6 +54,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     AfBorrowCashService afBorrowCashService;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    NumberWordFormat numberWordFormat;
     @Resource
     AfESdkService afESdkService;
     @Resource
@@ -238,7 +239,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 if (afBorrowCashDo != null) {
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtTime", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()) + "至" + simpleDateFormat.format(repaymentDay));
@@ -423,7 +425,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 if (afBorrowCashDo != null) {
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -817,4 +820,34 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         return temp;
     }
 
+
+    /**
+     * 借款时间
+     *
+     * @param afBorrowCashDo
+     * @return
+     */
+    public int borrowTime(final String type) {
+        Integer day ;
+        if(isNumeric(type)){
+            day = Integer.parseInt(type);
+        }else{
+            day = numberWordFormat.parse(type.toLowerCase());
+        }
+        return day;
+    }
+
+    /**
+     * 是否是数字字符串
+     * @param type
+     * @return
+     */
+    private boolean isNumeric(String type) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(type);
+        if( !isNum.matches() ){
+            return false;
+        }
+        return true;
+    }
 }
