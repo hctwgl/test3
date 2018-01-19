@@ -89,7 +89,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 			} else {
 				// 查询用户是否有订单借款信息
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
 				if ((StringUtils.equalsIgnoreCase("FINSH", status))) {
