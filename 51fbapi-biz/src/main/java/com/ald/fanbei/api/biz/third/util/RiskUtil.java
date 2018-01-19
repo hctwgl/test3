@@ -367,7 +367,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+    public RiskRespBo registerStrongRisk(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox) {
         Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
         String directory = "";
         if (directoryCache != null) {
@@ -380,7 +380,7 @@ public class RiskUtil extends AbstractThird {
 //            event = "REAUTH";
 //        }
 
-        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
+        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost(), bqsBlackBox);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 //		String content = JSONObject.toJSONString(reqBo);
@@ -425,7 +425,7 @@ public class RiskUtil extends AbstractThird {
 //            event = "REAUTH";
 //        }
 
-        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDoV1(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
+        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDoV1(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost(),bqsBlackBox);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 //		String content = JSONObject.toJSONString(reqBo);
@@ -478,7 +478,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap,String bqsBlackBox) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap,String bqsBlackBox,AfOrderDo orderDo) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -540,13 +540,17 @@ public class RiskUtil extends AbstractThird {
         if(orderid > 0 ){
             summaryOrderData =  riskDataMap.get("summaryOrderData");
         }
-        if(borrow != null){
+        if(borrow != null&&orderDo!=null){
             summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
             summaryOrderData.put("freeNper",borrow.getFreeNper());
             summaryOrderData.put("nperAmount",borrow.getNperAmount());
             summaryOrderData.put("cardNumber",cardNo);
             summaryOrderData.put("cardName",cardName);
             summaryOrderData.put("payType",payType);
+            summaryOrderData.put("bankAmount",orderDo.getBankAmount());
+            summaryOrderData.put("borrowAmount",orderDo.getBorrowAmount());
+            summaryOrderData.put("actualAmount",orderDo.getActualAmount());
+
         }
         reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");
@@ -2044,7 +2048,7 @@ public class RiskUtil extends AbstractThird {
            eventObj.put("cardNo", card == null ? "":card.getCardNumber());
            eventObj.put("blackBox",  params.get("blackBox")==null?"":params.get("blackBox"));
            eventObj.put("ipAddress",  params.get("ipAddress")==null?"":params.get("ipAddress"));
-           eventObj.put("bqsBlackBox",  params.get("bqsBlackBox")+"");
+           eventObj.put("bqsBlackBox",  params.get("bqsBlackBox")==null?"":params.get("bqsBlackBox"));
            reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
         }
         HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
