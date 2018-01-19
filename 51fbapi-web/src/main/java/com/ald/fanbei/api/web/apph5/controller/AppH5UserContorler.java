@@ -240,6 +240,7 @@ public class AppH5UserContorler extends BaseController {
 
 
             boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
+            logger.info("getRegisterSmsCode resultReg=>{}" , resultReg);
             if (!resultReg) {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
                 return resp.toString();
@@ -247,6 +248,7 @@ public class AppH5UserContorler extends BaseController {
 
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
             bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
+            logger.info("getRegisterSmsCode bizCacheUtil saveObject h5register mobile success.");
             return resp.toString();
 
         }catch (FanbeiException e) {
