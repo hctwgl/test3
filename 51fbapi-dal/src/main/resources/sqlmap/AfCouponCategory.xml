@@ -88,8 +88,7 @@
 		AND tag = #{tag}
 		
 	</select>
-	
-	
+
 	<select id="getCouponCategoryAll"  resultType="AfCouponCategoryDo">
 		SELECT
 			<include refid="couponCategorySqlField"/>

@@ -23,13 +23,15 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 	AfGoodsDoubleEggsDo getByDoubleGoodsId(@Param("doubleGoodsId")Long doubleGoodsId);
 	
 
-	List<Date> getAvalibleDateList();
+	List<Date> getAvalibleDateList(@Param("startTime")String startTime);
 
-	List<GoodsForDate> getgoodsByDate(@Param("startDate")Date startDate);
+	List<GoodsForDate> getgoodsByDate(@Param("startDate")Date startDate, @Param("tag")String tag);
 
 	void updateCountById(@Param("goodsId")Long goodsId);
 	
 	List<AfSFgoodsVo> getFivePictures(@Param("userId") Long userId);
+	
+	int shouldOnlyAp(@Param("goodsId")Long goodsId);
 
     
 

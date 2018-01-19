@@ -35,6 +35,8 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	private String blackBox;
 	@NotNull
+	private String bqsBlackBox;
+	@NotNull
 	private String borrowRemark;
 	@NotNull
 	private String refundRemark;
@@ -160,5 +162,13 @@ public class ApplyLegalBorrowCashParam {
 	}
 	public void setDeliveryPhone(String deliveryPhone) {
 		this.deliveryPhone = deliveryPhone;
+	}
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		this.bqsBlackBox = bqsBlackBox;
 	}
 }

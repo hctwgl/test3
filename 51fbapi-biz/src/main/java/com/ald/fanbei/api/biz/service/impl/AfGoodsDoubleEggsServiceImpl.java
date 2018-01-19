@@ -53,15 +53,15 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		
 
 		@Override
-		public List<Date> getAvalibleDateList() {
+		public List<Date> getAvalibleDateList(String startTime) {
 		
-			return afGoodsDoubleEggsDao.getAvalibleDateList();
+			return afGoodsDoubleEggsDao.getAvalibleDateList(startTime);
 		}
 
 		@Override
-		public List<GoodsForDate> getGOodsByDate(Date startDate) {
+		public List<GoodsForDate> getGOodsByDate(Date startDate,String tag) {
 			
-			return afGoodsDoubleEggsDao.getgoodsByDate(startDate);
+			return afGoodsDoubleEggsDao.getgoodsByDate(startDate,tag);
 		}
 
 		@Override
@@ -74,6 +74,12 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		public List<AfSFgoodsVo> getFivePictures(Long userId) {
 			
 			return afGoodsDoubleEggsDao.getFivePictures(userId);
+		}
+
+		@Override
+		public boolean shouldOnlyAp(Long goodsId) {
+			
+			return afGoodsDoubleEggsDao.shouldOnlyAp(goodsId) > 0 ? true :false;
 		}
 
 
