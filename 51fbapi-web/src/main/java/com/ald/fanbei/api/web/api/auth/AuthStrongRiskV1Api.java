@@ -193,7 +193,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 			}
 
 		//调用风控失败了
-		if(!"0".equals(riskCheckStatus)){
+		if(!"0".equals(riskCheckStatus)&&!"55".equals(riskCheckStatus)){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
 		}
 
