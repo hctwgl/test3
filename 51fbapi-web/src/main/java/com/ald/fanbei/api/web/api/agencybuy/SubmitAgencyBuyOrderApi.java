@@ -227,7 +227,18 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			cashSceneAmount.setScene(UserAccountSceneType.CASH.getCode());
 			cashSceneAmount.setUsedAmount(userAccountInfo.getUsedAmount());
 			cashSceneAmount.setUserId(userId);
-
+			if(onlineSceneAmount.getUserId() == null) {
+				onlineSceneAmount.setAuAmount(new BigDecimal(0));
+				onlineSceneAmount.setScene(UserAccountSceneType.ONLINE.getCode());
+				onlineSceneAmount.setUsedAmount(new BigDecimal(0));
+				onlineSceneAmount.setUserId(userId);
+			}
+			if(trainSceneAmount.getUserId() == null) {
+				trainSceneAmount.setAuAmount(new BigDecimal(0));
+				trainSceneAmount.setScene(UserAccountSceneType.TRAIN.getCode());
+				trainSceneAmount.setUsedAmount(new BigDecimal(0));
+				trainSceneAmount.setUserId(userId);
+			}
 			onlineSceneAmount.setOrderId(afOrder.getRid());
 			trainSceneAmount.setOrderId(afOrder.getRid());
 			listSceneAmount.add(cashSceneAmount);
