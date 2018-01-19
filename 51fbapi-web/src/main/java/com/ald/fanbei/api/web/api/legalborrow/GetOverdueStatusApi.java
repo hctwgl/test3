@@ -70,6 +70,7 @@ public class GetOverdueStatusApi implements ApiHandle {
 					}
 				}
 			}
+			
 			// 查询是否有消费分期账单逾期
 			int overdueBillCount = afBorrowBillService.countNotPayOverdueBill(userId);
 			if (overdueBillCount > 0) {

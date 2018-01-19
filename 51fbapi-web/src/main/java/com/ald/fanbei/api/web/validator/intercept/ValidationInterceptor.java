@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
+import javax.validation.MessageInterpolator;
 import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
@@ -20,6 +21,7 @@ import javax.validation.metadata.ConstraintDescriptor;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -60,11 +62,24 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	@PostConstruct
 	public void init() {
 		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+		validatorFactory.usingContext().messageInterpolator(new MessageInterpolator(){
+			ResourceBundleMessageInterpolator defaultInterpolator = new ResourceBundleMessageInterpolator();
+			@Override
+			public String interpolate(String messageTemplate, Context context) {
+				return defaultInterpolator.interpolate(messageTemplate, context);
+			}
+
+			@Override
+			public String interpolate(String messageTemplate, Context context, Locale locale) {
+				return defaultInterpolator.interpolate(messageTemplate, context, Locale.CHINA);
+			}
+			
+		});
 		clsValidator = validatorFactory.getValidator();
 		convertUtils = new ConvertUtilsBean();
 		resourceBundle = ResourceBundle.getBundle("com.ald.fanbei.api.web.validator.message.check_msg", Locale.CHINA);
 	}
-
+	
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
 		ApiHandle methodHandel = apiHandleFactory.getApiHandle(reqData.getMethod());
@@ -79,8 +94,13 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			try {
 				Object validatorInstanceBean = validatorBeanClazz.newInstance();
 				initializeValidatorBean(validatorInstanceBean, reqData);
+				reqData.setParamObj(validatorInstanceBean);
 				logger.info("initialize validator bean success.");
-				Set<ConstraintViolation<Object>> validateResults = clsValidator.validate(validatorInstanceBean);
+				
+				Set<ConstraintViolation<Object>> validateResults = null;
+				synchronized(this) {
+					validateResults = clsValidator.validate(validatorInstanceBean);
+				}
 				for (ConstraintViolation<Object> validateResult : validateResults) {
 					Path propertyPath = validateResult.getPropertyPath();
 					String message = validateResult.getMessage();
@@ -91,7 +111,12 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
 					boolean legal = cd.isReportAsSingleViolation();
 					if (!legal) {
-						String transName = resourceBundle.getString(paramName);
+						String transName = StringUtils.EMPTY;
+						try{
+							transName = resourceBundle.getString(paramName);
+						} catch(Exception e) {
+							// ignore error
+						}
 						if(StringUtils.isNotEmpty(transName)) {
 							try {
 								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");

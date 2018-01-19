@@ -162,9 +162,9 @@ public class AppH5ProtocolLegalController extends BaseController {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		/*if(userName == null || !webContext.isLogin() ) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
-		}*/
+		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 

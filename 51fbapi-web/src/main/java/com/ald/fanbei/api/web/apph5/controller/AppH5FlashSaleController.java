@@ -109,11 +109,14 @@ public class AppH5FlashSaleController extends BaseController {
 //			}
 //		}
 
-
-
-		List<AfActivityGoodsDo> AfActivityGoodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(list);
-		List<AfOrderDto> orderList = afOrderService.selectSumCountByGoodsId(list);
-		List<AfGoodsPriceDto> priceDtos = afGoodsPriceService.selectSumStockMap(list);
+		List<AfActivityGoodsDo> AfActivityGoodslist = new ArrayList<AfActivityGoodsDo>();
+		List<AfOrderDto> orderList = new ArrayList<AfOrderDto>();
+		List<AfGoodsPriceDto> priceDtos = new ArrayList<AfGoodsPriceDto>();
+		if(null != list){
+			AfActivityGoodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(list);
+			orderList = afOrderService.selectSumCountByGoodsId(list);
+			priceDtos = afGoodsPriceService.selectSumStockMap(list);
+		}
  		for(AfEncoreGoodsDto goodsDo : list) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName",goodsDo.getName());

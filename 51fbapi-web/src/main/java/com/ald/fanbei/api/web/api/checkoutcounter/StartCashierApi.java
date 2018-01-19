@@ -74,6 +74,10 @@ public class StartCashierApi implements ApiHandle {
     GetNperListApi getNperListApi;
     @Resource
     AfInterimAuService afInterimAuService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -127,6 +131,13 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setAmount(orderInfo.getActualAmount());
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
         cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter));
+
+        String scene = UserAccountSceneType.ONLINE.getCode();
+        //判断认证的场景
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            scene = orderInfo.getSecType();
+        }
+        cashierVo.setScene(scene);
 
         AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
@@ -274,15 +285,8 @@ public class StartCashierApi implements ApiHandle {
                 afInterimAuDo = new AfInterimAuDo();
                 afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
             }
-            BigDecimal userabledAmount = BigDecimal.ZERO;
-            //额度判断
-            if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
-                //获取当前用户可用临时额度
-                BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
-                userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
-            } else {
-                userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
-            }
+            //获取可使用额度+临时额度
+            BigDecimal userabledAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
@@ -347,6 +351,24 @@ public class StartCashierApi implements ApiHandle {
      */
     private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo) {
         String status = YesNoStatus.NO.getCode();
+        //获取不同场景的强风控认证
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            //商圈认证
+            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
+            if (afUserAuthStatusDo == null) {
+                authDo.setRiskStatus(YesNoStatus.NO.getCode());
+            } else {
+                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+            }
+        } else {
+            //线上分期认证
+            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+            if (afUserAuthStatusDo == null) {
+                authDo.setRiskStatus(YesNoStatus.NO.getCode());
+            } else {
+                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+            }
+        }
         if (userDto.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
             //StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证&&
             if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
@@ -404,20 +426,20 @@ public class StartCashierApi implements ApiHandle {
 //                        borrowNo="jk2017111218003479890";
 //                    }
                     AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-                    if(borrowInfo!=null){
+                    if (borrowInfo != null) {
                         Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
                         cashierTypeVo.setBillId(billId);
                         cashierTypeVo.setOverduedCode(erorrCode.getCode());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
                         return;
-                    }else{
-                        logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:"+borrowNo);
+                    } else {
+                        logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + borrowNo);
                     }
                     break;
                 case OVERDUE_BORROW_CASH:
                     AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-                    if(cashInfo!=null){
+                    if (cashInfo != null) {
                         cashierTypeVo.setOverduedCode(erorrCode.getCode());
                         cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
                         cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
@@ -428,8 +450,8 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
                         return;
-                    }else{
-                        logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:"+userDto.getUserId());
+                    } else {
+                        logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
                     }
                     break;
                 default:
@@ -441,15 +463,8 @@ public class StartCashierApi implements ApiHandle {
 
         //专项额度控制
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-        BigDecimal useableAmount = BigDecimal.ZERO;
-        //额度判断
-        if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
-            //获取当前用户可用临时额度
-            BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
-            useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
-        } else {
-            useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
-        }
+        //获取可使用额度+临时额度
+        BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
         if (afOrderService.isVirtualGoods(virtualMap)) {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
             String virtualCode = afOrderService.getVirtualCode(virtualMap);
@@ -487,6 +502,41 @@ public class StartCashierApi implements ApiHandle {
             cashierTypeVo.setUseableAmount(useableAmount);
             cashierTypeVo.setPayAmount(useableAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : useableAmount);
         }
+    }
+
+    /**
+     * 获取可使用额度+临时额度
+     *
+     * @param orderInfo
+     * @param userDto
+     * @param afInterimAuDo
+     * @return
+     */
+    private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDto userDto, AfInterimAuDo afInterimAuDo) {
+        BigDecimal useableAmount = BigDecimal.ZERO;
+        //判断商圈订单
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            //教育培训订单
+            if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
+                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDto.getUserId());
+                if (afUserAccountSenceDo != null) {
+                    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                }
+            }
+        } else {    //线上分期订单
+            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
+            if (afUserAccountSenceDo != null) {
+                //额度判断
+                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
+                    //获取当前用户可用临时额度
+                    BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);
+                } else {
+                    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                }
+            }
+        }
+        return useableAmount;
     }
 
 }

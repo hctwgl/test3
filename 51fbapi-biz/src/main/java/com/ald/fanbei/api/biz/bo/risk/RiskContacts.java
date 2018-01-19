@@ -29,4 +29,9 @@ public class RiskContacts extends RiskRegisterStrongReqBo {
 
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
 	}
+
+	@Override
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost, String riskScene) {
+
+	}
 }

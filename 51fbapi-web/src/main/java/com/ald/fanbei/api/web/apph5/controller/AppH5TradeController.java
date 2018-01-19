@@ -1,20 +1,15 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -47,6 +42,10 @@ public class AppH5TradeController extends BaseController {
     AfUserAuthService afUserAuthService;
     @Resource
     AfUserService afUserService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
@@ -85,6 +84,14 @@ public class AppH5TradeController extends BaseController {
         }
         AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
         AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+        String code = afTradeBusinessInfoService.getCodeById(afTradeBusinessInfoDo.getType());
+        //商圈认证
+        AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(account.getUserId(), code, YesNoStatus.YES.getCode());
+        if (afUserAuthStatusDo == null) {
+            auth.setRiskStatus(YesNoStatus.NO.getCode());
+        } else {
+            auth.setRiskStatus(afUserAuthStatusDo.getStatus());
+        }
         Integer status = getAuthStatus(auth, account, context.getAppVersion());
         model.put("isShowMention", status);
         if (status.equals(3)) {
@@ -95,10 +102,10 @@ public class AppH5TradeController extends BaseController {
         model.put("name", afTradeBusinessInfoDo.getName());
         model.put("id", afTradeBusinessInfoDo.getBusinessId());
         model.put("isLogin", "yes");
-        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
-        BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
-        BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
-        BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(code, account.getUserId());
+        BigDecimal auAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getAuAmount();
+        BigDecimal usedAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getUsedAmount();
+        BigDecimal freezeAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getFreezeAmount();
         Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
         model.put("canUseAmount", canUseAmount);
 

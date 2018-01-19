@@ -3,6 +3,12 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
@@ -41,22 +47,26 @@ public class AuthContactsV1Api implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfUserAuthStatusService afUserAuthStatusService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String contacts = (String) requestDataVo.getParams().get("contacts");
+
 //		if (StringUtil.isBlank(contacts)) {
 //			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
 //		}
-		
+
 		bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + context.getUserId(), contacts, Constants.SECOND_OF_ONE_DAY);
 		
 //		riskUtil.addressListPrimaries(context.getUserId() + "", contacts);
 		
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		
+
+
 		try {
 			if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode()) || StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "DIRECTORY", null, null, "", "", null, "", "", "");
@@ -67,7 +77,40 @@ public class AuthContactsV1Api implements ApiHandle {
 		} catch (Exception e) {
 			logger.error("更新风控通讯录信息失败：" + userId);
 		}
-		
+
+		/**
+		 * 更新 af_user_auth_status 用户认证信息表
+		 */
+		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
+		if("".equals(scene)){
+			scene="CASH";//如果前端所传为空,默认为现金贷
+		}
+		//已过期重新认证项
+		String authItem = "directory";
+		AfUserAuthStatusDo afUserAuthStatusDo= afUserAuthStatusService.selectAfUserAuthStatusByCondition(context.getUserId(),scene,"C");
+		if(afUserAuthStatusDo!=null){
+			String causeReason = afUserAuthStatusDo.getCauseReason();
+			if(causeReason!=null&&!"".equals(causeReason)){
+				JSONArray jsonArray = JSON.parseArray(causeReason);
+				boolean judge=true;
+				for(int i =0;i<jsonArray.size();i++){
+					if(judge){
+						JSONObject jsonObject =jsonArray.getJSONObject(i);
+						String auth=jsonObject.getString("auth");
+						if(authItem.equals(auth)){
+							jsonObject.put("status","Y");
+							jsonArray.remove(i);
+							jsonArray.add(jsonObject);
+							afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+							judge=false;
+						}
+					}
+				}
+
+			}
+		}
+
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(context.getUserId());
 		afUserAuthDo.setTeldirStatus(YesNoStatus.YES.getCode());

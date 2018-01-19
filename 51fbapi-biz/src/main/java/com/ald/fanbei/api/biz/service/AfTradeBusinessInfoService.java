@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface AfTradeBusinessInfoService extends ParentService<AfTradeBusines
     AfTradeBusinessInfoDo getByBusinessId(Long businessId);
 
     AfTradeBusinessInfoDto getBusinessInfoById(Long businessId);
+
+    String getCodeById(Integer id);
 }
