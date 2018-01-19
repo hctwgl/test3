@@ -51,6 +51,7 @@ import com.ald.fanbei.api.web.vo.SecondKillDateVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.hyphenation.SimplePatternParser;
 
 /**
  * @Title: AppH5SFController.java
@@ -123,6 +124,7 @@ public class AppH5SFController extends BaseController {
 			List<Date> dateListe = afActivityService.getDateListByName(tag);
 			List<SecondKillDateVo> dateList = new ArrayList<SecondKillDateVo>();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
 			if(CollectionUtil.isNotEmpty(dateListe)){
 				for(Date date:dateListe){
 					String dateStr = sdf.format(date);
@@ -133,11 +135,17 @@ public class AppH5SFController extends BaseController {
 					date = DateUtil.formatDateToYYYYMMdd(date);
 					
 					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
+					
+					int hours = new Date().getHours();
+					
 					if (DateUtil.afterDay(date, temNow)) {
 						vo.setStatus(0);
 					}else if (DateUtil.beforeDay(date, temNow)){
 						vo.setStatus(2);
 					}else {
+						if (hours < 11) {
+							vo.setStatus(0);
+						}
 						vo.setStatus(1);
 					}
 					
