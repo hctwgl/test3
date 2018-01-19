@@ -334,6 +334,35 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 			}
 		}
 
+		/**
+		 * 是否经过强风控
+		 */
+		//购物额度 未通过强风控
+		if(!"CASH".equals(scene)){
+			AfUserAuthStatusDo afUserAuthStatus=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+			AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"Y");
+			if(afUserAuthStatus==null&&afUserAuthStatusSuccess==null){//从未认证
+				data.put("basicStatus", "A");
+				data.put("riskStatus", "A");
+				data.put("flag", "N");
+				data.put("title1","你好，"+userDto.getRealName());
+				data.put("title2","完善基本资料即可获取3000-20000额度");
+			}
+			if(afUserAuthStatus!=null){//认证失败
+				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
+				between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+				data.put("riskStatus", "N");
+				data.put("basicStatus", "N");
+				data.put("title1","暂无信用额度");
+				if (between > 0) {
+					data.put("title2", "请"+between+"天后尝试重新提交");
+				} else {
+					data.put("title2", "请10天后尝试重新提交，完成补充认证可提高成功率");
+				}
+			}
+
+		}
+
 		return data;
 	}
 
