@@ -1076,7 +1076,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
                                 orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
-                                orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap,null);
+                                orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap,orderInfo);
                         logger.info("verybo=" + verybo);
                         if (verybo.isSuccess()) {
                             logger.info("pay result is true");
