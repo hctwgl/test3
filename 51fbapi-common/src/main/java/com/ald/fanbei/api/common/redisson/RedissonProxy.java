@@ -71,6 +71,8 @@ public class RedissonProxy implements RedissonClient{
 	
 	private String password;
 	
+	private int connectionPoolSize;
+	
 	private RedissonClient delegateRedissonClient;
 	
 	public String getHostName() {
@@ -96,13 +98,23 @@ public class RedissonProxy implements RedissonClient{
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public int getConnectionPoolSize() {
+		return connectionPoolSize;
+	}
+
+	public void setConnectionPoolSize(int connectionPoolSize) {
+		this.connectionPoolSize = connectionPoolSize;
+	}
+
 	@PostConstruct
 	public void init() {
 		Config config = new Config();
 		String address = hostName + ":" + port;
         config.useSingleServer()
         	  .setAddress(address)
-        	  .setPassword(password);
+        	  .setPassword(password)
+        	  .setConnectionPoolSize(connectionPoolSize);
         delegateRedissonClient = Redisson.create(config);
 	}
 
