@@ -39,10 +39,30 @@
 
   }
 }
-#theme5{
+#theme5,#theme10{
   .mar{
     background: #ffcc43!important;
     box-shadow:0 2px 10px #fdbf05;
+  }
+}
+#theme10{
+  .fontColor:last-child{
+    color:#ffcc43!important;
+    text-decoration: underline;
+  }
+  .iform li:nth-child(3) {
+      margin-top: .8rem;
+      margin-bottom: .4rem;
+    }
+
+}
+#theme11{
+  .logintxt{
+    margin-top: .3rem;
+  }
+  .iform li:nth-child(3) {
+    margin-top: .6rem;
+    margin-bottom: .2rem;
   }
 }
 #theme7{
@@ -137,7 +157,6 @@ button{
 .wrap,.form {
   position: relative;
 }
-
 .iform {
   position: absolute;
   width: 4.6rem;
@@ -373,4 +392,10 @@ input:-ms-input-placeholder {
       text-align: center;
       float: right;
   }
+}
+.logintxt{
+  width: 3.0rem;
+  margin: .5rem auto 0;
+  color: #fff;
+  font-size: 0.26rem;
 }

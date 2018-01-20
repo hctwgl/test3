@@ -477,7 +477,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap,AfOrderDo orderDo) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -538,13 +538,17 @@ public class RiskUtil extends AbstractThird {
         if(orderid > 0 ){
             summaryOrderData =  riskDataMap.get("summaryOrderData");
         }
-        if(borrow != null){
+        if(borrow != null&&orderDo!=null){
             summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
             summaryOrderData.put("freeNper",borrow.getFreeNper());
             summaryOrderData.put("nperAmount",borrow.getNperAmount());
             summaryOrderData.put("cardNumber",cardNo);
             summaryOrderData.put("cardName",cardName);
             summaryOrderData.put("payType",payType);
+            summaryOrderData.put("bankAmount",orderDo.getBankAmount());
+            summaryOrderData.put("borrowAmount",orderDo.getBorrowAmount());
+            summaryOrderData.put("actualAmount",orderDo.getActualAmount());
+
         }
         reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");
