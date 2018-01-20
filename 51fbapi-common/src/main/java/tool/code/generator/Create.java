@@ -19,11 +19,11 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_user_draw";
+		String tables = "af_user_coupon_tiger_machine";
 
 		// 配置作者及Domain说明
-		String classAuthor = "gaojibin";
-		String functionName = "年会抽奖";
+		String classAuthor = "qiao";
+		String functionName = "老虎机用户领券次数";
 
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";

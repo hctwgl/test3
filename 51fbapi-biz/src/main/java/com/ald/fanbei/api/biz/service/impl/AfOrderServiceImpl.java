@@ -216,7 +216,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     AfBoluomeUserCouponService afBoluomeUserCouponService;
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
-
+	@Resource
+	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
+ 
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -868,34 +870,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
                             //----------------------------------------------mqp end add a switch--------------------------------------------------
                             break;
-//					case PAID:
-//							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//							if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
-//								AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
-//								afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
-//								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//								if(borrowList == null || borrowList.size()==0 ){
-//									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//									for(AfBorrowBillDo _afBorrowExtendDo:billList){
-//										_afBorrowExtendDo.setStatus("N");
-//									}
-//									afBorrowDao.addBorrowBill(billList);
-//									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
-//									if(_aa ==null){
-//										_aa =new AfBorrowExtendDo();
-//										_aa.setId(afBorrowDo.getRid());
-//										_aa.setInBill(1);
-//										afBorrowExtendDao.addBorrowExtend(_aa);
-//									}
-//									else{
-//										_aa.setInBill(1);
-//										afBorrowExtendDao.updateBorrowExtend(_aa);
-//									}
-//								}
-//							}
-//							orderDao.updateOrder(afOrder);
-//							break;
-
                         default:
                             logger.info(" status is {} ", afOrder.getStatus());
                             orderDao.updateOrder(afOrder);
@@ -1570,6 +1544,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
         });
         if (result == 1) {
+			
+		  	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+        	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
+        	if (resourceDo != null) {
+        		Date current = new Date();
+        		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        		String strCurrent = sFormat.format(current);
+        		if (strCurrent.compareTo(resourceDo.getValue()) > 0 && strCurrent.compareTo(resourceDo.getValue1()) < 0 ) {
+        			afUserCouponTigerMachineService.addOneTime(orderInfo.getUserId(), "SHOPPING");
+				}
+        		
+			}
+        	//----------------------------end map:add one time for tiger machine---------------------------------
+			
+			
             boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
                     PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
             // iPhonX预约

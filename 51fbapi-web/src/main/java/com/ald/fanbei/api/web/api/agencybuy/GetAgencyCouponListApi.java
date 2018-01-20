@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
@@ -132,7 +133,17 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		
 		//———————mqp doubleEggs add function———————
-		
+		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+		if(doubleEggsDo != null){
+			//不使用优惠券
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("couponList", null);
+			data.put("pageNo", 1);
+			data.put("totalCount", 0);
+			resp.setResponseData(data);
+			return resp;
+		}
+		//———————end mqp doubleEggs add function———————
 		// 双十二秒杀新增逻辑+++++++++++++>
 		if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0 || afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){
 			//是双十二秒杀活动商品，不使用优惠券
