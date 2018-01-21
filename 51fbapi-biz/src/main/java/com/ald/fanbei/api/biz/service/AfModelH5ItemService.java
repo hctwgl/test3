@@ -67,6 +67,7 @@ public interface AfModelH5ItemService {
 	 * @return
 	 */
 	List<AfModelH5ItemDo> selectModelByTag();
+	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(long parseLong, String string);
 
 	
 }

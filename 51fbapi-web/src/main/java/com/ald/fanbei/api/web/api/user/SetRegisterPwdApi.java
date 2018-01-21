@@ -82,6 +82,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 		//风控可信异步通知
 		String ip = CommonUtil.getIpAddr(request);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
@@ -187,7 +188,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 		//风控可信异步通知
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
-					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY,bqsBlackBox);
 		}
 		//--------------------------------------------霸王餐活动start--------------------------------------------
 		//霸王餐活动绑定关系开关

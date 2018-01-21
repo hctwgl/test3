@@ -650,7 +650,10 @@ public abstract class BaseController {
 			}
 		}
 		logger.info("signStrBefore = {}", signStrBefore);
-		this.compareSign(signStrBefore, sign);
+		if (needToken){
+			this.compareSign(signStrBefore, sign);
+		}
+
 
 	}
 

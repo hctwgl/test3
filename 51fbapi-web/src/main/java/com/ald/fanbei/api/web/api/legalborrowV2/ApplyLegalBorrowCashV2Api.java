@@ -80,9 +80,10 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamObj();
 
 		ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
-		
+
 		BeanUtil.copyProperties(paramBo,param);
-		
+		paramBo.setIpAddress(CommonUtil.getIpAddr(request));
+		paramBo.setAppName(getAppType(requestDataVo));
 		// 获取用户账户和认证信息
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);

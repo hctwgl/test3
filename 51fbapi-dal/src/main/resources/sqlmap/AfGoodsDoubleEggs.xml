@@ -166,33 +166,46 @@
       WHERE is_delete = 0 AND id = #{doubleGoodsId};
     </select>
     
-    <select id="getAvalibleDateList" resultType="java.util.Date">
+    <select id="getAvalibleDateList" resultType="java.util.Date" parameterType="java.lang.String">
 	SELECT start_time FROM af_goods_double_eggs 
 		WHERE is_delete = 0 
+		and start_time >= #{startTime}
 	GROUP BY start_time ORDER BY start_time ;
     </select>
     
-    <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
+    <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" >
 		SELECT
-			de.id as double_goods_id,
-			case when CURRENT_DATE > date(de.start_time) then '4' when now() > de.start_time then '2' else '0' end as status,
-			de.goods_id,
-			g.stock_count,
-			g.stock_count - de.already_count AS count,
-			g.price_amount AS sale_amount,
-			g.sale_amount AS real_amount,
-			g.`name` AS goods_name,
-			g.goods_icon,
-			g.thumbnail_icon,
-			g.goods_url
+			de.id AS double_goods_id,
+			CASE
+		WHEN CURRENT_DATE > date(de.start_time) THEN
+			'4'
+		WHEN now() > de.start_time THEN
+			'2'
+		ELSE
+			'0'
+		END AS STATUS,
+		 de.goods_id,
+		 g.stock_count,
+		 g.stock_count - de.already_count AS count,
+		 g.price_amount AS sale_amount,
+		 g.sale_amount AS real_amount,
+		 g.`name` AS goods_name,
+		 g.goods_icon,
+		 g.thumbnail_icon,
+		 g.goods_url
 		FROM
 			af_goods_double_eggs de
 		INNER JOIN af_goods g ON g.id = de.goods_id
+		INNER JOIN af_activity a ON a.id = de.activity_id
 		WHERE
 			de.is_delete = 0
+		AND g.is_delete = 0
+		AND a.is_delete = 0
+		AND a.`status` = 2
+		AND a.`name` = #{tag}
 		AND DATE(de.start_time) = DATE(#{startDate})
-		ORDER BY
-			de.sort;
+			ORDER BY
+				de.sort;
     </select>
     
     <select id="isSubscribed" resultType="java.lang.Integer" parameterType="java.lang.Long">
@@ -247,5 +260,17 @@
 				de.reserve = 'Main'
 			ORDER BY
 				de.goods_id;
+    </select>
+    <select id="shouldOnlyAp" parameterType="java.lang.Long" resultType="java.lang.Integer">
+			SELECT
+				COUNT(1)
+			FROM
+				af_goods_double_eggs de
+			WHERE
+			de.goods_id = #{goodsId} AND
+			 de.is_delete = 0
+		AND (de.start_time BETWEEN 
+	(SELECT `value` FROM af_resource WHERE type = 'SPRING_FESTIVAL_ACTIVITY' AND sec_type ='AP_ONLY_LIMIT' )
+	AND (SELECT value_1 FROM af_resource WHERE type = 'SPRING_FESTIVAL_ACTIVITY' AND sec_type ='AP_ONLY_LIMIT' ))
     </select>
 </mapper>

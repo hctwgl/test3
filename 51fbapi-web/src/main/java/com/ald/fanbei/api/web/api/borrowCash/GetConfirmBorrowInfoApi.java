@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -33,10 +35,6 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -202,7 +200,14 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-			Object poundageRateCash = getUserPoundageRate(userId,context.getUserName());
+			JSONObject params = new JSONObject();
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			String bqsBlackBox = request.getParameter("bqsBlackBox");
+			params.put("ipAddress", CommonUtil.getIpAddr(request));
+			params.put("appName",appName);
+			params.put("bqsBlackBox",bqsBlackBox);
+			params.put("blackBox",request.getParameter("blackBox"));
+			Object poundageRateCash = getUserPoundageRate(userId,context.getUserName(),params);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -242,11 +247,11 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId,String userName) {
+	private Object getUserPoundageRate(Long userId,String userName,JSONObject params) {
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
 		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
 			//直接从风控系统取，没的话，走之前逻辑
-			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
 			if (!StringUtils.isBlank(poundageRate)) {
 				logger.info("direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
@@ -255,20 +260,20 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 				return poundageRate;
 			}else{
 				logger.info("direct get user poundage rate from risk,is null,getUserPoundageRateByUserId:.userName=" + userName);
-				return getUserPoundageRateByUserId(userId);
+				return getUserPoundageRateByUserId(userId,params);
 			}
 		}else{
 			logger.info("getUserPoundageRateByUserId from risk: userName=" + userName );
-			return getUserPoundageRateByUserId(userId);
+			return getUserPoundageRateByUserId(userId,params);
 		}
 	}
 	
-	private Object getUserPoundageRateByUserId(Long userId){
+	private Object getUserPoundageRateByUserId(Long userId,JSONObject params){
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate == null
 				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 				String poundageRate = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

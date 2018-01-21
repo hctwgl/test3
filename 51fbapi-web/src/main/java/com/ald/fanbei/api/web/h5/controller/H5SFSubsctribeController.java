@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponTigerMachineDo;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 
 /**  
@@ -61,6 +63,48 @@ public class H5SFSubsctribeController extends H5Controller{
 				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ,resourceDo = {}",
 						new Object[] { userId, goodsList, resourceDo });
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		
+
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	* @Title: initHomePageMain
+	* @author qiao
+	* @date 2018年1月15日 上午10:46:25
+	* @Description: 年货节主会场的主页面
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/initHomePageMain", method = RequestMethod.POST)
+	public String initHomePageMain(HttpServletRequest request, HttpServletResponse response) {
+		String result = "";
+		java.util.Map<String, Object> data = new HashMap<>();
+
+		try {
+			
+			int tigerTimes = 1;
+			data.put("tigerTimes", tigerTimes);
+			logger.info("/H5SF/initHomePageMain  tigerTimes={} ", new Object[] { tigerTimes });
+			
+			// get configuration from afresource
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY",
+					"MAIN_DESCRIBTION");
+			if (resourceDo != null) {
+				data.put("describtion", resourceDo.getValue2());
+			}
+			logger.info("/H5SF/initHomePageMain  tigerTimes={} ,resourceDo = {}",
+					new Object[] {  tigerTimes, resourceDo });
+			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		
 
 		} catch (Exception exception) {
