@@ -175,7 +175,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
-		bo.borrowOrderCashId = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(bo.borrowOrderId).getRid();
+		bo.borrowOrderCashId = bo.orderCashDo.getRid();
 		
 		generateRepayRecords(bo);
 		
