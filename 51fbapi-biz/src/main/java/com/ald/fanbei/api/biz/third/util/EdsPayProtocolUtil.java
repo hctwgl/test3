@@ -96,6 +96,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			Integer debtType = edspayBackPdfReqBo.getDebtType();
 			String investorName = edspayBackPdfReqBo.getInvestorName();
 			String investorCardId = edspayBackPdfReqBo.getInvestorCardId();
+			String borrowerName = edspayBackPdfReqBo.getBorrowerName();
 			String investorPhone = edspayBackPdfReqBo.getInvestorPhone();
 			List<EdspayInvestorInfoBo> investorList = edspayBackPdfReqBo.getInvestorList();
 			/*orderNo="jk2018010914473300001";
@@ -104,6 +105,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			investorName="杨海龙";
 			investorCardId="342522199401124538";
 			investorPhone="18268005632";
+			borrowerName="何文艺";
 			infoBo.setInvestorName(investorName);
 			infoBo.setInvestorCardId(investorCardId);
 			infoBo.setInvestorPhone(investorPhone);
@@ -119,6 +121,10 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			investorList.add(infoBo2);
 			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000001675551827.pdf";*/
 			if(orderNo==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
+			if(borrowerName==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
@@ -147,7 +153,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//具体操作
-			String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType,orderNo,protocolUrl,investorList);
+			String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType,orderNo,protocolUrl,borrowerName,investorList);
 //			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
 			if(url == null || "".equals(url)){
 				logger.error("EdspayController giveBackCreditInfo url exist error records,appId="+appId+ ",sendTime=" + timestamp);

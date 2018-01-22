@@ -39,6 +39,17 @@
     and is_delete = 0
     limit 1
   </select>
+  <select id="selectByIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from af_user_seal
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="id">
+      #{id}
+    </foreach>
+    and is_delete = 0
+    limit 1
+  </select>
   <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />

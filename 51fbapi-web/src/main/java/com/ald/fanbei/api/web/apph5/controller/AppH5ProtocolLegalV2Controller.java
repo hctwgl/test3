@@ -116,7 +116,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			lender(model, null);
 			Date date = afBorrowDo.getGmtCreate();
 			getEdspayInfo(model, borrowId, (byte) 2);
-			if (afBorrowDo.getVersion() == 0) {//老版分期
+			if (afBorrowDo != null && afBorrowDo.getVersion() == 0) {//老版分期
 				return "redirect:/fanbei-web/app/protocolFenqiService?userName=" + userName +
 						"&borrowId=" + borrowId + "&nper=" + nper + "&amount=" + borrowAmount +
 						"&poundage=" + poundage;

@@ -29,9 +29,19 @@ public class EdspayBackPdfReqBo implements Serializable {
 
 	private String investorName;
 
+	private String borrowerName;
+
 	private List investorList;
 
 	private String investorCardId;
+
+	public String getBorrowerName() {
+		return borrowerName;
+	}
+
+	public void setBorrowerName(String borrowerName) {
+		this.borrowerName = borrowerName;
+	}
 
 	public List getInvestorList() {
 		return investorList;

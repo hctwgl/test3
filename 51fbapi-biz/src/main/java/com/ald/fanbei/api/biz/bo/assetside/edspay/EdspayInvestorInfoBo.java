@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.bo.assetside.edspay;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,6 +18,16 @@ public class EdspayInvestorInfoBo implements Serializable {
 	private String investorName;
 
 	private String investorCardId;
+
+	private BigDecimal amount;
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
 
 	public String getInvestorPhone() {
 		return investorPhone;
