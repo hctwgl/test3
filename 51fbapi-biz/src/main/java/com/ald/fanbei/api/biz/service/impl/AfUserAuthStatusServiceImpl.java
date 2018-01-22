@@ -67,6 +67,11 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     }
 
     @Override
+    public AfUserAuthStatusDo getAfUserAuthStatusByUserIdAndScene(Long userId, String scene) {
+        return afUserAuthStatusDao.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+    }
+
+    @Override
     public List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status) {
         return afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndStatus(userId,status);
     }

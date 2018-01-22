@@ -126,7 +126,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             }
             if(afUserAccountSenceTrain!=null){
                 trainAuAmount=afUserAccountSenceTrain.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceTrain.getUsedAmount());
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
             }
             map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
             map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度

@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -61,6 +62,12 @@ public class AppH5InterimAuController extends BaseController {
 
     @Resource
     RiskUtil riskUtil;
+
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     DecimalFormat   df   =new DecimalFormat("0.00");
 
@@ -160,7 +167,12 @@ public class AppH5InterimAuController extends BaseController {
 
                 }
                 //可用额度=可用额度+临时额度
-                data.put("amount", df.format(afUserAccountService.getAuAmountByUserId(userId).add(interimAmount)));
+                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(),userId);
+                BigDecimal auAmount = new BigDecimal(0);
+                if(afUserAccountSenceDo != null){
+                    auAmount = afUserAccountSenceDo.getAuAmount();
+                }
+                data.put("amount", df.format(auAmount.add(interimAmount)));
 
                 resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
                 return resp.toString();
@@ -231,8 +243,8 @@ public class AppH5InterimAuController extends BaseController {
 
                             //判断是否已经过强风控
                             String msg="";
-                            AfUserAuthDo afUserAuthDo=afUserAuthService.getUserAuthInfoByUserId(userId);
-                            if("Y".equals(afUserAuthDo.getRiskStatus())){
+                            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,UserAccountSceneType.ONLINE.getCode());
+                            if("Y".equals(afUserAuthStatusDo.getStatus())){
                                 //推送用户信息给风控
                                 Date date = new Date();//取时间
                                 boolean isSuccess =true;//调用风控接口 默认成功

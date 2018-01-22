@@ -90,21 +90,21 @@ public class lookAllQuotaApi implements ApiHandle {
             }
 
             //加入线上额度(即购物额度) 线下 add by caowu 2018/1/10 15:25
-            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
-            AfUserAccountSenceDo afUserAccountSenceDo1 = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
+            AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
+            AfUserAccountSenceDo afUserAccountSenceTrain = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
             // 线上,线下信用额度
             BigDecimal onlineAuAmount = BigDecimal.ZERO;
             BigDecimal trainAuAmount = BigDecimal.ZERO;
             // 线上,线下可用额度
             BigDecimal onlineAmount = BigDecimal.ZERO;
             BigDecimal trainAmount = BigDecimal.ZERO;
-            if(afUserAccountSenceDo!=null){
-                onlineAuAmount=afUserAccountSenceDo.getAuAmount();
-                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo.getUsedAmount());
+            if(afUserAccountSenceOnline!=null){
+                onlineAuAmount=afUserAccountSenceOnline.getAuAmount();
+                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceOnline.getUsedAmount());
             }
-            if(afUserAccountSenceDo1!=null){
-                trainAuAmount=afUserAccountSenceDo1.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo1.getUsedAmount());
+            if(afUserAccountSenceTrain!=null){
+                trainAuAmount=afUserAccountSenceTrain.getAuAmount();
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
             }
             onlineMap.put("auAmount", onlineAuAmount.add(interimAmount));//线上授予额度
             onlineMap.put("amount", onlineAmount.add(usableAmount));//线上可用额度
@@ -169,7 +169,7 @@ public class lookAllQuotaApi implements ApiHandle {
                 }
                 List<String> listDesc1=getAuthDesc(value3,"two");
                 List<String> listDesc2=getAuthDesc(value4,"two");
-                cashMap.put("amount", listDesc1.get(0));
+                cashMap.put("showAmount", listDesc1.get(0));
                 cashMap.put("desc", listDesc1.get(1));
                 cashMap.put("status",status);
                 onlineMap.put("showAmount", listDesc2.get(0));
