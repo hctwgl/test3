@@ -382,6 +382,8 @@ public interface AfOrderService {
 	
 	int getAuthShoppingByUserId(Long userId, String activityTime);
 
+	int getCountByUserId(Long rid);
+
 	
 
 

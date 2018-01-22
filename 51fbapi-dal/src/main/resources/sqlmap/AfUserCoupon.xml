@@ -259,7 +259,9 @@
 			    AND uc.gmt_end)
 			    AND #{amount} >=  c.limit_amount
 			    AND c.is_global = 1
-			    AND c.activity_id = #{activityId}
+			    <if test="activityId != null">
+		          AND c.activity_id = #{activityId}
+		        </if>
 			    AND c.activity_type = #{activityType}
 			ORDER BY c.amount DESC
 			LIMIT 50

@@ -2569,5 +2569,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	return orderDao.getAuthShoppingByUserId(userId,activityTime);
     }
 
+    @Override
+    public int getCountByUserId(Long rid) {
+	// TODO Auto-generated method stub
+	return orderDao.getCountByUserId(rid);
+    }
+
 
 }

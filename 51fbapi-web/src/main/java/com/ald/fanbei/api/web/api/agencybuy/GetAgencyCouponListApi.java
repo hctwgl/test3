@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,29 +110,64 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		list.addAll(subjectUserCouponList);
 		*/	
 		
-		
+		//新人专享--信用专享优惠券,特定商品
 		//——————————————
+		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
+		    List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();        
+        		// 查询
+        		List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,null,ActivityType.EXCLUSIVE_CREDIT.getCode());
+        		list.addAll(h5TemplateCouponList);
+        		Map<String, Object> data = new HashMap<String, Object>();
+        		data.put("couponList", JSON.toJSON(list));
+        		data.put("pageNo", 1);
+        		data.put("totalCount", list.size());
+        		resp.setResponseData(data);
+        		return resp;
+		}
 		
 		//新人专享添加逻辑
+//		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
+//			
+//			//后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
+//			//List<AfGoodsPriceDo> byGoodsId = afGoodsPriceService.getByGoodsId(goodsId);
+//			//for (AfGoodsPriceDo afGoodsPriceDo : byGoodsId) {
+//				
+//				//if(afGoodsPriceDo.getActualAmount() != actualAmount){ 
+//					Map<String, Object> data = new HashMap<String, Object>();
+//					data.put("couponList", null);
+//					data.put("pageNo", 1);
+//					data.put("totalCount", 0);
+//					resp.setResponseData(data);
+//					return resp;
+//				//}
+//			//}
+//		}
+		//———————mqp doubleEggs add function———————
+		
+		//新人专享--首单爆品优惠券,特定商品
+		//——————————————
+		
+		
 		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
-			
-			//后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
-			//List<AfGoodsPriceDo> byGoodsId = afGoodsPriceService.getByGoodsId(goodsId);
-			//for (AfGoodsPriceDo afGoodsPriceDo : byGoodsId) {
-				
-				//if(afGoodsPriceDo.getActualAmount() != actualAmount){ 
-					Map<String, Object> data = new HashMap<String, Object>();
-					data.put("couponList", null);
-					data.put("pageNo", 1);
-					data.put("totalCount", 0);
-					resp.setResponseData(data);
-					return resp;
-				//}
-			//}
+		  // 查询商品是否在H5活动中
+		List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
+		 List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
+		        		for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+		        			Long modelId = afModelH5ItemDo.getModelId();
+		        			// 查询
+		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.EXCLUSIVE_CREDIT.getCode());
+		        			list.addAll(h5TemplateCouponList);
+		        		}
+		        		
+		        		Map<String, Object> data = new HashMap<String, Object>();
+		        		data.put("couponList", JSON.toJSON(list));
+		        		data.put("pageNo", 1);
+		        		data.put("totalCount", list.size());
+		        		resp.setResponseData(data);
+		        		return resp;
 		}
 		
 		
-		//———————mqp doubleEggs add function———————
 		
 		// 双十二秒杀新增逻辑+++++++++++++>
 		if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0 || afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){

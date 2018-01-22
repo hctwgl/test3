@@ -221,6 +221,8 @@ public interface AfOrderDao {
 
 	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId);
 
+	int getCountByUserId(@Param("userId")Long userId);
+
 
 	
 }

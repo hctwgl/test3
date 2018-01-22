@@ -5,6 +5,7 @@ import java.util.List;
 
 
 
+
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -110,4 +111,5 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
+
 }

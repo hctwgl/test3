@@ -153,4 +153,23 @@
 			#{item}
 		</foreach>
 	</select>
+	
+	<select id="getByActivityType" resultType="AfCouponDto">
+		SELECT
+		<include refid="queryAllFields"></include>
+		FROM
+			af_coupon
+		WHERE
+			activity_type = #{activityType}
+		AND
+			type = 'FULLVOUCHER'
+		AND
+			now() >= gmt_start
+		AND
+			gmt_end >= now()
+		AND
+			status = 'O'
+	</select>
+	
+	
 </mapper>

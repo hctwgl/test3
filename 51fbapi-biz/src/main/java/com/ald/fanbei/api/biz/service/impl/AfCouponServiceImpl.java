@@ -86,4 +86,10 @@ public class AfCouponServiceImpl implements AfCouponService {
 	    	return afCouponDao.listCouponByIds(couponIds);
 	}
 
+	@Override
+	public List<AfCouponDo> getByActivityType(String activityType) {
+	    // TODO Auto-generated method stub
+	         return afCouponDao.getByActivityType(activityType);
+	}
+
 }
