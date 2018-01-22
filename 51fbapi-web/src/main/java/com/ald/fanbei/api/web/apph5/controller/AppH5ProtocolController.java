@@ -294,7 +294,7 @@ public class AppH5ProtocolController extends BaseController {
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 //					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-					Integer day = borrowTime(afBorrowCashDo.getType());
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -401,7 +401,7 @@ public class AppH5ProtocolController extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 //					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-					Integer day = borrowTime(afBorrowCashDo.getType());
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -693,34 +693,6 @@ public class AppH5ProtocolController extends BaseController {
 		return null;
 	}
 
-	/**
-	 * 借款时间
-	 *
-	 * @param afBorrowCashDo
-	 * @return
-	 */
-	public int borrowTime(final String type) {
-		Integer day ;
-		if(isNumeric(type)){
-			day = Integer.parseInt(type);
-		}else{
-			day = numberWordFormat.parse(type.toLowerCase());
-		}
-		return day;
-	}
 
-	/**
-	 * 是否是数字字符串
-	 * @param type
-	 * @return
-	 */
-	private boolean isNumeric(String type) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(type);
-		if( !isNum.matches() ){
-			return false;
-		}
-		return true;
-	}
 
 }

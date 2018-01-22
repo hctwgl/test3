@@ -100,7 +100,7 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				
 				//af_fund_side_borrow_cash关联记录插入
 //				Integer borrowDays = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(borrowCashDo.getType()).getCode(), 0);
-				Integer borrowDays = borrowTime(borrowCashDo.getType());
+				Integer borrowDays = numberWordFormat.borrowTime(borrowCashDo.getType());
 				BigDecimal planCollectInterest = NumberUtil.getSumInterestsByAmountAndRate(borrowCashDo.getArrivalAmount(), fundSideInfoDo.getAnnualRate(), borrowDays);
 				
 				//af_fund_side_account资金更新
@@ -141,33 +141,5 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 		return afFundSideInfoDo;
 	}
 
-	/**
-	 * 借款时间
-	 *
-	 * @param afBorrowCashDo
-	 * @return
-	 */
-	public int borrowTime(final String type) {
-		Integer day ;
-		if(isNumeric(type)){
-			day = Integer.parseInt(type);
-		}else{
-			day = numberWordFormat.parse(type.toLowerCase());
-		}
-		return day;
-	}
 
-	/**
-	 * 是否是数字字符串
-	 * @param type
-	 * @return
-	 */
-	private boolean isNumeric(String type) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(type);
-		if( !isNum.matches() ){
-			return false;
-		}
-		return true;
-	}
 }

@@ -116,7 +116,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
-		if (StringUtils.isBlank(amountStr) || (!isNumeric(type)) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
+		if (StringUtils.isBlank(amountStr) || (!numberWordFormat.isNumeric(type)) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
@@ -349,34 +349,6 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		}
 	}
 
-	/**
-	 * 借款时间
-	 *
-	 * @param afBorrowCashDo
-	 * @return
-	 */
-	public int borrowTime(final String type) {
-		Integer day ;
-		if(isNumeric(type)){
-			day = Integer.parseInt(type);
-		}else{
-			day = numberWordFormat.parse(type.toLowerCase());
-		}
-		return day;
-	}
 
-	/**
-	 * 是否是数字字符串
-	 * @param type
-	 * @return
-	 */
-	private boolean isNumeric(String type) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(type);
-		if( !isNum.matches() ){
-			return false;
-		}
-		return true;
-	}
 
 }
