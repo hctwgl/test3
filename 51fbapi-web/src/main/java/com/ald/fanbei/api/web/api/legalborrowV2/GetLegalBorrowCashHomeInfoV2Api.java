@@ -202,9 +202,6 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
 		if (afBorrowCashDo == null) {
-			if (usableAmount.compareTo(minAmount) < 0) {
-				inRejectLoan = YesNoStatus.YES.getCode();
-			}
 			data.put("status", "DEFAULT");
 		} else {
 			String borrowStatus = afBorrowCashDo.getStatus();
@@ -367,7 +364,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 
-		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(minAmount) < 0 && StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) 
+				&& usableAmount.compareTo(minAmount) < 0 
+				&& StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 
