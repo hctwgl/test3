@@ -244,7 +244,11 @@ public class AppH5InterimAuController extends BaseController {
                             //判断是否已经过强风控
                             String msg="";
                             AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,UserAccountSceneType.ONLINE.getCode());
-                            if("Y".equals(afUserAuthStatusDo.getStatus())){
+                            String userAuthStatus = "N";
+                            if(afUserAuthStatusDo != null){
+                                userAuthStatus = afUserAuthStatusDo.getStatus();
+                            }
+                            if("Y".equals(userAuthStatus)){
                                 //推送用户信息给风控
                                 Date date = new Date();//取时间
                                 boolean isSuccess =true;//调用风控接口 默认成功
