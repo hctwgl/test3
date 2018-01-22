@@ -555,7 +555,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
         map.put("investorPhone",investorPhone);
         map.put("investorCardId",investorCardId);*/
         map.put("personKey",borrowerName);
-        if (debtType == 1){
+        if (debtType == 0){//借款
             AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
             if (afBorrowCashDo == null){
                 logger.error("借款信息不存在 => {}",orderNo);
@@ -563,7 +563,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             }
             return getPdfInfo(protocolUrl, map,afBorrowCashDo.getUserId(),afBorrowCashDo.getRid(),"cashLoan","1",investorList);
 //            protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());
-        }else if (debtType == 2){
+        }else if (debtType == 1){//分期
             AfBorrowDo afBorrowDo = afBorrowDao.getBorrowInfoByBorrowNo(orderNo);
             if (afBorrowDo == null){
                 AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByCashNo(orderNo);

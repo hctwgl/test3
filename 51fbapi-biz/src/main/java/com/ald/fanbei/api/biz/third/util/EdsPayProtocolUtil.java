@@ -89,15 +89,12 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			edspayBackPdfReqBo = new EdspayBackPdfReqBo();
+//			edspayBackPdfReqBo = new EdspayBackPdfReqBo();
 			//签名成功,业务处理
 			String orderNo = edspayBackPdfReqBo.getOrderNo();
 			String protocolUrl = edspayBackPdfReqBo.getProtocolUrl();
 			Integer debtType = edspayBackPdfReqBo.getDebtType();
-			String investorName = edspayBackPdfReqBo.getInvestorName();
-			String investorCardId = edspayBackPdfReqBo.getInvestorCardId();
 			String borrowerName = edspayBackPdfReqBo.getBorrowerName();
-			String investorPhone = edspayBackPdfReqBo.getInvestorPhone();
 			List<EdspayInvestorInfoBo> investorList = edspayBackPdfReqBo.getInvestorList();
 			/*orderNo="jk2018010914473300001";
 			debtType=2;
@@ -132,19 +129,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
-			if(debtType==null){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-			if(investorName==null){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-			if(investorCardId==null){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-			if(investorPhone==null){
+			if(debtType==null && debtType != 1&& debtType != 0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
