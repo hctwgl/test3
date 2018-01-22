@@ -112,7 +112,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 if (afBorrowLegalOrderDo != null){
                     date = afBorrowLegalOrderDo.getGmtCreate();
                 }
-                map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, borrowTime(afBorrowLegalOrderCashDo.getType()))));
+                map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, numberWordFormat.borrowTime(afBorrowLegalOrderCashDo.getType()))));
 //                if ("SEVEN".equals(afBorrowLegalOrderCashDo.getType())){
 ////                    map.put("gmtEnd", DateUtil.addDays(date, 6));
 //                    map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, 6)));
@@ -230,7 +230,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("yearRate",jsonObject.get("consumeSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("yearRate",jsonObject.get("consumeFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("yearRate",jsonObject.get("consumeSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -243,7 +243,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("poundageRate",jsonObject.get("consumeSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("poundageRate",jsonObject.get("consumeFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("poundageRate",jsonObject.get("consumeSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -256,7 +256,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("overdueRate",jsonObject.get("consumeSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("overdueRate",jsonObject.get("consumeFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("overdueRate",jsonObject.get("consumeSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -275,7 +275,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("yearRate",jsonObject.get("borrowSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("yearRate",jsonObject.get("borrowFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("yearRate",jsonObject.get("borrowSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -288,7 +288,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("poundageRate",jsonObject.get("borrowSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("poundageRate",jsonObject.get("borrowFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("poundageRate",jsonObject.get("borrowSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -301,7 +301,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("overdueRate",jsonObject.get("borrowSevenDay"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("overdueRate",jsonObject.get("borrowFourteenDay"));
-                        }else if(isNumeric(type)){
+                        }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
                                 map.put("overdueRate",jsonObject.get("borrowSevenDay"));
                             }else if(StringUtils.equals(twoDay,type)){
@@ -348,7 +348,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
                         map.put("gmtArrival", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()));
 //                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-                        Integer day = borrowTime(afBorrowCashDo.getType());
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("repaymentDay", simpleDateFormat.format(repaymentDay));
@@ -484,7 +484,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 //                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-                        Integer day = borrowTime(afBorrowCashDo.getType());
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtBorrowBegin", dateFormat.format(arrivalStart));//到账时间，借款起息日
@@ -1059,34 +1059,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
         return temp;
     }
 
-    /**
-     * 借款时间
-     *
-     * @param afBorrowCashDo
-     * @return
-     */
-    public int borrowTime(final String type) {
-        Integer day ;
-        if(isNumeric(type)){
-            day = Integer.parseInt(type);
-        }else{
-            day = numberWordFormat.parse(type.toLowerCase());
-        }
-        return day;
-    }
 
-    /**
-     * 是否是数字字符串
-     * @param type
-     * @return
-     */
-    private boolean isNumeric(String type) {
-        Pattern pattern = Pattern.compile("[0-9]*");
-        Matcher isNum = pattern.matcher(type);
-        if( !isNum.matches() ){
-            return false;
-        }
-        return true;
-    }
 
 }

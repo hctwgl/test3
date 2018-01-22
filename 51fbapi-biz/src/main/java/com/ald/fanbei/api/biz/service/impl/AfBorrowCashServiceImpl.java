@@ -104,7 +104,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                 logger.info("borrowSuccess--begin");
                 Date currDate = new Date(System.currentTimeMillis());
                 afBorrowCashDo.setGmtArrival(currDate);
-                Integer day = borrowTime(afBorrowCashDo.getType());
+                Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 //                Integer day = NumberUtil
 //                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                 Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
@@ -188,7 +188,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                 logger.info("borrowSuccess--begin");
                 Date currDate = new Date(System.currentTimeMillis());
                 afBorrowCashDo.setGmtArrival(currDate);
-                Integer day = borrowTime(afBorrowCashDo.getType());
+                Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 //                Integer day = NumberUtil
 //                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                 Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
@@ -237,35 +237,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
         return resultValue;
     }
 
-    /**
-     * 借款时间
-     *
-     * @param afBorrowCashDo
-     * @return
-     */
-    public int borrowTime(final String type) {
-        Integer day ;
-        if(isNumeric(type)){
-            day = Integer.parseInt(type);
-        }else{
-            day = numberWordFormat.parse(type.toLowerCase());
-        }
-        return day;
-    }
 
-    /**
-     * 是否是数字字符串
-     * @param type
-     * @return
-     */
-    private boolean isNumeric(String type) {
-        Pattern pattern = Pattern.compile("[0-9]*");
-        Matcher isNum = pattern.matcher(type);
-        if( !isNum.matches() ){
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {

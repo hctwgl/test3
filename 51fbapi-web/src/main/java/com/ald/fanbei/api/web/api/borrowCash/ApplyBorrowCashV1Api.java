@@ -142,7 +142,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
                 "couponId"));
         if (StringUtils.isBlank(amountStr)
-                || (!isNumeric(type))
+                || (!numberWordFormat.isNumeric(type))
                 || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
                 || StringUtils.isBlank(longitude)
                 || StringUtils.isBlank(blackBox)) {
@@ -506,7 +506,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     UserAccountLogType.BorrowCash.getCode(),
                     afBorrowCashDo.getRid() + "");
             cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-            Integer day = borrowTime(afBorrowCashDo.getType());
+            Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 //            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
 //                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
             Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo
@@ -710,35 +710,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         }
     }
 
-    /**
-     * 借款时间
-     *
-     * @param afBorrowCashDo
-     * @return
-     */
-    public int borrowTime(final String type) {
-        Integer day ;
-        if(isNumeric(type)){
-            day = Integer.parseInt(type);
-        }else{
-            day = numberWordFormat.parse(type.toLowerCase());
-        }
-        return day;
-    }
 
-    /**
-     * 是否是数字字符串
-     * @param type
-     * @return
-     */
-    private boolean isNumeric(String type) {
-        Pattern pattern = Pattern.compile("[0-9]*");
-        Matcher isNum = pattern.matcher(type);
-        if( !isNum.matches() ){
-            return false;
-        }
-        return true;
-    }
 
     // /**
     // * 处理风控逾期借钱或者借款处理

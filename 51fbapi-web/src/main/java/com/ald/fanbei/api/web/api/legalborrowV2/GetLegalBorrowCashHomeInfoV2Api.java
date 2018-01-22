@@ -249,7 +249,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", paidAmount);
 			data.put("overdueAmount", overdueAmount);
-			data.put("type", borrowTime(afBorrowCashDo.getType()));
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			Date now = DateUtil.getEndOfDate(new Date());
 
 			data.put("overdueStatus", "N");
@@ -598,33 +598,5 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 
 	}
 
-	/**
-	 * 借款时间
-	 *
-	 * @param afBorrowCashDo
-	 * @return
-	 */
-	public int borrowTime(final String type) {
-		Integer day ;
-		if(isNumeric(type)){
-			day = Integer.parseInt(type);
-		}else{
-			day = numberWordFormat.parse(type.toLowerCase());
-		}
-		return day;
-	}
 
-	/**
-	 * 是否是数字字符串
-	 * @param type
-	 * @return
-	 */
-	private boolean isNumeric(String type) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(type);
-		if( !isNum.matches() ){
-			return false;
-		}
-		return true;
-	}
 }
