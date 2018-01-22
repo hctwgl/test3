@@ -243,7 +243,10 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
+		logger.info("max amount:"+maxAmount);
+        logger.info("usableAmount amount:"+usableAmount);
 		if(maxAmount.compareTo(BigDecimal.ZERO)==0){
+            logger.info("reset max amount:"+ new BigDecimal(strMaxAmount));
 			maxAmount= new BigDecimal(strMaxAmount);
 		}
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
