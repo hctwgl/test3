@@ -24,11 +24,11 @@ public class ApplyLegalBorrowCashParam {
 	private BigDecimal latitude;
 	@NotNull
 	private BigDecimal longitude;
-	@NotNull
+	
 	private String province;
-	@NotNull
+	
 	private String city;
-	@NotNull
+	
 	private String county;
 	@NotNull
 	private String address;
