@@ -185,10 +185,15 @@ public class GetMyBorrowV1Api implements ApiHandle {
             map.put("realName", afUserDo.getRealName()==null ? "":afUserDo.getRealName());
 
             //购物额度 未通过强风控
-            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","C");
+            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
            // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
-
-            if(afUserAuthStatusDo!=null){
+            if(afUserAuthStatusDo == null){
+                List<String> listDesc=getAuthDesc(value4,"one");
+                map.put("onlineShowAmount", listDesc.get(0));
+                map.put("onlineDesc", listDesc.get(1));
+                map.put("onlineStatus","1");
+            }
+            else if(afUserAuthStatusDo.getStatus().equals("C")){
                 List<String> listDesc=getAuthDesc(value4,"three");
                 map.put("onlineShowAmount", listDesc.get(0));
                 map.put("onlineDesc", listDesc.get(1));
