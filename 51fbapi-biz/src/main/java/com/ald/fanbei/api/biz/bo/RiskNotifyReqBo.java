@@ -13,12 +13,12 @@ public class RiskNotifyReqBo extends HashMap<String, String>{
 
 	private static final long serialVersionUID = 4608466453298742175L;
 
-	private String token;
-	private String data;
-	private String userId;
-	private String orderSn;
-	private String orderNo;
-	private String signInfo;
+	private String token;//公积金方的token
+	private String data;//用户具体的公积金信息
+	private String userId;//用户id
+	private String orderSn;//公积金方的订单号
+	private String orderNo;//风控单号
+	private String signInfo;//加签
 	
 	public String getToken() {
 		return token;
