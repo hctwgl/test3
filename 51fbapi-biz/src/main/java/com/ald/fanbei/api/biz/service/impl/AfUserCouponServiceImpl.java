@@ -225,6 +225,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		String tag = "_FIRST_SHOPPING_";
 		String sourceType = "FIRST_SHOPPING";
 		logger.info("sentUserCoupon for new user userId=" + afOrder.toString());
+		
+		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afOrder.getUserId(), sourceType);
+		    //该用户是否拥有该类型优惠券
+		 if(countNum >0){
+		         return 0;   
+	        }
 	        sentUserCouponGroup(afOrder.getUserId(),tag,sourceType);
 		return 1;
 		
@@ -243,10 +249,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				if (couponDo != null) {
 				    //赠送优惠券
 				        //Integer limitCount = couponDo.getLimitCount();
-				        //该用户是否拥有该类型优惠券
 				        //有一个优惠券不符合要求就不送    
 				    
-					Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponCource(userId,sourceType);
+					Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,couponDo.getRid());
 					if (1 <= myCount) {
 					    //continue;
 					    MsgCode = "LEAD";

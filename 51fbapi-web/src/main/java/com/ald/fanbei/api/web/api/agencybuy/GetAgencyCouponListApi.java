@@ -76,10 +76,11 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = 980186L;
 		
-		BigDecimal actualAmount = new BigDecimal(1000);
-		Long goodsId = 130086L;
+                Long userId = context.getUserId();
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
+		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"), 0);
+		
 		/*
 		List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
 		List<AfUserCouponDto> subjectUserCouponList  = new ArrayList<AfUserCouponDto>();
@@ -147,15 +148,17 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		//新人专享--首单爆品优惠券,特定商品
 		//——————————————
 		
+		//是否是首单爆款类型
 		
-		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
 		  // 查询商品是否在H5活动中
-		List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
-		 List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
-		        		for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+	
+		List<AfModelH5ItemDo> afModelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
+		if(afModelH5ItemList.size()>0){
+			                List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
+		        		for(AfModelH5ItemDo afModelH5ItemDo : afModelH5ItemList) {
 		        			Long modelId = afModelH5ItemDo.getModelId();
 		        			// 查询
-		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.EXCLUSIVE_CREDIT.getCode());
+		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.FIRST_SINGLE.getCode());
 		        			list.addAll(h5TemplateCouponList);
 		        		}
 		        		

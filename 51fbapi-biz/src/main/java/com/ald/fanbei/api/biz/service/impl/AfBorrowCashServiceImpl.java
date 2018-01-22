@@ -222,8 +222,16 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		//是否是第一次借款,给该用户送优惠券（还款券）
 		String tag = "_FIRST_LOAN_";
 		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+		
+		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
+		    //该用户是否拥有该类型优惠券
+		 if(countNum >0){
+		         return 0;   
+	        }
+		
 		//是否是第一次借款
 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
+		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +afBorrowCashDo.toString());
 	    }catch(Exception e){
 	        logger.error("first borrow sentUserCoupon error", e);
 	   }
