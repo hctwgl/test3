@@ -32,6 +32,8 @@ public interface AfESdkService {
 
     FileDigestSignResult secondSign(Map<String,String> map);//签章
 
+    FileDigestSignResult secondStreamSign(Map<String,String> map,byte[] secondStream);//签章
+
     FileDigestSignResult thirdSign(Map<String,String> map);//签章
 
     FileDigestSignResult selfSign(Map<String,String> map);//签章

@@ -32,7 +32,7 @@ import java.util.List;
  * @author chengkang 2017年11月29日 16:55:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
  */
-@Component("EProtocolUtil")
+@Component("eProtocolUtil")
 public class EdsPayProtocolUtil extends AbstractThird {
 
 	@Resource
@@ -97,12 +97,27 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			String investorName = edspayBackPdfReqBo.getInvestorName();
 			String investorCardId = edspayBackPdfReqBo.getInvestorCardId();
 			String investorPhone = edspayBackPdfReqBo.getInvestorPhone();
+			List<EdspayInvestorInfoBo> investorList = edspayBackPdfReqBo.getInvestorList();
 			/*orderNo="jk2018010914473300001";
 			debtType=2;
+			EdspayInvestorInfoBo infoBo = new EdspayInvestorInfoBo();
 			investorName="杨海龙";
 			investorCardId="342522199401124538";
 			investorPhone="18268005632";
-			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000000059960459.pdf";*/
+			infoBo.setInvestorName(investorName);
+			infoBo.setInvestorCardId(investorCardId);
+			infoBo.setInvestorPhone(investorPhone);
+			investorList = new ArrayList<>();
+			investorList.add(infoBo);
+			EdspayInvestorInfoBo infoBo2 = new EdspayInvestorInfoBo();
+			investorName="郭帅强";
+			investorCardId="330724199211254817";
+			investorPhone="13018933980";
+			infoBo2.setInvestorName(investorName);
+			infoBo2.setInvestorCardId(investorCardId);
+			infoBo2.setInvestorPhone(investorPhone);
+			investorList.add(infoBo2);
+			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000001675551827.pdf";*/
 			if(orderNo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
@@ -132,8 +147,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//具体操作
-			String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType,orderNo,protocolUrl,investorPhone,
-					investorName,investorCardId);
+			String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType,orderNo,protocolUrl,investorList);
 //			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
 			if(url == null || "".equals(url)){
 				logger.error("EdspayController giveBackCreditInfo url exist error records,appId="+appId+ ",sendTime=" + timestamp);
