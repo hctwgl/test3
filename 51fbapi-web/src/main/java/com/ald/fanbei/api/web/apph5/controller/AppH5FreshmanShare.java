@@ -269,7 +269,6 @@ public class AppH5FreshmanShare extends BaseController{
 				for(AfGoodsDo goodsDo : afGoodsList) {
 				        //获取商
 				         //遍历list,查询满足条件优惠券。（大于满减，且最大优惠金额）
-				        BigDecimal maxCutMount = new BigDecimal(0.00);
 				        BigDecimal temp = new BigDecimal(0.00);
 				        BigDecimal couponLimitAmount = new BigDecimal(0.00);
 				        BigDecimal couponAmount = new BigDecimal(0.00);
@@ -279,15 +278,13 @@ public class AppH5FreshmanShare extends BaseController{
 				        	temp = couponList.get(i).getAmount();
 				        	couponLimitAmount =  couponList.get(i).getLimitAmount();
 				        	couponAmount =  couponList.get(i).getAmount();
-				        	maxCutMount = couponList.get(0).getAmount();
 				        	if(couponList.get(i).getAmount().compareTo(temp)>0 ){
-				        	    maxCutMount = temp;
 				        	    couponLimitAmount =  couponList.get(i).getLimitAmount();
 				        	    couponAmount =  couponList.get(i).getAmount();
 				        	}
 				            }
 				        }
-				        BigDecimal afterUseCouponAmount = goodsDo.getSaleAmount().subtract(maxCutMount);
+				        BigDecimal afterUseCouponAmount = goodsDo.getSaleAmount().subtract(couponAmount);
 				        
 		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		    			goodsInfo.put("goodName",goodsDo.getName());
