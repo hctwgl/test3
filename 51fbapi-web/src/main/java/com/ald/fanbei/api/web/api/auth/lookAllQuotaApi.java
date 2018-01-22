@@ -158,7 +158,9 @@ public class lookAllQuotaApi implements ApiHandle {
                 trainMap.put("desc",trainDesc);
                 trainMap.put("status","1");
 
-            } else{
+            } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                    ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
                 //认证人脸没有认证银行卡 状态为5
