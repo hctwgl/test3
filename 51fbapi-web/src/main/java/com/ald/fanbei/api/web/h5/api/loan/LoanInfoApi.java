@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -19,6 +21,7 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
  * @author yanghailong
  * @date 2018年1月22日
  */
+@Component("loanInfoApi")
 public class LoanInfoApi implements H5Handle {
 
 	@Resource
