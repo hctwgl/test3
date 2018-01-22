@@ -126,7 +126,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             }
             if(afUserAccountSenceTrain!=null){
                 trainAuAmount=afUserAccountSenceTrain.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceTrain.getUsedAmount());
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
             }
             map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
             map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
@@ -163,7 +163,9 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("onlineShowAmount", listDesc2.get(0));
                 map.put("onlineDesc", listDesc2.get(1));
                 map.put("onlineStatus","1");
-            } else{
+            } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
                 //认证人脸没有认证银行卡 状态为5
@@ -183,10 +185,15 @@ public class GetMyBorrowV1Api implements ApiHandle {
             map.put("realName", afUserDo.getRealName()==null ? "":afUserDo.getRealName());
 
             //购物额度 未通过强风控
-            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","C");
+            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
            // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
-
-            if(afUserAuthStatusDo!=null){
+            if(afUserAuthStatusDo == null){
+                List<String> listDesc=getAuthDesc(value4,"one");
+                map.put("onlineShowAmount", listDesc.get(0));
+                map.put("onlineDesc", listDesc.get(1));
+                map.put("onlineStatus","1");
+            }
+            else if(afUserAuthStatusDo.getStatus().equals("C")){
                 List<String> listDesc=getAuthDesc(value4,"three");
                 map.put("onlineShowAmount", listDesc.get(0));
                 map.put("onlineDesc", listDesc.get(1));

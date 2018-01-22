@@ -143,7 +143,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				afUserAuthStatusDo.setStatus("C");
 				afUserAuthStatusDo.setCauseReason(jsonArray.toString());
 				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-				apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+				//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
 				return apiHandleResponse;
 			}else{
 				JSONArray jsonArray =JSON.parseArray(afUserAuthStatusFail.getCauseReason());
@@ -180,11 +180,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						afUserAuthStatusDo.setStatus("C");
 						afUserAuthStatusDo.setCauseReason(jsonArray.toString());
 						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-						apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+						//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
 						return apiHandleResponse;
 					}
 					if(judge){
-						apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+						//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
 						return apiHandleResponse;
 					}
 

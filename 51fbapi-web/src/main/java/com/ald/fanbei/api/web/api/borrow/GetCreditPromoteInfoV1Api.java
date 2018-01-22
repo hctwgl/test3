@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrow;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 	private AfIdNumberService afIdNumberService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
-
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -83,6 +85,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 //		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
+		AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene,userId);
+		userDto.setAuAmount(afUserAccountSence == null ? new BigDecimal(0) : afUserAccountSence.getAuAmount());
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){
@@ -354,6 +358,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 				data.put("riskStatus", "N");
 				data.put("basicStatus", "N");
 				data.put("title1","暂无信用额度");
+				data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
 				if (between > 0) {
 					data.put("title2", "请"+between+"天后尝试重新提交");
 				} else {
