@@ -1033,7 +1033,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);//afUserAccountService.getUserAccountByUserId(userId);
                         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
                         // 判断使用额度
-                        checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+                        BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+                        if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+                            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+                        }
 
                         orderInfo.setNper(nper);
                         BorrowRateBo bo = null;
@@ -2124,12 +2127,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         RiskVirtualProductQuotaRespBo response;
         // 菠萝觅传code，其他的传goodsName
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-//            VirtualGoodsCateogy type = VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
-//            if (type == null) {
-//                return resultMap;
-//            }
-//            virtualCode = type.getCode();
-//           resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
 
             AfShopDo shopDo= afShopDao.getShopInfoBySecType(orderInfo.getSecType());
             response = riskUtil
@@ -2150,7 +2147,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 resultMap.put(Constants.VIRTUAL_CHECK_NAME,afGoodsCategoryDo.getName());
             }
         }
-        if (response != null && response.getData() != null) {
+        if (response != null && (response.getData().getAmount() != null||response.getData().getTotalAmount() !=null)) {
             resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
             resultMap.put(Constants.VIRTUAL_RECENT_DAY,response.getData().getRecentDay());
             resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT,response.getData().getTotalAmount());
@@ -2232,7 +2229,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param orderInfo
      * @param userAccountInfo
      */
-    private BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo) {
+    @Override
+    public BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo) {
         //获取临时额度
         AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
         if (afInterimAuDo == null) {
@@ -2250,10 +2248,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
             else if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
                 BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
-                //验证单词额度
-                if(virtualAmount.compareTo(orderInfo.getActualAmount())<0){
-                    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-                }
             }
 
             BigDecimal useableAmount = BigDecimal.ZERO;
@@ -2269,16 +2263,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
             //虚拟剩余额度大于信用可用额度 则为可用额度
             leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-            if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-            }
 
             return leftAmount;
         } else {
             BigDecimal useableAmount = getUseableAmount(orderInfo,userAccountInfo,afInterimAuDo);
-            if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-            }
 
             return useableAmount;
         }

@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -464,19 +466,12 @@ public class StartCashierApi implements ApiHandle {
         //专项额度控制
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         //获取可使用额度+临时额度
-        BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-        if (afOrderService.isVirtualGoods(virtualMap)) {
+        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
+        BigDecimal leftAmount= afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+        if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
-            String virtualCode = afOrderService.getVirtualCode(virtualMap);
-            VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-            BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-            BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-            cashierTypeVo.setCategoryName(virtualGoodsCateogy.getName());
-            //每月总额度
-            cashierTypeVo.setTotalVirtualAmount(totalVirtualAmount);
+            cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
 
-            // 虚拟剩余额度大于信用可用额度 则为可用额度
-            leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
             cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
             if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
@@ -499,8 +494,8 @@ public class StartCashierApi implements ApiHandle {
             }
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
-            cashierTypeVo.setUseableAmount(useableAmount);
-            cashierTypeVo.setPayAmount(useableAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : useableAmount);
+            cashierTypeVo.setUseableAmount(leftAmount);
+            cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
         }
     }
 

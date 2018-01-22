@@ -246,7 +246,9 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo);
-	
+
+	BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo);
+
 	/**
 	 * 判断是否为虚拟商品
 	 * @param orderInfo

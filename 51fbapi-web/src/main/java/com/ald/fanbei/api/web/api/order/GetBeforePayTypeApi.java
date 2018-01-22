@@ -7,6 +7,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +47,8 @@ public class GetBeforePayTypeApi implements ApiHandle {
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,18 +64,12 @@ public class GetBeforePayTypeApi implements ApiHandle {
 		// TODO获取用户订单
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal actualAmount = orderInfo.getActualAmount();
-		BigDecimal leftAmount = BigDecimalUtil.subtract(userAccountInfo.getAuAmount(), userAccountInfo.getUsedAmount());
-
 		//是否是限额类目
-        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-		if (afOrderService.isVirtualGoods(virtualMap)) {
-			String virtualCode = afOrderService.getVirtualCode(virtualMap);
-			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-			leftAmount = goodsUseableAmount.compareTo(leftAmount) < 0 ? goodsUseableAmount : leftAmount;
-		}
+		AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
+		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		// 判断使用额度
+		BigDecimal leftAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 		
 		HashMap<String, Object> responseMap = new HashMap<String, Object>();
 		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
