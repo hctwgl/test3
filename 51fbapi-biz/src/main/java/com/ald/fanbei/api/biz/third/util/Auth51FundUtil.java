@@ -35,6 +35,59 @@ public class Auth51FundUtil extends AbstractThird {
 	@Resource
 	RiskUtil riskUtil;
 	
+	public void giveBack(String orderSn,String userId) {
+		// 响应数据,默认成功
+		String appKey = ConfigProperties.get(Constants.CONFKEY_51FUND_APPKEY);
+		String secret = ConfigProperties.get(Constants.CONFKEY_51FUND_SECRET);
+		try {
+			if (null == orderSn) {
+				throw new Exception("51公积金回调的url参数有误");
+			}
+			TreeMap<String, String> paramSortedMap = new TreeMap<>();
+	        paramSortedMap.put("appKey", appKey);
+	        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
+	        String token = (String) bizCacheUtil.getObject(Constants.AUTH_51FUND_TOKEN);
+	        paramSortedMap.put("token", token);
+	        paramSortedMap.put("orderSn", orderSn);
+	        String mapStr = AuthFundSecret.paramTreeMapToString(paramSortedMap);
+	        String newStr = mapStr + "&appSecret="+secret;
+	        String sign = AuthFundSecret.signToHexStr(AuthFundSecret.ALGORITHMS_MD5, newStr).toUpperCase();
+	        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+	        resultSortedMap.put("sign",sign);
+	        resultSortedMap.put("type","gjj");
+	        resultSortedMap.put("params",paramSortedMap);
+	        String respResult = HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getGjjData", JSON.toJSONString(resultSortedMap));
+			if (StringUtil.isBlank(respResult)) {
+				logger.error("getGjjData req success,respResult is null,orderSn=" + orderSn);
+				throw new Exception("获取用户公积金信息为null");
+			}else {
+				Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
+				if (Auth51FundRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
+					String respData = respInfo.getData();
+					//推送公积金信息给风控
+					RiskRespBo riskRespBo = riskUtil.FundNotifyRisk(respData,userId,token,orderSn);
+					if (StringUtil.isBlank(respResult)) {
+						logger.error("notify risk req success,respResult is null,orderSn=" + orderSn+"data="+respData+"userId="+userId+"orderSn="+orderSn);
+						throw new Exception("推送信息给风控，返回结果为null");
+					}else{
+						if (riskRespBo.isSuccess()) {
+							logger.info("notify risk success,resp success, orderSn="+orderSn+",riskRespInfo"+riskRespBo.getMsg());	
+						}else{
+							logger.error("notify risk success,resp fail,errorCode="+riskRespBo.getCode());
+							throw new Exception("推送信息给风控，返回失败");
+						}
+					}
+				}else {
+					//三方处理错误
+					Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
+					logger.error("getGjjData req success,resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+				}
+			}
+		} catch (Exception e) {
+			logger.error("error=" + e);
+		}
+	}
+	
 	public Auth51FundRespBo giveBack(String orderSn, String status,String userId) {
 		// 响应数据,默认成功
 		Auth51FundRespBo notifyRespBo = new Auth51FundRespBo();

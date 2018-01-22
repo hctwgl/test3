@@ -10,18 +10,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.Auth51FundRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.Auth51FundUtil;
+import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 51公积金回调接口
+ * 51公积金回调的url
  * @author wujun
  * @version 1.0.0 初始化
  * @date 2018年1月9日下午3:53:34
@@ -35,9 +37,21 @@ public class Auth51FundController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@RequestMapping(value = { "/giveBack" }, method = {RequestMethod.POST,RequestMethod.GET}, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public Auth51FundRespBo giveBack(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+	
+	@RequestMapping(value = { "/giveBack" }, method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String giveBack(@RequestParam("orderSn") String orderSn,@RequestParam("userId") String userId,HttpServletRequest request,HttpServletResponse response){
+		try {
+			auth51FundUtil.giveBack(orderSn,userId);
+        } catch (Exception e) {
+        	logger.error("51fund giveBack error", e);
+            return "FAIL";
+        }
+	    return "SUCCESS";
+	}
+	
+	
+	/*public Auth51FundRespBo giveBack(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
 		JSONObject jsonObj = JSON.parseObject(requestData);
 		String orderSn = StringUtil.null2Str(jsonObj.get("order_id"));
 		String status = StringUtil.null2Str(jsonObj.get("status"));
@@ -46,5 +60,5 @@ public class Auth51FundController {
 		Auth51FundRespBo notifyRespBo = auth51FundUtil.giveBack(orderSn, status, userId);
 		logger.info("Auth51FundController giveBac,orderSn="+orderSn+ ",status=" + status+ ",userId=" + userId+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
-	}
+	}*/
 }
