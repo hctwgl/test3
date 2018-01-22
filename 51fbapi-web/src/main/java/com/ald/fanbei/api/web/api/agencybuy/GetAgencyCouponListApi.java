@@ -76,10 +76,10 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
+		Long userId = 980186L;
 		
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
-		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"), 0);
+		BigDecimal actualAmount = new BigDecimal(1000);
+		Long goodsId = 130086L;
 		/*
 		List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
 		List<AfUserCouponDto> subjectUserCouponList  = new ArrayList<AfUserCouponDto>();

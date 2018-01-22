@@ -225,13 +225,14 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		String tag = "_FIRST_SHOPPING_";
 		String sourceType = "FIRST_SHOPPING";
 		logger.info("sentUserCoupon for new user userId=" + afOrder.toString());
-	        sentUserCoupon(afOrder.getUserId(),tag,sourceType);
+	        sentUserCouponGroup(afOrder.getUserId(),tag,sourceType);
 		return 1;
 		
 		
 	}
-	  public void sentUserCoupon(Long userId,String tag,String sourceType){
+	  public String sentUserCouponGroup(Long userId,String tag,String sourceType){
 		//给该用户送优惠券（还款券）
+	        String MsgCode = null;
 		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
 		if(couponCategory != null){
 		    	String coupons = couponCategory.getCoupons();
@@ -243,14 +244,19 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				    //赠送优惠券
 				        //Integer limitCount = couponDo.getLimitCount();
 				        //该用户是否拥有该类型优惠券
-				        
+				        //有一个优惠券不符合要求就不送    
+				    
 					Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponCource(userId,sourceType);
 					if (1 <= myCount) {
-					    continue;
+					    //continue;
+					    MsgCode = "LEAD";
+					    return MsgCode;
 					}
 					Long totalCount = couponDo.getQuota();
 					if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
-					    continue;
+					   // continue;
+					    MsgCode = "LEAD_END";
+					    return MsgCode;
 					}
 					
 					AfUserCouponDo userCoupon = new AfUserCouponDo();
@@ -278,9 +284,11 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 					couponDoT.setRid(couponDo.getRid());
 					couponDoT.setQuotaAlready(1);
 					afCouponService.updateCouponquotaAlreadyById(couponDoT);
+					MsgCode = "SUCCESS";
 			       }
 			  }
 		    }
+		return MsgCode;
 		
 	    }
 		

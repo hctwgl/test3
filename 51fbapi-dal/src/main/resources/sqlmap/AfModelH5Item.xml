@@ -154,6 +154,7 @@
 	        AND m.is_delete = 0
 	        AND i.item_type = 'GOODS_ID'
 	        AND i.item_value = #{goodsId}
+	        and i.is_delete = 0
 	</select>
 	
 	<select id="selectModelByTag" resultType="AfModelH5ItemDo">
