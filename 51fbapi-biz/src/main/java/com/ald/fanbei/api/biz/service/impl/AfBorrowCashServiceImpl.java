@@ -151,7 +151,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
           		String tag = "_FIRST_LOAN_";
           		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
           		//是否是第一次借款
-          		afUserCouponService.sentUserCoupon(afBorrowCashDo.getUserId(),tag,sourceType);
+          		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
           	    }catch(Exception e){
           	        logger.error("first borrow sentUserCoupon error", e);
           	   }
@@ -223,7 +223,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		String tag = "_FIRST_LOAN_";
 		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
 		//是否是第一次借款
-		afUserCouponService.sentUserCoupon(afBorrowCashDo.getUserId(),tag,sourceType);
+		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
 	    }catch(Exception e){
 	        logger.error("first borrow sentUserCoupon error", e);
 	   }

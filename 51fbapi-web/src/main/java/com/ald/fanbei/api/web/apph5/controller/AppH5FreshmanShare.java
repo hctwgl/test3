@@ -179,7 +179,6 @@ public class AppH5FreshmanShare extends BaseController{
 			context = doWebCheck(request, false);
 			AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
-		        returnData.put("status", "ALERT");
 
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -204,10 +203,10 @@ public class AppH5FreshmanShare extends BaseController{
 			      returnData.put("status", H5OpenNativeType.DoPromoteBasic.getCode());
 			      return H5CommonResponse.getNewInstance(false, "请完成基础认证",notifyUrl, returnData).toString();
 			  }
-			  
 			  //1.若是老用户不可领取
 			  int count = afOrderService.getOldUserOrderAmount(afUserDo.getRid());
 			  if(count >0){
+			      returnData.put("status", FanbeiExceptionCode.NO_NEW_USER.getCode());
 			      return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.NO_NEW_USER.getDesc(),
 					"", returnData).toString();
 			  }
@@ -216,12 +215,14 @@ public class AppH5FreshmanShare extends BaseController{
 		        int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afUserDo.getRid(), sourceType);
 		        //2.该用户是否拥有该类型优惠券
 		        if(countNum >0){
+		          returnData.put("status",FanbeiExceptionCode.USER_GET_TO_COUPON_CENTER.getCode());
 		          return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_GET_TO_COUPON_CENTER.getDesc(),
 						"", returnData).toString();
 			}
 		       
 			String msg =  afUserCouponService.sentUserCouponGroup(afUserDo.getRid(), tag,sourceType);
 			if("LEAD_END".equals(msg)){
+			    returnData.put("status",FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getCode());
 			    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(),
 					"", returnData).toString();
 			}
