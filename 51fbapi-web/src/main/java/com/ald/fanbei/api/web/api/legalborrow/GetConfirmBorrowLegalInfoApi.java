@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -70,6 +71,8 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -113,8 +116,8 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 		if (isPromote == true || StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 			// 可以借钱
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
-			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+			String type = String.valueOf(numberWordFormat.borrowTime(ObjectUtils.toString(requestDataVo.getParams().get("type"))));
+			if (StringUtils.equals(amountStr, "") || !numberWordFormat.isNumeric(type)) {
 				// 推送处理
 				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);

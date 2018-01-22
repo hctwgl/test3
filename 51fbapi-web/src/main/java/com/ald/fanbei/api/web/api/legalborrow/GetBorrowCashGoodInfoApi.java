@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.ObjectUtils;
@@ -68,6 +69,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
 
+	@Resource
+	NumberWordFormat numberWordFormat;
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoApi.class);
 
 	@Override
@@ -86,7 +89,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			throw new FanbeiException("borrowType can't be empty.");
 		}
 		BigDecimal borrowDay = BigDecimal.ZERO;
-		borrowDay = BigDecimal.valueOf(Integer.parseInt(borrowType));
+		borrowDay = BigDecimal.valueOf(numberWordFormat.borrowTime(borrowType));
 		List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -127,7 +130,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		double newInterestRate = 0;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
-			Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
+			Map<String, Object> rateInfo = getRateInfo(borrowRate, String.valueOf(numberWordFormat.borrowTime(borrowType)), "borrow");
 			newServiceRate = (double) rateInfo.get("serviceRate");
 			newInterestRate = (double) rateInfo.get("interestRate");
 			double totalRate = (double) rateInfo.get("totalRate");
@@ -165,7 +168,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
 
 				String borrowRate = rateInfoDo.getValue3();
-				Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "consume");
+				Map<String, Object> rateInfo = getRateInfo(borrowRate, String.valueOf(numberWordFormat.borrowTime(borrowType)), "consume");
 				double totalRate = (double) rateInfo.get("totalRate");
 				double goodsServiceRate = (double) rateInfo.get("serviceRate");
 				double goodsInterestRate = (double) rateInfo.get("interestRate");

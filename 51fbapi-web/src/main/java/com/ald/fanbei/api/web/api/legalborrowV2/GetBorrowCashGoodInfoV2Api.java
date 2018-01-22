@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +68,8 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoV2Api.class);
 
@@ -79,7 +82,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
-		String borrowType = param.getBorrowType();
+		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
 		BigDecimal borrowDay = new BigDecimal(borrowType);
 
 		BigDecimal oriRate = BigDecimal.ZERO;

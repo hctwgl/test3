@@ -18,7 +18,6 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	private String pwd;
 	@NotNull
-	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	private String type;
 	@NotNull
 	private BigDecimal latitude;

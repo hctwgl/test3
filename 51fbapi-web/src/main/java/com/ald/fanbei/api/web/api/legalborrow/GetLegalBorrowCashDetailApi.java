@@ -108,7 +108,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (afBorrowCashDo.getGmtPlanRepayment() == null) {
 //			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-			Integer day = borrowTime(afBorrowCashDo.getType());
+			Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 			Date createEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtCreate());
 			Date repaymentDay = DateUtil.addDays(createEnd, day - 1);
 			afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -159,7 +159,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 
 		}
 
-		data.put("type", borrowTime(afBorrowCashDo.getType()));
+		data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
 		data.put("serviceAmount", afBorrowCashDo.getPoundage());
@@ -206,34 +206,6 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 
 	}
 
-	/**
-	 * 借款时间
-	 *
-	 * @param afBorrowCashDo
-	 * @return
-	 */
-	public int borrowTime(final String type) {
-		Integer day ;
-		if(isNumeric(type)){
-			day = Integer.parseInt(type);
-		}else{
-			day = numberWordFormat.parse(type.toLowerCase());
-		}
-		return day;
-	}
 
-	/**
-	 * 是否是数字字符串
-	 * @param type
-	 * @return
-	 */
-	private boolean isNumeric(String type) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(type);
-		if( !isNum.matches() ){
-			return false;
-		}
-		return true;
-	}
 
 }
