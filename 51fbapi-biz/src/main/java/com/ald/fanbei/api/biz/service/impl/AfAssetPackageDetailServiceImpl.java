@@ -540,7 +540,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @return
 	 */
 	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo){
-		Long timeLimit = NumberUtil.objToLongDefault(afViewAssetBorrowCashDo.getType(), 10);
+		Long timeLimit = NumberUtil.objToLongDefault(afViewAssetBorrowCashDo.getType(), null);
 		AfAssetPackageRepaymentType repayTypeEnum = AfAssetPackageRepaymentType.findEnumByCode(afAssetPackageDo.getRepaymentMethod());
 		//借款人平台逾期信息
 		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afViewAssetBorrowCashDo.getUserId());
