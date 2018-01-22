@@ -469,7 +469,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 //		int posX = 260;
 //		int posY = 390;
 		int posType = 1;
-		int width = 60;
+		int width = 30;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
 //		key = "证号码";

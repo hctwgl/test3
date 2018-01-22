@@ -645,10 +645,10 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
         try {
             List<AfUserSealDo> list  = (List<AfUserSealDo>) map.get("userSealDoList");
             FileDigestSignResult fileDigestSignResult = new FileDigestSignResult();
-            StringBuffer userSealIds = new StringBuffer();
+//            StringBuffer userSealIds = new StringBuffer();
             for (AfUserSealDo userSealDo: list) {
-                userSealIds.append(userSealDo.getId()+",");
-                map.put("key",userSealDo.getEdspayUserCardId());
+//                userSealIds.append(userSealDo.getId()+",");
+                map.put("key",userSealDo.getUserName());
                 map.put("secondSeal", userSealDo.getUserSeal());
                 map.put("secondAccoundId", userSealDo.getUserAccountId());
 //                map.put("edspayUserId", userSealDo.getId());
@@ -662,7 +662,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 map.put("secondStream",fileDigestSignResult.getStream());
                 map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
             }
-            map.put("userSealIds",userSealIds);
+//            map.put("userSealIds",userSealIds);
 
             fileDigestSignResult.getStream();
 //            FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);//出借人盖章
