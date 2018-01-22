@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,10 +17,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.Auth51FundRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.Auth51FundUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.common.enums.SupplyCertifyStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -34,15 +41,22 @@ import com.alibaba.fastjson.JSONObject;
 public class Auth51FundController {
 	@Resource
 	Auth51FundUtil auth51FundUtil;
+	@Resource
+	AfUserAuthService afUserAuthService;
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	
-	@RequestMapping(value = { "/giveBack" }, method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = { "/giveBack" }, method = RequestMethod.GET)
     @ResponseBody
     public String giveBack(@RequestParam("orderSn") String orderSn,@RequestParam("userId") String userId,HttpServletRequest request,HttpServletResponse response){
 		try {
 			auth51FundUtil.giveBack(orderSn,userId);
+			//保存认证的状态为认证中
+            AfUserAuthDo authDo = new AfUserAuthDo();
+            authDo.setUserId(NumberUtil.objToLongDefault(userId, 0l));
+            authDo.setGmtFund(new Date(System.currentTimeMillis()));
+            authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
+            afUserAuthService.updateUserAuth(authDo);
         } catch (Exception e) {
         	logger.error("51fund giveBack error", e);
             return "FAIL";
