@@ -243,6 +243,9 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
+		if(maxAmount.compareTo(BigDecimal.ZERO)==0){
+			maxAmount= new BigDecimal(strMaxAmount);
+		}
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
 		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
