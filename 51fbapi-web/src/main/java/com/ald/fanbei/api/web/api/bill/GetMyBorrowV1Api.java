@@ -163,7 +163,9 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("onlineShowAmount", listDesc2.get(0));
                 map.put("onlineDesc", listDesc2.get(1));
                 map.put("onlineStatus","1");
-            } else{
+            } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
                 //认证人脸没有认证银行卡 状态为5
