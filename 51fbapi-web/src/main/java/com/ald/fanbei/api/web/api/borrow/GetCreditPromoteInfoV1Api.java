@@ -354,6 +354,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 				data.put("riskStatus", "N");
 				data.put("basicStatus", "N");
 				data.put("title1","暂无信用额度");
+				data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
 				if (between > 0) {
 					data.put("title2", "请"+between+"天后尝试重新提交");
 				} else {
