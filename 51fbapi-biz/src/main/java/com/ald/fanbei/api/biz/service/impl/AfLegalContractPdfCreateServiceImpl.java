@@ -631,7 +631,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             List<AfUserSealDo> list  = (List<AfUserSealDo>) map.get("userSealDoList");
             FileDigestSignResult fileDigestSignResult = new FileDigestSignResult();
             for (AfUserSealDo userSealDo: list) {
-                map.put("key","萧**");
+                map.put("key",userSealDo.getUserName());
                 map.put("secondSeal", userSealDo.getUserSeal());
                 map.put("secondAccoundId", userSealDo.getUserAccountId());
 //                map.put("edspayUserId", userSealDo.getId());
@@ -641,7 +641,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     logger.error("乙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg());
                     return null;
                 }
-                map.put("key","于**");
                 map.put("secondStream",fileDigestSignResult.getStream());
                 map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
             }
