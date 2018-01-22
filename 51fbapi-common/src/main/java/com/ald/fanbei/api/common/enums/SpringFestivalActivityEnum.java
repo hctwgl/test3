@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.common.enums;
 
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion.Static;
+
 
 /**  
  * @Title: SpringFestivalActivityEnum.java

@@ -27,7 +27,6 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
