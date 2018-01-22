@@ -94,6 +94,7 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 			map.put("billList", billList);
 			map.put("orderDetail", queryOrderDo);
 			map.put("amount", queryBorrowDo.getAmount());
+			map.put("borrowId", queryBorrowDo.getRid());
 			// 手续费
 			BigDecimal interest = afBorrowBillService.getInterestByBorrowId(queryBorrowDo.getRid());
 			map.put("interest", interest);

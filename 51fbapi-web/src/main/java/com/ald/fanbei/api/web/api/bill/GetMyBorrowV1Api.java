@@ -112,21 +112,21 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("floatType", 0);//未开启悬浮窗
             }
             //加入线上额度(即购物额度) 线下 add by caowu 2018/1/10 15:25
-            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
-            AfUserAccountSenceDo afUserAccountSenceDo1 = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
+            AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
+            AfUserAccountSenceDo afUserAccountSenceTrain = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
             // 线上,线下信用额度
             BigDecimal onlineAuAmount = BigDecimal.ZERO;
             BigDecimal trainAuAmount = BigDecimal.ZERO;
             // 线上,线下可用额度
             BigDecimal onlineAmount = BigDecimal.ZERO;
             BigDecimal trainAmount = BigDecimal.ZERO;
-            if(afUserAccountSenceDo!=null){
-                onlineAuAmount=afUserAccountSenceDo.getAuAmount();
-                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo.getUsedAmount());
+            if(afUserAccountSenceOnline!=null){
+                onlineAuAmount=afUserAccountSenceOnline.getAuAmount();
+                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceOnline.getUsedAmount());
             }
-            if(afUserAccountSenceDo!=null){
-                trainAuAmount=afUserAccountSenceDo1.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo1.getUsedAmount());
+            if(afUserAccountSenceTrain!=null){
+                trainAuAmount=afUserAccountSenceTrain.getAuAmount();
+                trainAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceTrain.getUsedAmount());
             }
             map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
             map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
@@ -163,7 +163,9 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("onlineShowAmount", listDesc2.get(0));
                 map.put("onlineDesc", listDesc2.get(1));
                 map.put("onlineStatus","1");
-            } else{
+            } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
                 //认证人脸没有认证银行卡 状态为5
@@ -184,6 +186,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
 
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","C");
+           // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
+
             if(afUserAuthStatusDo!=null){
                 List<String> listDesc=getAuthDesc(value4,"three");
                 map.put("onlineShowAmount", listDesc.get(0));

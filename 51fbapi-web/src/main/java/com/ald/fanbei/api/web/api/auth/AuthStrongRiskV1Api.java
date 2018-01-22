@@ -103,7 +103,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		}
 		boolean numberOfAuth = false;//是否是新手引导过来
 		String [] sceneArray =scene.split(",");
-		String riskScene ="";
+		String riskScene ="20";
 		if(sceneArray.length>1){
 			numberOfAuth=true;
 		}
