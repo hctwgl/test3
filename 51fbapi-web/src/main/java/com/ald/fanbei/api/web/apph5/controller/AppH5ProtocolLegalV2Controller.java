@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -65,6 +66,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	@Resource
 	AfUserSealDao afUserSealDao;
+	@Resource
+	AfContractPdfEdspaySealDao afContractPdfEdspaySealDao;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
 	@Resource
@@ -253,9 +256,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
 		if (afContractPdfDo != null && afContractPdfDo.getUserSealId() != null) {
 			AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
+			List<AfContractPdfEdspaySealDto> edspaySealDoList = afContractPdfEdspaySealDao.getByPDFId(afContractPdfDo.getId());
 			model.put("edspayUserCardId", afUserSealDo.getEdspayUserCardId());
 			model.put("edspayUserName", afUserSealDo.getUserName());
 			model.put("secondSeal", afUserSealDo.getUserSeal());
+			model.put("edspaySealDoList", edspaySealDoList);
 		}
 	}
 

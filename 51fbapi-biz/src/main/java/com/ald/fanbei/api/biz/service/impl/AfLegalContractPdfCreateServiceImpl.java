@@ -14,10 +14,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
-import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
-import com.ald.fanbei.api.dal.dao.AfUserSealDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -65,6 +62,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
     OssFileUploadService ossFileUploadService;
     @Resource
     AfContractPdfDao afContractPdfDao;
+    @Resource
+    AfContractPdfEdspaySealDao afContractPdfEdspaySealDao;
     @Resource
     AfBorrowBillService afBorrowBillService;
     @Resource
@@ -186,11 +185,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             AfUserDo investorUserDo = new AfUserDo();
             AfUserAccountDo investorAccountDo = new AfUserAccountDo();
             List<AfUserSealDo> userSealDoList = new ArrayList<>();
+            List<AfContractPdfEdspaySealDo> edspaySealDoList = new ArrayList<>();
             if (investorList.size() <= 0){
                 logger.error("创建出借人印章失败，出借人list为空 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
             }
-            map.put("investorList",investorList);
+
             for (EdspayInvestorInfoBo infoBo : investorList){
                 investorUserDo.setMobile(infoBo.getInvestorPhone());
     //          investorUserDo.setRid((Long)map.get("investorCardId"));
@@ -202,9 +202,14 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     logger.error("创建e都市钱包用户印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                     throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                 }
-                userSealDoList.add(investorAfUserSealDo);
+                userSealDoList.add(investorAfUserSealDo);//印章列表
+                AfContractPdfEdspaySealDo afContractPdfEdspaySealDo = new AfContractPdfEdspaySealDo();
+                afContractPdfEdspaySealDo.setInvestorAmount(infoBo.getAmount());
+                afContractPdfEdspaySealDo.setUserSealId(investorAfUserSealDo.getId());
+                edspaySealDoList.add(afContractPdfEdspaySealDo);//e都市钱包印章和协议关联表
             }
             map.put("userSealDoList",userSealDoList);
+            map.put("edspaySealDoList",edspaySealDoList);
 //            map.put("secondSeal", investorAfUserSealDo.getUserSeal());
 //            map.put("secondAccoundId", investorAfUserSealDo.getUserAccountId());
 //            map.put("edspayUserId", investorAfUserSealDo.getId());
@@ -658,6 +663,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
             }
             map.put("userSealIds",userSealIds);
+
             fileDigestSignResult.getStream();
 //            FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);//出借人盖章
             /*if (fileDigestSignResult.isErrShow()) {
@@ -750,6 +756,11 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     afContractPdfDo.setTypeId((Long) map.get("renewalId"));
                 }
                 afContractPdfDao.insert(afContractPdfDo);
+                List<AfContractPdfEdspaySealDo> edspaySealDoList = (List<AfContractPdfEdspaySealDo>) map.get("edspaySealDoList");
+                for (AfContractPdfEdspaySealDo edspaySealDo:edspaySealDoList) {
+                    edspaySealDo.setPdfId(afContractPdfDo.getId());
+                }
+                afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
                 return ossUploadResult.getUrl();
             }
         } catch (Exception e) {
