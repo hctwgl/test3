@@ -192,19 +192,20 @@ public class AppH5FreshmanShare extends BaseController{
 			  if("N".equals(afUserAuthDo.getBankcardStatus())){
 			      String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 					+ H5OpenNativeType.DoScanId.getCode();
-			      return H5CommonResponse.getNewInstance(false,"请完成信用认证",notifyUrl, returnData).toString();
+			      returnData.put("status", H5OpenNativeType.DoScanId.getCode());
+			      return H5CommonResponse.getNewInstance(false,"请完成身份证认证",notifyUrl, returnData).toString();
 	        	   }
 			  if("N".equals(afUserAuthDo.getRiskStatus())){
 			      String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 					+ H5OpenNativeType.DoPromoteBasic.getCode();
-			      return H5CommonResponse.getNewInstance(false, "请完成信用认证",notifyUrl, returnData).toString();
+			      returnData.put("status", H5OpenNativeType.DoPromoteBasic.getCode());
+			      return H5CommonResponse.getNewInstance(false, "请完成基础认证",notifyUrl, returnData).toString();
 			  }
 			  //1.若是老用户不可领取
-			  int count = afOrderService.getCountByUserId(afUserDo.getRid());
+			  int count = afOrderService.getOldUserOrderAmount(afUserDo.getRid());
 			  if(count >0){
-			      return H5CommonResponse.getNewInstance(false, "您已经不是新用户了哦",
+			      return H5CommonResponse.getNewInstance(false, "您已经不是新用户了呦",
 					"", returnData).toString();
-			      
 			  }
 			String tag = "_FIRST_SINGLE_";
 			String sourceType = "FIRST_SINGLE";
@@ -212,7 +213,7 @@ public class AppH5FreshmanShare extends BaseController{
 		        //2.该用户是否拥有该类型优惠券
 		        if(countNum >0){
 		          return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_GET_TO_COUPON_CENTER.getDesc(),
-						"", returnData).toString();
+						"", null).toString();
 			}
 			afUserCouponService.sentUserCoupon(afUserDo.getRid(), tag,sourceType);
 			return H5CommonResponse.getNewInstance(true, "领取成功，可前往我的优惠券中查看", "", null).toString();
