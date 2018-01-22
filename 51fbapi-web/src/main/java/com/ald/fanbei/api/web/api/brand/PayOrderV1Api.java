@@ -172,10 +172,12 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
         //-------------mqp doubleEggs-------------
-        doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
+        // 支付逻辑不验证秒杀库存
+        //doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
 
         // 双十二秒杀新增逻辑+++++++++++++>
-        double12GoodsCheck(userId, orderInfo.getGoodsId());
+        // 支付逻辑不验证秒杀库存
+        //double12GoodsCheck(userId, orderInfo.getGoodsId());
         // +++++++++++++++++++++++++<
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
