@@ -26,6 +26,7 @@ import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.intercept.ValidationInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
@@ -46,6 +47,9 @@ public class FanbeiH5Controller extends H5BaseController {
 
 	@Resource
 	AfUserService afUserService;
+	
+	@Resource
+	ValidationInterceptor validationInterceptor;
 	
     @RequestMapping(value ="/h5/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -112,6 +116,7 @@ public class FanbeiH5Controller extends H5BaseController {
 
 	@Override
 	public BaseResponse doProcess(Context context) {
+		validationInterceptor.intercept(context);
         H5Handle methodHandel = h5HandleFactory.getHandle(context.getMethod());
       
         H5HandleResponse handelResult;
