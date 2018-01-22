@@ -207,4 +207,13 @@ public interface AfBorrowCashService {
 	AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId);
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
+	
+	
+	/**
+	 * 计算剩余应还的金额
+	 * @param cashDo
+	 * @param orderCashDo
+	 * @return
+	 */
+	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo);
 }

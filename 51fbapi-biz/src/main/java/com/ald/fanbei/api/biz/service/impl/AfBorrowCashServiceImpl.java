@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -379,5 +380,18 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo) {
 		return afBorrowCashDao.getBorrowCashInfoByBorrowNoV1(borrowNo);
+	}
+	
+	@Override
+	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo) {
+		BigDecimal restAmount = BigDecimal.ZERO;
+		if(cashDo != null) {
+			restAmount = BigDecimalUtil.add(restAmount, cashDo.getAmount(),
+					cashDo.getOverdueAmount(), cashDo.getSumOverdue(), 
+					cashDo.getRateAmount(),cashDo.getSumRate(),
+					cashDo.getPoundage(),cashDo.getSumRenewalPoundage())
+					.subtract(cashDo.getRepayAmount());
+		}
+		return restAmount;
 	}
 }

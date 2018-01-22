@@ -222,4 +222,6 @@ public interface AfBorrowCashDao {
 	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
+	
+	AfBorrowCashDo fetchLastByUserId(@Param("userId")Long userId);
 }

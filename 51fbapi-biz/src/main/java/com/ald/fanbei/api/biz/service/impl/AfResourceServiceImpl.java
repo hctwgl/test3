@@ -1,26 +1,28 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
@@ -667,6 +669,69 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
 	public AfResourceDo getConfigByTypesAndValue(String type, String value) {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
+	}
+	
+	public Map<String, Object> getBorrowCfgInfo() {
+		List<AfResourceDo> borrowHomeConfigList = this.selectBorrowHomeConfigByAllTypes();
+		Map<String, Object> data = new HashMap<String, Object>();
+
+		for (AfResourceDo afResourceDo : borrowHomeConfigList) {
+			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
+				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
+
+					data.put("maxAmount", afResourceDo.getValue());
+					data.put("minAmount", afResourceDo.getValue1());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+					data.put("bankDouble", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashPoundage.getCode())) {
+					data.put("poundage", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+					data.put("overduePoundage", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
+					data.put("bankRate", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
+					data.put("supuerSwitch", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashLenderForCash.getCode())) {
+					data.put("lender", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashTotalAmount.getCode())) {
+					data.put("amountPerDay", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashShowNum.getCode())) {
+					data.put("nums", afResourceDo.getValue());
+				}
+			} else {
+				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
+					data.put("borrowCashDay", afResourceDo.getValue());
+				}
+			}
+		}
+		return data;
+	}
+
+	public List<Object> extractBannerCfgInfo(List<AfResourceDo> bannerResclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		for (AfResourceDo afResourceDo : bannerResclist) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			data.put("type", afResourceDo.getValue1());
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+
+			bannerList.add(data);
+		}
+		return bannerList;
 	}
 
 }

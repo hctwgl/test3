@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
@@ -229,4 +230,10 @@ public interface AfResourceService {
 	AfResourceDo getWechatConfig();
 
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
+	
+	/**
+	 * 获取借钱相关的所有配置信息
+	 * @return
+	 */
+	Map<String, Object> getBorrowCfgInfo();
 }
