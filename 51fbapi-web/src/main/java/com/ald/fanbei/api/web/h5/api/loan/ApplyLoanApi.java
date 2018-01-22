@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.h5.api.legalborrowV2;
+package com.ald.fanbei.api.web.h5.api.loan;
 
 import javax.annotation.Resource;
 
