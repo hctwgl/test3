@@ -2502,7 +2502,7 @@ public class RiskUtil extends AbstractThird {
         String temp = String.valueOf(System.currentTimeMillis());
         reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/operator.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/processData.htm", reqBo);
         logThird(reqResult, "FundNotifyRisk", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);

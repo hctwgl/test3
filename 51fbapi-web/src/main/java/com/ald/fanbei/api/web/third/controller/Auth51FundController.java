@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.io.IOException;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -48,7 +49,7 @@ public class Auth51FundController {
 	
 	@RequestMapping(value = { "/giveBack" }, method = RequestMethod.GET)
     @ResponseBody
-    public String giveBack(@RequestParam("orderSn") String orderSn,@RequestParam("userId") String userId,HttpServletRequest request,HttpServletResponse response){
+    public String giveBack(@RequestParam("orderSn") String orderSn,@RequestParam("userId") String userId,HttpServletRequest request,HttpServletResponse response) throws IOException{
 		try {
 			auth51FundUtil.giveBack(orderSn,userId);
 			//保存认证的状态为认证中
@@ -59,9 +60,9 @@ public class Auth51FundController {
             afUserAuthService.updateUserAuth(authDo);
         } catch (Exception e) {
         	logger.error("51fund giveBack error", e);
-            return "FAIL";
+        	return "FAIL";
         }
-	    return "SUCCESS";
+		return "SUCCESS";
 	}
 	
 	
