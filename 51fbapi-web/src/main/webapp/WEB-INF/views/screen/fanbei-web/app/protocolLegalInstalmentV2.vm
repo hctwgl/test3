@@ -54,9 +54,9 @@
         <li><i>借款本金</i><i>#if($!{amountLower})￥$!{amountLower}#end</i></li>
         <li><i>大写金额</i><i>#if($!{amountCapital})人民币$!{amountCapital}#end</i></li>
         <li><i>借款利率（年化）</i><i>#if($!{interest}){{changeRate($!{interest})}}#end</i></li>
-        <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
+        <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>等本等息</i></li>
-        <li><i>还款日</i><i>$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
+        <li><i>还款日</i><i>$dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
     </ul><br>
     <span>还款计划：</span><br>
@@ -177,8 +177,10 @@
     <table cellspacing="1">
         <tr><td>姓名</td><td>身份证号码</td><td>出借金额</td></tr>
         <tr>
-            <td>$!{edspayUserName}</td><td>$!{edspayUserCardId}</td>
-            <td>#if($!{edspayUserCardId})$!{amountLower}#end</td>
+            #foreach($item in $!{edspaySealDoList})
+                <td>$!{item.userName}</td><td>$!{item.edspayUserCardId}</td>
+                <td>#if($!{item.edspayUserCardId})$!{item.amount}#end</td>
+            #end
         </tr>
     </table>
     <br>
