@@ -116,12 +116,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 		model.put("interest", BigDecimal.valueOf(Double.parseDouble(consumeDo.getValue3())));
 //		getResourceRate(model, type, afResourceDo, "instalment");
-		Integer repayDay = null;
-		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
-		if(afUserOutDayDo !=null) {
-			repayDay = afUserOutDayDo.getPayDay();
-		}
-		model.put("repayDay", repayDay);
+
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
@@ -150,6 +145,15 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					borrowDo.setAmount(bill.getPrincipleAmount());
 					repayPlan.add(borrowDo);
 				}
+				Date repayDay = null;
+				if (afBorrowBillDos.size() > 0){
+					AfBorrowBillDo billDo = afBorrowBillDos.get(afBorrowBillDos.size()-1);
+					AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
+					if(afUserOutDayDo !=null) {
+						repayDay = billDo.getGmtPayTime();
+					}
+				}
+				model.put("repayDay", repayDay);
 				/*BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
 				for (int i = 1; i <= nper; i++) {
 					AfBorrowDo borrowDo = new AfBorrowDo();
