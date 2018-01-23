@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -61,6 +62,7 @@ import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.AfPopupsDo;
@@ -74,8 +76,10 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -1131,6 +1135,59 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 		}
 		return "";
+	}
+	
+	
+	/**
+	 * 
+	* @Title: isLogin
+	* @author chen
+	* @date 2018年1月22日 下午5:43:05
+	* @Description: 是否登录
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/isLogin", method = RequestMethod.POST)
+	public String initTigerMachine(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
+		String result = "";
+
+		try {
+			context = doWebCheck(request, true);
+//			Long userId = convertUserNameToUserId(context.getUserName());
+			result = H5CommonResponse.getNewInstance(true, "已登录", "", data).toString();
+
+		} catch (FanbeiException e) {
+		    if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)){
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				
+			}
+		} 
+		
+		catch (Exception e) {
+			logger.error("/fanbei-web/isLogin error = {}", e.getStackTrace());
+			return H5CommonResponse.getNewInstance(false, "获取登录信息失败", null, "").toString();
+		}
+		return result;
+	}
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+
+		}
+		return userId;
 	}
 
 	/*
