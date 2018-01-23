@@ -148,6 +148,7 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/resource/getConfigurableNumDay</value>
 				<value>/legalborrow/getBorrowCashGoodInfo</value>
 				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 				<value>/legalborrow/getCashPageType</value>
@@ -418,6 +419,7 @@
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
+				<entry key="/resource/getConfigurableNumDay" value-ref="getConfigurableNumDayApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />

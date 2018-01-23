@@ -1010,7 +1010,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
                                 orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
                                 orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-
+                        borrow.setVersion(1);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String borrowTime = sdf.format(borrow.getGmtCreate());
                         // 最后调用风控控制
@@ -1086,7 +1086,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
                                 leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
                                 orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-
+                        borrow.setVersion(1);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String borrowTime = sdf.format(borrow.getGmtCreate());
                         String codeForSecond = null;
@@ -1776,8 +1776,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						// 更新账户金额
 						BigDecimal usedAmount = calculateUsedAmount(borrowInfo);
-						//减少线上使用额度
-						afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),accountInfo.getUserId(), usedAmount.multiply(new BigDecimal(-1)));
+                        //减少线上使用额度(优先还临时额度)
+                        updateUsedAmount(accountInfo.getUserId(),usedAmount,orderId);
 						// 增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 								UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
@@ -1866,8 +1866,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						// 更新账户金额
 						BigDecimal thisTimeUsedAmount = calculateUsedAmount(afBorrowDo);
-						//减少线上使用额度
-						afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),afUserAccountDo.getUserId(), thisTimeUsedAmount.multiply(new BigDecimal(-1)));
+						//减少线上使用额度(优先还临时额度)
+						updateUsedAmount(afUserAccountDo.getUserId(),thisTimeUsedAmount,orderId);
 						// 增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 								UserAccountLogType.CP_REFUND, afBorrowDo.getAmount(), userId, afBorrowDo.getRid()));
@@ -1901,7 +1901,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "组合支付退款生成新账单" + backAmount.abs(),
 									refundSource, StringUtils.EMPTY));
 							// 修改用户账户信息
-							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),afUserAccountDo.getUserId(), backAmount);
+							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),afUserAccountDo.getUserId(), backAmount.abs());
 
                                 afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(),
                                         afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(),
@@ -1972,6 +1972,43 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     refundNo);
         }
         return result;
+    }
+
+    private void updateUsedAmount(Long userId, BigDecimal onlineAmount,Long orderId){
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(userId);
+        if (afInterimAuDo == null) {
+            afInterimAuDo = new AfInterimAuDo();
+            afInterimAuDo.setInterimAmount(new BigDecimal(0));
+            afInterimAuDo.setInterimUsed(new BigDecimal(0));
+        }
+        //判断临时额度是否使用
+        if (afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1) {
+            //还款金额是否大于使用的临时额度
+            BigDecimal backInterim = BigDecimal.ZERO;
+            if (afInterimAuDo.getInterimUsed().compareTo(onlineAmount) >= 0) {
+                //还临时额度
+                backInterim = onlineAmount;
+                afInterimAuDao.updateInterimUsed(userId, backInterim.multiply(new BigDecimal(-1)));
+            } else {
+                //先还临时额度再还使用额度
+                backInterim = afInterimAuDo.getInterimUsed();
+                afInterimAuDao.updateInterimUsed(userId, backInterim.multiply(new BigDecimal(-1)));
+                //减少线上使用额度
+                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(), userId, onlineAmount.subtract(backInterim).multiply(new BigDecimal(-1)));
+            }
+            //增加临时额度使用记录
+            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+            afInterimDetailDo.setAmount(backInterim);
+            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().subtract(backInterim));
+            afInterimDetailDo.setType(3);
+            afInterimDetailDo.setOrderId(orderId);
+            afInterimDetailDo.setUserId(userId);
+            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+        } else {
+            //减少线上使用额度
+            afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),userId, onlineAmount.multiply(new BigDecimal(-1)));
+        }
     }
 
     /**

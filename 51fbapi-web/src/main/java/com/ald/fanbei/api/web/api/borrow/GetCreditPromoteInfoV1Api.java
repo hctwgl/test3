@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,10 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -85,8 +82,10 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 //		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
-		AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene,userId);
-		userDto.setAuAmount(afUserAccountSence == null ? new BigDecimal(0) : afUserAccountSence.getAuAmount());
+		if(!scene.equals(UserAccountSceneType.CASH.getCode())){
+			AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene,userId);
+			userDto.setAuAmount(afUserAccountSence == null ? new BigDecimal(0) : afUserAccountSence.getAuAmount());
+		}
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){

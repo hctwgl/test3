@@ -136,7 +136,7 @@
 			gmt_create BETWEEN #{gmtCreateStart} AND #{gmtCreateEnd}
     </select>
     
-    <select id="getSumSevenAmount" resultType="java.math.BigDecimal">
+    <select id="getSumMinAmount" resultType="java.math.BigDecimal">
     	SELECT
 			IFNULL(SUM(amount),0)
 		FROM
@@ -144,10 +144,10 @@
 		WHERE
 			gmt_create BETWEEN #{gmtCreateStart} AND #{gmtCreateEnd}
 		AND
-			type='SEVEN'
+			type= #{minBorrowTime}
     </select>
     
-    <select id="getSumFourteenAmount" resultType="java.math.BigDecimal">
+    <select id="getSumMaxAmount" resultType="java.math.BigDecimal">
     	SELECT
 			IFNULL(SUM(amount),0)
 		FROM
@@ -155,7 +155,7 @@
 		WHERE
 			gmt_create BETWEEN #{gmtCreateStart} AND #{gmtCreateEnd}
 		AND
-			type='FOURTEEN'
+			type= #{maxBorrowTime}
     </select>
     
     <select id="getByQueryCondition" resultType="com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery">
