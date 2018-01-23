@@ -147,14 +147,17 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			model.put("gmtEnd", DateUtil.addMonths(date, nper));
 			nper = afBorrowDo.getNper();
 			List repayPlan = new ArrayList();
-			if (nper != null) {
+			if (nper != null && nper != 0) {
 				List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
+				int num = 1;
 				for (AfBorrowBillDo bill:afBorrowBillDos) {
 					AfBorrowDo borrowDo = new AfBorrowDo();
 					borrowDo.setGmtCreate(bill.getGmtPayTime());
 					borrowDo.setNperAmount(bill.getInterestAmount());
 					borrowDo.setAmount(bill.getPrincipleAmount());
+					borrowDo.setNper(num);
 					repayPlan.add(borrowDo);
+					num++;
 				}
 				/*BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
 				for (int i = 1; i <= nper; i++) {
