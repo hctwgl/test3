@@ -1010,7 +1010,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
                                 orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
                                 orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-
+                        borrow.setVersion(1);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String borrowTime = sdf.format(borrow.getGmtCreate());
                         // 最后调用风控控制
@@ -1086,7 +1086,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
                                 leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
                                 orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-
+                        borrow.setVersion(1);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String borrowTime = sdf.format(borrow.getGmtCreate());
                         String codeForSecond = null;
