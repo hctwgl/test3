@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author Jiang Rongbo
  * @version 1.0.0 初始化
- * @date 2018-01-23 13:41:23
+ * @date 2018-01-23 13:50:41
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfLoanPeriodsDo extends AbstractSerial {
@@ -72,7 +72,7 @@ import java.math.BigDecimal;
     private String remark;
 
     /**
-     * 是否逾期，Y表示逾期，N表示未逾期
+     * 是否逾期，Y表示逾期，N表示未逾期，还清后也不重置
      */
     private String overdueStatus;
 
@@ -82,17 +82,17 @@ import java.math.BigDecimal;
     private Integer overdueDays;
 
     /**
-     * 利息费
+     * 未还利息费
      */
     private BigDecimal interestFee;
 
     /**
-     * 手续费
+     * 未还手续费
      */
     private BigDecimal serviceFee;
 
     /**
-     * 逾期费用
+     * 未还逾期费用
      */
     private BigDecimal overdueAmount;
 
@@ -105,21 +105,6 @@ import java.math.BigDecimal;
      * 提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      */
     private String preRepayStatus;
-
-    /**
-     * 优惠券Id
-     */
-    private Long couponId;
-
-    /**
-     * 优惠金额
-     */
-    private BigDecimal reducedAmount;
-
-    /**
-     * 使用余额还款金额
-     */
-    private BigDecimal rebatedAmount;
 
     /**
      * 还款手续费
@@ -357,18 +342,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取是否逾期，Y表示逾期，N表示未逾期
+     * 获取是否逾期，Y表示逾期，N表示未逾期，还清后也不重置
      *
-     * @return 是否逾期，Y表示逾期，N表示未逾期
+     * @return 是否逾期，Y表示逾期，N表示未逾期，还清后也不重置
      */
     public String getOverdueStatus(){
       return overdueStatus;
     }
 
     /**
-     * 设置是否逾期，Y表示逾期，N表示未逾期
+     * 设置是否逾期，Y表示逾期，N表示未逾期，还清后也不重置
      * 
-     * @param overdueStatus 要设置的是否逾期，Y表示逾期，N表示未逾期
+     * @param overdueStatus 要设置的是否逾期，Y表示逾期，N表示未逾期，还清后也不重置
      */
     public void setOverdueStatus(String overdueStatus){
       this.overdueStatus = overdueStatus;
@@ -393,54 +378,54 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取利息费
+     * 获取未还利息费
      *
-     * @return 利息费
+     * @return 未还利息费
      */
     public BigDecimal getInterestFee(){
       return interestFee;
     }
 
     /**
-     * 设置利息费
+     * 设置未还利息费
      * 
-     * @param interestFee 要设置的利息费
+     * @param interestFee 要设置的未还利息费
      */
     public void setInterestFee(BigDecimal interestFee){
       this.interestFee = interestFee;
     }
 
     /**
-     * 获取手续费
+     * 获取未还手续费
      *
-     * @return 手续费
+     * @return 未还手续费
      */
     public BigDecimal getServiceFee(){
       return serviceFee;
     }
 
     /**
-     * 设置手续费
+     * 设置未还手续费
      * 
-     * @param serviceFee 要设置的手续费
+     * @param serviceFee 要设置的未还手续费
      */
     public void setServiceFee(BigDecimal serviceFee){
       this.serviceFee = serviceFee;
     }
 
     /**
-     * 获取逾期费用
+     * 获取未还逾期费用
      *
-     * @return 逾期费用
+     * @return 未还逾期费用
      */
     public BigDecimal getOverdueAmount(){
       return overdueAmount;
     }
 
     /**
-     * 设置逾期费用
+     * 设置未还逾期费用
      * 
-     * @param overdueAmount 要设置的逾期费用
+     * @param overdueAmount 要设置的未还逾期费用
      */
     public void setOverdueAmount(BigDecimal overdueAmount){
       this.overdueAmount = overdueAmount;
@@ -480,60 +465,6 @@ import java.math.BigDecimal;
      */
     public void setPreRepayStatus(String preRepayStatus){
       this.preRepayStatus = preRepayStatus;
-    }
-
-    /**
-     * 获取优惠券Id
-     *
-     * @return 优惠券Id
-     */
-    public Long getCouponId(){
-      return couponId;
-    }
-
-    /**
-     * 设置优惠券Id
-     * 
-     * @param couponId 要设置的优惠券Id
-     */
-    public void setCouponId(Long couponId){
-      this.couponId = couponId;
-    }
-
-    /**
-     * 获取优惠金额
-     *
-     * @return 优惠金额
-     */
-    public BigDecimal getReducedAmount(){
-      return reducedAmount;
-    }
-
-    /**
-     * 设置优惠金额
-     * 
-     * @param reducedAmount 要设置的优惠金额
-     */
-    public void setReducedAmount(BigDecimal reducedAmount){
-      this.reducedAmount = reducedAmount;
-    }
-
-    /**
-     * 获取使用余额还款金额
-     *
-     * @return 使用余额还款金额
-     */
-    public BigDecimal getRebatedAmount(){
-      return rebatedAmount;
-    }
-
-    /**
-     * 设置使用余额还款金额
-     * 
-     * @param rebatedAmount 要设置的使用余额还款金额
-     */
-    public void setRebatedAmount(BigDecimal rebatedAmount){
-      this.rebatedAmount = rebatedAmount;
     }
 
     /**

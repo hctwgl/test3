@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,loan_id,loan_no,prd_type,amount,periods,nper,status,repay_id,remark,overdue_status,overdue_days,interest_fee,service_fee,overdue_amount,repay_amount,pre_repay_status,coupon_id,reduced_amount,rebated_amount,repaid_service_fee,repaid_interest_fee,repaid_overdue_amount,gmt_last_repay,gmt_create,gmt_modified,gmt_plan_repay,
+        id rid,user_id,loan_id,loan_no,prd_type,amount,periods,nper,status,repay_id,remark,overdue_status,overdue_days,interest_fee,service_fee,overdue_amount,repay_amount,pre_repay_status,repaid_service_fee,repaid_interest_fee,repaid_overdue_amount,gmt_last_repay,gmt_create,gmt_modified,gmt_plan_repay,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -64,15 +64,6 @@
         </if>
         <if test="preRepayStatus != null and preRepayStatus != ''">
             AND pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR}
-        </if>
-        <if test="couponId != null and couponId != ''">
-            AND coupon_id = #{couponId,jdbcType=INTEGER}
-        </if>
-        <if test="reducedAmount != null and reducedAmount != ''">
-            AND reduced_amount = #{reducedAmount,jdbcType=DECIMAL}
-        </if>
-        <if test="rebatedAmount != null and rebatedAmount != ''">
-            AND rebated_amount = #{rebatedAmount,jdbcType=DECIMAL}
         </if>
         <if test="repaidServiceFee != null and repaidServiceFee != ''">
             AND repaid_service_fee = #{repaidServiceFee,jdbcType=DECIMAL}
@@ -156,15 +147,6 @@
 	        <if test="preRepayStatus != null">        
 	            pre_repay_status,
 	        </if>
-	        <if test="couponId != null">        
-	            coupon_id,
-	        </if>
-	        <if test="reducedAmount != null">        
-	            reduced_amount,
-	        </if>
-	        <if test="rebatedAmount != null">        
-	            rebated_amount,
-	        </if>
 	        <if test="repaidServiceFee != null">        
 	            repaid_service_fee,
 	        </if>
@@ -239,15 +221,6 @@
 		    </if>
 		    <if test="preRepayStatus != null" >
 		       #{preRepayStatus,jdbcType=VARCHAR},
-		    </if>
-		    <if test="couponId != null" >
-		       #{couponId,jdbcType=INTEGER},
-		    </if>
-		    <if test="reducedAmount != null" >
-		       #{reducedAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="rebatedAmount != null" >
-		       #{rebatedAmount,jdbcType=DECIMAL},
 		    </if>
 		    <if test="repaidServiceFee != null" >
 		       #{repaidServiceFee,jdbcType=DECIMAL},
@@ -326,15 +299,6 @@
             </if>
             <if test="preRepayStatus != null and preRepayStatus != '' ">        
                 pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR},                
-            </if>
-            <if test="couponId != null and couponId != '' ">        
-                coupon_id = #{couponId,jdbcType=INTEGER},                
-            </if>
-            <if test="reducedAmount != null and reducedAmount != '' ">        
-                reduced_amount = #{reducedAmount,jdbcType=DECIMAL},                
-            </if>
-            <if test="rebatedAmount != null and rebatedAmount != '' ">        
-                rebated_amount = #{rebatedAmount,jdbcType=DECIMAL},                
             </if>
             <if test="repaidServiceFee != null and repaidServiceFee != '' ">        
                 repaid_service_fee = #{repaidServiceFee,jdbcType=DECIMAL},                
