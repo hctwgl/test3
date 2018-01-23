@@ -16,11 +16,11 @@ public enum CouponSenceRuleType {
     SIGNIN("SIGNIN", "签到"),
     AUTHNAME("AUTHNAME", "实名认证"),
     PICK("PICK", "领取"),
-    FIRST_LOAN("FIRST_LOAN", "首次借款"),
-    FIRST_SHOPPING("FIRST_SHOPPING", "首次信用购物"),
     INVITE("INVITE", "邀请"),
     RESERVATION("RESERVATION","预约活动"),
-    CREDITAUTH("CREDITAUTH", "信用认证");
+    CREDITAUTH("CREDITAUTH", "信用认证"),
+    EXCLUSIVE_CREDIT("EXCLUSIVE_CREDIT","新用户信用专享"),
+    FIRST_LOAN("FIRST_LOAN","新用户信用专享");
     
 
     private String code;

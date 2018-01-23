@@ -32,6 +32,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author suweili 2017年3月24日下午5:04:43
@@ -228,10 +229,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		 if(countNum >0){
 		         return 0;   
 	        }
-		
 		//是否是第一次借款
 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
-		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +afBorrowCashDo.toString());
+		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +JSONObject.toJSONString(afBorrowCashDo));
 	    }catch(Exception e){
 	        logger.error("first borrow sentUserCoupon error", e);
 	   }

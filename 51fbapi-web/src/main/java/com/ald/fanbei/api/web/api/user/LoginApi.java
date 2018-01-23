@@ -87,7 +87,7 @@ public class LoginApi implements ApiHandle {
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
 	AfAbTestDeviceService afAbTestDeviceService;
-
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		
@@ -194,6 +194,18 @@ public class LoginApi implements ApiHandle {
 				isNeedRisk = false;
 			}
 		}
+		//首次登陆，弹窗
+		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+		if(successTime < 1){
+			 new Timer().schedule(new TimerTask() {
+		         public void run() {
+				jpushService.jPushCoupon("COUPON_POPUPS", userName);
+				this.cancel();
+				 }
+		   }, 1000 * 5);// 一分钟
+		}
+		
+		
 		// 调用风控可信接口
 		if (context.getAppVersion() >= 381 && isNeedRisk && !isInWhiteList(userName)) {
 
@@ -268,15 +280,25 @@ public class LoginApi implements ApiHandle {
 
 		resp.setResponseData(jo);
 
-		if (failCount == -1) {
-			new Timer().schedule(new TimerTask() {
-				public void run() {
-					jpushService.jPushCoupon("COUPON_POPUPS", userName);
-					this.cancel();
-				}
-			}, 1000 * 5);// 一分钟
-		}
+//		if (failCount == -1) {
+//			new Timer().schedule(new TimerTask() {
+//				public void run() {
+//					jpushService.jPushCoupon("COUPON_POPUPS", userName);
+//					this.cancel();
+//				}
+//			}, 1000 * 5);// 一分钟
+//		}
 		
+//		//首次登陆，弹窗
+//		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+//		if(successTime <= 1){
+//		        new Timer().schedule(new TimerTask() {
+//		        public void run() {
+//		        	jpushService.jPushCoupon("COUPON_POPUPS", userName);
+//		        	this.cancel();
+//		        	}
+//		        }, 1000 * 5);// 一分钟
+//		}
 		// 记录用户设备信息
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));

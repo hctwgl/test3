@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.api.user;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -70,13 +73,15 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	AfBoluomeActivityService afBoluomeActivityService;
 	@Resource
 	AfAbTestDeviceService afAbTestDeviceService;
+	@Resource
+	JpushService jpushService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String SUCC = "1";
 		String FAIL = "0";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		String userName = context.getUserName();
+		final String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String ip = CommonUtil.getIpAddr(request);
@@ -203,7 +208,17 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 			}catch (Exception e){
 					logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
 			}
-		
+//		//首次登陆，弹窗
+//		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+//		if(successTime <= 1){
+//				  new Timer().schedule(new TimerTask() {
+//				   public void run() {
+//				        	jpushService.jPushCoupon("COUPON_POPUPS", userName);
+//				        	this.cancel();
+//				        }
+//				    }, 1000 * 5);// 一分钟
+//		}
+//		
 		// 记录用户设备信息
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));

@@ -34,6 +34,7 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -224,21 +225,24 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		
 		String tag = "_FIRST_SHOPPING_";
 		String sourceType = "FIRST_SHOPPING";
-		logger.info("sentUserCoupon for new user userId=" + afOrder.toString());
+		logger.info("sentUserCoupon for first auth shopping userId=" +JSONObject.toJSONString(afOrder));
 		
 		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afOrder.getUserId(), sourceType);
 		    //该用户是否拥有该类型优惠券
 		 if(countNum >0){
 		         return 0;   
 	        }
-	        sentUserCouponGroup(afOrder.getUserId(),tag,sourceType);
+	        String msg = sentUserCouponGroup(afOrder.getUserId(),tag,sourceType);
+	        logger.info("sentUserCouponGroup msg = ,userId =  ", msg,afOrder.getUserId());
 		return 1;
 		
 		
 	}
 	  public String sentUserCouponGroup(Long userId,String tag,String sourceType){
-		//给该用户送优惠券（还款券）
-	        String MsgCode = null;
+		//给该用户送优惠券
+	        String MsgCode = "";
+	        logger.info("sentUserCouponGroup start userId = ,sourceType", userId,sourceType);
+	    try{
 		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
 		if(couponCategory != null){
 		    	String coupons = couponCategory.getCoupons();
@@ -292,10 +296,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 					MsgCode = "SUCCESS";
 			       }
 			  }
-		    }
-		return MsgCode;
-		
+		  }
+	        }catch (Exception e) {
+			logger.info("sent user couponGroup:", e);
 	    }
+		return MsgCode;
+     }
 		
 	
 

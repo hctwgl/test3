@@ -1000,7 +1000,8 @@ public class AppH5InvitationActivityController extends BaseController {
 	     giftPackageList.add(map1);
 	     
 	     //注册(自营商城)
-	     List<AfCouponDo> rigsetCoupon = getCommonCouponMap(CouponScene.REGIST);
+	//     List<AfCouponDo> rigsetCoupon = getCommonCouponMap(CouponScene.REGIST);
+	     List<AfCouponDo> rigsetCoupon = getcouponListForCategoryTag("_EXCLUSIVE_CREDIT_");
 	     if(rigsetCoupon.size()>0){
 		for(int i=0;i<rigsetCoupon.size();i++){
 		    AfCouponDo shop = rigsetCoupon.get(i);
@@ -1063,6 +1064,22 @@ public class AppH5InvitationActivityController extends BaseController {
 	}
 	return afCouponDo;
     }
+    private List<AfCouponDo> getcouponListForCategoryTag(String tag){
+   	AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+   	String coupons = couponCategory.getCoupons();
+   	JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+   	List<AfCouponDo> afCouponList = new ArrayList<AfCouponDo>();
+   	//List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+   	if (couponsArray.size()>0) {
+   	        for(int i = 0; i< couponsArray.size(); i++){
+   	                AfCouponDo afCouponDo = new AfCouponDo();
+           		String couponId = (String) couponsArray.getString(i);
+           	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+           	        afCouponList.add(afCouponDo);
+   	        }
+   	}
+   	return afCouponList;
+       }
     /**
 	 * 
 	 * @说明：获得用户优惠券列表
