@@ -38,8 +38,6 @@ import com.alibaba.fastjson.JSONObject;
 public class AuthFundNewApi implements ApiHandle {
 
 	@Resource
-	RiskUtil riskUtil;
-	@Resource
 	BizCacheUtil  bizCacheUtil;
 	
 	@Override
