@@ -566,4 +566,24 @@
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
 	
+	<!-- jvm缓存服务 -->
+	
+	<bean id="homePageV1CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV1CacheTask">
+		<property name="updateInterval" value="1"/>
+	</bean>
+	
+	<bean id="homePageV2CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV2CacheTask">
+		<property name="updateInterval" value="1"/>
+	</bean>
+	
+	<bean id="scheduledCache" class="com.ald.fanbei.api.web.cache.impl.ScheduledCache">
+		<property name="tasks">
+			<list>  
+        		<ref bean="homePageV1CacheTask" />
+        		<ref bean="homePageV2CacheTask" />
+        	</list>
+		</property>
+	</bean>
+	
+	
 </beans>

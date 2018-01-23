@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.cache;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 /**
  * 应用缓存接口
  * 
@@ -29,7 +27,5 @@ public interface Cache {
 	void clear();
 
 	int getSize();
-
-	ReadWriteLock getReadWriteLock();
 
 }
