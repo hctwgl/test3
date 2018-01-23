@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author Jiang Rongbo
  * @version 1.0.0 初始化
- * @date 2018-01-19 16:50:32
+ * @date 2018-01-23 13:41:23
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfLoanRepaymentDo extends AbstractSerial {
@@ -21,26 +21,20 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
+    /**
+     * 用户编号
+     */
+    private Long userId;
 
     /**
-     * 创建时间
+     * 借款编号
      */
-    private Date gmtCreate;
-
-    /**
-     * 最后修改时间
-     */
-    private Date gmtModified;
+    private Long loanId;
 
     /**
      * 还款名称
      */
     private String name;
-
-    /**
-     * 还款编号
-     */
-    private String repayNo;
 
     /**
      * 还款金额
@@ -53,24 +47,19 @@ import java.math.BigDecimal;
     private BigDecimal actualAmount;
 
     /**
-     * 借款编号
+     * 还款状态【'A'-新建状态, 'Y'-还款成功, 'N'-还款失败, 'P'-处理中】
      */
-    private Long loanId;
+    private String status;
 
     /**
-     * 用户编号
-     */
-    private Long userId;
-
-    /**
-     * 平台交易流水
-     */
-    private String payTradeNo;
-
-    /**
-     * 第三方支付平台流水
+     * 我方交易流水号
      */
     private String tradeNo;
+
+    /**
+     * 三方资金交易流水
+     */
+    private String tradeNoOut;
 
     /**
      * 用户优惠券Id
@@ -83,14 +72,29 @@ import java.math.BigDecimal;
     private BigDecimal couponAmount;
 
     /**
-     * 返利余额
+     * 使用的返利余额
      */
     private BigDecimal userAmount;
 
     /**
-     * 还款状态
+     * 是否提前还款，"Y"表示提前还款，"N"表示非提前还款
      */
-    private String status;
+    private String preRepayStatus;
+
+    /**
+     * 产品类型
+     */
+    private String prdType;
+
+    /**
+     * 该还款对应的期数信息
+     */
+    private String referLoanPeriods;
+
+    /**
+     * 该还款对应的贷款
+     */
+    private String referLoanId;
 
     /**
      * 银行卡号
@@ -108,19 +112,15 @@ import java.math.BigDecimal;
     private String remark;
 
     /**
-     * 是否提前还款，"Y"表示提前还款，"N"表示非提前还款
+     * 创建时间
      */
-    private String preRepayStatus;
+    private Date gmtCreate;
 
     /**
-     * 产品类型
+     * 最后修改时间
      */
-    private String prdType;
+    private Date gmtModified;
 
-    /**
-     * 还款期数,逗号分割，例如1,2,3
-     */
-    private String repayPeriods;
 
 
     /**
@@ -141,41 +141,40 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
     /**
-     * 获取创建时间
+     * 获取用户编号
      *
-     * @return 创建时间
+     * @return 用户编号
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public Long getUserId(){
+      return userId;
     }
 
     /**
-     * 设置创建时间
+     * 设置用户编号
      * 
-     * @param gmtCreate 要设置的创建时间
+     * @param userId 要设置的用户编号
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
+    public void setUserId(Long userId){
+      this.userId = userId;
     }
 
     /**
-     * 获取最后修改时间
+     * 获取借款编号
      *
-     * @return 最后修改时间
+     * @return 借款编号
      */
-    public Date getGmtModified(){
-      return gmtModified;
+    public Long getLoanId(){
+      return loanId;
     }
 
     /**
-     * 设置最后修改时间
+     * 设置借款编号
      * 
-     * @param gmtModified 要设置的最后修改时间
+     * @param loanId 要设置的借款编号
      */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+    public void setLoanId(Long loanId){
+      this.loanId = loanId;
     }
 
     /**
@@ -194,24 +193,6 @@ import java.math.BigDecimal;
      */
     public void setName(String name){
       this.name = name;
-    }
-
-    /**
-     * 获取还款编号
-     *
-     * @return 还款编号
-     */
-    public String getRepayNo(){
-      return repayNo;
-    }
-
-    /**
-     * 设置还款编号
-     * 
-     * @param repayNo 要设置的还款编号
-     */
-    public void setRepayNo(String repayNo){
-      this.repayNo = repayNo;
     }
 
     /**
@@ -251,75 +232,57 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取借款编号
+     * 获取还款状态【'A'-新建状态, 'Y'-还款成功, 'N'-还款失败, 'P'-处理中】
      *
-     * @return 借款编号
+     * @return 还款状态【'A'-新建状态, 'Y'-还款成功, 'N'-还款失败, 'P'-处理中】
      */
-    public Long getLoanId(){
-      return loanId;
+    public String getStatus(){
+      return status;
     }
 
     /**
-     * 设置借款编号
+     * 设置还款状态【'A'-新建状态, 'Y'-还款成功, 'N'-还款失败, 'P'-处理中】
      * 
-     * @param loanId 要设置的借款编号
+     * @param status 要设置的还款状态【'A'-新建状态, 'Y'-还款成功, 'N'-还款失败, 'P'-处理中】
      */
-    public void setLoanId(Long loanId){
-      this.loanId = loanId;
+    public void setStatus(String status){
+      this.status = status;
     }
 
     /**
-     * 获取用户编号
+     * 获取我方交易流水号
      *
-     * @return 用户编号
-     */
-    public Long getUserId(){
-      return userId;
-    }
-
-    /**
-     * 设置用户编号
-     * 
-     * @param userId 要设置的用户编号
-     */
-    public void setUserId(Long userId){
-      this.userId = userId;
-    }
-
-    /**
-     * 获取平台交易流水
-     *
-     * @return 平台交易流水
-     */
-    public String getPayTradeNo(){
-      return payTradeNo;
-    }
-
-    /**
-     * 设置平台交易流水
-     * 
-     * @param payTradeNo 要设置的平台交易流水
-     */
-    public void setPayTradeNo(String payTradeNo){
-      this.payTradeNo = payTradeNo;
-    }
-
-    /**
-     * 获取第三方支付平台流水
-     *
-     * @return 第三方支付平台流水
+     * @return 我方交易流水号
      */
     public String getTradeNo(){
       return tradeNo;
     }
 
     /**
-     * 设置第三方支付平台流水
+     * 设置我方交易流水号
      * 
-     * @param tradeNo 要设置的第三方支付平台流水
+     * @param tradeNo 要设置的我方交易流水号
      */
     public void setTradeNo(String tradeNo){
       this.tradeNo = tradeNo;
+    }
+
+    /**
+     * 获取三方资金交易流水
+     *
+     * @return 三方资金交易流水
+     */
+    public String getTradeNoOut(){
+      return tradeNoOut;
+    }
+
+    /**
+     * 设置三方资金交易流水
+     * 
+     * @param tradeNoOut 要设置的三方资金交易流水
+     */
+    public void setTradeNoOut(String tradeNoOut){
+      this.tradeNoOut = tradeNoOut;
     }
 
     /**
@@ -359,39 +322,93 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取返利余额
+     * 获取使用的返利余额
      *
-     * @return 返利余额
+     * @return 使用的返利余额
      */
     public BigDecimal getUserAmount(){
       return userAmount;
     }
 
     /**
-     * 设置返利余额
+     * 设置使用的返利余额
      * 
-     * @param userAmount 要设置的返利余额
+     * @param userAmount 要设置的使用的返利余额
      */
     public void setUserAmount(BigDecimal userAmount){
       this.userAmount = userAmount;
     }
 
     /**
-     * 获取还款状态
+     * 获取是否提前还款，"Y"表示提前还款，"N"表示非提前还款
      *
-     * @return 还款状态
+     * @return 是否提前还款，"Y"表示提前还款，"N"表示非提前还款
      */
-    public String getStatus(){
-      return status;
+    public String getPreRepayStatus(){
+      return preRepayStatus;
     }
 
     /**
-     * 设置还款状态
+     * 设置是否提前还款，"Y"表示提前还款，"N"表示非提前还款
      * 
-     * @param status 要设置的还款状态
+     * @param preRepayStatus 要设置的是否提前还款，"Y"表示提前还款，"N"表示非提前还款
      */
-    public void setStatus(String status){
-      this.status = status;
+    public void setPreRepayStatus(String preRepayStatus){
+      this.preRepayStatus = preRepayStatus;
+    }
+
+    /**
+     * 获取产品类型
+     *
+     * @return 产品类型
+     */
+    public String getPrdType(){
+      return prdType;
+    }
+
+    /**
+     * 设置产品类型
+     * 
+     * @param prdType 要设置的产品类型
+     */
+    public void setPrdType(String prdType){
+      this.prdType = prdType;
+    }
+
+    /**
+     * 获取该还款对应的期数信息
+     *
+     * @return 该还款对应的期数信息
+     */
+    public String getReferLoanPeriods(){
+      return referLoanPeriods;
+    }
+
+    /**
+     * 设置该还款对应的期数信息
+     * 
+     * @param referLoanPeriods 要设置的该还款对应的期数信息
+     */
+    public void setReferLoanPeriods(String referLoanPeriods){
+      this.referLoanPeriods = referLoanPeriods;
+    }
+
+    /**
+     * 获取该还款对应的贷款
+     *
+     * @return 该还款对应的贷款
+     */
+    public String getReferLoanId(){
+      return referLoanId;
+    }
+
+    /**
+     * 设置该还款对应的贷款
+     * 
+     * @param referLoanId 要设置的该还款对应的贷款
+     */
+    public void setReferLoanId(String referLoanId){
+      this.referLoanId = referLoanId;
     }
 
     /**
@@ -449,57 +466,40 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取是否提前还款，"Y"表示提前还款，"N"表示非提前还款
+     * 获取创建时间
      *
-     * @return 是否提前还款，"Y"表示提前还款，"N"表示非提前还款
+     * @return 创建时间
      */
-    public String getPreRepayStatus(){
-      return preRepayStatus;
+    public Date getGmtCreate(){
+      return gmtCreate;
     }
 
     /**
-     * 设置是否提前还款，"Y"表示提前还款，"N"表示非提前还款
+     * 设置创建时间
      * 
-     * @param preRepayStatus 要设置的是否提前还款，"Y"表示提前还款，"N"表示非提前还款
+     * @param gmtCreate 要设置的创建时间
      */
-    public void setPreRepayStatus(String preRepayStatus){
-      this.preRepayStatus = preRepayStatus;
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
     }
 
     /**
-     * 获取产品类型
+     * 获取最后修改时间
      *
-     * @return 产品类型
+     * @return 最后修改时间
      */
-    public String getPrdType(){
-      return prdType;
+    public Date getGmtModified(){
+      return gmtModified;
     }
 
     /**
-     * 设置产品类型
+     * 设置最后修改时间
      * 
-     * @param prdType 要设置的产品类型
+     * @param gmtModified 要设置的最后修改时间
      */
-    public void setPrdType(String prdType){
-      this.prdType = prdType;
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
     }
 
-    /**
-     * 获取还款期数,逗号分割，例如1,2,3
-     *
-     * @return 还款期数,逗号分割，例如1,2,3
-     */
-    public String getRepayPeriods(){
-      return repayPeriods;
-    }
-
-    /**
-     * 设置还款期数,逗号分割，例如1,2,3
-     * 
-     * @param repayPeriods 要设置的还款期数,逗号分割，例如1,2,3
-     */
-    public void setRepayPeriods(String repayPeriods){
-      this.repayPeriods = repayPeriods;
-    }
 
 }

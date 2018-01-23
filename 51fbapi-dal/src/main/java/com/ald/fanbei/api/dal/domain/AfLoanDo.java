@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author Jiang Rongbo
  * @version 1.0.0 初始化
- * @date 2018-01-19 16:50:31
+ * @date 2018-01-23 13:41:23
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfLoanDo extends AbstractSerial {
@@ -21,26 +21,10 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
-
-    /**
-     * 最后修改时间
-     */
-    private Date gmtModified;
-
     /**
      * 用户编号
      */
     private Long userId;
-
-    /**
-     * 贷款产品类型
-     */
-    private String prdType;
 
     /**
      * 借款流水
@@ -58,9 +42,19 @@ import java.math.BigDecimal;
     private BigDecimal amount;
 
     /**
-     * 备注信息
+     * 实际到账金额
      */
-    private String remark;
+    private BigDecimal arrivalAmount;
+
+    /**
+     * 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
+     */
+    private String status;
+
+    /**
+     * 贷款产品类型
+     */
+    private String prdType;
 
     /**
      * 卡号
@@ -83,14 +77,9 @@ import java.math.BigDecimal;
     private BigDecimal overdueAmount;
 
     /**
-     * 实际到账金额
+     * 逾期状态，Y表示逾期，N表示未逾期
      */
-    private BigDecimal arrivalAmount;
-
-    /**
-     * 打款时间
-     */
-    private Date gmtArrival;
+    private String overdueStatus;
 
     /**
      * 审核人姓名
@@ -108,9 +97,14 @@ import java.math.BigDecimal;
     private String reviewDetails;
 
     /**
-     * 审核时间
+     * 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
      */
-    private Date gmtReview;
+    private String reviewStatus;
+
+    /**
+     * 风控流水号
+     */
+    private String riskNo;
 
     /**
      * 总手续费
@@ -131,6 +125,66 @@ import java.math.BigDecimal;
      * 利率
      */
     private String interestRate;
+
+    /**
+     * 用户分层日利率
+     */
+    private BigDecimal riskDailyRate;
+
+    /**
+     * 用户授信额度
+     */
+    private BigDecimal auAmount;
+
+    /**
+     * App来源，www为返呗,其余的为马甲包
+     */
+    private String appName;
+
+    /**
+     * 备注信息
+     */
+    private String remark;
+
+    /**
+     * 借款用途
+     */
+    private String loanRemark;
+
+    /**
+     * 还款来源
+     */
+    private String repayRemark;
+
+    /**
+     * 创建时间
+     */
+    private Date gmtCreate;
+
+    /**
+     * 最后修改时间
+     */
+    private Date gmtModified;
+
+    /**
+     * 打款时间
+     */
+    private Date gmtArrival;
+
+    /**
+     * 审核时间
+     */
+    private Date gmtReview;
+
+    /**
+     * 借款关闭时间
+     */
+    private Date gmtClose;
+
+    /**
+     * 结清时间
+     */
+    private Date gmtFinish;
 
     /**
      * 纬度
@@ -158,64 +212,10 @@ import java.math.BigDecimal;
     private String county;
 
     /**
-     * 借款关闭时间
-     */
-    private Date gmtClose;
-
-    /**
-     * 逾期状态，Y表示逾期，N表示未逾期
-     */
-    private String overdueStatus;
-
-    /**
-     * 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
-     */
-    private String reviewStatus;
-
-    /**
      * 详细地址
      */
     private String address;
 
-    /**
-     * 风控流水号
-     */
-    private String riskNo;
-
-    /**
-     * App来源，www为返呗,其余的为马甲包
-     */
-    private String appName;
-
-    /**
-     * 结清时间
-     */
-    private Date finishDate;
-
-    /**
-     * 用户授信额度
-     */
-    private BigDecimal auAmount;
-
-    /**
-     * 用户分层日利率
-     */
-    private BigDecimal riskDailyRate;
-
-    /**
-     * 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    private String status;
-
-    /**
-     * 借款用途
-     */
-    private String loanRemark;
-
-    /**
-     * 还款来源
-     */
-    private String repayRemark;
 
 
     /**
@@ -236,43 +236,6 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
-    /**
-     * 获取创建时间
-     *
-     * @return 创建时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置创建时间
-     * 
-     * @param gmtCreate 要设置的创建时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取最后修改时间
-     *
-     * @return 最后修改时间
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置最后修改时间
-     * 
-     * @param gmtModified 要设置的最后修改时间
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
-
     /**
      * 获取用户编号
      *
@@ -289,24 +252,6 @@ import java.math.BigDecimal;
      */
     public void setUserId(Long userId){
       this.userId = userId;
-    }
-
-    /**
-     * 获取贷款产品类型
-     *
-     * @return 贷款产品类型
-     */
-    public String getPrdType(){
-      return prdType;
-    }
-
-    /**
-     * 设置贷款产品类型
-     * 
-     * @param prdType 要设置的贷款产品类型
-     */
-    public void setPrdType(String prdType){
-      this.prdType = prdType;
     }
 
     /**
@@ -364,21 +309,57 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取备注信息
+     * 获取实际到账金额
      *
-     * @return 备注信息
+     * @return 实际到账金额
      */
-    public String getRemark(){
-      return remark;
+    public BigDecimal getArrivalAmount(){
+      return arrivalAmount;
     }
 
     /**
-     * 设置备注信息
+     * 设置实际到账金额
      * 
-     * @param remark 要设置的备注信息
+     * @param arrivalAmount 要设置的实际到账金额
      */
-    public void setRemark(String remark){
-      this.remark = remark;
+    public void setArrivalAmount(BigDecimal arrivalAmount){
+      this.arrivalAmount = arrivalAmount;
+    }
+
+    /**
+     * 获取借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
+     *
+     * @return 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
+     */
+    public String getStatus(){
+      return status;
+    }
+
+    /**
+     * 设置借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
+     * 
+     * @param status 要设置的借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
+     */
+    public void setStatus(String status){
+      this.status = status;
+    }
+
+    /**
+     * 获取贷款产品类型
+     *
+     * @return 贷款产品类型
+     */
+    public String getPrdType(){
+      return prdType;
+    }
+
+    /**
+     * 设置贷款产品类型
+     * 
+     * @param prdType 要设置的贷款产品类型
+     */
+    public void setPrdType(String prdType){
+      this.prdType = prdType;
     }
 
     /**
@@ -454,39 +435,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取实际到账金额
+     * 获取逾期状态，Y表示逾期，N表示未逾期
      *
-     * @return 实际到账金额
+     * @return 逾期状态，Y表示逾期，N表示未逾期
      */
-    public BigDecimal getArrivalAmount(){
-      return arrivalAmount;
+    public String getOverdueStatus(){
+      return overdueStatus;
     }
 
     /**
-     * 设置实际到账金额
+     * 设置逾期状态，Y表示逾期，N表示未逾期
      * 
-     * @param arrivalAmount 要设置的实际到账金额
+     * @param overdueStatus 要设置的逾期状态，Y表示逾期，N表示未逾期
      */
-    public void setArrivalAmount(BigDecimal arrivalAmount){
-      this.arrivalAmount = arrivalAmount;
-    }
-
-    /**
-     * 获取打款时间
-     *
-     * @return 打款时间
-     */
-    public Date getGmtArrival(){
-      return gmtArrival;
-    }
-
-    /**
-     * 设置打款时间
-     * 
-     * @param gmtArrival 要设置的打款时间
-     */
-    public void setGmtArrival(Date gmtArrival){
-      this.gmtArrival = gmtArrival;
+    public void setOverdueStatus(String overdueStatus){
+      this.overdueStatus = overdueStatus;
     }
 
     /**
@@ -544,21 +507,39 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取审核时间
+     * 获取审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
      *
-     * @return 审核时间
+     * @return 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
      */
-    public Date getGmtReview(){
-      return gmtReview;
+    public String getReviewStatus(){
+      return reviewStatus;
     }
 
     /**
-     * 设置审核时间
+     * 设置审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
      * 
-     * @param gmtReview 要设置的审核时间
+     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
      */
-    public void setGmtReview(Date gmtReview){
-      this.gmtReview = gmtReview;
+    public void setReviewStatus(String reviewStatus){
+      this.reviewStatus = reviewStatus;
+    }
+
+    /**
+     * 获取风控流水号
+     *
+     * @return 风控流水号
+     */
+    public String getRiskNo(){
+      return riskNo;
+    }
+
+    /**
+     * 设置风控流水号
+     * 
+     * @param riskNo 要设置的风控流水号
+     */
+    public void setRiskNo(String riskNo){
+      this.riskNo = riskNo;
     }
 
     /**
@@ -631,6 +612,222 @@ import java.math.BigDecimal;
      */
     public void setInterestRate(String interestRate){
       this.interestRate = interestRate;
+    }
+
+    /**
+     * 获取用户分层日利率
+     *
+     * @return 用户分层日利率
+     */
+    public BigDecimal getRiskDailyRate(){
+      return riskDailyRate;
+    }
+
+    /**
+     * 设置用户分层日利率
+     * 
+     * @param riskDailyRate 要设置的用户分层日利率
+     */
+    public void setRiskDailyRate(BigDecimal riskDailyRate){
+      this.riskDailyRate = riskDailyRate;
+    }
+
+    /**
+     * 获取用户授信额度
+     *
+     * @return 用户授信额度
+     */
+    public BigDecimal getAuAmount(){
+      return auAmount;
+    }
+
+    /**
+     * 设置用户授信额度
+     * 
+     * @param auAmount 要设置的用户授信额度
+     */
+    public void setAuAmount(BigDecimal auAmount){
+      this.auAmount = auAmount;
+    }
+
+    /**
+     * 获取App来源，www为返呗,其余的为马甲包
+     *
+     * @return App来源，www为返呗,其余的为马甲包
+     */
+    public String getAppName(){
+      return appName;
+    }
+
+    /**
+     * 设置App来源，www为返呗,其余的为马甲包
+     * 
+     * @param appName 要设置的App来源，www为返呗,其余的为马甲包
+     */
+    public void setAppName(String appName){
+      this.appName = appName;
+    }
+
+    /**
+     * 获取备注信息
+     *
+     * @return 备注信息
+     */
+    public String getRemark(){
+      return remark;
+    }
+
+    /**
+     * 设置备注信息
+     * 
+     * @param remark 要设置的备注信息
+     */
+    public void setRemark(String remark){
+      this.remark = remark;
+    }
+
+    /**
+     * 获取借款用途
+     *
+     * @return 借款用途
+     */
+    public String getLoanRemark(){
+      return loanRemark;
+    }
+
+    /**
+     * 设置借款用途
+     * 
+     * @param loanRemark 要设置的借款用途
+     */
+    public void setLoanRemark(String loanRemark){
+      this.loanRemark = loanRemark;
+    }
+
+    /**
+     * 获取还款来源
+     *
+     * @return 还款来源
+     */
+    public String getRepayRemark(){
+      return repayRemark;
+    }
+
+    /**
+     * 设置还款来源
+     * 
+     * @param repayRemark 要设置的还款来源
+     */
+    public void setRepayRemark(String repayRemark){
+      this.repayRemark = repayRemark;
+    }
+
+    /**
+     * 获取创建时间
+     *
+     * @return 创建时间
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
+
+    /**
+     * 设置创建时间
+     * 
+     * @param gmtCreate 要设置的创建时间
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
+
+    /**
+     * 获取最后修改时间
+     *
+     * @return 最后修改时间
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置最后修改时间
+     * 
+     * @param gmtModified 要设置的最后修改时间
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
+    /**
+     * 获取打款时间
+     *
+     * @return 打款时间
+     */
+    public Date getGmtArrival(){
+      return gmtArrival;
+    }
+
+    /**
+     * 设置打款时间
+     * 
+     * @param gmtArrival 要设置的打款时间
+     */
+    public void setGmtArrival(Date gmtArrival){
+      this.gmtArrival = gmtArrival;
+    }
+
+    /**
+     * 获取审核时间
+     *
+     * @return 审核时间
+     */
+    public Date getGmtReview(){
+      return gmtReview;
+    }
+
+    /**
+     * 设置审核时间
+     * 
+     * @param gmtReview 要设置的审核时间
+     */
+    public void setGmtReview(Date gmtReview){
+      this.gmtReview = gmtReview;
+    }
+
+    /**
+     * 获取借款关闭时间
+     *
+     * @return 借款关闭时间
+     */
+    public Date getGmtClose(){
+      return gmtClose;
+    }
+
+    /**
+     * 设置借款关闭时间
+     * 
+     * @param gmtClose 要设置的借款关闭时间
+     */
+    public void setGmtClose(Date gmtClose){
+      this.gmtClose = gmtClose;
+    }
+
+    /**
+     * 获取结清时间
+     *
+     * @return 结清时间
+     */
+    public Date getGmtFinish(){
+      return gmtFinish;
+    }
+
+    /**
+     * 设置结清时间
+     * 
+     * @param gmtFinish 要设置的结清时间
+     */
+    public void setGmtFinish(Date gmtFinish){
+      this.gmtFinish = gmtFinish;
     }
 
     /**
@@ -724,60 +921,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取借款关闭时间
-     *
-     * @return 借款关闭时间
-     */
-    public Date getGmtClose(){
-      return gmtClose;
-    }
-
-    /**
-     * 设置借款关闭时间
-     * 
-     * @param gmtClose 要设置的借款关闭时间
-     */
-    public void setGmtClose(Date gmtClose){
-      this.gmtClose = gmtClose;
-    }
-
-    /**
-     * 获取逾期状态，Y表示逾期，N表示未逾期
-     *
-     * @return 逾期状态，Y表示逾期，N表示未逾期
-     */
-    public String getOverdueStatus(){
-      return overdueStatus;
-    }
-
-    /**
-     * 设置逾期状态，Y表示逾期，N表示未逾期
-     * 
-     * @param overdueStatus 要设置的逾期状态，Y表示逾期，N表示未逾期
-     */
-    public void setOverdueStatus(String overdueStatus){
-      this.overdueStatus = overdueStatus;
-    }
-
-    /**
-     * 获取审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
-     *
-     * @return 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
-     */
-    public String getReviewStatus(){
-      return reviewStatus;
-    }
-
-    /**
-     * 设置审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
-     * 
-     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
-     */
-    public void setReviewStatus(String reviewStatus){
-      this.reviewStatus = reviewStatus;
-    }
-
-    /**
      * 获取详细地址
      *
      * @return 详细地址
@@ -795,148 +938,5 @@ import java.math.BigDecimal;
       this.address = address;
     }
 
-    /**
-     * 获取风控流水号
-     *
-     * @return 风控流水号
-     */
-    public String getRiskNo(){
-      return riskNo;
-    }
-
-    /**
-     * 设置风控流水号
-     * 
-     * @param riskNo 要设置的风控流水号
-     */
-    public void setRiskNo(String riskNo){
-      this.riskNo = riskNo;
-    }
-
-    /**
-     * 获取App来源，www为返呗,其余的为马甲包
-     *
-     * @return App来源，www为返呗,其余的为马甲包
-     */
-    public String getAppName(){
-      return appName;
-    }
-
-    /**
-     * 设置App来源，www为返呗,其余的为马甲包
-     * 
-     * @param appName 要设置的App来源，www为返呗,其余的为马甲包
-     */
-    public void setAppName(String appName){
-      this.appName = appName;
-    }
-
-    /**
-     * 获取结清时间
-     *
-     * @return 结清时间
-     */
-    public Date getFinishDate(){
-      return finishDate;
-    }
-
-    /**
-     * 设置结清时间
-     * 
-     * @param finishDate 要设置的结清时间
-     */
-    public void setFinishDate(Date finishDate){
-      this.finishDate = finishDate;
-    }
-
-    /**
-     * 获取用户授信额度
-     *
-     * @return 用户授信额度
-     */
-    public BigDecimal getAuAmount(){
-      return auAmount;
-    }
-
-    /**
-     * 设置用户授信额度
-     * 
-     * @param auAmount 要设置的用户授信额度
-     */
-    public void setAuAmount(BigDecimal auAmount){
-      this.auAmount = auAmount;
-    }
-
-    /**
-     * 获取用户分层日利率
-     *
-     * @return 用户分层日利率
-     */
-    public BigDecimal getRiskDailyRate(){
-      return riskDailyRate;
-    }
-
-    /**
-     * 设置用户分层日利率
-     * 
-     * @param riskDailyRate 要设置的用户分层日利率
-     */
-    public void setRiskDailyRate(BigDecimal riskDailyRate){
-      this.riskDailyRate = riskDailyRate;
-    }
-
-    /**
-     * 获取借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     *
-     * @return 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    public String getStatus(){
-      return status;
-    }
-
-    /**
-     * 设置借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     * 
-     * @param status 要设置的借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    public void setStatus(String status){
-      this.status = status;
-    }
-
-    /**
-     * 获取借款用途
-     *
-     * @return 借款用途
-     */
-    public String getLoanRemark(){
-      return loanRemark;
-    }
-
-    /**
-     * 设置借款用途
-     * 
-     * @param loanRemark 要设置的借款用途
-     */
-    public void setLoanRemark(String loanRemark){
-      this.loanRemark = loanRemark;
-    }
-
-    /**
-     * 获取还款来源
-     *
-     * @return 还款来源
-     */
-    public String getRepayRemark(){
-      return repayRemark;
-    }
-
-    /**
-     * 设置还款来源
-     * 
-     * @param repayRemark 要设置的还款来源
-     */
-    public void setRepayRemark(String repayRemark){
-      this.repayRemark = repayRemark;
-    }
 
 }

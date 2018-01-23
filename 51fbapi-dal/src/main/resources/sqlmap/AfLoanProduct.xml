@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,name,min_amount,max_amount,desc,conf,periods,prd_type,remind_day 
+        id rid,name,min_amount,max_amount,desc,conf,periods,prd_type,remind_day,gmt_create,gmt_modified,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -13,12 +13,6 @@
     	WHERE is_delete = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
-        </if>
-        <if test="gmtCreate !=null">
-            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
-        </if>
-        <if test="gmtModified !=null">
-            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
         <if test="name != null and name != ''">
             AND name = #{name,jdbcType=VARCHAR}
@@ -44,6 +38,12 @@
         <if test="remindDay != null and remindDay != ''">
             AND remind_day = #{remindDay,jdbcType=INTEGER}
         </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
     </sql>
 
     
@@ -54,12 +54,6 @@
     
         INSERT INTO af_loan_product
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
 	        <if test="name != null">        
 	            name,
 	        </if>
@@ -84,15 +78,15 @@
 	        <if test="remindDay != null">        
 	            remind_day,
 	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
 		    <if test="name != null" >
 		       #{name,jdbcType=VARCHAR},
 		    </if>
@@ -117,18 +111,18 @@
 		    <if test="remindDay != null" >
 		       #{remindDay,jdbcType=INTEGER},
 		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
         </trim>
     </insert>
     
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfLoanProductDo">
         UPDATE af_loan_product
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
             <if test="name != null and name != '' ">        
                 name = #{name,jdbcType=VARCHAR},                
             </if>
@@ -151,7 +145,13 @@
                 prd_type = #{prdType,jdbcType=VARCHAR},                
             </if>
             <if test="remindDay != null and remindDay != '' ">        
-                remind_day = #{remindDay,jdbcType=INTEGER}                
+                remind_day = #{remindDay,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
