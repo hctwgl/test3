@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -19,7 +21,8 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
  * @author yanghailong
  * @date 2018年1月22日
  */
-public class LoanPlanApi implements H5Handle {
+@Component("loanRepayPlanApi")
+public class LoanRepayPlanApi implements H5Handle {
 
 	@Resource
 	AfResourceService afResourceService;
@@ -39,7 +42,7 @@ public class LoanPlanApi implements H5Handle {
 	public H5HandleResponse process(Context context) {
 		
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-
+		Long loanId = (Long) context.getData("loanId");
 		
 		
 		return resp;
