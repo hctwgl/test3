@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -65,7 +62,7 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox);
+			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox);
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -364,5 +361,8 @@ public interface AfOrderService {
      * @return
      */
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
-	
+
+	int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount);
+
+	int addSceneAmount(List<AfOrderSceneAmountDo> list);
 }

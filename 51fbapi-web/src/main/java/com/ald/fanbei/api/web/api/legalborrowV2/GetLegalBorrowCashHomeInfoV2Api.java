@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSONObject;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,10 +55,6 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -193,7 +191,13 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		
+
+		logger.info("max amount:"+maxAmount);
+		logger.info("usableAmount amount:"+usableAmount);
+		if(maxAmount.compareTo(BigDecimal.ZERO)==0){
+			logger.info("reset max amount:"+ new BigDecimal(strMaxAmount));
+			maxAmount= new BigDecimal(strMaxAmount);
+		}
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());
@@ -208,9 +212,6 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
 		if (afBorrowCashDo == null) {
-			if (usableAmount.compareTo(minAmount) < 0) {
-				inRejectLoan = YesNoStatus.YES.getCode();
-			}
 			data.put("status", "DEFAULT");
 		} else {
 			String borrowStatus = afBorrowCashDo.getStatus();
@@ -373,7 +374,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 
-		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(minAmount) < 0 && StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())
+				&& usableAmount.compareTo(minAmount) < 0
+				&& StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 
@@ -439,6 +442,12 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		data.put("repayingMoney", repayingMoney);
 
 		try {
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			String bqsBlackBox = request.getParameter("bqsBlackBox");
+			data.put("ipAddress", CommonUtil.getIpAddr(request));
+			data.put("appName",appName);
+			data.put("bqsBlackBox",bqsBlackBox);
+			data.put("blackBox",request.getParameter("blackBox"));
 			// 用户点击借钱页面时去风控获取用户的借钱手续费
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
@@ -542,7 +551,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate == null || DateUtil.compareDate(new Date(), DateUtil.addDays(saveRateDate, 1))) {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId + "");
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId + "",new JSONObject(data));
 				if (riskResp == null) {
 					throw new FanbeiException("get user poundage rate error");
 				}

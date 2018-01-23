@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrow;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,15 +8,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -25,10 +24,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -56,22 +51,30 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 	private AfResourceService afResourceService;
 	@Resource
 	private AfIdNumberService afIdNumberService;
+	@Resource
+	AfUserAuthStatusService afUserAuthStatusService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Date now = new Date();
+		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
+		if("".equals(scene)){
+			scene="CASH";//如果前端所传为空,默认为现金贷
+		}
 		// 账户关联信息
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
+		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion(),scene);
 		resp.setResponseData(data);
 
 		return resp;
 	}
 
-	private Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion) {
+	private Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo,Integer appVersion,String scene) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> creditModel = new HashMap<String, Object>();
 		Map<String, Object> zmModel = new HashMap<String, Object>();
@@ -82,6 +85,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 //		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
+		AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene,userId);
+		userDto.setAuAmount(afUserAccountSence == null ? new BigDecimal(0) : afUserAccountSence.getAuAmount());
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){
@@ -302,6 +307,66 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		}
 
 		data.put("isSkipH5", isSkipH5);
+
+		//是否有数据失败过期状态
+		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+		if(afUserAuthStatusDo!=null){
+			String causeReason = afUserAuthStatusDo.getCauseReason();
+			if(causeReason!=null&&!"".equals(causeReason)) {
+				JSONArray jsonArray = JSON.parseArray(causeReason);
+				for(int i =0;i<jsonArray.size();i++){
+					JSONObject jsonObject =jsonArray.getJSONObject(i);
+					String auth=jsonObject.getString("auth");
+					String status=jsonObject.getString("status");
+					if(YesNoStatus.NO.getCode().equals(status)){
+						if("operator".equals(auth)){//运营商状态已过期
+							data.put("mobileStatus","E");
+						}
+						if("directory".equals(auth)){//通讯录状态已过期
+							data.put("teldirStatus","E");
+						}
+						if("fund".equals(auth)){//公积金状态已过期
+							data.put("fundStatus","E");
+						}
+						if("alipay".equals(auth)){//公积金状态已过期
+							data.put("alipayStatus","E");
+						}
+
+					}
+				}
+
+			}
+		}
+
+		/**
+		 * 是否经过强风控
+		 */
+		//购物额度 未通过强风控
+		if(!"CASH".equals(scene)){
+			AfUserAuthStatusDo afUserAuthStatus=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+			AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"Y");
+			if(afUserAuthStatus==null&&afUserAuthStatusSuccess==null){//从未认证
+				data.put("basicStatus", "A");
+				data.put("riskStatus", "A");
+				data.put("flag", "N");
+				data.put("title1","你好，"+userDto.getRealName());
+				data.put("title2","完善基本资料即可获取3000-20000额度");
+			}
+			if(afUserAuthStatus!=null){//认证失败
+				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
+				between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+				data.put("riskStatus", "N");
+				data.put("basicStatus", "N");
+				data.put("title1","暂无信用额度");
+				data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
+				if (between > 0) {
+					data.put("title2", "请"+between+"天后尝试重新提交");
+				} else {
+					data.put("title2", "请10天后尝试重新提交，完成补充认证可提高成功率");
+				}
+			}
+
+		}
 
 		return data;
 	}

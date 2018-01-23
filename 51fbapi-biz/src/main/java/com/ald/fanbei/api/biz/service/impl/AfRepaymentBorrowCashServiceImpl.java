@@ -214,7 +214,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
         final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
                 userId);
-        afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+        int result = afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+        if(result<=0){
+            //防止还款记录插入失败
+            logger.error("insert repayment fail data:"+rebateAmount.toString());
+            return null;
+        }
         logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo=" + payTradeNo + ",repaymentId=" + (repayment != null ? repayment.getRid() : 0));
         if (cardId > 0) {
             dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment);
@@ -580,7 +585,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             /**------------------------------------fmai风控提额begin------------------------------------------------*/
             try {
                 String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-                BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getPoundage(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+                BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getPoundage(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
                 int overdueCount = 0;
                 if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
                     overdueCount = 1;
@@ -588,7 +593,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 //11-17号加入,还清了才能调用提额
                 if (afBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
                     logger.info("还完了调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
-                    riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
+                    riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount, afBorrowCashDo.getOverdueDay(), afBorrowCashDo.getRenewalNum());
                 }
                 logger.info("没还完不调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
             } catch (Exception e) {

@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 
+import java.math.BigDecimal;
+
 /**
  * Dao
  * 
@@ -33,6 +35,8 @@ public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCas
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(@Param("borrowId")Long borrowId);
 
 	AfBorrowLegalOrderCashDo getOrderCashByCashNo(String cashNo);
+
+	BigDecimal calculateRestAmount(@Param("borrowId")Long borrowId);
 	
 	/**
 	 * 查询borrowId 下是否有订单记录

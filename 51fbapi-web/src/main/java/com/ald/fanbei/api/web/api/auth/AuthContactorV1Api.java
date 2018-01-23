@@ -63,7 +63,7 @@ public class AuthContactorV1Api implements ApiHandle {
 		
 		try {
 			if (StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode()) || StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "LINKMAN", null, afUserAuthDo, "", "", null, "", "", "");
+				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "LINKMAN", null, afUserAuthDo, "", "", null, "", "", "","");
 				if (!riskResp.isSuccess()) {
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 				}

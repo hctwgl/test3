@@ -499,53 +499,10 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 		
-		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
-		// 借款利率
-		BigDecimal newRate = null;
-		// 借款手续费率
-		BigDecimal newServiceRate = null;
-		
-		if (rateInfoDo != null) {
-			String borrowRate = rateInfoDo.getValue2();
-			JSONArray array = JSONObject.parseArray(borrowRate);
-			double rate = 0;
-			double serviceRate = 0;
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject info = array.getJSONObject(i);
-				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-						rate = info.getDouble("borrowSevenDay");
-				}
-				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					serviceRate = info.getDouble("borrowSevenDay");
-				}
-			}
-			newRate = BigDecimal.valueOf(rate / 100);
-			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
-		}		
-		
 		// 上期借款手续费
-		BigDecimal borrowPoundage = BigDecimal.ZERO;
+		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
 		// 上期借款利息
-		BigDecimal borrowRateAmount = BigDecimal.ZERO;
-		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
-		
-		if(afBorrowCashDo.getRenewalNum()>0){
-			// 续借过
-			AfRenewalDetailDo renewalDetail = afRenewalDetailDao.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
-			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
-			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
-			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
-			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
-		}else {
-			// 未续借过
-			borrowPoundage = afBorrowCashDo.getPoundage();
-			borrowRateAmount = afBorrowCashDo.getRateAmount();
-		}
-
+		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
 		
 		// 续借本金（总） 
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());

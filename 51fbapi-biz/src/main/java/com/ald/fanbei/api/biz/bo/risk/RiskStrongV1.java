@@ -22,12 +22,12 @@ import org.dbunit.util.Base64;
 public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
 
-	public RiskStrongV1(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost);
+	public RiskStrongV1(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene) {
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -70,7 +70,7 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		String notifyUrl = "/third/risk/registerStrongRiskV1";
 		JSONObject riskInfo = new JSONObject();
 		riskInfo.put("channel", CHANNEL);
-		riskInfo.put("scene", "20");
+		riskInfo.put("scene", riskScene);
 		riskInfo.put("notifyUrl", notifyHost + notifyUrl);
 		riskInfo.put("reqExt", "");
 		setRiskInfo(JSON.toJSONString(riskInfo));
@@ -80,6 +80,7 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		eventInfo.put("appName", appName);
 		eventInfo.put("cardNo", cardNum);
 		eventInfo.put("blackBox", blackBox);
+		eventInfo.put("bqsBlackBox", bqsBlackBox);
 		eventInfo.put("ipAddress", ipAddress);
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 

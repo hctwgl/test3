@@ -1,9 +1,7 @@
 package com.ald.fanbei.api.web.api.bill;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import jodd.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -50,6 +52,12 @@ public class GetMyBorrowV1Api implements ApiHandle {
     @Resource
     AfResourceService afResourceService;
 
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -73,6 +81,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             AfInterimAuDo afInterimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
             BigDecimal interimAmount = new BigDecimal(0);
             BigDecimal usableAmount = new BigDecimal(0);
+            Boolean interimExist =false;
             if (afInterimAuDo != null) {
                 interimAmount = afInterimAuDo.getInterimAmount();
                 usableAmount = interimAmount.subtract(afInterimAuDo.getInterimUsed());
@@ -84,6 +93,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     failureStatus = 1;
                     interimAmount = new BigDecimal(0);
                     usableAmount = new BigDecimal(0);
+                }else{
+                    interimExist=true;
                 }
                 map.put("failureStatus", failureStatus);
             } else {
@@ -100,6 +111,96 @@ public class GetMyBorrowV1Api implements ApiHandle {
             } else {
                 map.put("floatType", 0);//未开启悬浮窗
             }
+            //加入线上额度(即购物额度) 线下 add by caowu 2018/1/10 15:25
+            AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
+            AfUserAccountSenceDo afUserAccountSenceTrain = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
+            // 线上,线下信用额度
+            BigDecimal onlineAuAmount = BigDecimal.ZERO;
+            BigDecimal trainAuAmount = BigDecimal.ZERO;
+            // 线上,线下可用额度
+            BigDecimal onlineAmount = BigDecimal.ZERO;
+            BigDecimal trainAmount = BigDecimal.ZERO;
+            if(afUserAccountSenceOnline!=null){
+                onlineAuAmount=afUserAccountSenceOnline.getAuAmount();
+                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceOnline.getUsedAmount());
+            }
+            if(afUserAccountSenceTrain!=null){
+                trainAuAmount=afUserAccountSenceTrain.getAuAmount();
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
+            }
+            map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
+            map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
+            String onlineDesc="总额度"+onlineAuAmount+"元";
+            if(interimExist){//有临时额度下的描述
+                onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元（含"+interimAmount+"临时额度）";
+            }
+            map.put("onlineDesc",onlineDesc);//线上描述
+            map.put("onlineStatus","4");
+            //线下
+            map.put("trainAuAmount", trainAuAmount);//线下授予额度
+            map.put("trainAmount", trainAmount);//线下可用额度
+
+            //信用描述
+            AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
+            String value3=afResourceDoAuth.getValue3();
+            String value4=afResourceDoAuth.getValue4();
+            //现金贷 未通过强风控 状态
+            if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
+                List<String> listDesc=getAuthDesc(value3,"three");
+                map.put("showAmount", listDesc.get(0));
+                map.put("desc", listDesc.get(1));
+                map.put("borrowStatus","3");
+
+            }else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
+                    &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    &&StringUtil.equals(userAuth.getFacesStatus(),"N")){
+                //尚未认证状态
+                List<String> listDesc1=getAuthDesc(value3,"one");
+                List<String> listDesc2=getAuthDesc(value4,"one");
+                map.put("showAmount", listDesc1.get(0));
+                map.put("desc", listDesc1.get(1));
+                map.put("borrowStatus","1");
+                map.put("onlineShowAmount", listDesc2.get(0));
+                map.put("onlineDesc", listDesc2.get(1));
+                map.put("onlineStatus","1");
+            } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
+                //认证一般中途退出了
+                String status="2";
+                //认证人脸没有认证银行卡 状态为5
+                if(StringUtil.equals(userAuth.getFacesStatus(),"Y")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                    status="5";
+                }
+                List<String> listDesc1=getAuthDesc(value3,"two");
+                List<String> listDesc2=getAuthDesc(value4,"two");
+                map.put("showAmount", listDesc1.get(0));
+                map.put("desc", listDesc1.get(1));
+                map.put("borrowStatus",status);
+                map.put("onlineShowAmount", listDesc2.get(0));
+                map.put("onlineDesc", listDesc2.get(1));
+                map.put("onlineStatus",status);
+            }
+            //真实姓名
+            map.put("realName", afUserDo.getRealName()==null ? "":afUserDo.getRealName());
+
+            //购物额度 未通过强风控
+            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+           // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
+            if(afUserAuthStatusDo == null || afUserAuthStatusDo.getStatus().equals("N")){
+                List<String> listDesc=getAuthDesc(value4,"two");
+                map.put("onlineShowAmount", listDesc.get(0));
+                map.put("onlineDesc", listDesc.get(1));
+                map.put("onlineStatus","3");
+            }
+            else if(afUserAuthStatusDo.getStatus().equals("C")){
+                List<String> listDesc=getAuthDesc(value4,"three");
+                map.put("onlineShowAmount", listDesc.get(0));
+                map.put("onlineDesc", listDesc.get(1));
+                map.put("onlineStatus","3");
+            }
+
+
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())) {
                 // 获取用户额度
                 AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
@@ -176,13 +277,21 @@ public class GetMyBorrowV1Api implements ApiHandle {
                         map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
                     }
                 }
-
-
-                map.put("auAmount", auAmount.add(interimAmount));
-                map.put("amount", amount.add(usableAmount));
+                int onRepaymentCount = afBorrowBillService.getOnRepaymentCountByUserId(userId);
+                map.put("onRepaymentCount", onRepaymentCount);
                 map.put("overduedMonth", overduedMonth);
                 map.put("outMoney", outMoney);
                 map.put("notOutMoeny", notOutMoeny);
+                map.put("borrowStatus","4");
+                map.put("desc", "总额度"+auAmount+"元");
+                if(context.getAppVersion() >= 406){
+                    map.put("auAmount", auAmount);
+                    map.put("amount", amount);
+                }
+                else {
+                    map.put("auAmount", auAmount.add(interimAmount).add(onlineAuAmount));
+                    map.put("amount", amount.add(usableAmount).add(onlineAmount));
+                }
             }
             resp.setResponseData(map);
         } catch (Exception e) {
@@ -191,6 +300,24 @@ public class GetMyBorrowV1Api implements ApiHandle {
             return resp;
         }
         return resp;
+    }
+
+    public List<String> getAuthDesc(String value,String status){
+        List<String> listString = new ArrayList();
+        JSONArray jsonArray = JSON.parseArray(value);
+        boolean judge=true;
+        for(int i =0;i<jsonArray.size();i++){
+            if(judge){
+                JSONObject jsonObject =jsonArray.getJSONObject(i);
+                String jsonStatus=jsonObject.getString("status");
+                if(status.equals(jsonStatus)){
+                    listString.add(jsonObject.getString("quotaSection"));
+                    listString.add(jsonObject.getString("desc"));
+                    judge=false;
+                }
+            }
+        }
+        return listString;
     }
 
 }

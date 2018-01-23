@@ -24,16 +24,18 @@ public class ApplyLegalBorrowCashParam {
 	private BigDecimal latitude;
 	@NotNull
 	private BigDecimal longitude;
-	@NotNull
+	
 	private String province;
-	@NotNull
+	
 	private String city;
-	@NotNull
+	
 	private String county;
 	@NotNull
 	private String address;
 	@NotNull
 	private String blackBox;
+	@NotNull
+	private String bqsBlackBox;
 	@NotNull
 	private String borrowRemark;
 	@NotNull
@@ -160,5 +162,13 @@ public class ApplyLegalBorrowCashParam {
 	}
 	public void setDeliveryPhone(String deliveryPhone) {
 		this.deliveryPhone = deliveryPhone;
+	}
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		this.bqsBlackBox = bqsBlackBox;
 	}
 }

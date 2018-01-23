@@ -55,11 +55,11 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//资产方及启用状态校验
-			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+//			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
+			/*if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
-			}
+			}*/
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -71,7 +71,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			String realDataJson = "";
 			EdspayBackPdfReqBo edspayBackPdfReqBo  = null;
 			try {
-				realDataJson = AesUtil.decryptFromBase64(data, "2KA4WGA857FFCC65");
+				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
 				edspayBackPdfReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackPdfReqBo.class);
 			} catch (Exception e) {
 				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -104,7 +105,14 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			} else {
 				try {
-					RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+					JSONObject params = new JSONObject();
+					String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+					String bqsBlackBox = request.getParameter("bqsBlackBox");
+					params.put("ipAddress", CommonUtil.getIpAddr(request));
+					params.put("appName",appName);
+					params.put("bqsBlackBox",bqsBlackBox);
+					params.put("blackBox",request.getParameter("blackBox"));
+					RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 					String poundage = riskResp.getPoundageRate();
 					if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 						logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

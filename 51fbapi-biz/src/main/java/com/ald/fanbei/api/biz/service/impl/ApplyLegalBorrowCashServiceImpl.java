@@ -131,6 +131,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, 
 			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
+
+		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
 		String oneDay = "";
 		String twoDay = "";
@@ -138,7 +140,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			oneDay = afResourceDo.getTypeDesc().split(",")[0];
 			twoDay = afResourceDo.getTypeDesc().split(",")[1];
 		}
-		BigDecimal oriRate = riskUtil.getRiskOriRate(userId);
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = riskUtil.getObjectWithResourceDolist(list);
@@ -538,7 +539,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				riskOrderNo, accountDo.getUserName(), 
 				param.getAmount(), afBorrowCashDo.getPoundage(), 
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
-				afBorrowCashDo.getCardName(), null, "", riskDataMap);
+				afBorrowCashDo.getCardName(), null, "", riskDataMap,param.getBqsBlackBox(),null);
 		return verifyBo;
 	}
 
