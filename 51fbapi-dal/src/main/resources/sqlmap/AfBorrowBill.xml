@@ -842,7 +842,7 @@
 		SELECT
 		COUNT(1)
 		from
-		af_borrow_bill
-		where `status` = 'D'AND is_delete = 0 AND user_id = #{userId}
+		af_repayment
+		where `status` = 'P'AND is_delete = 0 AND user_id = #{userId}
 	</select>
 </mapper>

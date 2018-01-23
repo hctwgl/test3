@@ -227,40 +227,40 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     String consumeTag = jsonObject.get("consumeTag").toString();
                     if ("INTEREST_RATE".equals(consumeTag)){//借款利率
                         if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeSevenDay"));
+                            map.put("yearRate",jsonObject.get("consumeSecondType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("yearRate",jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
-                                map.put("yearRate",jsonObject.get("consumeSevenDay"));
+                                map.put("yearRate",jsonObject.get("consumeFirstType"));
                             }else if(StringUtils.equals(twoDay,type)){
-                                map.put("yearRate",jsonObject.get("consumeFourteenDay"));
+                                map.put("yearRate",jsonObject.get("consumeSecondType"));
                             }
                         }
                     }
                     if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
                         if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeSevenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
-                                map.put("poundageRate",jsonObject.get("consumeSevenDay"));
+                                map.put("poundageRate",jsonObject.get("consumeFirstType"));
                             }else if(StringUtils.equals(twoDay,type)){
-                                map.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+                                map.put("poundageRate",jsonObject.get("consumeSecondType"));
                             }
                         }
                     }
                     if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
                         if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeSevenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(StringUtils.equals(oneDay,type)){
-                                map.put("overdueRate",jsonObject.get("consumeSevenDay"));
+                                map.put("overdueRate",jsonObject.get("consumeFirstType"));
                             }else if(StringUtils.equals(twoDay,type)){
-                                map.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+                                map.put("overdueRate",jsonObject.get("consumeSecondType"));
                             }
                         }
                     }
