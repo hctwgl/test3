@@ -11,7 +11,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.JpushUtilV2;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -32,8 +34,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
  */
 @Service("jPushService")
 public class JpushServiceimpl extends BaseService implements JpushService {
-	@Resource
-	JpushUtil jpushUtil;
+	@Autowired
+	JpushUtilV2 jpushUtil;
         @Resource 
         AfResourceService afResourceService;
 	@Resource
