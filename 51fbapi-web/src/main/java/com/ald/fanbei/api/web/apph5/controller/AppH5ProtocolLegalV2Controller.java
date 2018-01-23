@@ -83,12 +83,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
-		if (userName == null || !webContext.isLogin()) {
+		/*if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));//借款本金
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
@@ -269,12 +269,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 */
 	@RequestMapping(value = {"protocolLegalCashLoanV2"}, method = RequestMethod.GET)
 	public String protocolLegalCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		if (userName == null || !webContext.isLogin()) {
+		/*if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 
@@ -647,12 +647,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 	@RequestMapping(value = {"protocolLegalRenewalV2"}, method = RequestMethod.GET)
 	public void protocolLegalRenewal(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		if (userName == null || !webContext.isLogin()) {
+		/*if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Long renewalId = NumberUtil.objToLongDefault(request.getParameter("renewalId"), 0l);
 		int renewalDay = NumberUtil.objToIntDefault(request.getParameter("renewalDay"), 0);
@@ -789,11 +789,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 */
 	@RequestMapping(value = { "protocolAgentBuyService" }, method = RequestMethod.GET)
 	public void protocolAgentBuyService(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(userName == null || !webContext.isLogin() ) {
+		/*if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -821,13 +821,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 */
 	@RequestMapping(value = { "platformServiceProtocol" }, method = RequestMethod.GET)
 	public void platformServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
-		if(userName == null || !webContext.isLogin() ) {
+		/*if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 
