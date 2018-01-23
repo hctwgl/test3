@@ -20,6 +20,8 @@ public interface AfUserSealDao {
 
     AfUserSealDo selectByUserName(String userName);
 
+    AfUserSealDo selectBySealInfo(AfUserSealDo afUserSealDo);
+
     List<AfUserSealDo> selectByUserType(String type);
 
     int updateByUserId(AfUserSealDo record);

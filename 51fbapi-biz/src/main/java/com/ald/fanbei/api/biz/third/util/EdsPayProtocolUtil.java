@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackPdfReqBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackSealReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -12,12 +13,15 @@ import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
+import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserSealDo;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +40,8 @@ public class EdsPayProtocolUtil extends AbstractThird {
     AfAssetPackageDao afAssetPackageDao;
     @Resource
     AfLegalContractPdfCreateService afLegalContractPdfCreateService;
+    @Resource
+    AfUserSealDao afUserSealDao;
 
     public AssetSideRespBo giveBackPdfInfo(String timestamp, String data, String sign, String appId) {
         // 响应数据,默认成功
@@ -67,9 +73,9 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
                 edspayBackPdfReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackPdfReqBo.class);
             } catch (Exception e) {
-                logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
+                logger.error("eProtocolUtil giveBackPdfInfo parseJosn error", e);
             } finally {
-                logger.info("EdspayController giveBackCreditInfo,appId=" + appId + ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+                logger.info("eProtocolUtil giveBackPdfInfo,appId=" + appId + ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
             }
             if (edspayBackPdfReqBo == null) {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
@@ -135,7 +141,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
             String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType, orderNo, protocolUrl, borrowerName, list);
 //			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
             if (url == null || "".equals(url)) {
-                logger.error("EdspayController giveBackCreditInfo url exist error records,appId=" + appId + ",sendTime=" + timestamp);
+                logger.error("eProtocolUtil giveBackPdfInfo url exist error records,appId=" + appId + ",sendTime=" + timestamp);
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
                 return notifyRespBo;
             }
@@ -143,7 +149,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
         } catch (Exception e) {
             //系统异常
-            logger.error("EdspayController giveBackCreditInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
+            logger.error("eProtocolUtil giveBackPdfInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
         }
         return notifyRespBo;
@@ -164,4 +170,73 @@ public class EdsPayProtocolUtil extends AbstractThird {
         }
         return assideResourceInfo;
     }
+
+    public AssetSideRespBo giveBackSealInfo(String timestamp, String data, String sign, String appId) {
+        // 响应数据,默认成功
+        AssetSideRespBo notifyRespBo = new AssetSideRespBo();
+        try {
+            //获取对应资产方配置信息
+            AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
+            if (assideResourceInfo == null) {
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
+                return notifyRespBo;
+            }
+            //请求时间校验
+            Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp, 0L);
+            int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp, DateUtil.getCurrSecondTimeStamp(), 60);
+            if (result > 0) {
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
+                return notifyRespBo;
+            }
+            //签名验证相关值处理
+            String realDataJson = "";
+            EdspayBackSealReqBo edspayBackSealReqBo = null;
+            try {
+                realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+                edspayBackSealReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackSealReqBo.class);
+            } catch (Exception e) {
+                logger.error("eProtocolUtil giveBackSealInfo parseJosn error", e);
+            } finally {
+                logger.info("eProtocolUtil giveBackSealInfo,appId=" + appId + ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+            }
+            if (edspayBackSealReqBo == null) {
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
+                return notifyRespBo;
+            }
+            String currSign = DigestUtil.MD5(realDataJson);
+            if (!StringUtil.equals(currSign, sign)) {// 验签成功
+                //验证签名失败
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
+                return notifyRespBo;
+            }
+            //签名成功,业务处理
+            List<AfUserSealDo> afUserSealDoList = edspayBackSealReqBo.getAfUserSealDoList();
+            List<AfUserSealDo> list = JSONArray.toList(JSONArray.fromObject(afUserSealDoList), AfUserSealDo.class);
+            if (list == null || list.size() <= 0) {
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+                return notifyRespBo;
+            }
+            List<AfUserSealDo> newSealList = new ArrayList<>();
+            //具体操作
+            for (AfUserSealDo seal:list) {
+                AfUserSealDo sealDo = afUserSealDao.selectBySealInfo(seal);
+                if (sealDo != null){
+                    newSealList.add(sealDo);
+                }
+            }
+            if (newSealList.size() <= 0) {
+                logger.error("eProtocolUtil giveBackSealInfo newSealList exist error records,appId=" + appId + ",sendTime=" + timestamp);
+                notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+                return notifyRespBo;
+            }
+            notifyRespBo.setData(String.valueOf(newSealList));
+            notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
+        } catch (Exception e) {
+            //系统异常
+            logger.error("eProtocolUtil giveBackSealInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
+            notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+        }
+        return notifyRespBo;
+    }
+
 }
