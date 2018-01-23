@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author Jiang Rongbo
  * @version 1.0.0 初始化
- * @date 2018-01-19 16:50:32
+ * @date 2018-01-23 13:41:23
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfLoanPeriodsDo extends AbstractSerial {
@@ -21,17 +21,6 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
-    /**
-     * 
-     */
-    private Date gmtCreate;
-
-    /**
-     * 
-     */
-    private Date gmtModified;
-
     /**
      * 用户编号
      */
@@ -53,9 +42,9 @@ import java.math.BigDecimal;
     private String prdType;
 
     /**
-     * 计划还款日期
+     * 当期本金
      */
-    private Date gmtPlanRepay;
+    private BigDecimal amount;
 
     /**
      * 借钱总期数
@@ -63,7 +52,7 @@ import java.math.BigDecimal;
     private Integer periods;
 
     /**
-     * 期数
+     * 当期期数
      */
     private Integer nper;
 
@@ -71,6 +60,11 @@ import java.math.BigDecimal;
      * 是否还款状态【Y:已还款 ，P:部分还款，D:还款中 N:未还款，C:关闭】
      */
     private String status;
+
+    /**
+     * 对应的还款Id
+     */
+    private Long repayId;
 
     /**
      * 
@@ -86,11 +80,6 @@ import java.math.BigDecimal;
      * 
      */
     private Integer overdueDays;
-
-    /**
-     * 还款Id
-     */
-    private Long repayId;
 
     /**
      * 利息费
@@ -113,9 +102,9 @@ import java.math.BigDecimal;
     private BigDecimal repayAmount;
 
     /**
-     * 最后一次还款时间
+     * 提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      */
-    private Date gmtLastRepay;
+    private String preRepayStatus;
 
     /**
      * 优惠券Id
@@ -135,27 +124,38 @@ import java.math.BigDecimal;
     /**
      * 还款手续费
      */
-    private BigDecimal paidServiceFee;
+    private BigDecimal repaidServiceFee;
 
     /**
      * 还款利息费
      */
-    private BigDecimal paidInterestFee;
+    private BigDecimal repaidInterestFee;
 
     /**
      * 已还逾期费
      */
-    private BigDecimal paidOverdueAmount;
+    private BigDecimal repaidOverdueAmount;
 
     /**
-     * 当期本金
+     * 最后一次还款时间
      */
-    private BigDecimal amount;
+    private Date gmtLastRepay;
 
     /**
-     * 提前还款状态,"Y"表示提前还款，"N"表示非提前还款
+     * 
      */
-    private String preRepayStatus;
+    private Date gmtCreate;
+
+    /**
+     * 
+     */
+    private Date gmtModified;
+
+    /**
+     * 计划还款日期
+     */
+    private Date gmtPlanRepay;
+
 
 
     /**
@@ -176,43 +176,6 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtCreate 要设置的
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtModified 要设置的
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
-
     /**
      * 获取用户编号
      *
@@ -286,21 +249,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取计划还款日期
+     * 获取当期本金
      *
-     * @return 计划还款日期
+     * @return 当期本金
      */
-    public Date getGmtPlanRepay(){
-      return gmtPlanRepay;
+    public BigDecimal getAmount(){
+      return amount;
     }
 
     /**
-     * 设置计划还款日期
+     * 设置当期本金
      * 
-     * @param gmtPlanRepay 要设置的计划还款日期
+     * @param amount 要设置的当期本金
      */
-    public void setGmtPlanRepay(Date gmtPlanRepay){
-      this.gmtPlanRepay = gmtPlanRepay;
+    public void setAmount(BigDecimal amount){
+      this.amount = amount;
     }
 
     /**
@@ -322,18 +285,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取期数
+     * 获取当期期数
      *
-     * @return 期数
+     * @return 当期期数
      */
     public Integer getNper(){
       return nper;
     }
 
     /**
-     * 设置期数
+     * 设置当期期数
      * 
-     * @param nper 要设置的期数
+     * @param nper 要设置的当期期数
      */
     public void setNper(Integer nper){
       this.nper = nper;
@@ -355,6 +318,24 @@ import java.math.BigDecimal;
      */
     public void setStatus(String status){
       this.status = status;
+    }
+
+    /**
+     * 获取对应的还款Id
+     *
+     * @return 对应的还款Id
+     */
+    public Long getRepayId(){
+      return repayId;
+    }
+
+    /**
+     * 设置对应的还款Id
+     * 
+     * @param repayId 要设置的对应的还款Id
+     */
+    public void setRepayId(Long repayId){
+      this.repayId = repayId;
     }
 
     /**
@@ -409,24 +390,6 @@ import java.math.BigDecimal;
      */
     public void setOverdueDays(Integer overdueDays){
       this.overdueDays = overdueDays;
-    }
-
-    /**
-     * 获取还款Id
-     *
-     * @return 还款Id
-     */
-    public Long getRepayId(){
-      return repayId;
-    }
-
-    /**
-     * 设置还款Id
-     * 
-     * @param repayId 要设置的还款Id
-     */
-    public void setRepayId(Long repayId){
-      this.repayId = repayId;
     }
 
     /**
@@ -502,21 +465,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取最后一次还款时间
+     * 获取提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      *
-     * @return 最后一次还款时间
+     * @return 提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      */
-    public Date getGmtLastRepay(){
-      return gmtLastRepay;
+    public String getPreRepayStatus(){
+      return preRepayStatus;
     }
 
     /**
-     * 设置最后一次还款时间
+     * 设置提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      * 
-     * @param gmtLastRepay 要设置的最后一次还款时间
+     * @param preRepayStatus 要设置的提前还款状态,"Y"表示提前还款，"N"表示非提前还款
      */
-    public void setGmtLastRepay(Date gmtLastRepay){
-      this.gmtLastRepay = gmtLastRepay;
+    public void setPreRepayStatus(String preRepayStatus){
+      this.preRepayStatus = preRepayStatus;
     }
 
     /**
@@ -578,17 +541,17 @@ import java.math.BigDecimal;
      *
      * @return 还款手续费
      */
-    public BigDecimal getPaidServiceFee(){
-      return paidServiceFee;
+    public BigDecimal getRepaidServiceFee(){
+      return repaidServiceFee;
     }
 
     /**
      * 设置还款手续费
      * 
-     * @param paidServiceFee 要设置的还款手续费
+     * @param repaidServiceFee 要设置的还款手续费
      */
-    public void setPaidServiceFee(BigDecimal paidServiceFee){
-      this.paidServiceFee = paidServiceFee;
+    public void setRepaidServiceFee(BigDecimal repaidServiceFee){
+      this.repaidServiceFee = repaidServiceFee;
     }
 
     /**
@@ -596,17 +559,17 @@ import java.math.BigDecimal;
      *
      * @return 还款利息费
      */
-    public BigDecimal getPaidInterestFee(){
-      return paidInterestFee;
+    public BigDecimal getRepaidInterestFee(){
+      return repaidInterestFee;
     }
 
     /**
      * 设置还款利息费
      * 
-     * @param paidInterestFee 要设置的还款利息费
+     * @param repaidInterestFee 要设置的还款利息费
      */
-    public void setPaidInterestFee(BigDecimal paidInterestFee){
-      this.paidInterestFee = paidInterestFee;
+    public void setRepaidInterestFee(BigDecimal repaidInterestFee){
+      this.repaidInterestFee = repaidInterestFee;
     }
 
     /**
@@ -614,53 +577,90 @@ import java.math.BigDecimal;
      *
      * @return 已还逾期费
      */
-    public BigDecimal getPaidOverdueAmount(){
-      return paidOverdueAmount;
+    public BigDecimal getRepaidOverdueAmount(){
+      return repaidOverdueAmount;
     }
 
     /**
      * 设置已还逾期费
      * 
-     * @param paidOverdueAmount 要设置的已还逾期费
+     * @param repaidOverdueAmount 要设置的已还逾期费
      */
-    public void setPaidOverdueAmount(BigDecimal paidOverdueAmount){
-      this.paidOverdueAmount = paidOverdueAmount;
+    public void setRepaidOverdueAmount(BigDecimal repaidOverdueAmount){
+      this.repaidOverdueAmount = repaidOverdueAmount;
     }
 
     /**
-     * 获取当期本金
+     * 获取最后一次还款时间
      *
-     * @return 当期本金
+     * @return 最后一次还款时间
      */
-    public BigDecimal getAmount(){
-      return amount;
+    public Date getGmtLastRepay(){
+      return gmtLastRepay;
     }
 
     /**
-     * 设置当期本金
+     * 设置最后一次还款时间
      * 
-     * @param amount 要设置的当期本金
+     * @param gmtLastRepay 要设置的最后一次还款时间
      */
-    public void setAmount(BigDecimal amount){
-      this.amount = amount;
+    public void setGmtLastRepay(Date gmtLastRepay){
+      this.gmtLastRepay = gmtLastRepay;
     }
 
     /**
-     * 获取提前还款状态,"Y"表示提前还款，"N"表示非提前还款
+     * 获取
      *
-     * @return 提前还款状态,"Y"表示提前还款，"N"表示非提前还款
+     * @return 
      */
-    public String getPreRepayStatus(){
-      return preRepayStatus;
+    public Date getGmtCreate(){
+      return gmtCreate;
     }
 
     /**
-     * 设置提前还款状态,"Y"表示提前还款，"N"表示非提前还款
+     * 设置
      * 
-     * @param preRepayStatus 要设置的提前还款状态,"Y"表示提前还款，"N"表示非提前还款
+     * @param gmtCreate 要设置的
      */
-    public void setPreRepayStatus(String preRepayStatus){
-      this.preRepayStatus = preRepayStatus;
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
     }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param gmtModified 要设置的
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
+    /**
+     * 获取计划还款日期
+     *
+     * @return 计划还款日期
+     */
+    public Date getGmtPlanRepay(){
+      return gmtPlanRepay;
+    }
+
+    /**
+     * 设置计划还款日期
+     * 
+     * @param gmtPlanRepay 要设置的计划还款日期
+     */
+    public void setGmtPlanRepay(Date gmtPlanRepay){
+      this.gmtPlanRepay = gmtPlanRepay;
+    }
+
 
 }

@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,name,repay_no,repay_amount,actual_amount,loan_id,user_id,pay_trade_no,trade_no,user_coupon_id,coupon_amount,user_amount,status,card_no,card_name,remark,pre_repay_status,prd_type,repay_periods 
+        id rid,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,refer_loan_periods,refer_loan_id,card_no,card_name,remark,gmt_create,gmt_modified,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -14,17 +14,14 @@
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="gmtCreate !=null">
-            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="gmtModified !=null">
-            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        <if test="loanId != null and loanId != ''">
+            AND loan_id = #{loanId,jdbcType=INTEGER}
         </if>
         <if test="name != null and name != ''">
             AND name = #{name,jdbcType=VARCHAR}
-        </if>
-        <if test="repayNo != null and repayNo != ''">
-            AND repay_no = #{repayNo,jdbcType=VARCHAR}
         </if>
         <if test="repayAmount != null and repayAmount != ''">
             AND repay_amount = #{repayAmount,jdbcType=DECIMAL}
@@ -32,17 +29,14 @@
         <if test="actualAmount != null and actualAmount != ''">
             AND actual_amount = #{actualAmount,jdbcType=DECIMAL}
         </if>
-        <if test="loanId != null and loanId != ''">
-            AND loan_id = #{loanId,jdbcType=INTEGER}
-        </if>
-        <if test="userId != null and userId != ''">
-            AND user_id = #{userId,jdbcType=INTEGER}
-        </if>
-        <if test="payTradeNo != null and payTradeNo != ''">
-            AND pay_trade_no = #{payTradeNo,jdbcType=VARCHAR}
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
         </if>
         <if test="tradeNo != null and tradeNo != ''">
             AND trade_no = #{tradeNo,jdbcType=VARCHAR}
+        </if>
+        <if test="tradeNoOut != null and tradeNoOut != ''">
+            AND trade_no_out = #{tradeNoOut,jdbcType=VARCHAR}
         </if>
         <if test="userCouponId != null and userCouponId != ''">
             AND user_coupon_id = #{userCouponId,jdbcType=INTEGER}
@@ -53,8 +47,17 @@
         <if test="userAmount != null and userAmount != ''">
             AND user_amount = #{userAmount,jdbcType=DECIMAL}
         </if>
-        <if test="status != null and status != ''">
-            AND status = #{status,jdbcType=VARCHAR}
+        <if test="preRepayStatus != null and preRepayStatus != ''">
+            AND pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="prdType != null and prdType != ''">
+            AND prd_type = #{prdType,jdbcType=VARCHAR}
+        </if>
+        <if test="referLoanPeriods != null and referLoanPeriods != ''">
+            AND refer_loan_periods = #{referLoanPeriods,jdbcType=VARCHAR}
+        </if>
+        <if test="referLoanId != null and referLoanId != ''">
+            AND refer_loan_id = #{referLoanId,jdbcType=VARCHAR}
         </if>
         <if test="cardNo != null and cardNo != ''">
             AND card_no = #{cardNo,jdbcType=VARCHAR}
@@ -65,14 +68,11 @@
         <if test="remark != null and remark != ''">
             AND remark = #{remark,jdbcType=VARCHAR}
         </if>
-        <if test="preRepayStatus != null and preRepayStatus != ''">
-            AND pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR}
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="prdType != null and prdType != ''">
-            AND prd_type = #{prdType,jdbcType=VARCHAR}
-        </if>
-        <if test="repayPeriods != null and repayPeriods != ''">
-            AND repay_periods = #{repayPeriods,jdbcType=VARCHAR}
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
     </sql>
 
@@ -84,17 +84,14 @@
     
         INSERT INTO af_loan_repayment
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
+	        <if test="userId != null">        
+	            user_id,
 	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
+	        <if test="loanId != null">        
+	            loan_id,
 	        </if>
 	        <if test="name != null">        
 	            name,
-	        </if>
-	        <if test="repayNo != null">        
-	            repay_no,
 	        </if>
 	        <if test="repayAmount != null">        
 	            repay_amount,
@@ -102,17 +99,14 @@
 	        <if test="actualAmount != null">        
 	            actual_amount,
 	        </if>
-	        <if test="loanId != null">        
-	            loan_id,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="payTradeNo != null">        
-	            pay_trade_no,
+	        <if test="status != null">        
+	            status,
 	        </if>
 	        <if test="tradeNo != null">        
 	            trade_no,
+	        </if>
+	        <if test="tradeNoOut != null">        
+	            trade_no_out,
 	        </if>
 	        <if test="userCouponId != null">        
 	            user_coupon_id,
@@ -123,8 +117,17 @@
 	        <if test="userAmount != null">        
 	            user_amount,
 	        </if>
-	        <if test="status != null">        
-	            status,
+	        <if test="preRepayStatus != null">        
+	            pre_repay_status,
+	        </if>
+	        <if test="prdType != null">        
+	            prd_type,
+	        </if>
+	        <if test="referLoanPeriods != null">        
+	            refer_loan_periods,
+	        </if>
+	        <if test="referLoanId != null">        
+	            refer_loan_id,
 	        </if>
 	        <if test="cardNo != null">        
 	            card_no,
@@ -135,29 +138,23 @@
 	        <if test="remark != null">        
 	            remark,
 	        </if>
-	        <if test="preRepayStatus != null">        
-	            pre_repay_status,
+	        <if test="gmtCreate != null">        
+	            gmt_create,
 	        </if>
-	        <if test="prdType != null">        
-	            prd_type,
-	        </if>
-	        <if test="repayPeriods != null">        
-	            repay_periods,
+	        <if test="gmtModified != null">        
+	            gmt_modified,
 	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
 		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
+		    <if test="loanId != null" >
+		       #{loanId,jdbcType=INTEGER},
 		    </if>
 		    <if test="name != null" >
 		       #{name,jdbcType=VARCHAR},
-		    </if>
-		    <if test="repayNo != null" >
-		       #{repayNo,jdbcType=VARCHAR},
 		    </if>
 		    <if test="repayAmount != null" >
 		       #{repayAmount,jdbcType=DECIMAL},
@@ -165,17 +162,14 @@
 		    <if test="actualAmount != null" >
 		       #{actualAmount,jdbcType=DECIMAL},
 		    </if>
-		    <if test="loanId != null" >
-		       #{loanId,jdbcType=INTEGER},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="payTradeNo != null" >
-		       #{payTradeNo,jdbcType=VARCHAR},
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
 		    </if>
 		    <if test="tradeNo != null" >
 		       #{tradeNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="tradeNoOut != null" >
+		       #{tradeNoOut,jdbcType=VARCHAR},
 		    </if>
 		    <if test="userCouponId != null" >
 		       #{userCouponId,jdbcType=INTEGER},
@@ -186,8 +180,17 @@
 		    <if test="userAmount != null" >
 		       #{userAmount,jdbcType=DECIMAL},
 		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=VARCHAR},
+		    <if test="preRepayStatus != null" >
+		       #{preRepayStatus,jdbcType=VARCHAR},
+		    </if>
+		    <if test="prdType != null" >
+		       #{prdType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="referLoanPeriods != null" >
+		       #{referLoanPeriods,jdbcType=VARCHAR},
+		    </if>
+		    <if test="referLoanId != null" >
+		       #{referLoanId,jdbcType=VARCHAR},
 		    </if>
 		    <if test="cardNo != null" >
 		       #{cardNo,jdbcType=VARCHAR},
@@ -198,14 +201,11 @@
 		    <if test="remark != null" >
 		       #{remark,jdbcType=VARCHAR},
 		    </if>
-		    <if test="preRepayStatus != null" >
-		       #{preRepayStatus,jdbcType=VARCHAR},
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
-		    <if test="prdType != null" >
-		       #{prdType,jdbcType=VARCHAR},
-		    </if>
-		    <if test="repayPeriods != null" >
-		       #{repayPeriods,jdbcType=VARCHAR},
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
         </trim>
     </insert>
@@ -213,17 +213,14 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo">
         UPDATE af_loan_repayment
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            <if test="loanId != null and loanId != '' ">        
+                loan_id = #{loanId,jdbcType=INTEGER},                
             </if>
             <if test="name != null and name != '' ">        
                 name = #{name,jdbcType=VARCHAR},                
-            </if>
-            <if test="repayNo != null and repayNo != '' ">        
-                repay_no = #{repayNo,jdbcType=VARCHAR},                
             </if>
             <if test="repayAmount != null and repayAmount != '' ">        
                 repay_amount = #{repayAmount,jdbcType=DECIMAL},                
@@ -231,17 +228,14 @@
             <if test="actualAmount != null and actualAmount != '' ">        
                 actual_amount = #{actualAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="loanId != null and loanId != '' ">        
-                loan_id = #{loanId,jdbcType=INTEGER},                
-            </if>
-            <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
-            </if>
-            <if test="payTradeNo != null and payTradeNo != '' ">        
-                pay_trade_no = #{payTradeNo,jdbcType=VARCHAR},                
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
             </if>
             <if test="tradeNo != null and tradeNo != '' ">        
                 trade_no = #{tradeNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="tradeNoOut != null and tradeNoOut != '' ">        
+                trade_no_out = #{tradeNoOut,jdbcType=VARCHAR},                
             </if>
             <if test="userCouponId != null and userCouponId != '' ">        
                 user_coupon_id = #{userCouponId,jdbcType=INTEGER},                
@@ -252,8 +246,17 @@
             <if test="userAmount != null and userAmount != '' ">        
                 user_amount = #{userAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=VARCHAR},                
+            <if test="preRepayStatus != null and preRepayStatus != '' ">        
+                pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR},                
+            </if>
+            <if test="prdType != null and prdType != '' ">        
+                prd_type = #{prdType,jdbcType=VARCHAR},                
+            </if>
+            <if test="referLoanPeriods != null and referLoanPeriods != '' ">        
+                refer_loan_periods = #{referLoanPeriods,jdbcType=VARCHAR},                
+            </if>
+            <if test="referLoanId != null and referLoanId != '' ">        
+                refer_loan_id = #{referLoanId,jdbcType=VARCHAR},                
             </if>
             <if test="cardNo != null and cardNo != '' ">        
                 card_no = #{cardNo,jdbcType=VARCHAR},                
@@ -264,14 +267,11 @@
             <if test="remark != null and remark != '' ">        
                 remark = #{remark,jdbcType=VARCHAR},                
             </if>
-            <if test="preRepayStatus != null and preRepayStatus != '' ">        
-                pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR},                
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="prdType != null and prdType != '' ">        
-                prd_type = #{prdType,jdbcType=VARCHAR},                
-            </if>
-            <if test="repayPeriods != null and repayPeriods != '' ">        
-                repay_periods = #{repayPeriods,jdbcType=VARCHAR}                
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}

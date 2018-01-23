@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.Map;
-
+import com.ald.fanbei.api.biz.service.impl.AfLoanServiceImpl.LoanHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
 /**
@@ -14,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
  */
 public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	
-	Map<String, Object> getHomeInfo(Long userId);
+	LoanHomeInfoBo getHomeInfo(Long userId);
 	
 }

@@ -157,7 +157,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	
 	private void dealFinal(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
 		// 借款总开关
-		if() { // TODO
+		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
+		if (YesNoStatus.NO.getCode().equals(oldBorrowCfg.get("supuerSwitch").toString()) ) {
 			bo.rejectCode = AfBorrowCashHomeRejectType.SWITCH_OFF.name();
 			return;
 		}
