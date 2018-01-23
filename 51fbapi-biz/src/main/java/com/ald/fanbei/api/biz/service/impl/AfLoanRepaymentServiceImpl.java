@@ -21,11 +21,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.afu.LoanStatusCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -148,7 +150,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		generateRepayRecords(bo);
 		
-		doRepay(bo, bo.borrowRepaymentDo);
+		doRepay(bo, bo.loanRepaymentDo);
 		
 	}
 	
@@ -183,7 +185,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator);
+		//dealRepaymentSucess(bo.tradeNo, null, bo.loanRepaymentDo,operator); TODO
 		
 	}
 	
@@ -256,7 +258,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         }
         
         if(repaymentDo != null) {
-			changBorrowRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
+        	changLoanRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
 		}
         
 		if(isNeedMsgNotice){
@@ -304,16 +306,63 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String tradeNo = bo.tradeNo;
     	String name = bo.name;
 		
-    	AfRepaymentBorrowCashDo borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.currentPeriodAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
-		afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
+    	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.currentPeriodAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsId);
+    	
+    	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
 		
-		bo.borrowRepaymentDo = borrowRepaymentDo;
+    	bo.loanRepaymentDo = loanRepaymentDo;
 		
-		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo));
+		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(loanRepaymentDo));
     }
     
-    private void doRepay(LoanRepayBo bo, AfRepaymentBorrowCashDo repayment) {
+    private AfLoanRepaymentDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
+			BigDecimal actualAmount, Long userCouponId, BigDecimal couponAmount, BigDecimal rebateAmount, 
+			Long loanId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo,Long loanPeriodsId) {
+		
+		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
+		loanRepay.setUserId(userId);
+		loanRepay.setLoanId(loanId);
+		loanRepay.setName(name);
+		loanRepay.setRepayAmount(repaymentAmount);
+		loanRepay.setActualAmount(actualAmount);
+		loanRepay.setStatus(AfLoanRepaymentStatus.APPLY.name());
+		loanRepay.setTradeNo(payTradeNo);
+		loanRepay.setUserCouponId(userCouponId);
+		loanRepay.setCouponAmount(couponAmount);
+		loanRepay.setUserAmount(rebateAmount);
+		loanRepay.setPreRepayStatus("N");
+		loanRepay.setPrdType(Constants.DEFAULT_WHITE_COLLAR_LOAN_NAME);
+		loanRepay.setRepayPeriods(loanPeriodsId+"");
+		loanRepay.setCardNo("");
+		if (cardId == -2) {
+			loanRepay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
+		} else if (cardId == -1) {
+			loanRepay.setCardName(Constants.DEFAULT_WX_PAY_NAME);
+		} else if (cardId == -3) {
+			loanRepay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
+		} else if (cardId == -4) {
+			if (cardNo == null){
+				cardNo = "";
+			}
+			loanRepay.setCardNo(cardNo);
+			if ("alipay".equals(repayType)){
+				loanRepay.setCardName("支付宝");
+			}else if ("bank".equals(repayType)){
+				loanRepay.setCardName("银行卡");
+			}else {
+				loanRepay.setCardName("线下还款");
+			}
+		} else {
+			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
+			loanRepay.setCardNo(bank.getCardNumber());
+			loanRepay.setCardName(bank.getBankName());
+		}
+		
+		return loanRepay;
+	}
+    
+    private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment) {
 		if (bo.cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
@@ -322,7 +371,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
-				changBorrowRepaymentStatus(respBo.getTradeNo(), AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
+				changLoanRepaymentStatus(respBo.getTradeNo(), AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
@@ -339,6 +388,15 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}
 		
 	}
+    
+   	private long changLoanRepaymentStatus(String outTradeNo, String status, Long rid) {
+   		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
+   		loanRepay.setStatus(status);
+   		loanRepay.setTradeNo(outTradeNo);
+   		loanRepay.setRid(rid);
+   		loanRepay.setGmtModified(new Date());
+        return afLoanRepaymentDao.updateById(loanRepay);
+    }
     
     private void preCheck(AfRepaymentBorrowCashDo repaymentDo, String tradeNo) {
     	// 检查交易流水 对应记录数据库中是否已经处理
@@ -387,7 +445,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         dealBorrowRepayPoundage(LoanRepayDealBo, cashDo);//手续费
         dealBorrowRepayInterest(LoanRepayDealBo, cashDo);//利息
         
-        changBorrowRepaymentStatus(LoanRepayDealBo.curOutTradeNo, AfBorrowCashRepmentStatus.YES.getCode(), repaymentDo.getRid());
+        changLoanRepaymentStatus(LoanRepayDealBo.curOutTradeNo, AfBorrowCashRepmentStatus.YES.getCode(), repaymentDo.getRid());
         
         cashDo.setSumRebate(BigDecimalUtil.add(cashDo.getSumRebate(), repaymentDo.getRebateAmount()));//余额使用
         dealBorrowRepayIfFinish(LoanRepayDealBo, repaymentDo, cashDo);
@@ -627,15 +685,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 	}
-    
-	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid) {
-        AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo();
-        repayment.setStatus(status);
-        repayment.setTradeNo(outTradeNo);
-        repayment.setRid(rid);
-        return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repayment);
-    }
-	
+   
 	/**
 	 * 锁住目标流水号的还款，防止重复回调
 	 */
@@ -647,79 +697,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             throw new FanbeiException(FanbeiExceptionCode.UPS_REPEAT_NOTIFY);
         }
 	}	
+	
 	private void unLock(String tradeNo) {
 		String key = tradeNo + "_success_legalRepay";
 		redisTemplate.delete(key);
-	}
-	
-	
-	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
-			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
-			Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
-		
-		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
-		repay.setActualAmount(actualAmountForBorrow);
-		repay.setBorrowId(borrowId);
-		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(repayNo);
-		repay.setRebateAmount(rebateAmountForBorrow);
-		repay.setRepaymentAmount(repaymentAmount);
-		repay.setRepayNo(repayNo);
-		repay.setGmtCreate(gmtCreate);
-		repay.setStatus(AfBorrowCashRepmentStatus.APPLY.getCode());
-		repay.setUserCouponId(userCouponId);
-		repay.setCouponAmount(couponAmountForBorrow);
-		repay.setName(name);
-		repay.setUserId(userId);
-		repay.setTradeNo(payTradeNo);
-		if (cardId == -2) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
-		} else if (cardId == -1) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_WX_PAY_NAME);
-		} else if (cardId == -3) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
-		} else if (cardId == -4) {
-			if (cardNo == null){
-				cardNo = "";
-			}
-			repay.setCardNumber(cardNo);
-			if ("alipay".equals(repayType)){
-				repay.setCardName("支付宝");
-			}else if ("bank".equals(repayType)){
-				repay.setCardName("银行卡");
-			}else {
-				repay.setCardName("线下还款");
-			}
-//			repay.setCardName(repayType);
-		} else {
-			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
-			repay.setCardNumber(bank.getCardNumber());
-			repay.setCardName(bank.getBankName());
-		}
-		
-//		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
-//		loanRepay.setUserId(userId);
-//		loanRepay.setLoanId(loanId);
-//		loanRepay.setName(name);
-//		loanRepay.setRepayAmount(repayAmount);
-//		loanRepay.setActualAmount(actualAmount);
-//		loanRepay.setStatus("A");
-//		loanRepay.setTradeNo(tradeNo);
-//		loanRepay.setTradeNoOut(tradeNoOut);
-//		loanRepay.setUserCouponId(userCouponId);
-//		loanRepay.setCouponAmount(couponAmount);
-//		loanRepay.setUserAmount(userAmount);
-//		loanRepay.setPreRepayStatus("N");
-//		loanRepay.setPrdType(prdType);
-//		loanRepay.setRepayPeriods(repayPeriods);
-//		loanRepay.setCardName(cardName);
-//		loanRepay.setCardNo(cardNo);
-//		loanRepay.setRemark(remark);
-		
-		return repay;
 	}
 	
 	
@@ -738,7 +719,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		/* request字段 */
 		
 		/* biz 业务处理字段 */
-		public AfRepaymentBorrowCashDo borrowRepaymentDo;
+		public AfLoanRepaymentDo loanRepaymentDo;
 		public AfLoanDo loanDo;
 		public AfUserCouponDto userCouponDto; //可选字段
 		public AfUserAccountDo userDo;
