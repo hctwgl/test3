@@ -122,6 +122,16 @@
         AND scene =#{scene}
     </select>
 
+    <select id="getAfUserAuthStatusByUserIdAndScene" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_auth_status
+        where
+        is_delete = 0
+        AND user_id=#{userId}
+        AND scene =#{scene}
+    </select>
+
     <select id="selectAfUserAuthStatusByUserIdAndScene" resultType="int">
         SELECT
         count(1)
