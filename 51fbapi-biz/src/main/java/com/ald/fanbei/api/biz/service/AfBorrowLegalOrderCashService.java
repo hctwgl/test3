@@ -30,6 +30,13 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo);
 
 	/**
+	 * 计算剩余未还的本金(兼容新版旧版)
+	 * @param cashDo
+	 * @param orderCashDo
+	 * @return
+	 */
+	BigDecimal calculateRestAmount(long borrowid);
+	/**
 	 * 计算剩余应还的金额
 	 * @param cashDo
 	 * @param orderCashDo

@@ -19,19 +19,14 @@ public class RiskContacts extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
 
 	public RiskContacts(String consumerNo, String event, String directory) {
-		super(consumerNo, event, null, null, null, null, null, null, null, null, null, null, directory, null);
+		super(consumerNo, event, null, null, null, null, null, null, null, null, null, null, directory, null,null,null);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox, String riskScene) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
-	}
-
-	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost, String riskScene) {
-
 	}
 }

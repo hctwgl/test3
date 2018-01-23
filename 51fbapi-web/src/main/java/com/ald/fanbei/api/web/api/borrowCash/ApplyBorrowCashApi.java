@@ -316,6 +316,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount, poundageBig));
 		afBorrowCashDo.setPoundageRate(poundage);
 		afBorrowCashDo.setBaseBankRate(bankRate);
+		afBorrowCashDo.setRiskDailyRate(poundage);
 		return afBorrowCashDo;
 	}
 

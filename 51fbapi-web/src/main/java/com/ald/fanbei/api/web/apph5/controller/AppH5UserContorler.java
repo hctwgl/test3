@@ -208,8 +208,7 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-            // 发送短信前,加入图片验证码验证
-            
+          
             String realCode = "";
             Object obj = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
             if (obj == null) {
@@ -236,12 +235,14 @@ public class AppH5UserContorler extends BaseController {
 
 
             boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
+            logger.info("getRegisterSmsCode resultReg=>{}" , resultReg);
             if (!resultReg) {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
 
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
+            logger.info("getRegisterSmsCode bizCacheUtil saveObject h5register mobile success.");
             return resp.toString();
 
         }catch (FanbeiException e) {
@@ -273,6 +274,13 @@ public class AppH5UserContorler extends BaseController {
             String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
             String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
             
+            // 短信1分钟校验
+            String exsitMobile = (String) bizCacheUtil.getObject("h5register"+mobile);
+        	if (StringUtils.isNotBlank(exsitMobile)) {
+        		resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
+        		return resp.toString();
+			}
+        	
             AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
             if (afUserDo != null) {
@@ -282,7 +290,7 @@ public class AppH5UserContorler extends BaseController {
             
             bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
-
+          
             try {
                 tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {
@@ -297,6 +305,7 @@ public class AppH5UserContorler extends BaseController {
             }
 
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
+            bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
             return resp.toString();
 
         } catch (FanbeiException e) {
@@ -424,11 +433,7 @@ public class AppH5UserContorler extends BaseController {
     	H5CommonResponse resp = H5CommonResponse.getNewInstance();
         try {
         	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
-        	String exsitMobile = (String) bizCacheUtil.getObject("h5register"+mobile);
-        	if (StringUtils.isNotBlank(exsitMobile)) {
-        		resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
-        		return resp.toString();
-			}
+        	
         	if(StringUtils.isEmpty(mobile)){
         		throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
         	}
@@ -439,7 +444,7 @@ public class AppH5UserContorler extends BaseController {
      		}
      		String isRegistered="N";
             AfUserDo UserDo = afUserService.getUserByUserName(mobile);
-            bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
+            
             if (UserDo != null) {
             	isRegistered="Y";
             	resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", isRegistered);
