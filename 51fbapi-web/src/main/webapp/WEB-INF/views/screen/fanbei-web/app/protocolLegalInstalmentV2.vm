@@ -56,7 +56,7 @@
         <li><i>借款利率（年化）</i><i>#if($!{interest}){{changeRate($!{interest})}}#end</i></li>
         <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>等本等息</i></li>
-        <li><i>还款日</i><i>$dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")</i></li>
+        <li><i>还款日</i><i>#if($!{repayDay})$dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")#end</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
     </ul><br>
     <span>还款计划：</span><br>
