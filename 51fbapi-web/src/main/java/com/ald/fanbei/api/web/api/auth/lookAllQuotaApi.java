@@ -183,7 +183,7 @@ public class lookAllQuotaApi implements ApiHandle {
 
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-            if(afUserAuthStatusDo == null){
+            if(afUserAuthStatusDo == null || afUserAuthStatusDo.equals("N")){
                 List<String> listDesc=getAuthDesc(value4,"one");
                 onlineMap.put("showAmount", listDesc.get(0));
                 onlineMap.put("desc", listDesc.get(1));
@@ -197,7 +197,7 @@ public class lookAllQuotaApi implements ApiHandle {
             }
             //线下培训 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
-            if(afUserAuthStatusTrain == null){
+            if(afUserAuthStatusTrain == null || afUserAuthStatusTrain.equals("N")){
                 trainMap.put("desc", trainDesc);
                 trainMap.put("status","1");
             }

@@ -187,7 +187,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
            // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
-            if(afUserAuthStatusDo == null){
+            if(afUserAuthStatusDo == null || afUserAuthStatusDo.getStatus().equals("N")){
                 List<String> listDesc=getAuthDesc(value4,"one");
                 map.put("onlineShowAmount", listDesc.get(0));
                 map.put("onlineDesc", listDesc.get(1));
@@ -279,13 +279,19 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 }
                 int onRepaymentCount = afBorrowBillService.getOnRepaymentCountByUserId(userId);
                 map.put("onRepaymentCount", onRepaymentCount);
-                map.put("auAmount", auAmount);
-                map.put("amount", amount);
                 map.put("overduedMonth", overduedMonth);
                 map.put("outMoney", outMoney);
                 map.put("notOutMoeny", notOutMoeny);
                 map.put("borrowStatus","4");
                 map.put("desc", "总额度"+auAmount+"元");
+                if(context.getAppVersion() >= 406){
+                    map.put("auAmount", auAmount);
+                    map.put("amount", amount);
+                }
+                else {
+                    map.put("auAmount", auAmount.add(interimAmount).add(onlineAuAmount));
+                    map.put("amount", amount.add(usableAmount).add(onlineAmount));
+                }
             }
             resp.setResponseData(map);
         } catch (Exception e) {
