@@ -182,6 +182,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 					}
 				}
+                afUserAuthStatus = afUserAuthStatusDo;
 			}
 		}
 
@@ -208,8 +209,10 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 				}
 			} else {
-				if (afUserAuthStatus == null || (!StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.NO.getCode()) && !StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.PASSING.getCode()))) {
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+				if(afUserAuthStatus!=null) {
+					if (!StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.NO.getCode()) && !StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.PASSING.getCode())) {
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+					}
 				}
 			}
 

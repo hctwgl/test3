@@ -1129,10 +1129,10 @@ public class RiskUtil extends AbstractThird {
 
             AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
             //风控异步回调的话，以第一次异步回调成功为准
-            if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
-                AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-                if (StringUtils.equals("10", result)) {
-                    if (SceneType.CASH.getCode().equals(scene)) {
+            AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+            if (StringUtils.equals("10", result)) {
+                if (SceneType.CASH.getCode().equals(scene)) {
+                    if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
                         AfUserAuthDo authDo = new AfUserAuthDo();
                         authDo.setUserId(consumerNo);
                         authDo.setRiskStatus(RiskStatus.YES.getCode());
@@ -1140,58 +1140,56 @@ public class RiskUtil extends AbstractThird {
                         authDo.setGmtBasic(new Date(System.currentTimeMillis()));
                         authDo.setGmtRisk(new Date(System.currentTimeMillis()));
                         afUserAuthService.updateUserAuth(authDo);
-
-                    } else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
-                        AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-                        afUserAuthStatusDo.setGmtModified(new Date());
-                        afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-                        afUserAuthStatusDo.setUserId(consumerNo);
-                        afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
-                        afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
                     }
+                } else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
+                    AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+                    afUserAuthStatusDo.setGmtModified(new Date());
+                    afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
+                    afUserAuthStatusDo.setUserId(consumerNo);
+                    afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
+                    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+                }
 
-                    updateUserScenceAmount(userAccountDo, consumerNo, au_amount, onlineAmount, offlineAmount);
-                    jpushService.strongRiskSuccess(userAccountDo.getUserName());
-                    smsUtil.sendRiskSuccess(userAccountDo.getUserName());
-                } else if (StringUtils.equals("30", result)) {
-                    if (SceneType.CASH.getCode().equals(scene)) {
-                        AfUserAuthDo authDo = new AfUserAuthDo();
-                        authDo.setUserId(consumerNo);
-                        if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-                            authDo.setRiskStatus(RiskStatus.NO.getCode());
-                        }
-                        authDo.setBasicStatus("N");
-                        authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-                        authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-                        afUserAuthService.updateUserAuth(authDo);
+                updateUserScenceAmount(userAccountDo, consumerNo, au_amount, onlineAmount, offlineAmount);
+                jpushService.strongRiskSuccess(userAccountDo.getUserName());
+                smsUtil.sendRiskSuccess(userAccountDo.getUserName());
+            } else if (StringUtils.equals("30", result)) {
+                if (SceneType.CASH.getCode().equals(scene)) {
+                    AfUserAuthDo authDo = new AfUserAuthDo();
+                    authDo.setUserId(consumerNo);
+                    if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+                        authDo.setRiskStatus(RiskStatus.NO.getCode());
+                    }
+                    authDo.setBasicStatus("N");
+                    authDo.setGmtBasic(new Date(System.currentTimeMillis()));
+                    authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+                    afUserAuthService.updateUserAuth(authDo);
 
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
 	                                                否则把用户的额度设置成分控返回的额度*/
-                        //这里修改逻辑永远以风控为准
-                        if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-                            AfUserAccountDo accountDo = new AfUserAccountDo();
-                            accountDo.setUserId(consumerNo);
-                            accountDo.setAuAmount(au_amount);
-                            afUserAccountService.updateUserAccount(accountDo);
-                        } else {
-                            AfUserAccountDo accountDo = new AfUserAccountDo();
-                            accountDo.setUserId(consumerNo);
-                            accountDo.setAuAmount(au_amount);
-                            afUserAccountService.updateUserAccount(accountDo);
-                        }
-                    } else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
-                        AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-                        afUserAuthStatusDo.setGmtModified(new Date());
-                        afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-                        afUserAuthStatusDo.setUserId(consumerNo);
-                        afUserAuthStatusDo.setStatus(UserAuthSceneStatus.FAILED.getCode());
-                        afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+                    //这里修改逻辑永远以风控为准
+                    if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
+                        AfUserAccountDo accountDo = new AfUserAccountDo();
+                        accountDo.setUserId(consumerNo);
+                        accountDo.setAuAmount(au_amount);
+                        afUserAccountService.updateUserAccount(accountDo);
+                    } else {
+                        AfUserAccountDo accountDo = new AfUserAccountDo();
+                        accountDo.setUserId(consumerNo);
+                        accountDo.setAuAmount(au_amount);
+                        afUserAccountService.updateUserAccount(accountDo);
                     }
-                    jpushService.strongRiskFail(userAccountDo.getUserName());
-                    smsUtil.sendRiskFail(userAccountDo.getUserName());
+                } else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
+                    AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+                    afUserAuthStatusDo.setGmtModified(new Date());
+                    afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
+                    afUserAuthStatusDo.setUserId(consumerNo);
+                    afUserAuthStatusDo.setStatus(UserAuthSceneStatus.FAILED.getCode());
+                    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
                 }
+                jpushService.strongRiskFail(userAccountDo.getUserName());
+                smsUtil.sendRiskFail(userAccountDo.getUserName());
             }
-
         }
         return 0;
     }
