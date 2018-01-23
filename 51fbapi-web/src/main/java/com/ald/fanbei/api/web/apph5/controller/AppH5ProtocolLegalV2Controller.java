@@ -146,12 +146,15 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			List repayPlan = new ArrayList();
 			if (nper != null) {
 				List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
+				int num = 1;
 				for (AfBorrowBillDo bill:afBorrowBillDos) {
 					AfBorrowDo borrowDo = new AfBorrowDo();
 					borrowDo.setGmtCreate(bill.getGmtPayTime());
 					borrowDo.setNperAmount(bill.getInterestAmount());
 					borrowDo.setAmount(bill.getPrincipleAmount());
+					borrowDo.setNper(num);
 					repayPlan.add(borrowDo);
+					num++;
 				}
 				Date repayDay = null;
 				if (afBorrowBillDos.size() > 0){
