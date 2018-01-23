@@ -32,6 +32,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -42,6 +43,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfLoanRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -129,6 +131,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private AfTradeCodeInfoService afTradeCodeInfoService;
     @Resource
     private AfLoanRepaymentDao afLoanRepaymentDao;
+    @Resource
+    private AfLoanPeriodsDao afLoanPeriodsDao;
 
 	@Override
 	public void repay(LoanRepayBo bo) {
@@ -164,8 +168,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		
 		bo.cardId = (long) -4;
-		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
-		bo.actualAmount =  bo.repaymentAmount;
+		bo.currentPeriodAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.actualAmount =  bo.currentPeriodAmount;
 		bo.loanId = cashDo.getRid();
 		
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
@@ -283,15 +287,15 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      * 计算本期需还金额
      */
     @Override
-	public BigDecimal calculateRestAmount(AfLoanDo loanDo) {
+	public BigDecimal calculateRestAmount(Long loanPeriodsId) {
 		BigDecimal restAmount = BigDecimal.ZERO;
-//		if(loanDo != null) {	TODO
-//			restAmount = BigDecimalUtil.add(restAmount, loanDo.getAmount(),
-//					loanDo.getOverdueAmount(), loanDo.getSumOverdue(), 
-//					loanDo.getRateAmount(),loanDo.getSumRate(),
-//					loanDo.getPoundage(),loanDo.getSumRenewalPoundage())
-//					.subtract(loanDo.getRepayAmount());
-//		}
+		AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(loanPeriodsId);
+		
+		if(loanPeriodsDo!=null){
+			restAmount = BigDecimalUtil.add(restAmount,loanPeriodsDo.getAmount(),
+						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getOverdueAmount());
+		}
+		
 		return restAmount;
 	}
     
@@ -300,7 +304,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String tradeNo = bo.tradeNo;
     	String name = bo.name;
 		
-    	AfRepaymentBorrowCashDo borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
+    	AfRepaymentBorrowCashDo borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.currentPeriodAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
 				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 		
@@ -652,6 +656,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
 			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
 			Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
+		
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -694,6 +699,26 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			repay.setCardNumber(bank.getCardNumber());
 			repay.setCardName(bank.getBankName());
 		}
+		
+//		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
+//		loanRepay.setUserId(userId);
+//		loanRepay.setLoanId(loanId);
+//		loanRepay.setName(name);
+//		loanRepay.setRepayAmount(repayAmount);
+//		loanRepay.setActualAmount(actualAmount);
+//		loanRepay.setStatus("A");
+//		loanRepay.setTradeNo(tradeNo);
+//		loanRepay.setTradeNoOut(tradeNoOut);
+//		loanRepay.setUserCouponId(userCouponId);
+//		loanRepay.setCouponAmount(couponAmount);
+//		loanRepay.setUserAmount(userAmount);
+//		loanRepay.setPreRepayStatus("N");
+//		loanRepay.setPrdType(prdType);
+//		loanRepay.setRepayPeriods(repayPeriods);
+//		loanRepay.setCardName(cardName);
+//		loanRepay.setCardNo(cardNo);
+//		loanRepay.setRemark(remark);
+		
 		return repay;
 	}
 	
@@ -702,13 +727,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		public Long userId;
 		
 		/* request字段 */
-		public BigDecimal repaymentAmount = BigDecimal.ZERO;
-		public BigDecimal actualAmount = BigDecimal.ZERO; //可选字段
+		public BigDecimal currentPeriodAmount = BigDecimal.ZERO;
+		public BigDecimal actualAmount = BigDecimal.ZERO; 
 		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
-		public String payPwd;			//可选字段
+		public String payPwd;			
 		public Long cardId;
 		public Long couponId;			//可选字段
-		public Long loanId;			//可选字段
+		public Long loanId;			
+		public Long loanPeriodsId;			
 		/* request字段 */
 		
 		/* biz 业务处理字段 */

@@ -89,12 +89,7 @@ import java.math.BigDecimal;
     /**
      * 该还款对应的期数信息
      */
-    private String referLoanPeriods;
-
-    /**
-     * 该还款对应的贷款
-     */
-    private String referLoanId;
+    private String repayPeriods;
 
     /**
      * 银行卡号
@@ -380,8 +375,8 @@ import java.math.BigDecimal;
      *
      * @return 该还款对应的期数信息
      */
-    public String getReferLoanPeriods(){
-      return referLoanPeriods;
+    public String getRepayPeriods(){
+      return repayPeriods;
     }
 
     /**
@@ -389,26 +384,8 @@ import java.math.BigDecimal;
      * 
      * @param referLoanPeriods 要设置的该还款对应的期数信息
      */
-    public void setReferLoanPeriods(String referLoanPeriods){
-      this.referLoanPeriods = referLoanPeriods;
-    }
-
-    /**
-     * 获取该还款对应的贷款
-     *
-     * @return 该还款对应的贷款
-     */
-    public String getReferLoanId(){
-      return referLoanId;
-    }
-
-    /**
-     * 设置该还款对应的贷款
-     * 
-     * @param referLoanId 要设置的该还款对应的贷款
-     */
-    public void setReferLoanId(String referLoanId){
-      this.referLoanId = referLoanId;
+    public void setRepayPeriods(String repayPeriods){
+      this.repayPeriods = repayPeriods;
     }
 
     /**
