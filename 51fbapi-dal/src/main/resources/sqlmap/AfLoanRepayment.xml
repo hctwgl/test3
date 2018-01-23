@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,refer_loan_periods,refer_loan_id,card_no,card_name,remark,gmt_create,gmt_modified,
+        id rid,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,gmt_create,gmt_modified,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -53,11 +53,8 @@
         <if test="prdType != null and prdType != ''">
             AND prd_type = #{prdType,jdbcType=VARCHAR}
         </if>
-        <if test="referLoanPeriods != null and referLoanPeriods != ''">
-            AND refer_loan_periods = #{referLoanPeriods,jdbcType=VARCHAR}
-        </if>
-        <if test="referLoanId != null and referLoanId != ''">
-            AND refer_loan_id = #{referLoanId,jdbcType=VARCHAR}
+        <if test="repayPeriods != null and referLoanPeriods != ''">
+            AND repay_periods = #{repayPeriods,jdbcType=VARCHAR}
         </if>
         <if test="cardNo != null and cardNo != ''">
             AND card_no = #{cardNo,jdbcType=VARCHAR}
@@ -123,11 +120,8 @@
 	        <if test="prdType != null">        
 	            prd_type,
 	        </if>
-	        <if test="referLoanPeriods != null">        
-	            refer_loan_periods,
-	        </if>
-	        <if test="referLoanId != null">        
-	            refer_loan_id,
+	        <if test="repayPeriods != null">        
+	            repay_periods,
 	        </if>
 	        <if test="cardNo != null">        
 	            card_no,
@@ -186,11 +180,8 @@
 		    <if test="prdType != null" >
 		       #{prdType,jdbcType=VARCHAR},
 		    </if>
-		    <if test="referLoanPeriods != null" >
-		       #{referLoanPeriods,jdbcType=VARCHAR},
-		    </if>
-		    <if test="referLoanId != null" >
-		       #{referLoanId,jdbcType=VARCHAR},
+		    <if test="repayPeriods != null" >
+		       #{repayPeriods,jdbcType=VARCHAR},
 		    </if>
 		    <if test="cardNo != null" >
 		       #{cardNo,jdbcType=VARCHAR},
@@ -252,11 +243,8 @@
             <if test="prdType != null and prdType != '' ">        
                 prd_type = #{prdType,jdbcType=VARCHAR},                
             </if>
-            <if test="referLoanPeriods != null and referLoanPeriods != '' ">        
-                refer_loan_periods = #{referLoanPeriods,jdbcType=VARCHAR},                
-            </if>
-            <if test="referLoanId != null and referLoanId != '' ">        
-                refer_loan_id = #{referLoanId,jdbcType=VARCHAR},                
+            <if test="repayPeriods != null and referLoanPeriods != '' ">        
+                repay_periods = #{repayPeriods,jdbcType=VARCHAR},                
             </if>
             <if test="cardNo != null and cardNo != '' ">        
                 card_no = #{cardNo,jdbcType=VARCHAR},                
@@ -311,7 +299,7 @@
 		loan_id =
 		#{loanId}
 		AND
-		status = 'P'
+		status = 'PROCESSING'
 		ORDER BY
 		gmt_create DESC
           LIMIT 1

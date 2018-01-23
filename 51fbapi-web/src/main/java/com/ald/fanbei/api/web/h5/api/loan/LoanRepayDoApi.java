@@ -6,48 +6,34 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.RepayBo;
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
-import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 
@@ -82,14 +68,14 @@ public class LoanRepayDoApi implements H5Handle {
 	@Override
 	public H5HandleResponse process(Context context) {
 		LoanRepayBo bo = this.extractAndCheck(context);
-		//bo.remoteIp = CommonUtil.getIpAddr(request);
+		//bo.remoteIp = CommonUtil.getIpAddr(request); TODO
 		
 		this.afLoanRepaymentService.repay(bo);
 		
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("rid", bo.loanId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+		data.put("amount", bo.currentPeriodAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
 		data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
 		if(bo.userCouponDto != null) {
@@ -122,13 +108,14 @@ public class LoanRepayDoApi implements H5Handle {
 		
 		Map<String, Object> dataMap = context.getDataMap();
 		
-		bo.repaymentAmount = (BigDecimal) dataMap.get("currentPeriodAmount");
+		bo.currentPeriodAmount = (BigDecimal) dataMap.get("currentPeriodAmount");
 		bo.rebateAmount = (BigDecimal) dataMap.get("rebateAmount");
 		bo.actualAmount = (BigDecimal) dataMap.get("actualAmount");
 		bo.payPwd = (String) dataMap.get("payPwd");
 		bo.cardId = (Long) dataMap.get("cardId");
 		bo.couponId = (Long) dataMap.get("couponId");
 		bo.loanId = (Long) dataMap.get("loanId");
+		bo.loanPeriodsId = (Long) dataMap.get("loanPeriodsId");
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
@@ -137,8 +124,8 @@ public class LoanRepayDoApi implements H5Handle {
 			throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
 		}
 		
-		checkFrom(bo);
 		checkPwdAndCard(bo);
+		checkFrom(bo);
 		checkAmount(bo);
 		
 		return bo;
@@ -157,15 +144,9 @@ public class LoanRepayDoApi implements H5Handle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
 		
-		// 检查 当前借款 是否在续期操作中
-//		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.loanId);
-//		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
-//			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
-//		}
-		
 		// 检查 用户 是否多还钱
-		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(loanDo);
-		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
+		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(bo.loanPeriodsId);
+		if(bo.currentPeriodAmount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 		
@@ -189,7 +170,7 @@ public class LoanRepayDoApi implements H5Handle {
 		}
 	}
 	
-	private void checkAmount(LoanRepayBo bo) {
+	private void checkAmount(LoanRepayBo bo) { //TODO
 		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.couponId);
 		bo.userCouponDto = userCouponDto;
 		if (null != userCouponDto && !userCouponDto.getStatus().equals(CouponStatus.NOUSE.getCode())) {
@@ -202,11 +183,11 @@ public class LoanRepayDoApi implements H5Handle {
         	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
         }
 		
-		BigDecimal calculateAmount = bo.repaymentAmount;
+		BigDecimal calculateAmount = bo.currentPeriodAmount;
 		
 		// 使用优惠券结算金额
 		if (userCouponDto != null) {
-			calculateAmount = BigDecimalUtil.subtract(bo.repaymentAmount, userCouponDto.getAmount());
+			calculateAmount = BigDecimalUtil.subtract(bo.currentPeriodAmount, userCouponDto.getAmount());
 			if (calculateAmount.compareTo(BigDecimal.ZERO) <= 0) {
 				logger.info(bo.userDo.getUserName() + "coupon repayment");
 				bo.rebateAmount = BigDecimal.ZERO;

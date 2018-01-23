@@ -97,6 +97,7 @@ public class Constants {
 	public static final double DEFAULT_CHARGE_MAX = 50;
 	public static final int DEFAULT_CASH_DEVIDE = 2;
 	public static final String DEFAULT_BORROW_CASH_NAME = "现金借款";
+	public static final String DEFAULT_WHITE_COLLAR_LOAN_NAME = "白领贷";
 	public static final String DEFAULT_MOBILE_CHARGE_NAME = "手机充值";
 	public static final String DEFAULT_BORROW_PURPOSE = "借款";
 	public static final String DEFAULT_CASH_PURPOSE = "提现";
