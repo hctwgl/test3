@@ -79,7 +79,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
 	NumberWordFormat numberWordFormat;
-
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
@@ -121,6 +122,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 		}
 //		getResourceRate(model, type, afResourceDo, "instalment");
+		int repayDay = 20;
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
+		if(afUserOutDayDo !=null) {
+			repayDay = afUserOutDayDo.getPayDay();
+		}
+		model.put("repayDay", repayDay);
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
@@ -141,15 +148,23 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			nper = afBorrowDo.getNper();
 			List repayPlan = new ArrayList();
 			if (nper != null) {
-				BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
-				for (int i = 0; i < nper; i++) {
+				List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
+				for (AfBorrowBillDo bill:afBorrowBillDos) {
+					AfBorrowDo borrowDo = new AfBorrowDo();
+					borrowDo.setGmtCreate(bill.getGmtPayTime());
+					borrowDo.setNperAmount(bill.getInterestAmount());
+					borrowDo.setAmount(bill.getPrincipleAmount());
+					repayPlan.add(borrowDo);
+				}
+				/*BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
+				for (int i = 1; i <= nper; i++) {
 					AfBorrowDo borrowDo = new AfBorrowDo();
 					borrowDo.setGmtCreate(DateUtil.addMonths(date, i));
 					borrowDo.setNperAmount(money);
 					borrowDo.setAmount(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
-					borrowDo.setNper(i + 1);
+					borrowDo.setNper(i);
 					repayPlan.add(borrowDo);
-				}
+				}*/
 				model.put("repayPlan", repayPlan);
 			}
 		}
