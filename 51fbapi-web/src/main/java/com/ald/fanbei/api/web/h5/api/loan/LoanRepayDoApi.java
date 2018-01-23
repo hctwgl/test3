@@ -35,6 +35,7 @@ import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -145,22 +146,22 @@ public class LoanRepayDoApi implements H5Handle {
 	
 	private void checkFrom(LoanRepayBo bo) {
 		AfLoanDo loanDo = null;
-		if((loanDo = afLoanDao.getById(bo.loanId)) != null ){
+		if((loanDo = afLoanDao.getById(bo.loanId)) == null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.loanDo = loanDo;
 		
 		// 检查当前 借款 是否已在处理中
-		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(bo.loanId);
-		if(rbCashDo != null && AfBorrowCashRepmentStatus.PROCESS.getCode().equals(rbCashDo.getStatus())) {
+		AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(bo.loanId);
+		if(loanRepaymentDo != null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
 		
 		// 检查 当前借款 是否在续期操作中
-		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.loanId);
-		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
-			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
-		}
+//		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.loanId);
+//		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
+//			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
+//		}
 		
 		// 检查 用户 是否多还钱
 		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(loanDo);

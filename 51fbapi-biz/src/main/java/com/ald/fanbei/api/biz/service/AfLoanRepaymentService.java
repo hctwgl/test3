@@ -36,4 +36,6 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * @return
 	 */
 	BigDecimal calculateRestAmount(AfLoanDo cashDo);
+
+	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 }

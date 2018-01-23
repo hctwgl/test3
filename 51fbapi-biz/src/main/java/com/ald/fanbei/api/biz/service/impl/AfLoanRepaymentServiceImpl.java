@@ -279,6 +279,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 	}
     
+    /**
+     * 计算本期需还金额
+     */
     @Override
 	public BigDecimal calculateRestAmount(AfLoanDo loanDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
@@ -760,6 +763,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	@Override
 	public BaseDao<AfLoanRepaymentDo, Long> getDao() {
 		return null;
+	}
+
+	@Override
+	public AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId) {
+		return afLoanRepaymentDao.getProcessLoanRepaymentByLoanId(loanId);
 	}
 
 	
