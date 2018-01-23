@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
  */
 public interface AfLoanProductDao extends BaseDao<AfLoanProductDo, Long> {
 
-    
+	AfLoanProductDo getLast();
 
 }

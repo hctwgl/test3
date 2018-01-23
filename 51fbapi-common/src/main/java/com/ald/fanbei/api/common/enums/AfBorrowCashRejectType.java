@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.common.enums;
 
-public enum AfBorrowCashHomeRejectType {
+public enum AfBorrowCashRejectType {
 	PASS("通过"),
 	NO_AUTHZ("未认证"),
 	QUOTA_TOO_SMALL("额度小于最小借款额"),
@@ -10,7 +10,7 @@ public enum AfBorrowCashHomeRejectType {
     
     public String desz;
 
-    AfBorrowCashHomeRejectType(String desz) {
+    AfBorrowCashRejectType(String desz) {
         this.desz = desz;
     }
 }

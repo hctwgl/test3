@@ -17,7 +17,7 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
  * @类描述：申请贷款 参考{@link com.ald.fanbei.api.web.api.legalborrowV2.GetLegalBorrowCashHomeInfoV2Api}
  */
 @Component("getBorrowHomeInfoApi")
-public class GetBorrowHomeInfoApi implements H5Handle {
+public class GetHomeInfoApi implements H5Handle {
 
 	@Resource
 	private AfBorrowLegalService afBorrowLegalService;
@@ -32,9 +32,7 @@ public class GetBorrowHomeInfoApi implements H5Handle {
 		
 		// banner 信息 TODO
 		resp.addResponseData("bannerList", null);
-		
 		resp.addResponseData("bldInfo", afLoanService.getHomeInfo(userId));
-		
 		resp.addResponseData("xdInfo", afBorrowLegalService.getHomeInfo(userId));
 		
 		return resp;

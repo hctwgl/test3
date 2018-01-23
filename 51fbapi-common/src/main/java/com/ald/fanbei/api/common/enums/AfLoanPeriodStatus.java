@@ -11,8 +11,7 @@ package com.ald.fanbei.api.common.enums;
 public enum AfLoanPeriodStatus {
 	AWAIT_REPAY("待还款"),
 	REPAYING("未还款"),
-	FINISHED("已结清"),
-	CLOSED("关闭");
+	FINISHED("已结清");
 	
     public String desz;
 

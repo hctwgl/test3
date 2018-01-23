@@ -348,4 +348,14 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getLastActivePeriodByLoanId" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_periods 
+        WHERE loan_id = #{loanId}
+            AND status = 'AWAIT_REPAY'
+        ORDER BY nper ASC
+        LIMIT 1
+    </select>
+    
 </mapper>

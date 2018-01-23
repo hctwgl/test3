@@ -1,14 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 
 
 
@@ -24,12 +26,25 @@ import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 @Service("afLoanPeriodsService")
 public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo, Long> implements AfLoanPeriodsService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(AfLoanPeriodsServiceImpl.class);
-   
     @Resource
     private AfLoanPeriodsDao afLoanPeriodsDao;
-
-		@Override
+    
+    @Override
+	public List<AfLoanPeriodsDo> resolvePeriods(BigDecimal amount, Long userId, int periods,
+				Long loanId, String loanNo, String prdType){
+		
+		//TODO 计算每期信息
+		
+		return null;
+	}
+    
+    public BigDecimal calcuRestAmount(AfLoanPeriodsDo p) {
+    	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getOverdueAmount())
+    		.add(p.getServiceFee()).add(p.getInterestFee()).add(p.getOverdueAmount())
+    		.subtract(p.getRepayAmount());
+    }
+    
+	@Override
 	public BaseDao<AfLoanPeriodsDo, Long> getDao() {
 		return afLoanPeriodsDao;
 	}

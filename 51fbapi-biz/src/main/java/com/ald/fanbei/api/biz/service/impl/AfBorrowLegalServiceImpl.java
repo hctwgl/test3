@@ -20,7 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashHomeRejectType;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -84,7 +84,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.isLogin = true;
-		bo.rejectCode = AfBorrowCashHomeRejectType.PASS.name();
+		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		
 		this.dealResource(bo, userAccount); 		// 处理 额度 信息
 		this.dealBorrow(bo, userAccount);  	// 处理 借款/续期 信息
@@ -115,9 +115,9 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
 		BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		bo.maxAmount = this.calculateMaxAmount(maxAmount);
+		bo.maxQuota = this.calculateMaxAmount(maxAmount);
 		
-		bo.minAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
+		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
 		
 	}
 	
@@ -159,14 +159,14 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		// 借款总开关
 		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
 		if (YesNoStatus.NO.getCode().equals(oldBorrowCfg.get("supuerSwitch").toString()) ) {
-			bo.rejectCode = AfBorrowCashHomeRejectType.SWITCH_OFF.name();
+			bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
 			return;
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
 		//检查是否认证过
 		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
-			bo.rejectCode = AfBorrowCashHomeRejectType.NO_AUTHZ.name();
+			bo.rejectCode = AfBorrowCashRejectType.NO_AUTHZ.name();
 			return;
 		}
 		
@@ -181,15 +181,15 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
 				Date desTime = DateUtil.addDays(bo.borrowGmtApply, rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) { // 风控拒绝日期内
-					bo.rejectCode = AfBorrowCashHomeRejectType.NO_PASS_WEAK_RISK.name();
+					bo.rejectCode = AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
 					return;
 				}
 			}
 		}
 		
 		//检查额度
-		if(bo.minAmount.compareTo(userAccount.getAuAmount()) > 0) {
-			bo.rejectCode = AfBorrowCashHomeRejectType.QUOTA_TOO_SMALL.name();
+		if(bo.minQuota.compareTo(userAccount.getAuAmount()) > 0) {
+			bo.rejectCode = AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
 			return;
 		}
 		
@@ -213,8 +213,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 
 		// 获取后台配置的最大金额和最小金额
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-		bo.maxAmount = new BigDecimal(rateInfoDo.getValue4());
-		bo.minAmount = new BigDecimal(rateInfoDo.getValue1());
+		bo.maxQuota = new BigDecimal(rateInfoDo.getValue4());
+		bo.minQuota = new BigDecimal(rateInfoDo.getValue1());
 		
 		afBorrowCacheAmountPerdayService.record(); // TODO 意义?
 
@@ -250,8 +250,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public String lender;
 		public String borrowCashDay;
 		
-		public BigDecimal maxAmount;
-		public BigDecimal minAmount;
+		public BigDecimal maxQuota;
+		public BigDecimal minQuota;
 		
 		public boolean hasBorrow;
 		public Long borrowId;

@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
  */
 public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 
-    
+	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loadId);
 
 }

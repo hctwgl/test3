@@ -2,23 +2,31 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfLoanHomeRejectType;
+import com.ald.fanbei.api.common.DBResource;
+import com.ald.fanbei.api.common.enums.AfLoanRejectType;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -36,51 +44,95 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
  
 @Service("afLoanService")
 public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> implements AfLoanService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(AfLoanServiceImpl.class);
-    
     @Resource
 	AfResourceService afResourceService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfLoanPeriodsService afLoanPeriodsService;
 	
 	@Resource
 	RiskUtil riskUtil;
 	
 	@Resource
+    private AfLoanDao afLoanDao;
+	@Resource
+    private AfLoanPeriodsDao afLoanPeriodsDao;
+	@Resource
+    private AfLoanProductDao afLoanProductDao;
+	@Resource
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
-    private AfLoanDao afLoanDao;
+	private AfResourceDao afResourceDao;
 	
 	@Override
 	public LoanHomeInfoBo getHomeInfo(Long userId){
+		LoanDBCfgBo loanCfg = this.getDBCfg();
 		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 		if(userAccount != null) {
-			return processLogin(userAccount);
+			return processLogin(userAccount, loanCfg);
 		}else{
-			return processUnlogin();
+			return processUnlogin(loanCfg);
 		}
 	}
 	
+	public LoanDBCfgBo getDBCfg() {
+		LoanDBCfgBo bo = new LoanDBCfgBo();
+		
+		List<AfResourceDo> loanCfgs = afResourceDao.getConfigByTypes(DBResource.TYPE_LOAN);
+		for(AfResourceDo resDo : loanCfgs) {
+			if(DBResource.SEC_TYPE_LOAN_SWITCH.equals(resDo.getSecType())) {
+				bo.SWITCH = resDo.getValue();
+			}
+			if(DBResource.SEC_TYPE_LOAN_MAX_QUOTA.equals(resDo.getSecType())) {
+				bo.MAX_QUOTA = new BigDecimal(resDo.getValue());
+			}
+			if(DBResource.SEC_TYPE_LOAN_MIN_QUOTA.equals(resDo.getSecType())) {
+				bo.MIN_QUOTA = new BigDecimal(resDo.getValue());
+			}
+			if(DBResource.SEC_TYPE_LOAN_INTEREST_RATE.equals(resDo.getSecType())) {
+				bo.INTEREST_RATE = resDo.getValue();
+			}
+			if(DBResource.SEC_TYPE_LOAN_POUNDAGE_RATE.equals(resDo.getSecType())) {
+				bo.POUNDAGE_RATE = resDo.getValue();
+			}
+			if(DBResource.SEC_TYPE_LOAN_OVERDUE_RATE.equals(resDo.getSecType())) {
+				bo.OVERDUE_RATE = resDo.getValue();
+			}
+		}
+		
+		return bo;
+	}
 	
-	private LoanHomeInfoBo processLogin(AfUserAccountDo userAccount) {
+	
+	private LoanHomeInfoBo processLogin(AfUserAccountDo userAccount, LoanDBCfgBo loanCfg) {
 		LoanHomeInfoBo bo = new LoanHomeInfoBo();
 		bo.isLogin = true;
-		bo.rejectCode = AfLoanHomeRejectType.PASS.name();
 		
-		this.dealResource(bo, userAccount); 	// 处理 额度 信息
-		this.dealLoan(bo, userAccount);  		// 处理 贷款 信息
-		
-		this.dealFinal(bo, userAccount);		// 汇总处理
+		this.dealResource(bo, userAccount, loanCfg);// 处理 配置 信息
+		this.dealLoan(bo, userAccount, loanCfg);  	// 处理 贷款 信息
+		bo.rejectCode = rejectCheck(userAccount, loanCfg).name();
 
 		return bo;
 	}
 	
-	private void dealResource(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
-		// TODO 获取一些后台配置的固定信息
+	private void dealResource(LoanHomeInfoBo bo, AfUserAccountDo userAccount, LoanDBCfgBo loanCfg) {
+		BigDecimal maxAuota = loanCfg.MAX_QUOTA;
+		BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
+		maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
+		bo.maxQuota = maxAuota;
+		bo.minQuota = loanCfg.MIN_QUOTA;
+		
+		bo.interestRate = loanCfg.INTEREST_RATE;
+		bo.poundageRate = loanCfg.POUNDAGE_RATE;
+		bo.overdueRate = loanCfg.OVERDUE_RATE;
+		AfLoanProductDo prdDo = afLoanProductDao.getLast();
+		bo.periods = prdDo.getPeriods();
+		bo.prdName = prdDo.getName();
+		bo.prdType = prdDo.getPrdType();
 	}
 	
-	private void dealLoan(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
+	private void dealLoan(LoanHomeInfoBo bo, AfUserAccountDo userAccount, LoanDBCfgBo loanCfg) {
 		Long userId = userAccount.getUserId();
 		
 		AfLoanDo loanDo = afLoanDao.fetchLastByUserId(userId);
@@ -90,7 +142,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		String status = loanDo.getStatus();
-		if(false) { // TODO
+		if(AfLoanStatus.FINISHED.name().equals(status)
+			|| AfLoanStatus.TRANSFER_FAIL.name().equals(status)
+			|| AfLoanStatus.CLOSED.name().equals(status)) {
 			bo.hasLoan = false;
 			return;
 		}
@@ -100,53 +154,60 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.loanStatus = status;
 		bo.loanAmount = loanDo.getAmount();
 		bo.loanArrivalAmount = loanDo.getArrivalAmount();
-		bo.loanRestAmount = null; // TODO
 		bo.loanGmtApply = loanDo.getGmtCreate();
-		bo.loanGmtPlanRepayment = loanDo.getGmtPlanRepayment();
-		if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
-			bo.isBorrowOverdue = true;
+		
+		// 处理贷款当期
+		AfLoanPeriodsDo activePeriod = afLoanPeriodsDao.getLastActivePeriodByLoanId(loanDo.getRid());
+		bo.curPeriodId = activePeriod.getRid();
+		bo.curPeriodAmount = activePeriod.getAmount();
+		bo.curPeriodRestAmount = afLoanPeriodsService.calcuRestAmount(activePeriod);
+		bo.curPeriodGmtPlanRepay = activePeriod.getGmtPlanRepay();
+		if(activePeriod.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
+			bo.isOverdue = true;
 		}else {
-			bo.isBorrowOverdue = false;
+			bo.isOverdue = false;
 		}
 	}
 	
-	private void dealFinal(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
+	private AfLoanRejectType rejectCheck(AfUserAccountDo userAccount, LoanDBCfgBo loanCfg) {
 		//贷款总开关
-		if() { // TODO
-			bo.rejectCode = AfLoanHomeRejectType.SWITCH_OFF.name();
-			return;
+		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {
+			return AfLoanRejectType.SWITCH_OFF;
 		}
 		
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
 		// TODO 检查是否认证过
 		
-		// TODO 检查强风控
+		//检查强风控
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+		if(RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
+			return AfLoanRejectType.NO_PASS_STRO_RISK;
+		}
 		
 		// TODO 检查弱风控
 		
-		// TODO 检查额度
+		// 检查额度
+		if(loanCfg.MIN_QUOTA.compareTo(userAccount.getAuAmount()) > 0) {
+			return AfLoanRejectType.QUOTA_TOO_SMALL;
+		}
 		
+		return AfLoanRejectType.PASS;
 	}
 	
-	private LoanHomeInfoBo processUnlogin(){
+	private LoanHomeInfoBo processUnlogin(LoanDBCfgBo loanCfg){
 		LoanHomeInfoBo bo = new LoanHomeInfoBo();
-		
+		bo.rejectCode = AfLoanRejectType.PASS.name();
 		bo.isLogin = false;
 
-		bo.interestRate = null;	// TODO
-		bo.poundageRate = null; // TODO 
-		bo.overdueRate = null; 	// TODO
-		bo.companyName = null; 	// TODO
-		bo.loanCashDay = null;// TODO
-		bo.lender = null;		// TODO
-
-		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-		bo.maxAmount = new BigDecimal(rateInfoDo.getValue4());
-		bo.minAmount = new BigDecimal(rateInfoDo.getValue1());
+		bo.interestRate = loanCfg.INTEREST_RATE;
+		bo.poundageRate = loanCfg.POUNDAGE_RATE;
+		bo.overdueRate = loanCfg.OVERDUE_RATE;
+		bo.maxQuota = loanCfg.MAX_QUOTA;
+		bo.minQuota = loanCfg.MIN_QUOTA;
 		
-		// TODO 借款总开关配置判断
-		
+		//贷款总开关
+		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {
+			bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
+		}
 		return bo;
 	}
 	
@@ -154,27 +215,38 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		public String rejectCode; //拒绝码，通过则为 "PASS"
 		
 		public boolean isLogin;
-		public String companyName;
+		public BigDecimal maxQuota;
+		public BigDecimal minQuota;
 		public String interestRate;
 		public String poundageRate;
 		public String overdueRate;
-		public String lender;
-		public String loanCashDay;
-		
-		public BigDecimal maxAmount;
-		public BigDecimal minAmount;
+		public int periods;
+		public String prdType;
+		public String prdName;
 		
 		public boolean hasLoan;
 		public Long loanId;
 		public String loanStatus;
 		public BigDecimal loanAmount;
 		public BigDecimal loanArrivalAmount;
-		public BigDecimal loanRestAmount;
 		public Date loanGmtApply;
-		public Date loanGmtPlanRepayment;
-		public boolean isBorrowOverdue;
+		
+		public Long curPeriodId;
+		public BigDecimal curPeriodAmount;
+		public BigDecimal curPeriodRestAmount;
+		public Date curPeriodGmtPlanRepay;
+		public boolean isOverdue;
 	}
-    
+	
+	public final static class LoanDBCfgBo{
+		public String SWITCH;
+		
+		public BigDecimal MAX_QUOTA;
+		public BigDecimal MIN_QUOTA;
+		public String INTEREST_RATE;
+		public String POUNDAGE_RATE;
+		public String OVERDUE_RATE;
+	}
     
 	@Override
 	public BaseDao<AfLoanDo, Long> getDao() {
