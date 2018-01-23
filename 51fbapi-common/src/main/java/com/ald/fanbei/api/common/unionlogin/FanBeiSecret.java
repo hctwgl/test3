@@ -303,7 +303,7 @@ public class FanBeiSecret {
 //        }
         String appId="gxb099547a1a9ea2e48";
         String appSecurity="a8b2a9708cb4487cacdb568fadef19cd";
-        String sequenceNo="5c2500de12c8479cb05686c84c5fb2ch";
+        String sequenceNo="12345678gxb00001";//用户的id 中间gxb 末尾自增
         String authItem="ecommerce";
         String timestamp="1499363705428";
         String name="任春雷";
