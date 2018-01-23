@@ -32,6 +32,21 @@
 		sort desc
 	</select>
 	
+	<select id="getModelH5ItemListByModelIdAndModelTypeSortById" resultType="AfModelH5ItemDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+			af_model_h5_item
+		WHERE
+			model_id = #{modelId}
+		AND
+			is_delete = 0
+		AND
+		type =#{type}
+		order by id
+	</select>
+	
+	
 	<select id="getModelH5ItemCategoryListByModelIdAndModelType" resultType="AfModelH5ItemDo">
 		SELECT
 		<include refid="queryCategoryFields" />

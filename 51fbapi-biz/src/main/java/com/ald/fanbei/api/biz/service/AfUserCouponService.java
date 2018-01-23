@@ -1,10 +1,8 @@
+
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-
-
 
 
 
@@ -147,3 +145,4 @@ public interface AfUserCouponService {
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
 }
+

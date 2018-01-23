@@ -300,7 +300,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					logger.info("don't init risk,skip sync user");
 				}else {
 					// 更新用户信息 USER
-					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "", "");
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}

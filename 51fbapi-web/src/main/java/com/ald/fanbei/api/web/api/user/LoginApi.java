@@ -104,6 +104,7 @@ public class LoginApi implements ApiHandle {
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 
@@ -212,7 +213,7 @@ public class LoginApi implements ApiHandle {
 			boolean riskSucc = false;
 			try {
 				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox,
-						uuid, loginType, loginTime, ip, phoneType, networkType, osType);
+						uuid, loginType, loginTime, ip, phoneType, networkType, osType,bqsBlackBox);
 			} catch (Exception e) {
 				if (e instanceof FanbeiException) {
 					logger.error("用户登录调风控可信验证失败", e);
@@ -275,7 +276,7 @@ public class LoginApi implements ApiHandle {
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
-					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY);
+					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY,bqsBlackBox);
 		}
 
 		resp.setResponseData(jo);

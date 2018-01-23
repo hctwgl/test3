@@ -75,6 +75,7 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 
 
 	@Override
+
 	public List<AfModelH5ItemDo> getModelH5ItemForFirstSingleByGoodsId(Long goodsId) {
 	    // TODO Auto-generated method stub
 	        return afModelH5ItemDao.getModelH5ItemForFirstSingleByGoodsId(goodsId);
@@ -85,6 +86,11 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 	public List<AfModelH5ItemDo> getModelH5ItemCategoryByModelTag(String tag) {
 	    // TODO Auto-generated method stub
 	    	return afModelH5ItemDao.getModelH5ItemCategoryByModelTag(tag);
+	}
+
+	public List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(long modelId, String type) {
+		return afModelH5ItemDao.getModelH5ItemListByModelIdAndModelTypeSortById(modelId, type);
+
 	}
 
 }

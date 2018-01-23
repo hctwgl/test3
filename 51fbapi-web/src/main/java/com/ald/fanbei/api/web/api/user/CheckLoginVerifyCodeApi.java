@@ -91,6 +91,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("可信登录：inputPassSrc can't be empty");
@@ -140,7 +141,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
         String realCode = smsDo.getVerifyCode();
         if(!StringUtils.equals(verifyCode, realCode)){
         	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", 
-        			loginTime, ip, phoneType, networkType, osType,FAIL,Constants.EVENT_LOGIN_ASY);
+        			loginTime, ip, phoneType, networkType, osType,FAIL,Constants.EVENT_LOGIN_ASY,bqsBlackBox);
         	// 更新为已经验证
          	//afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
          	loginDo.setResult("false:可信登录短信验证码不正确");
@@ -188,7 +189,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		}
 
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
-				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY,bqsBlackBox);
 		resp.setResponseData(jo);
 		//逛逛点亮活动新用户送券第一版(下架)
 //		try{
