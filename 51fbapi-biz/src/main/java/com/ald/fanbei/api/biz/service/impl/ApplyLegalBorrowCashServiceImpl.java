@@ -179,9 +179,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
 		afBorrowCashDo.setLatitude(param.getLatitude());
 		afBorrowCashDo.setLongitude(param.getLongitude());
-		afBorrowCashDo.setCity(param.getCity());
-		afBorrowCashDo.setProvince(param.getProvince());
-		afBorrowCashDo.setCounty(param.getCounty());
+		afBorrowCashDo.setCity(ObjectUtils.toString(param.getCity()));
+		afBorrowCashDo.setProvince(ObjectUtils.toString(param.getProvince()));
+		afBorrowCashDo.setCounty(ObjectUtils.toString(param.getCounty()));
 		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(param.getType()).getName());
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);

@@ -187,7 +187,13 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		
+
+		logger.info("max amount:"+maxAmount);
+		logger.info("usableAmount amount:"+usableAmount);
+		if(maxAmount.compareTo(BigDecimal.ZERO)==0){
+			logger.info("reset max amount:"+ new BigDecimal(strMaxAmount));
+			maxAmount= new BigDecimal(strMaxAmount);
+		}
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());
@@ -202,9 +208,6 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
 		if (afBorrowCashDo == null) {
-			if (usableAmount.compareTo(minAmount) < 0) {
-				inRejectLoan = YesNoStatus.YES.getCode();
-			}
 			data.put("status", "DEFAULT");
 		} else {
 			String borrowStatus = afBorrowCashDo.getStatus();
@@ -367,7 +370,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 
-		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(minAmount) < 0 && StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) 
+				&& usableAmount.compareTo(minAmount) < 0 
+				&& StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 
