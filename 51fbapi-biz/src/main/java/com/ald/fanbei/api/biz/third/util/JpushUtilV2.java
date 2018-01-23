@@ -32,7 +32,6 @@ import java.util.concurrent.*;
 public class JpushUtilV2 extends AbstractThird {
 
     private JPushClient jpushClient = null;
-    ExecutorService pool = Executors.newFixedThreadPool(16);
     private static final String MESSAGE_CONTENT_TYPE = "text";
     private static final String EXTRAS_KEY_TITLE = "title";
     private static final String EXTRAS_KEY_CONTENT = "content";
