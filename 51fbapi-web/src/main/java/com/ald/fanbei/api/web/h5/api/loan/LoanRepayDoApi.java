@@ -12,12 +12,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.RepayBo;
+import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -28,8 +30,11 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -37,6 +42,8 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.H5Handle;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
@@ -51,10 +58,8 @@ import com.google.common.collect.Maps;
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
-@Validator("legalRepayDoV2Param")
-public class LoanRepayDoApi implements ApiHandle {
-	
-	BigDecimal showAmount;
+@Validator("LoanRepayDoParam")
+public class LoanRepayDoApi implements H5Handle {
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -64,24 +69,25 @@ public class LoanRepayDoApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	
 	@Resource
-	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
+	AfLoanRepaymentService afLoanRepaymentService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
-	AfBorrowCashDao afBorrowCashDao;
+	AfLoanDao afLoanDao;
+
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
-		bo.remoteIp = CommonUtil.getIpAddr(request);
+	public H5HandleResponse process(Context context) {
+		LoanRepayBo bo = this.extractAndCheck(context);
+		//bo.remoteIp = CommonUtil.getIpAddr(request);
 		
-		this.afBorrowLegalRepaymentV2Service.repay(bo);
+		this.afLoanRepaymentService.repay(bo);
 		
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.borrowId);
+		data.put("rid", bo.loanId);
 		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
 		data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
@@ -100,27 +106,28 @@ public class LoanRepayDoApi implements ApiHandle {
 		resp.setResponseData(data);
 		
 		return resp;
-		
 	}
 	
-	private RepayBo extractAndCheck(RequestDataVo requestDataVo, Long userId) {
-		AfUserAccountDo userDo = afUserAccountService.getUserAccountByUserId(userId);
+	
+	private LoanRepayBo extractAndCheck(Context context) {
+		AfUserAccountDo userDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		if (userDo == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		
-		RepayBo bo = new RepayBo();
-		bo.userId = userId;
+		LoanRepayBo bo = new LoanRepayBo();
+		bo.userId = context.getUserId();
 		bo.userDo = userDo;
 		
-		BorrowLegalRepayDoV2Param param = (BorrowLegalRepayDoV2Param) requestDataVo.getParamObj();
-		bo.repaymentAmount = param.repaymentAmount;
-		bo.rebateAmount = param.rebateAmount;
-		bo.actualAmount = param.actualAmount;
-		bo.payPwd = param.payPwd;
-		bo.cardId = param.cardId;
-		bo.couponId = param.couponId;
-		bo.borrowId = param.borrowId;
+		Map<String, Object> dataMap = context.getDataMap();
+		
+		bo.repaymentAmount = (BigDecimal) dataMap.get("currentPeriodAmount");
+		bo.rebateAmount = (BigDecimal) dataMap.get("rebateAmount");
+		bo.actualAmount = (BigDecimal) dataMap.get("actualAmount");
+		bo.payPwd = (String) dataMap.get("payPwd");
+		bo.cardId = (Long) dataMap.get("cardId");
+		bo.couponId = (Long) dataMap.get("couponId");
+		bo.loanId = (Long) dataMap.get("loanId");
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
@@ -136,36 +143,34 @@ public class LoanRepayDoApi implements ApiHandle {
 		return bo;
 	}
 	
-	private void checkFrom(RepayBo bo) {
-		AfBorrowCashDo cashDo = null;
-		if(bo.borrowId > 0 
-				&& (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) != null ){
-		} else {
+	private void checkFrom(LoanRepayBo bo) {
+		AfLoanDo loanDo = null;
+		if((loanDo = afLoanDao.getById(bo.loanId)) != null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		bo.cashDo = cashDo;
+		bo.loanDo = loanDo;
 		
 		// 检查当前 借款 是否已在处理中
-		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(bo.borrowId);
+		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(bo.loanId);
 		if(rbCashDo != null && AfBorrowCashRepmentStatus.PROCESS.getCode().equals(rbCashDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
 		
 		// 检查 当前借款 是否在续期操作中
-		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.borrowId);
+		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.loanId);
 		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
 		}
 		
 		// 检查 用户 是否多还钱
-		BigDecimal shouldRepayAmount = afBorrowLegalRepaymentV2Service.calculateRestAmount(cashDo);
+		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(loanDo);
 		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 		
 	}
 	
-	private void checkPwdAndCard(RepayBo bo) {
+	private void checkPwdAndCard(LoanRepayBo bo) {
 		if (bo.cardId == -2 || bo.cardId > 0) { // -1-微信支付，-3支付宝支付，-2余额支付，>0卡支付（包含组合支付）
 			String finalPwd = UserUtil.getPassword(bo.payPwd, bo.userDo.getSalt());
 			if (!StringUtils.equals(finalPwd, bo.userDo.getPassword())) {
@@ -183,7 +188,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		}
 	}
 	
-	private void checkAmount(RepayBo bo) {
+	private void checkAmount(LoanRepayBo bo) {
 		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.couponId);
 		bo.userCouponDto = userCouponDto;
 		if (null != userCouponDto && !userCouponDto.getStatus().equals(CouponStatus.NOUSE.getCode())) {
@@ -223,5 +228,5 @@ public class LoanRepayDoApi implements ApiHandle {
 		}
 		
 	}
-	
+
 }
