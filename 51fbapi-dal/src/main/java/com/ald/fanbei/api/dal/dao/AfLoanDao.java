@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
  */
 public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 
-    
-
+	AfLoanDo fetchLastByUserId(Long userId);
+	
 }

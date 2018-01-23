@@ -62,6 +62,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 	}
 	
+	
 	private LoanHomeInfoBo processLogin(AfUserAccountDo userAccount) {
 		LoanHomeInfoBo bo = new LoanHomeInfoBo();
 		bo.isLogin = true;
@@ -76,6 +77,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	private void dealResource(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
+		// TODO 获取一些后台配置的固定信息
 	}
 	
 	private void dealLoan(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
@@ -109,21 +111,20 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	private void dealFinal(LoanHomeInfoBo bo, AfUserAccountDo userAccount) {
-		// 借款总开关
+		//贷款总开关
 		if() { // TODO
 			bo.rejectCode = AfLoanHomeRejectType.SWITCH_OFF.name();
 			return;
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
-		//检查是否认证过
+		// TODO 检查是否认证过
 		
-		//检查强风控
-		// TODO
+		// TODO 检查强风控
 		
-		//检查弱风控
+		// TODO 检查弱风控
 		
-		//检查额度
+		// TODO 检查额度
 		
 	}
 	
