@@ -160,15 +160,15 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			String borrowTag = info.getString("borrowTag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, type)) {
-					interestRate = info.getDouble("borrowSevenDay");
+					interestRate = info.getDouble("borrowFirstType");
 				} else if (StringUtils.equals(twoDay, type)){
-					interestRate = info.getDouble("borrowFourteenDay");
+					interestRate = info.getDouble("borrowSecondType");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, type)) {
-					serviceRate = info.getDouble("borrowSevenDay");
+					serviceRate = info.getDouble("borrowFirstType");
 				} else if (StringUtils.equals(twoDay, type)){
-					serviceRate = info.getDouble("borrowFourteenDay");
+					serviceRate = info.getDouble("borrowSecondType");
 				}
 			}
 		}

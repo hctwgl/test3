@@ -567,40 +567,40 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					String borrowTag = jsonObject.get("borrowTag").toString();
 					if ("INTEREST_RATE".equals(borrowTag)) {//借款利率
 						if ("SEVEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowSevenDay"));
+							model.put("yearRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowFourteenDay"));
+							model.put("yearRate", jsonObject.get("borrowSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("yearRate", jsonObject.get("borrowSevenDay"));
+								model.put("yearRate", jsonObject.get("borrowFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("yearRate", jsonObject.get("borrowFourteenDay"));
+								model.put("yearRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
 					if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
 						if ("SEVEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowSevenDay"));
+							model.put("poundageRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+							model.put("poundageRate", jsonObject.get("borrowSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowSevenDay"));
+								model.put("poundageRate", jsonObject.get("borrowFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+								model.put("poundageRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
 						if ("SEVEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowSevenDay"));
+							model.put("overdueRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowFourteenDay"));
+							model.put("overdueRate", jsonObject.get("borrowSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowSevenDay"));
+								model.put("poundageRate", jsonObject.get("borrowFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
+								model.put("poundageRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
