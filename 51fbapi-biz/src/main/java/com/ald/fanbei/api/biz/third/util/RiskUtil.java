@@ -2666,7 +2666,7 @@ public class RiskUtil extends AbstractThird {
 
 
         String url = getUrl() + "/modules/api/xj/renew.htm";
-
+        logger.info("summaryData 1233= " + summaryData + "url = " + url);
         String reqResult = requestProxy.post(url, summaryData);
 
         logThird(reqResult, "transferBorrow", summaryData);

@@ -11,7 +11,7 @@ public class AfUserSealDo {
 
     private String userAccountId;
 
-    private String userType;//用户类型 1：公司 2：个人
+    private String userType;//用户类型 1：公司 2：个人 3：钱包用户
 
     private String userName;
 
