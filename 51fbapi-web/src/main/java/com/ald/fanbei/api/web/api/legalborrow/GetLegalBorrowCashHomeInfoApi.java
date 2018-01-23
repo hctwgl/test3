@@ -219,11 +219,11 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
 				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-					newInterestRate = info.getDouble("borrowFourteenDay");
+					newInterestRate = info.getDouble("borrowSecondType");
 					totalRate += newInterestRate;
 				}
 				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					newServiceRate = info.getDouble("borrowFourteenDay");
+					newServiceRate = info.getDouble("borrowSecondType");
 					totalRate += newServiceRate;
 				}
 			}

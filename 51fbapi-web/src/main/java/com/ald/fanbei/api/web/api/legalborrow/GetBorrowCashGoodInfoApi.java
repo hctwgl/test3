@@ -238,19 +238,19 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
 				} else if(StringUtils.equals(twoDay, borrowType)) {
-					interestRate = info.getDouble(tag + "FourteenDay");
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
 				} else if(StringUtils.equals(twoDay, borrowType)){
-					serviceRate = info.getDouble(tag + "FourteenDay");
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}
