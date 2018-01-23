@@ -496,19 +496,19 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
 				} else if(StringUtils.equals(twoDay, borrowType)){
-					interestRate = info.getDouble(tag + "FourteenDay");
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
 				if (StringUtils.equals(oneDay, borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
 				} else if(StringUtils.equals(twoDay, borrowType)){
-					serviceRate = info.getDouble(tag + "FourteenDay");
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}
@@ -662,15 +662,15 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			String consumeTag = info.getString("consumeTag");
 			if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
 				if (StringUtils.equals(oneDay, type)) {
-					interestRate = info.getDouble("consumeSevenDay");
+					interestRate = info.getDouble("consumeFirstType");
 				} else if (StringUtils.equals(twoDay, type)){
-					interestRate = info.getDouble("consumeFourteenDay");
+					interestRate = info.getDouble("consumeSecondType");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
 				if (StringUtils.equals(oneDay, type)) {
-					serviceRate = info.getDouble("consumeSevenDay");
+					serviceRate = info.getDouble("consumeFirstType");
 				} else if (StringUtils.equals(twoDay, type)){
-					serviceRate = info.getDouble("consumeFourteenDay");
+					serviceRate = info.getDouble("consumeSecondType");
 				}
 			}
 		}

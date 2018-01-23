@@ -248,40 +248,40 @@ public class AppH5ProtocolLegalController extends BaseController {
 					String consumeTag = jsonObject.get("consumeTag").toString();
 					if ("INTEREST_RATE".equals(consumeTag)){//借款利率
 						if ("SEVEN".equals(type)){
-							model.put("yearRate",jsonObject.get("consumeSevenDay"));
+							model.put("yearRate",jsonObject.get("consumeFirstType"));
 						}else if ("FOURTEEN".equals(type)){
-							model.put("yearRate",jsonObject.get("consumeFourteenDay"));
+							model.put("yearRate",jsonObject.get("consumeSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("yearRate",jsonObject.get("consumeSevenDay"));
+								model.put("yearRate",jsonObject.get("consumeFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("yearRate",jsonObject.get("consumeFourteenDay"));
+								model.put("yearRate",jsonObject.get("consumeSecondType"));
 							}
 						}
 					}
 					if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
 						if ("SEVEN".equals(type)){
-							model.put("poundageRate",jsonObject.get("consumeSevenDay"));
+							model.put("poundageRate",jsonObject.get("consumeFirstType"));
 						}else if ("FOURTEEN".equals(type)){
-							model.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+							model.put("poundageRate",jsonObject.get("consumeSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("poundageRate",jsonObject.get("consumeSevenDay"));
+								model.put("poundageRate",jsonObject.get("consumeFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+								model.put("poundageRate",jsonObject.get("consumeSecondType"));
 							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
 						if ("SEVEN".equals(type)){
-							model.put("overdueRate",jsonObject.get("consumeSevenDay"));
+							model.put("overdueRate",jsonObject.get("consumeFirstType"));
 						}else if ("FOURTEEN".equals(type)){
-							model.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+							model.put("overdueRate",jsonObject.get("consumeSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("overdueRate",jsonObject.get("consumeSevenDay"));
+								model.put("overdueRate",jsonObject.get("consumeFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+								model.put("overdueRate",jsonObject.get("consumeSecondType"));
 							}
 						}
 					}

@@ -713,10 +713,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				JSONObject info = array.getJSONObject(i);
 				String consumeTag = info.getString("consumeTag");
 				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-						interestRate = info.getDouble("consumeSevenDay");
+						interestRate = info.getDouble("consumeFirstType");
 				}
 				if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-					serviceRate = info.getDouble("consumeSevenDay");
+					serviceRate = info.getDouble("consumeFirstType");
 				}
 			}
 			newRate = BigDecimal.valueOf(interestRate / 100);
