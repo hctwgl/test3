@@ -37,8 +37,8 @@ public class Auth51FundUtil extends AbstractThird {
 	
 	public void giveBack(String orderSn,String userId) {
 		// 响应数据,默认成功
-		String appKey = ConfigProperties.get(Constants.CONFKEY_51FUND_APPKEY);
-		String secret = ConfigProperties.get(Constants.CONFKEY_51FUND_SECRET);
+		String appKey = ConfigProperties.get(Constants.CONFKEY_NEWFUND_APPKEY);
+		String secret = ConfigProperties.get(Constants.CONFKEY_NEWFUND_SECRET);
 		try {
 			if (null == orderSn) {
 				throw new Exception("51公积金回调的url参数有误");
@@ -91,8 +91,8 @@ public class Auth51FundUtil extends AbstractThird {
 	public Auth51FundRespBo giveBack(String orderSn, String status,String userId) {
 		// 响应数据,默认成功
 		Auth51FundRespBo notifyRespBo = new Auth51FundRespBo();
-		String appKey = ConfigProperties.get(Constants.CONFKEY_51FUND_APPKEY);
-		String secret = ConfigProperties.get(Constants.CONFKEY_51FUND_SECRET);
+		String appKey = ConfigProperties.get(Constants.CONFKEY_NEWFUND_APPKEY);
+		String secret = ConfigProperties.get(Constants.CONFKEY_NEWFUND_SECRET);
 		try {
 			if (null == orderSn || null == status || null == userId) {
 				notifyRespBo.resetRespInfo(Auth51FundRespCode.INVALID_PARAMETER);

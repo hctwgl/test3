@@ -453,7 +453,7 @@ public class Constants {
 	  
 	  //51公积金认证
 	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
-	  public static final String CONFKEY_51FUND_APPKEY = "fbapi.51fund.appkey";
-	  public static final String CONFKEY_51FUND_SECRET = "fbapi.51fund.secret";
+	  public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
+	  public static final String CONFKEY_NEWFUND_SECRET = "fbapi.newfund.secret";
 	  
 }

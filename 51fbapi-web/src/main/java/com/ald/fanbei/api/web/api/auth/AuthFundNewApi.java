@@ -45,10 +45,10 @@ public class AuthFundNewApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String token =null;
-		String appKey = ConfigProperties.get(Constants.CONFKEY_51FUND_APPKEY);
-//		String secret = ConfigProperties.get(Constants.CONFKEY_51FUND_SECRET);
+		String appKey = ConfigProperties.get(Constants.CONFKEY_NEWFUND_APPKEY);
+		String secret = ConfigProperties.get(Constants.CONFKEY_NEWFUND_SECRET);
 		//String appKey = "1DE714C387E641E987078EC625666D92";
-		String secret = "6658179F17D844E093635571F41A337AC99CD26B";
+//		String secret = "6658179F17D844E093635571F41A337AC99CD26B";
 		//获取token
 		try {
 			token = (String) bizCacheUtil.getObject(Constants.AUTH_51FUND_TOKEN);
