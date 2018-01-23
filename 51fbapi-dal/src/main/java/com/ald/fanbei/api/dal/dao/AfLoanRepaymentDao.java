@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
  */
 public interface AfLoanRepaymentDao extends BaseDao<AfLoanRepaymentDo, Long> {
 
+	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
+
     
 
 }

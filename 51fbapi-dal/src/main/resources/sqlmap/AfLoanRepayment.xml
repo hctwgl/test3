@@ -300,4 +300,21 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getLastLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="AfLoanRepaymentDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan_repayment
+		WHERE
+		is_delete = 0
+		AND
+		loan_id =
+		#{loanId}
+		AND
+		status = 'P'
+		ORDER BY
+		gmt_create DESC
+          LIMIT 1
+	</select>
+    
 </mapper>
