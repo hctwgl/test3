@@ -714,10 +714,10 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if(onlineTime != null){
 	            activityTime = onlineTime.getValue();
 	        }
-	        //活动之前是否借款成功，
-	        int  activityBeforeBorrow  = afBorrowCashService.getCashBorrowSuccessByUserId(userId,activityTime);
+	        
+	        int  activityBeforeBorrow  = afBorrowCashService.getCashBorrowByUserIdAndActivity(userId,activityTime);
 	        int  isBorrow  = afBorrowCashService.getCashBorrowSuccessByUserId(userId,null);
-	        //活动之前没有借过钱，且现在借钱成功
+	        //活动之前没有借过钱包括CLOSED，且现在借钱成功
 	        if(activityBeforeBorrow == 0 && isBorrow >= 1){
 	            borrow = 1;
 	        }

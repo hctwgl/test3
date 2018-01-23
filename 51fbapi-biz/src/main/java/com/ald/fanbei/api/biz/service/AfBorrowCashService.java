@@ -212,4 +212,7 @@ public interface AfBorrowCashService {
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
 
+
+	int getCashBorrowByUserIdAndActivity(Long userId, String activityTime);
+
 }

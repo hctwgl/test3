@@ -228,4 +228,6 @@ public interface AfBorrowCashDao {
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
 
+	int getCashBorrowByUserIdAndActivity(@Param("userId") Long userId,@Param("activityTime") String activityTime);
+
 }

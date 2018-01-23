@@ -1141,8 +1141,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	/**
 	 * 
 	* @Title: isLogin
-	* @author chen
-	* @date 2018年1月22日 下午5:43:05
+	* @author chenqiwei
+	* @date 2018年1月23日 上午10:43:05
 	* @Description: 是否登录
 	* @param request
 	* @param response
@@ -1150,7 +1150,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/isLogin", method = RequestMethod.POST)
+	@RequestMapping(value = "isLogin", method = RequestMethod.POST,  produces = "application/json;charset=utf-8")
+	@ResponseBody
 	public String initTigerMachine(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
@@ -1163,12 +1164,10 @@ public class AppH5FanBeiWebController extends BaseController {
 
 		} catch (FanbeiException e) {
 		    if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)){
-				data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-				
+				return  H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
 			}
 		} 
 		

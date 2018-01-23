@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -148,14 +149,29 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         e);
             }
             try{
-          		//是否是第一次借款,给该用户送优惠券（还款券）
-          		String tag = "_FIRST_LOAN_";
-          		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
-          		//是否是第一次借款
-          		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
-          	    }catch(Exception e){
-          	        logger.error("first borrow sentUserCoupon error", e);
-          	   }
+ 		//是否是第一次借款,给该用户送优惠券（还款券）
+ 		String tag = "_FIRST_LOAN_";
+ 		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+ 		
+ 		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
+ 		    //该用户是否拥有该类型优惠券
+ 		 if(countNum >0){
+ 		         return 0;   
+ 	        }
+ 		         HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(afBorrowCashDo.getUserId());
+ 			logger.info("setnt first loan coupon userId=" + afBorrowCashDo.getUserId());
+ 			
+ 				Long count = (Long) map.get("count");
+ 				logger.info("setnt first loan coupon count="+count+"userId=" + afBorrowCashDo.getUserId());
+ 				if (count > 1)
+ 					return 0;
+ 		 
+ 		//第一次借款
+ 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
+ 		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +JSONObject.toJSONString(afBorrowCashDo));
+ 	    }catch(Exception e){
+ 	        logger.error("first borrow sentUserCoupon error", e);
+ 	   }
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
                     ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
                     AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
@@ -229,7 +245,15 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		 if(countNum >0){
 		         return 0;   
 	        }
-		//是否是第一次借款
+		         HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(afBorrowCashDo.getUserId());
+			logger.info("setnt first loan coupon userId=" + afBorrowCashDo.getUserId());
+			
+				Long count = (Long) map.get("count");
+				logger.info("setnt first loan coupon count="+count+"userId=" + afBorrowCashDo.getUserId());
+				if (count > 1)
+					return 0;
+		 
+		//第一次借款
 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
 		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +JSONObject.toJSONString(afBorrowCashDo));
 	    }catch(Exception e){
@@ -417,5 +441,11 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public int getCashBorrowSuccessByUserId(Long userId, String activityTime) {
 	    // TODO Auto-generated method stub
 	       return afBorrowCashDao.getCashBorrowSuccessByUserId(userId,activityTime);
+	}
+
+	@Override
+	public int getCashBorrowByUserIdAndActivity(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	    return afBorrowCashDao.getCashBorrowByUserIdAndActivity(userId,activityTime);
 	}
 }
