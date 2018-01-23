@@ -116,7 +116,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 		model.put("interest", BigDecimal.valueOf(Double.parseDouble(consumeDo.getValue3())));
 //		getResourceRate(model, type, afResourceDo, "instalment");
-		int repayDay = 20;
+		Integer repayDay = null;
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
 		if(afUserOutDayDo !=null) {
 			repayDay = afUserOutDayDo.getPayDay();
