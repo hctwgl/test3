@@ -38,15 +38,18 @@
         from af_user_seal a
         LEFT JOIN af_user b on a.user_id=b.id
         where
-        is_delete = 0,
+        a.is_delete = 0,
         <if test="edspayUserCardId != null and edspayUserCardId != ''">
-            and edspay_user_card_id = #{edspayUserCardId},
+            and a.edspay_user_card_id = #{edspayUserCardId},
         </if>
         <if test="userName != null and userName != ''">
-            and user_name = #{userName},
+            and a.user_name = #{userName},
         </if>
         <if test="userType != null and userType != ''">
-            and user_type = #{userType}
+            and a.user_type = #{userType}
+        </if>
+        <if test="userId != null">
+            and a.user_id = #{userId}
         </if>
         limit 1
     </select>
