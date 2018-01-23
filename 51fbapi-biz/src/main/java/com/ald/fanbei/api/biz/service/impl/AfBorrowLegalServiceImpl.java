@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -16,14 +15,12 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashHomeRejectType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -60,13 +57,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
-	AfRenewalDetailService afRenewalDetailService;
-	@Resource
 	AfBorrowCacheAmountPerdayService afBorrowCacheAmountPerdayService;
-	@Resource
-	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	@Resource
-	AfUserOperationLogService afUserOperationLogService;
 	@Resource
 	AfUserAuthService afUserAuthService;
 	
@@ -81,7 +72,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	private AfBorrowCashDao afBorrowCashDao;
 	
 	@Override
-	public Map<String, Object> getHomeInfo(Long userId){
+	public BorrowLegalHomeInfoBo getHomeInfo(Long userId){
 		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 		if(userAccount != null) {
 			return processLogin(userAccount);
@@ -90,52 +81,52 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 	}
 	
-	private Map<String, Object> processLogin(AfUserAccountDo userAccount) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("isLogin", YesNoStatus.YES.getCode());
-		data.put("isRejectGlobal", false);		// 全局拒绝借款
+	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
+		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
+		bo.isLogin = true;
+		bo.rejectCode = AfBorrowCashHomeRejectType.PASS.name();
 		
-		this.dealResoure(data, userAccount); 	// 处理 后台配置 信息
-		this.dealBorrow(data, userAccount);  	// 处理 借款/续期 信息
+		this.dealResource(bo, userAccount); 		// 处理 额度 信息
+		this.dealBorrow(bo, userAccount);  	// 处理 借款/续期 信息
 		
-		this.dealFinal(data, userAccount);		// 汇总处理
+		this.dealFinal(bo, userAccount);		// 汇总处理
 
-		return data;
+		return bo;
 	}
 	
-	private void dealResoure(Map<String, Object> data, AfUserAccountDo userAccount) {
+	private void dealResource(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
 		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
 
 		//获取配置的公司名称
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
-		data.put("companyName", companyInfo != null? companyInfo.getValue() : ""); // 债权公司名称
-		
-		//获取配置的银行利率
+		bo.companyName = companyInfo != null? companyInfo.getValue() : "";
+		 
+		//获取配置的银行利率 TODO
 		BigDecimal bankRate = new BigDecimal(oldBorrowCfg.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(oldBorrowCfg.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		data.put("bankDoubleRate", bankService.toString());				// 逾期费率
+		bo.interestRate = bankService.toString();
+		bo.overdueRate = oldBorrowCfg.get("overduePoundage").toString();
+		bo.borrowCashDay = oldBorrowCfg.get("borrowCashDay").toString();
+		bo.lender = oldBorrowCfg.get("lender").toString();
 		
 		//获取用户 最大/最小 借款额
 		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
 		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
-		BigDecimal minAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
 		BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		data.put("maxAmount", this.calculateMaxAmount(maxAmount));		// 逾期费率
-		data.put("minAmount", minAmount);								// 逾期费率
+		bo.maxAmount = this.calculateMaxAmount(maxAmount);
 		
-		data.put("overdueRate", oldBorrowCfg.get("overduePoundage")); 	// 逾期费率
-		data.put("borrowCashDay", oldBorrowCfg.get("borrowCashDay")); 
-		data.put("lender", oldBorrowCfg.get("lender")); 				// 债权人信息
+		bo.minAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
+		
 	}
 	
-	private void dealBorrow(Map<String, Object> data, AfUserAccountDo userAccount) {
+	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
 		Long userId = userAccount.getUserId();
 		
 		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastByUserId(userId);
 		if(cashDo == null) {
-			data.put("hasBorrow", false);
+			bo.hasBorrow = false;
 			return;
 		}
 		
@@ -143,58 +134,92 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		if( AfBorrowCashStatus.finsh.getCode().equals(status) 
 				|| AfBorrowCashStatus.transedfail.getCode().equals(status)
 				|| AfBorrowCashStatus.closed.getCode().equals(status)) {
-			data.put("hasBorrow", false);
+			bo.hasBorrow = false;
 			return;
 		}
 		
-		data.put("hasBorrow", true);
-		data.put("borrowId", cashDo.getRid());
-		data.put("borrowStatus", status); 											// 借款状态
-		data.put("borrowAmount", cashDo.getAmount());								// 借款额
-		data.put("borrowArrivalAmount", cashDo.getArrivalAmount());					// 借款实际到款额
-		data.put("borrowRestAmount", afBorrowCashService.calculateLegalRestAmount(cashDo));// 剩余应还额
-		data.put("borrowGmtApply", cashDo.getGmtCreate());
-		data.put("borrowGmtPlanRepayment", cashDo.getGmtPlanRepayment());			// 最后还款日
+		bo.hasBorrow = true;
+		bo.borrowId = cashDo.getRid();
+		bo.borrowStatus = status;
+		bo.borrowAmount = cashDo.getAmount();
+		bo.borrowArrivalAmount = cashDo.getArrivalAmount();
+		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(cashDo);
+		bo.borrowGmtApply = cashDo.getGmtCreate();
+		bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
 		if(cashDo.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
-			data.put("borrowIsOverdue", true);										// 借款是否有逾期未还
+			bo.isBorrowOverdue = true;
+		}else {
+			bo.isBorrowOverdue = false;
 		}
 		
-		afBorrowCacheAmountPerdayService.record(); // TODO
+		afBorrowCacheAmountPerdayService.record(); // TODO 意义?
+	}
+	
+	private void dealFinal(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
+		// 借款总开关
+		if() { // TODO
+			bo.rejectCode = AfBorrowCashHomeRejectType.SWITCH_OFF.name();
+			return;
+		}
 		
-		// 处理因为风控拒绝的借款
-		if ( AfBorrowCashStatus.closed.getCode().equals(cashDo.getStatus()) 
-				&& AfBorrowCashReviewStatus.refuse.getCode().equals(cashDo.getReviewStatus()) ) {
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+		//检查是否认证过
+		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
+			bo.rejectCode = AfBorrowCashHomeRejectType.NO_AUTHZ.name();
+			return;
+		}
+		
+		//检查强风控
+		// TODO
+		
+		//检查弱风控
+		if ( AfBorrowCashStatus.closed.getCode().equals(bo.borrowStatus) 
+					&& AfBorrowCashReviewStatus.refuse.getCode().equals(bo.borrowStatus) ) {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-				Date desTime = DateUtil.addDays(cashDo.getGmtCreate(), rejectTimePeriod);
+				Date desTime = DateUtil.addDays(bo.borrowGmtApply, rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) { // 风控拒绝日期内
-					data.put("isRejectGlobal", true);
-					data.put("rejectReason", "近期借款被风控拒绝过");
+					bo.rejectCode = AfBorrowCashHomeRejectType.NO_PASS_WEAK_RISK.name();
+					return;
 				}
 			}
 		}
-	}
-	
-	private void dealFinal(Map<String, Object> data, AfUserAccountDo userAccount) {
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
-		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
-			data.put("isRejectGlobal", true);
-			data.put("rejectReason", "风控审核未通过");
+		
+		//检查额度
+		if(bo.minAmount.compareTo(userAccount.getAuAmount()) > 0) {
+			bo.rejectCode = AfBorrowCashHomeRejectType.QUOTA_TOO_SMALL.name();
+			return;
 		}
 		
-		if (YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+		if ( YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) 
+					&& YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus()) ) {
 			throw new FanbeiException(FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 	}
 	
-	private Map<String, Object> processUnlogin(){
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("isLogin", YesNoStatus.NO.getCode());
+	private BorrowLegalHomeInfoBo processUnlogin(){
+		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		
-		// TODO
+		bo.isLogin = false;
+
+		bo.interestRate = null;	// TODO
+		bo.poundageRate = null; // TODO 
+		bo.overdueRate = null; 	// TODO
+		bo.companyName = null; 	// TODO
+		bo.borrowCashDay = null;// TODO
+		bo.lender = null;		// TODO
+
+		// 获取后台配置的最大金额和最小金额
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		bo.maxAmount = new BigDecimal(rateInfoDo.getValue4());
+		bo.minAmount = new BigDecimal(rateInfoDo.getValue1());
 		
-		return data;
+		afBorrowCacheAmountPerdayService.record(); // TODO 意义?
+
+		// TODO 借款总开关配置判断
+		
+		return bo;
 	}
 	
 	/**
@@ -211,6 +236,31 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	@Override
 	public BaseDao<AfBorrowCashDo, Long> getDao() {
 		return null;
+	}
+	
+	public final static class BorrowLegalHomeInfoBo{
+		public String rejectCode; //拒绝码，通过则为 "PASS"
+		
+		public boolean isLogin;
+		public String companyName;
+		public String interestRate;
+		public String poundageRate;
+		public String overdueRate;
+		public String lender;
+		public String borrowCashDay;
+		
+		public BigDecimal maxAmount;
+		public BigDecimal minAmount;
+		
+		public boolean hasBorrow;
+		public Long borrowId;
+		public String borrowStatus;
+		public BigDecimal borrowAmount;
+		public BigDecimal borrowArrivalAmount;
+		public BigDecimal borrowRestAmount;
+		public Date borrowGmtApply;
+		public Date borrowGmtPlanRepayment;
+		public boolean isBorrowOverdue;
 	}
 
 }

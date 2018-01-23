@@ -1,12 +1,11 @@
 package com.ald.fanbei.api.web.h5.api.loan;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
@@ -20,23 +19,23 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
 @Component("getBorrowHomeInfoApi")
 public class GetBorrowHomeInfoApi implements H5Handle {
 
+	@Resource
+	private AfBorrowLegalService afBorrowLegalService;
+	
+	@Resource
+	private AfLoanService afLoanService;
+	
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
 		
-		// banner 信息
-		List<Map<String,Object>> bannerList = new ArrayList<>();
-		resp.addResponseData("bannerList", bannerList);
+		// banner 信息 TODO
+		resp.addResponseData("bannerList", null);
 		
+		resp.addResponseData("bldInfo", afLoanService.getHomeInfo(userId));
 		
-		// 获取白领贷(bld)信息 TODO 
-		Map<String,Object> bldInfo = new HashMap<>();
-		resp.addResponseData("bldInfo", bldInfo);
-		
-		
-		// 获取小额贷(xd)信息 TODO 
-		Map<String, Object> xdInfo = new HashMap<>();
-		resp.addResponseData("xdInfo", xdInfo);
+		resp.addResponseData("xdInfo", afBorrowLegalService.getHomeInfo(userId));
 		
 		return resp;
 	}

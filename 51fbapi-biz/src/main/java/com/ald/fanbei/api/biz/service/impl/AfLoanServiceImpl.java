@@ -1,14 +1,17 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfLoanDao;
-import com.ald.fanbei.api.dal.domain.AfLoanDo;
+
 import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
 
 
@@ -29,8 +32,17 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
     @Resource
     private AfLoanDao afLoanDao;
 
-		@Override
+    
+    @Override
+	public Map<String, Object> getHomeInfo(Long userId) {
+    	
+    	
+		return null;
+	}
+    
+	@Override
 	public BaseDao<AfLoanDo, Long> getDao() {
 		return afLoanDao;
 	}
+
 }
