@@ -132,7 +132,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
             String onlineDesc="总额度"+onlineAuAmount+"元";
             if(interimExist){//有临时额度下的描述
-                onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元（含"+interimAmount+"临时额度）";
+                onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元";
             }
             map.put("onlineDesc",onlineDesc);//线上描述
             map.put("onlineStatus","4");
