@@ -246,18 +246,23 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		         return 0;   
 	        }
 		         HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(afBorrowCashDo.getUserId());
-			logger.info("setnt first loan coupon userId=" + afBorrowCashDo.getUserId());
 			
-				Long count = (Long) map.get("count");
-				logger.info("setnt first loan coupon count="+count+"userId=" + afBorrowCashDo.getUserId());
+			String log = String.format("setnt first loan coupon userId = %s",afBorrowCashDo.getUserId());
+			logger.info(log);
+			Long count = (Long) map.get("count");
+			log =log + String.format("count =  %s", count);
+			logger.info(log);
 				if (count > 1)
 					return 0;
 		 
 		//第一次借款
 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
-		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +JSONObject.toJSONString(afBorrowCashDo));
+		log =log + String.format("msg =  %s", msg);
+		logger.info(log);
+		log =log + String.format("afBorrowCashDo =  %s", JSONObject.toJSONString(afBorrowCashDo));
+		logger.info(log);
 	    }catch(Exception e){
-	        logger.error("first borrow sentUserCoupon error", e);
+	        logger.error("first borrow sentUserCouponGroup error", e);
 	   }
             
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(

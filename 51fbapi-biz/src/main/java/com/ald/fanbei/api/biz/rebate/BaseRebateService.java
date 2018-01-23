@@ -110,13 +110,19 @@ public abstract class BaseRebateService {
 		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
 		     afRecommendUserDo.setFirstSelfsupportOrder(orderInfo.getRid());
 		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
-	             logger.info("selfsupport first order rebate ", JSONObject.toJSONString(orderInfo),updateRecommend);
+	             String log = String.format("selfsupport first order rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
+		     logger.info(log);
+		     log =log + String.format("updateRecommend result =  %s", updateRecommend);
+		      logger.info(log);
+	             
 		 }
 	     }
         }
         //自营商城活动第三单双倍返利
         if(shopOrderList.size() == 3 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
-              logger.info("selfsupport double rebate ", JSONObject.toJSONString(orderInfo));
+             String log = String.format("selfsupport double rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
+	     logger.info(log);
+	    
                //用户账户操作
                 accountInfo.setRebateAmount(rebateAmount.multiply(new BigDecimal(2)));
                 accountLog.setType(UserAccountLogType.DOUBLE_REBATE_CASH.getCode());

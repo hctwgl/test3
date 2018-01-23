@@ -220,12 +220,13 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 			if (count > 1)
 				return 0;
 		        } catch (Exception e) {
-			  logger.error("sentUserCoupon error for new user userId=" + afOrder.getUserId());
+			  logger.error("sentFirstAuthShoppingUserCoupon error userId=" + afOrder.getUserId());
 		    }
 		
 		String tag = "_FIRST_SHOPPING_";
 		String sourceType = "FIRST_SHOPPING";
-		logger.info("sentUserCoupon for first auth shopping userId=" +JSONObject.toJSONString(afOrder));
+		String log = String.format("sentUserCouponGroup for first auth shopping afOrder = %s", JSONObject.toJSONString(afOrder));
+		logger.info(log);
 		
 		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afOrder.getUserId(), sourceType);
 		    //该用户是否拥有该类型优惠券
@@ -233,7 +234,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		         return 0;   
 	        }
 	        String msg = sentUserCouponGroup(afOrder.getUserId(),tag,sourceType);
-	        logger.info("sentUserCouponGroup msg = ,userId =  ", msg,afOrder.getUserId());
+	        log =log + String.format("msg = %s", msg);
+		logger.info(log);
 		return 1;
 		
 		
@@ -241,7 +243,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	  public String sentUserCouponGroup(Long userId,String tag,String sourceType){
 		//给该用户送优惠券
 	        String MsgCode = "";
-	        logger.info("sentUserCouponGroup start userId = ,sourceType", userId,sourceType);
+	        String log = String.format("sentUserCouponGroup start userId = %s", userId);
+		logger.info(log);
+	        log =log + String.format("sourceType = %s", sourceType);
+	        logger.info(log);
 	    try{
 		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
 		if(couponCategory != null){
@@ -259,12 +264,16 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 					if (1 <= myCount) {
 					    //continue;
 					    MsgCode = "LEAD";
+					    log =log + String.format("MsgCode = %s", MsgCode);
+					    logger.info(log);
 					    return MsgCode;
 					}
 					Long totalCount = couponDo.getQuota();
 					if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
 					   // continue;
 					    MsgCode = "LEAD_END";
+					    log =log + String.format("MsgCode = %s", MsgCode);
+					    logger.info(log);
 					    return MsgCode;
 					}
 					
@@ -294,6 +303,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 					couponDoT.setQuotaAlready(1);
 					afCouponService.updateCouponquotaAlreadyById(couponDoT);
 					MsgCode = "SUCCESS";
+					log =log + String.format("MsgCode = %s", MsgCode);
+					logger.info(log);
 			       }
 			  }
 		  }

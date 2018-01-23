@@ -94,7 +94,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 				String sourceType = CouponSenceRuleType.EXCLUSIVE_CREDIT.getCode();
 				String msg = afUserCouponService.sentUserCouponGroup(afUserDo.getRid(),tag,sourceType);
 			        
-				logger.info("sent new user couponGroup msg = ", msg);
+				logger.info("sent new user couponGroup msg = "+msg.toString());
 			        long recommendId = afUserDo.getRecommendId();
 					//#region add by hongzhengpei
 			        if(recommendId !=0){
