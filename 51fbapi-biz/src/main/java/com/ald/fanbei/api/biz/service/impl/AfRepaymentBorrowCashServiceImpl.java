@@ -214,7 +214,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
         final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
                 userId);
-        afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+        int result = afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+        if(result<=0){
+            //防止还款记录插入失败
+            logger.error("insert repayment fail data:"+rebateAmount.toString());
+            return null;
+        }
         logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo=" + payTradeNo + ",repaymentId=" + (repayment != null ? repayment.getRid() : 0));
         if (cardId > 0) {
             dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment);

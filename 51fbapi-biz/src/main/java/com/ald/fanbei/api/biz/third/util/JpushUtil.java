@@ -1,8 +1,7 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -78,9 +77,9 @@ public class JpushUtil extends AbstractThird {
             pushBuilder.setOptions(getOptions());
             pushBuilder.setPlatform(Platform.all());
             final PushPayload ppl = pushBuilder.build();
-            pool.execute(new Runnable() {
+            execute(new Callable<String>() {
                 @Override
-                public void run() {
+                public String call() {
                     try {
                         PushResult result = jpushClient.sendPush(ppl);
                         thirdLog.info(StringUtil.appendStrs("pushMessageByAlias title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result));
@@ -88,7 +87,7 @@ public class JpushUtil extends AbstractThird {
                     } catch (Exception e) {
                         thirdLog.error(StringUtil.appendStrs("pushMessageByAlias error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias)), e);
                     }
-
+                    return "";
                 }
             });
         } catch (Exception e) {
@@ -124,9 +123,9 @@ public class JpushUtil extends AbstractThird {
             pushBuilder.setOptions(getOptions());
             pushBuilder.setPlatform(Platform.all());
             final PushPayload ppl = pushBuilder.build();
-            pool.execute(new Runnable() {
+            execute(new Callable<String>() {
                 @Override
-                public void run() {
+                public String call() {
                     try {
                         PushResult result = jpushClient.sendPush(ppl);
                         thirdLog.info(StringUtil.appendStrs("pushMessageByRegistIds title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", ";result=", result));
@@ -134,7 +133,7 @@ public class JpushUtil extends AbstractThird {
                     } catch (Exception e) {
                         thirdLog.error(StringUtil.appendStrs("pushMessageByRegistIds error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias="), e);
                     }
-
+                    return "";
                 }
             });
         } catch (Exception e) {
@@ -152,7 +151,7 @@ public class JpushUtil extends AbstractThird {
      * @param extras
      * @param alias
      */
-    public void pushNotifyByAlias(final String title,final  String msgContent,final  Map<String, String> extras, final String[] alias) {
+    public void pushNotifyByAlias(final String title, final String msgContent, final Map<String, String> extras, final String[] alias) {
         PushResult result = null;
         try {
             extras.put(EXTRAS_KEY_TITLE, title);
@@ -166,9 +165,9 @@ public class JpushUtil extends AbstractThird {
             pushBuilder.setMessage(Message.content(msgContent));
             pushBuilder.setPlatform(Platform.all());
             final PushPayload ppl = pushBuilder.build();
-            pool.execute(new Runnable() {
+            execute(new Callable<String>() {
                 @Override
-                public void run() {
+                public String call() {
                     try {
                         PushResult result = jpushClient.sendPush(ppl);
                         thirdLog.info(StringUtil.appendStrs("pushNotifyByAlias title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result));
@@ -176,7 +175,7 @@ public class JpushUtil extends AbstractThird {
                     } catch (Exception e) {
                         thirdLog.error(StringUtil.appendStrs("pushNotifyByAlias error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias)), e);
                     }
-
+                    return "";
                 }
             });
         } catch (Exception e) {
@@ -194,7 +193,7 @@ public class JpushUtil extends AbstractThird {
      * @param extras
      * @param registIds
      */
-    public void pushNotifyByRegistIds(final String title, final String msgContent,final  Map<String, String> extras, final String[] registIds) {
+    public void pushNotifyByRegistIds(final String title, final String msgContent, final Map<String, String> extras, final String[] registIds) {
         PushResult result = null;
         try {
             extras.put(EXTRAS_KEY_TITLE, title);
@@ -208,9 +207,9 @@ public class JpushUtil extends AbstractThird {
             pushBuilder.setMessage(Message.content(msgContent));
             pushBuilder.setPlatform(Platform.all());
             final PushPayload ppl = pushBuilder.build();
-            pool.execute(new Runnable() {
+            execute(new Callable<String>() {
                 @Override
-                public void run() {
+                public String call() {
                     try {
                         PushResult result = jpushClient.sendPush(ppl);
                         thirdLog.info(StringUtil.appendStrs("pushNotifyByRegistIds title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", ";result=", result));
@@ -218,7 +217,7 @@ public class JpushUtil extends AbstractThird {
                     } catch (Exception e) {
                         thirdLog.error(StringUtil.appendStrs("pushNotifyByRegistIds error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias="), e);
                     }
-
+                    return "";
                 }
             });
 
@@ -267,8 +266,8 @@ public class JpushUtil extends AbstractThird {
      * @param alias
      * @param type       1-指定用户 2-全部用户
      */
-    public PushResult pushNotifyByAlias(final String title, final String msgContent,final  Map<String, String> extras, final String[] alias, final String type,final  String system,final  String pushType) {
-        PushResult result=null;
+    public PushResult pushNotifyByAlias(final String title, final String msgContent, final Map<String, String> extras, final String[] alias, final String type, final String system, final String pushType) {
+        PushResult result = null;
         try {
             extras.put("title", title);
             extras.put("content", msgContent);
@@ -297,9 +296,9 @@ public class JpushUtil extends AbstractThird {
             }
 //			pushBuilder.setPlatform(Platform.all());
             final PushPayload ppl = pushBuilder.build();
-            pool.execute(new Runnable() {
+            execute(new Callable<String>() {
                 @Override
-                public void run() {
+                public String call() {
                     try {
                         PushResult result = jpushClient.sendPush(ppl);
                         thirdLog.info(StringUtil.appendStrs("pushNotifyByAlias title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result));
@@ -307,13 +306,28 @@ public class JpushUtil extends AbstractThird {
                     } catch (Exception e) {
                         thirdLog.error(StringUtil.appendStrs("pushNotifyByAlias error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias)), e);
                     }
-
+                    return "";
                 }
             });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    public void execute(final Callable<String> callable) {
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                Future f = executorService.submit(callable);
+                try {
+                    f.get(3000, TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    System.out.println("jpush execute timeout,thread id:" + Thread.currentThread().getId());
+                }
+            }
+        });
     }
 
     private cn.jpush.api.push.model.notification.Notification.Builder getNotifycationBuilder(String title, String msgContent, Map<String, String> extras, String system) {

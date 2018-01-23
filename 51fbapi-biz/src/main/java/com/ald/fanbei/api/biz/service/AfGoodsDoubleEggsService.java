@@ -20,12 +20,13 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 	AfGoodsDoubleEggsDo getByGoodsId(Long goodsId);
 	AfGoodsDoubleEggsDo getByDoubleGoodsId(Long goodsId);
 	
-	List<Date> getAvalibleDateList();
+	List<Date> getAvalibleDateList(String beginningDate);
 
-	List<GoodsForDate> getGOodsByDate(Date startDate);
+	List<GoodsForDate> getGOodsByDate(Date startDate, String tag);
 
 	void updateCountById(Long goodsId);
 	
 	List<AfSFgoodsVo> getFivePictures(Long userId);
+	boolean shouldOnlyAp(Long goodsId);
 
 }

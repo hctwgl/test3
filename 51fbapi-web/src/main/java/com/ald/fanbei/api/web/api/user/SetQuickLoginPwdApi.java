@@ -52,6 +52,7 @@ public class SetQuickLoginPwdApi implements ApiHandle {
         
         String ip = CommonUtil.getIpAddr(request);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+        String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
@@ -94,7 +95,7 @@ public class SetQuickLoginPwdApi implements ApiHandle {
         	String registerTime = sdf.format(new Date(System.currentTimeMillis()));
         	try{
         		riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
-						registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+						registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY,bqsBlackBox);
         	} catch (Exception e){
         		logger.error(e.getMessage());
         	}

@@ -131,11 +131,25 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		vo.setSaleAmount(goods.getSaleAmount());
 		vo.setSource(goods.getSource());
 		vo.setSaleCount(goods.getSaleCount());
+		/* 商品详情图：多图，用英文逗号隔开  by weiqingeng
+		 * 1: 图片没有尺寸 http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg,http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg
+		 * 2: 图片有尺寸 http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg;1024;760,http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg;1024;760
+		*/
 		if(StringUtil.isNotBlank(goods.getGoodsDetail())){
-			String[] gdArray = goods.getGoodsDetail().split(";");
-			if(gdArray!=null && gdArray.length == Constants.GOODSDETAIL_PIC_PARTS){
-				GoodsDetailPicInfoVo goodsDetailPicInfoVo = new GoodsDetailPicInfoVo(gdArray[0], gdArray[1], gdArray[2]);
-				goodsDetail.add(goodsDetailPicInfoVo);
+			String[] details = goods.getGoodsDetail().split(",");
+			if(null != details && details.length > 0){
+				for(String detail : details){
+					String[] gdArray = detail.split(";");
+					if(gdArray != null && gdArray.length > 0){
+						if(gdArray.length == Constants.GOODSDETAIL_PIC_PARTS){
+							GoodsDetailPicInfoVo goodsDetailPicInfoVo = new GoodsDetailPicInfoVo(gdArray[0], gdArray[1], gdArray[2]);
+							goodsDetail.add(goodsDetailPicInfoVo);
+						}else{
+							GoodsDetailPicInfoVo goodsDetailPicInfoVo = new GoodsDetailPicInfoVo(gdArray[0], null, null);
+							goodsDetail.add(goodsDetailPicInfoVo);
+						}
+					}
+				}
 			}
 		}
 		vo.setGoodsDetail(goodsDetail);
@@ -172,5 +186,5 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		return vo;
 	}
-	
+
 }

@@ -195,6 +195,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfInterimDetailDao afInterimDetailDao;
 
+	@Resource
+	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
+
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -559,7 +562,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param actualAmount --实际支付价格
      * @param goodsId      --商品id
      * @param openId       --商品混淆id
-     * @param numId        --商品数字id
      * @param goodsName    --商品名称
      * @param goodsIcon    --商品图片
      * @param count        --数量
@@ -569,7 +571,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     private AfOrderDo buildOrder(Date now, String orderNo, String payTradeNo, Long userId, AfUserCouponDto couponDto,
                                  BigDecimal money, BigDecimal saleAmount, String mobile, BigDecimal rebateAmount, String orderType,
                                  BigDecimal actualAmount, Long goodsId, String openId, String goodsName, String goodsIcon, int count,
-                                 String shopName, Long bankId, String clientIp, String blackBox) {
+                                 String shopName, Long bankId, String clientIp, String blackBox,String bqsBlackBox) {
         AfOrderDo orderDo = new AfOrderDo();
         orderDo.setGmtCreate(now);
         orderDo.setUserId(userId);
@@ -587,6 +589,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         //新增下单时记录 IP 、设备指纹 2017年12月12日13:28:59 cxk
         orderDo.setIp(clientIp);//用户ip地址
         orderDo.setBlackBox(blackBox);//加入同盾设备指纹
+        orderDo.setBqsBlackBox(bqsBlackBox);//加入白骑士设备指纹
         if (null == couponDto) {
             orderDo.setUserCouponId(0l);
 
@@ -683,43 +686,43 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         return afUserOrderDao.addUserOrder(order);
     }
 
-    @Override
-    public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
-                                                       AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
-                                                       String clientIp, AfUserAccountDo afUserAccountDo, String blackBox) {
-        final Date now = new Date();
-        final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
-        final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
-        Map<String, Object> map;
-        // 订单创建
-        orderDao.createOrder(buildOrder(now, orderNo, orderNo, userId, couponDto, money, money, mobile, rebateAmount,
-                OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "", bankId, clientIp, blackBox));
-        if (bankId < 0) {// 微信支付
-            map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,
-                    PayOrderSource.ORDER.getCode());
-        } else {// 银行卡支付 代收
-            map = new HashMap<String, Object>();
-            UpsCollectRespBo respBo = upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(),
-                    card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(),
-                    Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode());
-            if (!respBo.isSuccess()) {
-                if (StringUtil.isNotBlank(respBo.getRespCode())) {
-                    //模版数据map处理
-                    Map<String, String> replaceMapData = new HashMap<String, String>();
-                    replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
-                    try {
-                        AfUserDo userDo = afUserService.getUserById(userId);
-                        smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-                    } catch (Exception e) {
-                        logger.error("pay order rela bank pay error,userId=" + userId, e);
-                    }
-                }
-                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-            }
-            map.put("resp", respBo);
-        }
-        return map;
-    }
+	@Override
+	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
+			AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
+			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox,String bqsBlackBox) {
+		final Date now = new Date();
+		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
+		final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
+		Map<String, Object> map;
+		// 订单创建
+		orderDao.createOrder(buildOrder(now, orderNo, orderNo, userId, couponDto, money, money, mobile, rebateAmount,
+                OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "", bankId,clientIp,blackBox,bqsBlackBox));
+		if (bankId < 0) {// 微信支付
+			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,
+					PayOrderSource.ORDER.getCode());
+		} else {// 银行卡支付 代收
+			map = new HashMap<String, Object>();
+			UpsCollectRespBo respBo = upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(),
+					card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(),
+					Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode());
+			if (!respBo.isSuccess()) {
+				if(StringUtil.isNotBlank(respBo.getRespCode())){
+					//模版数据map处理
+					Map<String,String> replaceMapData = new HashMap<String, String>();
+					replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+					try {
+						AfUserDo userDo = afUserService.getUserById(userId);
+						smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+					} catch (Exception e) {
+						logger.error("pay order rela bank pay error,userId="+userId,e);
+					}
+				}
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
+			map.put("resp", respBo);
+		}
+		return map;
+	}
 
     @Override
     public AfOrderDo getThirdOrderInfoByOrderTypeAndOrderNo(String orderType, String thirdOrderNo) {
@@ -847,34 +850,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
                             //----------------------------------------------mqp end add a switch--------------------------------------------------
                             break;
-//					case PAID:
-//							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//							if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
-//								AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
-//								afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
-//								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//								if(borrowList == null || borrowList.size()==0 ){
-//									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//									for(AfBorrowBillDo _afBorrowExtendDo:billList){
-//										_afBorrowExtendDo.setStatus("N");
-//									}
-//									afBorrowDao.addBorrowBill(billList);
-//									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
-//									if(_aa ==null){
-//										_aa =new AfBorrowExtendDo();
-//										_aa.setId(afBorrowDo.getRid());
-//										_aa.setInBill(1);
-//										afBorrowExtendDao.addBorrowExtend(_aa);
-//									}
-//									else{
-//										_aa.setInBill(1);
-//										afBorrowExtendDao.updateBorrowExtend(_aa);
-//									}
-//								}
-//							}
-//							orderDao.updateOrder(afOrder);
-//							break;
-
                         default:
                             logger.info(" status is {} ", afOrder.getStatus());
                             orderDao.updateOrder(afOrder);
@@ -1056,7 +1031,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
                                 orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
-                                orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap);
+                                orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap,orderInfo.getBqsBlackBox(),orderInfo);
                         logger.info("verybo=" + verybo);
                         if (verybo.isSuccess()) {
                             logger.info("pay result is true");
@@ -1125,7 +1100,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                                 BigDecimal.ZERO, borrowTime,
                                 OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
                                         ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
-                                getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap);
+                                getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap,orderInfo.getBqsBlackBox(),orderInfo);
                         if (verybo.isSuccess()) {
                             logger.info("combination_pay result is true");
                             orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
@@ -1261,7 +1236,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param userId           用户id
      * @param amount           分期金额
      * @param nper             分期期数
-     * @param perAmount        每期金额
      * @param status           状态
      * @param orderId          订单id
      * @param orderNo          订单编号
@@ -1541,6 +1515,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
         });
         if (result == 1) {
+
+		  	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+        	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
+        	if (resourceDo != null) {
+        		Date current = new Date();
+        		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        		String strCurrent = sFormat.format(current);
+        		if (strCurrent.compareTo(resourceDo.getValue()) > 0 && strCurrent.compareTo(resourceDo.getValue1()) < 0 ) {
+        			afUserCouponTigerMachineService.addOneTime(orderInfo.getUserId(), "SHOPPING");
+				}
+
+			}
+        	//----------------------------end map:add one time for tiger machine---------------------------------
+
+
             boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
                     PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
             // iPhonX预约

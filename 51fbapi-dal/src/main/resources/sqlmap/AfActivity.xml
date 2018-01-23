@@ -107,6 +107,15 @@
 		WHERE
 			id = #{activityId}
 	</update>
-	
+	<select id="getDateListByName" parameterType="java.lang.String" resultType="java.util.Date">
+		SELECT
+			gmt_start
+		FROM
+			af_activity
+		WHERE
+			is_delete = 0
+		AND `status` = 2
+		AND `name` = #{tag};
+	</select>
 
 </mapper>

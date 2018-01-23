@@ -27,12 +27,12 @@ public class RiskUser extends RiskRegisterStrongReqBo {
 	 */
 	public RiskUser(String consumerNo, String event,  AfUserDo afUserDo, 
 			 AfUserAccountDto accountDo,  String CHANNEL, String PRIVATE_KEY) {
-		super(consumerNo, event, null, afUserDo, null, null, null, accountDo, null, null, CHANNEL, PRIVATE_KEY, null, null);
+		super(consumerNo, event, null, afUserDo, null, null, null, accountDo, null, null, CHANNEL, PRIVATE_KEY, null, null,null,null);
 	}
 
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox, String riskScene) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		
@@ -52,11 +52,6 @@ public class RiskUser extends RiskRegisterStrongReqBo {
 		userInfo.put("email", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
 //		setUserInfo(Base64.encodeString(JSON.toJSONString(userInfo)));
 		setUserInfo(JSON.toJSONString(userInfo));
-	}
-
-	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost, String riskScene) {
-
 	}
 
 }
