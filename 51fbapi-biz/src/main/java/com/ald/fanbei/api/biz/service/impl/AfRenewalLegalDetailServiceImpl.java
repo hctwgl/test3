@@ -413,10 +413,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			    				JSONObject info = array.getJSONObject(i);
 			    				String borrowTag = info.getString("borrowTag");
 			    				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-			    						rate = info.getDouble("borrowSevenDay");
+			    						rate = info.getDouble("borrowFirstType");
 			    				}
 			    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-			    					serviceRate = info.getDouble("borrowSevenDay");
+			    					serviceRate = info.getDouble("borrowFirstType");
 			    				}
 			    			}
 			    			newRate = BigDecimal.valueOf(rate / 100);
@@ -713,10 +713,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				JSONObject info = array.getJSONObject(i);
 				String consumeTag = info.getString("consumeTag");
 				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-						interestRate = info.getDouble("consumeSevenDay");
+						interestRate = info.getDouble("consumeFirstType");
 				}
 				if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-					serviceRate = info.getDouble("consumeSevenDay");
+					serviceRate = info.getDouble("consumeFirstType");
 				}
 			}
 			newRate = BigDecimal.valueOf(interestRate / 100);

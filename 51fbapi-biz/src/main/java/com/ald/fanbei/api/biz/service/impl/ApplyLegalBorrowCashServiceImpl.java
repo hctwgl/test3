@@ -8,9 +8,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,14 +41,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.RiskReviewStatus;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -112,6 +108,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	@Resource
 	AfBorrowDao afBorrowDao;
 
+	@Resource
+	NumberWordFormat numberWordFormat;
 	private Logger logger = LoggerFactory.getLogger(ApplyLegalBorrowCashServiceImpl.class);
 
 	@Override
@@ -135,6 +133,13 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		// 获取用户分层利率
 
 		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = riskUtil.getObjectWithResourceDolist(list);
@@ -154,16 +159,16 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString("borrowTag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					interestRate = info.getDouble("borrowSevenDay");
-				} else {
-					interestRate = info.getDouble("borrowFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					interestRate = info.getDouble("borrowFirstType");
+				} else if (StringUtils.equals(twoDay, type)){
+					interestRate = info.getDouble("borrowSecondType");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					serviceRate = info.getDouble("borrowSevenDay");
-				} else {
-					serviceRate = info.getDouble("borrowFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					serviceRate = info.getDouble("borrowFirstType");
+				} else if (StringUtils.equals(twoDay, type)){
+					serviceRate = info.getDouble("borrowSecondType");
 				}
 			}
 		}
@@ -182,7 +187,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setCity(param.getCity());
 		afBorrowCashDo.setProvince(param.getProvince());
 		afBorrowCashDo.setCounty(param.getCounty());
-		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(param.getType()).getName());
+		afBorrowCashDo.setType(type);
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);
 		afBorrowCashDo.setRateAmount(rateAmount);
@@ -395,8 +400,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 					mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 					UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
-			Integer day = NumberUtil
-					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//			Integer day = NumberUtil
+//					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -553,6 +559,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			throw new FanbeiException(FanbeiExceptionCode.ADD_BORROW_CASH_INFO_FAIL);
 		}
 	}
-	
+
+
 	
 }
