@@ -497,6 +497,65 @@ public class HttpUtil {
 
     }
     /**
+     * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
+     *
+     * @param urlString
+     * @param query
+     * @return
+     */
+    public static String doHttpsPostIgnoreCertJSON(String urlString, String query) {
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
+        try {
+            URL url = new URL(urlString);
+            /*
+             * use ignore host name verifier
+             */
+            HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("content-type", "application/json");
+            connection.setRequestProperty("charset", "utf-8");
+            // Prepare SSL Context
+            TrustManager[] tm = { ignoreCertificationTrustManger };
+            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+            sslContext.init(null, tm, new java.security.SecureRandom());
+            // 设置doOutput属性为true表示将使用此urlConnection写入数据
+            connection.setDoOutput(true);
+            // 从上述SSLContext对象中得到SSLSocketFactory对象
+            SSLSocketFactory ssf = sslContext.getSocketFactory();
+            connection.setSSLSocketFactory(ssf);
+
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(),"utf-8");
+            // 把数据写入请求的Body
+            out.write(query);
+            out.flush();
+            out.close();
+
+            InputStream reader = connection.getInputStream();
+            byte[] bytes = new byte[512];
+            int length = reader.read(bytes);
+
+            do {
+                buffer.write(bytes, 0, length);
+                length = reader.read(bytes);
+            } while (length > 0);
+
+            reader.close();
+            connection.disconnect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+        }
+        try {
+            String repString = new String(buffer.toByteArray(),"utf-8");
+            return repString;
+        }  catch (Exception e){
+            return e.getMessage();
+        }
+
+
+    }
+    /**
      * 忽视证书HostName
      */
     private static HostnameVerifier ignoreHostnameVerifier = new HostnameVerifier() {
