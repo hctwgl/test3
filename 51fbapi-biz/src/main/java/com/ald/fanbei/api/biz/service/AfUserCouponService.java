@@ -1,9 +1,8 @@
+
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-
 
 
 
@@ -139,10 +138,11 @@ public interface AfUserCouponService {
 	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
 
 
-	void sentUserCoupon(Long userId, String tag, String sourceType);
+	String sentUserCouponGroup(Long userId, String tag, String sourceType);
 
 	int sentFirstAuthShoppingUserCoupon(AfOrderDo orderInfo);
 
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
 }
+

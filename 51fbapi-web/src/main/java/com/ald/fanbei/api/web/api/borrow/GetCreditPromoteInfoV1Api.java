@@ -60,14 +60,17 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
-		Date now = new Date();
-		// 账户关联信息
-		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
-		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
-		resp.setResponseData(data);
-
+		try{
+			Long userId = context.getUserId();
+			Date now = new Date();
+			// 账户关联信息
+			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+			AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+			Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
+			resp.setResponseData(data);
+		}catch (Exception e){
+			logger.error("getCreditPromoteInfoV1Api error:",e);
+		}
 		return resp;
 	}
 

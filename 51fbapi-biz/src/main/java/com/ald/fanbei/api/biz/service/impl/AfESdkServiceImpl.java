@@ -153,6 +153,173 @@ public class AfESdkServiceImpl implements AfESdkService {
 	}
 
 	@Override
+	public FileDigestSignResult selfOldSign(Map<String, String> map) {
+		// 签章标识
+		// int sealId = Integer.valueOf(map.get("sealId"));//签署印章的标识，为0表示用默认印章签署
+		int sealId = 0;
+		// 待签署文档路径
+		String srcFile = map.get("userPath");
+		logger.debug("sign doc: " + srcFile);
+		String dstFile = map.get("selfPath");
+		String fileName = map.get("fileName");
+		SignType signType = null;
+		String type = map.get("signType");
+		type = "Multi";
+		if ("Single".equalsIgnoreCase(type)) {
+			signType = SignType.Single;
+		} else if ("Multi".equalsIgnoreCase(type)) {
+			signType = SignType.Multi;
+		} else if ("Edges".equalsIgnoreCase(type)) {
+			signType = SignType.Edges;
+		} else if ("Key".equalsIgnoreCase(type)) {
+			signType = SignType.Key;
+		}
+		String accountId = map.get("accountId");
+		/*
+		 * int posX = Integer.valueOf(map.get("posX")); int posY =
+		 * Integer.valueOf(map.get("posY")); int posType =
+		 * Integer.valueOf(map.get("posType")); float width =
+		 * Float.valueOf(map.get("sealWidth")); boolean isQrcodeSign =
+		 * Boolean.valueOf(map.get("isQrcodeSign"));
+		 */
+		int posX = 170;
+		int posY = 540;
+		int posType = 0;
+		int width = 159;
+		boolean isQrcodeSign = false;
+		String key = map.get("key");
+		String posPage = map.get("posPage");
+		logger.debug("sign account id: " + accountId);
+		fileName = "反呗合同";
+		posPage = "5";
+		PosBean pos = new PosBean();
+		pos.setPosType(posType);
+		pos.setPosX(posX);
+		pos.setPosY(posY);
+		pos.setPosPage(posPage);
+		pos.setKey(key);
+		pos.setWidth(width);
+		pos.setQrcodeSign(isQrcodeSign);
+		SignPDFFileBean fileBean = new SignPDFFileBean();
+		fileBean.setDstPdfFile(dstFile);
+		fileBean.setSrcPdfFile(srcFile);
+		fileBean.setFileName(fileName);
+		FileDigestSignResult r = selfSign.localSignPdf(fileBean, pos, sealId, signType);
+		return r;
+	}
+
+	@Override
+	public FileDigestSignResult secondOldSign(Map<String, String> map) {
+		// 待签署文档路径
+		String srcFile = map.get("selfPath");// 待签署文档路径
+		logger.debug("sign doc: " + srcFile);
+		String dstFile = map.get("secondPath");// 签署后文档保存路径
+		String fileName = map.get("fileName");// 文档显示名字
+
+		String type = map.get("signType");// 签章类型
+		SignType signType = null;
+		String sealData = map.get("secondSeal");// 签章数据
+		fileName = "反呗合同";
+		type = "Multi";
+		if ("Single".equalsIgnoreCase(type)) {
+			signType = SignType.Single;
+		} else if ("Multi".equalsIgnoreCase(type)) {
+			signType = SignType.Multi;
+		} else if ("Edges".equalsIgnoreCase(type)) {
+			signType = SignType.Edges;
+		} else if ("Key".equalsIgnoreCase(type)) {
+			signType = SignType.Key;
+		}
+
+		String accountId = map.get("secondAccoundId");
+		// accountId = "57FD6990CE904C84A212A6D81E16213A";
+		// int posX = Integer.valueOf(map.get("posX"));
+		// int posY = Integer.valueOf(map.get("posY"));
+		// int posType = Integer.valueOf(map.get("posType"));
+		// float width = Float.valueOf(map.get("sealWidth"));
+		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
+		int posX = 420;
+		int posY = 685;
+		int posType = 0;
+		int width = 159;
+		boolean isQrcodeSign = false;
+		String key = map.get("key");
+		String posPage = map.get("posPage");
+		logger.debug("sign account id: " + accountId);
+		posPage = "5";
+		PosBean pos = new PosBean();
+		pos.setPosType(posType);
+		pos.setPosX(posX);
+		pos.setPosY(posY);
+		pos.setPosPage(posPage);
+		pos.setKey(key);
+		pos.setWidth(width);
+		pos.setQrcodeSign(isQrcodeSign);
+		SignPDFFileBean fileBean = new SignPDFFileBean();
+		fileBean.setSrcPdfFile(srcFile);
+		fileBean.setDstPdfFile(dstFile);
+		fileBean.setFileName(fileName);
+		FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
+		// 使用用户印章签名
+		return r;
+	}
+
+	@Override
+	public FileDigestSignResult userOldSign(Map<String, String> map) {
+		// 待签署文 档路径
+		String srcFile = map.get("PDFPath");// 待签署文档路径
+		logger.debug("sign doc: " + srcFile);
+		String dstFile = map.get("userPath");// 签署后文档保存路径
+		String fileName = map.get("fileName");// 文档显示名字
+		String type = map.get("signType");// 签章类型
+		SignType signType = null;
+		String sealData = map.get("personUserSeal");// 签章数据
+		fileName = "反呗合同";
+		type = "Multi";
+		if ("Single".equalsIgnoreCase(type)) {
+			signType = SignType.Single;
+		} else if ("Multi".equalsIgnoreCase(type)) {
+			signType = SignType.Multi;
+		} else if ("Edges".equalsIgnoreCase(type)) {
+			signType = SignType.Edges;
+		} else if ("Key".equalsIgnoreCase(type)) {
+			signType = SignType.Key;
+		}
+
+		String accountId = map.get("accountId");
+		// accountId = "57FD6990CE904C84A212A6D81E16213A";
+		// int posX = Integer.valueOf(map.get("posX"));
+		// int posY = Integer.valueOf(map.get("posY"));
+		// int posType = Integer.valueOf(map.get("posType"));
+		// float width = Float.valueOf(map.get("sealWidth"));
+		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
+		int posX = 170;
+		int posY = 685;
+		int posType = 0;
+		int width = 159;
+		boolean isQrcodeSign = false;
+		String key = map.get("key");
+		String posPage = map.get("posPage");
+		logger.debug("sign account id: " + accountId);
+		posPage = "5";
+		PosBean pos = new PosBean();
+		pos.setPosType(posType);
+		pos.setPosX(posX);
+		pos.setPosY(posY);
+		pos.setPosPage(posPage);
+		pos.setKey(key);
+		pos.setWidth(width);
+		pos.setQrcodeSign(isQrcodeSign);
+		SignPDFFileBean fileBean = new SignPDFFileBean();
+		fileBean.setSrcPdfFile(srcFile);
+		fileBean.setDstPdfFile(dstFile);
+		fileBean.setFileName(fileName);
+		FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
+		// 使用用户印章签名
+		return r;
+	}
+
+	@Override
 	public FileDigestSignResult secondSign(Map<String, String> map) {
 		// 待签署文档路径
 		String srcFile = map.get("selfPath");// 待签署文档路径

@@ -22,6 +22,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class BaseRebateService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -109,12 +110,14 @@ public abstract class BaseRebateService {
 		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
 		     afRecommendUserDo.setFirstSelfsupportOrder(orderInfo.getRid());
 		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
+	             logger.info("selfsupport first order rebate ", JSONObject.toJSONString(orderInfo),updateRecommend);
 		 }
 	     }
         }
         //自营商城活动第三单双倍返利
         if(shopOrderList.size() == 3 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
-                //用户账户操作
+              logger.info("selfsupport double rebate ", JSONObject.toJSONString(orderInfo));
+               //用户账户操作
                 accountInfo.setRebateAmount(rebateAmount.multiply(new BigDecimal(2)));
                 accountLog.setType(UserAccountLogType.DOUBLE_REBATE_CASH.getCode());
                 accountLog.setAmount(orderInfo.getRebateAmount().multiply(new BigDecimal(2)));

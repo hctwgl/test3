@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
@@ -26,5 +27,7 @@ public interface AfActivityService {
 	List<AfActivityDo> listAllHomeActivity();
 
 	AfActivityDo getHomeMoreActivity();
+
+	List<Date> getDateListByName(String tag);
 
 }

@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -16,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -23,6 +25,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -58,7 +61,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Resource
 	RiskUtil riskUtil;
 	@Resource
-    AfUserRegisterTypeDao afUserRegisterTypeDao;
+	AfUserRegisterTypeDao afUserRegisterTypeDao;
+	
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -82,7 +88,13 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
-
+			        //新人专享送自营商城优惠券
+			        
+			        String tag = "_EXCLUSIVE_CREDIT_";
+				String sourceType = CouponSenceRuleType.EXCLUSIVE_CREDIT.getCode();
+				String msg = afUserCouponService.sentUserCouponGroup(afUserDo.getRid(),tag,sourceType);
+			        
+				logger.info("sent new user couponGroup msg = ", msg);
 			        long recommendId = afUserDo.getRecommendId();
 					//#region add by hongzhengpei
 			        if(recommendId !=0){
@@ -92,6 +104,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 						afRecommendUserDo.setParentId(recommendId);
 						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 					}
+			        
 					//#endregion
 
 					//处理帐单日，还款日
@@ -287,7 +300,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					logger.info("don't init risk,skip sync user");
 				}else {
 					// 更新用户信息 USER
-					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "", "");
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}

@@ -32,6 +32,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
@@ -76,10 +77,11 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
 		
+                Long userId = context.getUserId();
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"), 0);
+		
 		/*
 		List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
 		List<AfUserCouponDto> subjectUserCouponList  = new ArrayList<AfUserCouponDto>();
@@ -146,16 +148,15 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		//新人专享--首单爆品优惠券,特定商品
 		//——————————————
-		
-		
-		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
-		  // 查询商品是否在H5活动中
-		List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
-		 List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
-		        		for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+	
+	
+		List<AfModelH5ItemDo> afModelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
+		if(afModelH5ItemList.size()>0){
+			                List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
+		        		for(AfModelH5ItemDo afModelH5ItemDo : afModelH5ItemList) {
 		        			Long modelId = afModelH5ItemDo.getModelId();
 		        			// 查询
-		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.EXCLUSIVE_CREDIT.getCode());
+		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.FIRST_SINGLE.getCode());
 		        			list.addAll(h5TemplateCouponList);
 		        		}
 		        		
@@ -167,8 +168,20 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		        		return resp;
 		}
 		
-		
-		
+
+		//———————mqp doubleEggs add function———————
+		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+		if(doubleEggsDo != null){
+			//不使用优惠券
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("couponList", null);
+			data.put("pageNo", 1);
+			data.put("totalCount", 0);
+			resp.setResponseData(data);
+			return resp;
+		}
+		//———————end mqp doubleEggs add function———————
+
 		// 双十二秒杀新增逻辑+++++++++++++>
 		if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0 || afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){
 			//是双十二秒杀活动商品，不使用优惠券
