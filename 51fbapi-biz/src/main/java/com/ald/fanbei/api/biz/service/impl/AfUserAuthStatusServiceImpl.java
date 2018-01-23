@@ -51,7 +51,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
                         afUserAuthStatusDo.setStatus("C");
                         break;
                     }
-                    afUserAuthStatusDo.setStatus("N");
+                    afUserAuthStatusDo.setStatus("P");
                 }
             }
             afUserAuthStatusDao.updateAfUserAuthStatus(afUserAuthStatusDo);
