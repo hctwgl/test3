@@ -492,8 +492,8 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	 */
 	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
 
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
