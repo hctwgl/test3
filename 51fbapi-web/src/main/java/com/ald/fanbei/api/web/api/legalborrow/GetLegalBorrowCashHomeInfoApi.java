@@ -236,7 +236,10 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(14));
+		String str = rateInfoDo.getTypeDesc().split(",")[rateInfoDo.getTypeDesc().split(",").length-1];
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
+
+
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
@@ -253,7 +256,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			maxAmount= new BigDecimal(strMaxAmount);
 		}
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
-		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
+		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
 		BigDecimal tmpLimitAmount = BigDecimal.ZERO;
 		if (tmpGoodsId != null) {

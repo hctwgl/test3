@@ -734,7 +734,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
 		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		
-		Date date = DateUtil.addDays(afBorrowLegalOrderCash.getGmtPlanRepay(), 7);
+		Date date = DateUtil.addDays(afBorrowLegalOrderCash.getGmtPlanRepay(), allowRenewalDay.intValue());
 		borrowLegalOrderCash.setGmtPlanRepay(date);
 		logger.info("buildAfBorrowLegalOrderCashDo :",borrowLegalOrderCash);
 		return borrowLegalOrderCash;
