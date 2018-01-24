@@ -136,13 +136,14 @@ public class lookAllQuotaApi implements ApiHandle {
             String value3=afResourceDoAuth.getValue3();
             String value4=afResourceDoAuth.getValue4();
             //现金贷 未通过强风控 状态
-            if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
+            if (!StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())){
                 List<String> listDesc=getAuthDesc(value3,"three");
                 cashMap.put("showAmount", listDesc.get(0));
                 cashMap.put("desc", listDesc.get(1));
                 cashMap.put("status","3");
 
-            }else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
+            }
+            if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     &&StringUtil.equals(userAuth.getRealnameStatus(),"N")){
                 //尚未认证状态
