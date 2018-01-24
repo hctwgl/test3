@@ -358,4 +358,11 @@
         LIMIT 1
     </select>
     
+    <select id="listByLoanId" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_periods 
+        WHERE loan_id = #{loanId}
+    </select>
+    
 </mapper>

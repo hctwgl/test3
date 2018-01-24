@@ -18,8 +18,9 @@ public class ApplyLoanBo {
 		public BigDecimal amount;
 		public int periods;
 		public String repayType;
-		public String loan_remark;
-		public String repay_remark;
+		public String remark;
+		public String loanRemark;
+		public String repayRemark;
 		public Long cardId;
 		public String pwd;
 		public String latitude;

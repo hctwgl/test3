@@ -14,4 +14,5 @@ public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 
 	AfLoanDo fetchLastByUserId(Long userId);
 	
+	AfLoanDo getByLoanNo(String loanNo);
 }

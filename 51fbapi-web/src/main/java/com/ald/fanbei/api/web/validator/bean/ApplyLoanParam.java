@@ -23,11 +23,14 @@ public class ApplyLoanParam {
 	@NotNull
 	String repayType;
 	
-	@NotNull
-	String loan_remark;
+	@Null
+	String remark;
 	
 	@NotNull
-	String repay_remark;
+	String loanRemark;
+	
+	@NotNull
+	String repayRemark;
 	
 	@Min(value=1)
 	Long cardId;

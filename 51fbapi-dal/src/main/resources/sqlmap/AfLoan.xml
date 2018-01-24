@@ -540,4 +540,21 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="fetchLastByUserId" resultType="AfLoanDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan 
+        WHERE is_delete = 0 AND user_id=#{userId}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    
+    <select id="getByLoanNo" resultType="AfLoanDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan 
+        WHERE is_delete = 0 AND loan_no=#{loanNo}
+        LIMIT 1
+    </select>
+    
 </mapper>

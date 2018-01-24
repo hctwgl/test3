@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 
 /**
@@ -12,6 +14,8 @@ import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
  */
 public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 
-	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loadId);
+	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
 
+	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
+	
 }

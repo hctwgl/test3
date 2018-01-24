@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.DBResource;
 import com.ald.fanbei.api.common.enums.AfLoanRejectType;
@@ -86,6 +89,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private AfResourceDao afResourceDao;
 	
 	@Resource
+    private GeneratorClusterNo generatorClusterNo;
+	@Resource
 	private TransactionTemplate transactionTemplate;
 	
 	@Override
@@ -101,34 +106,46 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	
 	@Override
 	public void doLoan(ApplyLoanBo bo) {
-		// TODO 询问 风控 是否放行
-		
+		//我方检查是否放行借款
 		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		AfLoanRejectType res = rejectCheck(userAccount, getDBCfg());
 		if(!res.equals(AfLoanRejectType.PASS)) {
-			// TODO throw new FanbeiException
-			return;
+			throw new FanbeiException();// TODO throw new FanbeiException
 		}
 		
-		ReqParam reqParam = bo.reqParam;
-		String loanNo = "";// TODO
-		final List<Object> periodDos = afLoanPeriodsService.resolvePeriods(reqParam.amount, bo.userId, reqParam.periods, loanNo, reqParam.prdType);
+		final ReqParam reqParam = bo.reqParam;
+		String loanNo = generatorClusterNo.getLoanNo(new Date());
+		final List<Object> objs = afLoanPeriodsService.resolvePeriods(reqParam.amount, bo.userId, reqParam.periods, loanNo, reqParam.prdType);
+		final AfLoanDo loanDo = (AfLoanDo)objs.remove(0);
+		final List<AfLoanPeriodsDo> periodDos = new ArrayList<>();
 		
-		final AfLoanDo loanDo = (AfLoanDo)periodDos.remove(0);
+		// TODO 询问 风控 是否放行
+		loanDo.setRiskNo("");// TODO
+		
+		//数据入库
 		transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
                 try {
-            		loanDo.setAppName("www");// TODO 其他信息补充
+                	loanDo.setAddress(reqParam.address);
+                	loanDo.setCity(reqParam.city);
+                	loanDo.setCounty(reqParam.county);
+                	loanDo.setLatitude(new BigDecimal(reqParam.latitude));
+                	loanDo.setLongitude(new BigDecimal(reqParam.longitude));
+                	loanDo.setRemark(reqParam.remark);
+                	loanDo.setLoanRemark(reqParam.loanRemark);
+                	loanDo.setRepayRemark(reqParam.repayRemark);
+            		loanDo.setAppName("www");
             		afLoanDao.saveRecord(loanDo);
             		
             		Long loanId = loanDo.getRid();
-            		for(Object o: periodDos) {
+            		for(Object o: objs) {
             			AfLoanPeriodsDo periodDo = (AfLoanPeriodsDo)o;
             			periodDo.setLoanId(loanId);
             			afLoanPeriodsDao.saveRecord(periodDo);
+            			periodDos.add(periodDo);
             		}
-                    
+            		
                     return 1L;
                 } catch (Exception e) {
                     logger.error("doLoan,DB error", e);
@@ -146,13 +163,19 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		if (!upsResult.isSuccess()) {
 			loanDo.setTradeNoOut(upsResult.getOrderNo());
 			dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
-			throw new FanbeiException(); // TODO 打款失败
+			throw new FanbeiException(); // TODO
 		}
 	}
 	
 	@Override
-	public void dealLoanSucc(Long loanId, String loanNo, String tradeNoOut) {
-		// TODO 修改我方记录
+	public void dealLoanSucc(String loanNo, String tradeNoOut) {
+		final AfLoanDo loanDo = afLoanDao.getByLoanNo(loanNo);
+		Date cur = new Date();
+		loanDo.setTradeNoOut(tradeNoOut);
+		loanDo.setStatus(AfLoanStatus.TRANSFERRED.name());
+		loanDo.setArrivalAmount(loanDo.getAmount());
+		loanDo.setGmtArrival(cur);
+		afLoanDao.updateById(loanDo);
 		
 		// TODO 通知用户
 		
@@ -160,9 +183,12 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public void dealLoanFail(Long loanId, String loanNo, String tradeNoOut, String msgOut) {
-		// TODO 查询出loan 和 loanPeriods记录
-		dealLoanFail(null, null, msgOut); // TODO
+	public void dealLoanFail(String loanNo, String tradeNoOut, String msgOut) {
+		AfLoanDo loanDo = afLoanDao.getByLoanNo(loanNo);
+		loanDo.setTradeNoOut(tradeNoOut);
+		List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+		
+		dealLoanFail(loanDo, periodDos, msgOut);
 	}
 	
 	@Override
@@ -291,8 +317,11 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		return bo;
 	}
 	
-	private void dealLoanFail(AfLoanDo loanDo, List<Object> periodDos, String msg) {
-		// TODO 修改我方记录
+	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
+		Date cur = new Date();
+		loanDo.setStatus(AfLoanStatus.TRANSFER_FAIL.name());
+		loanDo.setGmtClose(cur);
+		afLoanDao.updateById(loanDo);
 		
 		// TODO 通知用户
 	}
