@@ -201,6 +201,8 @@ public class Constants {
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	// 允许续期的天数
 	public static final String RES_ALLOW_RENEWAL_DAY = "ALLOW_RENEWAL_DAY";
+	// 新版允许续期的天数
+	public static final String RES_ALLOW_RENEWAL_DAY_NEW = "ALLOW_RENEWAL_DAY_NEW";
 	// 续期的距离预计还款日的最小天数差
 	public static final String RES_BETWEEN_DUEDATE = "BETWEEN_DUEDATE";
 	// 未还款金额限制，只有在未还款金额大于这个金额时才能续期

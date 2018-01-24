@@ -103,7 +103,7 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		// 获取续期天数
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
 		// 允许续期天数
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());
 		
