@@ -24,7 +24,6 @@ import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -41,7 +40,6 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -88,9 +86,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	
-	@Resource
-	Cache scheduledCache;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -106,7 +101,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
 			String searchBoxBgImage = serchBoxInfo.getValue();
 			data.put("searchBoxBgImage", searchBoxBgImage);
-		} 
+		}
 
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
@@ -154,52 +149,38 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				&& request.getRequestURL().indexOf("//app") != -1) {
 			if (StringUtils.equals(afResourceDo.getValue1(), "N")) {
 				// 缓存首页商品，10分钟刷新一次
-				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW.getCode();
+				String cacheKey = "GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW";
 
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
-				
-				if(categoryGoodsInfo == null) {
-					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
-				}
-				
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
-					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
+					bizCacheUtil.saveObjectList(cacheKey, categoryGoodsInfo);
 
 				}
 			} else if (StringUtils.equals(afResourceDo.getValue1(), "Y")) {
-				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD.getCode();
+				String cacheKey = "GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD";
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
-				if(categoryGoodsInfo == null) {
-					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
-				}
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfo();
-					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
+					bizCacheUtil.saveObjectList(cacheKey, categoryGoodsInfo);
+
 				}
 			}
 		} else {
 			if (StringUtils.equals(afResourceDo.getValue2(), "N")) {
 				// 缓存首页商品，10分钟刷新一次
-				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW.getCode();
+				String cacheKey = "GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW";
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
-				if(categoryGoodsInfo == null) {
-					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
-				}
-				
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
-					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
+					bizCacheUtil.saveObjectList(cacheKey, categoryGoodsInfo);
 				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
-				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD.getCode();
+				String cacheKey = "GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD";
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
-				if(categoryGoodsInfo == null) {
-					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
-				}
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfo();
-					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
+					bizCacheUtil.saveObjectList(cacheKey, categoryGoodsInfo);
 				}
 			}
 		}
@@ -270,7 +251,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		return financialEntranceInfo;
 	}
 
-	public List<Map<String, Object>> getHomePageGoodsCategoryInfo() {
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfo() {
 		List<AfCategoryDo> categoryList = afCategoryService.getHomePageCategoryInfo();
 		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
 		for (AfCategoryDo categoryDo : categoryList) {
@@ -353,7 +334,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		return categoryInfoList;
 	}
 
-	public List<Map<String, Object>> getHomePageGoodsCategoryInfoV1() {
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfoV1() {
 		List<AfModelH5ItemDo> categoryList = afModelH5ItemService.selectModelByTag();
 		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
 		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
@@ -436,7 +417,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		return categoryInfoList;
 	}
 
-	public Map<String, Object> getEcommerceAreaInfo() {
+	private Map<String, Object> getEcommerceAreaInfo() {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
 		AfResourceDo ecommerceFloorImgRes = afResourceService.getEcommerceFloorImgRes();
@@ -473,7 +454,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		return ecommerceAreaInfoMap;
 	}
 
-	public Map<String, Object> getBrandAreaInfo() {
+	private Map<String, Object> getBrandAreaInfo() {
 		Map<String, Object> brandAreaInfoMap = Maps.newHashMap();
 		// 获取逛逛楼层图信息
 		AfResourceDo brandFloorImgRes = afResourceService.getBrandFloorImgRes();
