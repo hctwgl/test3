@@ -39,4 +39,8 @@ public interface Context {
 	public Map<String, Object> getSystemsMap() ;
 
 	public void setSystemsMap(Map<String, Object> systemsMap);
+	
+	public Object getParamEntity();
+
+	public void setParamEntity(Object paramEntity);
 }
