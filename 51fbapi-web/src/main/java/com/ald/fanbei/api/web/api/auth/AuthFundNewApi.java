@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.TreeMap;
 
@@ -47,8 +48,6 @@ public class AuthFundNewApi implements ApiHandle {
 		String token =null;
 		String appKey = ConfigProperties.get(Constants.CONFKEY_NEWFUND_APPKEY);
 		String secret = ConfigProperties.get(Constants.CONFKEY_NEWFUND_SECRET);
-		//String appKey = "1DE714C387E641E987078EC625666D92";
-//		String secret = "6658179F17D844E093635571F41A337AC99CD26B";
 		//获取token
 		try {
 			token = (String) bizCacheUtil.getObject(Constants.AUTH_51FUND_TOKEN);
@@ -133,15 +132,17 @@ public class AuthFundNewApi implements ApiHandle {
 		    String newStr = mapStr + "&appSecret=" + secret;
 		    String sign = AuthFundSecret.signToHexStr(AuthFundSecret.ALGORITHMS_MD5, newStr).toUpperCase();
 		    paramSortedMap.put("sign", sign);
-		    String redirectUrl = "https://testapp.51fanbei.com/third/51fund/giveBack";
+		    String redirectUrl = "https://testapp.51fanbei.com/third/newFund/giveBack";
+		  //  String redirectUrl =  URLEncoder.encode("https://testapp.51fanbei.com/third/newFund/giveBack", "utf-8");
 		    paramSortedMap.put("redirectUrl", redirectUrl);
-		    
 		    paramSortedMap.put("userId", userId+"");
 		    String urlParams=AuthFundSecret.paramTreeMapToString(paramSortedMap);
 		    String urlFull = "https://t.51gjj.com/gjj?"+urlParams;
 		    logger.info("token=" + token + " orderSn="+orderSn+"url=" + urlFull+"redirectUrl="+redirectUrl+"userId="+userId);
 		    resp.addResponseData("url", urlFull);
 		} catch (Exception e) {
+			
+			
 			logger.error("error = " + e);
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 		}
