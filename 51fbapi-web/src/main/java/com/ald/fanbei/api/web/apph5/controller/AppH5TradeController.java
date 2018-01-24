@@ -85,6 +85,7 @@ public class AppH5TradeController extends BaseController {
         AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
         AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         String code = afTradeBusinessInfoService.getCodeById(afTradeBusinessInfoDo.getType());
+        model.put("scene", code);
         //商圈认证
         AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(account.getUserId(), code, YesNoStatus.YES.getCode());
         if (afUserAuthStatusDo == null) {
