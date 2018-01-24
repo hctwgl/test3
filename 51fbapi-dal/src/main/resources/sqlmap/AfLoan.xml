@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,loan_no,periods,amount,arrival_amount,status,prd_type,card_no,card_name,overdue_days,overdue_amount,overdue_status,review_name,review_no,review_details,review_status,risk_no,total_service_fee,service_rate,total_interest_fee,interest_rate,risk_daily_rate,au_amount,app_name,remark,loan_remark,repay_remark,gmt_create,gmt_modified,gmt_arrival,gmt_review,gmt_close,gmt_finish,latitude,longitude,province,city,county,address,
+        id rid,user_id,loan_no,trade_no_out,periods,amount,arrival_amount,prd_type,card_no,card_name,overdue_days,overdue_amount,overdue_status,review_name,review_no,review_details,review_status,risk_no,status,total_service_fee,service_rate,total_interest_fee,interest_rate,risk_daily_rate,au_amount,app_name,remark,loan_remark,repay_remark,gmt_create,gmt_modified,gmt_arrival,gmt_review,gmt_close,gmt_finish,latitude,longitude,province,city,county,address,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -20,6 +20,9 @@
         <if test="loanNo != null and loanNo != ''">
             AND loan_no = #{loanNo,jdbcType=VARCHAR}
         </if>
+        <if test="tradeNoOut != null and tradeNoOut != ''">
+            AND trade_no_out = #{tradeNoOut,jdbcType=VARCHAR}
+        </if>
         <if test="periods != null and periods != ''">
             AND periods = #{periods,jdbcType=INTEGER}
         </if>
@@ -28,9 +31,6 @@
         </if>
         <if test="arrivalAmount != null and arrivalAmount != ''">
             AND arrival_amount = #{arrivalAmount,jdbcType=DECIMAL}
-        </if>
-        <if test="status != null and status != ''">
-            AND status = #{status,jdbcType=VARCHAR}
         </if>
         <if test="prdType != null and prdType != ''">
             AND prd_type = #{prdType,jdbcType=VARCHAR}
@@ -64,6 +64,9 @@
         </if>
         <if test="riskNo != null and riskNo != ''">
             AND risk_no = #{riskNo,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
         </if>
         <if test="totalServiceFee != null and totalServiceFee != ''">
             AND total_service_fee = #{totalServiceFee,jdbcType=DECIMAL}
@@ -147,6 +150,9 @@
 	        <if test="loanNo != null">        
 	            loan_no,
 	        </if>
+	        <if test="tradeNoOut != null">        
+	            trade_no_out,
+	        </if>
 	        <if test="periods != null">        
 	            periods,
 	        </if>
@@ -155,9 +161,6 @@
 	        </if>
 	        <if test="arrivalAmount != null">        
 	            arrival_amount,
-	        </if>
-	        <if test="status != null">        
-	            status,
 	        </if>
 	        <if test="prdType != null">        
 	            prd_type,
@@ -191,6 +194,9 @@
 	        </if>
 	        <if test="riskNo != null">        
 	            risk_no,
+	        </if>
+	        <if test="status != null">        
+	            status,
 	        </if>
 	        <if test="totalServiceFee != null">        
 	            total_service_fee,
@@ -267,6 +273,9 @@
 		    <if test="loanNo != null" >
 		       #{loanNo,jdbcType=VARCHAR},
 		    </if>
+		    <if test="tradeNoOut != null" >
+		       #{tradeNoOut,jdbcType=VARCHAR},
+		    </if>
 		    <if test="periods != null" >
 		       #{periods,jdbcType=INTEGER},
 		    </if>
@@ -275,9 +284,6 @@
 		    </if>
 		    <if test="arrivalAmount != null" >
 		       #{arrivalAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=VARCHAR},
 		    </if>
 		    <if test="prdType != null" >
 		       #{prdType,jdbcType=VARCHAR},
@@ -311,6 +317,9 @@
 		    </if>
 		    <if test="riskNo != null" >
 		       #{riskNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
 		    </if>
 		    <if test="totalServiceFee != null" >
 		       #{totalServiceFee,jdbcType=DECIMAL},
@@ -390,6 +399,9 @@
             <if test="loanNo != null and loanNo != '' ">        
                 loan_no = #{loanNo,jdbcType=VARCHAR},                
             </if>
+            <if test="tradeNoOut != null and tradeNoOut != '' ">        
+                trade_no_out = #{tradeNoOut,jdbcType=VARCHAR},                
+            </if>
             <if test="periods != null and periods != '' ">        
                 periods = #{periods,jdbcType=INTEGER},                
             </if>
@@ -398,9 +410,6 @@
             </if>
             <if test="arrivalAmount != null and arrivalAmount != '' ">        
                 arrival_amount = #{arrivalAmount,jdbcType=DECIMAL},                
-            </if>
-            <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=VARCHAR},                
             </if>
             <if test="prdType != null and prdType != '' ">        
                 prd_type = #{prdType,jdbcType=VARCHAR},                
@@ -435,6 +444,9 @@
             <if test="riskNo != null and riskNo != '' ">        
                 risk_no = #{riskNo,jdbcType=VARCHAR},                
             </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
             <if test="totalServiceFee != null and totalServiceFee != '' ">        
                 total_service_fee = #{totalServiceFee,jdbcType=DECIMAL},                
             </if>
@@ -468,9 +480,9 @@
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
+                
+                gmt_modified = NOW(),
+                                
             <if test="gmtArrival != null and gmtArrival != '' ">        
                 gmt_arrival = #{gmtArrival,jdbcType=TIMESTAMP},                
             </if>
@@ -526,15 +538,6 @@
         <include refid="queryFields" />
         FROM af_loan
         <include refid="commonCondition"/>
-    </select>
-    
-    <select id="fetchLastByUserId" resultType="AfLoanDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_loan
-        WHERE is_delete = 0 AND user_id = #{userId}
-        ORDER BY id DESC
-        LIMIT 1
     </select>
     
 </mapper>

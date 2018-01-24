@@ -315,9 +315,9 @@
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
+            
+                gmt_modified = NOW(),
+            
             <if test="gmtPlanRepay != null and gmtPlanRepay != '' ">        
                 gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP},                
             </if>

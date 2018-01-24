@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 
 /**
  * 贷款业务实体
@@ -16,6 +18,25 @@ import java.math.BigDecimal;
 
     private static final long serialVersionUID = 1L;
 
+    public static AfLoanPeriodsDo gen(Long userId, Long loanId, String loanNo, String prdType
+    			,int periods, int nper, BigDecimal amount, BigDecimal serviceFee, BigDecimal interestFee, Date gmtPlanRepay) {
+    	AfLoanPeriodsDo p = new AfLoanPeriodsDo();
+    	p.userId = userId;
+    	p.loanId = loanId;
+    	p.loanNo = loanNo;
+    	p.prdType = prdType;
+    	p.periods = periods;
+    	p.nper = nper;
+    	p.amount = amount;
+    	p.serviceFee = serviceFee;
+    	p.interestFee = interestFee;
+    	p.gmtPlanRepay = gmtPlanRepay;
+    	
+    	p.gmtCreate = new Date();
+		p.status = AfLoanPeriodStatus.AWAIT_REPAY.name();
+    	return p;
+    }
+    
     /**
      * 主键Rid
      */
@@ -57,7 +78,7 @@ import java.math.BigDecimal;
     private Integer nper;
 
     /**
-     * 是否还款状态【Y:已还款 ，P:部分还款，D:还款中 N:未还款，C:关闭】
+     * 是否还款状态
      */
     private String status;
 

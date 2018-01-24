@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
@@ -29,9 +31,32 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	void doLoan(ApplyLoanBo bo);
 	
 	/**
+	 * 借贷成功回调
+	 * @param loanId
+	 * @param loanNo
+	 * @param tradeNoOut
+	 */
+	void dealLoanSucc(Long loanId, String loanNo, String tradeNoOut);
+	
+	/**
+	 * 借贷失败回调
+	 * @param loanId
+	 * @param loanNo
+	 * @param tradeNoOut
+	 */
+	void dealLoanFail(Long loanId, String loanNo, String tradeNoOut);
+	
+	/**
 	 * 获取数据库中配置有关贷款的全部配置信息
 	 * @return
 	 */
 	LoanDBCfgBo getDBCfg();
+	
+	/**
+	 * 获取用户白领贷分层日利率
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserLayRate(Long userId);
 	
 }

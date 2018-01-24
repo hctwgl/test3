@@ -15,11 +15,13 @@ import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.DBResource;
 import com.ald.fanbei.api.common.enums.AfLoanRejectType;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
@@ -55,6 +57,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	@Resource
     private AfLoanDao afLoanDao;
@@ -80,7 +84,28 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	
 	@Override
 	public void doLoan(ApplyLoanBo bo) {
+		// TODO 询问 风控 是否放行
 		
+		// TODO 检查我方前置条件
+		
+		// TODO 处理期数信息，并全部入库
+		
+		// TODO 调用UPS打款
+	}
+	
+	@Override
+	public void dealLoanSucc(Long loanId, String loanNo, String tradeNoOut) {
+		// TODO 修改我方记录
+		
+		// TODO 通知用户
+		
+		// TODO 通知风控/催收
+	}
+	
+	@Override
+	public void dealLoanFail(Long loanId, String loanNo, String tradeNoOut) {
+		// TODO 查询出loan 和 loanPeriods记录
+		dealLoanFail(null, null); // TODO
 	}
 	
 	@Override
@@ -110,6 +135,20 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		return bo;
+	}
+	
+	@Override
+	public BigDecimal getUserLayRate(Long userId) {
+		try {
+			// TODO FROM cache
+			
+			// TODO ASK risk
+			
+			// TODO SAVE cache
+			return BigDecimal.ZERO;
+		} catch (Exception e) {
+			throw new FanbeiException("getUserLayRate error!", e);
+		}
 	}
 	
 	/**
@@ -189,11 +228,16 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.maxQuota = loanCfg.MAX_QUOTA;
 		bo.minQuota = loanCfg.MIN_QUOTA;
 		
-		//贷款总开关
-		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {
+		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {//贷款总开关
 			bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
 		}
 		return bo;
+	}
+	
+	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos) {
+		// TODO 修改我方记录
+		
+		// TODO 通知用户
 	}
 	
 	/**
