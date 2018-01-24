@@ -236,23 +236,23 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     String consumeTag = jsonObject.get("consumeTag").toString();
                     if ("INTEREST_RATE".equals(consumeTag)){//借款利率
                         if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeSevenDay"));
+                            map.put("yearRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("yearRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                     if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
                         if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeSevenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                     if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
                         if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeSevenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                 }
@@ -263,23 +263,23 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     String borrowTag = jsonObject.get("borrowTag").toString();
                     if ("INTEREST_RATE".equals(borrowTag)){//借款利率
                         if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowSevenDay"));
+                            map.put("yearRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("yearRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                     if ("SERVICE_RATE".equals(borrowTag)){//手续费利率
                         if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowSevenDay"));
+                            map.put("poundageRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("poundageRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                     if ("OVERDUE_RATE".equals(borrowTag)){//逾期利率
                         if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowSevenDay"));
+                            map.put("overdueRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("overdueRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                 }
