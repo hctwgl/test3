@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
@@ -68,7 +69,7 @@ public class LoanRepayDoApi implements H5Handle {
 	@Override
 	public H5HandleResponse process(Context context) {
 		LoanRepayBo bo = this.extractAndCheck(context);
-		//bo.remoteIp = CommonUtil.getIpAddr(request); TODO
+//		bo.remoteIp = CommonUtil.getIpAddr(request); //TODO
 		
 		this.afLoanRepaymentService.repay(bo);
 		
