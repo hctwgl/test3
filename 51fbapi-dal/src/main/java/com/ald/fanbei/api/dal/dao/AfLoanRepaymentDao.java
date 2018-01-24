@@ -14,6 +14,8 @@ public interface AfLoanRepaymentDao extends BaseDao<AfLoanRepaymentDo, Long> {
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 
+	AfLoanRepaymentDo getRepayByPayTradeNo(String payTradeNo);
+
     
 
 }

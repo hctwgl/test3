@@ -178,7 +178,7 @@ public abstract class H5BaseController {
 		signStrBefore = signStrBefore + token.getToken();
 
 		logger.info("signStrBefore = {}", signStrBefore);
-		this.compareSign(signStrBefore, sign);
+		//this.compareSign(signStrBefore, sign);
 
 	}
 
