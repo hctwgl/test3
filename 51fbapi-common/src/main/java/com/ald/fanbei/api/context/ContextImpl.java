@@ -17,6 +17,8 @@ public class ContextImpl implements Context {
 	private Long userId;
 	
 	private String id;
+	
+	private Object paramEntity;
 
 	private Map<String,Object> systemsMap;
 	
@@ -89,6 +91,16 @@ public class ContextImpl implements Context {
 
 	public void setSystemsMap(Map<String, Object> systemsMap) {
 		this.systemsMap = systemsMap;
+	}
+	
+	
+
+	public Object getParamEntity() {
+		return paramEntity;
+	}
+
+	public void setParamEntity(Object paramEntity) {
+		this.paramEntity = paramEntity;
 	}
 
 	private ContextImpl(Builder builder) {
