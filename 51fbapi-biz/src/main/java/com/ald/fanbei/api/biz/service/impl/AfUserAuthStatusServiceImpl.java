@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -42,7 +43,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     @Override
     public void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
         if (afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(), afUserAuthStatusDo.getScene()) > 0) {
-            if (afUserAuthStatusDo.getStatus().equals("C") && StringUtils.isNotBlank(afUserAuthStatusDo.getCauseReason())) {
+            if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusDo.getStatus()) && StringUtils.isNotBlank(afUserAuthStatusDo.getCauseReason())) {
                 JSONArray jsonArray = JSON.parseArray(afUserAuthStatusDo.getCauseReason());
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
