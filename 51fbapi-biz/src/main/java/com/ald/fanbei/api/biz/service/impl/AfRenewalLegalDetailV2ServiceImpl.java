@@ -338,7 +338,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 			    						rate = info.getDouble("borrowFirstType");
 			    				}
 			    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-			    					serviceRate = info.getDouble("borrowSecondType");
+			    					serviceRate = info.getDouble("borrowFirstType");
 			    				}
 			    			}
 			    			newRate = BigDecimal.valueOf(rate / 100);
