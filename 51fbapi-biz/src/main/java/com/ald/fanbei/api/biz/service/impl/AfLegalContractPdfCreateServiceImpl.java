@@ -2,10 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.EviDoc;
-import com.ald.fanbei.api.biz.util.OssUploadResult;
-import com.ald.fanbei.api.biz.util.PdfCreateUtil;
+import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.*;
@@ -80,6 +77,9 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
     private EsignPublicInit esignPublicInit;
     @Resource
     private AfBorrowDao afBorrowDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
+
     private static final String src = "/home/aladin/project/app_contract";
 
     @Override
@@ -320,7 +320,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
                         map.put("gmtArrival", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()));
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("repaymentDay", simpleDateFormat.format(repaymentDay));
@@ -455,7 +456,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     getResourceRate(map, afBorrowCashDo.getType(),afResourceDo,"borrow");
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtBorrowBegin", dateFormat.format(arrivalStart));//到账时间，借款起息日

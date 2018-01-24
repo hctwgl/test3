@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.StringUtils;
@@ -107,6 +108,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Resource
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
@@ -340,7 +343,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", paidAmount);
 			data.put("overdueAmount", overdueAmount);
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			Date now = DateUtil.getEndOfDate(new Date());
 
 			data.put("overdueStatus", "N");

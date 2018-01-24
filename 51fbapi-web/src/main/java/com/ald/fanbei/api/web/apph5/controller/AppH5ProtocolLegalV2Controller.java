@@ -433,7 +433,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -497,7 +498,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -701,7 +703,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日

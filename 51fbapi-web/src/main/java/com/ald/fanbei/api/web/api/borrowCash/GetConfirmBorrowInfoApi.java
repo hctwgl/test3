@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
@@ -74,6 +75,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	@Resource
 	AfUserCouponService afUserCouponService;
 
+	@Resource
+	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
@@ -154,7 +157,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			// 可以借钱
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+			if (StringUtils.equals(amountStr, "") || !(numberWordFormat.isNumeric(type))) {
 				// 推送处理
 				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);

@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -99,6 +100,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -169,7 +172,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			long currentTime = System.currentTimeMillis();
 			Date now = DateUtil.getEndOfDate(new Date(currentTime));
 
