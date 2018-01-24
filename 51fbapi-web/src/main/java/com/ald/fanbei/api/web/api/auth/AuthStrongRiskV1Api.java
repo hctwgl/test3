@@ -100,6 +100,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 			scene = SceneType.CASH.getName();//如果前端所传为空,默认为现金贷
 		}
 		boolean numberOfAuth = false;//是否是新手引导过来
+		if(StringUtils.isBlank(scene))
+		{//兼容老版本认证多个场景
+			numberOfAuth= true;
+			scene = "CASH,ONLINE";
+		}
 		String[] sceneArray = scene.split(",");
 		String riskScene = "20";
 		if (sceneArray.length > 1) {
