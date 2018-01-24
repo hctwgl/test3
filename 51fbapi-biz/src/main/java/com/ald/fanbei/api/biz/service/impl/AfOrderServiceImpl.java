@@ -2246,12 +2246,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 //验证累计额度
                 leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount, virtualRecentDay);
             }
-            else if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
+            if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
                 BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+                if(virtualAmount.compareTo(orderInfo.getActualAmount())<=0) {
+                    leftAmount = BigDecimal.ZERO;
+                }
             }
 
-            BigDecimal useableAmount = BigDecimal.ZERO;
-
+            BigDecimal useableAmount;
             //判断临时额度是否到期
             if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
                 //获取当前用户可用临时额度
