@@ -134,7 +134,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
                                 				String couponId = (String) couponsArray.getString(i);
                                 				AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
                                 				if (couponDo != null) {
-                                				    if(couponDo.getRid() == userCouponDto.getCouponId()){
+                                				    if(couponDo.getRid().equals(userCouponDto.getCouponId())){
                                 					couponList.add(userCouponDto);
                                 				   }
                                 			        }
@@ -202,7 +202,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
         		                            				String couponId = (String) couponsArray.getString(i);
         		                            				AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
         		                            				if (couponDo != null) {
-        		                            				    if(couponDo.getRid() == userCouponDto.getCouponId()){
+        		                            				    if(couponDo.getRid().longValue() == userCouponDto.getCouponId().longValue()){
         		                            					userCouponList.add(userCouponDto);
         		                            				    }
         		                            			        }
