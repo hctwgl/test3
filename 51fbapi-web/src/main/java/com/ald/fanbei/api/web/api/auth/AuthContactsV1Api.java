@@ -87,7 +87,7 @@ public class AuthContactsV1Api implements ApiHandle {
 		}
 		//已过期重新认证项
 		String authItem = "directory";
-		AfUserAuthStatusDo afUserAuthStatusDo= afUserAuthStatusService.selectAfUserAuthStatusByCondition(context.getUserId(),scene,"C");
+		AfUserAuthStatusDo afUserAuthStatusDo= afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(context.getUserId(),scene);
 		if(afUserAuthStatusDo!=null){
 			String causeReason = afUserAuthStatusDo.getCauseReason();
 			if(causeReason!=null&&!"".equals(causeReason)){

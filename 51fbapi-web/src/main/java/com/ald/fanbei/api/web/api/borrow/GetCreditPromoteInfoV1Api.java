@@ -308,7 +308,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		data.put("isSkipH5", isSkipH5);
 
 		//是否有数据失败过期状态
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,scene);
 		if(afUserAuthStatusDo!=null){
 			String causeReason = afUserAuthStatusDo.getCauseReason();
 			if(causeReason!=null&&!"".equals(causeReason)) {

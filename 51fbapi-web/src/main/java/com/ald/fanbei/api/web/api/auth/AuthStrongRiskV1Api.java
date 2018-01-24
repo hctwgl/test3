@@ -137,7 +137,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						jsonObject.put("status", "N");//失效状态
 						jsonArray.add(jsonObject);
 					}
-					afUserAuthStatusDo.setStatus("C");
+					afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
 					afUserAuthStatusDo.setCauseReason(jsonArray.toString());
 					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 					//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
