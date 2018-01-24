@@ -27,5 +27,7 @@ public interface Cache {
 	void clear();
 
 	int getSize();
+	
+	public long getRefreshInterval();
 
 }

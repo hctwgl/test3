@@ -62,14 +62,14 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 			// 更新jvm缓存
 			cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 
-			TimeUnit.SECONDS.sleep(5);
-			if (lock.tryLock(30, TimeUnit.SECONDS)) {
+			if (lock.tryLock()) {
 				// 更新redis缓存
 				bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(),
 						activityInfoList);
 				log.info("home page v1 update redis cache success.");
 			}
 			log.info("update home page v1 cache task end,time =>{}", System.currentTimeMillis());
+			TimeUnit.MINUTES.sleep(cache.getRefreshInterval());;
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();

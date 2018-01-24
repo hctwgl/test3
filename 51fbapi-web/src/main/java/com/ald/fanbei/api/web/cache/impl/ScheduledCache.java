@@ -26,10 +26,13 @@ public class ScheduledCache implements Cache {
 	
 	private List<CacheTask> tasks = Lists.newArrayList();
 	
+	private long refreshInterval; // 单位：分钟
+	
 	
 	@PostConstruct
 	public void init() {
 		for(CacheTask task : tasks) {
+			task.setCache(this);
 			scheduler.scheduleAtFixedRate(task, 0, task.getUpdateInterval(), TimeUnit.MINUTES);
 		}
 	}
@@ -68,5 +71,15 @@ public class ScheduledCache implements Cache {
 	public void setTasks(List<CacheTask> tasks) {
 		this.tasks = tasks;
 	}
+
+	public long getRefreshInterval() {
+		return refreshInterval;
+	}
+
+	public void setRefreshInterval(long refreshInterval) {
+		this.refreshInterval = refreshInterval;
+	}
+	
+	
 	
 }

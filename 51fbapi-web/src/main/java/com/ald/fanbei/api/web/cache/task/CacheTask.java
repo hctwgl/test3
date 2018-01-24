@@ -7,5 +7,6 @@ public interface  CacheTask extends Runnable{
 	void updateCache(Cache cache);
 	
 	long getUpdateInterval();
-
+	
+	public void setCache(Cache cache);
 }
