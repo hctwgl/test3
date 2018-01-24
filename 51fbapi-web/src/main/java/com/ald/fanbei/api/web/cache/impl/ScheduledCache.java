@@ -12,7 +12,11 @@ import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.cache.task.CacheTask;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
+/**
+ * 定时刷新缓存实现类
+ * @author rongbo
+ *
+ */
 public class ScheduledCache implements Cache {
 
 
