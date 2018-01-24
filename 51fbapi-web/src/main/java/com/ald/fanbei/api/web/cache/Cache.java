@@ -16,7 +16,7 @@ public interface Cache {
 	void putObject(Object key, Object value);
 
 	/**
-	 * 获取
+	 * 获取缓存数据
 	 * @param key
 	 * @return
 	 */

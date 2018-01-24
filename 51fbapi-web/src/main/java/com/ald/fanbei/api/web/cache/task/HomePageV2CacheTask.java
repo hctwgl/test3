@@ -71,8 +71,6 @@ public class HomePageV2CacheTask extends AbstractCacheTask{
 		} finally {
 			lock.unlock();
 		}
-		
-		
 	}
 	
 
