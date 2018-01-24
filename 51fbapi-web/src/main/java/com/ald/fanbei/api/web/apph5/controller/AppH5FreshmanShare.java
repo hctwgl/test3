@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
@@ -33,14 +34,16 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -95,6 +98,8 @@ public class AppH5FreshmanShare extends BaseController{
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfCouponCategoryService afCouponCategoryService;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -210,8 +215,10 @@ public class AppH5FreshmanShare extends BaseController{
 			      return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.NO_NEW_USER.getDesc(),
 					"", returnData).toString();
 			  }
-			String tag = "_FIRST_SINGLE_";
-			String sourceType = "FIRST_SINGLE";
+			
+			String tag = CouponCateGoryType._EXCLUSIVE_CREDIT_.getCode();
+			String sourceType = CouponActivityType.EXCLUSIVE_CREDIT.getCode();
+			
 		        int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afUserDo.getRid(), sourceType);
 		        //2.该用户是否拥有该类型优惠券
 		        if(countNum >0){
@@ -255,8 +262,21 @@ public class AppH5FreshmanShare extends BaseController{
 			List<Map<String,Object>> itemList = new ArrayList<Map<String,Object>>();
 			
 			//查询爆款信息
-			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTag("FIRST_SINGLE");
-			List<AfCouponDo> couponList = afCouponService.getByActivityType("FIRST_SINGLE");
+			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTag(CouponActivityType.FIRST_SINGLE.getCode());
+			List<AfCouponDo> couponList = new ArrayList<AfCouponDo>();
+			//List<AfCouponDo> list = afCouponService.getByActivityType(CouponActivityType.FIRST_SINGLE.getCode());
+			AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(CouponCateGoryType._FIRST_SINGLE_.getCode());
+			if(couponCategory != null){
+			    	String coupons = couponCategory.getCoupons();
+				JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+				for (int i = 0; i < couponsArray.size(); i++) {
+					String couponId = (String) couponsArray.getString(i);
+					AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+					if (couponDo != null) {
+					    couponList.add(couponDo);
+					}
+				  }
+			}
 			
 			for(AfModelH5ItemDo afModelH5ItemDo:afModelH5ItemList){
 			    String itemName = afModelH5ItemDo.getItemValue();

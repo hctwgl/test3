@@ -22,6 +22,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.CouponActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -150,8 +152,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
             }
             try{
  		//是否是第一次借款,给该用户送优惠券（还款券）
- 		String tag = "_FIRST_LOAN_";
- 		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+ 		String tag = CouponCateGoryType._FIRST_LOAN_.getCode();
+		String sourceType = CouponActivityType.FIRST_LOAN.getCode();
  		
  		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
  		    //该用户是否拥有该类型优惠券
@@ -237,8 +239,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 
             try{
 		//是否是第一次借款,给该用户送优惠券（还款券）
-		String tag = "_FIRST_LOAN_";
-		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+		
+		String tag = CouponCateGoryType._FIRST_LOAN_.getCode();
+		String sourceType = CouponActivityType.FIRST_LOAN.getCode();
 		
 		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
 		    //该用户是否拥有该类型优惠券

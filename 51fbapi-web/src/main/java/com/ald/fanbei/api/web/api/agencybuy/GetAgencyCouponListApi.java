@@ -28,9 +28,12 @@ import com.ald.fanbei.api.biz.service.AfSubjectService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
@@ -41,6 +44,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * @类描述：代买订单可使用优惠券列表获取
@@ -114,18 +118,47 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		//新人专享--信用专享优惠券,特定商品
 		//——————————————
-		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
-		    List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();        
-        		// 查询
-        		List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,null,ActivityType.EXCLUSIVE_CREDIT.getCode());
-        		list.addAll(h5TemplateCouponList);
-        		Map<String, Object> data = new HashMap<String, Object>();
-        		data.put("couponList", JSON.toJSON(list));
-        		data.put("pageNo", 1);
-        		data.put("totalCount", list.size());
-        		resp.setResponseData(data);
-        		return resp;
-		}
+                List<AfUserCouponDto>  cList = new ArrayList<AfUserCouponDto>(); 
+		try{
+        		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
+                		// 查询
+        			List<AfUserCouponDto> couponList =   new ArrayList<AfUserCouponDto>();
+                		List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,null,ActivityType.EXCLUSIVE_CREDIT.getCode());
+                		if(h5TemplateCouponList !=null && h5TemplateCouponList.size()>0){
+                        	        for(AfUserCouponDto userCouponDto:h5TemplateCouponList){
+                                		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(CouponCateGoryType._EXCLUSIVE_CREDIT_.getCode());
+                                		if(couponCategory != null){
+                                		    	String coupons = couponCategory.getCoupons();
+                                			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+                                			for (int i = 0; i < couponsArray.size(); i++) {
+                                				String couponId = (String) couponsArray.getString(i);
+                                				AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+                                				if (couponDo != null) {
+                                				    if(couponDo.getRid() == userCouponDto.getCouponId()){
+                                					couponList.add(userCouponDto);
+                                				   }
+                                			        }
+                        		                }
+                		                }
+                        	        }
+                		}
+                		cList.addAll(couponList);
+                		Map<String, Object> data = new HashMap<String, Object>();
+                		data.put("couponList", JSON.toJSON(cList));
+                		data.put("pageNo", 1);
+                		data.put("totalCount", cList.size());
+                		resp.setResponseData(data);
+                		return resp;
+        		}
+        	 }catch(Exception e){
+        	     logger.error("exclusive credit userCoupon error", e);
+        	        Map<String, Object> data = new HashMap<String, Object>();
+         		data.put("couponList",cList);
+         		data.put("pageNo", 1);
+         		data.put("totalCount", 0);
+         		resp.setResponseData(data);
+         		return resp;
+        	 }
 		
 		//新人专享添加逻辑
 //		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
@@ -148,26 +181,55 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		//新人专享--首单爆品优惠券,特定商品
 		//——————————————
-	
-	
-		List<AfModelH5ItemDo> afModelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
-		if(afModelH5ItemList.size()>0){
-			                List<AfUserCouponDto>  list = new ArrayList<AfUserCouponDto>();
+                   List<AfUserCouponDto>  uList = new ArrayList<AfUserCouponDto>();
+	           try{
+		        List<AfModelH5ItemDo> afModelH5ItemList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
+		        if(afModelH5ItemList!= null && afModelH5ItemList.size()>0){
+			              
 		        		for(AfModelH5ItemDo afModelH5ItemDo : afModelH5ItemList) {
 		        			Long modelId = afModelH5ItemDo.getModelId();
 		        			// 查询
-		        			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.FIRST_SINGLE.getCode());
-		        			list.addAll(h5TemplateCouponList);
+		        			List<AfUserCouponDto> userCouponList =   new ArrayList<AfUserCouponDto>();
+		        			List<AfUserCouponDto> firstSingleCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.FIRST_SINGLE.getCode());
+		        			
+		        			if(firstSingleCouponList !=null && firstSingleCouponList.size()>0){
+        		                    	        for(AfUserCouponDto userCouponDto:firstSingleCouponList){
+        		                            		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(CouponCateGoryType._FIRST_SINGLE_.getCode());
+        		                            		if(couponCategory != null){
+        		                            		    	String coupons = couponCategory.getCoupons();
+        		                            			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+        		                            			for (int i = 0; i < couponsArray.size(); i++) {
+        		                            				String couponId = (String) couponsArray.getString(i);
+        		                            				AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        		                            				if (couponDo != null) {
+        		                            				    if(couponDo.getRid() == userCouponDto.getCouponId()){
+        		                            					userCouponList.add(userCouponDto);
+        		                            				    }
+        		                            			        }
+        		                    		                }
+        		            		                }
+        		                    	        }
+		        			}
+		        			
+		        			uList.addAll(userCouponList);
 		        		}
 		        		
 		        		Map<String, Object> data = new HashMap<String, Object>();
-		        		data.put("couponList", JSON.toJSON(list));
+		        		data.put("couponList", JSON.toJSON(uList));
 		        		data.put("pageNo", 1);
-		        		data.put("totalCount", list.size());
+		        		data.put("totalCount", uList.size());
 		        		resp.setResponseData(data);
 		        		return resp;
+		  }
+	         }catch(Exception e){
+		    logger.error("first single userCoupon error", e);
+			Map<String, Object> data = new HashMap<String, Object>();
+        		data.put("couponList", uList);
+        		data.put("pageNo", 1);
+        		data.put("totalCount", 0);
+        		resp.setResponseData(data);
+        		return resp;
 		}
-		
 
 		//———————mqp doubleEggs add function———————
 		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);

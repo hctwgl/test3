@@ -44,6 +44,8 @@ import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
@@ -935,6 +937,7 @@ public class AppH5InvitationActivityController extends BaseController {
   }
     
     private List<HashMap<String, Object>> getGiftPackageList(){
+	
 	     List<HashMap<String, Object>>  giftPackageList = new ArrayList<HashMap<String, Object>>();
 	     HashMap<String,Object> map1 =new HashMap<>();
 	     HashMap<String,Object> map2 =new HashMap<>();
@@ -943,12 +946,13 @@ public class AppH5InvitationActivityController extends BaseController {
 	     List<HashMap<String, Object>>  list2 = new ArrayList<HashMap<String, Object>>();
 	     List<HashMap<String, Object>>  list3 = new ArrayList<HashMap<String, Object>>();
 	     //实名认证
-	     AfResourceDo resourceDo = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:type:name");
-	     if (resourceDo == null) {
-		         //并且加入redis
-	             resourceDo = afResourceService.getConfigByTypesAndSecType("RECOMMEND_COUPON", "TYPE_NAME");
-		     bizCacheUtil.saveObject("recommend:activity:type:name", resourceDo, Constants.SECOND_OF_TEN_MINITS);
-	     }
+	     
+        	     AfResourceDo resourceDo = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:type:name");
+        	     if (resourceDo == null) {
+        		         //并且加入redis
+        	             resourceDo = afResourceService.getConfigByTypesAndSecType("RECOMMEND_COUPON", "TYPE_NAME");
+        		     bizCacheUtil.saveObject("recommend:activity:type:name", resourceDo, Constants.SECOND_OF_TEN_MINITS);
+        	     }
 		
 	     
 	     List<AfCouponDo> authCoupon = getCommonCouponMap(CouponScene.CREDIT_AUTH);
@@ -967,9 +971,15 @@ public class AppH5InvitationActivityController extends BaseController {
 	     }
 	     
 	    
+	     
 	     //首次借钱，首次购物
-	     AfCouponDo  firstLoan = getcouponForCategoryTag("_FIRST_LOAN_");
-	     AfCouponDo  firstShopping = getcouponForCategoryTag("_FIRST_SHOPPING_");
+	     AfCouponDo  firstLoan = new AfCouponDo();
+	     firstLoan =  getcouponForCategoryTag(CouponCateGoryType._FIRST_LOAN_.getCode());
+	     AfCouponDo  firstShopping = new AfCouponDo();
+		     
+	    firstShopping = getcouponForCategoryTag(CouponCateGoryType._FIRST_SHOPPING_.getCode());
+	     
+	     
 	     if(firstLoan !=null){
         	     HashMap<String,Object> loanMap =new HashMap<>();
         	     loanMap.put("threshold", firstLoan.getLimitAmount());
@@ -984,8 +994,8 @@ public class AppH5InvitationActivityController extends BaseController {
         	     shoppingMap.put("couponName", value3);
         	     list1.add(shoppingMap);
 	     }
-	     
-	     if(authCoupon.size()>0){
+	    
+	     if(authCoupon!= null && authCoupon.size()>0){
 		 for(int i=0;i<authCoupon.size();i++){
         		 AfCouponDo  coupon = authCoupon.get(i);
         		 HashMap<String,Object> map =new HashMap<>();
@@ -999,9 +1009,10 @@ public class AppH5InvitationActivityController extends BaseController {
 	     map1.put("couponList",list1 );
 	     giftPackageList.add(map1);
 	     
-	     //注册(自营商城)
+	     //注册(自营商城),首单爆品
 	//     List<AfCouponDo> rigsetCoupon = getCommonCouponMap(CouponScene.REGIST);
-	     List<AfCouponDo> rigsetCoupon = getcouponListForCategoryTag("_EXCLUSIVE_CREDIT_");
+	     List<AfCouponDo> rigsetCoupon = getcouponListForCategoryTag(CouponCateGoryType._FIRST_SINGLE_.getCode());
+	     
 	     if(rigsetCoupon.size()>0){
 		for(int i=0;i<rigsetCoupon.size();i++){
 		    AfCouponDo shop = rigsetCoupon.get(i);
@@ -1052,31 +1063,39 @@ public class AppH5InvitationActivityController extends BaseController {
 }
 
     private AfCouponDo getcouponForCategoryTag(String tag){
-	AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
-	String coupons = couponCategory.getCoupons();
-	JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 	AfCouponDo afCouponDo = new AfCouponDo();
-	//List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-
-	if (couponsArray.size()>0) {
-		String couponId = (String) couponsArray.getString(0);
-	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+	AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+	if(couponCategory !=null){
+        	String coupons = couponCategory.getCoupons();
+        	JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+        
+        	//List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+        
+        	if (couponsArray.size()>0) {
+        		String couponId = (String) couponsArray.getString(0);
+        	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        	}
+	}else{
+	    return null; 
 	}
 	return afCouponDo;
     }
     private List<AfCouponDo> getcouponListForCategoryTag(String tag){
    	AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+   	List<AfCouponDo> afCouponList = new ArrayList<AfCouponDo>();
+   	if(couponCategory !=null){
    	String coupons = couponCategory.getCoupons();
    	JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
-   	List<AfCouponDo> afCouponList = new ArrayList<AfCouponDo>();
-   	//List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-   	if (couponsArray.size()>0) {
-   	        for(int i = 0; i< couponsArray.size(); i++){
-   	                AfCouponDo afCouponDo = new AfCouponDo();
-           		String couponId = (String) couponsArray.getString(i);
-           	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-           	        afCouponList.add(afCouponDo);
-   	        }
+   	
+           //List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+           if (couponsArray.size()>0) {
+           	        for(int i = 0; i< couponsArray.size(); i++){
+           	                AfCouponDo afCouponDo = new AfCouponDo();
+                   		String couponId = (String) couponsArray.getString(i);
+                   	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+                   	        afCouponList.add(afCouponDo);
+           	        }
+           	}
    	}
    	return afCouponList;
        }

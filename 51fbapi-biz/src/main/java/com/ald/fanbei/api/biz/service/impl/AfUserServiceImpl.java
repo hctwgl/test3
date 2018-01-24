@@ -6,9 +6,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -25,12 +22,25 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.dao.AfUserRegisterTypeDao;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
@@ -90,8 +100,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 			        //新人专享送自营商城优惠券
 			        
-			        String tag = "_EXCLUSIVE_CREDIT_";
-				String sourceType = CouponSenceRuleType.EXCLUSIVE_CREDIT.getCode();
+			        String tag = CouponCateGoryType._FIRST_SINGLE_.getCode();
+				String sourceType = CouponActivityType.FIRST_SINGLE.getCode();
 				String msg = afUserCouponService.sentUserCouponGroup(afUserDo.getRid(),tag,sourceType);
 			        
 				logger.info("sent new user couponGroup msg = "+msg.toString());
