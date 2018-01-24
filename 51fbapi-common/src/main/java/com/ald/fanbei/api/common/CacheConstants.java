@@ -56,5 +56,37 @@ public class CacheConstants {
 		}
 
 	}
+	
+	public static enum HOME_PAGE{
+		
+		GET_HOME_INFO_V1_ACTIVITY_INFO_LIST("GET_HOME_INFO_V1_ACTIVITY_INFO_LIST","V1首页活动商品"),
+		GET_HOME_INFO_V1_MORE_GOODS_INFO("GET_HOME_INFO_V1_MORE_GOODS_INFO","V1首页更多商品"),
+		GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD("GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD","V2首页商品（旧）"),
+		GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW("GET_HOME_INFO_V2_GOODS_INFO_FOR_NEW","V2首页商品（新）");
+		
+		private String code;
+		private String name;
+
+		private HOME_PAGE(String code, String name) {
+			this.code = code;
+			this.name = name;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
 
 }
