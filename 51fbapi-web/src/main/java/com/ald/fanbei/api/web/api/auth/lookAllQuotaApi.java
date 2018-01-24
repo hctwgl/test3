@@ -188,7 +188,7 @@ public class lookAllQuotaApi implements ApiHandle {
                 List<String> listDesc=getAuthDesc(value4,"two");
                 onlineMap.put("showAmount", listDesc.get(0));
                 onlineMap.put("desc", listDesc.get(1));
-                onlineMap.put("status","3");
+                onlineMap.put("status","1");
             }
             else if(afUserAuthStatusDo.getStatus().equals("C")){
                 List<String> listDesc=getAuthDesc(value4,"three");
@@ -200,7 +200,7 @@ public class lookAllQuotaApi implements ApiHandle {
             AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
             if(afUserAuthStatusTrain == null || afUserAuthStatusTrain.getStatus().equals("N")){
                 trainMap.put("desc", trainDesc);
-                trainMap.put("status","2");
+                trainMap.put("status","1");
             }
             else if(afUserAuthStatusTrain.getStatus().equals("C")){
                 trainMap.put("desc", trainDesc);

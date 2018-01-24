@@ -192,7 +192,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 List<String> listDesc=getAuthDesc(value4,"two");
                 map.put("onlineShowAmount", listDesc.get(0));
                 map.put("onlineDesc", listDesc.get(1));
-                map.put("onlineStatus","3");
+                map.put("onlineStatus","1");
             }
             else if(afUserAuthStatusDo.getStatus().equals("C")){
                 List<String> listDesc=getAuthDesc(value4,"three");
