@@ -546,6 +546,11 @@
 				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
 				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
 				<entry key="/h5/loan/getHomeInfo" value-ref="getLoanHomeInfoApi" />
+				
+				<!-- 白领贷业务接口 -->
+				<entry key="/h5/whitecollar/applyWhiteCollarLoan" value-ref="applyWhiteCollarLoanApi" />
+				
+				
 			</map>
 		</constructor-arg>
 	</bean>
