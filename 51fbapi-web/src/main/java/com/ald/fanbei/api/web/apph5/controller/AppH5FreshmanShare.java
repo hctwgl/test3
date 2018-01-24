@@ -31,6 +31,7 @@ import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -100,6 +101,8 @@ public class AppH5FreshmanShare extends BaseController{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -113,19 +116,22 @@ public class AppH5FreshmanShare extends BaseController{
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/homePage", method = RequestMethod.POST)
+	@ResponseBody
+	@RequestMapping(value = "/homePage", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String homePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String result = "";
 		try {
 			doWebCheck(request, false);
 			
-			List<AfShareGoodsDto> shareGoods = afShareGoodsService.getShareGoods();
+			String cacheKey =  "freshman:share:homePage:goodsList";  
+		 
+			List<AfFreshmanGoodsVo> resultList =  bizCacheUtil.getObjectList(cacheKey);
+			List<AfFreshmanGoodsVo> list = new ArrayList<AfFreshmanGoodsVo>();
+			if (resultList  == null) {
+			  List<AfShareGoodsDto> shareGoods =  afShareGoodsService.getShareGoods();
 			
-			List<AfFreshmanGoodsVo> resultList = new ArrayList<AfFreshmanGoodsVo>();
-			
-			if(shareGoods!=null){
-				
+			   if(shareGoods!=null){
 				for (AfShareGoodsDto afShareGoodsDto : shareGoods) {
 					AfFreshmanGoodsVo afFreshmanGoodsVo = new AfFreshmanGoodsVo();
 					afFreshmanGoodsVo.setNumId(String.valueOf(afShareGoodsDto.getRid()));
@@ -139,27 +145,30 @@ public class AppH5FreshmanShare extends BaseController{
 					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail().split(";")[0]);
 					afFreshmanGoodsVo.setOpenId(afShareGoodsDto.getOpenId());
 					afFreshmanGoodsVo.setSource(afShareGoodsDto.getSource());
-					resultList.add(afFreshmanGoodsVo);
+					list.add(afFreshmanGoodsVo);
 				}
 			}
 			
 			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-	        JSONArray array = JSON.parseArray(resource.getValue());
+	                JSONArray array = JSON.parseArray(resource.getValue());
 	        
-	        //删除2分期
-	        if (array == null) {
-	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-	        }
-	        //removeSecondNper(array);
+        	        //删除2分期
+        	        if (array == null) {
+        	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        	        }
+        	        //removeSecondNper(array);
 			
-			for (AfFreshmanGoodsVo goodsInfo : resultList) {
-                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
-                         new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2());
-                if (nperList != null) {
-                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-                    goodsInfo.setNperMap(nperMap);
-                }
-            }
+			for (AfFreshmanGoodsVo goodsInfo : list) {
+                          List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
+                          new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2());
+                          if (nperList != null) {
+                          Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                         goodsInfo.setNperMap(nperMap);
+                          }
+                       }
+			resultList = list;
+			bizCacheUtil.saveObjectListExpire(cacheKey, list, Constants.SECOND_OF_TEN_MINITS);
+	}
 			
 			
 			logger.info(JSON.toJSONString(resultList));
@@ -251,15 +260,17 @@ public class AppH5FreshmanShare extends BaseController{
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/explosiveGoods", method = RequestMethod.POST)
+	@ResponseBody
+	@RequestMapping(value = "/explosiveGoods", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
 	public String explosiveGoods(HttpServletRequest request, HttpServletResponse response) {
 		
 		String result = "";
 		try {
 			doWebCheck(request, false);
-			
-			
-			List<Map<String,Object>> itemList = new ArrayList<Map<String,Object>>();
+			String cacheKey =  "freshman:share:explosiveGoods";  
+			List<Map<String,Object>> itemList = bizCacheUtil.getObjectList(cacheKey);
+			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+			if (itemList  == null) {
 			
 			//查询爆款信息
 			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTag(CouponActivityType.FIRST_SINGLE.getCode());
@@ -365,8 +376,13 @@ public class AppH5FreshmanShare extends BaseController{
 			 }
 			         data.put("goodsList", goodsList);
 				 data.put("itemName",itemName);
-				 itemList.add(data);
-			}
+				 list.add(data);
+				 itemList = list;
+				 bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
+				 
+			       
+			 }
+		    }
 			 
 			result = H5CommonResponse.getNewInstance(true, "获取首单爆款商品成功", "", itemList).toString();
 			} catch (Exception exception) {

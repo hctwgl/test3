@@ -189,6 +189,7 @@
 		and is_delete = 0
 		limit 1
 		)
+	    ORDER BY sort DESC
 	</select>
 
 
