@@ -13,7 +13,7 @@
 		<java.encoding>UTF-8</java.encoding>
 		<spring-version>4.2.1.RELEASE</spring-version>
 		<springext-plugin-version>1.0</springext-plugin-version>
-		<jackson-version>2.7.5</jackson-version>
+		<jackson-version>1.9.9</jackson-version>
 		<jetty-version>8.1.8.v20121106</jetty-version>
 		<autoconfig.plugin.version>1.0.10</autoconfig.plugin.version>
 		<project.build.sourceEncoding>
@@ -287,6 +287,22 @@
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
 			<version>3.3.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.6.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.6.0</version>
 		</dependency>
 
 	</dependencies>
