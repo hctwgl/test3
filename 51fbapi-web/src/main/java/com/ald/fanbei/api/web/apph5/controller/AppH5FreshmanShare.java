@@ -205,13 +205,13 @@ public class AppH5FreshmanShare extends BaseController{
                        //1. if没有通过强风控，跳转认证，银行卡。。
 			
 			  AfUserAuthDo afUserAuthDo  = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
-			  if("N".equals(afUserAuthDo.getBankcardStatus())){
+			  if(!"Y".equals(afUserAuthDo.getBankcardStatus())){
 			      String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 					+ H5OpenNativeType.DoScanId.getCode();
 			      returnData.put("status", H5OpenNativeType.DoScanId.getCode());
 			      return H5CommonResponse.getNewInstance(false,"请完成身份证认证",notifyUrl, returnData).toString();
 	        	   }
-			  if("N".equals(afUserAuthDo.getRiskStatus())){
+			  if(!"Y".equals(afUserAuthDo.getRiskStatus())){
 			      String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 					+ H5OpenNativeType.DoPromoteBasic.getCode();
 			      returnData.put("status", H5OpenNativeType.DoPromoteBasic.getCode());
