@@ -248,24 +248,24 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				authDo.setGmtRisk(new Date());
 				authDo.setGmtBasic(new Date());
 				try {
-					if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-						authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
-					}
-					authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
-					if (SceneType.CASH.getCode().equals(riskScene)) {
-						afUserAuthService.updateUserAuth(authDo);
-					} else {
-						afUserAuthStatusDo.setGmtModified(new Date());
-						afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
-						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-					}
-
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 							card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
 
 					if (!riskResp.isSuccess()) {
 						return processRishAuthFail(requestDataVo.getId(), riskScene, authDo ,afUserAuthDo, afUserAuthStatusDo);
 					} else {
+						if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+							authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+						}
+						authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
+						if (SceneType.CASH.getCode().equals(riskScene)) {
+							afUserAuthService.updateUserAuth(authDo);
+						} else {
+							afUserAuthStatusDo.setGmtModified(new Date());
+							afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
+							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+						}
+
 						processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
 					}
 
