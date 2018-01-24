@@ -542,7 +542,10 @@
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-				<entry key="/h5/legalborrowV2/getLegalOrderLogistics" value-ref="h5GetLegalOrderLogisticsApi" />
+				<!-- 贷款相关接口 -->
+				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
+				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
+				<entry key="/h5/loan/getHomeInfo" value-ref="getLoanHomeInfoApi" />
 			</map>
 		</constructor-arg>
 	</bean>
