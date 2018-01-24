@@ -30,8 +30,7 @@ public class GetHomeInfoApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		
-		// banner 信息 TODO
-		resp.addResponseData("bannerList", null);
+		resp.addResponseData("bannerList", null);// banner 信息 TODO
 		resp.addResponseData("bldInfo", afLoanService.getHomeInfo(userId));
 		resp.addResponseData("xdInfo", afBorrowLegalService.getHomeInfo(userId));
 		

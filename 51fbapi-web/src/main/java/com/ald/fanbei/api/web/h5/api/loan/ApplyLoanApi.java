@@ -12,6 +12,7 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.bean.ApplyLoanParam;
 
 /**
  * 发起贷款申请
@@ -28,13 +29,12 @@ public class ApplyLoanApi implements H5Handle {
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
-		// Request
-		ApplyLoanBo bo = new ApplyLoanBo();
-		BeanUtil.copyProperties(bo.reqParam, param);
-		bo.userId = context.getUserId();
-		afLoanService.doLoan(bo);
 		
-		// Response
+		ApplyLoanBo bo = new ApplyLoanBo();
+		BeanUtil.copyProperties(bo.reqParam, (ApplyLoanParam)context.getParamEntity());
+		bo.userId = context.getUserId();
+		
+		afLoanService.doLoan(bo);
 		
 		return resp;
 	}

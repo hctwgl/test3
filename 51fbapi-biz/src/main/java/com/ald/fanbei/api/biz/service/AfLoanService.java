@@ -1,7 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
-import com.ald.fanbei.api.biz.service.impl.AfLoanServiceImpl.LoanHomeInfoBo;
+import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
+import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
 /**
@@ -14,8 +15,23 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
  */
 public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	
+	/**
+	 * 获取贷款首页信息
+	 * @param userId
+	 * @return
+	 */
 	LoanHomeInfoBo getHomeInfo(Long userId);
 	
+	/**
+	 * 执行借贷
+	 * @param bo
+	 */
 	void doLoan(ApplyLoanBo bo);
+	
+	/**
+	 * 获取数据库中配置有关贷款的全部配置信息
+	 * @return
+	 */
+	LoanDBCfgBo getDBCfg();
 	
 }

@@ -34,12 +34,15 @@ public class ConfirmLoanApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		
-		String prdType = ""; 	// TODO
-		BigDecimal amount = null;	// TODO
-		int periods = 0;	// TODO
+		String prdType = context.getData("prdType").toString();
+		BigDecimal amount = new BigDecimal(context.getData("amount").toString());
+		int periods = Integer.valueOf(context.getData("periods").toString());
 		
 		List<AfLoanPeriodsDo> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, null, prdType);
 		AfUserBankcardDo cardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		
+		resp.addResponseData("periodsInfo", periodDos);
+		resp.addResponseData("cardInfo", cardDo);
 		
 		return resp;
 	}
