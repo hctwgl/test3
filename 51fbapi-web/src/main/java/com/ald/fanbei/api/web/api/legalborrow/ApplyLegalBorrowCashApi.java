@@ -204,7 +204,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 		// 判断用户借款金额是否在后台配置的金额范围内
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 
 		if (rateInfoDo != null) {
 			BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
@@ -460,7 +460,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
@@ -479,7 +479,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";
 		String twoDay = "";
 		if(null != afResourceDo){

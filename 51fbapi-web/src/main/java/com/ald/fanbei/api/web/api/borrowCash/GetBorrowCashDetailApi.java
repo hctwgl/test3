@@ -113,7 +113,7 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 		if(afRenewalDetailDo!=null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 			data.put("renewalStatus", "P");
 		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
 			BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 			AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 			BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差

@@ -2,10 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.EviDoc;
-import com.ald.fanbei.api.biz.util.OssUploadResult;
-import com.ald.fanbei.api.biz.util.PdfCreateUtil;
+import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.*;
@@ -80,6 +77,9 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
     private EsignPublicInit esignPublicInit;
     @Resource
     private AfBorrowDao afBorrowDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
+
     private static final String src = "/home/aladin/project/app_contract";
 
     @Override
@@ -102,7 +102,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     map.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate()+"%");//手续费率
                     map.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate()+"%");//利率
                 }
-                AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+                AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
                 getResourceRate(map, afBorrowLegalOrderCashDo.getType(),afResourceDo,"borrow");
                 if (afBorrowLegalOrderDo != null){
                     date = afBorrowLegalOrderDo.getGmtCreate();
@@ -236,23 +236,23 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     String consumeTag = jsonObject.get("consumeTag").toString();
                     if ("INTEREST_RATE".equals(consumeTag)){//借款利率
                         if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeSevenDay"));
+                            map.put("yearRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("yearRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                     if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
                         if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeSevenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("poundageRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                     if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
                         if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeSevenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeFourteenDay"));
+                            map.put("overdueRate",jsonObject.get("consumeSecondType"));
                         }
                     }
                 }
@@ -263,23 +263,23 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     String borrowTag = jsonObject.get("borrowTag").toString();
                     if ("INTEREST_RATE".equals(borrowTag)){//借款利率
                         if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowSevenDay"));
+                            map.put("yearRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("yearRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                     if ("SERVICE_RATE".equals(borrowTag)){//手续费利率
                         if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowSevenDay"));
+                            map.put("poundageRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("poundageRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                     if ("OVERDUE_RATE".equals(borrowTag)){//逾期利率
                         if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowSevenDay"));
+                            map.put("overdueRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowFourteenDay"));
+                            map.put("overdueRate",jsonObject.get("borrowSecondType"));
                         }
                     }
                 }
@@ -302,7 +302,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             AfBorrowCashDo afBorrowCashDo = null;
             map.put("amountCapital", "人民币" + toCapital(borrowAmount.doubleValue()));
             map.put("amountLower", "￥" + borrowAmount);
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
             if (borrowId > 0) {
                 afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
                 if (afBorrowCashDo != null) {
@@ -320,7 +320,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
                         map.put("gmtArrival", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()));
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("repaymentDay", simpleDateFormat.format(repaymentDay));
@@ -447,7 +448,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             }
             map.put("personUserSeal", afUserSealDo.getUserSeal());
             map.put("accountId", afUserSealDo.getUserAccountId());*/
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
             AfBorrowCashDo afBorrowCashDo = null;
             if (borrowId > 0) {
                 afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
@@ -455,7 +456,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                     getResourceRate(map, afBorrowCashDo.getType(),afResourceDo,"borrow");
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtBorrowBegin", dateFormat.format(arrivalStart));//到账时间，借款起息日

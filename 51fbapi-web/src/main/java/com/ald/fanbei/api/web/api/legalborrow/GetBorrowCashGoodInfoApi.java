@@ -131,7 +131,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		BigDecimal oriRate = serviceRate.add(poundageRate);
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 
 		double newServiceRate = 0;
@@ -221,7 +221,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";
 		String twoDay = "";
 		if(null != afResourceDo){

@@ -90,7 +90,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 
 		// 获取后台配置借款利率信息
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		// 获取主卡信息
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
