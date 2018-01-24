@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -74,6 +75,11 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}else{
 			return processUnlogin(loanCfg);
 		}
+	}
+	
+	@Override
+	public void doLoan(ApplyLoanBo bo) {
+		
 	}
 	
 	public LoanDBCfgBo getDBCfg() {

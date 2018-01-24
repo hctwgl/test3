@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.service.impl.AfLoanServiceImpl.LoanHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
@@ -14,5 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
 public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	
 	LoanHomeInfoBo getHomeInfo(Long userId);
+	
+	void doLoan(ApplyLoanBo bo);
 	
 }
