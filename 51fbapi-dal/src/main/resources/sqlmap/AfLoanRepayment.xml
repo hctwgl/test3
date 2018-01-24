@@ -305,4 +305,17 @@
           LIMIT 1
 	</select>
     
+    <select id="getRepayByPayTradeNo" resultType="AfLoanRepaymentDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan_repayment
+		WHERE
+		is_delete = 0
+		AND
+		trade_no_out=#{payTradeNo}
+		ORDER BY
+		gmt_create DESC
+
+	</select>
 </mapper>
