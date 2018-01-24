@@ -27,16 +27,17 @@ function buyNow(){
          window.location.href='/fanbei-web/opennative?name=APP_TRADE_PAY&params={"tradeAmount":"'+amount+'","tradeId":"'+id+'","tradeName":"'+name+'"}';
 }
 function identification(){
+    var scene=$('.scene').val();
     if(isShowMention==1||isShowMention==2){
-        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_FACE"}';
+        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_FACE","scene":"'+scene+'"}';
     }else if(isShowMention==3){
         var idNumber=$('.idNumber').val();
         var realName=$('.realName').val();
-        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_BIND_CARD","idNumber":"'+idNumber+'","realName":"'+realName+'"}';
+        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_BIND_CARD","idNumber":"'+idNumber+'","realName":"'+realName+'","scene":"'+scene+'"}';
     }else if(isShowMention==5){
-        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_PROMOTE_EXTRA"}';
+        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_PROMOTE_EXTRA","scene":"'+scene+'"}';
     }else{
-        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_PROMOTE_BASIC"}';
+        window.location.href='/fanbei-web/opennative?name=APP_TRADE_PROMOTE&params={"action":"DO_PROMOTE_BASIC","scene":"'+scene+'"}';
     }
 }
 function btn() {
