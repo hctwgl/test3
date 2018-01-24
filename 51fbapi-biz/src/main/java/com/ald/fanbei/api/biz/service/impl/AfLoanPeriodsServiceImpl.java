@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.common.DBResource;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -37,6 +38,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	
 	public static final BigDecimal DAYS_OF_YEAR = BigDecimal.valueOf(360);
 	public static final BigDecimal DAYS_OF_MONTH = BigDecimal.valueOf(30);
+	public static final int MAX_DAY_NO = 28;
 	
 	@Resource
 	private AfLoanService afLoanService;
@@ -50,7 +52,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     
     
     @Override
-	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, Long loanId, String loanNo, String prdType){
+	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType){
     	BigDecimal userLayDailyRate = afLoanService.getUserLayRate(userId);
     	BigDecimal layRate = userLayDailyRate.multiply(DAYS_OF_YEAR);
     	AfResourceDo resDo = afResourceDao.getConfigByTypesAndSecType(DBResource.TYPE_LOAN, DBResource.SEC_TYPE_LOAN_INTEREST_RATE);
@@ -96,8 +98,15 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     		interestFeePerPeriod.setScale(2, RoundingMode.HALF_UP);
     		serviceFeePerPeriod.setScale(2, RoundingMode.HALF_UP);
     		
-    		Date gmtPlanRepay = new Date();// TODO gmtPlanRepay
-    		result.add(AfLoanPeriodsDo.gen(userId, loanId, loanNo, prdType, periods, j, amount, interestFeePerPeriod, serviceFeePerPeriod, gmtPlanRepay));
+    		// 计算还款时间
+    		Date gmtPlanRepay = new Date();
+    		gmtPlanRepay = DateUtil.addMonths(gmtPlanRepay, j);
+    		int today = DateUtil.getTodayNoInMonth(gmtPlanRepay);
+    		if(today > MAX_DAY_NO) {
+    			gmtPlanRepay = DateUtil.setDayNoInMonth(gmtPlanRepay, MAX_DAY_NO);
+    		}
+    		
+    		result.add(AfLoanPeriodsDo.gen(userId, loanNo, prdType, periods, j, amount, interestFeePerPeriod, serviceFeePerPeriod, gmtPlanRepay));
     	}
 		
 		return null;

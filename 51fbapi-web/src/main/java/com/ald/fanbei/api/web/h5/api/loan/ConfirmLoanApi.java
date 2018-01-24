@@ -37,10 +37,10 @@ public class ConfirmLoanApi implements H5Handle {
 		BigDecimal amount = new BigDecimal(context.getData("amount").toString());
 		int periods = Integer.valueOf(context.getData("periods").toString());
 		
-		List<Object> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, null, prdType);
+		List<Object> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, prdType);
+		periodDos.remove(0);
 		AfUserBankcardDo cardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		
-		periodDos.remove(0);
 		resp.addResponseData("periodsInfo", periodDos);
 		resp.addResponseData("cardInfo", cardDo);
 		

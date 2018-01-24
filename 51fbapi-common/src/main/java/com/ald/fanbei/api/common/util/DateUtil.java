@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
@@ -1212,6 +1211,30 @@ public class DateUtil {
     	Calendar calender = Calendar.getInstance();
     	return calender.get(Calendar.MONTH) + 1;
     }
+    
+    /**
+     * 获取指定日期下月内天数序号
+     * @param date
+     * @return
+     */
+    public static int getTodayNoInMonth(Date date) {
+    	Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_MONTH);
+    }
+    
+    /**
+     * 设置日期下月内天数序号
+     * @param date
+     * @return
+     */
+    public static Date setDayNoInMonth(Date date, int dayNo) {
+    	Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DAY_OF_MONTH, dayNo);
+        return cal.getTime();
+    }
+    
 
     /**
      * 一天的结束时间，【注：只精确到毫秒】

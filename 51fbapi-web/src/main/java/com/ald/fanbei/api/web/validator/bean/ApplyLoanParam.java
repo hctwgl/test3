@@ -29,8 +29,8 @@ public class ApplyLoanParam {
 	@NotNull
 	String repay_remark;
 	
-	@NotNull
-	String cardId;
+	@Min(value=1)
+	Long cardId;
 	
 	@NotNull
 	String pwd;

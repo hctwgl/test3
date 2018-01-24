@@ -18,11 +18,10 @@ import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 
     private static final long serialVersionUID = 1L;
 
-    public static AfLoanPeriodsDo gen(Long userId, Long loanId, String loanNo, String prdType
+    public static AfLoanPeriodsDo gen(Long userId, String loanNo, String prdType
     			,int periods, int nper, BigDecimal amount, BigDecimal serviceFee, BigDecimal interestFee, Date gmtPlanRepay) {
     	AfLoanPeriodsDo p = new AfLoanPeriodsDo();
     	p.userId = userId;
-    	p.loanId = loanId;
     	p.loanNo = loanNo;
     	p.prdType = prdType;
     	p.periods = periods;

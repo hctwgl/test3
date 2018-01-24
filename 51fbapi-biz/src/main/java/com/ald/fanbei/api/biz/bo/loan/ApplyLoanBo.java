@@ -13,14 +13,14 @@ public class ApplyLoanBo {
 	/* carrier区域，业务处理中继参数 */
 	public Long userId;
 	
-	static class ReqParam{
+	public static class ReqParam{
 		public String prdType; 
 		public BigDecimal amount;
 		public int periods;
 		public String repayType;
 		public String loan_remark;
 		public String repay_remark;
-		public String cardId;
+		public Long cardId;
 		public String pwd;
 		public String latitude;
 		public String longitude;

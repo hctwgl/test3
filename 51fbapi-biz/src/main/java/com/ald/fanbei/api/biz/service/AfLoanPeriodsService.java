@@ -15,8 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
  */
 public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Long>{
 	
-	List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods,
-			Long loanId, String loanNo, String prdType);
+	List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
 	
 	BigDecimal calcuRestAmount(AfLoanPeriodsDo period);
 	
