@@ -83,6 +83,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
@@ -338,8 +340,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-//					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
