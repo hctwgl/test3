@@ -301,7 +301,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
             	List<AfViewAssetBorrowCashDo> minDebtList= new ArrayList<AfViewAssetBorrowCashDo>();
        		    List<AfViewAssetBorrowCashDo> maxDebtList=new ArrayList<AfViewAssetBorrowCashDo>();
        		    //根据resource表灵活配置的天数，目前为10/20天
-				AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+				AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 				if (null == afResourceDo) {
 					return 0L;
 				}

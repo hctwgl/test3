@@ -398,7 +398,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						//续期本金
 						BigDecimal waitPaidAmount =afRenewalDetailDo.getRenewalAmount();
 						// 查询新利率配置
-			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			    		//借款利率
 			    		BigDecimal newRate = null;
 			    		//借款手续费率
@@ -698,7 +698,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setPlanRepayDays(allowRenewalDay.intValue());
 
 		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		//借款利率
 		BigDecimal newRate = null;
 		//借款手续费率

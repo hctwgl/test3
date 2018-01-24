@@ -421,6 +421,7 @@ public class Constants {
 	public static final String BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
 	public static final String BORROW_CASH_OVERDUE_POUNDAGE = "BORROW_CASH_OVERDUE_POUNDAGE";
 	public static final String BORROW_CASH_INFO_LEGAL = "BORROW_CASH_INFO_LEGAL";
+	public static final String BORROW_CASH_INFO_LEGAL_NEW = "BORROW_CASH_INFO_LEGAL_NEW";
 	// 首页滚动条
 	public static final String HOMEPAGE_TOP_SCROLLBAR = "HOMEPAGE_TOP_SCROLLBAR";
 	public static final String BORROW_TOP_SCROLLBAR = "H5_URL";
