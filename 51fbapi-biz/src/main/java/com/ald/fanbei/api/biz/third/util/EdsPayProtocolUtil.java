@@ -199,7 +199,10 @@ public class EdsPayProtocolUtil extends AbstractThird {
             List<EdspayBackSealReqBo> edspayBackSealReqBoList = null;
             try {
                 realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+                realDataJson.replace("[", "");
+                realDataJson.replace("]", "");
                 edspayBackSealReqBoList = JSONArray.toList(JSONArray.fromObject(realDataJson), EdspayBackSealReqBo.class);
+//                edspayBackSealReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackSealReqBo.class);
             } catch (Exception e) {
                 logger.error("eProtocolUtil giveBackSealInfo parseJosn error", e);
             } finally {
