@@ -56,5 +56,11 @@ public class RiskNotifyReqBo extends HashMap<String, String>{
 	public void setSignInfo(String signInfo) {
 		this.signInfo = signInfo;
 	}
+	@Override
+	public String toString() {
+		return "RiskNotifyReqBo [token=" + token + ", data=" + data
+				+ ", userId=" + userId + ", orderSn=" + orderSn + ", orderNo="
+				+ orderNo + ", signInfo=" + signInfo + "]";
+	}
 	
 }

@@ -73,7 +73,7 @@ public class AuthFundNewGiveBackApi implements ApiHandle {
             afUserAuthService.updateUserAuth(authDo);
         } catch (Exception e) {
 			logger.error("error = " + e);
-			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_SUBMIT_ERROR);
         }
 		return resp;
 	}
