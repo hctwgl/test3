@@ -104,6 +104,26 @@ public class BizCacheUtil extends AbstractThird {
 		
 	}
 	
+	public void saveMapForever(final String key, final Map<?, ?> valMap) {
+		try{
+			redisTemplate.opsForHash().putAll(key, valMap);
+		} catch (Exception e) {
+			logger.error("redis save map error, error info=>{}",e.getMessage());
+		}
+	}
+	
+	
+	public void saveListForever(final String key, final List<?> dataList) {
+		try{
+			redisTemplate.opsForList().rightPushAll(key, dataList);
+		} catch (Exception e) {
+			logger.error("redis save map error, error info=>{}",e.getMessage());
+		}
+	}
+	
+	
+	
+	
 	public Map<?,?> getMap(final String key) {
 		try{
 			if(redisTemplate.hasKey(key)){

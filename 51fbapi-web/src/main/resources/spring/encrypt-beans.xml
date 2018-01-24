@@ -8,7 +8,7 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd ">
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<!-- redis config -->
     <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
@@ -26,7 +26,14 @@
         <property name="poolConfig" ref="poolConfigToken" />
     </bean>
     
-
+    <!-- redisson分布式锁解决方案 -->
+    <bean id="redissonProxy" class="com.ald.fanbei.api.common.redisson.RedissonProxy">
+        <property name="hostName" value="${fbapi.token.redis.hostname}" />
+        <property name="port" value="${fbapi.token.redis.port}" />
+        <property name="password" value="${fbapi.token.redis.password}" />
+        <property name="connectionPoolSize" value="64" />
+    </bean>
+    
 	<!-- 数据库JDBC的配置 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">

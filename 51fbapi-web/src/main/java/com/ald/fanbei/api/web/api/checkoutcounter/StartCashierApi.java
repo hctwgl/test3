@@ -120,22 +120,22 @@ public class StartCashierApi implements ApiHandle {
         } else {
             checkoutCounter = afCheckoutCounterService.getByType(orderInfo.getOrderType(), "");
         }
-        
-        //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
-        	
-        	checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
-		}
-        //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        
-        
-        
+
 
         AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------
+        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+            checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
+            if (userDto.getAuAmount().subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(4000)) >= 0)
+                checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
+            else
+                checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
+        }
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------
+
         AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         //判断额度支付是否可用
         cashierVo.setOrderId(orderInfo.getRid());
