@@ -283,7 +283,21 @@
 			<if test="address != null and address != '' ">
 				address = #{address,jdbcType=VARCHAR},
 			</if>
-
+			<if test="logisticsInfo != null">
+				#{logisticsInfo,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsCompany != null">
+				#{logisticsCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsNo != null">
+				#{logisticsNo,jdbcType=VARCHAR},
+			</if>
+			<if test="deliveryUser != null">
+				#{deliveryUser,jdbcType=VARCHAR},
+			</if>
+			<if test="deliveryPhone != null">
+				#{deliveryPhone,jdbcType=VARCHAR},
+			</if>
 			<if test="goodsName != null and goodsName != '' ">
 				goods_name = #{goodsName,jdbcType=VARCHAR}
 			</if>
