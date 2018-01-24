@@ -24,6 +24,8 @@ public interface AfESdkService {
 
     FileDigestSignResult userSign(Map<String,String> map);//签章
 
+    FileDigestSignResult userStreamSign(Map<String,String> map,byte[] stream);//签章
+
     FileDigestSignResult userOldSign(Map<String,String> map);//签章
 
     FileDigestSignResult selfOldSign(Map<String,String> map);//签章
@@ -32,9 +34,15 @@ public interface AfESdkService {
 
     FileDigestSignResult secondSign(Map<String,String> map);//签章
 
+    FileDigestSignResult secondStreamSign(Map<String,String> map,byte[] secondStream);//签章
+
     FileDigestSignResult thirdSign(Map<String,String> map);//签章
 
+    FileDigestSignResult thirdStreamSign(Map<String,String> map,byte[] stream);//签章
+
     FileDigestSignResult selfSign(Map<String,String> map);//签章
+
+    FileDigestSignResult selfStreamSign(Map<String,String> map,byte[] stream);//签章
 
     AddAccountResult addPerson(Map<String,String> map);//创建个人账户
 

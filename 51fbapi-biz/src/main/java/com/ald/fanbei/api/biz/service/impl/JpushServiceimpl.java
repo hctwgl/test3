@@ -945,14 +945,19 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	 */
 	@Override
 	public void pushUtil(String title,String msgContent,String userName){
-		String pid =userName + System.currentTimeMillis();
-		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
-		logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
-		Map<String,String> extras = new HashMap<String,String>();
-		extras.put(PID, pid);
-		extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-		extras.put(PUSH_JUMP_TYPE, "1");
-		jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+		try {
+			String pid =userName + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
+			logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "1");
+			jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+		}catch (Exception e){
+			logger.info("pushUtil error", e);
+		}
+
 	}
 
 }
