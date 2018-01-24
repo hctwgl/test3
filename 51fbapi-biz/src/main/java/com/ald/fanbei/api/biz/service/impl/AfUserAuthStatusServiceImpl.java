@@ -40,8 +40,8 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
 
     @Override
     public void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
-        if(afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(),afUserAuthStatusDo.getScene())>0){
-            if(afUserAuthStatusDo.getStatus().equals("C")) {
+        if (afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(), afUserAuthStatusDo.getScene()) > 0) {
+            if (afUserAuthStatusDo.getStatus().equals("C") && afUserAuthStatusDo.getCauseReason() != null && afUserAuthStatusDo.getCauseReason().length() > 0) {
                 JSONArray jsonArray = JSON.parseArray(afUserAuthStatusDo.getCauseReason());
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -51,11 +51,11 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
                         afUserAuthStatusDo.setStatus("C");
                         break;
                     }
-                    afUserAuthStatusDo.setStatus("N");
+                    afUserAuthStatusDo.setStatus("P");
                 }
             }
             afUserAuthStatusDao.updateAfUserAuthStatus(afUserAuthStatusDo);
-        }else{
+        } else {
             afUserAuthStatusDao.addAfUserAuthStatus(afUserAuthStatusDo);
         }
     }

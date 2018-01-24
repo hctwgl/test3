@@ -32,7 +32,7 @@ public class EProtocolController {
 	@Resource
 	EdsPayProtocolUtil edsPayProtocolUtil;
 	/**
-	 * 资产方债权订单回传接口
+	 * 资产方协议回传接口
 	 * @param request
 	 * @param response
 	 * @return
@@ -49,6 +49,27 @@ public class EProtocolController {
 		
 		AssetSideRespBo notifyRespBo = edsPayProtocolUtil.giveBackPdfInfo(sendTime, data, sign,appId);
 		logger.info("EProtocolController giveBackPdfInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
+		return notifyRespBo;
+	}
+
+	/**
+	 * 资产方协议签章回传接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/giveBackSealInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public AssetSideRespBo giveBackSealInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
+		logger.info("EProtocolController giveBackSealInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+
+		AssetSideRespBo notifyRespBo = edsPayProtocolUtil.giveBackSealInfo(sendTime, data, sign,appId);
+		logger.info("EProtocolController giveBackSealInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 
