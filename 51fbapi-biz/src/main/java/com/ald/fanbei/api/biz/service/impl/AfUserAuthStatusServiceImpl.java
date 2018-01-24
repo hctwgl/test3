@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     @Override
     public void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
         if (afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(), afUserAuthStatusDo.getScene()) > 0) {
-            if (afUserAuthStatusDo.getStatus().equals("C") && afUserAuthStatusDo.getCauseReason() != null && afUserAuthStatusDo.getCauseReason().length() > 0) {
+            if (afUserAuthStatusDo.getStatus().equals("C") && StringUtils.isNotBlank(afUserAuthStatusDo.getCauseReason())) {
                 JSONArray jsonArray = JSON.parseArray(afUserAuthStatusDo.getCauseReason());
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
