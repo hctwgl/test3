@@ -11,7 +11,6 @@ import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -38,9 +37,10 @@ public class ConfirmLoanApi implements H5Handle {
 		BigDecimal amount = new BigDecimal(context.getData("amount").toString());
 		int periods = Integer.valueOf(context.getData("periods").toString());
 		
-		List<AfLoanPeriodsDo> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, null, prdType);
+		List<Object> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, null, prdType);
 		AfUserBankcardDo cardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		
+		periodDos.remove(0);
 		resp.addResponseData("periodsInfo", periodDos);
 		resp.addResponseData("cardInfo", cardDo);
 		

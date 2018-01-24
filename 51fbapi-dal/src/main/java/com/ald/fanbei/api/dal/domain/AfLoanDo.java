@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -9,13 +11,32 @@ import java.math.BigDecimal;
  * 
  * @author Jiang Rongbo
  * @version 1.0.0 初始化
- * @date 2018-01-23 13:41:23
+ * @date 2018-01-24 11:26:57
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfLoanDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
 
+    public static AfLoanDo gen(Long userId, String loanNo, String prdType, int periods, 
+    			BigDecimal serviceRate, BigDecimal interestRate, BigDecimal userLayDailyRate,
+    			BigDecimal amount, BigDecimal totalServiceFee, BigDecimal totalInterestFee) {
+    	AfLoanDo l = new AfLoanDo();
+		l.userId = userId;
+		l.loanNo = loanNo;
+		l.prdType = prdType;
+		l.periods = periods;
+		l.serviceRate = serviceRate;
+		l.interestRate = interestRate;
+		l.amount = amount;
+		l.totalServiceFee = totalServiceFee;
+		l.totalInterestFee = totalInterestFee;
+		
+		l.gmtCreate = new Date();
+		l.status = AfLoanStatus.APPLY.name();
+		return l;
+	}
+    
     /**
      * 主键Rid
      */
@@ -32,6 +53,11 @@ import java.math.BigDecimal;
     private String loanNo;
 
     /**
+     * 资金方三方交易流水号
+     */
+    private String tradeNoOut;
+
+    /**
      * 借款期数
      */
     private Integer periods;
@@ -45,11 +71,6 @@ import java.math.BigDecimal;
      * 实际到账金额
      */
     private BigDecimal arrivalAmount;
-
-    /**
-     * 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    private String status;
 
     /**
      * 贷款产品类型
@@ -97,7 +118,7 @@ import java.math.BigDecimal;
     private String reviewDetails;
 
     /**
-     * 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
+     * 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
      */
     private String reviewStatus;
 
@@ -105,6 +126,11 @@ import java.math.BigDecimal;
      * 风控流水号
      */
     private String riskNo;
+
+    /**
+     * 借钱状态：【APPLY:申请/未审核，WAIT_TRANSFER:待打款，TRANSFER_FAIL:打款失败 ， TRANSFERING:打款中 ，  TRANSFERRED:已经打款/待还款 ，CLOSED:关闭，FINISHED:已结清】
+     */
+    private String status;
 
     /**
      * 总手续费
@@ -124,7 +150,7 @@ import java.math.BigDecimal;
     /**
      * 利率
      */
-    private String interestRate;
+    private BigDecimal interestRate;
 
     /**
      * 用户分层日利率
@@ -273,6 +299,24 @@ import java.math.BigDecimal;
     }
 
     /**
+     * 获取资金方三方交易流水号
+     *
+     * @return 资金方三方交易流水号
+     */
+    public String getTradeNoOut(){
+      return tradeNoOut;
+    }
+
+    /**
+     * 设置资金方三方交易流水号
+     * 
+     * @param tradeNoOut 要设置的资金方三方交易流水号
+     */
+    public void setTradeNoOut(String tradeNoOut){
+      this.tradeNoOut = tradeNoOut;
+    }
+
+    /**
      * 获取借款期数
      *
      * @return 借款期数
@@ -324,24 +368,6 @@ import java.math.BigDecimal;
      */
     public void setArrivalAmount(BigDecimal arrivalAmount){
       this.arrivalAmount = arrivalAmount;
-    }
-
-    /**
-     * 获取借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     *
-     * @return 借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    public String getStatus(){
-      return status;
-    }
-
-    /**
-     * 设置借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     * 
-     * @param status 要设置的借钱状态：【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINISHED:已结清】
-     */
-    public void setStatus(String status){
-      this.status = status;
     }
 
     /**
@@ -507,18 +533,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
+     * 获取审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
      *
-     * @return 审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
+     * @return 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
      */
     public String getReviewStatus(){
       return reviewStatus;
     }
 
     /**
-     * 设置审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
+     * 设置审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
      * 
-     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 , AGREE:风控同意,WAITFBREVIEW:待返呗审核通过 ,REFUSE:风控拒绝,FBAGREE:返呗审核同意,FBREFUSE:返呗平台审核拒绝】
+     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
      */
     public void setReviewStatus(String reviewStatus){
       this.reviewStatus = reviewStatus;
@@ -540,6 +566,24 @@ import java.math.BigDecimal;
      */
     public void setRiskNo(String riskNo){
       this.riskNo = riskNo;
+    }
+
+    /**
+     * 获取借钱状态：【APPLY:申请/未审核，WAIT_TRANSFER:待打款，TRANSFER_FAIL:打款失败 ， TRANSFERING:打款中 ，  TRANSFERRED:已经打款/待还款 ，CLOSED:关闭，FINISHED:已结清】
+     *
+     * @return 借钱状态：【APPLY:申请/未审核，WAIT_TRANSFER:待打款，TRANSFER_FAIL:打款失败 ， TRANSFERING:打款中 ，  TRANSFERRED:已经打款/待还款 ，CLOSED:关闭，FINISHED:已结清】
+     */
+    public String getStatus(){
+      return status;
+    }
+
+    /**
+     * 设置借钱状态：【APPLY:申请/未审核，WAIT_TRANSFER:待打款，TRANSFER_FAIL:打款失败 ， TRANSFERING:打款中 ，  TRANSFERRED:已经打款/待还款 ，CLOSED:关闭，FINISHED:已结清】
+     * 
+     * @param status 要设置的借钱状态：【APPLY:申请/未审核，WAIT_TRANSFER:待打款，TRANSFER_FAIL:打款失败 ， TRANSFERING:打款中 ，  TRANSFERRED:已经打款/待还款 ，CLOSED:关闭，FINISHED:已结清】
+     */
+    public void setStatus(String status){
+      this.status = status;
     }
 
     /**
@@ -601,7 +645,7 @@ import java.math.BigDecimal;
      *
      * @return 利率
      */
-    public String getInterestRate(){
+    public BigDecimal getInterestRate(){
       return interestRate;
     }
 
@@ -610,7 +654,7 @@ import java.math.BigDecimal;
      * 
      * @param interestRate 要设置的利率
      */
-    public void setInterestRate(String interestRate){
+    public void setInterestRate(BigDecimal interestRate){
       this.interestRate = interestRate;
     }
 
