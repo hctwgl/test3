@@ -282,11 +282,13 @@
 			<artifactId>google.guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
-			<version>3.3.2</version>
+			<version>2.6.0</version>
 		</dependency>
+
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>

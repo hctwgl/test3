@@ -361,35 +361,14 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getQueue(name);
 	}
 
-	@Override
-	public <V> RDelayedQueue<V> getDelayedQueue(RQueue<V> destinationQueue) {
-		return delegateRedissonClient.getDelayedQueue(destinationQueue);
-	}
+
 
 	@Override
 	public <V> RQueue<V> getQueue(String name, Codec codec) {
 		return delegateRedissonClient.getQueue(name, codec);
 	}
 
-	@Override
-	public <V> RPriorityQueue<V> getPriorityQueue(String name) {
-		return delegateRedissonClient.getPriorityDeque(name);
-	}
 
-	@Override
-	public <V> RPriorityQueue<V> getPriorityQueue(String name, Codec codec) {
-		return delegateRedissonClient.getPriorityDeque(name, codec);
-	}
-
-	@Override
-	public <V> RPriorityDeque<V> getPriorityDeque(String name) {
-		return delegateRedissonClient.getPriorityDeque(name);
-	}
-
-	@Override
-	public <V> RPriorityDeque<V> getPriorityDeque(String name, Codec codec) {
-		return delegateRedissonClient.getPriorityDeque(name, codec);
-	}
 
 	@Override
 	public <V> RBlockingQueue<V> getBlockingQueue(String name) {
@@ -561,5 +540,27 @@ public class RedissonProxy implements RedissonClient{
 	public boolean isShuttingDown() {
 		return delegateRedissonClient.isShuttingDown();
 	}
+
+	@Override
+	public CodecProvider getCodecProvider() {
+		return delegateRedissonClient.getCodecProvider();
+	}
+
+	@Override
+	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String key, LocalCachedMapOptions options) {
+		return delegateRedissonClient.getLocalCachedMap(key, options);
+	}
+
+	@Override
+	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String key, Codec codec, LocalCachedMapOptions options) {
+		return delegateRedissonClient.getLocalCachedMap(key, codec,options);
+	}
+
+	@Override
+	public ResolverProvider getResolverProvider() {
+		return delegateRedissonClient.getResolverProvider();
+	}
+
+	
 
 }

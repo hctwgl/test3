@@ -187,7 +187,13 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		
+
+		logger.info("max amount:"+maxAmount);
+		logger.info("usableAmount amount:"+usableAmount);
+		if(maxAmount.compareTo(BigDecimal.ZERO)==0){
+			logger.info("reset max amount:"+ new BigDecimal(strMaxAmount));
+			maxAmount= new BigDecimal(strMaxAmount);
+		}
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());

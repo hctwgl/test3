@@ -252,6 +252,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_CREDIT_PAYMENT_ERROR("RISK_CREDIT_PAYMENT_ERROR",1922,"get risk credit payment error","获取信用支付额度失败"),
     RISK_SYNC_CONTACTS_ERROR("RISK_MODIFY_CONTACTS_ERROR", 1922, "risk_modify contacts error", "风控同步通讯录失败"),
     RISK_RAISE_CAPTIL_ERROR("RISK_RAISE_CAPTIL_ERROR",1923,"get captil error","风控应还本金获取失败"),
+    RISK_FORBIDDEN_ERROR("RISK_FORBIDDEN_ERROR",1923,"get captil error","抱歉，无法续期"),
 
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
