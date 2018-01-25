@@ -69,7 +69,7 @@ public class LoanRepayDoApi implements H5Handle {
 	@Override
 	public H5HandleResponse process(Context context) {
 		LoanRepayBo bo = this.extractAndCheck(context);
-//		bo.remoteIp = CommonUtil.getIpAddr(request); //TODO
+		bo.remoteIp = context.getClientIp();
 		
 		this.afLoanRepaymentService.repay(bo);
 		

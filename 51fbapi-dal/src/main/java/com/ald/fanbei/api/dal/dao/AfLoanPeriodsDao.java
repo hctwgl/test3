@@ -17,5 +17,5 @@ public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
 
 	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
-	
+
 }
