@@ -165,7 +165,7 @@ public class lookAllQuotaApi implements ApiHandle {
                     onlineMap.put("amount", onlineAmount.add(usableAmount));//线上可用额度
                     onlineDesc="总额度"+onlineAuAmount+"元";
                     if(interimExist){//有临时额度下的描述
-                        onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元（含"+interimAmount+"临时额度）";
+                        onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元";
                     }
                     onlineMap.put("desc",onlineDesc);//线上描述
                     onlineMap.put("status","4");

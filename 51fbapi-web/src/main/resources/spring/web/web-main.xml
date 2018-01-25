@@ -319,6 +319,8 @@
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
 				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authFundNew" value-ref="authFundNewApi" />
+				<entry key="/auth/authFundNew/GiveBack" value-ref="authFundNewGiveBackApi" />
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />

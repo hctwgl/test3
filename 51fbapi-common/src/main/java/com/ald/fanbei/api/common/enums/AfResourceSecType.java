@@ -32,6 +32,7 @@ public enum AfResourceSecType {
 		BorrowCashPoundage("BORROW_CASH_POUNDAGE", "借钱手续费率（日）"),
 		BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 		BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
+		NewBorrowCashDay("BORROW_CASH_DAY_NEW", "新借钱时间"),
 		borrowCashLender("BORROW_CASH_LENDER", "分期借款出借人信息"),
 		borrowCashLenderForCash("BORROW_CASH_LENDER_FOR_CASH", "现金借款借款出借人信息"),
 		borrowCashSupuerSwitch("BORROW_CASH_SUPUER_SWITCH", "借款超级开关"),
