@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.common.exception;
 
 /**
- *
  *@类AppExceptionCode.java 的实现描述：错误枚举类
  *@author 陈金虎 2017年1月16日 下午11:27:54
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -9,9 +8,9 @@ package com.ald.fanbei.api.common.exception;
 public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-
+	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
-
+    
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
 
     VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
@@ -133,6 +132,11 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ZM_STATUS_EXPIRED("ZM_STATUS_EXPIRED",1319,"zm status expired","芝麻信用已过期，请至信用中心-基础认证中重新认证芝麻信用分！"),
     CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
     CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
+    
+    AUTH_FUND_GETTOKEN_ERROR("AUTH_FUND_GETTOKEN_ERROR",1322,"auth fund gettoken error","51公积金认证获取令牌失败！"),
+    AUTH_FUND_GETORDERSN_ERROR("AUTH_FUND_GETORDERSN_ERROR",1322,"auth fund getordersn error","51公积金认证获取订单号失败！"),
+    AUTH_FUND_SUBMIT_ERROR("AUTH_FUND_SUBMIT_ERROR",1323,"auth fund submit error","公积金提交认证失败，请稍后重试"),
+    
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
 
