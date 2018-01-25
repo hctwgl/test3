@@ -40,14 +40,14 @@ import com.google.common.collect.Maps;
 
 
 /**  
- * @Description: 白领贷-还款
+ * @Description: 白领贷-提前还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
- * @date 2018年1月22日
+ * @date 2018年1月25日
  */
-@Component("loanRepayDoApi")
+@Component("loanAllRepayDo")
 @Validator("LoanRepayDoParam")
-public class LoanRepayDoApi implements H5Handle {
+public class LoanAllRepayDoApi implements H5Handle {
 	
 	@Resource
 	AfUserCouponService afUserCouponService;

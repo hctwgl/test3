@@ -20,5 +20,7 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	BigDecimal calcuRestAmount(AfLoanPeriodsDo period);
 
 	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
+
+	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
 	
 }
