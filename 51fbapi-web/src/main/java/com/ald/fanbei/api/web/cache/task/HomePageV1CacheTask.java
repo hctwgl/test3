@@ -59,19 +59,24 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 					Constants.RES_BORROW_CONSUME);
 			JSONArray array = JSON.parseArray(resource.getValue());
 			List<Map<String, Object>> activityInfoList = getHomeInfoV1Api.getHomeActivityList(resource, array);
+			
+			Map<String, Object> moreGoodsInfo = getHomeInfoV1Api.getMoreGoodsInfo(resource, array);
 			// 更新jvm缓存
 			cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+			
+			cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 
 			if (lock.tryLock()) {
 				// 更新redis缓存
 				bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(),
 						activityInfoList);
+				bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 				log.info("home page v1 update redis cache success.");
 			}
 			log.info("update home page v1 cache task end,time =>{}", System.currentTimeMillis());
-			TimeUnit.MINUTES.sleep(cache.getRefreshInterval());;
+			TimeUnit.MINUTES.sleep(cache.getLockInterval());
 
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			lock.unlock();

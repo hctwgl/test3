@@ -577,7 +577,7 @@
 	</bean>
 	
 	<bean id="scheduledCache" class="com.ald.fanbei.api.web.cache.impl.ScheduledCache">
-		<property name="refreshInterval" value="10" />
+		<property name="lockInterval" value="5" />
 		<property name="tasks">
 			<list>  
         		<ref bean="homePageV1CacheTask" />
