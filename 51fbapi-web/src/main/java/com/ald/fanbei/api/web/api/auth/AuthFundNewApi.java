@@ -133,7 +133,6 @@ public class AuthFundNewApi implements ApiHandle {
 		    String sign = AuthFundSecret.signToHexStr(AuthFundSecret.ALGORITHMS_MD5, newStr).toUpperCase();
 		    paramSortedMap.put("sign", sign);
 		    String redirectUrl = "https://testapp.51fanbei.com/third/newFund/giveBack";
-		  //  String redirectUrl =  URLEncoder.encode("https://testapp.51fanbei.com/third/newFund/giveBack", "utf-8");
 		    paramSortedMap.put("redirectUrl", redirectUrl);
 		    paramSortedMap.put("userId", userId+"");
 		    String urlParams=AuthFundSecret.paramTreeMapToString(paramSortedMap);

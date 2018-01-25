@@ -31,7 +31,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 51公积金回调的url
+ * 51公积金回调
  * @author wujun
  * @version 1.0.0 初始化
  * @date 2018年1月9日下午3:53:34
@@ -65,15 +65,4 @@ public class Auth51FundController {
 		return "SUCCESS";
 	}
 	
-	
-	/*public Auth51FundRespBo giveBack(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
-		JSONObject jsonObj = JSON.parseObject(requestData);
-		String orderSn = StringUtil.null2Str(jsonObj.get("order_id"));
-		String status = StringUtil.null2Str(jsonObj.get("status"));
-		String userId = StringUtil.null2Str(jsonObj.get("user_id"));
-		logger.info("Auth51FundController giveBack,orderSn="+orderSn+",status=" + status + ",userId=" + userId);
-		Auth51FundRespBo notifyRespBo = auth51FundUtil.giveBack(orderSn, status, userId);
-		logger.info("Auth51FundController giveBac,orderSn="+orderSn+ ",status=" + status+ ",userId=" + userId+",returnMsg="+notifyRespBo.toString());
-		return notifyRespBo;
-	}*/
 }

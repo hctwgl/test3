@@ -25,36 +25,42 @@ public class RiskNotifyReqBo extends HashMap<String, String>{
 	}
 	public void setToken(String token) {
 		this.token = token;
+		this.put("token", token);
 	}
 	public String getData() {
 		return data;
 	}
 	public void setData(String data) {
 		this.data = data;
+		this.put("data", data);
 	}
 	public String getUserId() {
 		return userId;
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
+		this.put("userId", userId);
 	}
 	public String getOrderSn() {
 		return orderSn;
 	}
 	public void setOrderSn(String orderSn) {
 		this.orderSn = orderSn;
+		this.put("orderSn", orderSn);
 	}
 	public String getOrderNo() {
 		return orderNo;
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+		this.put("orderNo", orderNo);
 	}
 	public String getSignInfo() {
 		return signInfo;
 	}
 	public void setSignInfo(String signInfo) {
 		this.signInfo = signInfo;
+		this.put("signInfo", signInfo);
 	}
 	@Override
 	public String toString() {
