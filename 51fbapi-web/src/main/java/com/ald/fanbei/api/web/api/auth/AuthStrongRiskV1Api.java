@@ -94,6 +94,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
 		}
 
+		logger.info("authStrongRiskV1Api requestDataVo:"+requestDataVo.toString());
 		//认证场景 20（现金），21（线上），22（线下）
 		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
 		if ("".equals(scene)) {
