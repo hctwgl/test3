@@ -555,7 +555,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
         }
         try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.userOldSign(map);
             if (fileDigestSignResult.isErrShow()) {
                 result = false;
                 logger.error("甲方盖章证书生成失败 => {}",fileDigestSignResult);
@@ -576,7 +576,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         }
 
         try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.selfOldSign(map);
             if (fileDigestSignResult.isErrShow()) {
                 result = false;
                 logger.error("丙方盖章证书生成失败 => {}",fileDigestSignResult);
@@ -598,7 +598,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
         }
         try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.secondOldSign(map);
             if (fileDigestSignResult.isErrShow()) {
                 result = false;
                 logger.error("乙方盖章证书生成失败 => {}",fileDigestSignResult);

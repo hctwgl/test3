@@ -16,13 +16,13 @@ import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
  */
 public interface AfActivityGoodsService {
 
-	List<AfActivityGoodsDto> listActivityGoodsByActivityId(Long activityId, Integer appVersion);
+	List<AfActivityGoodsDto> listActivityGoodsByActivityId(Long activityId);
 
-	List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId, Integer appVersion);
+	List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId);
 	
 	AfActivityGoodsDo getActivityGoodsByGoodsId(Long goodsId);
 
-	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId, Integer appVersion);
+	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId);
 
 	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId);
 

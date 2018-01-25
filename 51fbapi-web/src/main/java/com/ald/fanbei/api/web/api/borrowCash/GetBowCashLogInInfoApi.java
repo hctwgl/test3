@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -44,10 +46,6 @@ import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
@@ -122,6 +120,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
+		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+		String bqsBlackBox = request.getParameter("bqsBlackBox");
+		data.put("ipAddress", CommonUtil.getIpAddr(request));
+		data.put("appName",appName);
+		data.put("bqsBlackBox",bqsBlackBox);
+		data.put("blackBox",request.getParameter("blackBox"));
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
@@ -476,7 +480,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
 		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
 			//直接从风控系统取，没的话，走之前逻辑
-			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data));
 			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
 			if (!StringUtils.isBlank(poundageRate)) {
 				logger.info("getBowCashLogInInfoApi direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
@@ -495,7 +499,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	private void getUserPoundageRateByUserId(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
 		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
-			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data));
 			String poundageRate = riskResp.getPoundageRate();
 			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);

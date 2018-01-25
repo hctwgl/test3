@@ -133,7 +133,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, 
 			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
-		BigDecimal oriRate = riskUtil.getRiskOriRate(userId);
+
+		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = riskUtil.getObjectWithResourceDolist(list);
@@ -178,9 +179,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
 		afBorrowCashDo.setLatitude(param.getLatitude());
 		afBorrowCashDo.setLongitude(param.getLongitude());
-		afBorrowCashDo.setCity(param.getCity());
-		afBorrowCashDo.setProvince(param.getProvince());
-		afBorrowCashDo.setCounty(param.getCounty());
+		afBorrowCashDo.setCity(ObjectUtils.toString(param.getCity()));
+		afBorrowCashDo.setProvince(ObjectUtils.toString(param.getProvince()));
+		afBorrowCashDo.setCounty(ObjectUtils.toString(param.getCounty()));
 		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(param.getType()).getName());
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);
@@ -532,7 +533,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				riskOrderNo, accountDo.getUserName(), 
 				param.getAmount(), afBorrowCashDo.getPoundage(), 
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
-				afBorrowCashDo.getCardName(), null, "", riskDataMap,null);
+				afBorrowCashDo.getCardName(), null, "", riskDataMap,param.getBqsBlackBox(),null);
 		return verifyBo;
 	}
 

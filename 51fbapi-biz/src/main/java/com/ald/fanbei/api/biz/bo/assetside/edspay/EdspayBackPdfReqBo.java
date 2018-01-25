@@ -19,32 +19,31 @@ public class EdspayBackPdfReqBo implements Serializable {
 
 	private String orderNo;
 
-	private String investorPhone;
-
 	private String companyName;
 
 	private String companyTaxNo;
 
 	private String protocolUrl;
 
-	private String investorName;
+	private String borrowerName;
 
-	private String investorCardId;
+	private List investorList;
 
-	public String getInvestorName() {
-		return investorName;
+
+	public String getBorrowerName() {
+		return borrowerName;
 	}
 
-	public void setInvestorName(String investorName) {
-		this.investorName = investorName;
+	public void setBorrowerName(String borrowerName) {
+		this.borrowerName = borrowerName;
 	}
 
-	public String getInvestorCardId() {
-		return investorCardId;
+	public List getInvestorList() {
+		return investorList;
 	}
 
-	public void setInvestorCardId(String investorCardId) {
-		this.investorCardId = investorCardId;
+	public void setInvestorList(List investorList) {
+		this.investorList = investorList;
 	}
 
 	public Integer getDebtType() {
@@ -61,14 +60,6 @@ public class EdspayBackPdfReqBo implements Serializable {
 
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
-	}
-
-	public String getInvestorPhone() {
-		return investorPhone;
-	}
-
-	public void setInvestorPhone(String investorPhone) {
-		this.investorPhone = investorPhone;
 	}
 
 	public String getCompanyName() {

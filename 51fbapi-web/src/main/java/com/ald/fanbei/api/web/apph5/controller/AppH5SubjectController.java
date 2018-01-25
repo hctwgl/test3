@@ -486,7 +486,7 @@ public class AppH5SubjectController  extends BaseController{
 				return resp.toString();
 			}
 			// 查询会场下所有二级会场
-			List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "SUBJECT");
+			List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
 			List<Map> activityList = new ArrayList<Map>();
 			if(subjectList == null || subjectList.size() == 0){
 				resp = H5CommonResponse.getNewInstance(false, "分会场信息为空"); 

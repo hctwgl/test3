@@ -74,6 +74,9 @@ public class StartCashierApi implements ApiHandle {
     GetNperListApi getNperListApi;
     @Resource
     AfInterimAuService afInterimAuService;
+    @Resource
+    AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+    
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -105,12 +108,11 @@ public class StartCashierApi implements ApiHandle {
             //endregion
         }
         Long userId = orderInfo.getUserId();
-        AfCheckoutCounterDo checkoutCounter;
+        AfCheckoutCounterDo checkoutCounter ;
         CashierVo cashierVo = new CashierVo();
         cashierVo.setCurrentTime(new Date());
         cashierVo.setGmtPayEnd(orderInfo.getGmtPayEnd());
-
-
+        
         //兼容各类订单类型
         if (orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
             cashierVo.setCountDown(true);
@@ -119,7 +121,21 @@ public class StartCashierApi implements ApiHandle {
             checkoutCounter = afCheckoutCounterService.getByType(orderInfo.getOrderType(), "");
         }
 
+
         AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------
+        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+            checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
+            if (userDto.getAuAmount().subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(4000)) >= 0)
+                checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
+            else
+                checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
+        }
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------
+
         AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         //判断额度支付是否可用
         cashierVo.setOrderId(orderInfo.getRid());
@@ -178,11 +194,14 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setWx(canWX(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setBank(canBankpay(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setAli(canAlipay(userDto, authDo, orderInfo, checkoutCounter));
+        
+
         resp.setResponseData(cashierVo);
         return resp;
     }
 
-    /**
+
+	/**
      * 组合支付验证,前置条件分期支付验证通过
      *
      * @param userDto         用户账户信息

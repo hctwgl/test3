@@ -71,13 +71,13 @@ public class SubmitClearApi implements ApiHandle {
         Long userId = context.getUserId();
 
 
-        AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
-        if(afUserSeedDo !=null){
+//        AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
+//        if(afUserSeedDo !=null){
 //            throw new FanbeiException(FanbeiExceptionCode.ZZYH_ERROR);
             //FanbeiException fbEX = new FanbeiException(FanbeiExceptionCode.ZZYH_ERROR);
-            ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZZYH_ERROR);
-            return resp1;
-        }
+//            ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZZYH_ERROR);
+//            return resp1;
+//        }
 
         Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0L);   //0 全部结清   其它订单结清
         BigDecimal repayAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repayAmount")),BigDecimal.ZERO);         //帐单金额
