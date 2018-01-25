@@ -138,6 +138,10 @@
 		<property name="fbapi.sup.business.key" defaultValue="/C9w1LBJUPi3u26ULHnu+EtRQUOeJywL1jRGe/PuasXQroYLtEIaqFC8Jmft4E4B" description="sup 游戏充值配置KEY"/>
 
 		<property name="fbapi.orderfinish.key" defaultValue="51fanbeiOrderV" />
+		
+		<!-- 51公积金认证 -->
+		<property name="fbapi.newfund.appkey" defaultValue="1DE714C387E641E987078EC625666D92"  description="51公积金的公钥"/>
+		<property name="fbapi.newfund.secret" defaultValue="6658179F17D844E093635571F41A337AC99CD26B"  description="51公积金的私钥"/>
 	</group>
 
 	<script>

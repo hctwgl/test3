@@ -1933,6 +1933,59 @@ public class RiskUtil extends AbstractThird {
         }
         return 0;
     }
+    
+    /**
+     * 51公积金认证风控异步通知
+     * @param consumerNo --用户唯一标识
+     * @param userName   --用户名
+     * @return
+     */
+    public int newFundNotify(String code, String data, String msg, String signInfo) {
+        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+        reqBo.setCode(code);
+        reqBo.setData(data);
+        reqBo.setMsg(msg);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        logThird(signInfo, "newFundNotify", reqBo);
+        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+            JSONObject obj = JSON.parseObject(data);
+            String consumerNo = obj.getString("consumerNo");
+            String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+            if (StringUtil.equals("50", result)) {
+                return 0;//不做任何更新
+            }
+            String limitAmount = obj.getString("amount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal au_amount = new BigDecimal(limitAmount);
+
+            AfUserAuthDo auth = new AfUserAuthDo();
+            auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+            auth.setGmtFund(new Date(System.currentTimeMillis()));
+            AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+            if (StringUtil.equals("10", result)) {
+                auth.setFundStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                    auth.setRiskStatus(RiskStatus.YES.getCode());
+                    AfUserAccountDo accountDo = new AfUserAccountDo();
+                    accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+                    accountDo.setAuAmount(au_amount);
+                    afUserAccountService.updateUserAccount(accountDo);
+                }
+                jpushService.fundRiskSuccess(userAccountDo.getUserName());
+            } else if (StringUtil.equals("20", result)) {//20是认证未通过 ，风控返回错误
+                auth.setFundStatus(YesNoStatus.NO.getCode());
+                jpushService.fundRiskFail(userAccountDo.getUserName());
+            } else if (StringUtil.equals("21", result)) {//21是认证失败,51公积金返回错误
+                auth.setFundStatus("A");
+                jpushService.fundRiskFault(userAccountDo.getUserName());
+            }
+            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
 
     /**
      * 魔蝎社保第三方数据查询异步通知
@@ -2768,4 +2821,37 @@ public class RiskUtil extends AbstractThird {
         return true;
     }
 
+
+	/**
+	 * 推送公积金信息给风控
+	 * @param data 51公积金返回的公积金信息
+	 * @param userId app端用户唯一标识
+	 * @param token 51公积金交互的token
+	 * @param orderSn 51公积金交互的订单号
+	 * @return 
+	 */
+	public RiskRespBo FundNotifyRisk(String data, String userId,String token, String orderSn) {
+		RiskNotifyReqBo reqBo = new RiskNotifyReqBo();
+		reqBo.setUserId(userId);
+        reqBo.setToken(token);
+        reqBo.setOrderSn(orderSn);
+        reqBo.setData(data);
+        String temp = String.valueOf(System.currentTimeMillis());
+        reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        System.out.println(reqBo.toString());
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/processData.htm", reqBo);
+      //  String reqResult = requestProxy.post("http://192.168.117.20:8080" + "/modules/api/user/processData.htm",reqBo);
+        logThird(reqResult, "FundNotifyRisk", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+        }
+        RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskOperatorRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            riskResp.setSuccess(true);
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+        }
+	}
 }
