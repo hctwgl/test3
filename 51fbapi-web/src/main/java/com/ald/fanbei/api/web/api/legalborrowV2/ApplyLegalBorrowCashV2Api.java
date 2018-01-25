@@ -128,7 +128,6 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				// 提交风控审核
 				RiskVerifyRespBo verifyBo = applyLegalBorrowCashService.submitRiskReview(borrowId,appType,ipAddress,paramBo,
 						accountDo,userId,afBorrowCashDo,riskOrderNo);
-				logger.info("verifyBo 12323 ="+verifyBo);
 				if (verifyBo.isSuccess()) {
 					// 风控审核通过，提交ups进行打款处理
 					applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
