@@ -76,6 +76,7 @@ public class FanbeiH5Controller extends H5BaseController {
 		String method = request.getRequestURI();
         String appInfo =  request.getParameter("_appInfo");
         if(StringUtils.isEmpty(appInfo)) {
+        	// 从请求头获取_appInfo
         	
         }
         
