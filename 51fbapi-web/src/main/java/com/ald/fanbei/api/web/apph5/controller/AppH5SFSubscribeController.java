@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,20 +15,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -34,7 +44,9 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -60,6 +72,12 @@ public class AppH5SFSubscribeController extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	AfShopService afShopService;
+	@Resource
+	AfCouponCategoryService afCouponCategoryService;
+	@Resource
+	AfCouponService afCouponService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -111,6 +129,11 @@ public class AppH5SFSubscribeController extends BaseController {
 				if (goodsList.size() != 5) {
 					result = H5CommonResponse.getNewInstance(false, "配置失败").toString();
 				}
+		/*		goodsList.get(0).setOrderNumber(goodsList.get(0).getOrderNumber() + Integer.parseInt(fakeDo.getValue()));
+				goodsList.get(1).setOrderNumber(goodsList.get(1).getOrderNumber() + Integer.parseInt(fakeDo.getValue1()));
+				goodsList.get(2).setOrderNumber(goodsList.get(2).getOrderNumber() + Integer.parseInt(fakeDo.getValue2()));
+				goodsList.get(3).setOrderNumber(goodsList.get(3).getOrderNumber() + Integer.parseInt(fakeDo.getValue3()));
+				goodsList.get(4).setOrderNumber(goodsList.get(4).getOrderNumber() + Integer.parseInt(fakeDo.getValue4()));*/
 				data.put("goodsList", goodsList);
 				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ", new Object[] { userId, goodsList });
 				// get configuration from afresource
@@ -237,8 +260,7 @@ public class AppH5SFSubscribeController extends BaseController {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-				return resultStr.toString();
+				return resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "获取波罗蜜url失败", "", exception.getMessage()).toString();
@@ -247,6 +269,7 @@ public class AppH5SFSubscribeController extends BaseController {
 		}
 		return resultStr;
 	}
+	
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {

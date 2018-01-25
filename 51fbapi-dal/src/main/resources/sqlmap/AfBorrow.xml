@@ -239,7 +239,7 @@ IFNULL((SELECT  c1.amount    FROM  af_borrow_cash c1 WHERE  c1.user_id  =c.user_
 IFNULL((SELECT  c1.overdue_day    FROM  af_borrow_cash c1  WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ),0)  lastOverdueDay,
 IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay,
 DATE_FORMAT(min(c.gmt_create),'%Y-%m-%d %H:%i:%s') firstBorrowTime
-FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
+FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId}
 	</select>
 	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
 		SELECT
@@ -315,5 +315,8 @@ FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no
 		AND is_delete = 0
 		AND `status` = 'Y'
 	</select>
-
+	<select id="getUserSummaryForCapital" resultType="java.util.HashMap">
+		SELECT IF(sum(renewal_num)>0,'false','true') first,IF(sum(renewal_num)>0,IFNULL(sum(overdue_day ),0),max(overdue_day)) allDays,IFNULL(SUM(IF(renewal_num>0,overdue_day,0)),0) allDays1 FROM af_borrow_cash
+		WHERE user_id =#{userId} AND `status`='FINSH'
+	</select>
 </mapper>

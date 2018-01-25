@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,14 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 		BigDecimal oriRate = BigDecimal.ZERO;
 		if (userId != null) {
-			oriRate = riskUtil.getRiskOriRate(userId);
+			JSONObject params = new JSONObject();
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			String bqsBlackBox = request.getParameter("bqsBlackBox");
+			params.put("ipAddress",CommonUtil.getIpAddr(request));
+			params.put("appName",appName);
+			params.put("bqsBlackBox",bqsBlackBox);
+			params.put("blackBox",request.getParameter("blackBox"));
+			oriRate = riskUtil.getRiskOriRate(userId,params);
 		}
 
 		// 查询新利率配置

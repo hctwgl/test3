@@ -35,15 +35,13 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 
 	@Override
 	public List<AfActivityGoodsDto> listActivityGoodsByActivityId(
-			Long activityId, Integer appVersion) {
-		return appVersion < 371 ? afActivityGoodsDao.listActivityGoodsByActivityIdLT371(activityId) 
-				: afActivityGoodsDao.listActivityGoodsByActivityId(activityId);
+			Long activityId) {
+		return afActivityGoodsDao.listActivityGoodsByActivityId(activityId);
 	}
 
 	@Override
-	public List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId, Integer appVersion) {
-		return appVersion < 371 ? afActivityGoodsDao.listRecommendGoodsByActivityIdLT371(activityId)
-				: afActivityGoodsDao.listRecommendGoodsByActivityId(activityId);
+	public List<AfGoodsDo> listRecommendGoodsByActivityId(Long activityId) {
+		return afActivityGoodsDao.listRecommendGoodsByActivityId(activityId);
 	}
 
 	@Override
@@ -53,9 +51,8 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	}
 
 	@Override
-	public List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId, Integer appVersion) {
-		return appVersion < 371 ? afActivityGoodsDao.listNewEncoreGoodsByActivityIdLT371(activityId)
-				: afActivityGoodsDao.listNewEncoreGoodsByActivityId(activityId);
+	public List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId) {
+		return afActivityGoodsDao.listNewEncoreGoodsByActivityId(activityId);
 		
 	}
 

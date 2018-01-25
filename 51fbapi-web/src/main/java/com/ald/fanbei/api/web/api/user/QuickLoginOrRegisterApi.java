@@ -99,6 +99,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		// String inputPassSrc =
 		// ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));// 验证码
@@ -270,7 +271,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
-					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY);
+					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY,bqsBlackBox);
 		}
 
 		resp.setResponseData(jo);
@@ -317,6 +318,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 		String ip = CommonUtil.getIpAddr(request);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
@@ -405,7 +407,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		// 风控可信异步通知
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
-					registerTime, ip, phoneType, networkType, osType, Constants.EVENT_RIGISTER_ASY);
+					registerTime, ip, phoneType, networkType, osType, Constants.EVENT_RIGISTER_ASY,bqsBlackBox);
 		}
 		return afUserDo;
 	}

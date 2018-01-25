@@ -41,5 +41,11 @@ public class FanbeiWebContext extends AbstractSerial{
 	public void setLogin(boolean isLogin) {
 		this.isLogin = isLogin;
 	}
+	@Override
+	public String toString() {
+		return "FanbeiWebContext [userName=" + userName + ", appInfo=" + appInfo + ", appVersion=" + appVersion
+				+ ", isLogin=" + isLogin + "]";
+	}
+	
 	
 }
