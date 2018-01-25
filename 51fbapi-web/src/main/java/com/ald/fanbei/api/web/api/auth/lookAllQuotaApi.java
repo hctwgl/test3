@@ -194,7 +194,7 @@ public class lookAllQuotaApi implements ApiHandle {
 
             if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
-                    &&StringUtil.equals(userAuth.getRealnameStatus(),"N")){
+                    &&StringUtil.equals(userAuth.getRealnameStatus(),"N")&&StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //尚未认证状态
                 cashMap.put("showAmount", listDesc1.get(0));
                 cashMap.put("desc", listDesc1.get(1));
@@ -208,7 +208,7 @@ public class lookAllQuotaApi implements ApiHandle {
 
             } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
                     ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
-                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
                 //认证人脸没有认证银行卡 状态为5
