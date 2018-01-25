@@ -567,7 +567,7 @@
 	</task:scheduled-tasks>
 	
 	<!-- jvm缓存服务 -->
-	
+	<!-- 
 	<bean id="homePageV1CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV1CacheTask">
 		<property name="updateInterval" value="10"/>
 	</bean>
@@ -585,6 +585,5 @@
         	</list>
 		</property>
 	</bean>
-	
-	
+	 -->
 </beans>

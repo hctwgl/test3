@@ -250,6 +250,7 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
+        jpushService.strongRiskSuccess("15990182307");
         //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
         ExecutorService pool = Executors.newFixedThreadPool(16);
         for (int i = 0; i < 1000; i++) {

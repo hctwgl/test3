@@ -164,8 +164,10 @@
     <table cellspacing="1">
         <tr><td>姓名</td><td>身份证号码</td><td>出借金额</td></tr>
         <tr>
-            <td>$!{edspayUserName}</td><td>$!{edspayUserCardId}</td>
-            <td>#if($!{edspayUserCardId})$!{amountLower}#end</td>
+            #foreach($item in $!{edspaySealDoList})
+                <td>$!{item.userName}</td><td>$!{item.edspayUserCardId}</td>
+                <td>#if($!{item.edspayUserCardId})$!{item.amount}#end</td>
+            #end
         </tr>
     </table>
     <br>
