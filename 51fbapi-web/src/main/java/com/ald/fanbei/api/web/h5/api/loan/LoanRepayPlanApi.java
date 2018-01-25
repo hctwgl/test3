@@ -34,7 +34,7 @@ import com.alibaba.fastjson.JSON;
  * @author yanghailong
  * @date 2018年1月22日
  */
-@Component("getRepayPlanApi")
+@Component("loanRepayPlanApi")
 public class LoanRepayPlanApi implements H5Handle {
 
 	@Resource
@@ -109,7 +109,7 @@ public class LoanRepayPlanApi implements H5Handle {
 				data.add(loanPeriodsVo);
 			}
 			
-			resp.setResponseData(JSON.toJSONString(data));
+			resp.setResponseData(data);
 			
 		} catch (Exception e) {
 			logger.error("/loanRepayPlanApi error = {}", e.getStackTrace());
