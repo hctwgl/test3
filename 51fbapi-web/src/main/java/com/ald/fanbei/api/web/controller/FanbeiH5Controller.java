@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -96,6 +97,8 @@ public class FanbeiH5Controller extends H5BaseController {
         wrapRequest(request,dataMaps);
         builder.dataMap(dataMaps);
        
+        String clientIp = CommonUtil.getIpAddr(request);
+        builder.clientIp(clientIp);
         Context context = builder.build();
 		return context;
 	}
