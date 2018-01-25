@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.auth;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -171,11 +172,6 @@ public class lookAllQuotaApi implements ApiHandle {
                     onlineMap.put("status","4");
                 }
             }
-            else{
-                onlineMap.put("showAmount", listDesc2.get(0));
-                onlineMap.put("desc", listDesc2.get(1));
-                onlineMap.put("status","1");
-            }
             //线下培训 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
             if(afUserAuthStatusTrain !=null) {
@@ -227,8 +223,6 @@ public class lookAllQuotaApi implements ApiHandle {
                 onlineMap.put("showAmount", listDesc2.get(0));
                 onlineMap.put("desc", listDesc2.get(1));
                 onlineMap.put("status",status);
-
-
                 trainMap.put("desc", trainDesc);
                 trainMap.put("status",status);
             }
