@@ -84,12 +84,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
 
     @Override
     public void protocolInstalment(long userId, Integer nper, BigDecimal amount, Long borrowId) {//分期
-
-//        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
-//        Integer nper = NumberUtil.objToIntDefault(content.get("nper"), 0);
-//        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("amount"), new BigDecimal(0));
-//        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(content.get("poundage"), new BigDecimal(0));
-//        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"),0);
         try {
             AfUserDo afUserDo = afUserService.getUserById(userId);
             Map map = new HashMap();
@@ -103,7 +97,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("realName", accountDo.getRealName());
             AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
             AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
-//            AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
             AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
             if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
                 logger.error("创建个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
@@ -113,7 +106,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("borrowId", borrowId);
             map.put("personUserSeal", afUserSealDo.getUserSeal());
             map.put("accountId", afUserSealDo.getUserAccountId());
-//            map.put("lender", lenderDo.getValue());// 出借人
             AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
             if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
                 map.put("lender", fundSideInfo.getName());// 出借人
@@ -125,7 +117,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 map.put("lender", lenderDo.getValue());// 出借人
                 secondSeal(map, lenderDo, afUserDo, accountDo);
             }
-//            secondSeal(map, lenderDo,afUserDo, accountDo);
             if (null == map.get("companySelfSeal")) {
                 logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
@@ -160,7 +151,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
             map.put("poundage", "￥" + poundageAmount);
             Date date = new Date();
-            date = afBorrowDo.getGmtCreate();
+            if (afBorrowDo != null){
+                date = afBorrowDo.getGmtCreate();
+            }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
             map.put("gmtTime", simpleDateFormat.format(date) + "至" + simpleDateFormat.format(repayDay));
 
