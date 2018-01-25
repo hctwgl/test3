@@ -248,7 +248,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
 	@Override
     public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
-		final AfLoanRepaymentDo repaymentDo = afLoanRepaymentDao.getRepayByPayTradeNo(tradeNo);
+		final AfLoanRepaymentDo repaymentDo = afLoanRepaymentDao.getRepayByPayTradeNo(outTradeNo);
         dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null);
     }
     
@@ -257,25 +257,25 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      */
     @Override
 	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
-		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
+		final AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentDao.getRepayByPayTradeNo(outTradeNo);
         logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo 
         		+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg 
-        		+ ",borrowRepayment=" + JSON.toJSONString(repaymentDo));
+        		+ ",borrowRepayment=" + JSON.toJSONString(loanRepaymentDo));
         
-        if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) )) { // 检查交易流水 对应记录数据库中是否已经处理
+        if ((loanRepaymentDo != null && AfLoanRepaymentStatus.SUCC.name().equals(loanRepaymentDo.getStatus()) )) { // 检查交易流水 对应记录数据库中是否已经处理
             return;
         }
         
-        if(repaymentDo != null) {
-        	changLoanRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
+        if(loanRepaymentDo != null) {
+        	changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
         
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
 			int errorTimes = 0;
-			AfUserDo afUserDo = afUserService.getUserById(repaymentDo.getUserId());
+			AfUserDo afUserDo = afUserService.getUserById(loanRepaymentDo.getUserId());
 			//如果是代扣，不校验次数
-			String payType = repaymentDo.getName();
+			String payType = loanRepaymentDo.getName();
 			//模版数据map处理
 			Map<String,String> replaceMapData = new HashMap<String, String>();
 			replaceMapData.put("errorMsg", errorMsg);
@@ -283,7 +283,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
 				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
 			}else{
-				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
+				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
 				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
 				String title = "本次还款支付失败";
 				String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
@@ -386,9 +386,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
-					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				}else{
-					dealRepaymentFail(bo.tradeNo, "", false, "");
+					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), false, "");
 				}
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
@@ -403,7 +403,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
    	private long changLoanRepaymentStatus(String outTradeNo, String status, Long rid) {
    		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
    		loanRepay.setStatus(status);
-   		loanRepay.setTradeNo(outTradeNo);
+   		loanRepay.setTradeNoOut(outTradeNo);
    		loanRepay.setRid(rid);
    		loanRepay.setGmtModified(new Date());
         return afLoanRepaymentDao.updateById(loanRepay);
