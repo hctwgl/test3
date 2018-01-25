@@ -1,7 +1,12 @@
 package com.ald.fanbei.api.web.common;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -87,12 +92,22 @@ public abstract class H5BaseController {
 
 	private void checkAppInfo(HttpServletRequest request) {
 		String appInfo = request.getParameter("_appInfo");
+		if(StringUtils.isEmpty(appInfo)) {
+			String referer = request.getHeader("Referer");
+			if(StringUtils.isNotEmpty(referer)) {
+				if(StringUtils.contains(referer, "_appInfo")) 
+					return;
+			}
+		}
+		
 		// App内部H5接口，客户端必须上送_appInfo字段
 		if (StringUtils.isBlank(appInfo)) {
 			throw new FanbeiException("param is null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 	}
-
+	
+	
+	
 	protected BaseResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
 		H5HandleResponse resp = new H5HandleResponse();
 		resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
