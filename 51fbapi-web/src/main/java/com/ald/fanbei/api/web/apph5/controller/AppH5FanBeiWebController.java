@@ -980,11 +980,10 @@ public class AppH5FanBeiWebController extends BaseController {
 	public String getOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext context = null;
 		try {
-			long orderId = 186;
-			long isOutTraces = 1;
-			AfOrderLogisticsBo afOrderLogisticsBo = afBorrowLegalOrderLogisticsService.getLegalOrderLogisticsBo(orderId,
-					isOutTraces);
-			//AfOrderLogisticsBo afOrderLogisticsBo = afOrderLogisticsService.getOrderLogisticsBo(orderId, isOutTraces);
+			long orderId = NumberUtil.strToLong(request.getParameter("orderId").toString());
+			long isOutTraces = NumberUtil.strToLong(request.getParameter("traces") == null ? String.valueOf(0)
+					: request.getParameter("traces").toString());
+			AfOrderLogisticsBo afOrderLogisticsBo = afOrderLogisticsService.getOrderLogisticsBo(orderId, isOutTraces);
 			if (afOrderLogisticsBo != null) {
 				return H5CommonResponse.getNewInstance(true, "", "", afOrderLogisticsBo).toString();
 			} else {
