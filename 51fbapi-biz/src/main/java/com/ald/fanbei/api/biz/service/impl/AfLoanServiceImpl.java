@@ -156,41 +156,14 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			final List<Object> objs = afLoanPeriodsService.resolvePeriods(reqParam.amount, userId, reqParam.periods, loanNo, reqParam.prdType);
 			final AfLoanDo loanDo = (AfLoanDo)objs.remove(0);
 			final List<AfLoanPeriodsDo> periodDos = new ArrayList<>();
+			for(Object o : objs) {
+				periodDos.add((AfLoanPeriodsDo)o);
+			}
 			
-			//数据入库
 			final AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.reqParam.cardId);
-			transactionTemplate.execute(new TransactionCallback<Long>() {
-	            @Override
-	            public Long doInTransaction(TransactionStatus status) {
-	                try {
-	                	loanDo.setCardNo(bank.getCardNumber());
-	                	loanDo.setCardName(bank.getBankName());
-	                	loanDo.setAddress(reqParam.address);
-	                	loanDo.setCity(reqParam.city);
-	                	loanDo.setCounty(reqParam.county);
-	                	loanDo.setLatitude(new BigDecimal(reqParam.latitude));
-	                	loanDo.setLongitude(new BigDecimal(reqParam.longitude));
-	                	loanDo.setRemark(reqParam.remark);
-	                	loanDo.setLoanRemark(reqParam.loanRemark);
-	                	loanDo.setRepayRemark(reqParam.repayRemark);
-	            		loanDo.setAppName("www"); // TODO getAppName
-	            		afLoanDao.saveRecord(loanDo);
-	            		
-	            		Long loanId = loanDo.getRid();
-	            		for(Object o: objs) {
-	            			AfLoanPeriodsDo periodDo = (AfLoanPeriodsDo)o;
-	            			periodDo.setLoanId(loanId);
-	            			afLoanPeriodsDao.saveRecord(periodDo);
-	            			periodDos.add(periodDo);
-	            		}
-	            		
-	                    return 1L;
-	                } catch (Exception e) {
-	                    logger.error("doLoan,DB error", e);
-	                    throw e;
-	                }
-	            }
-	        });
+			
+			// 数据入库
+			this.saveLoanRecords(bo, loanDo, periodDos, bank);
 			
 			// 弱风控
 			this.weakRiskCheck(bo, loanDo);
@@ -219,11 +192,43 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			this.unlockLoan(userId);
 		}
 	}
-	/**
-	 * 弱风控审核
-	 * @param bo
-	 * @param tarLoanDo
-	 */
+	private void saveLoanRecords(final ApplyLoanBo bo, final AfLoanDo loanDo, 
+				final List<AfLoanPeriodsDo> periodDos, final AfUserBankDto bank) {
+		transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus status) {
+                try {
+                	ReqParam reqParam = bo.reqParam;
+                	
+                	loanDo.setCardNo(bank.getCardNumber());
+                	loanDo.setCardName(bank.getBankName());
+                	loanDo.setAddress(reqParam.address);
+                	loanDo.setCity(reqParam.city);
+                	loanDo.setCounty(reqParam.county);
+                	loanDo.setLatitude(new BigDecimal(reqParam.latitude));
+                	loanDo.setLongitude(new BigDecimal(reqParam.longitude));
+                	loanDo.setRemark(reqParam.remark);
+                	loanDo.setLoanRemark(reqParam.loanRemark);
+                	loanDo.setRepayRemark(reqParam.repayRemark);
+            		loanDo.setAppName(reqParam.appName);
+            		afLoanDao.saveRecord(loanDo);
+            		
+            		Long loanId = loanDo.getRid();
+            		for(Object o: periodDos) {
+            			AfLoanPeriodsDo periodDo = (AfLoanPeriodsDo)o;
+            			periodDo.setLoanId(loanId);
+            			afLoanPeriodsDao.saveRecord(periodDo);
+            			periodDos.add(periodDo);
+            		}
+            		
+                    return 1L;
+                } catch (Exception e) {
+                    logger.error("saveLoanRecords,DB error", e);
+                    throw e;
+                }
+            }
+        });
+	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void weakRiskCheck(ApplyLoanBo bo, AfLoanDo tarLoanDo) {
 		Long userId = bo.userId;
@@ -254,7 +259,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				null, null, 0l,
 				tarLoanDo.getCardName(), 
 				null, "", 
-				riskDataMap);
+				riskDataMap,
+				bo.reqParam.bqsBlackBox,
+				null);
 		
 		tarLoanDo.setRiskNo(verifyBo.getOrderNo());
 		if(verifyBo.isSuccess()) {

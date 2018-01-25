@@ -31,10 +31,12 @@ public class ApplyLoanBo {
 		public String county;
 		public String address;
 		public String blackBox;
+		public String bqsBlackBox;
 		public Long couponId;
 		
 		public String ip;
 		public String appType;
+		public String appName;
 	}
 	
 }

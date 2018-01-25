@@ -59,6 +59,9 @@ public class ApplyLoanParam {
 	@NotNull
 	String blackBox;
 	
+	@NotNull
+	String bqsBlackBox;
+	
 	@Null
 	Long couponId;
 }
