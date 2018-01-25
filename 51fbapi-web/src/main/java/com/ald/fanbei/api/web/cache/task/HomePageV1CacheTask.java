@@ -51,7 +51,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 
 	@Override
 	public void updateCache(Cache cache) {
-		/*
+
 		try {
 			log.info("update home page v1 cache task start,time =>{}", System.currentTimeMillis());
 			// 获取借款分期配置信息
@@ -81,7 +81,6 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 		} finally {
 			lock.unlock();
 		}
-		*/
 	}
 
 }
