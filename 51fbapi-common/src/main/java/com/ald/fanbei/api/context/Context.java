@@ -43,4 +43,8 @@ public interface Context {
 	public Object getParamEntity();
 
 	public void setParamEntity(Object paramEntity);
+	
+	public String getClientIp();
+
+	public void setClientIp(String clientIp); 
 }

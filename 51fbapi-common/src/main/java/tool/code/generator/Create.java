@@ -25,6 +25,7 @@ public class Create {
 		String classAuthor = "Jiang Rongbo";
 		String functionName = "贷款业务";
 
+
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
 

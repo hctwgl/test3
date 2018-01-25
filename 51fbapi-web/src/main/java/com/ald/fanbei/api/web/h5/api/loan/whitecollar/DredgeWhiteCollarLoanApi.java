@@ -10,12 +10,12 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.ApplyWhiteCollarLoanParam;
+import com.ald.fanbei.api.web.validator.bean.DredgeWhiteCollarLoanParam;
 import com.google.common.collect.Maps;
 
-@Component("applyWhiteCollarLoanApi")
-@Validator("applyWhiteCollarLoanParam")
-public class ApplyWhiteCollarLoanApi implements H5Handle {
+@Component("dredgeWhiteCollarLoanApi")
+@Validator("dredgeWhiteCollarLoanParam")
+public class DredgeWhiteCollarLoanApi implements H5Handle {
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -26,7 +26,7 @@ public class ApplyWhiteCollarLoanApi implements H5Handle {
 		if(userId == null) {
 			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 		}
-		ApplyWhiteCollarLoanParam param = (ApplyWhiteCollarLoanParam) context.getParamEntity();
+		DredgeWhiteCollarLoanParam param = (DredgeWhiteCollarLoanParam) context.getParamEntity();
 		
 		
 		

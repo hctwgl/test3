@@ -19,10 +19,20 @@ public class ContextImpl implements Context {
 	private String id;
 	
 	private Object paramEntity;
+	
+	private String clientIp;
 
 	private Map<String,Object> systemsMap;
 	
 	
+	public String getClientIp() {
+		return clientIp;
+	}
+
+	public void setClientIp(String clientIp) {
+		this.clientIp = clientIp;
+	}
+
 	@Override
 	public Object getData(String key) {
 		return dataMap.get(key);
@@ -93,8 +103,6 @@ public class ContextImpl implements Context {
 		this.systemsMap = systemsMap;
 	}
 	
-	
-
 	public Object getParamEntity() {
 		return paramEntity;
 	}
@@ -111,6 +119,7 @@ public class ContextImpl implements Context {
 		this.method  = builder.method;
 		this.id = builder.id;
 		this.systemsMap  = builder.systemsMap;
+		this.clientIp = builder.clientIp;
 	}
 
 	public static class Builder {
@@ -126,6 +135,8 @@ public class ContextImpl implements Context {
 		private String method;
 		
 		private String id;
+		
+		private String clientIp;
 		
 		private Map<String,Object> systemsMap;
 
@@ -163,6 +174,12 @@ public class ContextImpl implements Context {
 			this.id = id;
 			return this;
 		}
+		
+		public Builder clientIp(String clientIp) {
+			this.clientIp = clientIp;
+			return this;
+		}
+		
 
 		public ContextImpl build() {
 			return new ContextImpl(this);

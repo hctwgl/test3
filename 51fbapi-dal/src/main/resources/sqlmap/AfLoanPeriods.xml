@@ -363,6 +363,7 @@
         <include refid="queryFields" />
         FROM af_loan_periods 
         WHERE loan_id = #{loanId}
+        ORDER BY nper ASC
     </select>
     
 </mapper>

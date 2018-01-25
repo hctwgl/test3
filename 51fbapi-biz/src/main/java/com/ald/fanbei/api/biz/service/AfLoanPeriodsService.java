@@ -18,5 +18,9 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
 	
 	BigDecimal calcuRestAmount(AfLoanPeriodsDo period);
+
+	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
+
+	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
 	
 }

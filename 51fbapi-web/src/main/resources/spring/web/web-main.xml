@@ -548,8 +548,8 @@
 				<entry key="/h5/loan/getHomeInfo" value-ref="getLoanHomeInfoApi" />
 				
 				<!-- 白领贷业务接口 -->
-				<entry key="/h5/whitecollar/applyWhiteCollarLoan" value-ref="applyWhiteCollarLoanApi" />
-				
+				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
+				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
 				
 			</map>
 		</constructor-arg>
@@ -575,5 +575,26 @@
 		<task:scheduled ref="healthCheck" method="checkBizCache"
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
+	
+	<!-- jvm缓存服务 -->
+	
+	<bean id="homePageV1CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV1CacheTask">
+		<property name="updateInterval" value="10"/>
+	</bean>
+	
+	<bean id="homePageV2CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV2CacheTask">
+		<property name="updateInterval" value="10"/>
+	</bean>
+	
+	<bean id="scheduledCache" class="com.ald.fanbei.api.web.cache.impl.ScheduledCache">
+		<property name="lockInterval" value="5" />
+		<property name="tasks">
+			<list>  
+        		<ref bean="homePageV1CacheTask" />
+        		<ref bean="homePageV2CacheTask" />
+        	</list>
+		</property>
+	</bean>
+	
 	
 </beans>

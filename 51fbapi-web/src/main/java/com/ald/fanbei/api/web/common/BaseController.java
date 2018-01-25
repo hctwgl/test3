@@ -109,7 +109,9 @@ public abstract class BaseController {
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
-
+			if(contex.getAppVersion()==344){
+				throw new FanbeiException("您使用的app版本过低,请升级",true);
+			}
 			// 判断版本更新 后台控制
 			try {
 				AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesion();
@@ -650,7 +652,10 @@ public abstract class BaseController {
 			}
 		}
 		logger.info("signStrBefore = {}", signStrBefore);
-		this.compareSign(signStrBefore, sign);
+		if (needToken){
+			this.compareSign(signStrBefore, sign);
+		}
+
 
 	}
 

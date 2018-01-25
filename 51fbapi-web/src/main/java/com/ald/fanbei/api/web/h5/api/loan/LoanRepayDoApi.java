@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -40,7 +41,7 @@ import com.google.common.collect.Maps;
 
 
 /**  
- * @Description: 白领贷-还款（待）
+ * @Description: 白领贷-还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
  * @date 2018年1月22日
@@ -63,13 +64,13 @@ public class LoanRepayDoApi implements H5Handle {
 	@Resource
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
-	AfLoanDao afLoanDao;
+	AfLoanService afLoanService;
 
 
 	@Override
 	public H5HandleResponse process(Context context) {
 		LoanRepayBo bo = this.extractAndCheck(context);
-//		bo.remoteIp = CommonUtil.getIpAddr(request); //TODO
+		bo.remoteIp = context.getClientIp();
 		
 		this.afLoanRepaymentService.repay(bo);
 		
@@ -134,7 +135,7 @@ public class LoanRepayDoApi implements H5Handle {
 	
 	private void checkFrom(LoanRepayBo bo) {
 		AfLoanDo loanDo = null;
-		if((loanDo = afLoanDao.getById(bo.loanId)) == null ){
+		if((loanDo = afLoanService.getById(bo.loanId)) == null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.loanDo = loanDo;
