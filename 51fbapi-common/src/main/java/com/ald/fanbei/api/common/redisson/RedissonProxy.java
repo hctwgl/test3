@@ -15,14 +15,12 @@ import org.redisson.api.RBatch;
 import org.redisson.api.RBinaryStream;
 import org.redisson.api.RBitSet;
 import org.redisson.api.RBlockingDeque;
-import org.redisson.api.RBlockingFairQueue;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RBoundedBlockingQueue;
 import org.redisson.api.RBucket;
 import org.redisson.api.RBuckets;
 import org.redisson.api.RCountDownLatch;
-import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RDeque;
 import org.redisson.api.RGeo;
 import org.redisson.api.RHyperLogLog;
@@ -38,8 +36,6 @@ import org.redisson.api.RMap;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RPatternTopic;
 import org.redisson.api.RPermitExpirableSemaphore;
-import org.redisson.api.RPriorityDeque;
-import org.redisson.api.RPriorityQueue;
 import org.redisson.api.RQueue;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RRemoteService;
@@ -346,49 +342,17 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getPatternTopic(pattern, codec);
 	}
 
-	@Override
-	public <V> RBlockingFairQueue<V> getBlockingFairQueue(String name) {
-		return delegateRedissonClient.getBlockingFairQueue(name);
-	}
-
-	@Override
-	public <V> RBlockingFairQueue<V> getBlockingFairQueue(String name, Codec codec) {
-		return delegateRedissonClient.getBlockingFairQueue(name, codec);
-	}
-
+	
 	@Override
 	public <V> RQueue<V> getQueue(String name) {
 		return delegateRedissonClient.getQueue(name);
 	}
 
-	@Override
-	public <V> RDelayedQueue<V> getDelayedQueue(RQueue<V> destinationQueue) {
-		return delegateRedissonClient.getDelayedQueue(destinationQueue);
-	}
+	
 
 	@Override
 	public <V> RQueue<V> getQueue(String name, Codec codec) {
 		return delegateRedissonClient.getQueue(name, codec);
-	}
-
-	@Override
-	public <V> RPriorityQueue<V> getPriorityQueue(String name) {
-		return delegateRedissonClient.getPriorityDeque(name);
-	}
-
-	@Override
-	public <V> RPriorityQueue<V> getPriorityQueue(String name, Codec codec) {
-		return delegateRedissonClient.getPriorityDeque(name, codec);
-	}
-
-	@Override
-	public <V> RPriorityDeque<V> getPriorityDeque(String name) {
-		return delegateRedissonClient.getPriorityDeque(name);
-	}
-
-	@Override
-	public <V> RPriorityDeque<V> getPriorityDeque(String name, Codec codec) {
-		return delegateRedissonClient.getPriorityDeque(name, codec);
 	}
 
 	@Override
@@ -477,10 +441,6 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getExecutorService(codec, name);
 	}
 
-	@Override
-	public RScheduledExecutorService getExecutorService(String name, Codec codec) {
-		return delegateRedissonClient.getExecutorService(name, codec);
-	}
 
 	@Override
 	public RRemoteService getRemoteService() {

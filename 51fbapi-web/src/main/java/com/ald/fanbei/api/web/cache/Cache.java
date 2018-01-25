@@ -28,6 +28,6 @@ public interface Cache {
 
 	int getSize();
 	
-	public long getRefreshInterval();
+	public long getLockInterval();
 
 }
