@@ -114,10 +114,20 @@ public class BizCacheUtil extends AbstractThird {
 	
 	
 	public void saveListForever(final String key, final List<?> dataList) {
-		try{
-			redisTemplate.opsForList().rightPushAll(key, dataList);
+		try {
+			if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || dataList == null || dataList.size() < 1) {
+				return;
+			}
+			redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Object doInRedis(RedisConnection connection) throws DataAccessException {
+					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serializeList(dataList));
+					return null;
+				}
+			});
 		} catch (Exception e) {
-			logger.error("redis save map error, error info=>{}",e.getMessage());
+			logger.error("saveListForever" + key, e);
+
 		}
 	}
 	

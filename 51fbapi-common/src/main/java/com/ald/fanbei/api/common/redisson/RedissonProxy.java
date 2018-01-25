@@ -212,15 +212,6 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getListMultimapCache(name, codec);
 	}
 
-	@Override
-	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String name, LocalCachedMapOptions options) {
-		return delegateRedissonClient.getLocalCachedMap(name, options);
-	}
-
-	@Override
-	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String name, Codec codec, LocalCachedMapOptions options) {
-		return delegateRedissonClient.getLocalCachedMap(name, codec, options);
-	}
 
 	@Override
 	public <K, V> RMap<K, V> getMap(String name) {
@@ -349,11 +340,9 @@ public class RedissonProxy implements RedissonClient{
 	}
 
 	
-
 	@Override
 	public <V> RQueue<V> getQueue(String name, Codec codec) {
 		return delegateRedissonClient.getQueue(name, codec);
-	}
 
 	@Override
 	public <V> RBlockingQueue<V> getBlockingQueue(String name) {
@@ -492,15 +481,6 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getConfig();
 	}
 
-	@Override
-	public CodecProvider getCodecProvider() {
-		return delegateRedissonClient.getCodecProvider();
-	}
-
-	@Override
-	public ResolverProvider getResolverProvider() {
-		return delegateRedissonClient.getResolverProvider();
-	}
 
 	@Override
 	public NodesGroup<Node> getNodesGroup() {
@@ -521,5 +501,27 @@ public class RedissonProxy implements RedissonClient{
 	public boolean isShuttingDown() {
 		return delegateRedissonClient.isShuttingDown();
 	}
+
+	@Override
+	public CodecProvider getCodecProvider() {
+		return delegateRedissonClient.getCodecProvider();
+	}
+
+	@Override
+	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String key, LocalCachedMapOptions options) {
+		return delegateRedissonClient.getLocalCachedMap(key, options);
+	}
+
+	@Override
+	public <K, V> RLocalCachedMap<K, V> getLocalCachedMap(String key, Codec codec, LocalCachedMapOptions options) {
+		return delegateRedissonClient.getLocalCachedMap(key, codec,options);
+	}
+
+	@Override
+	public ResolverProvider getResolverProvider() {
+		return delegateRedissonClient.getResolverProvider();
+	}
+
+	
 
 }
