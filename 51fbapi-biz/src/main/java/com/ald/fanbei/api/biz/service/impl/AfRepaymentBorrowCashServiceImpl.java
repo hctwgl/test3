@@ -11,9 +11,12 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -22,14 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -59,12 +54,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -123,6 +112,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
+
+    @Autowired
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
 
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
@@ -586,6 +578,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             try {
                 String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
                 BigDecimal income = BigDecimalUtil.add(afBorrowCashDo.getPoundage(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
+                //收入添加搭售商品价格
+                AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+                if(afBorrowLegalOrderDo!=null&&afBorrowLegalOrderDo.getPriceAmount()!=null) {
+                    income.add(afBorrowLegalOrderDo.getPriceAmount());
+                }
+                else {
+                    logger.info("未获取到搭售商品信息 cashDo："+ afBorrowCashDo.toString());
+                }
+
                 int overdueCount = 0;
                 if (StringUtil.equals("Y", afBorrowCashDo.getOverdueStatus())) {
                     overdueCount = 1;
@@ -660,7 +661,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
      * 用户手动现金贷还款成功短信发送
      *
      * @param mobile
-     * @param nowRepayAmountStr
      */
     private boolean sendRepaymentBorrowCashWarnMsg(String mobile, String repayMoney, String notRepayMoney) {
         //模版数据map处理
