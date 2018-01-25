@@ -548,8 +548,8 @@
 				<entry key="/h5/loan/getHomeInfo" value-ref="getLoanHomeInfoApi" />
 				
 				<!-- 白领贷业务接口 -->
-				<entry key="/h5/whitecollar/applyWhiteCollarLoan" value-ref="applyWhiteCollarLoanApi" />
-				
+				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
+				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
 				
 			</map>
 		</constructor-arg>
