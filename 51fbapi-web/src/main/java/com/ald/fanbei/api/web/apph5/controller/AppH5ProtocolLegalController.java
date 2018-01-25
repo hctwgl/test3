@@ -140,7 +140,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 		model.put("poundage", poundage);
 		
 		model.put("gmtStart", date);
-		model.put("gmtEnd", DateUtil.addDays(date, numberWordFormat.borrowTime(type)));
+		model.put("gmtEnd", DateUtil.addDays(date, numberWordFormat.borrowTime(type)-1));
 //		if ("SEVEN".equals(type)){
 //			model.put("gmtEnd", DateUtil.addDays(date, 6));
 //		}else if ("FOURTEEN".equals(type)){

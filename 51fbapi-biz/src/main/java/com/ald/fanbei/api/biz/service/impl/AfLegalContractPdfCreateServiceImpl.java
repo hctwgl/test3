@@ -107,13 +107,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 if (afBorrowLegalOrderDo != null){
                     date = afBorrowLegalOrderDo.getGmtCreate();
                 }
-                if ("SEVEN".equals(afBorrowLegalOrderCashDo.getType())){
-//                    map.put("gmtEnd", DateUtil.addDays(date, 6));
-                    map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, 6)));
-                }else if ("FOURTEEN".equals(afBorrowLegalOrderCashDo.getType())){
-//                    map.put("gmtEnd", DateUtil.addDays(date, 13));
-                    map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, 13)));
-                }
+                map.put("gmtEnd", simpleDateFormat.format(DateUtil.addDays(date, (numberWordFormat.borrowTime(afBorrowLegalOrderCashDo.getType())-1))));
                 map.put("overdueRate","36%");
             }else {
 //                getResourceRate(map, type,afResourceDo,"instalment");
@@ -228,6 +222,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
 
     private void getResourceRate(Map map, String type,AfResourceDo afResourceDo,String borrowType) {
         if (afResourceDo != null && afResourceDo.getValue2() != null){
+            String oneDay = "";
+            String twoDay = "";
+            if(null != afResourceDo){
+                oneDay = afResourceDo.getTypeDesc().split(",")[0];
+                twoDay = afResourceDo.getTypeDesc().split(",")[1];
+            }
             JSONArray array = new JSONArray();
             if ("instalment".equals(borrowType)){
                 array = JSONObject.parseArray(afResourceDo.getValue3());
@@ -239,6 +239,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("yearRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("yearRate",jsonObject.get("consumeSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("yearRate",jsonObject.get("consumeFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("yearRate",jsonObject.get("consumeSecondType"));
+                            }
                         }
                     }
                     if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
@@ -246,6 +252,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("poundageRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("poundageRate",jsonObject.get("consumeSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("consumeFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("consumeSecondType"));
+                            }
                         }
                     }
                     if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
@@ -253,6 +265,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("overdueRate",jsonObject.get("consumeFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("overdueRate",jsonObject.get("consumeSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("overdueRate", jsonObject.get("consumeFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("overdueRate", jsonObject.get("consumeSecondType"));
+                            }
                         }
                     }
                 }
@@ -266,6 +284,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("yearRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("yearRate",jsonObject.get("borrowSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("yearRate", jsonObject.get("borrowFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("yearRate", jsonObject.get("borrowSecondType"));
+                            }
                         }
                     }
                     if ("SERVICE_RATE".equals(borrowTag)){//手续费利率
@@ -273,6 +297,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("poundageRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("poundageRate",jsonObject.get("borrowSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowSecondType"));
+                            }
                         }
                     }
                     if ("OVERDUE_RATE".equals(borrowTag)){//逾期利率
@@ -280,6 +310,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("overdueRate",jsonObject.get("borrowFirstType"));
                         }else if ("FOURTEEN".equals(type)){
                             map.put("overdueRate",jsonObject.get("borrowSecondType"));
+                        }else if(numberWordFormat.isNumeric(type)){
+                            if(oneDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                            }else if(twoDay.equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowSecondType"));
+                            }
                         }
                     }
                 }

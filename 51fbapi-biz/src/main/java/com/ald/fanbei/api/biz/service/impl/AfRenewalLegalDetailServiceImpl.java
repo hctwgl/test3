@@ -685,7 +685,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setUserId(userId);
 		borrowLegalOrderCash.setBorrowId(afBorrowCashDo.getRid());
 		borrowLegalOrderCash.setCashNo(payTradeNo);
-		borrowLegalOrderCash.setType("SEVEN");
+		borrowLegalOrderCash.setType(String.valueOf(allowRenewalDay));
 		borrowLegalOrderCash.setAmount(goodsDo.getSaleAmount());
 		borrowLegalOrderCash.setStatus("APPLYING");
 		borrowLegalOrderCash.setBorrowRemark(afBorrowLegalOrderCash.getBorrowRemark());

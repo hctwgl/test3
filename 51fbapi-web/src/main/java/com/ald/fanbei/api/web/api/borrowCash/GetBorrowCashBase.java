@@ -61,7 +61,7 @@ public class GetBorrowCashBase {
 					data.put("nums", afResourceDo.getValue());
 				}
 			} else {
-				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
+				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.NewBorrowCashDay.getCode())) {
 					data.put("borrowCashDay", afResourceDo.getValue());
 				}
 			}
