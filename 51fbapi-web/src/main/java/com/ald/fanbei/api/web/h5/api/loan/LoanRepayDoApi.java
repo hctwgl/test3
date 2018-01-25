@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -63,7 +64,7 @@ public class LoanRepayDoApi implements H5Handle {
 	@Resource
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
-	AfLoanDao afLoanDao;
+	AfLoanService afLoanService;
 
 
 	@Override
@@ -134,7 +135,7 @@ public class LoanRepayDoApi implements H5Handle {
 	
 	private void checkFrom(LoanRepayBo bo) {
 		AfLoanDo loanDo = null;
-		if((loanDo = afLoanDao.getById(bo.loanId)) == null ){
+		if((loanDo = afLoanService.getById(bo.loanId)) == null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.loanDo = loanDo;

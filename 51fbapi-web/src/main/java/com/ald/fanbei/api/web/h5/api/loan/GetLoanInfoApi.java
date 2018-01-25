@@ -102,7 +102,7 @@ public class GetLoanInfoApi implements H5Handle {
 			loanVo.setGmtCreate(loanDo.getGmtCreate());		// 申请时间
 			loanVo.setGmtArrival(loanDo.getGmtArrival());	// 打款时间
 			
-			resp.setResponseData(JSON.toJSONString(loanVo));
+			resp.setResponseData(loanVo);
 			
 		} catch (Exception e) {
 			logger.error("/loanInfoApi error = {}", e.getStackTrace());

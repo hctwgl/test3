@@ -109,7 +109,7 @@ public class LoanRepayPlanApi implements H5Handle {
 				data.add(loanPeriodsVo);
 			}
 			
-			resp.setResponseData(JSON.toJSONString(data));
+			resp.setResponseData(data);
 			
 		} catch (Exception e) {
 			logger.error("/loanRepayPlanApi error = {}", e.getStackTrace());
