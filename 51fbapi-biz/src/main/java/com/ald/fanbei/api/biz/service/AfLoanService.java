@@ -57,6 +57,6 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	 * @param userId
 	 * @return
 	 */
-	BigDecimal getUserLayRate(Long userId);
+	BigDecimal getUserLayDailyRate(Long userId);
 	
 }

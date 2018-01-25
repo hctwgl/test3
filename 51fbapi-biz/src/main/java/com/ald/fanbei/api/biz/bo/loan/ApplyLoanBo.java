@@ -12,6 +12,7 @@ public class ApplyLoanBo {
 	
 	/* carrier区域，业务处理中继参数 */
 	public Long userId;
+	public String userName;
 	
 	public static class ReqParam{
 		public String prdType; 
@@ -31,6 +32,9 @@ public class ApplyLoanBo {
 		public String address;
 		public String blackBox;
 		public Long couponId;
+		
+		public String ip;
+		public String appType;
 	}
 	
 }

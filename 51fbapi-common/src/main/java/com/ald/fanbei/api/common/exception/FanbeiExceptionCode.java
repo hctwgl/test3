@@ -281,6 +281,20 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ADD_BORROW_CASH_INFO_FAIL("ADD_BORROW_CASH_INFO_FAIL",2011,"add borrow cash info fail","生成借款信息失败"),
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
     LOAN_PERIOD_NOT_EXIST_ERROR("LOAN_PERIOD_NOT_EXIST_ERROR",2012,"loan period not exist error","分期借款信息不存在"),
+    
+    
+    /* 2100-2200 贷款相关！！！！！！！ */
+    LOAN_NO_AUTHZ("",2101,"", "您还未认证"),
+    LOAN_QUOTA_TOO_SMALL("",2102,"", "可用额度小于最小借款额"),
+    LOAN_NO_PASS_STRO_RISK("",2103,"", "未通过强风控审核"),
+    LOAN_NO_PASS_WEAK_RISK("",2104,"", "未通过弱风控审核"),
+    LOAN_SWITCH_OFF("",2105,"", "贷款开关关闭"),
+    LOAN_RISK_REFUSE("",2106,"", "贷款风控拒绝"),
+    LOAN_UPS_DRIECT_FAIL("",2107,"","请求打款实时失败"),
+    LOAN_UPS_CALLBACK_FAIL("",2108,"","请求打款失败"),
+    LOAN_REPEAT_APPLY("",2109,"","已有处理中的贷款申请，不可重复申请"),
+    LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
+    
 
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),

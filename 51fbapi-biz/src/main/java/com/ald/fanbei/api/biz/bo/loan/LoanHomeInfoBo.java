@@ -9,9 +9,9 @@ public class LoanHomeInfoBo {
 	public boolean isLogin;
 	public BigDecimal maxQuota;
 	public BigDecimal minQuota;
-	public String interestRate;
-	public String poundageRate;
-	public String overdueRate;
+	public BigDecimal interestRate;
+	public BigDecimal poundageRate;
+	public BigDecimal overdueRate;
 	public int periods;
 	public String prdType;
 	public String prdName;

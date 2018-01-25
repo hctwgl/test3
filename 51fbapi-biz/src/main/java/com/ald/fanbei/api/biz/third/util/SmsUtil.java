@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,13 +15,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -718,7 +717,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private SmsResult sendSmsToDhst(String mobiles, String content) {
+    public SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),

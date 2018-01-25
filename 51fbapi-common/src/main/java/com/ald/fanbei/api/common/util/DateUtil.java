@@ -737,11 +737,11 @@ public class DateUtil {
     /**
      * 返回标准格式的当前时间
      * 
-     * @return [yyyy-MM-dd k:mm:ss]
+     * @return [yyyy-MM-dd HH:mm:ss]
      */
 
     public static String getNow() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd H:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_SHORT);
         Date nowc = new Date();
         String pid = formatter.format(nowc);
         return pid;

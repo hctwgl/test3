@@ -32,7 +32,10 @@ public class ApplyLoanApi implements H5Handle {
 		
 		ApplyLoanBo bo = new ApplyLoanBo();
 		BeanUtil.copyProperties(bo.reqParam, (ApplyLoanParam)context.getParamEntity());
+		bo.reqParam.ip = "";		// TODO
+		bo.reqParam.appType = ""; 	// TODO
 		bo.userId = context.getUserId();
+		bo.userName = context.getUserName();
 		
 		afLoanService.doLoan(bo);
 		
