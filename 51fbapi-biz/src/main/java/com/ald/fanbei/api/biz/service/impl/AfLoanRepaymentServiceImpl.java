@@ -154,6 +154,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 		
+		// 增加还款记录
 		generateRepayRecords(bo);
 		
 		doRepay(bo, bo.loanRepaymentDo);
@@ -335,13 +336,15 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		loanRepay.setRepayAmount(repaymentAmount);
 		loanRepay.setActualAmount(actualAmount);
 		loanRepay.setStatus(AfLoanRepaymentStatus.APPLY.name());
-		loanRepay.setTradeNo(payTradeNo);
+		loanRepay.setTradeNo(repayNo);
+		loanRepay.setTradeNoOut(payTradeNo);
 		loanRepay.setUserCouponId(userCouponId);
 		loanRepay.setCouponAmount(couponAmount);
 		loanRepay.setUserAmount(rebateAmount);
 		loanRepay.setPreRepayStatus("N");
 		loanRepay.setPrdType(prdType);
 		loanRepay.setRepayPeriods(loanPeriodsId+"");
+		loanRepay.setGmtCreate(gmtCreate);
 		loanRepay.setCardNo("");
 		if (cardId == -2) {
 			loanRepay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
