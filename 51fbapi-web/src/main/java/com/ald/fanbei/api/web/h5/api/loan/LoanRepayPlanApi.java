@@ -95,14 +95,14 @@ public class LoanRepayPlanApi implements H5Handle {
 				
 				// 状态(已还款：Y；已逾期：O；还款中：D；未还款：N)
 				String status = loanPeriodsDo.getStatus();
-				if(status.endsWith(AfLoanPeriodStatus.AWAIT_REPAY.name())){	// 未还款
+				if(status.equals(AfLoanPeriodStatus.AWAIT_REPAY.name())){	// 未还款
 					loanPeriodsVo.setStatus("N");
-					if(loanPeriodsDo.getOverdueStatus().endsWith("Y")){	// 未还款已逾期
+					if(loanPeriodsDo.getOverdueStatus().equals("Y")){	// 未还款已逾期
 						loanPeriodsVo.setStatus("O");
 					}
-				}else if(status.endsWith(AfLoanPeriodStatus.REPAYING.name())){	// 还款中
+				}else if(status.equals(AfLoanPeriodStatus.REPAYING.name())){	// 还款中
 					loanPeriodsVo.setStatus("D");
-				}else if(status.endsWith(AfLoanPeriodStatus.FINISHED.name())){	// 已结清
+				}else if(status.equals(AfLoanPeriodStatus.FINISHED.name())){	// 已结清
 					loanPeriodsVo.setStatus("Y");
 				}
 				
