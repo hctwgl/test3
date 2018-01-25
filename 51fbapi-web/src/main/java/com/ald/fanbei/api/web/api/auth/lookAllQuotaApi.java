@@ -178,12 +178,12 @@ public class lookAllQuotaApi implements ApiHandle {
             }
             //线下培训 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
-            if(afUserAuthStatusDo!=null) {
+            if(afUserAuthStatusTrain !=null) {
                 if (afUserAuthStatusTrain.getStatus().equals("C")) {
                     trainMap.put("desc", trainDesc);
                     trainMap.put("status", "3");
                 }
-                else if(afUserAuthStatusDo.getStatus().equals("Y"))
+                else if(afUserAuthStatusTrain.getStatus().equals("Y"))
                 {
                     onlineMap.put("auAmount", trainAuAmount);//线上授予额度
                     onlineMap.put("amount", trainAmount);//线上可用额度

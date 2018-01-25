@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.dal.domain.*;
 
 import com.alibaba.fastjson.JSON;
@@ -133,10 +134,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
             AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
             String value3=afResourceDoAuth.getValue3();
             String value4=afResourceDoAuth.getValue4();
-            List<String> listDesc1=getAuthDesc(value3,"one");
-            List<String> listDesc2=getAuthDesc(value4,"one");
-            listDesc1=getAuthDesc(value3,"two");
-            listDesc2=getAuthDesc(value4,"two");
+            List<String> listDesc1=getAuthDesc(value3,"two");
+            List<String> listDesc2=getAuthDesc(value4,"two");
             map.put("showAmount", listDesc1.get(0));
             map.put("desc", listDesc1.get(1));
             map.put("borrowStatus","2");
@@ -156,15 +155,13 @@ public class GetMyBorrowV1Api implements ApiHandle {
             }
             //购物额度 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-            // AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,"ONLINE","Y");
             List<String> listDesc=getAuthDesc(value4,"three");
-
             if(afUserAuthStatusDo!=null){
-                if(afUserAuthStatusDo.getStatus().equals("C")) {
+                if(afUserAuthStatusDo.getStatus().equals(UserAuthSceneStatus.FAILED.getCode())) {
                     map.put("onlineShowAmount", listDesc.get(0));
                     map.put("onlineDesc", listDesc.get(1));
                     map.put("onlineStatus", "3");
-                }else if(afUserAuthStatusDo.getStatus().equals("Y"))
+                }else if(afUserAuthStatusDo.getStatus().equals(UserAuthSceneStatus.YES.getCode()))
                 {
                     map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
                     map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
@@ -181,6 +178,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     &&StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //尚未认证状态
+                listDesc1=getAuthDesc(value3,"one");
+                listDesc2=getAuthDesc(value4,"one");
                 map.put("showAmount", listDesc1.get(0));
                 map.put("desc", listDesc1.get(1));
                 map.put("borrowStatus","1");
