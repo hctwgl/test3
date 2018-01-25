@@ -343,6 +343,7 @@ public class RedissonProxy implements RedissonClient{
 	@Override
 	public <V> RQueue<V> getQueue(String name, Codec codec) {
 		return delegateRedissonClient.getQueue(name, codec);
+	}
 
 	@Override
 	public <V> RBlockingQueue<V> getBlockingQueue(String name) {
