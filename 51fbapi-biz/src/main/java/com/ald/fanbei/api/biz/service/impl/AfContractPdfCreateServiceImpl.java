@@ -76,6 +76,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     @Resource
     EviDoc eviDoc;
     @Resource
+    AfBorrowService afBorrowService;
+    @Resource
     private EsignPublicInit esignPublicInit;
 
     private static final String src = "/home/aladin/project/app_contract";
@@ -143,6 +145,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
             map.put("amountCapital", "人民币" + toCapital(amount.doubleValue()));
             map.put("amountLower", "￥" + amount);
+            AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
             List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
             BigDecimal poundageAmount = new BigDecimal(0);
             for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList) {
@@ -150,16 +153,23 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                     poundageAmount.add(afBorrowBillDo.getPoundageAmount());//账单手续费
                 }
             }
+            Date repayDay = null;
+            if (afBorrowBillDoList.size() > 0){
+                AfBorrowBillDo billDo = afBorrowBillDoList.get(afBorrowBillDoList.size()-1);
+                repayDay = billDo.getGmtPayTime();
+            }
             map.put("poundage", "￥" + poundageAmount);
             Date date = new Date();
+            date = afBorrowDo.getGmtCreate();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-            map.put("gmtTime", simpleDateFormat.format(date) + "至" + simpleDateFormat.format(DateUtil.addMonths(date, nper)));
+            map.put("gmtTime", simpleDateFormat.format(date) + "至" + simpleDateFormat.format(repayDay));
 
             for (NperDo nperDo : list) {
                 if (nperDo.getNper() == nper) {
                     map.put("yearRate", nperDo.getRate());
                 }
             }
+
             for (NperDo nperDo : overduelist) {
                 if (nperDo.getNper() == nper) {
                     map.put("overdueRate", nperDo.getRate() != null ? nperDo.getRate() : "");
