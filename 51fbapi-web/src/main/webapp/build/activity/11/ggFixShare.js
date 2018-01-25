@@ -384,7 +384,7 @@ var shareInfo;
 if(pageName=='ggFix'){
     shareInfo = {
         title: "有人@你~你有最高188元惊喜金待领取！",
-        desc: "16元外卖1元购，下单即返30元~",
+        desc: "16元外卖1元购，笔笔订单返现金（可提现）~",
         link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggFix",
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
@@ -402,7 +402,7 @@ if(pageName=='ggFix'){
 if(pageName=='ggOverlord'){
     shareInfo = {
         title: "老铁~快来吃霸王餐啦~",
-        desc: "节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>",
+        desc: "节日剁手不吃土，来51返呗点16元外卖1元购，有福同享，你也快来>>>",
         link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggOverlord",
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
