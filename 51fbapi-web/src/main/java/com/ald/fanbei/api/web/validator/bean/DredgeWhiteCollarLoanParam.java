@@ -8,8 +8,8 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.stereotype.Component;
 
-@Component("applyWhiteCollarLoanParam")
-public class ApplyWhiteCollarLoanParam {
+@Component("dredgeWhiteCollarLoanParam")
+public class DredgeWhiteCollarLoanParam {
 	
 	@NotNull
 	private String company;  // 公司
