@@ -74,7 +74,11 @@ public class FanbeiH5Controller extends H5BaseController {
 		
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
-        String appInfo = request.getParameter("_appInfo");
+        String appInfo =  request.getParameter("_appInfo");
+        if(StringUtils.isEmpty(appInfo)) {
+        	
+        }
+        
         if(StringUtils.isNotEmpty(appInfo)) {
         	JSONObject _appInfo = JSONObject.parseObject(appInfo);
             String userName = _appInfo.getString("userName");
