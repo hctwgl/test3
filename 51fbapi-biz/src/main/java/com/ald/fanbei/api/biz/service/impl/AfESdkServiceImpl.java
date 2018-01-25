@@ -798,7 +798,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
         AfUserSealDo afUserSealDo = new AfUserSealDo();
         AfUserSealDo afUserSealDo1 = new AfUserSealDo();
-        if ("edspay".equals(afUserDo.getMajiabaoName())) {
+        if ("edspay".equals(afUserDo.getMajiabaoName()) || afUserDo.getRid() == null) {
             afUserSealDo = selectUserSealByCardId(accountDo.getIdNumber());
         } else {
             afUserSealDo = selectUserSealByUserId(afUserDo.getRid());
