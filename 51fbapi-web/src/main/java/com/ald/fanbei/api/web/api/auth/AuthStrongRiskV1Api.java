@@ -97,9 +97,6 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		logger.info("authStrongRiskV1Api requestDataVo:"+requestDataVo.toString());
 		//认证场景 20（现金），21（线上），22（线下）
 		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
-		if ("".equals(scene)) {
-			scene = SceneType.CASH.getName();//如果前端所传为空,默认为现金贷
-		}
 		boolean numberOfAuth = false;//是否是新手引导过来
 		if(StringUtils.isBlank(scene))
 		{//兼容老版本认证多个场景

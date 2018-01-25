@@ -232,8 +232,6 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			}
 		}
 
-
-
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
 				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())
 				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
@@ -256,6 +254,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			data.put("title1","暂无信用额度");
 			if (between > 0) {
 				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
+			}else if (between == 0){
+				data.put("title2", "审核不通过，明天可以重新提交审核");
 			} else {
 				data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
 			}
@@ -270,6 +270,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			data.put("currentAmount",userDto.getAuAmount());
 			if (between > 0) {
 				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
+			}else if (between == 0){
+				data.put("title2", "审核不通过，明天可以重新提交审核");
 			} else {
 				data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
 			}
