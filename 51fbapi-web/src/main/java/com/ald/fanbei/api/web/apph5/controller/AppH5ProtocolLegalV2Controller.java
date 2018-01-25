@@ -81,8 +81,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfContractPdfDao afContractPdfDao;
 	@Resource
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
+
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
@@ -338,8 +341,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-//					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -431,7 +434,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -495,7 +499,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -544,6 +549,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 	private void getResourceRate(ModelMap model, String type, AfResourceDo afResourceDo, String borrowType) {
 		if (afResourceDo != null && afResourceDo.getValue2() != null) {
+			String oneDay = "";
+			String twoDay = "";
+			if(null != afResourceDo){
+				oneDay = afResourceDo.getTypeDesc().split(",")[0];
+				twoDay = afResourceDo.getTypeDesc().split(",")[1];
+			}
 			JSONArray array = new JSONArray();
 			if ("instalment".equals(borrowType)) {
 				array = JSONObject.parseArray(afResourceDo.getValue3());
@@ -555,6 +566,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("yearRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("yearRate", jsonObject.get("consumeSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate",jsonObject.get("consumeSecondType"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(consumeTag)) {//手续费利率
@@ -562,6 +579,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("poundageRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("poundageRate", jsonObject.get("consumeSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("consumeFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("consumeSecondType"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(consumeTag)) {//逾期利率
@@ -569,6 +592,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("overdueRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("overdueRate", jsonObject.get("consumeSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("overdueRate", jsonObject.get("consumeFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("overdueRate", jsonObject.get("consumeSecondType"));
+							}
 						}
 					}
 				}
@@ -582,6 +611,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("yearRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("yearRate", jsonObject.get("borrowSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("yearRate", jsonObject.get("borrowFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("yearRate", jsonObject.get("borrowSecondType"));
+							}
 						}
 					}
 					if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
@@ -589,6 +624,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("poundageRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("poundageRate", jsonObject.get("borrowSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowSecondType"));
+							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
@@ -596,6 +637,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("overdueRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
 							model.put("overdueRate", jsonObject.get("borrowSecondType"));
+						}else if(numberWordFormat.isNumeric(type)){
+							if(oneDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowFirstType"));
+							}else if(twoDay.equals(type)){
+								model.put("poundageRate", jsonObject.get("borrowSecondType"));
+							}
 						}
 					}
 				}
@@ -699,7 +746,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日

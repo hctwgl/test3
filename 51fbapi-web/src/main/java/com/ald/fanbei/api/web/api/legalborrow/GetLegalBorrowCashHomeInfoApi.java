@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.StringUtils;
@@ -107,6 +108,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Resource
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
@@ -161,7 +164,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		String strMinAmount = "0";
 		String strMaxAmount = "0";
 		if (rateInfoDo != null) {
@@ -233,7 +236,10 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(14));
+		String str = rateInfoDo.getTypeDesc().split(",")[rateInfoDo.getTypeDesc().split(",").length-1];
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
+
+
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
@@ -250,7 +256,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			maxAmount= new BigDecimal(strMaxAmount);
 		}
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
-		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
+		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
 		BigDecimal tmpLimitAmount = BigDecimal.ZERO;
 		if (tmpGoodsId != null) {
@@ -340,7 +346,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", paidAmount);
 			data.put("overdueAmount", overdueAmount);
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			Date now = DateUtil.getEndOfDate(new Date());
 
 			data.put("overdueStatus", "N");
@@ -594,7 +600,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		data.put("overdueRate", rate.get("overduePoundage"));
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 
 		String strMinAmount = rateInfoDo.getValue4();
 		String strMaxAmount = rateInfoDo.getValue1();

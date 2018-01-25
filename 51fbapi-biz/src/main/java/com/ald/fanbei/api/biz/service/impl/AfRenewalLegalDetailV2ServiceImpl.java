@@ -320,7 +320,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 						// 续期本金
 						BigDecimal waitPaidAmount =afRenewalDetailDo.getRenewalAmount();
 						// 查询新利率配置
-			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			    		// 借款利率
 			    		BigDecimal newRate = null;
 			    		// 借款手续费率
@@ -492,7 +492,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	 */
 	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
 
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();

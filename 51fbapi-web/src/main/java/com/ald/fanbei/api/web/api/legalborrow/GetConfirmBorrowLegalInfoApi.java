@@ -122,7 +122,7 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 			}
 			// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-					Constants.BORROW_CASH_INFO_LEGAL);
+					Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			if (rateInfoDo != null) {
 				BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
 				BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());

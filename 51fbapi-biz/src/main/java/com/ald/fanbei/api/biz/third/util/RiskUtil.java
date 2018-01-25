@@ -466,6 +466,26 @@ public class RiskUtil extends AbstractThird {
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
                                       BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap,String bqsBlackBox,AfOrderDo orderDo) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+        if(orderDo!=null){
+            //获取不同场景的强风控认证
+            if (StringUtils.equals(OrderType.TRADE.getCode(),orderDo.getOrderType())) {
+                //商圈认证
+                AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(Long.parseLong(consumerNo), orderDo.getSecType(), YesNoStatus.YES.getCode());
+                if (afUserAuthStatusDo == null) {
+                    userAuth.setRiskStatus(YesNoStatus.NO.getCode());
+                } else {
+                    userAuth.setRiskStatus(afUserAuthStatusDo.getStatus());
+                }
+            } else {
+                //线上分期认证
+                AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(Long.parseLong(consumerNo), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+                if (afUserAuthStatusDo == null) {
+                    userAuth.setRiskStatus(YesNoStatus.NO.getCode());
+                } else {
+                    userAuth.setRiskStatus(afUserAuthStatusDo.getStatus());
+                }
+            }
+        }
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
         }

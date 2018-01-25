@@ -308,7 +308,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		data.put("isSkipH5", isSkipH5);
 
 		//是否有数据失败过期状态
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
+		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,scene);
 		if(afUserAuthStatusDo!=null){
 			String causeReason = afUserAuthStatusDo.getCauseReason();
 			if(causeReason!=null&&!"".equals(causeReason)) {
@@ -342,16 +342,15 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		 */
 		//购物额度 未通过强风控
 		if(!"CASH".equals(scene)){
-			AfUserAuthStatusDo afUserAuthStatus=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"C");
-			AfUserAuthStatusDo afUserAuthStatusSuccess=afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId,scene,"Y");
-			if(afUserAuthStatus==null&&afUserAuthStatusSuccess==null){//从未认证
+			AfUserAuthStatusDo afUserAuthStatus=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,scene);
+			if(afUserAuthStatus==null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus())|| UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())){//从未认证
 				data.put("basicStatus", "A");
 				data.put("riskStatus", "A");
 				data.put("flag", "N");
 				data.put("title1","你好，"+userDto.getRealName());
 				data.put("title2","完善基本资料即可获取3000-20000额度");
 			}
-			if(afUserAuthStatus!=null){//认证失败
+			else if(UserAuthSceneStatus.FAILED.getCode().equals(afUserAuthStatus.getStatus())){//认证失败
 				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
 				between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 				data.put("riskStatus", "N");
@@ -364,6 +363,18 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 					data.put("title2", "请10天后尝试重新提交，完成补充认证可提高成功率");
 				}
 			}
+			else if(UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatus.getStatus()))
+            {
+            	data.put("basicStatus", "Y");
+				data.put("riskStatus", "Y");
+                data.put("highestAmount",afResource.getValue());
+                data.put("currentAmount",userDto.getAuAmount());
+                data.put("title2","每完成一项补充认证都会提高相应额度");
+            }
+            else{
+                data.put("title1","基础信息认证中");
+                data.put("title2","完善补充认证能够增加审核通过率");
+            }
 
 		}
 

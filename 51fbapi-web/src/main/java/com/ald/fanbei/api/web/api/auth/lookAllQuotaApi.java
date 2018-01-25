@@ -89,6 +89,23 @@ public class lookAllQuotaApi implements ApiHandle {
                 }
             }
 
+            //信用描述
+            AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
+            String value3=afResourceDoAuth.getValue3();
+            String value4=afResourceDoAuth.getValue4();
+            List<String> listDesc1=getAuthDesc(value3,"one");
+            List<String> listDesc2=getAuthDesc(value4,"one");
+            listDesc1=getAuthDesc(value3,"two");
+            listDesc2=getAuthDesc(value4,"two");
+            cashMap.put("showAmount", listDesc1.get(0));
+            cashMap.put("desc", listDesc1.get(1));
+            cashMap.put("status","2");
+            onlineMap.put("showAmount", listDesc2.get(0));
+            onlineMap.put("desc", listDesc2.get(1));
+            onlineMap.put("status","2");
+//            trainMap.put("desc", trainDesc);
+//            trainMap.put("status","2");
+
             //加入线上额度(即购物额度) 线下 add by caowu 2018/1/10 15:25
             AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
             AfUserAccountSenceDo afUserAccountSenceTrain = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
@@ -106,22 +123,12 @@ public class lookAllQuotaApi implements ApiHandle {
                 trainAuAmount=afUserAccountSenceTrain.getAuAmount();
                 trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
             }
-            onlineMap.put("auAmount", onlineAuAmount.add(interimAmount));//线上授予额度
-            onlineMap.put("amount", onlineAmount.add(usableAmount));//线上可用额度
-            String onlineDesc="总额度"+onlineAuAmount+"元";
-            if(interimExist){//有临时额度下的描述
-                onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元（含"+interimAmount+"临时额度）";
-            }
-            onlineMap.put("desc",onlineDesc);//线上描述
-            onlineMap.put("status","4");
 
             //线下
             trainMap.put("auAmount", trainAuAmount);//线下授予额度
             trainMap.put("amount", trainAmount);//线下可用额度
-            trainMap.put("status","4");
+            trainMap.put("status","2");
 
-            //信用描述
-            AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
             String value2=afResourceDoAuth.getValue2();//线下描述
             JSONObject jsonObject =JSON.parseObject(value2);
             String trainTitle = jsonObject.getString("title");
@@ -133,22 +140,66 @@ public class lookAllQuotaApi implements ApiHandle {
             trainMap.put("picUrl",picUrl);
             trainMap.put("jumpUrl",jumpUrl);
 
-            String value3=afResourceDoAuth.getValue3();
-            String value4=afResourceDoAuth.getValue4();
             //现金贷 未通过强风控 状态
-            if (!StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())){
+            if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
                 List<String> listDesc=getAuthDesc(value3,"three");
                 cashMap.put("showAmount", listDesc.get(0));
                 cashMap.put("desc", listDesc.get(1));
                 cashMap.put("status","3");
 
             }
+
+            String onlineDesc = "";
+            //购物额度 未通过强风控
+            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+            if(afUserAuthStatusDo!=null) {
+                if (afUserAuthStatusDo.getStatus().equals("C")) {
+                    List<String> listDesc=getAuthDesc(value4,"three");
+                    onlineMap.put("showAmount", listDesc.get(0));
+                    onlineMap.put("desc", listDesc.get(1));
+                    onlineMap.put("status","3");
+                }
+                else if(afUserAuthStatusDo.getStatus().equals("Y"))
+                {
+                    onlineMap.put("auAmount", onlineAuAmount.add(interimAmount));//线上授予额度
+                    onlineMap.put("amount", onlineAmount.add(usableAmount));//线上可用额度
+                    onlineDesc="总额度"+onlineAuAmount+"元";
+                    if(interimExist){//有临时额度下的描述
+                        onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元";
+                    }
+                    onlineMap.put("desc",onlineDesc);//线上描述
+                    onlineMap.put("status","4");
+                }
+            }
+            else{
+                onlineMap.put("showAmount", listDesc2.get(0));
+                onlineMap.put("desc", listDesc2.get(1));
+                onlineMap.put("status","1");
+            }
+            //线下培训 未通过强风控
+            AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
+            if(afUserAuthStatusTrain !=null) {
+                if (afUserAuthStatusTrain.getStatus().equals("C")) {
+                    trainMap.put("desc", trainDesc);
+                    trainMap.put("status", "3");
+                }
+                else if(afUserAuthStatusTrain.getStatus().equals("Y"))
+                {
+                    onlineMap.put("auAmount", trainAuAmount);//线上授予额度
+                    onlineMap.put("amount", trainAmount);//线上可用额度
+                    onlineDesc="总额度"+trainAuAmount+"元";
+                    if(interimExist){//有临时额度下的描述
+                        onlineDesc="总额度"+trainAuAmount+"元";
+                    }
+                    onlineMap.put("desc",onlineDesc);//线上描述
+                    onlineMap.put("status","4");
+                }
+            }
+
             if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     &&StringUtil.equals(userAuth.getRealnameStatus(),"N")){
                 //尚未认证状态
-                List<String> listDesc1=getAuthDesc(value3,"one");
-                List<String> listDesc2=getAuthDesc(value4,"one");
                 cashMap.put("showAmount", listDesc1.get(0));
                 cashMap.put("desc", listDesc1.get(1));
                 cashMap.put("status","1");
@@ -168,8 +219,8 @@ public class lookAllQuotaApi implements ApiHandle {
                 if(StringUtil.equals(userAuth.getFacesStatus(),"Y")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
                     status="5";
                 }
-                List<String> listDesc1=getAuthDesc(value3,"two");
-                List<String> listDesc2=getAuthDesc(value4,"two");
+                listDesc1=getAuthDesc(value3,"two");
+                listDesc2=getAuthDesc(value4,"two");
                 cashMap.put("showAmount", listDesc1.get(0));
                 cashMap.put("desc", listDesc1.get(1));
                 cashMap.put("status",status);
@@ -180,31 +231,6 @@ public class lookAllQuotaApi implements ApiHandle {
 
                 trainMap.put("desc", trainDesc);
                 trainMap.put("status",status);
-            }
-
-            //购物额度 未通过强风控
-            AfUserAuthStatusDo afUserAuthStatusDo=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-            if(afUserAuthStatusDo == null || afUserAuthStatusDo.getStatus().equals("N")){
-                List<String> listDesc=getAuthDesc(value4,"two");
-                onlineMap.put("showAmount", listDesc.get(0));
-                onlineMap.put("desc", listDesc.get(1));
-                onlineMap.put("status","1");
-            }
-            else if(afUserAuthStatusDo.getStatus().equals("C")){
-                List<String> listDesc=getAuthDesc(value4,"three");
-                onlineMap.put("showAmount", listDesc.get(0));
-                onlineMap.put("desc", listDesc.get(1));
-                onlineMap.put("status","3");
-            }
-            //线下培训 未通过强风控
-            AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
-            if(afUserAuthStatusTrain == null || afUserAuthStatusTrain.getStatus().equals("N")){
-                trainMap.put("desc", trainDesc);
-                trainMap.put("status","1");
-            }
-            else if(afUserAuthStatusTrain.getStatus().equals("C")){
-                trainMap.put("desc", trainDesc);
-                trainMap.put("status","3");
             }
 
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())) {
