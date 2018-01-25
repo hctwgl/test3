@@ -34,7 +34,7 @@ import com.alibaba.fastjson.JSON;
  * @author yanghailong
  * @date 2018年1月22日
  */
-@Component("loanRepayPlanApi")
+@Component("getRepayPlanApi")
 public class LoanRepayPlanApi implements H5Handle {
 
 	@Resource
