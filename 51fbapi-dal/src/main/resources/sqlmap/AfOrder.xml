@@ -1119,6 +1119,9 @@
 		WHERE
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+        AND 
+			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
+		AND is_delete = 0
 	</select>
 
 	<select id="selectSumCountByGoodsId" resultType="AfOrderDto" parameterType="list" >
