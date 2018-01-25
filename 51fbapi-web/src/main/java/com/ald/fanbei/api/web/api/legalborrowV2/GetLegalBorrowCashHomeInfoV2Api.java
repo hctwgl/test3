@@ -171,7 +171,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		}
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		String strMinAmount = "0";
 		String strMaxAmount = "0";
 		if (rateInfoDo != null) {
@@ -500,7 +500,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		data.put("overdueRate", rate.get("overduePoundage"));
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 
 		String strMinAmount = rateInfoDo.getValue4();
 		String strMaxAmount = rateInfoDo.getValue1();

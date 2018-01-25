@@ -117,7 +117,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		if (isPromote == true || StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 			// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-					Constants.BORROW_CASH_INFO_LEGAL);
+					Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			if (rateInfoDo != null) {
 				BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
 				BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());
@@ -229,7 +229,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 	}
 	
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";
 		String twoDay = "";
 		if(null != afResourceDo){

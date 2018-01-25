@@ -107,7 +107,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
@@ -307,7 +307,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type, afResourceDo, "borrow");
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
@@ -471,7 +471,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type,afResourceDo,"borrow");
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
@@ -733,7 +733,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type, afResourceDo, "borrow");
 		model.put("realName", accountDo.getRealName());//借款人
 		model.put("idNumber", accountDo.getIdNumber());//身份证号
@@ -907,7 +907,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type,afResourceDo,"borrow");
 		model.put("email", afUserDo.getEmail());//电子邮箱
 		model.put("mobile", afUserDo.getUserName());// 联系电话

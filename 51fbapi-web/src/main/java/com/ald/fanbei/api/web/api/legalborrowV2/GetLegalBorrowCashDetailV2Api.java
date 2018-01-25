@@ -166,7 +166,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		// 判断是否显示续借按钮
 		String renewalRate = rateInfoDo.getValue();
 

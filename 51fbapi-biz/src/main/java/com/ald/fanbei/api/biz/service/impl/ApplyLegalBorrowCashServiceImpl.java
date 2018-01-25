@@ -133,7 +133,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		// 获取用户分层利率
 
 		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";
 		String twoDay = "";
 		if(null != afResourceDo){
