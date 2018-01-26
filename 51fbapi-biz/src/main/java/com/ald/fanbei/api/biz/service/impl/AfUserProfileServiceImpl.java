@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.AfUserProfileDao;
 import com.ald.fanbei.api.dal.domain.AfUserProfileDo;
 import com.ald.fanbei.api.biz.service.AfUserProfileService;
 
+import java.util.List;
 
 
 /**
@@ -29,8 +30,38 @@ public class AfUserProfileServiceImpl extends ParentServiceImpl<AfUserProfileDo,
     @Resource
     private AfUserProfileDao afUserProfileDao;
 
-		@Override
+	@Override
 	public BaseDao<AfUserProfileDo, Long> getDao() {
 		return afUserProfileDao;
+	}
+
+	@Override
+	public void saveUserProfile(AfUserProfileDo userProfileDo) {
+		afUserProfileDao.saveUserProfile(userProfileDo);
+	}
+
+	@Override
+	public void updateUserProfileById(AfUserProfileDo userProfileDo) {
+		afUserProfileDao.updateUserProfileById(userProfileDo);
+	}
+
+	@Override
+	public AfUserProfileDo getUserProfileById(AfUserProfileDo userProfileDo) {
+		return afUserProfileDao.getUserProfileById(userProfileDo);
+	}
+
+	@Override
+	public AfUserProfileDo getUserProfileByCommonCondition(AfUserProfileDo userProfileDo) {
+		return afUserProfileDao.getUserProfileByCommonCondition(userProfileDo);
+	}
+
+	@Override
+	public List<AfUserProfileDo> getUserProfileListByCommonCondition(AfUserProfileDo userProfileDo) {
+		return afUserProfileDao.getUserProfileListByCommonCondition(userProfileDo);
+	}
+
+	@Override
+	public void updateDeleteUserProfileById(long id) {
+		afUserProfileDao.updateDeleteUserProfileById(id);
 	}
 }

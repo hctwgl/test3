@@ -32,50 +32,31 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" keyProperty="rid">
+    <insert id="saveUserProfile" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
     
         INSERT INTO af_user_profile
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModify != null">        
-	            gmt_modify,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="account != null">        
-	            account,
-	        </if>
-	        <if test="type != null">        
-	            type,
-	        </if>
+	        gmt_create,
+	        gmt_modify,
+	        user_id,
+	        account,
+	         type
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModify != null" >
-		       #{gmtModify,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="account != null" >
-		       #{account,jdbcType=VARCHAR},
-		    </if>
-		    <if test="type != null" >
-		       #{type,jdbcType=VARCHAR},
-		    </if>
+		    NOW(),
+		    NOW(),
+		    #{userId,jdbcType=INTEGER},
+		   #{account,jdbcType=VARCHAR},
+		    #{type,jdbcType=VARCHAR}
+
         </trim>
     </insert>
     
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
+    <update id="updateUserProfileById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
         UPDATE af_user_profile
           <set>
             <if test="gmtCreate != null and gmtCreate != '' ">        
@@ -96,8 +77,16 @@
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
+    <update id="updateDeleteUserProfileById" >
+        UPDATE af_user_profile
+        <set>
+            gmt_modify = NOW(),is_delete = 1
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
+        </set>
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getUserProfileById" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
         SELECT
         <include refid="queryFields" />
         FROM af_user_profile
@@ -105,7 +94,7 @@
         LIMIT 0,1
     </select>
 
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
+	<select id="getUserProfileByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
         SELECT
         <include refid="queryFields" />
         FROM af_user_profile
@@ -113,7 +102,7 @@
         limit 0,1
     </select>
                
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
+    <select id="getUserProfileListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserProfileDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserProfileDo">
         SELECT
         <include refid="queryFields" />
         FROM af_user_profile

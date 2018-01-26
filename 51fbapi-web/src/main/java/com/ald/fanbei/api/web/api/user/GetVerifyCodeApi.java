@@ -126,7 +126,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 			resp.addResponseData("code",1146);
 			break;
 		case MOBILE_BIND:// 更换手机号
-			resultSms = smsUtil.sendMobileBindVerifyCode(mobile);
+			resultSms = smsUtil.sendMobileBindVerifyCode(mobile,SmsType.MOBILE_BIND,1l);
 			break;
 		default:
 			logger.error("type is invalid,type = " + typeParam);

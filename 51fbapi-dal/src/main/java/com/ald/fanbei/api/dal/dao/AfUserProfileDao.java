@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfUserProfileDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 用户关联账号Dao
@@ -12,6 +15,11 @@ import com.ald.fanbei.api.dal.domain.AfUserProfileDo;
  */
 public interface AfUserProfileDao extends BaseDao<AfUserProfileDo, Long> {
 
-    
+    void saveUserProfile(AfUserProfileDo userProfileDo);
+    void updateUserProfileById(AfUserProfileDo userProfileDo);
+    AfUserProfileDo getUserProfileById(AfUserProfileDo userProfileDo);
+    AfUserProfileDo getUserProfileByCommonCondition(AfUserProfileDo userProfileDo);
+    List<AfUserProfileDo> getUserProfileListByCommonCondition(AfUserProfileDo userProfileDo);
+    void updateDeleteUserProfileById(@Param("rid")long id);
 
 }

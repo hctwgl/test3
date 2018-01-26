@@ -525,7 +525,9 @@
 				<entry key="/legalborrowV2/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoV2Api" />
 				<entry key="/legalborrowV2/agentBuyHints" value-ref="agentBuyHintsV2Api" />
-
+				<!-- 线下还款支付宝绑定 -->
+				<entry key="/userprofile/zhiBalanceBind" value-ref="zhiBalanceBindApi" />
+				<entry key="/userprofile/zhiBalanceGetBind" value-ref="zhiBalanceGetBindApi" />
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
