@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 		l.loanNo = loanNo;
 		l.prdType = prdType;
 		l.periods = periods;
+		l.riskDailyRate = userLayDailyRate;
 		l.serviceRate = serviceRate;
 		l.interestRate = interestRate;
 		l.amount = amount;

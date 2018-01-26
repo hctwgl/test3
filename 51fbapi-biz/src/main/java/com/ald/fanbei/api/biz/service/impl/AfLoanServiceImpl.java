@@ -146,8 +146,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			}
 			
 			//自检是否放行贷款
-			AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-			AfLoanRejectType res = rejectCheck(userAccount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
+			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
+			BigDecimal anAmount = BigDecimal.valueOf(50000);
+			AfLoanRejectType res = rejectCheck(userId, anAmount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
 			if(!res.equals(AfLoanRejectType.PASS)) {
 				throw new FanbeiException(res.exceptionCode);
 			}
@@ -165,18 +166,20 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			final AfUserBankcardDo bankCard = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 			
 			// 数据入库
+			loanDo.setAuAmount(anAmount);
 			this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 			
 			// 弱风控
 			this.weakRiskCheck(bo, loanDo);
 			
+			AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 			// 调用UPS打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
 					userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
 					bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 					UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+			loanDo.setTradeNoOut(upsResult.getOrderNo());
 			if (!upsResult.isSuccess()) {
-				loanDo.setTradeNoOut(upsResult.getOrderNo());
 				dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
 				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
 			}
@@ -208,6 +211,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
                 	loanDo.setCardNo(bankCard.getCardNumber());
                 	loanDo.setCardName(bankCard.getBankName());
                 	loanDo.setAddress(reqParam.address);
+                	loanDo.setProvince(reqParam.province);
                 	loanDo.setCity(reqParam.city);
                 	loanDo.setCounty(reqParam.county);
                 	loanDo.setLatitude(new BigDecimal(reqParam.latitude));
@@ -268,6 +272,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				null);
 		
 		tarLoanDo.setRiskNo(verifyBo.getOrderNo());
+		tarLoanDo.setGmtReview(new Date());
 		if(verifyBo.isSuccess()) {
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.AGREE.name());
 			tarLoanDo.setReviewDetails("");
@@ -316,6 +321,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
 		Date cur = new Date();
 		loanDo.setStatus(AfLoanStatus.TRANSFER_FAIL.name());
+		loanDo.setRemark(msg);
 		loanDo.setGmtClose(cur);
 		afLoanDao.updateById(loanDo);
 	}
@@ -359,6 +365,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			// 处理 配置 信息
 			BigDecimal maxAuota = loanCfg.maxQuota;
 			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
+			BigDecimal anAmount = BigDecimal.valueOf(50000); 
 			BigDecimal usableAmount = BigDecimal.valueOf(50000);
 			
 			maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
@@ -378,7 +385,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userAccount.getUserId());
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
 			
-			bo.rejectCode = rejectCheck(userAccount, lastLoanDo, loanCfg).name();
+			bo.rejectCode = rejectCheck(userAccount.getUserId(), anAmount, lastLoanDo, loanCfg).name();
 			
 			infoBos.add(bo);
 		}
@@ -451,7 +458,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 * @param loanCfg
 	 * @return
 	 */
-	private AfLoanRejectType rejectCheck(AfUserAccountDo userAccount, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
+	private AfLoanRejectType rejectCheck(Long userId, BigDecimal auAmount, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
 		//贷款总开关
 		if(YesNoStatus.NO.getCode().equals(loanCfg.switch_)) {
 			return AfLoanRejectType.SWITCH_OFF;
@@ -461,7 +468,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		
 		//检查强风控
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
@@ -481,7 +488,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		// 检查额度
-		if(loanCfg.minQuota.compareTo(userAccount.getAuAmount()) > 0) {
+		if(loanCfg.minQuota.compareTo(auAmount) > 0) {
 			return AfLoanRejectType.QUOTA_TOO_SMALL;
 		}
 		
