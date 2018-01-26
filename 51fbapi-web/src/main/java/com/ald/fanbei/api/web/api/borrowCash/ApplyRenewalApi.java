@@ -73,6 +73,9 @@ public class ApplyRenewalApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 
+		if(context.getAppVersion()<=375){
+			throw new FanbeiException("续借功能维护中,为避免产生逾期，请及时还款",true);
+		}
 		// 对402版本借钱，低版本还款情况做控制
         afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), rid);
 		

@@ -448,4 +448,9 @@ public class Constants {
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+
+
+	//快递鸟配置
+	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
+	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
 }
