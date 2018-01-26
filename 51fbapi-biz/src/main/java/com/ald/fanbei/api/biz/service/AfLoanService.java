@@ -37,7 +37,7 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	 * @param loanNo
 	 * @param tradeNoOut
 	 */
-	void dealLoanSucc(String loanNo, String tradeNoOut);
+	void dealLoanSucc(Long loanId, String tradeNoOut);
 	
 	/**
 	 * 借贷失败回调
@@ -45,7 +45,7 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	 * @param loanNo
 	 * @param tradeNoOut
 	 */
-	void dealLoanFail(String loanNo, String tradeNoOut, String msgOut);
+	void dealLoanFail(Long loanId, String tradeNoOut, String msgOut);
 	
 	/**
 	 * 获取数据库中配置有关贷款的全部配置信息

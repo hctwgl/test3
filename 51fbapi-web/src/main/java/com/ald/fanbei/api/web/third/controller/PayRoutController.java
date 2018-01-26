@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
@@ -146,6 +147,9 @@ public class PayRoutController {
 
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	
+	//贷款
+	AfLoanService afLoanService;
 
 	@Resource
 	private HuichaoUtility huichaoUtility;
@@ -279,6 +283,8 @@ public class PayRoutController {
 
 					afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
 
+				} else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
+					afLoanService.dealLoanSucc(result, outTradeNo);
 				} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
 					// 退款记录
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
@@ -314,6 +320,8 @@ public class PayRoutController {
 					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
 					afSupDo.setRid(result);
 					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
+					afLoanService.dealLoanFail(result, outTradeNo, "");
 				}
 				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
 					return "SUCCESS";

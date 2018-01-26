@@ -61,7 +61,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 
 
@@ -136,11 +136,13 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		try {
 			//检查是否已有有效贷款申请
 			AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userId);
-			String lastLoanStatus = lastLoanDo.getStatus();
-			if(AfLoanStatus.TRANSFERING.name().equals(lastLoanStatus) 
-					|| AfLoanStatus.TRANSFERRED.name().equals(lastLoanStatus) 
-					|| AfLoanStatus.APPLY.name().equals(lastLoanStatus) ) {
-				throw new FanbeiException(FanbeiExceptionCode.LOAN_REPEAT_APPLY);
+			if(lastLoanDo != null) {
+				String lastLoanStatus = lastLoanDo.getStatus();
+				if(AfLoanStatus.TRANSFERING.name().equals(lastLoanStatus) 
+						|| AfLoanStatus.TRANSFERRED.name().equals(lastLoanStatus) 
+						|| AfLoanStatus.APPLY.name().equals(lastLoanStatus) ) {
+					throw new FanbeiException(FanbeiExceptionCode.LOAN_REPEAT_APPLY);
+				}
 			}
 			
 			//自检是否放行贷款
@@ -160,28 +162,31 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				periodDos.add((AfLoanPeriodsDo)o);
 			}
 			
-			final AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.reqParam.cardId);
+			final AfUserBankcardDo bankCard = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 			
 			// 数据入库
-			this.saveLoanRecords(bo, loanDo, periodDos, bank);
+			this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 			
 			// 弱风控
 			this.weakRiskCheck(bo, loanDo);
 			
 			// 调用UPS打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
-					bank.getRealName(), bank.getCardNumber(), userId.toString(), bank.getMobile(),
-					bank.getBankName(), bank.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-					UserAccountLogType.LOAN.getCode(), loanNo);
+					userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
+					bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+					UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
 			if (!upsResult.isSuccess()) {
 				loanDo.setTradeNoOut(upsResult.getOrderNo());
 				dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
 				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
 			}
+			loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+			afLoanDao.updateById(loanDo);
+			
 			
 			//贷款成功 通知用户
 			try {
-				String bankNumber = bank.getCardNumber();
+				String bankNumber = bankCard.getCardNumber();
 				String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
 				smsUtil.sendSmsToDhst(userAccount.getUserName(), String.format(Documents.LOAN_SUCC_SMS_MSG, lastBankCode));
 				jpushService.pushUtil(Documents.LOAN_SUCC_TITLE, String.format(Documents.LOAN_SUCC_MSG, lastBankCode), userAccount.getUserName());
@@ -193,15 +198,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 	}
 	private void saveLoanRecords(final ApplyLoanBo bo, final AfLoanDo loanDo, 
-				final List<AfLoanPeriodsDo> periodDos, final AfUserBankDto bank) {
+				final List<AfLoanPeriodsDo> periodDos, final AfUserBankcardDo bankCard) {
 		transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
                 try {
                 	ReqParam reqParam = bo.reqParam;
                 	
-                	loanDo.setCardNo(bank.getCardNumber());
-                	loanDo.setCardName(bank.getBankName());
+                	loanDo.setCardNo(bankCard.getCardNumber());
+                	loanDo.setCardName(bankCard.getBankName());
                 	loanDo.setAddress(reqParam.address);
                 	loanDo.setCity(reqParam.city);
                 	loanDo.setCounty(reqParam.county);
@@ -214,11 +219,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
             		afLoanDao.saveRecord(loanDo);
             		
             		Long loanId = loanDo.getRid();
-            		for(Object o: periodDos) {
+            		for(AfLoanPeriodsDo o: periodDos) {
             			AfLoanPeriodsDo periodDo = (AfLoanPeriodsDo)o;
             			periodDo.setLoanId(loanId);
             			afLoanPeriodsDao.saveRecord(periodDo);
-            			periodDos.add(periodDo);
             		}
             		
                     return 1L;
@@ -267,6 +271,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		if(verifyBo.isSuccess()) {
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.AGREE.name());
 			tarLoanDo.setReviewDetails("");
+			afLoanDao.updateById(tarLoanDo);
 		}else {
 			tarLoanDo.setStatus(AfLoanStatus.CLOSED.name());
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.REFUSE.name());
@@ -279,17 +284,17 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public void dealLoanSucc(String loanNo, String tradeNoOut) {
-		AfLoanDo loanDo = afLoanDao.getByLoanNo(loanNo);
+	public void dealLoanSucc(Long loanId, String tradeNoOut) {
+		AfLoanDo loanDo = afLoanDao.getById(loanId);
 		String status = loanDo.getStatus();
 		if(AfLoanStatus.TRANSFERRED.name().equals(status)) {//已经处理过，防重复回调
-			logger.warn("DealLoanSucc, transfer has succ, repeat UPS invoke! loanNo="+loanNo+",tradeNoOut="+tradeNoOut);
+			logger.warn("DealLoanSucc, transfer has succ, repeat UPS invoke! loanId="+loanId+",tradeNoOut="+tradeNoOut);
 			return;
 		}
 		
 		if(AfLoanStatus.CLOSED.name().equals(status) 
 					|| AfLoanStatus.TRANSFER_FAIL.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
-			logger.warn("DealLoanSucc, transfer has fail, but still callback! original status= "+status+",loanNo="+loanNo+",tradeNoOut="+tradeNoOut);
+			logger.warn("DealLoanSucc, transfer has fail, but still callback! original status= "+status+",loanId="+loanId+",tradeNoOut="+tradeNoOut);
 		}
 		
 		Date cur = new Date();
@@ -301,8 +306,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public void dealLoanFail(String loanNo, String tradeNoOut, String msgOut) {
-		AfLoanDo loanDo = afLoanDao.getByLoanNo(loanNo);
+	public void dealLoanFail(Long loanId, String tradeNoOut, String msgOut) {
+		AfLoanDo loanDo = afLoanDao.getById(loanId);
 		loanDo.setTradeNoOut(tradeNoOut);
 		List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
 		
@@ -318,6 +323,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	@Override
 	public LoanDBCfgBo getDBCfg(String prdType) {
 		LoanDBCfgBo bo = new LoanDBCfgBo();
+		// TODO
 		return bo;
 	}
 	
@@ -353,7 +359,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			// 处理 配置 信息
 			BigDecimal maxAuota = loanCfg.maxQuota;
 			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
-			BigDecimal usableAmount = null;
+			BigDecimal usableAmount = BigDecimal.valueOf(50000);
 			
 			maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
 			bo.maxQuota = maxAuota;
@@ -447,7 +453,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 */
 	private AfLoanRejectType rejectCheck(AfUserAccountDo userAccount, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
 		//贷款总开关
-		if(YesNoStatus.YES.getCode().equals(loanCfg.switch_)) {
+		if(YesNoStatus.NO.getCode().equals(loanCfg.switch_)) {
 			return AfLoanRejectType.SWITCH_OFF;
 		}
 		

@@ -78,4 +78,11 @@ public interface AfUserService {
 	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
 
 	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
+	
+	/**
+	 * 检查请求的支付密码是否正确
+	 * @param reqPayPwd
+	 * @param userId
+	 */
+	void checkPayPwd(String reqPayPwd, Long userId);
 }

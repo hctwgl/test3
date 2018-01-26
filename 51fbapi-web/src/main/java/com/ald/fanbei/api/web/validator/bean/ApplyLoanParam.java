@@ -5,63 +5,53 @@ import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
 import org.springframework.stereotype.Component;
 
 @Component("applyLoanParam")
 public class ApplyLoanParam {
 	@NotNull
-	String prdType; 
+	public String prdType; 
 	
 	@DecimalMin("0")
-	BigDecimal amount;
+	public BigDecimal amount;
 	
 	@Min(value=1)
-	int periods;
+	public int periods;
+	
+	public String remark;
 	
 	@NotNull
-	String repayType;
-	
-	@Null
-	String remark;
+	public String loanRemark;
 	
 	@NotNull
-	String loanRemark;
+	public String repayRemark;
 	
 	@NotNull
-	String repayRemark;
-	
-	@Min(value=1)
-	Long cardId;
+	public String payPwd;
 	
 	@NotNull
-	String pwd;
+	public String latitude;
 	
 	@NotNull
-	String latitude;
+	public String longitude;
 	
 	@NotNull
-	String longitude;
+	public String province;
 	
 	@NotNull
-	String province;
+	public String city;
 	
 	@NotNull
-	String city;
+	public String county;
+	
+	public String address;
 	
 	@NotNull
-	String county;
-	
-	@Null
-	String address;
+	public String blackBox;
 	
 	@NotNull
-	String blackBox;
+	public String bqsBlackBox;
 	
-	@NotNull
-	String bqsBlackBox;
-	
-	@Null
-	Long couponId;
+	public Long couponId;
 }

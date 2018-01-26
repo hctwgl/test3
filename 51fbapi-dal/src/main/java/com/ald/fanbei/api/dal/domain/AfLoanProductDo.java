@@ -39,7 +39,7 @@ import java.math.BigDecimal;
     /**
      * 产品说明
      */
-    private String desc;
+    private String desz;
 
     /**
      * 产品参数配置
@@ -150,8 +150,8 @@ import java.math.BigDecimal;
      *
      * @return 产品说明
      */
-    public String getDesc(){
-      return desc;
+    public String getDesz(){
+      return desz;
     }
 
     /**
@@ -159,8 +159,8 @@ import java.math.BigDecimal;
      * 
      * @param desc 要设置的产品说明
      */
-    public void setDesc(String desc){
-      this.desc = desc;
+    public void setDesz(String desz){
+      this.desz = desz;
     }
 
     /**
