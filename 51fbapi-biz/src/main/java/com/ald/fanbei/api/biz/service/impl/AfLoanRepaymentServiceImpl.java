@@ -343,11 +343,13 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                     try {
                     	dealLoanRepay(LoanRepayDealBo, repaymentDo);
                 		
-                    	// TODO 最后一期还完后， 修改loan状态FINSH
+                    	// 最后一期还完后， 修改loan状态FINSH
+                    	dealLoanStatus(LoanRepayDealBo);
                     	
                 		dealSum(LoanRepayDealBo);
                 		
                         dealCouponAndRebate(LoanRepayDealBo, repaymentDo);
+                        
                         doAccountLog(LoanRepayDealBo);
                         
                         return 1L;
@@ -357,6 +359,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                         throw e;
                     }
                 }
+
             });
 
             if (resultValue == 1L) {
@@ -437,6 +440,18 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         
 	}
 	
+	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
+		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
+		if(nper > 1 || (nper == 1 && LoanRepayDealBo.loanPeriodsDoList.get(0).getNper() == LoanRepayDealBo.loanDo.getPeriods())) {
+			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
+			AfLoanDo loanDo = new AfLoanDo();
+			loanDo.setRid(LoanRepayDealBo.loanDo.getRid());
+			loanDo.setStatus(AfLoanStatus.FINISHED.name());
+			loanDo.setGmtModified(new Date());
+			loanDo.setGmtFinish(new Date());
+			afLoanDao.updateById(loanDo);
+		}
+	}
 	
 	private void dealSum(LoanRepayDealBo LoanRepayDealBo){
 		
