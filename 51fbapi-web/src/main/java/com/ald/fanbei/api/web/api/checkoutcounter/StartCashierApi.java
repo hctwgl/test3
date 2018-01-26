@@ -377,7 +377,7 @@ public class StartCashierApi implements ApiHandle {
             if (afUserAuthStatusDo == null) {
                 authDo.setRiskStatus(YesNoStatus.NO.getCode());
             } else {
-                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+                authDo.setRiskStatus(YesNoStatus.YES.getCode());
             }
         } else {
             //线上分期认证
@@ -385,19 +385,18 @@ public class StartCashierApi implements ApiHandle {
             if (afUserAuthStatusDo == null) {
                 authDo.setRiskStatus(YesNoStatus.NO.getCode());
             } else {
-                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+                authDo.setRiskStatus(YesNoStatus.YES.getCode());
             }
         }
-        if (userDto.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
-            //StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证&&
-            if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
-                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
-                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
-                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
-                status = YesNoStatus.YES.getCode();
-            }
-        }
-        return status;
+	if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
+	    if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
+		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
+		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
+		status = YesNoStatus.YES.getCode();
+	    }
+	}
+	return status;
     }
 
     /**
