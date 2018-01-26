@@ -309,5 +309,13 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
 	}
 
+	public void checkPayPwd(String reqPayPwd, Long userId) {
+		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		String finalPwd = UserUtil.getPassword(reqPayPwd, userAccount.getSalt());
+		if (!StringUtils.equals(finalPwd, userAccount.getPassword())) {
+			throw new FanbeiException("Pay Password is error",FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
+	}
+	
 
 }

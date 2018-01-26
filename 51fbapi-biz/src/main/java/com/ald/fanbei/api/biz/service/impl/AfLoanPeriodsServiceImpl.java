@@ -10,9 +10,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
-import com.ald.fanbei.api.common.DBResource;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
@@ -20,7 +20,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 
 
@@ -55,8 +54,8 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType){
     	BigDecimal userLayDailyRate = afLoanService.getUserLayDailyRate(userId, prdType);
     	BigDecimal layRate = userLayDailyRate.multiply(DAYS_OF_YEAR);
-    	AfResourceDo resDo = afResourceDao.getConfigByTypesAndSecType(DBResource.TYPE_LOAN, DBResource.SEC_TYPE_LOAN_INTEREST_RATE);
-    	BigDecimal interestRate = new BigDecimal(resDo.getValue());
+    	LoanDBCfgBo dbCfg = afLoanService.getDBCfg(prdType);
+    	BigDecimal interestRate = new BigDecimal(dbCfg.interestRate);
     	BigDecimal serviceRate = layRate.subtract(interestRate);
     	BigDecimal interestRatio = interestRate.divide(layRate, 4, RoundingMode.HALF_UP);
     	
@@ -77,7 +76,10 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	
     	BigDecimal totalInterestFee = totalIncome.multiply(interestRatio);
     	BigDecimal totalServiceFee = totalIncome.subtract(totalInterestFee);
-    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, serviceRate, interestRate, userLayDailyRate, amount, totalServiceFee, totalInterestFee));
+    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, serviceRate, interestRate, userLayDailyRate, 
+    			amount.setScale(2, RoundingMode.HALF_UP), 
+    			totalServiceFee.setScale(2, RoundingMode.HALF_UP), 
+    			totalInterestFee.setScale(2, RoundingMode.HALF_UP)));
     	
     	BigDecimal capitalPerPeriod;//每期本金
     	BigDecimal incomePerPeriod;	//每期总利息
@@ -90,13 +92,8 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     					.add(totalFeePerPeriod);
     		capitalPerPeriod = totalFeePerPeriod.subtract(incomePerPeriod);
     		
-    		incomePerPeriod.setScale(2, RoundingMode.HALF_UP);
-    		
     		interestFeePerPeriod = incomePerPeriod.multiply(interestRatio);
     		serviceFeePerPeriod = incomePerPeriod.subtract(interestFeePerPeriod);
-    		capitalPerPeriod.setScale(2, RoundingMode.HALF_UP);
-    		interestFeePerPeriod.setScale(2, RoundingMode.HALF_UP);
-    		serviceFeePerPeriod.setScale(2, RoundingMode.HALF_UP);
     		
     		// 计算还款时间
     		Date gmtPlanRepay = new Date();
@@ -106,10 +103,14 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     			gmtPlanRepay = DateUtil.setDayNoInMonth(gmtPlanRepay, MAX_DAY_NO);
     		}
     		
-    		result.add(AfLoanPeriodsDo.gen(userId, loanNo, prdType, periods, j, amount, interestFeePerPeriod, serviceFeePerPeriod, gmtPlanRepay));
+    		result.add(AfLoanPeriodsDo.gen(userId, loanNo, prdType, periods, j,
+    				capitalPerPeriod.setScale(2, RoundingMode.HALF_UP),
+    				interestFeePerPeriod.setScale(2, RoundingMode.HALF_UP),
+    				serviceFeePerPeriod.setScale(2, RoundingMode.HALF_UP),
+    				gmtPlanRepay));
     	}
 		
-		return null;
+		return result;
 	}
     
     public BigDecimal calcuRestAmount(AfLoanPeriodsDo p) {

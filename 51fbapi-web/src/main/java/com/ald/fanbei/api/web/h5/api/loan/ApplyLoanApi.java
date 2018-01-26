@@ -5,9 +5,10 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
+import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo.ReqParam;
 import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BeanUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -25,13 +26,15 @@ public class ApplyLoanApi implements H5Handle {
 
 	@Resource
 	private AfLoanService afLoanService;
+	@Resource
+	private AfUserService afUserService;
 	
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		
 		ApplyLoanBo bo = new ApplyLoanBo();
-		BeanUtil.copyProperties(bo.reqParam, (ApplyLoanParam)context.getParamEntity());
+		copyFields((ApplyLoanParam)context.getParamEntity(), bo);
 		
 		bo.reqParam.ip = context.getClientIp();
 		String reqId = context.getId();
@@ -41,9 +44,30 @@ public class ApplyLoanApi implements H5Handle {
 		bo.userId = context.getUserId();
 		bo.userName = context.getUserName();
 		
+		afUserService.checkPayPwd(bo.reqParam.payPwd, context.getUserId());
+		
 		afLoanService.doLoan(bo);
 		
 		return resp;
+	}
+	
+	public void copyFields(ApplyLoanParam p, ApplyLoanBo bo) {
+		ReqParam rp = bo.reqParam;
+		rp.amount = p.amount;
+		rp.prdType = p.prdType;
+		rp.periods = p.periods;
+		rp.payPwd = p.payPwd;
+		rp.remark = p.remark;
+		rp.loanRemark = p.loanRemark;
+		rp.repayRemark = p.repayRemark;
+		rp.city = p.city;
+		rp.province = p.province;
+		rp.county = p.county;
+		rp.address = p.address;
+		rp.latitude = p.latitude;
+		rp.longitude = p.longitude;
+		rp.blackBox = p.blackBox;
+		rp.bqsBlackBox = p.bqsBlackBox;
 	}
 	
 }

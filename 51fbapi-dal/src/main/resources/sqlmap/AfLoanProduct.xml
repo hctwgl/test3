@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,name,min_amount,max_amount,desc,conf,periods,prd_type,remind_day,gmt_create,gmt_modified,
+        id rid,name,min_amount,max_amount,desz,conf,periods,prd_type,remind_day,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -23,8 +23,8 @@
         <if test="maxAmount != null and maxAmount != ''">
             AND max_amount = #{maxAmount,jdbcType=DECIMAL}
         </if>
-        <if test="desc != null and desc != ''">
-            AND desc = #{desc,jdbcType=VARCHAR}
+        <if test="desz != null and desz != ''">
+            AND desz = #{desz,jdbcType=VARCHAR}
         </if>
         <if test="conf != null and conf != ''">
             AND conf = #{conf,jdbcType=VARCHAR}
@@ -63,8 +63,8 @@
 	        <if test="maxAmount != null">        
 	            max_amount,
 	        </if>
-	        <if test="desc != null">        
-	            desc,
+	        <if test="desz != null">        
+	            desz,
 	        </if>
 	        <if test="conf != null">        
 	            conf,
@@ -96,8 +96,8 @@
 		    <if test="maxAmount != null" >
 		       #{maxAmount,jdbcType=DECIMAL},
 		    </if>
-		    <if test="desc != null" >
-		       #{desc,jdbcType=VARCHAR},
+		    <if test="desz != null" >
+		       #{desz,jdbcType=VARCHAR},
 		    </if>
 		    <if test="conf != null" >
 		       #{conf,jdbcType=VARCHAR},
@@ -132,8 +132,8 @@
             <if test="maxAmount != null and maxAmount != '' ">        
                 max_amount = #{maxAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="desc != null and desc != '' ">        
-                desc = #{desc,jdbcType=VARCHAR},                
+            <if test="desz != null and desz != '' ">        
+                desz = #{desz,jdbcType=VARCHAR},                
             </if>
             <if test="conf != null and conf != '' ">        
                 conf = #{conf,jdbcType=VARCHAR},                
