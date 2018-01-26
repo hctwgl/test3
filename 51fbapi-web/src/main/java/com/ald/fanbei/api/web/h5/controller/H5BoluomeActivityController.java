@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
+import com.ald.fanbei.api.biz.service.AfBoluomeOneYuanRegisterService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -53,6 +54,7 @@ import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeOneYuanRegisterDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -97,7 +99,11 @@ public class H5BoluomeActivityController extends BaseController {
     @Resource
     AfBoluomeActivityCouponService afBoluomeActivityCouponService;
     @Resource
+    AfBoluomeOneYuanRegisterService  afBoluomeOneYuanRegisterService;
+    @Resource
     BoluomeUtil boluomeUtil;
+    
+    
     private static String couponUrl = null;
 
     // 菠萝觅活动登录
@@ -190,9 +196,9 @@ public class H5BoluomeActivityController extends BaseController {
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-//	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
-//	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
-//	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
+	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
+	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
+	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
 	    	
 	    String log = "/H5GGShare/boluomeActivityRegisterLogin";
 		
@@ -259,8 +265,31 @@ public class H5BoluomeActivityController extends BaseController {
 	    logger.info("boluomeActivityRegisterLogin userDo",JSONObject.toJSONString(userDo),mobile);
 	    String source = "oneYuan";
 	    Long userId = afUserService.toAddUser(userDo,source);
-	    logger.info("boluomeActivityRegisterLogin userId,mobile",userId,mobile);
-	  
+	    logger.info("boluomeActivityRegisterLogin userId = "+userId+" mobile = "+mobile);
+	    //渠道
+	    try{
+	    if(1000L == boluomeActivityId.longValue()){
+		if(!StringUtils.isBlank(typeFrom)){
+		    AfBoluomeOneYuanRegisterDo register   = new AfBoluomeOneYuanRegisterDo();
+		    register.setGmtCreate(new Date());
+		    register.setGmtModified(new Date());
+		    register.setMobile(mobile);
+		    register.setTypeFrom(typeFrom);
+		    register.setTypeFromNum(typeFromNum);
+		    if (!StringUtils.isBlank(recommendCode)) {
+			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+			if(userRecommendDo != null){
+			     register.setInviter(userRecommendDo.getUserName());
+			  }
+		    }
+		    
+		    afBoluomeOneYuanRegisterService.saveRecord(register);
+		}
+	    }
+	    }catch (FanbeiException e) {
+        	logger.error("save qudao info exception" + e.getMessage());
+     		  
+            } 
 	    
 	    Long invteLong = Constants.INVITE_START_VALUE + userId;
 	    String inviteCode = Long.toString(invteLong, 36);
