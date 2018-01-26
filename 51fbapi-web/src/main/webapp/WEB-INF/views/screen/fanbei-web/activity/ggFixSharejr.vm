@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201712221346")
+    #set($version="201801261414")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -40,7 +40,7 @@
     <!--首页轮播图-->
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first">
-        <img src="$src/ggFix01.jpg">
+        <img src="$src/ggFix01.png">
         <div class="firstStep">
             <p class="word01"></p>
             <p class="lineBox01"><span class="line01"></span></p>
