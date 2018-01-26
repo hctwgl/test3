@@ -33,7 +33,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.DBResource;
 import com.ald.fanbei.api.common.Documents;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfLoanRejectType;
@@ -118,13 +117,14 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private RedisTemplate<String, ?> redisTemplate;
 	
 	@Override
-	public LoanHomeInfoBo getHomeInfo(Long userId){
-		LoanDBCfgBo loanCfg = this.getDBCfg();
+	public List<LoanHomeInfoBo> getHomeInfo(Long userId){
 		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		
+		List<AfLoanProductDo> prdDos = afLoanProductDao.getAll();
 		if(userAccount != null) {
-			return dealHomeLogin(userAccount, loanCfg);
+			return dealHomeLogin(userAccount, prdDos);
 		}else{
-			return dealHomeUnlogin(loanCfg);
+			return dealHomeUnlogin(prdDos);
 		}
 	}
 	
@@ -145,7 +145,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			
 			//自检是否放行贷款
 			AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-			AfLoanRejectType res = rejectCheck(userAccount, lastLoanDo, getDBCfg());
+			AfLoanRejectType res = rejectCheck(userAccount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
 			if(!res.equals(AfLoanRejectType.PASS)) {
 				throw new FanbeiException(res.exceptionCode);
 			}
@@ -316,43 +316,23 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public LoanDBCfgBo getDBCfg() {
+	public LoanDBCfgBo getDBCfg(String prdType) {
 		LoanDBCfgBo bo = new LoanDBCfgBo();
-		
-		List<AfResourceDo> loanCfgs = afResourceDao.getConfigByTypes(DBResource.TYPE_LOAN);
-		for(AfResourceDo resDo : loanCfgs) {
-			if(DBResource.SEC_TYPE_LOAN_SWITCH.equals(resDo.getSecType())) {
-				bo.SWITCH = resDo.getValue();
-			}
-			if(DBResource.SEC_TYPE_LOAN_MAX_QUOTA.equals(resDo.getSecType())) {
-				bo.MAX_QUOTA = new BigDecimal(resDo.getValue());
-			}
-			if(DBResource.SEC_TYPE_LOAN_MIN_QUOTA.equals(resDo.getSecType())) {
-				bo.MIN_QUOTA = new BigDecimal(resDo.getValue());
-			}
-			if(DBResource.SEC_TYPE_LOAN_INTEREST_RATE.equals(resDo.getSecType())) {
-				bo.INTEREST_RATE = resDo.getValue();
-			}
-			if(DBResource.SEC_TYPE_LOAN_POUNDAGE_RATE.equals(resDo.getSecType())) {
-				bo.POUNDAGE_RATE = resDo.getValue();
-			}
-			if(DBResource.SEC_TYPE_LOAN_OVERDUE_RATE.equals(resDo.getSecType())) {
-				bo.OVERDUE_RATE = resDo.getValue();
-			}
-		}
-		
 		return bo;
 	}
 	
 	@Override
-	public BigDecimal getUserLayDailyRate(Long userId) {
+	public BigDecimal getUserLayDailyRate(Long userId, String prdType) {
 		try {
-			// TODO FROM cache
+			String key = Constants.CACHEKEY_USER_LAY_DAILY_RATE + prdType + ":" + userId;
+			BigDecimal dailyRate = (BigDecimal)bizCacheUtil.getObject(key);
 			
-			// TODO ASK risk
+			if(dailyRate == null) {
+				dailyRate = BigDecimal.valueOf(0.0002);// TODO ASK risk 分层利率 暂时写死
+				bizCacheUtil.saveObject(key, dailyRate, Constants.SECOND_OF_AN_HOUR_INT);
+			}
 			
-			// TODO SAVE cache
-			return BigDecimal.ZERO;
+			return dailyRate;
 		} catch (Exception e) {
 			throw new FanbeiException("getUserLayRate error!", e);
 		}
@@ -361,35 +341,45 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	/**
 	 * 处理登陆场景下首页信息
 	 */
-	private LoanHomeInfoBo dealHomeLogin(AfUserAccountDo userAccount, LoanDBCfgBo loanCfg) {
-		LoanHomeInfoBo bo = new LoanHomeInfoBo();
-		bo.isLogin = true;
+	private List<LoanHomeInfoBo> dealHomeLogin(AfUserAccountDo userAccount, List<AfLoanProductDo> prdDos) {
+		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
+		for(AfLoanProductDo prdDo : prdDos) {
+			LoanHomeInfoBo bo = new LoanHomeInfoBo();
+			bo.isLogin = true;
+			
+			String prdType = prdDo.getPrdType();
+			LoanDBCfgBo loanCfg = this.getDBCfg(prdType);
+			
+			// 处理 配置 信息
+			BigDecimal maxAuota = loanCfg.maxQuota;
+			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
+			BigDecimal usableAmount = null;
+			
+			maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
+			bo.maxQuota = maxAuota;
+			bo.minQuota = loanCfg.minQuota;
+			
+			bo.interestRate = new BigDecimal(loanCfg.interestRate);
+			BigDecimal userLayDailyRate = getUserLayDailyRate(userAccount.getUserId(), prdType);
+			BigDecimal userLayRate = userLayDailyRate.multiply(AfLoanPeriodsServiceImpl.DAYS_OF_YEAR);
+			bo.poundageRate = userLayRate.subtract(bo.interestRate);
+			bo.overdueRate = new BigDecimal(loanCfg.overdueRate);
+			
+			bo.periods = prdDo.getPeriods();
+			bo.prdName = prdDo.getName();
+			bo.prdType = prdType;
+			
+			AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userAccount.getUserId());
+			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
+			
+			bo.rejectCode = rejectCheck(userAccount, lastLoanDo, loanCfg).name();
+			
+			infoBos.add(bo);
+		}
 		
-		// 处理 配置 信息
-		BigDecimal maxAuota = loanCfg.MAX_QUOTA;
-		BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
-		maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
-		bo.maxQuota = maxAuota;
-		bo.minQuota = loanCfg.MIN_QUOTA;
-		
-		bo.interestRate = new BigDecimal(loanCfg.INTEREST_RATE);
-		BigDecimal userLayDailyRate = getUserLayDailyRate(userAccount.getUserId());
-		BigDecimal userLayRate = userLayDailyRate.multiply(AfLoanPeriodsServiceImpl.DAYS_OF_YEAR);
-		bo.poundageRate = userLayRate.subtract(bo.interestRate);
-		bo.overdueRate = new BigDecimal(loanCfg.OVERDUE_RATE);
-		
-		AfLoanProductDo prdDo = afLoanProductDao.getLast();
-		bo.periods = prdDo.getPeriods();
-		bo.prdName = prdDo.getName();
-		bo.prdType = prdDo.getPrdType();
-		
-		AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userAccount.getUserId());
-		this.dealHomeLoginLoan(bo, userAccount, lastLoanDo, loanCfg);  	// 处理 贷款 信息
-		bo.rejectCode = rejectCheck(userAccount, lastLoanDo, loanCfg).name();
-
-		return bo;
+		return infoBos;
 	}
-	private void dealHomeLoginLoan(LoanHomeInfoBo bo, AfUserAccountDo userAccount, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
+	private void dealHomeLoginLoan(LoanHomeInfoBo bo, AfLoanDo lastLoanDo) {
 		if(lastLoanDo == null) {
 			bo.hasLoan = false;
 			return;
@@ -425,21 +415,28 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	/**
 	 * 处理非登陆场景下首页信息
 	 */
-	private LoanHomeInfoBo dealHomeUnlogin(LoanDBCfgBo loanCfg){
-		LoanHomeInfoBo bo = new LoanHomeInfoBo();
-		bo.rejectCode = AfLoanRejectType.PASS.name();
-		bo.isLogin = false;
+	private List<LoanHomeInfoBo> dealHomeUnlogin(List<AfLoanProductDo> prdDos){
+		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
+		for(AfLoanProductDo prdDo : prdDos) {
+			LoanDBCfgBo loanCfg = getDBCfg(prdDo.getPrdType());
+			
+			LoanHomeInfoBo bo = new LoanHomeInfoBo();
+			bo.rejectCode = AfLoanRejectType.PASS.name();
+			bo.isLogin = false;
 
-		bo.interestRate = new BigDecimal(loanCfg.INTEREST_RATE);
-		bo.poundageRate = new BigDecimal(loanCfg.POUNDAGE_RATE);
-		bo.overdueRate = new BigDecimal(loanCfg.OVERDUE_RATE);
-		bo.maxQuota = loanCfg.MAX_QUOTA;
-		bo.minQuota = loanCfg.MIN_QUOTA;
-		
-		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {//贷款总开关
-			bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
+			bo.interestRate = new BigDecimal(loanCfg.interestRate);
+			bo.poundageRate = new BigDecimal(loanCfg.poundageRate);
+			bo.overdueRate = new BigDecimal(loanCfg.overdueRate);
+			bo.maxQuota = loanCfg.maxQuota;
+			bo.minQuota = loanCfg.minQuota;
+			
+			if(YesNoStatus.YES.getCode().equals(loanCfg.switch_)) {//贷款总开关
+				bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
+			}
+			
+			infoBos.add(bo);
 		}
-		return bo;
+		return infoBos;
 	}
 	
 	/**
@@ -450,11 +447,11 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 */
 	private AfLoanRejectType rejectCheck(AfUserAccountDo userAccount, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
 		//贷款总开关
-		if(YesNoStatus.YES.getCode().equals(loanCfg.SWITCH)) {
+		if(YesNoStatus.YES.getCode().equals(loanCfg.switch_)) {
 			return AfLoanRejectType.SWITCH_OFF;
 		}
 		
-		// TODO 检查是否认证过 af_user_auth_status
+		// TODO 检查是否认证过 af_user_auth_status中获取
 		
 		
 		//检查强风控
@@ -462,7 +459,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		if(RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
-		
 		
 		// 检查上笔贷款
 		if (lastLoanDo != null 
@@ -479,7 +475,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		// 检查额度
-		if(loanCfg.MIN_QUOTA.compareTo(userAccount.getAuAmount()) > 0) {
+		if(loanCfg.minQuota.compareTo(userAccount.getAuAmount()) > 0) {
 			return AfLoanRejectType.QUOTA_TOO_SMALL;
 		}
 		

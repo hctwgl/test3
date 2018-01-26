@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
@@ -22,7 +23,7 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	 * @param userId
 	 * @return
 	 */
-	LoanHomeInfoBo getHomeInfo(Long userId);
+	List<LoanHomeInfoBo> getHomeInfo(Long userId);
 	
 	/**
 	 * 执行借贷
@@ -48,15 +49,17 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	
 	/**
 	 * 获取数据库中配置有关贷款的全部配置信息
+	 * @param prdType 对应product表中的prdType字段值
 	 * @return
 	 */
-	LoanDBCfgBo getDBCfg();
+	LoanDBCfgBo getDBCfg(String prdType);
 	
 	/**
-	 * 获取用户白领贷分层日利率
+	 * 获取用户白领贷分层日利率,缓存1小时
 	 * @param userId
+	 * @param prdType 对应product表中的prdType字段值
 	 * @return
 	 */
-	BigDecimal getUserLayDailyRate(Long userId);
+	BigDecimal getUserLayDailyRate(Long userId, String prdType);
 	
 }

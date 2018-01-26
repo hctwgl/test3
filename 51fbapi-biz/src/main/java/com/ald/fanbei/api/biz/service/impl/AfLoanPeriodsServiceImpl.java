@@ -53,7 +53,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     
     @Override
 	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType){
-    	BigDecimal userLayDailyRate = afLoanService.getUserLayDailyRate(userId);
+    	BigDecimal userLayDailyRate = afLoanService.getUserLayDailyRate(userId, prdType);
     	BigDecimal layRate = userLayDailyRate.multiply(DAYS_OF_YEAR);
     	AfResourceDo resDo = afResourceDao.getConfigByTypesAndSecType(DBResource.TYPE_LOAN, DBResource.SEC_TYPE_LOAN_INTEREST_RATE);
     	BigDecimal interestRate = new BigDecimal(resDo.getValue());

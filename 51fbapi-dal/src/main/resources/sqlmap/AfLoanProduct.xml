@@ -180,12 +180,13 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getLast" resultType="AfLoanProductDo">
+    <select id="getAll" resultType="AfLoanProductDo">
         SELECT
         <include refid="queryFields" />
         FROM af_loan_product
-        ORDER BY id DESC
-        LIMIT 1
+        WHERE is_delete = 0
+            AND switch = 'Y'
+        ORDER BY id ASC
     </select>
     
 </mapper>

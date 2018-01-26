@@ -15,7 +15,7 @@ public class ApplyLoanBo {
 	public String userName;
 	
 	public static class ReqParam{
-		public String prdType; 
+		public String prdType;
 		public BigDecimal amount;
 		public int periods;
 		public String repayType;
