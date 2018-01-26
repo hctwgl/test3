@@ -252,7 +252,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				riskOrderNo, 
 				bo.userName, 
 				tarLoanDo.getAmount(), 
-				tarLoanDo.getTotalInterestFee().add(tarLoanDo.getTotalServiceFee()), 
+				tarLoanDo.getTotalInterestFee().add(tarLoanDo.getTotalServiceFee()),
 				DateUtil.getNow(),
 				"贷款", 
 				StringUtils.EMPTY, 
