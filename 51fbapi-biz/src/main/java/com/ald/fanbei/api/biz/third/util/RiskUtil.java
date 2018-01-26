@@ -659,11 +659,11 @@ public class RiskUtil extends AbstractThird {
             JSONObject dataObj = JSON.parseObject(riskResp.getData());
             BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
 
-            String limitAmount = obj.getString("onlineAmount");
+            String limitAmount = dataObj.getString("onlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal onlineAmount = new BigDecimal(limitAmount);
-            limitAmount = obj.getString("offlineAmount");
+            limitAmount = dataObj.getString("offlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal offlineAmount = new BigDecimal(limitAmount);

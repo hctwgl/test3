@@ -581,7 +581,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 //收入添加搭售商品价格
                 AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
                 if(afBorrowLegalOrderDo!=null&&afBorrowLegalOrderDo.getPriceAmount()!=null) {
-                    income.add(afBorrowLegalOrderDo.getPriceAmount());
+                    income = income.add(afBorrowLegalOrderDo.getPriceAmount());
                 }
                 else {
                     logger.info("未获取到搭售商品信息 cashDo："+ afBorrowCashDo.toString());

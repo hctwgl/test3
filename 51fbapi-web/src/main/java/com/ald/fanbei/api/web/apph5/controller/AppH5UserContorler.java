@@ -603,28 +603,6 @@ public class AppH5UserContorler extends BaseController {
             doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("registerMobile"));
         }
 
-    }
-
-    @RequestMapping(value = {"CreditPromote"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-    @ResponseBody
-    public String getCreditPromote(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "");
-        try {
-            FanbeiWebContext context = doWebCheck(request, true);
-
-            AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
-            // 账户关联信息
-            AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(afUserDo.getRid());
-            AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
-            Map<String, Object> data = afUserAuthService.getCreditPromoteInfo(afUserDo.getRid(), new Date(), userDto, authDo, context.getAppVersion(), UserAccountSceneType.TRAIN.getCode());
-            resp.setData(data);
-
-            return JsonUtil.toJSONString(resp);
-        } catch (Exception e) {
-            logger.error("CreditPromote", e);
-            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
-            return JsonUtil.toJSONString(resp);
-        }
-    }
+    }   
 
 }

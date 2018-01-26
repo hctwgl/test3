@@ -185,7 +185,7 @@ public interface AfResourceService {
 
 	AfResourceDo getAfResourceAppVesion();
 
-	AfResourceDo getAfResourceAppVesionV1();
+	String getAfResourceAppVesionV1();
 
 	ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum);
 
