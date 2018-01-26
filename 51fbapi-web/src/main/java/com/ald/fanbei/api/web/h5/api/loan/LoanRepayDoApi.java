@@ -206,7 +206,7 @@ public class LoanRepayDoApi implements H5Handle {
 		
 		// 对比
 		if (bo.actualAmount.compareTo(calculateAmount) != 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
 	}
