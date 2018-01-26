@@ -665,7 +665,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				//收入添加搭售商品价格
 				AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(cashDo.getRid());
 				if(afBorrowLegalOrderDo!=null&&afBorrowLegalOrderDo.getPriceAmount()!=null) {
-					repayDealBo.sumIncome.add(afBorrowLegalOrderDo.getPriceAmount());
+				    repayDealBo.sumIncome =repayDealBo.sumIncome.add(afBorrowLegalOrderDo.getPriceAmount());
 				}
 				else {
 					logger.info("未获取到搭售商品信息 cashDo："+repayDealBo.cashDo.toString());
