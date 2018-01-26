@@ -107,7 +107,7 @@ public abstract class BaseController {
 				throw new FanbeiException("您使用的app版本过低,请升级",true);
 			}
 			//406强升需要数据拦截的借钱相关接口
-			String apiUrl = "/legalborrowV2/applyLegalBorrowCash,/legalborrowV2/applyLegalRenewal,/legalborrowV2/confirmLegalRenewalPay,/legalborrow/applyLegalRenewal,/legalborrow/confirmLegalRenewalPay,/legalborrow/applyLegalBorrowCash,/borrowCash/applyBorrowCashV1,/borrowCash/applyRenewal,/borrowCash/confirmRenewalPay";
+			String apiUrl = "/legalborrow/applyLegalBorrowCash,/legalborrowV2/applyLegalBorrowCash,/legalborrowV2/confirmLegalRenewalPay,/legalborrow/confirmLegalRenewalPay,/borrowCash/applyBorrowCashV1,/borrowCash/confirmRenewalPay";
 			if(apiUrl.toLowerCase().contains(request.getRequestURI().toString().toLowerCase()) && contex.getAppVersion()<406){
 				AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesionV1();
 				if (afResourceDo != null && afResourceDo.getValue().toLowerCase().equals("true") && requestDataVo.getId().endsWith("www")) {
