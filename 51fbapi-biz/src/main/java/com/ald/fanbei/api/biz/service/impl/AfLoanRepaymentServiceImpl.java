@@ -343,6 +343,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                     try {
                     	dealLoanRepay(LoanRepayDealBo, repaymentDo);
                 		
+                    	// TODO 最后一期还完后， 修改loan状态FINSH
+                    	
                 		dealSum(LoanRepayDealBo);
                 		
                         dealCouponAndRebate(LoanRepayDealBo, repaymentDo);

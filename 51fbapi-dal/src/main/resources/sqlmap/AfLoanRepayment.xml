@@ -288,7 +288,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id=getProcessLoanRepaymentByLoanId parameterType="java.lang.Long" resultType="AfLoanRepaymentDo">
+    <select id="getProcessLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="AfLoanRepaymentDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
