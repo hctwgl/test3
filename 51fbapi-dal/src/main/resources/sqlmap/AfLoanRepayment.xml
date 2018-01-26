@@ -288,7 +288,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getLastLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="AfLoanRepaymentDo">
+    <select id=getProcessLoanRepaymentByLoanId parameterType="java.lang.Long" resultType="AfLoanRepaymentDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
@@ -296,13 +296,11 @@
 		WHERE
 		is_delete = 0
 		AND
-		loan_id =
-		#{loanId}
+		loan_id = #{loanId}
 		AND
 		status = 'PROCESSING'
-		ORDER BY
-		gmt_create DESC
-          LIMIT 1
+		ORDER BY gmt_create DESC
+        LIMIT 1
 	</select>
     
     <select id="getRepayByPayTradeNo" resultType="AfLoanRepaymentDo">
