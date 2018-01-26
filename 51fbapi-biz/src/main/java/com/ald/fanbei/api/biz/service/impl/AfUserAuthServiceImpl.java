@@ -222,9 +222,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())) {
 			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
 			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
-			if (between > 0) {
+			if (between > 1) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
-			} else if (between == 0){
+			} else if (between == 1){
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 			}
 			else{
@@ -252,9 +252,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())){//信用认证页面（失败状态）
 			data.put("title1","暂无信用额度");
-			if (between > 0) {
+			if (between > 1) {
 				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
-			}else if (between == 0){
+			}else if (between == 1){
 				data.put("title2", "审核不通过，明天可以重新提交审核");
 			} else {
 				data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
@@ -268,9 +268,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){//信用认证页面（基础认证失败状态，补充认证成功状态）
 			data.put("highestAmount",afResource.getValue());
 			data.put("currentAmount",userDto.getAuAmount());
-			if (between > 0) {
+			if (between > 1) {
 				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
-			}else if (between == 0){
+			}else if (between == 1){
 				data.put("title2", "审核不通过，明天可以重新提交审核");
 			} else {
 				data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
@@ -402,10 +402,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				data.put("basicStatus", "N");
 				data.put("flag", "Y");
 				data.put("title1","暂无信用额度");
-				if (between > 0) {
+				if (between > 1) {
 					data.put("title2", "请"+between+"天后尝试重新提交");
 					data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
-				}else if (between == 0){
+				}else if (between == 1){
 					data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 					data.put("title2", "审核不通过，明天可以重新提交审核");
 				} else {
