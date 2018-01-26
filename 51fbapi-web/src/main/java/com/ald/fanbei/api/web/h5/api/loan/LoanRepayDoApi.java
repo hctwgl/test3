@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
+import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -79,7 +80,7 @@ public class LoanRepayDoApi implements H5Handle {
 		data.put("rid", bo.loanId);
 		data.put("amount", bo.currentPeriodAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
-		data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
+		data.put("status", AfLoanRepaymentStatus.SUCC.name());
 		if(bo.userCouponDto != null) {
 			data.put("couponAmount", bo.userCouponDto.getAmount());
 		}
