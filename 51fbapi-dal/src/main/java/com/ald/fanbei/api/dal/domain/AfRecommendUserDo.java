@@ -75,6 +75,18 @@ public class AfRecommendUserDo extends AbstractSerial {
      * 颜色加重 前台展示用的
      */
     private String color;
+    
+    private String source;
+
+    
+    
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getColor() {
         return color;

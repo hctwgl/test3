@@ -1064,7 +1064,7 @@
 			status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING') 
 		AND 
 			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
-		AND is_delete = 0
+	
 	</select>
 	
 	
@@ -1121,7 +1121,7 @@
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
         AND 
 			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
-		AND is_delete = 0
+	
 	</select>
 
 	<select id="selectSumCountByGoodsId" resultType="AfOrderDto" parameterType="list" >
@@ -1166,7 +1166,7 @@
 		 user_id = #{userId}
 		 AND order_type = #{orderType}
 		 and pay_status in('P','R')
-		 AND is_delete = 0
+	<!-- 	 AND is_delete = 0 -->
 	</select>
 	<select id="getSelfsupportOrderByUserIdOrActivityTime" resultType="AfOrderDo">
 		 SELECT 	
@@ -1175,7 +1175,7 @@
 		 af_order WHERE 
 		 user_id = #{userId}
 		 AND order_type ='SELFSUPPORT'
-		 AND is_delete = 0
+	<!-- 	 AND is_delete = 0 -->
 		 and status = 'REBATED' 
 		  <if test="activityTime != null">
 		   and gmt_finished &gt; #{activityTime}
@@ -1190,7 +1190,7 @@
 		 af_order WHERE 
 		 user_id = #{userId}
 		 AND order_type ='SELFSUPPORT'
-		 AND is_delete = 0
+<!-- 		 AND is_delete = 0 -->
 		 and pay_status = 'P' 
 		 and pay_type in('AP','CP')
 		 <if test="activityTime != null">

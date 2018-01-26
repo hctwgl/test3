@@ -257,7 +257,8 @@ public class H5BoluomeActivityController extends BaseController {
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
 	    logger.info("boluomeActivityRegisterLogin userDo",JSONObject.toJSONString(userDo),mobile);
-	    Long userId = afUserService.addUser(userDo);
+	    String source = "oneYuan";
+	    Long userId = afUserService.toAddUser(userDo,source);
 	    logger.info("boluomeActivityRegisterLogin userId,mobile",userId,mobile);
 	  
 	    

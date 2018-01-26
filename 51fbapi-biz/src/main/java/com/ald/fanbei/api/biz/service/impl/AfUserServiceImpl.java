@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -36,6 +37,7 @@ import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.dao.AfUserRegisterTypeDao;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -81,6 +83,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	
+	@Resource
+	AfResourceService afResourceService;
+	
+	
 	@Override
 	public Long addUser(final AfUserDo afUserDo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -99,12 +106,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 			        //新人专享送自营商城优惠券
-			        
-			        String tag = CouponCateGoryType._FIRST_SINGLE_.getCode();
-				String sourceType = CouponActivityType.FIRST_SINGLE.getCode();
-				String msg = afUserCouponService.sentUserCouponGroup(afUserDo.getRid(),tag,sourceType);
-			        
-				logger.info("sent new user couponGroup msg = "+msg.toString());
+			        sentUserCouponGroup(afUserDo);
+			       
 			        long recommendId = afUserDo.getRecommendId();
 					//#region add by hongzhengpei
 			        if(recommendId !=0){
@@ -128,8 +131,80 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					return 0L;
 				}
 			}
+
+			
 		});
 
+	}
+	
+	public Long toAddUser(final AfUserDo afUserDo,final String source) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				try {
+					afUserDao.addUser(afUserDo);
+					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+					afUserAuthDo.setUserId(afUserDo.getRid());
+					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
+					afUserAuthDao.addUserAuth(afUserAuthDo);
+
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(afUserDo.getRid());
+					account.setUserName(afUserDo.getUserName());
+					afUserAccountDao.addUserAccount(account);
+			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
+			        //新人专享送自营商城优惠券
+			        sentUserCouponGroup(afUserDo);
+			       
+			        long recommendId = afUserDo.getRecommendId();
+					//#region add by hongzhengpei
+			        if(recommendId !=0){
+			        	//新增推荐记录表
+			                         //如果是一元活动，开关开启才绑定
+			             		
+						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
+						afRecommendUserDo.setUser_id(afUserDo.getRid());
+						afRecommendUserDo.setParentId(recommendId);
+						afRecommendUserDo.setSource(source);
+						if(!"oneYuan".equals("source")){
+						        afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+						}else if("oneYuan".equals("source")){
+						    try{
+							AfResourceDo   biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
+							if(biddingSwitch != null && "O".equals(biddingSwitch.getValue()) ){
+							    afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+						        }
+						     }catch(Exception e){
+							logger.error("one yuan activity addUser error:", e,afUserDo);
+						    }
+						}
+					}
+			        
+					//#endregion
+
+					//处理帐单日，还款日
+					addOutDay(afUserDo.getRid());
+					long userId = 0L;
+					userId = afUserDo.getRid();
+					return userId;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("addUser error:", e,afUserDo);
+					return 0L;
+				}
+			}
+
+			
+		});
+
+	}
+	
+	private void sentUserCouponGroup(AfUserDo afUserDo) {
+	    // TODO Auto-generated method stub
+	        String tag = CouponCateGoryType._FIRST_SINGLE_.getCode();
+		String sourceType = CouponActivityType.FIRST_SINGLE.getCode();
+		String msg = afUserCouponService.sentUserCouponGroup(afUserDo.getRid(),tag,sourceType);
+		logger.info("sent new user couponGroup for first single and  msg = "+msg.toString());
 	}
 
 	@Override
@@ -149,8 +224,9 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 					couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
-
-
+					//      
+					  sentUserCouponGroup(afUserDo);
+ 
 					long recommendId = afUserDo.getRecommendId();
 
 					//#region add by hongzhengpei

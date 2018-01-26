@@ -650,6 +650,7 @@ public class APPH5GgActivityController extends BaseController {
 								couponResourceDo);
 						if (couponResourceDo != null) {
 							String uri = couponResourceDo.getValue();
+							String name = couponResourceDo.getName();
 							String[] pieces = uri.split("/");
 							if (pieces.length > 9) {
 								String app_id = pieces[6];
@@ -698,6 +699,7 @@ public class APPH5GgActivityController extends BaseController {
 														}
 													}
 												}
+												BoluomeCouponResponseBo.setName(name);
 												boluomeCouponList.add(BoluomeCouponResponseBo);
 												Map<String, Object> data = new HashMap<>();
 												data.put("boluomeCouponList", boluomeCouponList);
