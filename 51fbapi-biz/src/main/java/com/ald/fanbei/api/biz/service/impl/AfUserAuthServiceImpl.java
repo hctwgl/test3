@@ -17,6 +17,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Service;
@@ -232,6 +233,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			}
 		}
 
+        	// 信用描述
+        	AfResourceDo afResourceDoAuth = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
 				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())
 				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
@@ -240,7 +243,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				data.put("title2","请展开基础认证并重新认证芝麻信用，即可立即恢复额度");
 			}else{
 				data.put("title1","你好，"+userDto.getRealName());
-				data.put("title2","完善基本资料即可获取3000-20000额度");
+				data.put("title2",afResourceDoAuth.getValue1());
 			}
 		}else if(StringUtil.equals(authDo.getRiskStatus(),RiskStatus.SECTOR.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.SECTOR.getCode())){
 			data.put("title1","暂无信用额度");
@@ -392,7 +395,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				data.put("riskStatus", "A");
 				data.put("flag", "N");
 				data.put("title1","你好，"+userDto.getRealName());
-				data.put("title2","完善基本资料即可获取3000-20000额度");
+				data.put("title2",afResourceDoAuth.getValue1());
 				data.put("sceneStatus","1");//尚未认证状态
 			}
 			else if(UserAuthSceneStatus.FAILED.getCode().equals(afUserAuthStatus.getStatus())){//认证失败

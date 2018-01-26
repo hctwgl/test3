@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
+import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
@@ -39,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
@@ -250,18 +251,24 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
-        jpushService.strongRiskSuccess("15990182307");
-        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
-        ExecutorService pool = Executors.newFixedThreadPool(16);
-        for (int i = 0; i < 1000; i++) {
-            pool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
-                    System.out.println("---" + repayNo);
-                }
-            });
-        }
+        KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
+        String requestData = api.getOrderTracesByJson("SF","058029296755");
+
+        KdniaoReqDataData kdniaoReqData = JSON.parseObject(requestData, KdniaoReqDataData.class);
+        System.out.print(requestData);
+
+//        jpushService.strongRiskSuccess("15990182307");
+//        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+//        ExecutorService pool = Executors.newFixedThreadPool(16);
+//        for (int i = 0; i < 1000; i++) {
+//            pool.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
+//                    System.out.println("---" + repayNo);
+//                }
+//            });
+//        }
 
 
         // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
