@@ -33,25 +33,29 @@
     </select>
     <select id="selectBySealInfo" resultMap="BaseResultMap" parameterType="AfUserSealDo">
         select
-        a.id, a.user_seal,a.user_id,a.user_account_id,a.user_type,a.is_delete,a.gmt_create,a.edspay_user_card_id
-        ,b.user_name userName
+        a.id,a.user_seal,a.user_type
+        ,if(user_type=3,a.edspay_user_card_id,c.id_number) as edspayUserCardId
         from af_user_seal a
-        LEFT JOIN af_user b on a.user_id=b.id
-        where
-        a.is_delete = 0,
-        <if test="edspayUserCardId != null and edspayUserCardId != ''">
-            and a.edspay_user_card_id = #{edspayUserCardId},
-        </if>
-        <if test="userName != null and userName != ''">
-            and a.user_name = #{userName},
-        </if>
-        <if test="userType != null and userType != ''">
-            and a.user_type = #{userType}
-        </if>
-        <if test="userId != null">
-            and a.user_id = #{userId}
-        </if>
-        limit 1
+        LEFT JOIN af_user_account c on a.user_id = c.user_id
+        <where>
+            a.is_delete = 0
+            <if test="edspayUserCardId != null and edspayUserCardId != ''  and userType == 3">
+                and a.edspay_user_card_id = #{edspayUserCardId}
+            </if>
+            <if test="edspayUserCardId != null and edspayUserCardId != ''  and userType != 3">
+                and c.id_number = #{edspayUserCardId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and a.user_name = #{userName}
+            </if>
+            <if test="userType != null and userType != ''">
+                and a.user_type = #{userType}
+            </if>
+            <if test="userId != null">
+                and a.user_id = #{userId}
+            </if>
+        </where>
+            limit 1
     </select>
     <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
