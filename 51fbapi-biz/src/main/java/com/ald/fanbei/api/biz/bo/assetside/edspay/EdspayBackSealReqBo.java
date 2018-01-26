@@ -14,13 +14,44 @@ public class EdspayBackSealReqBo implements Serializable {
 
     private static final long serialVersionUID = 4347678991772430075L;
 
-    private List<AfUserSealDo> afUserSealDoList;
+    private String edspayUserCardId;
 
-    public List<AfUserSealDo> getAfUserSealDoList() {
-        return afUserSealDoList;
+    private String userType;//用户类型 1：公司 2：个人 3：钱包用户
+
+    private String realName;//用户姓名
+
+    private String mobile;//用户手机号
+
+    public String getRealName() {
+        return realName;
     }
 
-    public void setAfUserSealDoList(List<AfUserSealDo> afUserSealDoList) {
-        this.afUserSealDoList = afUserSealDoList;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEdspayUserCardId() {
+        return edspayUserCardId;
+    }
+
+    public void setEdspayUserCardId(String edspayUserCardId) {
+        this.edspayUserCardId = edspayUserCardId;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
 }

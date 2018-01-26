@@ -81,7 +81,6 @@ public class StartCashierApi implements ApiHandle {
     @Resource
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
 
-
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -125,28 +124,35 @@ public class StartCashierApi implements ApiHandle {
             checkoutCounter = afCheckoutCounterService.getByType(orderInfo.getOrderType(), "");
         }
 
-        //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
-
-        	checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
-        	checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
-		}
-        //--------------------------mqp second kill fixed goods limit Ap only -------------------
-
-
-
 
         AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
         AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
+        if (afInterimAuDo == null) {
+            afInterimAuDo = new AfInterimAuDo();
+            afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+        }
         //判断额度支付是否可用
         cashierVo.setOrderId(orderInfo.getRid());
         cashierVo.setOrderType(orderType);
         cashierVo.setAmount(orderInfo.getActualAmount());
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
-        cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter));
+        cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter,afInterimAuDo));        
+
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------
+        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+            checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
+            checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
+            BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
+            if (useableAmount.subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(4000)) >= 0)
+                checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
+            else
+                checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
+        }
+        //--------------------------mqp second kill fixed goods limit Ap only -------------------        
 
         String scene = UserAccountSceneType.ONLINE.getCode();
         //判断认证的场景
@@ -205,7 +211,6 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setWx(canWX(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setBank(canBankpay(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setAli(canAlipay(userDto, authDo, orderInfo, checkoutCounter));
-
 
         resp.setResponseData(cashierVo);
         return resp;
@@ -285,7 +290,7 @@ public class StartCashierApi implements ApiHandle {
      * @param checkoutCounter 收银台信息
      * @return
      */
-    private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
+    private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter,AfInterimAuDo afInterimAuDo) {
         if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
@@ -298,14 +303,9 @@ public class StartCashierApi implements ApiHandle {
             if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
                 return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
             }
-            //获取临时额度
-            AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
-            if (afInterimAuDo == null) {
-                afInterimAuDo = new AfInterimAuDo();
-                afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
-            }
             //获取可使用额度+临时额度
             BigDecimal userabledAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
+
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
@@ -554,5 +554,4 @@ public class StartCashierApi implements ApiHandle {
         }
         return useableAmount;
     }
-
 }
