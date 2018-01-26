@@ -140,7 +140,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 						log = log + String.format("redOrderTimes = %s ", redOrderTimes);
 						logger.info(log);
 
-						redOrderTimes += 1;
+					
 						// check the red packet amount
 						boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
 

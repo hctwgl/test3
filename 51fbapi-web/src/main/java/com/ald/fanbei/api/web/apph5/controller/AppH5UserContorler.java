@@ -394,9 +394,10 @@ public class AppH5UserContorler extends BaseController {
                 AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
                 userDo.setRecommendId(userRecommendDo.getRid());
             }
-           
+//            if(StringUtil.isBlank(source)){
+//        	source = "recommend";
+//            }
             long userId = afUserService.toAddUser(userDo,source);
-
             Long invteLong = Constants.INVITE_START_VALUE + userId;
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);
