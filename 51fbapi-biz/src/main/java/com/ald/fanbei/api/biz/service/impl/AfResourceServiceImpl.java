@@ -505,6 +505,17 @@ public class AfResourceServiceImpl implements AfResourceService {
         return afResourceDo;
     }
 
+    public AfResourceDo getAfResourceAppVesionV1() {
+        AfResourceDo afResourceDo = (AfResourceDo) bizCacheUtil.getObject("check_app_versionV1");
+        if (afResourceDo != null) return afResourceDo;
+        List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_versionV1");
+        if (list != null && list.size() > 0) {
+            afResourceDo = list.get(0);
+            bizCacheUtil.saveObject("check_app_versionV1", afResourceDo);
+        }
+        return afResourceDo;
+    }
+
 	/**
 	 * 获取第三方支付通道
 	 * @param thirdPayTypeEnum
