@@ -109,13 +109,10 @@ public abstract class BaseController {
 			//406强升需要数据拦截的借钱相关接口
 			String apiUrl = "/legalborrow/applyLegalBorrowCash,/legalborrowV2/applyLegalBorrowCash,/legalborrowV2/confirmLegalRenewalPay,/legalborrow/confirmLegalRenewalPay,/borrowCash/applyBorrowCashV1,/borrowCash/confirmRenewalPay";
 			if(apiUrl.toLowerCase().contains(request.getRequestURI().toString().toLowerCase()) && contex.getAppVersion()<406){
-				AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesionV1();
-				if (afResourceDo != null && afResourceDo.getValue().toLowerCase().equals("true") && requestDataVo.getId().endsWith("www")) {
-					if(contex.getAppVersion() < Integer.parseInt(afResourceDo.getValue1())){
-						throw new FanbeiException("version is letter 406", FanbeiExceptionCode.VERSION_ERROR);
-					}
+				String afResourceDo = afResourceService.getAfResourceAppVesionV1();
+				if (afResourceDo != null && afResourceDo.equals("true") && requestDataVo.getId().endsWith("www")) {
+					throw new FanbeiException("version is letter 406", FanbeiExceptionCode.VERSION_ERROR);
 				}
-
 			}
 			// 判断版本更新 后台控制
 			try {

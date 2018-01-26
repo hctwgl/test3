@@ -505,15 +505,16 @@ public class AfResourceServiceImpl implements AfResourceService {
         return afResourceDo;
     }
 
-    public AfResourceDo getAfResourceAppVesionV1() {
-        AfResourceDo afResourceDo = (AfResourceDo) bizCacheUtil.getObject("check_app_versionV1");
-        if (afResourceDo != null) return afResourceDo;
+    public String getAfResourceAppVesionV1() {
+        String afResource = (String) bizCacheUtil.getObject("check_app_versionV1");
+        if (afResource != null) return afResource;
         List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_versionV1");
         if (list != null && list.size() > 0) {
-            afResourceDo = list.get(0);
-            bizCacheUtil.saveObject("check_app_versionV1", afResourceDo);
+            AfResourceDo afResourceDo = list.get(0);
+            afResource = afResourceDo.getValue();
+            bizCacheUtil.saveObject("check_app_versionV1", afResource);
         }
-        return afResourceDo;
+        return afResource;
     }
 
 	/**
