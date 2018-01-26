@@ -134,11 +134,12 @@ public class lookAllQuotaApi implements ApiHandle {
             JSONObject jsonObject =JSON.parseObject(value2);
             String trainTitle = jsonObject.getString("title");
             String picUrl = jsonObject.getString("picUrl");
-            String jumpUrl = jsonObject.getString("jumpUrl");
             String trainDesc = jsonObject.getString("desc");
             trainMap.put("desc",trainDesc);
             trainMap.put("title",trainTitle);
             trainMap.put("picUrl",picUrl);
+            
+            String jumpUrl = jsonObject.getString("jumpUrlAuth");
             trainMap.put("jumpUrl",jumpUrl);
 
             //现金贷 未通过强风控 状态
@@ -205,6 +206,8 @@ public class lookAllQuotaApi implements ApiHandle {
 
                 trainMap.put("desc",trainDesc);
                 trainMap.put("status","1");
+                jumpUrl = jsonObject.getString("jumpUrlFirst");
+                trainMap.put("jumpUrl",jumpUrl);
 
             } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
                     ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
