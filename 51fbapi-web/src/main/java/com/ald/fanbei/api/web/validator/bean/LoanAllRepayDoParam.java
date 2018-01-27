@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
-@Component("LoanRepayDoParam")
+@Component("LoanAllRepayDoParam")
 public class LoanAllRepayDoParam {
 	@NotNull
 	@DecimalMin("0")
