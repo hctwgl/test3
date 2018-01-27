@@ -79,9 +79,10 @@ public interface AfRecommendUserService {
     /**
      * 用户总共的奖励金额
      * @param userId
+     * @param activityTime 
      * @return
      */
-    double getSumPrizeMoney(long userId);
+    double getSumPrizeMoney(long userId, String activityTime);
 
     /**
      * 奖励查询

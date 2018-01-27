@@ -141,8 +141,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					      //查询此次活动之后的返利次数。
 					       int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId,activityTime);
 					    
-					       //查询活动之前是否有完成的菠萝觅订单，有(老用户)，则每次额外加1
-					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId,activityTime);
+					       //查询活动之前是否下过的菠萝觅订单，有(老用户)，则每次额外加1
+					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountBoluomeOrderByUserIdByActivityTime(userId,activityTime);
 					          if(boluomeFinishOrderBeforActivityTime >= 1 ){
 						       redOrderTimes = redOrderTimes +1 ;
 						  }
@@ -298,9 +298,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 *         下午12:59:03 @Description: 根据用户查所有返利 @param userId @return @throws
 	 */
 	@Override
-	public List<AfBoluomeRebateDo> getListByUserId(Long userId) {
+	public List<AfBoluomeRebateDo> getListByUserId(Long userId,String startTime) {
 
-		return afBoluomeRebateDao.getListByUserId(userId);
+		return afBoluomeRebateDao.getListByUserId(userId,startTime);
 	}
 
 	/**
@@ -366,5 +366,6 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	    // TODO Auto-generated method stub
 	    	return afBoluomeRebateDao.getCountByUserIdAndFirstOrder(userId,firstOrder);
 	}
+
 
 }

@@ -1107,9 +1107,24 @@
 			where order_type = 'BOLUOME'
 			AND user_id = #{userId} 
 			AND is_delete = 0
-			AND status in ('FINISHED','REBATED');
-			
+			 AND status in ('FINISHED','REBATED') 
+			<if test="activityTime != null">
+		      and gmt_create <![CDATA[<]]> #{activityTime}
+		  </if>
 	</select>
+	<select id="getCountBoluomeOrderByUserIdByActivityTime" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_order 
+			where order_type = 'BOLUOME'
+			AND user_id = #{userId} 
+			AND is_delete = 0
+			<if test="activityTime != null">
+		    and gmt_create <![CDATA[<]]> #{activityTime}
+		  </if>
+	</select>
+	
 	
 	
 	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">

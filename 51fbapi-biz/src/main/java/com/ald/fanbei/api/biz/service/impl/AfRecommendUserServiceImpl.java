@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -14,14 +15,12 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-
 
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
@@ -53,7 +52,6 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
-
 
 import sun.awt.geom.AreaOp;
 
@@ -413,8 +411,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	}
 
 	@Override
-	public double getSumPrizeMoney(long userId) {
-		return afRecommendUserDao.getSumPrizeMoney(userId);
+	public double getSumPrizeMoney(long userId,String activityTime) {
+		return afRecommendUserDao.getSumPrizeMoney(userId,activityTime);
 	}
 
 	@Override
@@ -423,11 +421,20 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		if(pageSize==null){
 			pageSize=5;
 		}
+		String  activityTime = null;
+		    AfResourceDo activityStart = new AfResourceDo();
+			   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+			   activityStart = list.get(0);
+			    if(activityStart !=null){
+				activityTime = activityStart.getValue();
+			    }
+		
+		
 		long pageNo=(currentPage-1)*pageSize;
 		if("1".equals(type)){
-			listData =afRecommendUserDao.firstRewardQuery(userId,pageNo,pageSize);
+			listData =afRecommendUserDao.firstRewardQuery(userId,pageNo,pageSize,activityTime);
 		}else if("2".equals(type)){
-			listData = afRecommendUserDao.twoLevelRewardQuery(userId,pageNo,pageSize);
+			listData = afRecommendUserDao.twoLevelRewardQuery(userId,pageNo,pageSize,activityTime);
 		}
 		if(listData!=null){
 			for (AfRecommendUserDto af: listData) {

@@ -23,7 +23,7 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	AfShopDo getShopInfoByOrderId(@Param("orderId") long orderId);
 
-	List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId);
+	//List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId);
 
 	Long getLightShopId(@Param("orderId")Long orderId);
 
@@ -45,6 +45,8 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 
 	int checkOrderTimes(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+	List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId,@Param("startTime")String startTime);
 
 
     

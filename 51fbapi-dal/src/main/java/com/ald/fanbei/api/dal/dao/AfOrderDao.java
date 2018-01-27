@@ -225,6 +225,8 @@ public interface AfOrderDao {
 
 	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
+	int getCountBoluomeOrderByUserIdByActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
 
 	
 }

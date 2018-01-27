@@ -25,11 +25,11 @@ public interface AfRecommendUserDao {
 
     HashMap getRecommendSharedById(@Param("id") String id);
 
-    double getSumPrizeMoney(@Param("userId") long userId);
+    double getSumPrizeMoney(@Param("userId") long userId,@Param("activityTime") String activityTime);
 
-    List<AfRecommendUserDto> firstRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
+    List<AfRecommendUserDto> firstRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize,@Param("activityTime") String activityTime);
 
-    List<AfRecommendUserDto> twoLevelRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
+    List<AfRecommendUserDto> twoLevelRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize,@Param("activityTime") String activityTime);
 
     int firstRewardQueryCount(@Param("userId") long userId);
 

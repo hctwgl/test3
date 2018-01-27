@@ -44,7 +44,6 @@ import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.CouponActivityType;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
@@ -56,6 +55,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -121,6 +121,8 @@ public class AppH5InvitationActivityController extends BaseController {
     BizCacheUtil bizCacheUtil;
     @Resource
     AfShopService afShopService;
+    @Resource
+    AfResourceDao afResourceDao;
     String opennative = "/fanbei-web/opennative?name=";
     
     /**
@@ -172,9 +174,16 @@ public class AppH5InvitationActivityController extends BaseController {
 	    afUserService.updateUser(userDo);
 	    invitationCode = inviteCode;
         }
+        String  activityTime = null;
+	    AfResourceDo activityStart = new AfResourceDo();
+		   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+		   activityStart = list.get(0);
+		    if(activityStart !=null){
+			activityTime = activityStart.getValue();
+    }
         
         //用户的总共奖励金额
-        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
+        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
         DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
         map.put("listRule",listRule);
         map.put("listPic",listPic);
@@ -482,9 +491,16 @@ public class AppH5InvitationActivityController extends BaseController {
 //         giftPackageList = getGiftPackageList();
         //特惠专区
 //         preferentialList =  getPreferentialList();
+         String  activityTime = null;
+	    AfResourceDo activityStart = new AfResourceDo();
+		   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+		   activityStart = list.get(0);
+		    if(activityStart !=null){
+			activityTime = activityStart.getValue();
+        }
          
        //用户的总共奖励金额
-        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
+        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
         DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
         
         

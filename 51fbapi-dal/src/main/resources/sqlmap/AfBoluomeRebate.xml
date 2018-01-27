@@ -133,11 +133,17 @@
     </select>
     <select id="checkOrderTimes" parameterType="java.lang.Long" resultType = "java.lang.Integer">
     	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId}
-    	AND is_delete = 0;
+    	AND is_delete = 0
+    	 <if test="activityTime != null">
+    			and gmt_create <![CDATA[ >= ]]> #{activityTime}
+		</if>
     </select>
     <select id="getListByUserId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
     	SELECT * FROM af_boluome_rebate WHERE user_id = #{userId} 
-		AND is_delete = 0;
+		AND is_delete = 0
+	    <if test="startTime != null">
+    			and gmt_create <![CDATA[ >= ]]> #{startTime}
+		</if>
     </select>
     <select id="getLightShopId" parameterType="java.lang.Long"  resultType="java.lang.Long">
 			SELECT

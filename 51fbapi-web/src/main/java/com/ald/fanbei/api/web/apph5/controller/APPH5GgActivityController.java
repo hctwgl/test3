@@ -28,7 +28,6 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityMsgIndexService;
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -53,10 +52,10 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityMsgIndexDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCardDo;
@@ -114,6 +113,8 @@ public class APPH5GgActivityController extends BaseController {
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	AfUserDao afUserDao;
+	@Resource
+	AfResourceDao afResourceDao;
 	@Resource
 	AfBoluomeActivityMsgIndexService afBoluomeActivityMsgIndexService;
 	@Resource
@@ -246,8 +247,16 @@ public class APPH5GgActivityController extends BaseController {
 				} // for
 			} // if
 
+			String  activityTime = null;
+			    AfResourceDo activityStart = new AfResourceDo();
+				   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+				   activityStart = list.get(0);
+				    if(activityStart !=null){
+					activityTime = activityStart.getValue();
+                           }
+			
 			// 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
-			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
+			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId,activityTime));
 
 			vo.setReturnCouponList(returnCouponList);
 			vo.setInviteAmount(inviteAmount);
@@ -261,7 +270,7 @@ public class APPH5GgActivityController extends BaseController {
 		return resultStr;
 
 	}
-
+	
 	/** 
 	* author chenqiwei
 	* @Title: inviteFriend 
@@ -535,14 +544,16 @@ public class APPH5GgActivityController extends BaseController {
 						Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
 
-							AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
-							logger.info("/h5GgActivity/homePage do1 = {}",do1);
+							//AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
+						    AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+						    logger.info("/h5GgActivity/homePage do1 = {}",do1);
 							if(do1 != null){
 								String startTime = do1.getValue();
 								if (StringUtil.isNotBlank(startTime)) {
 
 								List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
-								rebateList = afBoluomeRebateService.getListByUserId(userId);
+								//在活动时间之后
+								rebateList = afBoluomeRebateService.getListByUserId(userId,startTime);
 								// the status of items
 								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
 								//List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
