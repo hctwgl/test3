@@ -186,6 +186,7 @@
 			    AND o.`status` in ('FINISHED','REBATED')
 			    AND o.`gmt_rebated` >= #{startTime}
 			    And o.is_delete = 0 
+			    GROUP BY type
 			) as tt 
 			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
 			ORDER BY consumeTime DESC , surpriseRebate DESC;
