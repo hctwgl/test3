@@ -87,12 +87,12 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		Integer appVersion = context.getAppVersion();
 
-		String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
-		boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
-
-		if (!isGetLock) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
-		}
+        	String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
+        	if (bizCacheUtil.getObject(lockKey) == null) {
+        	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+        	} else {
+        	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
+        	}
 
 		logger.info("authStrongRiskV1Api requestDataVo:"+requestDataVo.toString());
 		//认证场景 20（现金），21（线上），22（线下）
