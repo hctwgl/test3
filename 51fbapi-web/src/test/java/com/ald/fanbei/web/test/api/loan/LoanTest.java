@@ -43,7 +43,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -68,7 +68,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
-	@Test
+//	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
 		String orderNo = "01dpay23425234545345";
