@@ -745,9 +745,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             Boolean isCashOverdue = false;
             try{
                 Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
-                gmtPlanTime = DateUtil.parseDate(gmtPlanTime.toString());
+                gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
                 Date newDate = new Date();
-                newDate = DateUtil.parseDate(newDate.toString());
+                newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
                 if (StringUtils.equals("代扣付款",repayment.getName())&&gmtPlanTime.getTime() < newDate.getTime()) {
                     isCashOverdue = true;
                 }

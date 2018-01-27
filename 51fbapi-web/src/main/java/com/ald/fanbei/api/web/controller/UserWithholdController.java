@@ -62,6 +62,8 @@ public class UserWithholdController extends BaseController {
     AfWithholdLogService afWithholdLogService;
     @Resource
     AfUserWithholdService afUserWithholdService;
+    @Resource
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
     /**
      * 借款代扣
      *
@@ -146,7 +148,10 @@ public class UserWithholdController extends BaseController {
                         afBorrowCashDo.getOverdueAmount(),
                         afBorrowCashDo.getRateAmount(),
                         afBorrowCashDo.getSumRate());
-
+                //判断是否搭售二期，加入手续费
+                if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)){
+                    allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage());
+                }
                 BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
                         afBorrowCashDo.getRepayAmount());
                 repaymentAmount = temAmount;
