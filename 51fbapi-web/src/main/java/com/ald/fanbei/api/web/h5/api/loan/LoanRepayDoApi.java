@@ -2,7 +2,9 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,6 +12,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
@@ -27,6 +30,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -42,11 +46,12 @@ import com.google.common.collect.Maps;
  * @Description: 白领贷-还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
+ * @param <E>
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
 @Validator("LoanRepayDoParam")
-public class LoanRepayDoApi implements H5Handle {
+public class LoanRepayDoApi<E> implements H5Handle {
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -63,6 +68,8 @@ public class LoanRepayDoApi implements H5Handle {
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfLoanService afLoanService;
+	@Resource
+	AfLoanPeriodsService afLoanPeriodsService;
 
 
 	@Override
@@ -168,6 +175,10 @@ public class LoanRepayDoApi implements H5Handle {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
+		AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getLastActivePeriodByLoanId(loanDo.getRid());
+		List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+		loanPeriodsDoList.add(loanPeriodsDo);
+		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
 	private void checkAmount(LoanRepayBo bo) { //TODO

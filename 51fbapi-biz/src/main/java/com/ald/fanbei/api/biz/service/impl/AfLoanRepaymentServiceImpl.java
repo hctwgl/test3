@@ -140,6 +140,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 
 	@Override
 	public void repay(LoanRepayBo bo) {
+		if(!canRepay(bo.loanPeriodsDoList.get(0))){
+			// 未出账
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+		}
+		
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){

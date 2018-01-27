@@ -287,6 +287,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
     LOAN_PERIOD_NOT_EXIST_ERROR("LOAN_PERIOD_NOT_EXIST_ERROR",2012,"loan period not exist error","分期借款信息不存在"),
     LOAN_REPAY_AMOUNT_ERROR("LOAN_REPAY_AMOUNT_ERROR",2013,"loan repay amount error","还款金额有误请重新检查"),
+    LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2013,"loan period can not repay error","当前借款未到还款时间"),
     
     
     /* 2100-2200 贷款相关！！！！！！！ */

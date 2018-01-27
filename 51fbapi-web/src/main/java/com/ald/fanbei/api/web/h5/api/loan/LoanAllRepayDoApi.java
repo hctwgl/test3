@@ -176,7 +176,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
-		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
+		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsService.getNoRepayListByLoanId(loanDo.getRid());
 		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
