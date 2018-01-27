@@ -800,7 +800,7 @@ public class APPH5GgActivityController extends BaseController {
 			// 该用户获得最后一张优惠券是否有记录
 			if (userCouponDo != null) {
 				// 设置金额
-				long couponId = userCouponDo.getCouponId();
+				Long couponId = userCouponDo.getCouponId();
 				AfResourceDo couponInfo = afResourceService.getResourceByResourceId(couponId);
 				if (couponInfo != null) {
 					logger.error("popUp couponInfo = {},userId = {}", couponInfo, userId);
@@ -809,9 +809,15 @@ public class APPH5GgActivityController extends BaseController {
 				// 设置图片
 				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
 						H5GgActivity.COUPON_IMAGE.getCode());
+				
 				if (imageInfo != null) {
 					logger.error("popUp coupon imageInfo = {}", imageInfo);
-					poPupVo.setCouponImage(imageInfo.getValue());
+					if(newUser.longValue() == couponId.longValue() ){
+					    poPupVo.setCouponImage(imageInfo.getValue());
+					}else{
+					    poPupVo.setCouponImage(imageInfo.getValue1());
+					}
+					
 				}
 				// 是否有弹窗记录
 				AfBoluomeActivityMsgIndexDo msgIndexDo = afBoluomeActivityMsgIndexService.getByUserId(userId);
