@@ -425,6 +425,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("title2", "每完成一项补充认证都会提高相应额度");
 		data.put("sceneStatus", "4");// 认证成功
 	    } else {
+		data.put("basicStatus", "A");
+		data.put("riskStatus", "A");
 		data.put("flag", "Y");
 		data.put("title1", "基础信息认证中");
 		data.put("title2", "完善补充认证能够增加审核通过率");
