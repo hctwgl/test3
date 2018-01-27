@@ -112,9 +112,9 @@ public class Test {
         	    reqBo.setRefundNo("ala202998187465112");
         	    reqBo.setTimestamp(System.currentTimeMillis());
         
-        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+        	    beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
         	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
-        	    String sign = DigestUtil.MD5(beforeSign);        
+        	    sign = DigestUtil.MD5(beforeSign);        
         	    reqBo.setSign(sign);
         	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
         	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
