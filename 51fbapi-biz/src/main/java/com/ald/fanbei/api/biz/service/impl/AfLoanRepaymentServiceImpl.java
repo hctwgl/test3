@@ -887,7 +887,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		for (AfLoanPeriodsDo loanPeriodsDo : noRepayList) {
 			
-			if(isRepay(loanPeriodsDo)) { // 已出账
+			if(canRepay(loanPeriodsDo)) { // 已出账
 				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount(),
 						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getOverdueAmount());
 			}else { // 未出账， 提前还款时不用还手续费和利息
@@ -903,7 +903,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      * @return true: 已出账；false： 未出账
      */
 	@Override
-	public boolean isRepay(AfLoanPeriodsDo loanPeriodsDo) {
+	public boolean canRepay(AfLoanPeriodsDo loanPeriodsDo) {
 		boolean flag = false;
 		Date now = new Date();
 		Date plan = loanPeriodsDo.getGmtPlanRepay();
@@ -911,7 +911,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(plan);
-		calendar.set(Calendar.DATE, calendar.get(Calendar.DATE)-remindDay);
+		calendar.add(Calendar.DAY_OF_YEAR, -remindDay);
 		Date startTime = calendar.getTime();
 		
 		if(now.after(startTime)){ // 已出账

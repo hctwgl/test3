@@ -46,7 +46,7 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * 判断当前分期是否可以还款（是否已出账）
 	 * @return
 	 */
-	boolean isRepay(AfLoanPeriodsDo loanPeriodsDo);
+	boolean canRepay(AfLoanPeriodsDo loanPeriodsDo);
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 }

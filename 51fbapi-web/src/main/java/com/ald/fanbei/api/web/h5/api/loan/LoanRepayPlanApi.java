@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -49,6 +50,8 @@ public class LoanRepayPlanApi implements H5Handle {
 	AfLoanService afLoanService;
 	@Resource
 	AfLoanPeriodsService afLoanPeriodsService;
+	@Resource
+	AfLoanRepaymentService afLoanRepaymentService;
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -96,7 +99,11 @@ public class LoanRepayPlanApi implements H5Handle {
 				// 状态(已还款：Y；已逾期：O；还款中：D；未还款：N)
 				String status = loanPeriodsDo.getStatus();
 				if(status.equals(AfLoanPeriodStatus.AWAIT_REPAY.name())){	// 未还款
-					loanPeriodsVo.setStatus("N");
+					if(afLoanRepaymentService.canRepay(loanPeriodsDo)){
+						loanPeriodsVo.setStatus("H");	// 已出账
+					}else{
+						loanPeriodsVo.setStatus("N");	// 未出账
+					}
 					if(loanPeriodsDo.getOverdueStatus().equals("Y")){	// 未还款已逾期
 						loanPeriodsVo.setStatus("O");
 					}
