@@ -424,9 +424,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
 		data.put("title2", "每完成一项补充认证都会提高相应额度");
 		data.put("sceneStatus", "4");// 认证成功
-	    } else {
-		data.put("basicStatus", "A");
-		data.put("riskStatus", "A");
+	    }
+	    else {
+		data.put("basicStatus", "P");
+		data.put("riskStatus", "P");
 		data.put("flag", "Y");
 		data.put("title1", "基础信息认证中");
 		data.put("title2", "完善补充认证能够增加审核通过率");
