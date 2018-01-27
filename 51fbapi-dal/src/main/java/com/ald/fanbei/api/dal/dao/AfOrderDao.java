@@ -219,9 +219,11 @@ public interface AfOrderDao {
 	List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 
-	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId);
+	//int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId);
 
 	int getCountByUserId(@Param("userId")Long userId);
+
+	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 
 	

@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao;
@@ -114,7 +115,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
 					if (orderTimes == 0) {
-    					     int boluomeFinishOrderTimes =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId);
+    					     int boluomeFinishOrderTimes =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId,null);
     					     if(boluomeFinishOrderTimes == 1){
             					     //邀请有礼记录用户订单id
             					    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(userId);
@@ -131,15 +132,26 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 						rebateDo.setFirstOrder(1);
 
 						// check if the order times for red packet
-						int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
-						//cqw 老用户则设置返利次数加1。(活动中未必已返利)
-						   if(boluomeFinishOrderTimes > 1 ){
+						
+					    String activityTime = null;
+					    AfResourceDo startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+					    	   if(startTime != null){
+					    	       activityTime =   startTime.getValue();
+					    	   }
+					      //查询此次活动之后的返利次数。
+					       int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId,activityTime);
+					    
+					       //查询活动之前是否有完成的菠萝觅订单，有(老用户)，则每次额外加1
+					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId,activityTime);
+					          if(boluomeFinishOrderBeforActivityTime >= 1 ){
 						       redOrderTimes = redOrderTimes +1 ;
-						   }
+						  }
+						
 						//cqw
 						log = log + String.format("redOrderTimes = %s ", redOrderTimes);
 						logger.info(log);
-
+						//本次加1
+						redOrderTimes += 1;
 					
 						// check the red packet amount
 						boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);

@@ -108,7 +108,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
         					         int couponNum =  afBoluomeUserCouponService.getTodayNumByUserId(refUserIdTemp);
                 				        if(getRecommendRecourceForStrongWind()!=null){
                 				            int limitNum = Integer.valueOf(getRecommendRecourceForStrongWind().getValue3()) ;
-                						   if(limitNum != 0 && limitNum <= couponNum){
+                						   if(limitNum != 0 && limitNum < couponNum){
                 						       return false;
                 						   }
                 					 }
