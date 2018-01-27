@@ -153,8 +153,8 @@ public class UserWithholdController extends BaseController {
                 if(StringUtils.isNotBlank(borrowStatus)){
                     if("overdue".equals(borrowStatus)){
                         if(isAmount==1){
-                            amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
-                            repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
+                            //amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
+                            repaymentAmount = BigDecimalUtil.subtract(repaymentAmount,afBorrowCashDo.getOverdueAmount());
                         }
                         logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
                         if(repaymentAmount.compareTo(temAmount)>0){

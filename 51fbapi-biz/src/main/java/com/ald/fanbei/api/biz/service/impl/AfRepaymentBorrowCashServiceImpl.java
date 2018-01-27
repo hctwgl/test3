@@ -559,11 +559,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                 if (repayment.getName().equals("代扣付款")) {
-                    if (isCashOverdueOld) {
-                        sendRepaymentBorrowCashOverdueWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
-                    } else {
+                    //if (isCashOverdueOld) {
+                        //sendRepaymentBorrowCashOverdueWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
+                    //} else {
                         sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
-                    }
+                    //}
                 } else {
                     sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
                 }
