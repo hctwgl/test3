@@ -424,6 +424,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}else {
 			bo.isOverdue = false;
 		}
+		
+		// TODO check当前期是否可还款
+		bo.canRepay = true;
 	}
 	/**
 	 * 处理非登陆场景下首页信息

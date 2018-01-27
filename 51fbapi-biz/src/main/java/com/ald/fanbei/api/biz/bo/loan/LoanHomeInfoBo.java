@@ -24,6 +24,7 @@ public class LoanHomeInfoBo {
 	public Date loanGmtApply;
 	
 	public Long curPeriodId;
+	public boolean canRepay;
 	public BigDecimal curPeriodAmount;
 	public BigDecimal curPeriodRestAmount;
 	public Date curPeriodGmtPlanRepay;
