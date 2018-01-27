@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo.ReqParam;
 import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -82,6 +83,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private AfUserAuthService afUserAuthService;
 	@Resource
 	private AfLoanPeriodsService afLoanPeriodsService;
+	@Resource
+	private AfLoanRepaymentService afLoanRepaymentService;
 	
 	@Resource
 	private BizCacheUtil bizCacheUtil;
@@ -425,8 +428,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.isOverdue = false;
 		}
 		
-		// TODO check当前期是否可还款
-		bo.canRepay = true;
+		bo.canRepay = afLoanRepaymentService.canRepay(activePeriod);
 	}
 	/**
 	 * 处理非登陆场景下首页信息
