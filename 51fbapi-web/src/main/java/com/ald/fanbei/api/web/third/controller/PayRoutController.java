@@ -149,6 +149,7 @@ public class PayRoutController {
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	
 	//贷款
+	@Resource
 	AfLoanService afLoanService;
 
 	@Resource

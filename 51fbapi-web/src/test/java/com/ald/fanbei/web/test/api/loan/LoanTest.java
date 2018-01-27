@@ -8,6 +8,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.web.test.common.BaseTest;
 
 public class LoanTest  extends BaseTest{
@@ -41,7 +43,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -66,6 +68,20 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
+	@Test
+	public void delegatePay() {
+		String url = urlBase + "/third/ups/delegatePay?";
+		String orderNo = "01dpay23425234545345";
+		String merPriv = UserAccountLogType.LOAN.getCode();
+		String tradeState = "00";
+		String reqExt = "8";
+		
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
+		url += reqStr;
+		
+		testH5(url, null, userName ,true);
+	}
+	
 //	@Test
 	public void repayDo() {
 		

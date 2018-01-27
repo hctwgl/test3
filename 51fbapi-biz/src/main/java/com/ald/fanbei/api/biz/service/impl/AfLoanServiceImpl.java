@@ -147,8 +147,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			
 			//自检是否放行贷款
 			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
-			BigDecimal anAmount = BigDecimal.valueOf(50000);
-			AfLoanRejectType res = rejectCheck(userId, anAmount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
+			BigDecimal auAmount = BigDecimal.valueOf(50000);
+			AfLoanRejectType res = rejectCheck(userId, auAmount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
 			if(!res.equals(AfLoanRejectType.PASS)) {
 				throw new FanbeiException(res.exceptionCode);
 			}
@@ -166,7 +166,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			final AfUserBankcardDo bankCard = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 			
 			// 数据入库
-			loanDo.setAuAmount(anAmount);
+			loanDo.setAuAmount(auAmount);
 			this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 			
 			// 弱风控
