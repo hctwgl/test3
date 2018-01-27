@@ -141,7 +141,7 @@ public class lookAllQuotaApi implements ApiHandle {
             trainMap.put("picUrl",picUrl);
             
             String jumpUrl = jsonObject.getString("jumpUrlAuth");
-            trainMap.put("jumpUrl",jumpUrl);
+            trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
 
             //现金贷 未通过强风控 状态
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
@@ -180,7 +180,6 @@ public class lookAllQuotaApi implements ApiHandle {
             if(afUserAuthStatusTrain !=null) {
                 if (afUserAuthStatusTrain.getStatus().equals("C")) {
                     trainMap.put("desc", trainDesc);
-                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                     trainMap.put("status", "3");
                 }
                 else if(afUserAuthStatusTrain.getStatus().equals("Y"))
@@ -211,7 +210,7 @@ public class lookAllQuotaApi implements ApiHandle {
 
                 trainMap.put("desc",trainDesc);
                 trainMap.put("status","1");
-                trainMap.put("jumpUrl",jumpUrl+"&name=DO_SCAN_ID");
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_SCAN_ID"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
 
             } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
                     ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
