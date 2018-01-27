@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class LoanAllRepayDoParam {
 	@NotNull
 	@DecimalMin("0")
-	public BigDecimal currentPeriodAmount;
+	public BigDecimal repayAmount;
 	
 	@NotNull
 	@DecimalMin("0")
