@@ -8,6 +8,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -61,7 +62,7 @@ public class lookAllQuotaApi implements ApiHandle {
                 resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
                 return resp;
             }
-            AfUserDo afUserDo = afUserService.getUserById(userId);
+            AfUserAccountDto afUserDo = afUserAccountService.getUserAndAccountByUserId(userId);
             if (afUserDo == null || afUserDo.getRid() == null) {
                 logger.info("lookAllQuotaApi user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
                 resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
@@ -179,7 +180,7 @@ public class lookAllQuotaApi implements ApiHandle {
             if(afUserAuthStatusTrain !=null) {
                 if (afUserAuthStatusTrain.getStatus().equals("C")) {
                     trainMap.put("desc", trainDesc);
-                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC");
+                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                     trainMap.put("status", "3");
                 }
                 else if(afUserAuthStatusTrain.getStatus().equals("Y"))
@@ -195,7 +196,7 @@ public class lookAllQuotaApi implements ApiHandle {
                 }
             }
             else{
-                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC");
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
             }
             if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
@@ -217,11 +218,11 @@ public class lookAllQuotaApi implements ApiHandle {
                     ||StringUtil.equals(userAuth.getFacesStatus(),"N")||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
-                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC");
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                 //认证人脸没有认证银行卡 状态为5
                 if(StringUtil.equals(userAuth.getFacesStatus(),"Y")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
                     status="5";
-                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_BIND_CARD");
+                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_BIND_CARD"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                 }
                 listDesc1=getAuthDesc(value3,"two");
                 listDesc2=getAuthDesc(value4,"two");
