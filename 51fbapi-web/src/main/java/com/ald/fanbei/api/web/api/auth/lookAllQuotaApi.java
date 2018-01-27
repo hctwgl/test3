@@ -184,14 +184,14 @@ public class lookAllQuotaApi implements ApiHandle {
                 }
                 else if(afUserAuthStatusTrain.getStatus().equals("Y"))
                 {
-                    onlineMap.put("auAmount", trainAuAmount);//线上授予额度
-                    onlineMap.put("amount", trainAmount);//线上可用额度
-                    onlineDesc="总额度"+trainAuAmount+"元";
+                    trainMap.put("auAmount", trainAuAmount);//线上授予额度
+                    trainMap.put("amount", trainAmount);//线上可用额度
+                    trainDesc="总额度"+trainAuAmount+"元";
                     if(interimExist){//有临时额度下的描述
-                        onlineDesc="总额度"+trainAuAmount+"元";
+                	trainDesc="总额度"+trainAuAmount+"元";
                     }
-                    onlineMap.put("desc",onlineDesc);//线上描述
-                    onlineMap.put("status","4");
+                    trainMap.put("desc",onlineDesc);//线上描述
+                    trainMap.put("status","4");
                 }
             }
             else{
