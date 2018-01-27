@@ -126,8 +126,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				String failureData = riskCheckData.get("failureData").toString();
 				//String failureData= "operator";
 				String[] failureDataArray = failureData.split(",");
-				AfUserAuthStatusDo afUserAuthStatusFail = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
-				if (afUserAuthStatusFail == null) {
+				//AfUserAuthStatusDo afUserAuthStatusFail = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+				//if (afUserAuthStatusFail == null) {
 					JSONArray jsonArray = new JSONArray();
 					for (int i = 0; i < failureDataArray.length; i++) {
 						JSONObject jsonObject = new JSONObject();
@@ -140,53 +140,54 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 					//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
 					return apiHandleResponse;
-				} else {
-					JSONArray jsonArray = JSON.parseArray(afUserAuthStatusFail.getCauseReason());
-					Boolean existJudge = false;//已失败原因里 跟现在失败原因里不相同,直接返回
-					Boolean judge = false;//已失效状态还是已失效状态
-
-					Integer failureDataLength = failureDataArray.length;
-					for (int i = 0; i < failureDataLength; i++) {
-						Boolean oldEqual = true;//相等过了
-						String failure = failureDataArray[i];
-						for (int j = 0; j < jsonArray.size(); j++) {
-							String failJson = jsonArray.getJSONObject(j).getString("auth");
-							String status = jsonArray.getJSONObject(j).getString("status");
-							if (oldEqual) {
-								if (!failure.equals(failJson)) {
-									if (j == jsonArray.size() - 1) {
-										existJudge = true;//已失败原因里 跟现在失败原因里不相同
-										JSONObject jsonObject = new JSONObject();
-										jsonObject.put("auth", failure);
-										jsonObject.put("status", "N");//失效状态
-										jsonArray.add(jsonObject);
-										j = j + 1;
-									}
-								} else {//已失败原因里 跟现在失败原因里相同,且状态为未失效
-									if ("N".equals(status)) {
-										judge = true;
-									}
-									oldEqual = false;
-								}
-							}
-
-						}
-						if (existJudge && (i == failureDataLength - 1)) {
-							afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
-							afUserAuthStatusDo.setCauseReason(jsonArray.toString());
-							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-							//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
-							return apiHandleResponse;
-						}
-						if (judge) {
-							//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
-							return apiHandleResponse;
-						}
-
-					}
-				}
-                afUserAuthStatus = afUserAuthStatusDo;
-			}
+//				} else {
+//					JSONArray jsonArray = JSON.parseArray(afUserAuthStatusFail.getCauseReason());
+//					Boolean existJudge = false;//已失败原因里 跟现在失败原因里不相同,直接返回
+//					Boolean judge = false;//已失效状态还是已失效状态
+//
+//                		    Integer failureDataLength = failureDataArray.length;
+//                		    for (int i = 0; i < failureDataLength; i++) {
+//                			Boolean oldEqual = true;// 相等过了
+//                			String failure = failureDataArray[i];
+//                			for (int j = 0; j < jsonArray.size(); j++) {
+//                			    String failJson = jsonArray.getJSONObject(j).getString("auth");
+//                			    String status = jsonArray.getJSONObject(j).getString("status");
+//                			    if (oldEqual) {
+//                				if (!failure.equals(failJson)) {
+//                				    if (j == jsonArray.size() - 1) {
+//                					existJudge = true;// 已失败原因里
+//                							  // 跟现在失败原因里不相同
+//                					JSONObject jsonObject = new JSONObject();
+//                					jsonObject.put("auth", failure);
+//                					jsonObject.put("status", "N");// 失效状态
+//                					jsonArray.add(jsonObject);
+//                					j = j + 1;
+//                				    }
+//                				} else {// 已失败原因里 跟现在失败原因里相同,且状态为未失效
+//                				    if ("N".equals(status)) {
+//                					judge = true;
+//                				    }
+//                				    oldEqual = false;
+//                				}
+//                			    }                
+//                			}
+//                    			
+//                    			if (existJudge && (i == failureDataLength - 1)) {
+//                    			    afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
+//                    			    afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+//                    			    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+//                    			    // apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+//                    			    return apiHandleResponse;
+//                    			}
+//                    			if (judge) {
+//                    			    // apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+//                    			    return apiHandleResponse;
+//                    			}
+//                    
+//                    		    }
+//                    		}
+                    		//afUserAuthStatus = afUserAuthStatusDo;
+                    	    }
 		}
 
 		//调用风控失败了
