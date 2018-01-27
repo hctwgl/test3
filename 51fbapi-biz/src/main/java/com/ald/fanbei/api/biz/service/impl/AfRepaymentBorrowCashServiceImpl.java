@@ -364,6 +364,19 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         tempSmsDataMap.put("nowRepayAmountStr", "");
         tempSmsDataMap.put("notRepayMoneyStr", "");
         final String cardNo = userCardNo;
+        Boolean isCashOverdueOld = false;
+        try{
+            Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
+            gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
+            Date newDate = new Date();
+            newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
+            if (StringUtils.equals("代扣付款",repayment.getName())&&gmtPlanTime.getTime() < newDate.getTime()) {
+                isCashOverdueOld = true;
+            }
+        }catch(Exception ex){
+            logger.info("dealRepaymentSucess isCashOverdue error", ex);
+        }
+        final Boolean isCashOverdue = isCashOverdueOld;
         long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
@@ -503,7 +516,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     // 变更还款记录为已还款
                     afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
                     //判断是否需要平账
-                    if ((repayment.getName().equals("代扣付款") && StringUtils.equals("Y", afBorrowCashDo.getOverdueStatus())) || allAmount.compareTo(repayAmount) == 0) {
+                    if (isCashOverdue|| allAmount.compareTo(repayAmount) == 0) {
                         Long userId = afBorrowCashDo.getUserId();
                         AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
                         //减少使用额度
@@ -546,7 +559,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                 if (repayment.getName().equals("代扣付款")) {
-                    if (StringUtils.equals("Y", afBorrowCashDo.getOverdueStatus())) {
+                    if (isCashOverdueOld) {
                         sendRepaymentBorrowCashOverdueWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
                     } else {
                         sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
@@ -611,7 +624,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                             (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)),
                             currAfBorrowCashDo.getOverdueAmount(),
                             currAfBorrowCashDo.getRepayAmount(),
-                            currAfBorrowCashDo.getRateAmount());
+                            currAfBorrowCashDo.getRateAmount(),isCashOverdueOld);
                     logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
                 } catch (Exception e) {
                     logger.error("向催收平台同步还款信息失败", e);
@@ -729,12 +742,24 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             //模版数据map处理
             Map<String, String> replaceMapData = new HashMap<String, String>();
             replaceMapData.put("errorMsg", errorMsg);
+            Boolean isCashOverdue = false;
+            try{
+                Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
+                gmtPlanTime = DateUtil.parseDate(gmtPlanTime.toString());
+                Date newDate = new Date();
+                newDate = DateUtil.parseDate(newDate.toString());
+                if (StringUtils.equals("代扣付款",repayment.getName())&&gmtPlanTime.getTime() < newDate.getTime()) {
+                    isCashOverdue = true;
+                }
+            }catch(Exception ex){
+                logger.info("dealRepaymentFalse isCashOverdue error", ex);
+            }
             //还款失败短信通知
             if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
-                if (StringUtils.equals("N", afBorrowCashDo.getOverdueStatus())) {
-                    smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+                if (isCashOverdue) {
+                    logger.info("borrowCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
                 } else {
-                    logger.info("borrowCash overdue withhold false,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
+                    smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
                 }
             } else {
                 errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());

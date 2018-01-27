@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
@@ -109,8 +108,8 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @return
 	 */
 	public CollectionSystemReqRespBo consumerRepayment(String repayNo, String borrowNo, String cardNumber,
-			String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
-			BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount) {
+													   String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
+													   BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount, Boolean isCashOverdue) {
 		CollectionDataBo data = new CollectionDataBo();
 		Map<String, String> reqBo = new HashMap<String, String>();
 		reqBo.put("repay_no", repayNo);
@@ -128,7 +127,10 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-
+		//判断逾期是否平账
+		if(isCashOverdue){
+			data.setIsFinish("1");
+		}
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);// 数据集合
 		data.setSign(DigestUtil.MD5(json));
@@ -140,6 +142,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
 					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
+			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");

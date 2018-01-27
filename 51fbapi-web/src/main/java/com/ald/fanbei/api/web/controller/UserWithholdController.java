@@ -119,6 +119,15 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
             return returnjson;
         }*/
+        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+        if(afUserWithholdDo==null){
+            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
+            logger.info("withhold for borrowcash fail for afUserWithholdDo is null,userId:"+userId + ",borrowId:"+borrowId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","afUserWithholdDo is null");
+            return returnjson;
+        }
         AfUserAccountDo userDto = afUserAccountService
                 .getUserAccountByUserId(userId);
         if (userDto == null) {
@@ -180,16 +189,6 @@ public class UserWithholdController extends BaseController {
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg","afBorrowCashDo error");
-            return returnjson;
-        }
-
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
-        if(afUserWithholdDo==null){
-            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
-            logger.info("withhold for borrowcash fail for afUserWithholdDo is null,userId:"+userId + ",borrowId:"+borrowId);
-            JSONObject returnjson = new JSONObject();
-            returnjson.put("success",false);
-            returnjson.put("msg","afUserWithholdDo is null");
             return returnjson;
         }
         //将该笔订单锁住(除此之外还需要将原先用户还款的数据锁住)
@@ -368,7 +367,15 @@ public class UserWithholdController extends BaseController {
             return returnjson;
         }
         logger.info("withhold for borrowbill userId:"+userId+",lowBillPrice:"+lowBillPrice);
-
+        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+        if(afUserWithholdDo==null){
+            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
+            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId + ",billIds:"+billIds);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","afUserWithholdDo is null");
+            return returnjson;
+        }
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (afUserAccountDo == null) {
             logger.info("withhold for borrowbill fail for USER_ACCOUNT_NOT_EXIST_ERROR,userId:"+userId);
@@ -399,15 +406,7 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
             return returnjson;
         }
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
-        if(afUserWithholdDo==null){
-            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
-            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId + ",billIds:"+billIds);
-            JSONObject returnjson = new JSONObject();
-            returnjson.put("success",false);
-            returnjson.put("msg","afUserWithholdDo is null");
-            return returnjson;
-        }
+
         JSONObject returnjson = new JSONObject();
         Long refId = 0l;
         try{

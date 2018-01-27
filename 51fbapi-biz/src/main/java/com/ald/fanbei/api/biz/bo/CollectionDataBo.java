@@ -15,6 +15,7 @@ public class CollectionDataBo extends HashMap<String,String>{
 	private String timestamp;
 	private String data;//数据集合
 	private String channel;
+	private String isFinish;//是否平账
 	
 	public String getSign() {
 		return sign;
@@ -44,5 +45,14 @@ public class CollectionDataBo extends HashMap<String,String>{
 	public void setChannel(String channel) {
 		this.channel = channel;
 		this.put("channel",channel);
+	}
+
+	public String getIsFinish() {
+		return isFinish;
+	}
+
+	public void setIsFinish(String isFinish) {
+		this.isFinish = isFinish;
+		this.put("isFinish",isFinish);
 	}
 }
