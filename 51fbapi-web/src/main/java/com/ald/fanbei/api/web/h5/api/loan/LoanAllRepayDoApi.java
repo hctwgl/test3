@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.loan;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
@@ -28,7 +30,9 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -47,7 +51,7 @@ import com.google.common.collect.Maps;
  * @date 2018年1月25日
  */
 @Component("loanAllRepayDo")
-@Validator("LoanRepayDoParam")
+@Validator("LoanAllRepayDoParam")
 public class LoanAllRepayDoApi implements H5Handle {
 	
 	@Resource
@@ -65,6 +69,8 @@ public class LoanAllRepayDoApi implements H5Handle {
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfLoanService afLoanService;
+	@Resource
+	AfLoanPeriodsService afLoanPeriodsService;
 
 
 	@Override
@@ -117,7 +123,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		bo.cardId = (Long) dataMap.get("cardId");
 		bo.couponId = (Long) dataMap.get("couponId");
 		bo.loanId = (Long) dataMap.get("loanId");
-		bo.loanPeriodsId = (Long) dataMap.get("loanPeriodsId");
+//		bo.loanPeriodsId = (Long) dataMap.get("loanPeriodsId");
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
@@ -131,27 +137,6 @@ public class LoanAllRepayDoApi implements H5Handle {
 		checkAmount(bo);
 		
 		return bo;
-	}
-	
-	private void checkFrom(LoanRepayBo bo) {
-		AfLoanDo loanDo = null;
-		if((loanDo = afLoanService.getById(bo.loanId)) == null ){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
-		}
-		bo.loanDo = loanDo;
-		
-		// 检查当前 借款 是否已在处理中
-		AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(bo.loanId);
-		if(loanRepaymentDo != null) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
-		}
-		
-		// 检查 用户 是否多还钱
-		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(bo.loanPeriodsId);
-		if(bo.currentPeriodAmount.compareTo(shouldRepayAmount) > 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
-		}
-		
 	}
 	
 	private void checkPwdAndCard(LoanRepayBo bo) {
@@ -170,6 +155,29 @@ public class LoanAllRepayDoApi implements H5Handle {
 				bo.cardNo = card.getCardNumber();
 			}
 		}
+	}
+	
+	private void checkFrom(LoanRepayBo bo) {
+		AfLoanDo loanDo = null;
+		if((loanDo = afLoanService.getById(bo.loanId)) == null ){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+		}
+		bo.loanDo = loanDo;
+		
+		// 检查当前 借款 是否已在处理中
+		AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(bo.loanId);
+		if(loanRepaymentDo != null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+		}
+		
+		// 检查 用户 是否多还钱(提前结清)
+		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateAllRestAmount(loanDo.getRid());
+		if(bo.currentPeriodAmount.compareTo(shouldRepayAmount) != 0) {
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
+		}
+		
+		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
+		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
 	private void checkAmount(LoanRepayBo bo) { //TODO
@@ -208,7 +216,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		
 		// 对比
 		if (bo.actualAmount.compareTo(calculateAmount) != 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
 	}
