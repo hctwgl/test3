@@ -370,7 +370,7 @@ public class UserWithholdController extends BaseController {
         AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
         if(afUserWithholdDo==null){
             //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
-            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId + ",billIds:"+billIds);
+            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg","afUserWithholdDo is null");
