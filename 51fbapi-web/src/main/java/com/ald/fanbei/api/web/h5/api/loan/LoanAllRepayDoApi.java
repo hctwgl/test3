@@ -83,7 +83,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("rid", bo.loanId);
-		data.put("amount", bo.currentPeriodAmount.setScale(2, RoundingMode.HALF_UP));
+		data.put("amount", bo.repayAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
 		data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
 		if(bo.userCouponDto != null) {
@@ -116,7 +116,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		
 		Map<String, Object> dataMap = context.getDataMap();
 		
-		bo.currentPeriodAmount = (BigDecimal) dataMap.get("currentPeriodAmount");
+		bo.repayAmount = (BigDecimal) dataMap.get("repayAmount");
 		bo.rebateAmount = (BigDecimal) dataMap.get("rebateAmount");
 		bo.actualAmount = (BigDecimal) dataMap.get("actualAmount");
 		bo.payPwd = (String) dataMap.get("payPwd");
@@ -172,11 +172,11 @@ public class LoanAllRepayDoApi implements H5Handle {
 		
 		// 检查 用户 是否多还钱(提前结清)
 		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateAllRestAmount(loanDo.getRid());
-		if(bo.currentPeriodAmount.compareTo(shouldRepayAmount) != 0) {
+		if(bo.repayAmount.compareTo(shouldRepayAmount) != 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
-		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
+		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsService.getNoRepayListByLoanId(loanDo.getRid());
 		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
@@ -193,11 +193,11 @@ public class LoanAllRepayDoApi implements H5Handle {
         	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
         }
 		
-		BigDecimal calculateAmount = bo.currentPeriodAmount;
+		BigDecimal calculateAmount = bo.repayAmount;
 		
 		// 使用优惠券结算金额
 		if (userCouponDto != null) {
-			calculateAmount = BigDecimalUtil.subtract(bo.currentPeriodAmount, userCouponDto.getAmount());
+			calculateAmount = BigDecimalUtil.subtract(bo.repayAmount, userCouponDto.getAmount());
 			if (calculateAmount.compareTo(BigDecimal.ZERO) <= 0) {
 				logger.info(bo.userDo.getUserName() + "coupon repayment");
 				bo.rebateAmount = BigDecimal.ZERO;

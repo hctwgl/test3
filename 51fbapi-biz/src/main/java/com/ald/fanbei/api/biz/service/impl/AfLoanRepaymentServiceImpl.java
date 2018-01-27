@@ -140,6 +140,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 
 	@Override
 	public void repay(LoanRepayBo bo) {
+		if(!canRepay(bo.loanPeriodsDoList.get(0))){
+			// 未出账
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+		}
+		
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
@@ -167,7 +172,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String tradeNo = bo.tradeNo;
     	String name = bo.name;
 		
-    	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.currentPeriodAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
+    	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repayAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
 				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsId,bo.loanDo.getPrdType());
     	
     	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
@@ -607,8 +612,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		
 		bo.cardId = (long) -4;
-		bo.currentPeriodAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
-		bo.actualAmount =  bo.currentPeriodAmount;
+		bo.repayAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.actualAmount =  bo.repayAmount;
 		bo.loanId = cashDo.getRid();
 		
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
@@ -787,7 +792,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		public Long userId;
 		
 		/* request字段 */
-		public BigDecimal currentPeriodAmount = BigDecimal.ZERO;
+		public BigDecimal repayAmount = BigDecimal.ZERO;	// 还款金额
 		public BigDecimal actualAmount = BigDecimal.ZERO; 
 		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
 		public String payPwd;			

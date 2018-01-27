@@ -2,7 +2,9 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,6 +12,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
@@ -27,6 +30,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -42,11 +46,12 @@ import com.google.common.collect.Maps;
  * @Description: 白领贷-还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
+ * @param <E>
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
 @Validator("LoanRepayDoParam")
-public class LoanRepayDoApi implements H5Handle {
+public class LoanRepayDoApi<E> implements H5Handle {
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -63,6 +68,8 @@ public class LoanRepayDoApi implements H5Handle {
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfLoanService afLoanService;
+	@Resource
+	AfLoanPeriodsService afLoanPeriodsService;
 
 
 	@Override
@@ -74,7 +81,7 @@ public class LoanRepayDoApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("rid", bo.loanId);
-		data.put("amount", bo.currentPeriodAmount.setScale(2, RoundingMode.HALF_UP));
+		data.put("amount", bo.repayAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
 		data.put("status", AfLoanRepaymentStatus.SUCC.name());
 		if(bo.userCouponDto != null) {
@@ -108,7 +115,7 @@ public class LoanRepayDoApi implements H5Handle {
 		
 		Map<String, Object> dataMap = context.getDataMap();
 		
-		bo.currentPeriodAmount = (BigDecimal) dataMap.get("currentPeriodAmount");
+		bo.repayAmount = (BigDecimal) dataMap.get("repayAmount");
 		bo.rebateAmount = (BigDecimal) dataMap.get("rebateAmount");
 		bo.actualAmount = (BigDecimal) dataMap.get("actualAmount");
 		bo.payPwd = (String) dataMap.get("payPwd");
@@ -164,10 +171,14 @@ public class LoanRepayDoApi implements H5Handle {
 		
 		// 检查 用户 是否多还钱
 		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(bo.loanPeriodsId);
-		if(bo.currentPeriodAmount.compareTo(shouldRepayAmount) != 0) {
+		if(bo.repayAmount.compareTo(shouldRepayAmount) != 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
+		AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getLastActivePeriodByLoanId(loanDo.getRid());
+		List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+		loanPeriodsDoList.add(loanPeriodsDo);
+		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
 	private void checkAmount(LoanRepayBo bo) { //TODO
@@ -183,11 +194,11 @@ public class LoanRepayDoApi implements H5Handle {
         	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
         }
 		
-		BigDecimal calculateAmount = bo.currentPeriodAmount;
+		BigDecimal calculateAmount = bo.repayAmount;
 		
 		// 使用优惠券结算金额
 		if (userCouponDto != null) {
-			calculateAmount = BigDecimalUtil.subtract(bo.currentPeriodAmount, userCouponDto.getAmount());
+			calculateAmount = BigDecimalUtil.subtract(bo.repayAmount, userCouponDto.getAmount());
 			if (calculateAmount.compareTo(BigDecimal.ZERO) <= 0) {
 				logger.info(bo.userDo.getUserName() + "coupon repayment");
 				bo.rebateAmount = BigDecimal.ZERO;

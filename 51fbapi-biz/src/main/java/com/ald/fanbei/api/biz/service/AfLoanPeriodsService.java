@@ -22,5 +22,7 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
 
 	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
+
+	List<AfLoanPeriodsDo> getNoRepayListByLoanId(Long rid);
 	
 }
