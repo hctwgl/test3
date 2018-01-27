@@ -126,7 +126,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				String failureData = riskCheckData.get("failureData").toString();
 				//String failureData= "operator";
 				String[] failureDataArray = failureData.split(",");
-				AfUserAuthStatusDo afUserAuthStatusFail = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userId, scene, UserAuthSceneStatus.FAILED.getCode());
+				AfUserAuthStatusDo afUserAuthStatusFail = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 				if (afUserAuthStatusFail == null) {
 					JSONArray jsonArray = new JSONArray();
 					for (int i = 0; i < failureDataArray.length; i++) {
@@ -172,7 +172,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 						}
 						if (existJudge && (i == failureDataLength - 1)) {
-							afUserAuthStatusDo.setStatus("C");
+							afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
 							afUserAuthStatusDo.setCauseReason(jsonArray.toString());
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 							//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
