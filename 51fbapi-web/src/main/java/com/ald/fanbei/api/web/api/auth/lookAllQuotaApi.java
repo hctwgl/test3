@@ -193,7 +193,7 @@ public class lookAllQuotaApi implements ApiHandle {
                     trainMap.put("desc",onlineDesc);//线上描述
                     trainMap.put("status","4");
                 }
-                 else if (afUserAuthStatusTrain.getStatus().equals("P")) {                
+                 else if (afUserAuthStatusTrain.getStatus().equals("P") || afUserAuthStatusTrain.getStatus().equals("N")) {                
                      trainMap.put("jumpUrl", jumpUrl + "&name=DO_PROMOTE_BASIC" + "&idNumber=" + afUserDo.getIdNumber() + "&realName=" + afUserDo.getRealName());
                 }
             }
