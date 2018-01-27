@@ -189,4 +189,13 @@
         ORDER BY id ASC
     </select>
     
+    <select id="getRemindDayByLoanPeriodsId" resultType="java.lang.Integer">
+        SELECT
+       		remind_day
+        FROM af_loan_product
+        WHERE is_delete = 0
+          AND prd_type = (SELECT prd_type FROM af_loan_periods WHERE id = #{loanPeriodsId})
+        limit 0,1
+    </select>
+    
 </mapper>

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +29,12 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -68,6 +71,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.tech.sdk.network.d;
 
 
 
@@ -131,6 +135,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private AfLoanPeriodsDao afLoanPeriodsDao;
     @Resource
     private AfLoanDao afLoanDao;
+    @Resource
+    private AfLoanProductDao afLoanProductDao;
 
 	@Override
 	public void repay(LoanRepayBo bo) {
@@ -794,7 +800,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		/* biz 业务处理字段 */
 		public AfLoanRepaymentDo loanRepaymentDo;
 		public AfLoanDo loanDo;
-		public AfUserCouponDto userCouponDto; //可选字段
+		public List<AfLoanPeriodsDo> loanPeriodsDoList;	//借款分期
+		public AfUserCouponDto userCouponDto; 	//可选字段
 		public AfUserAccountDo userDo;
 		public String remoteIp;
 		public String name;
@@ -866,6 +873,52 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}
 		
 		return restAmount;
+	}
+
+    /**
+     * 计算提前还款需还金额
+     */
+	@Override
+	public BigDecimal calculateAllRestAmount(Long loanId) {
+		
+		BigDecimal allRestAmount = BigDecimal.ZERO;
+
+		List<AfLoanPeriodsDo> noRepayList = afLoanPeriodsDao.getNoRepayListByLoanId(loanId);
+		
+		for (AfLoanPeriodsDo loanPeriodsDo : noRepayList) {
+			
+			if(canRepay(loanPeriodsDo)) { // 已出账
+				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount(),
+						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getOverdueAmount());
+			}else { // 未出账， 提前还款时不用还手续费和利息
+				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount());
+			}
+			
+		}
+		
+		return allRestAmount;
+	}
+
+	/**
+     * @return true: 已出账；false： 未出账
+     */
+	@Override
+	public boolean canRepay(AfLoanPeriodsDo loanPeriodsDo) {
+		boolean flag = false;
+		Date now = new Date();
+		Date plan = loanPeriodsDo.getGmtPlanRepay();
+		Integer remindDay = afLoanProductDao.getRemindDayByLoanPeriodsId(loanPeriodsDo.getRid());
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(plan);
+		calendar.add(Calendar.DAY_OF_YEAR, -remindDay);
+		Date startTime = calendar.getTime();
+		
+		if(now.after(startTime)){ // 已出账
+			flag = true;
+		}
+		
+		return flag;
 	}
 
 }

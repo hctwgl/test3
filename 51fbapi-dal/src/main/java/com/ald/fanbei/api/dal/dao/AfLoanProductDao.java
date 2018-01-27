@@ -16,4 +16,6 @@ public interface AfLoanProductDao extends BaseDao<AfLoanProductDo, Long> {
 
 	List<AfLoanProductDo> getAll();
 
+	Integer getRemindDayByLoanPeriodsId(Long loanPeriodsId);
+
 }

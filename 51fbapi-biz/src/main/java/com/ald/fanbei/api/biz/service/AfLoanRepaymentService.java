@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 
@@ -30,12 +31,22 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	
 	/**
-	 * 计算剩余应还的金额
-	 * @param cashDo
-	 * @param orderCashDo
+	 * 计算每期应还的金额
 	 * @return
 	 */
 	BigDecimal calculateRestAmount(Long loanPeriodsId);
+
+	/**
+	 * 计算提前还款应还的金额
+	 * @return
+	 */
+	BigDecimal calculateAllRestAmount(Long rid);
+
+	/**
+	 * 判断当前分期是否可以还款（是否已出账）
+	 * @return
+	 */
+	boolean canRepay(AfLoanPeriodsDo loanPeriodsDo);
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 }
