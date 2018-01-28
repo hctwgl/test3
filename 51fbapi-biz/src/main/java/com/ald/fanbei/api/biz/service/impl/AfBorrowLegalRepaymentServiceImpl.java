@@ -9,9 +9,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -20,13 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -148,20 +143,13 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
 	@Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+
+	@Autowired
+	private AfBorrowLegalOrderService afBorrowLegalOrderService;
 	
 	/**
 	 * 新版还钱函
 	 * 参考{@link com.ald.fanbei.api.biz.service.impl.AfRepaymentBorrowCashServiceImpl}.createRepayment()
-	 * 
-	 * @param repaymentAmount
-	 * @param actualAmount
-	 * @param coupon
-	 * @param rebateAmount
-	 * @param borrow
-	 * @param cardId
-	 * @param userId
-	 * @param clientIp
-	 * @param afUserAccountDo
 	 * @return
 	 */
 	@Override
@@ -175,6 +163,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
+		bo.borrowOrderCashId = bo.orderCashDo.getRid();
 		
 		generateRepayRecords(bo);
 		
@@ -607,7 +596,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     /**
      * 代扣现金贷还款成功短信发送
      * @param mobile
-     * @param nowRepayAmountStr
      */
     private boolean sendRepaymentBorrowCashWithHold(String mobile,BigDecimal nowRepayAmount){
     	//模版数据map处理
@@ -620,7 +608,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     /**
      * 用户手动现金贷还款成功短信发送
      * @param mobile
-     * @param nowRepayAmountStr
      */
     private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
     	//模版数据map处理
@@ -673,6 +660,17 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                 if (StringUtil.equals("Y", repayDealBo.cashDo.getOverdueStatus())) {
                     overdueCount = 1;
                 }
+
+				final AfBorrowCashDo cashDo = afBorrowCashService.getBorrowCashByrid(repayDealBo.cashDo.getRid());
+				//收入添加搭售商品价格
+				AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(cashDo.getRid());
+				if(afBorrowLegalOrderDo!=null&&afBorrowLegalOrderDo.getPriceAmount()!=null) {
+				    repayDealBo.sumIncome =repayDealBo.sumIncome.add(afBorrowLegalOrderDo.getPriceAmount());
+				}
+				else {
+					logger.info("未获取到搭售商品信息 cashDo："+repayDealBo.cashDo.toString());
+				}
+
                 riskUtil.raiseQuota(repayDealBo.userId.toString(), 
                 			repayDealBo.borrowNo, "50", riskOrderNo, 
                 			repayDealBo.sumBorrowAmount,
@@ -926,7 +924,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		AfBorrowLegalOrderRepaymentDo repayment = new AfBorrowLegalOrderRepaymentDo();
 
 		repayment.setUserId(bo.userId);
-		repayment.setBorrowLegalOrderCashId(bo.borrowOrderId);
+		repayment.setBorrowLegalOrderCashId(bo.borrowOrderCashId);
 		repayment.setRepayAmount(repayAmount);
 		repayment.setActualAmount(actualAmountForOrder);
 		repayment.setName(bo.name);

@@ -168,6 +168,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		}**/
 		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
+		afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
 		
 		afOrder.setConsigneeMobile(addressDo.getMobile());
 		afAgentOrderDo.setAddress(addressDo.getAddress());

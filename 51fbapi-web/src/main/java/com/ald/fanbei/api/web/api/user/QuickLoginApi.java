@@ -93,6 +93,7 @@ public class QuickLoginApi implements ApiHandle {
 
 //		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));//验证码
@@ -264,7 +265,7 @@ public class QuickLoginApi implements ApiHandle {
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
-					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY,bqsBlackBox);
 		}
 
 		resp.setResponseData(jo);

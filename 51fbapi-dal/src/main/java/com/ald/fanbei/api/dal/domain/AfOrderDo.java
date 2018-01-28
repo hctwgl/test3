@@ -86,7 +86,20 @@ public class AfOrderDo extends AbstractSerial{
 	private String district;//收货人所在区
 	private String blackBox;//同盾设备指纹
 	private String ip;//ip地址
-	
+	private String bqsBlackBox;//白骑士设备指纹
+
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		if(bqsBlackBox.length()>1024){
+			bqsBlackBox="";//针对超长字符串进行处理
+		}
+		this.bqsBlackBox = bqsBlackBox;
+	}
+
 	public String getIp() {
 		return ip;
 	}

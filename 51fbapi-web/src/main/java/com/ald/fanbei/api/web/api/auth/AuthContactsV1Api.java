@@ -69,7 +69,7 @@ public class AuthContactsV1Api implements ApiHandle {
 
 		try {
 			if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode()) || StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "DIRECTORY", null, null, "", "", null, "", "", "");
+				RiskRespBo riskResp = riskUtil.registerStrongRisk(userId + "", "DIRECTORY", null, null, "", "", null, "", "", "","");
 				if (!riskResp.isSuccess()) {
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
 				}
@@ -87,7 +87,7 @@ public class AuthContactsV1Api implements ApiHandle {
 		}
 		//已过期重新认证项
 		String authItem = "directory";
-		AfUserAuthStatusDo afUserAuthStatusDo= afUserAuthStatusService.selectAfUserAuthStatusByCondition(context.getUserId(),scene,"C");
+		AfUserAuthStatusDo afUserAuthStatusDo= afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(context.getUserId(),scene);
 		if(afUserAuthStatusDo!=null){
 			String causeReason = afUserAuthStatusDo.getCauseReason();
 			if(causeReason!=null&&!"".equals(causeReason)){

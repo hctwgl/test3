@@ -154,6 +154,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		//新增下单时，记录ip和同盾设备指纹锁 cxk
 		afOrder.setIp(request.getRemoteAddr());//用户ip地址
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
+		afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
 		// afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new
 		// BigDecimal(count)));
 
@@ -474,22 +475,27 @@ public class BuySelfGoodsApi implements ApiHandle {
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
+				if (count != 1||afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
+					//报错提示只能买一件商品
+					throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+				}
+				
 				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 				if(doubleEggsDo != null){
+					if (doubleEggsDo.getStartTime().after(new Date())) {
+						//before start
+						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_WITHOUT_START);
+					}
+					
 					if (doubleEggsDo.getEndTime().before(new Date())) {
 						//expire
 						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_EXPIRE);
 					}
 					
-					if (count != 1||afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
-						//报错提示只能买一件商品
-						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
-					}
-					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
-					if(goodsDouble12Count<=0){
+					if(goodsDouble12Count <= 0){
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 					}
@@ -500,11 +506,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 				}
 			}
 		} catch(FanbeiException e){
-			logger.error("double1Egg activity order error = {}", e.getStackTrace());
+			logger.error("doubleEggsGoodsCheck activity order error = {}", e.getStackTrace());
 			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error("double1Egg activity order error = {}", e.getStackTrace());
+			logger.error("doubleEggsGoodsCheck activity order error = {}", e.getStackTrace());
 			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
 		} finally{
 			bizCacheUtil.delCache(key);

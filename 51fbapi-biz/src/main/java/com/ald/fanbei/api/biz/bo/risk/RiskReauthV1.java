@@ -19,12 +19,12 @@ import org.dbunit.util.Base64;
 public class RiskReauthV1 extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
 
-	public RiskReauthV1(String consumerNo, String event, String riskOrderNo, String appName, String ipAddress, String blackBox, String cardNum, String CHANNEL, String notifyHost) {
-		super(consumerNo, event, riskOrderNo, null, null, appName, ipAddress, null, blackBox, cardNum, CHANNEL, null, null, notifyHost);
+	public RiskReauthV1(String consumerNo, String event, String riskOrderNo, String appName, String ipAddress, String blackBox, String cardNum, String CHANNEL, String notifyHost,String bqsBlackBox, String riskScene) {
+		super(consumerNo, event, riskOrderNo, null, null, appName, ipAddress, null, blackBox, cardNum, CHANNEL, null, null, notifyHost,bqsBlackBox,null);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox, String riskScene) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -44,11 +44,6 @@ public class RiskReauthV1 extends RiskRegisterStrongReqBo {
 		eventInfo.put("blackBox", blackBox);
 		eventInfo.put("ipAddress", ipAddress);
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
-	}
-
-	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost, String riskScene) {
-
 	}
 
 }

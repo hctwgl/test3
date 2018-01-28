@@ -8,22 +8,32 @@ import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author 沈铖 2017/7/14 下午3:14
@@ -85,6 +95,7 @@ public class AppH5TradeController extends BaseController {
         AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
         AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         String code = afTradeBusinessInfoService.getCodeById(afTradeBusinessInfoDo.getType());
+        model.put("scene", code);
         //商圈认证
         AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(account.getUserId(), code, YesNoStatus.YES.getCode());
         if (afUserAuthStatusDo == null) {
@@ -175,4 +186,25 @@ public class AppH5TradeController extends BaseController {
         return status;
     }
 
+    @RequestMapping(value = {"CreditPromote"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getCreditPromote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "");
+        try {
+            FanbeiWebContext context = doWebCheck(request, true);
+
+            AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+            // 账户关联信息
+            AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(afUserDo.getRid());
+            AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
+            Map<String, Object> data = afUserAuthService.getCreditPromoteInfo(afUserDo.getRid(), new Date(), userDto, authDo, context.getAppVersion(), UserAccountSceneType.TRAIN.getCode());
+            resp.setData(data);
+
+            return JsonUtil.toJSONString(resp);
+        } catch (Exception e) {
+            logger.error("CreditPromote", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return JsonUtil.toJSONString(resp);
+        }
+    }
 }

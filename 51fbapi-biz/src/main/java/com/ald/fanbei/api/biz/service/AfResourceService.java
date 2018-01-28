@@ -185,6 +185,8 @@ public interface AfResourceService {
 
 	AfResourceDo getAfResourceAppVesion();
 
+	String getAfResourceAppVesionV1();
+
 	ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum);
 
 	boolean checkThirdPayByType(ThirdBizType thirdBizType,ThirdPayTypeEnum thirdPayTypeEnum);

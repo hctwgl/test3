@@ -62,7 +62,7 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox);
+			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox);
 	
 	/**
 	 * 手机充值订单充值逻辑

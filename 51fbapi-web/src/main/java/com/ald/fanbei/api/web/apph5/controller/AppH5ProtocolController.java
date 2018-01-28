@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
@@ -74,6 +75,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @类描述：
@@ -111,6 +114,8 @@ public class AppH5ProtocolController extends BaseController {
 	AfUserSealDao afUserSealDao;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@RequestMapping(value = {"protocolFenqiService"}, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
@@ -182,11 +187,11 @@ public class AppH5ProtocolController extends BaseController {
 			repayDay = afUserOutDayDo.getPayDay();
 		}
 		model.put("repayDay", repayDay);
-		if (StringUtils.isNotBlank(consumeDo.getValue3())) {
-			model.put("interest", borrowAmount.multiply(new BigDecimal( consumeDo.getValue3())).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));
-		}
-		else {
-			model.put("interest", new BigDecimal(0));
+		List<NperDo> rateList = JSONArray.parseArray(consumeDo.getValue3(), NperDo.class);
+		for (NperDo nperDo : rateList) {
+			if (nperDo.getNper() == nper) {
+				model.put("interest", borrowAmount.multiply(nperDo.getRate()).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));
+			}
 		}
 		logger.info(JSON.toJSONString(model));
 	}
@@ -288,7 +293,8 @@ public class AppH5ProtocolController extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("repaymentDay", repaymentDay);
@@ -394,7 +400,8 @@ public class AppH5ProtocolController extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -685,5 +692,7 @@ public class AppH5ProtocolController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 
 }

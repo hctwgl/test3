@@ -27,7 +27,13 @@ public interface AfUserAuthStatusService {
      */
     AfUserAuthStatusDo selectAfUserAuthStatusByCondition(Long userId, String scene,String status);
 
-
+    /**
+     * 查询场景认证
+     * @param userId
+     * @param scene
+     * @return
+     */
+    AfUserAuthStatusDo getAfUserAuthStatusByUserIdAndScene(Long userId, String scene);
 
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);
 }

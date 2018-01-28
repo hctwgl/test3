@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -57,6 +58,12 @@ public class AfActivityServiceImpl  implements AfActivityService {
 	@Override
 	public AfActivityDo getHomeMoreActivity() {
 		return afActivityDao.getHomeMoreActivity();
+	}
+
+	@Override
+	public List<Date> getDateListByName(String tag) {
+		
+		return afActivityDao.getDateListByName(tag);
 	}
 	
 	

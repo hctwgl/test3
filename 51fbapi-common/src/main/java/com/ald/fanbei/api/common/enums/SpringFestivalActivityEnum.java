@@ -16,12 +16,13 @@ public enum SpringFestivalActivityEnum {
 	MAKE_UP(1L,"_MAKE_UP_","美妆"),
 	COMPUTER(2L,"_COMPUTER_","电脑"),
 	WATCH(3L,"_WATCH_","名表"),
-	CLOTHING(4L,"_CLOTHING_","服饰"),
+	CLOTHING(4L,"_CLOTHING_","鞋服"),
 	HOME_ELECTICITY(5L,"_HOME_ELECTICITY_","家电"),
-	ELECTRIC_PRODUCT(6L,"_ELECTRIC_PRODUCT_","电器"),
-	SECOND_HAND(7L,"_SECOND_HAND_","二手"),
 	BAGS(8L,"_BAGS_","箱包"),
-	PHONE(9L,"_PHONE_","手机");
+	PHONE(9L,"_PHONE_","手机"),
+	ELECTRIC_PRODUCT(6L,"_ELECTRIC_PRODUCT_","数码"),
+	SECOND_HAND(7L,"_SECOND_HAND_","食品"),
+	TIGER_MACHINE(10L,"_TIGER_MACHINE_","老虎机");
 	
 	private Long activityId;
 	private String tag;

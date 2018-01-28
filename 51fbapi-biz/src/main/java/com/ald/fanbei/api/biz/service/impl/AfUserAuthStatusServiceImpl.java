@@ -2,6 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,18 +42,35 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
 
     @Override
     public void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
-	// TODO Auto-generated method stub
-        if(afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(),afUserAuthStatusDo.getScene())>0){
+        if (afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(), afUserAuthStatusDo.getScene()) > 0) {
+            if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusDo.getStatus()) && StringUtils.isNotBlank(afUserAuthStatusDo.getCauseReason())) {
+                JSONArray jsonArray = JSON.parseArray(afUserAuthStatusDo.getCauseReason());
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String auth = jsonObject.getString("auth");
+                    String status = jsonObject.getString("status");
+                    if (YesNoStatus.NO.getCode().equals(status)) {
+                        afUserAuthStatusDo.setStatus("N");
+                        break;
+                    }
+                    afUserAuthStatusDo.setStatus("P");
+                }
+            }
             afUserAuthStatusDao.updateAfUserAuthStatus(afUserAuthStatusDo);
-        }else{
+        } else {
             afUserAuthStatusDao.addAfUserAuthStatus(afUserAuthStatusDo);
         }
     }
 
     @Override
     public AfUserAuthStatusDo selectAfUserAuthStatusByCondition(Long userId, String scene, String status) {
-	// TODO Auto-generated method stub
+
 	   return afUserAuthStatusDao.selectAfUserAuthStatusByCondition(userId,scene,status);
+    }
+
+    @Override
+    public AfUserAuthStatusDo getAfUserAuthStatusByUserIdAndScene(Long userId, String scene) {
+        return afUserAuthStatusDao.getAfUserAuthStatusByUserIdAndScene(userId, scene);
     }
 
     @Override

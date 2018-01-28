@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -9,6 +10,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -107,6 +110,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
     BizCacheUtil bizCacheUtil;
     @Resource
     AfBorrowDao afBorrowDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
+
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -114,36 +120,35 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-
-        String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
-                "amount"));
-        String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
-        String type = ObjectUtils.toString(requestDataVo.getParams()
-                .get("type"));
-        String latitude = ObjectUtils.toString(requestDataVo.getParams().get(
-                "latitude"));
-        String longitude = ObjectUtils.toString(requestDataVo.getParams().get(
-                "longitude"));
-        String province = ObjectUtils.toString(requestDataVo.getParams().get(
-                "province"));
-        String city = ObjectUtils.toString(requestDataVo.getParams()
-                .get("city"));
-        String county = ObjectUtils.toString(requestDataVo.getParams().get(
-                "county"));
-        String address = ObjectUtils.toString(requestDataVo.getParams().get(
-                "address"));
-        String blackBox = ObjectUtils.toString(requestDataVo.getParams().get(
-                "blackBox"));
-        String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
-                "couponId"));
-        if (StringUtils.isBlank(amountStr)
-                || AfBorrowCashType.findRoleTypeByCode(type) == null
-                || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
-                || StringUtils.isBlank(longitude)
-                || StringUtils.isBlank(blackBox)) {
-            return new ApiHandleResponse(requestDataVo.getId(),
-                    FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-        }
+		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
+				"amount"));
+		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
+		String type = ObjectUtils.toString(requestDataVo.getParams()
+				.get("type"));
+		String latitude = ObjectUtils.toString(requestDataVo.getParams().get(
+				"latitude"));
+		String longitude = ObjectUtils.toString(requestDataVo.getParams().get(
+				"longitude"));
+		String province = ObjectUtils.toString(requestDataVo.getParams().get(
+				"province"));
+		String city = ObjectUtils.toString(requestDataVo.getParams()
+				.get("city"));
+		String county = ObjectUtils.toString(requestDataVo.getParams().get(
+				"county"));
+		String address = ObjectUtils.toString(requestDataVo.getParams().get(
+				"address"));
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get(
+				"blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
+		String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
+				"couponId"));
+		if (StringUtils.isBlank(amountStr)
+				|| (!numberWordFormat.isNumeric(type))
+				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
+				|| StringUtils.isBlank(longitude)) {
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
 
         // 密码判断
         AfUserAccountDo accountDo = afUserAccountService
@@ -388,7 +393,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                         afBorrowCashDo.getCardNumber(), appName, ipAddress,
                         blackBox, riskOrderNo, accountDo.getUserName(), amount,
                         afBorrowCashDo.getPoundage(), borrowTime, "借钱",
-                        StringUtil.EMPTY_STRING, null, null, 0l, card.getBankName(), null, "",riskDataMap);
+                        StringUtil.EMPTY_STRING, null, null, 0l, card.getBankName(), null, "",riskDataMap,bqsBlackBox,null);
 
                 if (verybo.isSuccess()) {
                     delegatePay(verybo.getConsumerNo(), afBorrowCashDo,
@@ -501,8 +506,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     UserAccountLogType.BorrowCash.getCode(),
                     afBorrowCashDo.getRid() + "");
             cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
-                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+            Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
+//                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
             Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo
                     .getGmtArrival());
             Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
@@ -613,8 +619,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         afBorrowCashDo.setCity(city);
         afBorrowCashDo.setProvince(province);
         afBorrowCashDo.setCounty(county);
-        afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type)
-                .getName());
+        afBorrowCashDo.setType(type);
         afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
         afBorrowCashDo.setUserId(userId);
         afBorrowCashDo.setRateAmount(rateAmount);
@@ -704,6 +709,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
             logger.error("userBorrowCashApply maidian logger error", e);
         }
     }
+
+
 
     // /**
     // * 处理风控逾期借钱或者借款处理
