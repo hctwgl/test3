@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -123,7 +124,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-
+    @Resource
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -394,7 +396,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     }
 
                     BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
-
+                    //判断是否搭售二期，加入手续费
+                    try{
+                        if(StringUtils.equals("代扣付款",repayment.getName())){
+                            if(afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid())){
+                                allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage());
+                            }
+                        }
+                    }catch (Exception ex){
+                        logger.error("withhold isV2BorrowCash error for" + ex);
+                    }
                     AfBorrowCashDo bcashDo = new AfBorrowCashDo();
                     bcashDo.setRid(afBorrowCashDo.getRid());
                     bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
