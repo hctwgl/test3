@@ -21,7 +21,6 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
-import com.google.common.collect.Maps;
 
 /**
  * 获取借钱首页信息

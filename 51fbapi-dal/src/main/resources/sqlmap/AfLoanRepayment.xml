@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,gmt_create,gmt_modified
+        id rid,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,repay_channel,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -64,6 +64,9 @@
         </if>
         <if test="remark != null and remark != ''">
             AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="repayChannel != null and repayChannel != ''">
+            AND repay_channel = #{repayChannel,jdbcType=VARCHAR}
         </if>
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
@@ -132,6 +135,9 @@
 	        <if test="remark != null">        
 	            remark,
 	        </if>
+	        <if test="repayChannel != null">        
+                repay_channel,
+            </if>
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
@@ -192,6 +198,9 @@
 		    <if test="remark != null" >
 		       #{remark,jdbcType=VARCHAR},
 		    </if>
+		    <if test="repayChannel != null" >
+               #{repayChannel,jdbcType=VARCHAR},
+            </if>
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
@@ -254,6 +263,9 @@
             </if>
             <if test="remark != null and remark != '' ">        
                 remark = #{remark,jdbcType=VARCHAR},                
+            </if>
+            <if test="repayChannel != null and repayChannel != '' ">        
+                repay_channel = #{repayChannel,jdbcType=VARCHAR},        
             </if>
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                

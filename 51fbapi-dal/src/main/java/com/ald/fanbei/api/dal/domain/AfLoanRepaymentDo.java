@@ -105,6 +105,11 @@ import java.math.BigDecimal;
      * 还款备注
      */
     private String remark;
+    
+    /**
+     * 还款渠道
+     */
+    private String repayChannel;
 
     /**
      * 创建时间
@@ -477,6 +482,14 @@ import java.math.BigDecimal;
     public void setGmtModified(Date gmtModified){
       this.gmtModified = gmtModified;
     }
+
+	public String getRepayChannel() {
+		return repayChannel;
+	}
+
+	public void setRepayChannel(String repayChannel) {
+		this.repayChannel = repayChannel;
+	}
 
 
 }
