@@ -138,7 +138,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		try {
 			//检查是否已有有效贷款申请
-			AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userId);
+			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userId, bo.reqParam.prdType);
 			if(lastLoanDo != null) {
 				String lastLoanStatus = lastLoanDo.getStatus();
 				if(AfLoanStatus.TRANSFERING.name().equals(lastLoanStatus) 
@@ -384,7 +384,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.prdName = prdDo.getName();
 			bo.prdType = prdType;
 			
-			AfLoanDo lastLoanDo = afLoanDao.fetchLastByUserId(userAccount.getUserId());
+			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
 			
 			bo.rejectCode = rejectCheck(userAccount.getUserId(), anAmount, lastLoanDo, loanCfg).name();

@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
 /**
@@ -12,7 +16,22 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
  */
 public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 
-	AfLoanDo fetchLastByUserId(Long userId);
+	AfLoanDo getLastByUserIdAndPrdType(@Param("userId") Long userId, @Param("prdType") String prdType);
 	
 	AfLoanDo getByLoanNo(String loanNo);
+	
+	/**
+	 * 获取已经完成的贷款记录
+	 * @param userId
+	 * @param start
+	 * @return
+	 */
+	List<AfLoanDo> listDoneLoansByUserId(@Param("userId") Long userId, @Param("start") Integer start);
+	
+	/**
+	 * 获取处理中的贷款
+	 * @param userId
+	 * @return
+	 */
+	List<AfLoanDo> listDealingLoansByUserId(@Param("userId") Long userId);
 }

@@ -219,7 +219,27 @@
 		LIMIT
 		#{start},20
 	</select>
+	<select id="listDoneCashsByUserId" resultType="AfBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_cash
+        WHERE is_delete = 0
+            AND user_id = #{userId}
+            AND status IN ('TRANSEDFAIL','CLOSED','FINSH')
+        ORDER BY gmt_create DESC
+        LIMIT #{start},20
+    </select>
 
+    <select id="getDealingCashByUserId" resultType="AfBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_cash
+        WHERE is_delete = 0
+            AND user_id = #{userId}
+            AND status IN ('APPLY','WAITTRANSED','TRANSEDING','TRANSED')
+        ORDER BY gmt_create DESC
+        LIMIT 1
+    </select>
 	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
 		select borrow_no
 		from af_borrow_cash WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%")
