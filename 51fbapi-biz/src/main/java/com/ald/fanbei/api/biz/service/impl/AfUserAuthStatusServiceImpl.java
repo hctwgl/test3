@@ -50,7 +50,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
                     String auth = jsonObject.getString("auth");
                     String status = jsonObject.getString("status");
                     if (YesNoStatus.NO.getCode().equals(status)) {
-                        afUserAuthStatusDo.setStatus("C");
+                        afUserAuthStatusDo.setStatus("N");
                         break;
                     }
                     afUserAuthStatusDo.setStatus("P");

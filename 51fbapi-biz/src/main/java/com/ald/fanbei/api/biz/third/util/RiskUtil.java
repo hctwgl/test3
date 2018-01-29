@@ -1160,17 +1160,27 @@ public class RiskUtil extends AbstractThird {
                         authDo.setGmtBasic(new Date(System.currentTimeMillis()));
                         authDo.setGmtRisk(new Date(System.currentTimeMillis()));
                         afUserAuthService.updateUserAuth(authDo);
+                        updateUserScenceAmount(userAccountDo, consumerNo, au_amount, new BigDecimal(0), new BigDecimal(0));
                     }
-                } else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
+                } else if (SceneType.ONLINE.getCode().equals(scene)) {
                     AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
                     afUserAuthStatusDo.setGmtModified(new Date());
                     afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
                     afUserAuthStatusDo.setUserId(consumerNo);
                     afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
                     afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+                    updateUserScenceAmount(userAccountDo, consumerNo, new BigDecimal(0), onlineAmount, new BigDecimal(0));
+                }
+                else if(SceneType.TRAIN.getCode().equals(scene)){
+                    AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+                    afUserAuthStatusDo.setGmtModified(new Date());
+                    afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
+                    afUserAuthStatusDo.setUserId(consumerNo);
+                    afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
+                    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+                    updateUserScenceAmount(userAccountDo, consumerNo, new BigDecimal(0), new BigDecimal(0), offlineAmount);
                 }
 
-                updateUserScenceAmount(userAccountDo, consumerNo, au_amount, onlineAmount, offlineAmount);
                 jpushService.strongRiskSuccess(userAccountDo.getUserName());
                 smsUtil.sendRiskSuccess(userAccountDo.getUserName());
             } else if (StringUtils.equals("30", result)) {
