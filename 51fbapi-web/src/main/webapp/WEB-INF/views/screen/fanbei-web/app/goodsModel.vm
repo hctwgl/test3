@@ -56,7 +56,7 @@
                 <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
                 <div class="goodPrice">
                     <p class="fanPrice">￥{{data.saleAmount}}</p>
-                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                    <p class="originPrice"><i class="fan">返</i>￥{{data.rebateAmount}}</p>
                 </div>
                 <p class="monthPrice">{{buttonTxt(data)}}</p>
             </li>
@@ -71,7 +71,7 @@
                 <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
                 <div class="goodPrice">
                     <p class="fanPrice">￥{{data.saleAmount}}</p>
-                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                    <p class="originPrice"><i class="fan">返</i>￥{{data.rebateAmount}}</p>
                 </div>
                 <p class="monthPrice">{{buttonTxt(data)}}</p>
             </li>
