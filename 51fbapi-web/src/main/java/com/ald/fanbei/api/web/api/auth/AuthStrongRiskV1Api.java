@@ -271,6 +271,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 					if (numberOfAuth) {//新手引导过来的二次调用
 						riskScene = getRiskScene(sceneArray[1]);
 						afUserAuthStatusDo.setScene(sceneArray[1]);
+						riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						RiskRespBo riskResp1 = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 								card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
 
