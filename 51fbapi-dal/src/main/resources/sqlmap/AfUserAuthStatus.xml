@@ -165,4 +165,13 @@
         AND status=#{status}
         AND user_id=#{userId}
     </select>
+    
+    <select id="selectAfUserAuthStatusByUserId" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_auth_status
+        where
+        is_delete = 0
+        AND user_id=#{userId}
+    </select>
 </mapper>

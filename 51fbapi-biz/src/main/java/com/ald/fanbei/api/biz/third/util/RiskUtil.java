@@ -2770,7 +2770,7 @@ public class RiskUtil extends AbstractThird {
      *回调时将af_user_auth_status中运营商过期状态改变
      */
     public void syncOperator(Long userId){
-        List <AfUserAuthStatusDo> afUserAuthStatusDos= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"C");
+        List <AfUserAuthStatusDo> afUserAuthStatusDos= afUserAuthStatusService.selectAfUserAuthStatusByUserId(userId);
         if(afUserAuthStatusDos!=null&&afUserAuthStatusDos.size()>0){
             for (AfUserAuthStatusDo afUserAuthStatusDo: afUserAuthStatusDos) {
                 if(afUserAuthStatusDo!=null){
