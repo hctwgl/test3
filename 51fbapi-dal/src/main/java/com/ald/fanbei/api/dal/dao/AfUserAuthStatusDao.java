@@ -62,6 +62,9 @@ public interface AfUserAuthStatusDao extends BaseDao<AfUserAuthStatusDo, Long>{
      * @return
      */
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
+    
+
+    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(@Param("userId") Long userId);
 }
 
 
