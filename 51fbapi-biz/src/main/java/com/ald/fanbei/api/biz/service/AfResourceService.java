@@ -236,4 +236,12 @@ public interface AfResourceService {
 	 * @return
 	 */
 	Map<String, Object> getBorrowCfgInfo();
+
+	/**
+	 *
+	 * @param type (banner的类型)
+	 * @param envType (区分预发和线上)
+	 * @return
+	 */
+	List<AfResourceDo> getLoanHomeListByType(String type ,String envType);
 }
