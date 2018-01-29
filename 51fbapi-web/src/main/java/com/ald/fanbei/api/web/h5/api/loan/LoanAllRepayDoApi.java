@@ -117,11 +117,11 @@ public class LoanAllRepayDoApi implements H5Handle {
 		Map<String, Object> dataMap = context.getDataMap();
 		
 		bo.repayAmount = new BigDecimal(dataMap.get("repayAmount").toString());
-		bo.rebateAmount = new BigDecimal(dataMap.get("rebateAmount").toString());
+		bo.rebateAmount = dataMap.get("rebateAmount").toString()==""?BigDecimal.ZERO:new BigDecimal(dataMap.get("rebateAmount").toString());
 		bo.actualAmount = new BigDecimal(dataMap.get("actualAmount").toString());
 		bo.payPwd = dataMap.get("payPwd").toString();
 		bo.cardId = Long.parseLong(dataMap.get("cardId").toString());
-		bo.couponId = Long.parseLong(dataMap.get("couponId").toString());
+		bo.couponId = dataMap.get("couponId").toString()==""?0:Long.parseLong(dataMap.get("couponId").toString());
 		bo.loanId = Long.parseLong(dataMap.get("loanId").toString());
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
