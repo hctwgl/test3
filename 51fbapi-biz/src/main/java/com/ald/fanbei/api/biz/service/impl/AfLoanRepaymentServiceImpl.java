@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -241,7 +242,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", repayment.getPrdType()+PayOrderSource.REPAY_LOAN.getCode());
+						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
@@ -435,7 +436,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		for (int i = 0; i < repayPeriodsIds.length; i++) {
 			// 获取分期信息
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
-			LoanRepayDealBo.loanPeriodsDoList.add(loanPeriodsDo);
+			List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+			loanPeriodsDoList.add(loanPeriodsDo);
+			LoanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 			if(loanPeriodsDo!=null){
 				dealLoanRepayOverdue(LoanRepayDealBo, loanPeriodsDo);		//逾期费
 				dealLoanRepayPoundage(LoanRepayDealBo, loanPeriodsDo);		//手续费
