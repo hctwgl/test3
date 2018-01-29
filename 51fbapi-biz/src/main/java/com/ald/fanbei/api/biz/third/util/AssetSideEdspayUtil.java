@@ -204,14 +204,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			Date nowDate = new Date();
 			Date startTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanStartTime(),DateUtil.getStartOfDate(nowDate));
 			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getEndOfDate(nowDate));
-			BigDecimal sevenMoney = null;
-			BigDecimal fourteenMoney = null;
+			BigDecimal minMoney = null;//借款期限的较小的 
+			BigDecimal maxMoney = null;//借款期限的较大的 
 			EdspayCreditDetailInfo detailInfo = edspayGetCreditReqBo.getCreditDetails();
-			if(detailInfo != null && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getSEVEN()) && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getFOURTEEN())){
-				sevenMoney = detailInfo.getSEVEN();
-				fourteenMoney = detailInfo.getFOURTEEN();
+			if(detailInfo != null && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getMinMoney()) && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getMaxMoney())){
+				minMoney = detailInfo.getMinMoney();
+				maxMoney = detailInfo.getMaxMoney();
 			}
-			if(sevenMoney!=null && fourteenMoney!=null && sevenMoney.add(fourteenMoney).compareTo(edspayGetCreditReqBo.getMoney())!=0){
+			if(minMoney!=null && maxMoney!=null && minMoney.add(maxMoney).compareTo(edspayGetCreditReqBo.getMoney())!=0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
@@ -229,7 +229,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				creditInfoList = afAssetPackageDetailService.getBorrowBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
 			}else{
 				//现金贷
-				creditInfoList = afAssetPackageDetailService.getBorrowCashBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
+				creditInfoList = afAssetPackageDetailService.getBorrowCashBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, minMoney);
 			}
 			if(creditInfoList!=null && creditInfoList.size()>0){
 				String sourceJsonStr = JSON.toJSONString(creditInfoList);

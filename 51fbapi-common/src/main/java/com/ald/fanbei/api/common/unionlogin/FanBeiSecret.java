@@ -2,16 +2,19 @@ package com.ald.fanbei.api.common.unionlogin;
 
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.alibaba.fastjson.JSON;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -229,23 +232,93 @@ public class FanBeiSecret {
 
     //endregion
 
+    public void test01(){
+        //region 获取token
+        TreeMap<String, String> paramSortedMap = new TreeMap<>();
+        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()) );
+
+        String mapStr = paramTreeMapToString(paramSortedMap);
+        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+        resultSortedMap.put("sign",sign);
+        resultSortedMap.put("params",paramSortedMap);
+        String postParams=JSON.toJSONString(resultSortedMap);
+        System.out.println(postParams);
+
+        String data=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", JSON.toJSONString(resultSortedMap));
+    }
+    
+    public void test02(){
+	    String token = "7bb48b11a30f433587ac4e31f97c7884";
+        TreeMap<String, String> paramSortedMap = new TreeMap<>();
+        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
+        paramSortedMap.put("token", token);
+        String mapStr = paramTreeMapToString(paramSortedMap);
+        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+
+        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+        resultSortedMap.put("sign",sign);
+        resultSortedMap.put("params",paramSortedMap);
+        String data = HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getOrderSn", JSON.toJSONString(resultSortedMap));
+    }
+    
+    public void test03(){
+       String orderNo="84fc84d5-cc6e-42e0-89d1-8ca48c5d47db";
+       String token = "7bb48b11a30f433587ac4e31f97c7884";
+       TreeMap<String, String> paramSortedMap = new TreeMap<>();
+       paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+       paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
+       paramSortedMap.put("token", token);
+       String mapStr = paramTreeMapToString(paramSortedMap);
+       String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+       String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+
+       TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+       resultSortedMap.put("sign",sign);
+       resultSortedMap.put("params",paramSortedMap);
+       String data = HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getCityConfig", JSON.toJSONString(resultSortedMap));
+    }
+    
+    public void test04(){
+      String orderSn = "84fc84d5-cc6e-42e0-89d1-8ca48c5d47db";
+      String token = "7bb48b11a30f433587ac4e31f97c7884";
+      TreeMap<String, String> paramSortedMap = new TreeMap<>();
+      paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+      paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
+      paramSortedMap.put("token", token);
+      paramSortedMap.put("orderSn", orderSn);
+      String mapStr = paramTreeMapToString(paramSortedMap);
+      String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+      String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+
+      paramSortedMap.put("sign", sign);
+      paramSortedMap.put("redirectUrl", "http://atestadmin.51fanbei.com//kdniao/notify.json");
+      String urlParams=paramTreeMapToString(paramSortedMap);
+      String urlFull = "https://t.51gjj.com/gjj?"+urlParams;
+      //endregion
+      System.out.println(urlFull);
+    }
     public static void main(String[] args) throws Exception {
 
         //region 获取token
-//        TreeMap<String, String> paramSortedMap = new TreeMap<>();
-//        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
-//        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()) );
-//
-//        String mapStr = paramTreeMapToString(paramSortedMap);
-//        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
-//        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
-//        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
-//        resultSortedMap.put("sign",sign);
-//        resultSortedMap.put("params",paramSortedMap);
-//        String postParams=JSON.toJSONString(resultSortedMap);
-//        System.out.println(postParams);
-//
-//        String data=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", JSON.toJSONString(resultSortedMap));
+        TreeMap<String, String> paramSortedMap = new TreeMap<>();
+        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()) );
+
+        String mapStr = paramTreeMapToString(paramSortedMap);
+        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+        resultSortedMap.put("sign",sign);
+        resultSortedMap.put("params",paramSortedMap);
+        String postParams=JSON.toJSONString(resultSortedMap);
+        System.out.println(postParams);
+
+        String data=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", JSON.toJSONString(resultSortedMap));
 
 
         //endregion  获取token
@@ -289,25 +362,23 @@ public class FanBeiSecret {
 //  endregion
 
         //region 包装前端url
-        String orderSn = "379d607d-0e30-462c-ac3c-31bc4de683f1";
-        String token = "3c63ba17146645f793d679c96fb6b735";
-        TreeMap<String, String> paramSortedMap = new TreeMap<>();
-        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
-        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
-        paramSortedMap.put("token", token);
-        paramSortedMap.put("orderSn", orderSn);
-        String mapStr = paramTreeMapToString(paramSortedMap);
-        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
-        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
-
-        paramSortedMap.put("sign", sign);
-        paramSortedMap.put("redirectUrl", "http://atestadmin.51fanbei.com//kdniao/notify.json");
-        String urlParams=paramTreeMapToString(paramSortedMap);
-        String urlFull = "https://t.51gjj.com/gjj?"+urlParams;
-        //endregion
-        System.out.println(urlFull);
-
-
+//        String orderSn = "379d607d-0e30-462c-ac3c-31bc4de683f1";
+//        String token = "3c63ba17146645f793d679c96fb6b735";
+//        TreeMap<String, String> paramSortedMap = new TreeMap<>();
+//        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+//        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()));
+//        paramSortedMap.put("token", token);
+//        paramSortedMap.put("orderSn", orderSn);
+//        String mapStr = paramTreeMapToString(paramSortedMap);
+//        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+//        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+//
+//        paramSortedMap.put("sign", sign);
+//        paramSortedMap.put("redirectUrl", "http://atestadmin.51fanbei.com//kdniao/notify.json");
+//        String urlParams=paramTreeMapToString(paramSortedMap);
+//        String urlFull = "https://t.51gjj.com/gjj?"+urlParams;
+//        //endregion
+//        System.out.println(urlFull);
 
 
     }

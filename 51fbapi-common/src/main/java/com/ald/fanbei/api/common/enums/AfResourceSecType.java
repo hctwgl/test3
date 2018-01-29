@@ -32,6 +32,7 @@ public enum AfResourceSecType {
 		BorrowCashPoundage("BORROW_CASH_POUNDAGE", "借钱手续费率（日）"),
 		BorrowCashOverduePoundage("BORROW_CASH_OVERDUE_POUNDAGE", "借钱逾期手续费率（日）"),
 		BorrowCashDay("BORROW_CASH_DAY", "借钱时间"),
+		NewBorrowCashDay("BORROW_CASH_DAY_NEW", "新借钱时间"),
 		borrowCashLender("BORROW_CASH_LENDER", "分期借款出借人信息"),
 		borrowCashLenderForCash("BORROW_CASH_LENDER_FOR_CASH", "现金借款借款出借人信息"),
 		borrowCashSupuerSwitch("BORROW_CASH_SUPUER_SWITCH", "借款超级开关"),
@@ -48,6 +49,7 @@ public enum AfResourceSecType {
 		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
 		BORROW_CASH_COMPANY_NAME("BORROW_CASH_COMPANY_NAME","借款公司名称"),
 		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
+		BORROW_CASH_INFO_LEGAL_NEW("BORROW_CASH_INFO_LEGAL_NEW","新借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
