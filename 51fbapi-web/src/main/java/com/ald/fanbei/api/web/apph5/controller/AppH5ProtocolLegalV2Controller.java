@@ -137,9 +137,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			if (afBorrowDo.getVersion() == 0) {//老版分期
 				protocolFenqiService(request,model);
 				return "/fanbei-web/app/protocolFenqiService";
-//				return "redirect:/fanbei-web/app/protocolFenqiService?userName=" + userName +
-//						"&borrowId=" + borrowId + "&nper=" + nper + "&amount=" + borrowAmount +
-//						"&poundage=" + poundage;
 			}
 			BigDecimal nperAmount = afBorrowDo.getNperAmount();
 			model.put("nperAmount", nperAmount);
@@ -168,38 +165,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					}
 				}
 				model.put("repayDay", repayDay);
-				/*BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
-				for (int i = 1; i <= nper; i++) {
-					AfBorrowDo borrowDo = new AfBorrowDo();
-					borrowDo.setGmtCreate(DateUtil.addMonths(date, i));
-					borrowDo.setNperAmount(money);
-					borrowDo.setAmount(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
-					borrowDo.setNper(i);
-					repayPlan.add(borrowDo);
-				}*/
 				model.put("repayPlan", repayPlan);
 			}
 		}
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
-//		model.put("poundage", consumeDo.getValue1());
 		model.put("poundage", poundage);
-
-		/*model.put("gmtStart", date);
-		if ("SEVEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 6));
-		}else if ("FOURTEEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 13));
-		}
-
-		int repayDay = 20;
-		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
-		if(afUserOutDayDo !=null) {
-			repayDay = afUserOutDayDo.getPayDay();
-		}
-		model.put("repayDay", repayDay);*/
-
 		logger.info(JSON.toJSONString(model));
 		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
@@ -307,7 +279,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
 		getResourceRate(model, type, afResourceDo, "borrow");
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
@@ -327,13 +299,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				if (afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 					protocolLegalCashLoanV1(request,model);
 					return "/fanbei-web/app/protocolLegalCashLoan";
-//					return "redirect:/fanbei-web/app/protocolLegalCashLoan?userName=" + userName + "&borrowId=" + borrowId + "&borrowAmount=" + borrowAmount + "&type=" + type;
 				}//合规线下还款V2
 				else if (afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
 
 				} else {//老版借钱协议
 					protocolCashLoan(request,model);
-//					return "redirect:/fanbei-web/app/protocolCashLoan?userName=" + userName + "&borrowId=" + borrowId + "&borrowAmount=" + borrowAmount;
 					return "/fanbei-web/app/protocolCashLoan";
 				}
 				getResourceRate(model, type, afResourceDo, "borrow");
@@ -489,9 +459,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
 				if (afBorrowLegalOrderCashDo != null){
 					model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
-					/*model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
-					model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
-					model.put("overdueRate","36");*/
 				}else {
 					getResourceRate(model, type,afResourceDo,"borrow");
 				}
