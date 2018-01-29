@@ -151,7 +151,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			//自检是否放行贷款
 			// 获取对应贷款产品额度 af_user_account_sence 中获取 TODO
 			BigDecimal auAmount = BigDecimal.valueOf(50000);
-			AfLoanRejectType res = rejectCheck(userId, auAmount, lastLoanDo, getDBCfg(bo.reqParam.prdType));
+			AfLoanRejectType res = rejectCheck(userId, auAmount, lastLoanDo, getDBCfg(bo.reqParam.prdType, bo.reqParam.periods));
 			if(!res.equals(AfLoanRejectType.PASS)) {
 				throw new FanbeiException(res.exceptionCode);
 			}
@@ -330,13 +330,14 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public LoanDBCfgBo getDBCfg(String prdType) {
+	public LoanDBCfgBo getDBCfg(String prdType, int periods) {
 		LoanDBCfgBo bo = new LoanDBCfgBo();
 		// TODO
 		return bo;
 	}
 	
 	@Override
+	@Deprecated
 	public BigDecimal getUserLayDailyRate(Long userId, String prdType) {
 		try {
 			String key = Constants.CACHEKEY_USER_LAY_DAILY_RATE + prdType + ":" + userId;
@@ -363,7 +364,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.isLogin = true;
 			
 			String prdType = prdDo.getPrdType();
-			LoanDBCfgBo loanCfg = this.getDBCfg(prdType);
+			LoanDBCfgBo loanCfg = this.getDBCfg(prdType, prdDo.getPeriods());
 			
 			// 处理 配置 信息
 			BigDecimal maxAuota = loanCfg.maxQuota;
@@ -376,9 +377,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.minQuota = loanCfg.minQuota;
 			
 			bo.interestRate = new BigDecimal(loanCfg.interestRate);
-			BigDecimal userLayDailyRate = getUserLayDailyRate(userAccount.getUserId(), prdType);
-			BigDecimal userLayRate = userLayDailyRate.multiply(AfLoanPeriodsServiceImpl.DAYS_OF_YEAR);
-			bo.poundageRate = userLayRate.subtract(bo.interestRate);
+			bo.poundageRate = new BigDecimal(loanCfg.poundageRate);
 			bo.overdueRate = new BigDecimal(loanCfg.overdueRate);
 			
 			bo.periods = prdDo.getPeriods();
@@ -436,7 +435,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private List<LoanHomeInfoBo> dealHomeUnlogin(List<AfLoanProductDo> prdDos){
 		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
 		for(AfLoanProductDo prdDo : prdDos) {
-			LoanDBCfgBo loanCfg = getDBCfg(prdDo.getPrdType());
+			LoanDBCfgBo loanCfg = getDBCfg(prdDo.getPrdType(), prdDo.getPeriods());
 			
 			LoanHomeInfoBo bo = new LoanHomeInfoBo();
 			bo.rejectCode = AfLoanRejectType.PASS.name();

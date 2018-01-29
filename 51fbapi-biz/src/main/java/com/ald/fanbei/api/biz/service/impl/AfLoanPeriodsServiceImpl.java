@@ -52,11 +52,13 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     
     @Override
 	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType){
-    	BigDecimal userLayDailyRate = afLoanService.getUserLayDailyRate(userId, prdType);
-    	BigDecimal layRate = userLayDailyRate.multiply(DAYS_OF_YEAR);
-    	LoanDBCfgBo dbCfg = afLoanService.getDBCfg(prdType);
+    	LoanDBCfgBo dbCfg = afLoanService.getDBCfg(prdType, periods);
+    	
     	BigDecimal interestRate = new BigDecimal(dbCfg.interestRate);
-    	BigDecimal serviceRate = layRate.subtract(interestRate);
+    	BigDecimal poundageRate = new BigDecimal(dbCfg.poundageRate);
+    	BigDecimal layRate = interestRate.add(poundageRate);
+    	BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 4, RoundingMode.HALF_UP);
+    	
     	BigDecimal interestRatio = interestRate.divide(layRate, 4, RoundingMode.HALF_UP);
     	
     	List<Object> result = new ArrayList<Object>();
@@ -76,7 +78,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	
     	BigDecimal totalInterestFee = totalIncome.multiply(interestRatio);
     	BigDecimal totalServiceFee = totalIncome.subtract(totalInterestFee);
-    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, serviceRate, interestRate, userLayDailyRate, 
+    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, poundageRate, interestRate, userLayDailyRate, 
     			amount.setScale(2, RoundingMode.HALF_UP), 
     			totalServiceFee.setScale(2, RoundingMode.HALF_UP), 
     			totalInterestFee.setScale(2, RoundingMode.HALF_UP)));
