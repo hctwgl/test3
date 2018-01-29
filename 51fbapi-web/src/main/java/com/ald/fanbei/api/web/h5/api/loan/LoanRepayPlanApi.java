@@ -65,7 +65,7 @@ public class LoanRepayPlanApi implements H5Handle {
 		List<AfLoanPeriodsVo> data = new ArrayList<AfLoanPeriodsVo>();
 		try {
 			
-			Long loanId = (Long) context.getData("loanId");
+			Long loanId = Long.parseLong(context.getData("loanId").toString());
 			if(loanId == null || loanId <= 0){
 				throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 			}

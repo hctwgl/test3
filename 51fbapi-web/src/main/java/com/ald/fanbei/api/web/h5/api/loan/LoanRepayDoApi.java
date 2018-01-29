@@ -115,14 +115,14 @@ public class LoanRepayDoApi<E> implements H5Handle {
 		
 		Map<String, Object> dataMap = context.getDataMap();
 		
-		bo.repayAmount = (BigDecimal) dataMap.get("repayAmount");
-		bo.rebateAmount = (BigDecimal) dataMap.get("rebateAmount");
-		bo.actualAmount = (BigDecimal) dataMap.get("actualAmount");
-		bo.payPwd = (String) dataMap.get("payPwd");
-		bo.cardId = (Long) dataMap.get("cardId");
-		bo.couponId = (Long) dataMap.get("couponId");
-		bo.loanId = (Long) dataMap.get("loanId");
-		bo.loanPeriodsId = (Long) dataMap.get("loanPeriodsId");
+		bo.repayAmount = new BigDecimal(dataMap.get("repayAmount").toString());
+		bo.rebateAmount = new BigDecimal(dataMap.get("rebateAmount").toString());
+		bo.actualAmount = new BigDecimal(dataMap.get("actualAmount").toString());
+		bo.payPwd = dataMap.get("payPwd").toString();
+		bo.cardId = Long.parseLong(dataMap.get("cardId").toString());
+		bo.couponId = Long.parseLong(dataMap.get("couponId").toString());
+		bo.loanId = Long.parseLong(dataMap.get("loanId").toString());
+		bo.loanPeriodsId = Long.parseLong(dataMap.get("loanPeriodsId").toString());
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
