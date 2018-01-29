@@ -402,21 +402,21 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		if (between > 1) {
 		    data.put("title2", "请" + between + "天后尝试重新提交");
 		    if (SceneType.ONLINE.getName().equals(scene))
-			data.put("riskRetrialRemind", afResource.getValue3() + "，请" + between + "天后可重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，请" + between + "天后重新提交审核");
 		    else {
-			data.put("riskRetrialRemind", afResource.getValue4() + "，请" + between + "天后可重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，请" + between + "天后重新提交审核");
 		    }
 		} else if (between == 1) {
 		    if (SceneType.ONLINE.getName().equals(scene)) {
-			data.put("riskRetrialRemind", afResource.getValue3() + "，明天可以重新提交审核");
-			data.put("title2", afResource.getValue3() + "，明天可以重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，明天可以重新提交审核");
+			data.put("title2", afResourceDo.getValue3() + "，明天可以重新提交审核");
 		    } else {
 			data.put("riskRetrialRemind", afResource.getValue4() + "，明天可以重新提交审核");
-			data.put("title2", afResource.getValue4() + "，明天可以重新提交审核");
+			data.put("title2", afResourceDo.getValue4() + "，明天可以重新提交审核");
 		    }
 		} else {
-		    data.put("title2", afResource.getValue());
-		    data.put("riskRetrialRemind", afResource.getValue());
+		    data.put("title2", afResourceDo.getValue());
+		    data.put("riskRetrialRemind", afResourceDo.getValue());
 		    data.put("riskStatus", "A");
 		    data.put("basicStatus", "A");
 		}
