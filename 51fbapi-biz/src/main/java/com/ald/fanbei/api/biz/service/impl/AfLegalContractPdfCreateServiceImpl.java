@@ -585,7 +585,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
 
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
             getResourceRate(map, type,afResourceDo,"borrow");
             map.put("email", afUserDo.getEmail());//电子邮箱
             map.put("mobile", afUserDo.getUserName());// 联系电话
