@@ -315,7 +315,7 @@
         LIMIT 1
 	</select>
     
-    <select id="getRepayByPayTradeNo" resultType="AfLoanRepaymentDo">
+    <select id="getRepayByTradeNo" resultType="AfLoanRepaymentDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
