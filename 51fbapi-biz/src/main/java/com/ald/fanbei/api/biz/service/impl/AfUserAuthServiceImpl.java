@@ -404,7 +404,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		    if (SceneType.ONLINE.getName().equals(scene))
 			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，请" + between + "天后重新提交审核");
 		    else {
-			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，请" + between + "天后重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，" + between + "天后可重试");
 		    }
 		} else if (between == 1) {
 		    if (SceneType.ONLINE.getName().equals(scene)) {
