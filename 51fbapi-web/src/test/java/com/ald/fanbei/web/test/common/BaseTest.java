@@ -82,7 +82,7 @@ public class BaseTest {
     	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
     	
 		try {
-			httpPost(urlString, JSONObject.toJSONString(params), header);
+			httpPost(urlString, JSONObject.toJSONString(params), header, "api");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -111,7 +111,7 @@ public class BaseTest {
 			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(header), "UTF-8"));
 	    	header.put("Referer", referer.toString());
 	    	
-			httpPost(urlString, urlJoin(params), header);
+			httpPost(urlString, urlJoin(params), header, "h5");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -165,7 +165,7 @@ public class BaseTest {
     	return res.substring(1);
     }
     
-    private String httpPost(String url, String reqBody, Map<String, String> headers) throws Exception {
+    private String httpPost(String url, String reqBody, Map<String, String> headers, String type) throws Exception {
     	CloseableHttpClient httpClient = null;
     	
     	if(url.contains("https")) {
@@ -203,7 +203,13 @@ public class BaseTest {
         // request body
     	EntityBuilder builder = EntityBuilder.create();
     	builder.setContentEncoding("UTF-8");
-    	builder.setContentType(ContentType.APPLICATION_FORM_URLENCODED);
+    	
+    	if("api".equals(type)) {
+    		builder.setContentType(ContentType.APPLICATION_JSON);
+    	}else {
+    		builder.setContentType(ContentType.APPLICATION_FORM_URLENCODED);
+    	}
+    	
     	builder.setText(reqBody);
         HttpEntity reqEntity = builder.build();
         postMethod.setEntity(reqEntity);

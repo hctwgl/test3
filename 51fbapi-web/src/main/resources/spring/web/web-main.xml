@@ -398,6 +398,8 @@
 				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
 				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
+				<entry key="/borrowCash/getAllBorrowList" value-ref="getAllBorrowListApi" />
+				
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
@@ -550,7 +552,6 @@
 				<entry key="/h5/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
 				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />
-				<entry key="/h5/loan/getBorrowList" value-ref="getBorrowListApi" />
 				
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />

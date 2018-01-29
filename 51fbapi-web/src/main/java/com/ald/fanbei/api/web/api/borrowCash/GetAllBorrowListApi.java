@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.h5.api.loan;
+package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,27 +8,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
- * H5借钱首页-右上角获取借钱记录
+ * H5借钱首页-右上角获取借钱记录,包含小额借，白领贷等等的全量借钱信息
+ * @attention 注意与 getBorrowCashListApi的区别
  * @author ZJF
  */
-@Component("getBorrowListApi")
-public class GetBorrowListApi implements H5Handle {
+@Component("getAllBorrowListApi")
+public class GetAllBorrowListApi implements ApiHandle  {
 	public static final int PAGE_COUNT = 20;
 	
 	@Resource
@@ -39,10 +42,10 @@ public class GetBorrowListApi implements H5Handle {
 	private AfLoanProductDao afLoanProductDao;
 	
 	@Override
-	public H5HandleResponse process(Context context) {
-		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		
-		Integer pageNo = NumberUtil.objToIntDefault(context.getData("pageNo"), 1);
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		Long userId = context.getUserId();
 		
 		List<Object> dealingList = new ArrayList<Object>();
