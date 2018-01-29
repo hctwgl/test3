@@ -174,7 +174,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String name = bo.name;
 		
     	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repayAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsId,bo.loanDo.getPrdType());
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsDoList,bo.loanDo.getPrdType());
     	
     	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
 		
@@ -185,7 +185,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     
 	private AfLoanRepaymentDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount, 
 			Long userCouponId, BigDecimal couponAmount, BigDecimal rebateAmount, Long loanId, Long cardId, String payTradeNo, String name, Long userId, 
-			String repayType, String cardNo, Long loanPeriodsId, String prdType) {
+			String repayType, String cardNo, List<AfLoanPeriodsDo> loanPeriodsDoList, String prdType) {
 
 		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
 		loanRepay.setUserId(userId);
@@ -199,9 +199,24 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		loanRepay.setUserCouponId(userCouponId);
 		loanRepay.setCouponAmount(couponAmount);
 		loanRepay.setUserAmount(rebateAmount);
-		loanRepay.setPreRepayStatus("N");
+		
+		if(loanPeriodsDoList.size() > 1) {
+			loanRepay.setPreRepayStatus("Y");
+		} else if(loanPeriodsDoList.size() == 1) {
+			loanRepay.setPreRepayStatus("N");
+		}
+		
+		String repayPeriods = "";
+		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
+			if(i == loanPeriodsDoList.size()){
+				repayPeriods += loanPeriodsDoList.get(i).getRid();
+			} else {
+				repayPeriods += loanPeriodsDoList.get(i).getRid()+",";
+			}
+		}
+		loanRepay.setRepayPeriods(repayPeriods);
+		
 		loanRepay.setPrdType(prdType);
-		loanRepay.setRepayPeriods(loanPeriodsId + "");
 		loanRepay.setGmtCreate(gmtCreate);
 		loanRepay.setCardNo("");
 		if (cardId == -2) {
