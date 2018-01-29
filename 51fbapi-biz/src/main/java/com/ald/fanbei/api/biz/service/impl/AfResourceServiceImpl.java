@@ -512,7 +512,7 @@ public class AfResourceServiceImpl implements AfResourceService {
         if (list != null && list.size() > 0) {
             AfResourceDo afResourceDo = list.get(0);
             afResource = afResourceDo.getValue();
-            bizCacheUtil.saveObject("check_app_versionV1", afResource);
+            bizCacheUtil.saveObjectForever("check_app_versionV1", afResource);
         }
         return afResource;
     }
