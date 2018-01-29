@@ -11,10 +11,12 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.DredgeWhiteCollarLoanParam;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
 
 @Component("dredgeWhiteCollarLoanApi")
 @Validator("dredgeWhiteCollarLoanParam")
+@NeedLogin
 public class DredgeWhiteCollarLoanApi implements H5Handle {
 
 	@Override

@@ -8,8 +8,6 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.web.validator.constraints.Default;
-
 @Component("dredgeWhiteCollarLoanParam")
 public class DredgeWhiteCollarLoanParam {
 	
@@ -17,7 +15,6 @@ public class DredgeWhiteCollarLoanParam {
 	private String company;  // 公司
 	
 	@NotNull
-	@Default("abcdef")
 	private String station;  // 岗位
 	
 	@NotNull

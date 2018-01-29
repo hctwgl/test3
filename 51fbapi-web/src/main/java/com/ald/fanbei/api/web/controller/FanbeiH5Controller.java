@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.ald.fanbei.api.web.validator.intercept.ValidationInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -164,11 +166,17 @@ public class FanbeiH5Controller extends H5BaseController {
 	@Override
 	public BaseResponse doProcess(Context context) {
 		validationInterceptor.intercept(context);
-        H5Handle methodHandel = h5HandleFactory.getHandle(context.getMethod());
+        H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
+        
+        // 接口是否需要登录
+        boolean needLogin = isNeedLogin(methodHandle.getClass());
+        if(needLogin && context.getUserId() == null) {
+        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+        }
       
         H5HandleResponse handelResult;
         try {
-            handelResult = methodHandel.process(context);
+            handelResult = methodHandle.process(context);
             int resultCode = handelResult.getResult().getCode();
             if(resultCode != 1000){
                 logger.info(context.getId() + " err,Code=" + resultCode);
@@ -181,6 +189,18 @@ public class FanbeiH5Controller extends H5BaseController {
             logger.error("sys exception",e);
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
+	}
+
+
+	private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
+		Annotation[] annotations = clazz.getDeclaredAnnotations();
+		for(Annotation annotation : annotations) {
+			if(annotation instanceof NeedLogin) {
+				return true;
+			}
+		}
+		return false;
+		
 	}
 
 
