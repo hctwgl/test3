@@ -190,7 +190,7 @@ public class lookAllQuotaApi implements ApiHandle {
                     if(interimExist){//有临时额度下的描述
                 	trainDesc="总额度"+trainAuAmount+"元";
                     }
-                    trainMap.put("desc",onlineDesc);//线上描述
+                    trainMap.put("desc",trainDesc);//线上描述
                     trainMap.put("status","4");
                 }
                  else if (afUserAuthStatusTrain.getStatus().equals("P") || afUserAuthStatusTrain.getStatus().equals("N")) {                
