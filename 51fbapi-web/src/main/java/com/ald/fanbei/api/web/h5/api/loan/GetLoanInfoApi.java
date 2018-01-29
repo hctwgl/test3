@@ -64,7 +64,7 @@ public class GetLoanInfoApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		try {
 			
-			Long loanId = (Long) context.getData("loanId");
+			Long loanId = Long.parseLong(context.getData("loanId").toString());
 			if(loanId == null || loanId <= 0){
 				throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 			}

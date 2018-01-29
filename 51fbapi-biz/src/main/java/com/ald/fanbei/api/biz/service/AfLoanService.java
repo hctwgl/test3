@@ -50,12 +50,14 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	/**
 	 * 获取数据库中配置有关贷款的全部配置信息
 	 * @param prdType 对应product表中的prdType字段值
+	 * @param periods 还款期数
 	 * @return
 	 */
-	LoanDBCfgBo getDBCfg(String prdType);
+	LoanDBCfgBo getDBCfg(String prdType, int periods);
 	
 	/**
 	 * 获取用户白领贷分层日利率,缓存1小时
+	 * @deprecated 暂时写死：年化利率 0.36
 	 * @param userId
 	 * @param prdType 对应product表中的prdType字段值
 	 * @return

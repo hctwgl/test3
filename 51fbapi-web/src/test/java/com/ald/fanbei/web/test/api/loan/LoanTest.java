@@ -81,9 +81,39 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void repayDo() {
+		String url = urlBase + "/h5/loan/loanRepayDo";
+		Map<String,String> params = new HashMap<>();
+		params.put("repayAmount", 12688.06+"");
+		params.put("couponId", "");
+		params.put("rebateAmount", "");
 		
+		params.put("payPwd", DigestUtils.md5Hex("123456"));
+		params.put("cardId", "3111464124");
+		params.put("actualAmount", 12688.06+"");
+		params.put("loanId", 7+"");
+		params.put("loanPeriodsId", 18+"");
+		
+		testH5(url, params, userName, true);
+	}
+	
+	@Test
+	public void getLoanInfo() {
+		String url = urlBase + "/h5/loan/getLoanInfo";
+		Map<String,String> params = new HashMap<>();
+		params.put("loanId", 7+"");
+		
+		testH5(url, params, userName, true);
+	}
+	
+	@Test
+	public void loanRepayPlan() {
+		String url = urlBase + "/h5/loan/loanRepayPlan";
+		Map<String,String> params = new HashMap<>();
+		params.put("loanId", 7+"");
+		
+		testH5(url, params, userName, true);
 	}
 	
 //	@Test

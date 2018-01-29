@@ -315,7 +315,7 @@
         LIMIT 1
 	</select>
     
-    <select id="getRepayByPayTradeNo" resultType="AfLoanRepaymentDo">
+    <select id="getRepayByTradeNo" resultType="AfLoanRepaymentDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
@@ -323,7 +323,7 @@
 		WHERE
 		is_delete = 0
 		AND
-		trade_no_out=#{payTradeNo}
+		trade_no=#{tradeNo}
 		ORDER BY
 		gmt_create DESC
 
