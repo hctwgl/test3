@@ -35,10 +35,10 @@ public class LoanTest  extends BaseTest{
 	
 	@Test
 	public void getBorrowList() {
-		String url = urlBase + "/h5/loan/getBorrowList";
+		String url = urlBase + "/borrowCash/getAllBorrowList";
 		Map<String,String> params = new HashMap<>();
 		params.put("pageNo", 1+"");
-		testH5(url, params, userName, true);
+		testApi(url, params, userName, true);
 	}
 	
 //	@Test
@@ -125,7 +125,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "hq2018012915123212811";
