@@ -38,6 +38,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.constraints.Default;
 import com.google.common.collect.Lists;
 
 /**
@@ -154,6 +155,10 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			String fieldName = field.getName();
 			// 获取请求参数，初始化ValidationBean
 			Object reqParam = reqData.getParams().get(fieldName);
+			if(reqParam == null) {
+				reqParam = getParamDefaultValue(field);
+			}
+			
 			if (reqParam != null) {
 				field.setAccessible(true);
 				Class<?> fieldType = field.getType();
@@ -173,6 +178,17 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	
 	
 	
+	private Object getParamDefaultValue(Field field) {
+		Annotation[] annotations = field.getDeclaredAnnotations();
+		for(Annotation annotation : annotations) {
+			if(annotation instanceof Default) {
+				Default defaultAnnotation = (Default)annotation;
+				return defaultAnnotation.value();
+			}
+		}
+		return null;
+	}
+
 	private void initializeValidatorBean(Object validatorBean, Context context) {
 		Class<? extends Object> clazz = validatorBean.getClass();
 		Field[] fields = clazz.getDeclaredFields();
@@ -180,6 +196,9 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			String fieldName = field.getName();
 			// 获取请求参数，初始化ValidationBean
 			Object reqParam = context.getData(fieldName);
+			if(reqParam == null) {
+				reqParam = getParamDefaultValue(field);
+			}
 			if (reqParam != null) {
 				field.setAccessible(true);
 				Class<?> fieldType = field.getType();
