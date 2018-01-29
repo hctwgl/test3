@@ -528,6 +528,7 @@
 				<!-- 线下还款支付宝绑定 -->
 				<entry key="/userprofile/zhiBalanceBind" value-ref="zhiBalanceBindApi" />
 				<entry key="/userprofile/zhiBalanceGetBind" value-ref="zhiBalanceGetBindApi" />
+				<entry key="/userprofile/zhiBalanceGetVerifyCode" value-ref="zhiBalanceGetVerifyCodeApi" />
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
