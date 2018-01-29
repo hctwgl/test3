@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -241,7 +242,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
+						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
@@ -283,7 +284,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      */
     @Override
 	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
-		final AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentDao.getRepayByPayTradeNo(outTradeNo);
+		final AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentDao.getRepayByTradeNo(tradeNo);
         logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo 
         		+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg 
         		+ ",borrowRepayment=" + JSON.toJSONString(loanRepaymentDo));
@@ -296,7 +297,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
         
-		if(isNeedMsgNotice){
+		/*if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
 			int errorTimes = 0;
 			AfUserDo afUserDo = afUserService.getUserById(loanRepaymentDo.getUserId());
@@ -316,14 +317,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				content = content.replace("&errorMsg",errorMsg);
 				pushService.pushUtil(title,content,afUserDo.getMobile());
 			}
-		}
+		}*/
 		
 	}
     
     
 	@Override
     public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
-		final AfLoanRepaymentDo repaymentDo = afLoanRepaymentDao.getRepayByPayTradeNo(outTradeNo);
+		final AfLoanRepaymentDo repaymentDo = afLoanRepaymentDao.getRepayByTradeNo(tradeNo);
         dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null);
     }
     
@@ -374,8 +375,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             });
 
             if (resultValue == 1L) {
-            	notifyUserBySms(LoanRepayDealBo);
-            	nofityRisk(LoanRepayDealBo);
+//            	notifyUserBySms(LoanRepayDealBo);
+//            	nofityRisk(LoanRepayDealBo);
             }
     		
     	}finally {
@@ -435,7 +436,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		for (int i = 0; i < repayPeriodsIds.length; i++) {
 			// 获取分期信息
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
-			LoanRepayDealBo.loanPeriodsDoList.add(loanPeriodsDo);
+			List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+			loanPeriodsDoList.add(loanPeriodsDo);
+			LoanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 			if(loanPeriodsDo!=null){
 				dealLoanRepayOverdue(LoanRepayDealBo, loanPeriodsDo);		//逾期费
 				dealLoanRepayPoundage(LoanRepayDealBo, loanPeriodsDo);		//手续费

@@ -50,7 +50,7 @@ import com.google.common.collect.Maps;
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
-//@Validator("LoanRepayDoParam")
+@Validator("LoanRepayDoParam")
 public class LoanRepayDoApi<E> implements H5Handle {
 	
 	@Resource
@@ -116,11 +116,11 @@ public class LoanRepayDoApi<E> implements H5Handle {
 		Map<String, Object> dataMap = context.getDataMap();
 		
 		bo.repayAmount = new BigDecimal(dataMap.get("repayAmount").toString());
-		bo.rebateAmount = dataMap.get("rebateAmount").toString()==""?BigDecimal.ZERO:new BigDecimal(dataMap.get("rebateAmount").toString());
+		bo.rebateAmount = new BigDecimal(dataMap.get("rebateAmount").toString());
 		bo.actualAmount = new BigDecimal(dataMap.get("actualAmount").toString());
 		bo.payPwd = dataMap.get("payPwd").toString();
 		bo.cardId = Long.parseLong(dataMap.get("cardId").toString());
-		bo.couponId = dataMap.get("couponId").toString()==""?0:Long.parseLong(dataMap.get("couponId").toString());
+		bo.couponId = Long.parseLong(dataMap.get("couponId").toString());
 		bo.loanId = Long.parseLong(dataMap.get("loanId").toString());
 		bo.loanPeriodsId = Long.parseLong(dataMap.get("loanPeriodsId").toString());
 		
