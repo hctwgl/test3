@@ -540,11 +540,13 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="fetchLastByUserId" resultType="AfLoanDo">
+    <select id="getLastByUserIdAndPrdType" resultType="AfLoanDo">
         SELECT
         <include refid="queryFields" />
         FROM af_loan 
-        WHERE is_delete = 0 AND user_id=#{userId}
+        WHERE is_delete = 0 
+            AND user_id=#{userId}
+            AND prd_type=#{prdType}
         ORDER BY id DESC
         LIMIT 1
     </select>
@@ -555,6 +557,27 @@
         FROM af_loan 
         WHERE is_delete = 0 AND loan_no=#{loanNo}
         LIMIT 1
+    </select>
+    
+    <select id="listDoneLoansByUserId" resultType="AfLoanDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan 
+        WHERE is_delete = 0
+            AND user_id = #{userId}
+            AND status IN ('TRANSFER_FAIL','CLOSED','FINISHED')
+        ORDER BY gmt_create DESC
+        LIMIT #{start},20
+    </select>
+    
+    <select id="listDealingLoansByUserId" resultType="AfLoanDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan
+        WHERE is_delete = 0
+            AND user_id = #{userId}
+            AND status IN ('APPLY','TRANSFERING','TRANSFERRED')
+        ORDER BY gmt_create DESC
     </select>
     
 </mapper>

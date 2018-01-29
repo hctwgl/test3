@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -173,7 +174,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String name = bo.name;
 		
     	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repayAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsId,bo.loanDo.getPrdType());
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsDoList,bo.loanDo.getPrdType());
     	
     	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
 		
@@ -184,7 +185,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     
 	private AfLoanRepaymentDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount, 
 			Long userCouponId, BigDecimal couponAmount, BigDecimal rebateAmount, Long loanId, Long cardId, String payTradeNo, String name, Long userId, 
-			String repayType, String cardNo, Long loanPeriodsId, String prdType) {
+			String repayType, String cardNo, List<AfLoanPeriodsDo> loanPeriodsDoList, String prdType) {
 
 		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
 		loanRepay.setUserId(userId);
@@ -198,9 +199,24 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		loanRepay.setUserCouponId(userCouponId);
 		loanRepay.setCouponAmount(couponAmount);
 		loanRepay.setUserAmount(rebateAmount);
-		loanRepay.setPreRepayStatus("N");
+		
+		if(loanPeriodsDoList.size() > 1) {
+			loanRepay.setPreRepayStatus("Y");
+		} else if(loanPeriodsDoList.size() == 1) {
+			loanRepay.setPreRepayStatus("N");
+		}
+		
+		String repayPeriods = "";
+		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
+			if(i == loanPeriodsDoList.size()){
+				repayPeriods += loanPeriodsDoList.get(i).getRid();
+			} else {
+				repayPeriods += loanPeriodsDoList.get(i).getRid()+",";
+			}
+		}
+		loanRepay.setRepayPeriods(repayPeriods);
+		
 		loanRepay.setPrdType(prdType);
-		loanRepay.setRepayPeriods(loanPeriodsId + "");
 		loanRepay.setGmtCreate(gmtCreate);
 		loanRepay.setCardNo("");
 		if (cardId == -2) {
@@ -241,7 +257,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", repayment.getPrdType()+PayOrderSource.REPAY_LOAN.getCode());
+						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
@@ -435,7 +451,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		for (int i = 0; i < repayPeriodsIds.length; i++) {
 			// 获取分期信息
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
-			LoanRepayDealBo.loanPeriodsDoList.add(loanPeriodsDo);
+			List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+			loanPeriodsDoList.add(loanPeriodsDo);
+			LoanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 			if(loanPeriodsDo!=null){
 				dealLoanRepayOverdue(LoanRepayDealBo, loanPeriodsDo);		//逾期费
 				dealLoanRepayPoundage(LoanRepayDealBo, loanPeriodsDo);		//手续费

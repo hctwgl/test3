@@ -734,4 +734,17 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return bannerList;
 	}
 
+	@Override
+	public List<AfResourceDo> getLoanHomeListByType(){
+        String type = "BORROW_CASH_BANNER_DOWN";
+        String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        List<AfResourceDo> list = new ArrayList<AfResourceDo>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+            list = afResourceDao.getResourceHomeListByTypeOrderBy(type);
+        }else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+            list = afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type);
+        }
+        return list;
+    }
+
 }

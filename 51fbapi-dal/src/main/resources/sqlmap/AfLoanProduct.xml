@@ -198,4 +198,12 @@
         limit 0,1
     </select>
     
+    <select id="getByPrdType" resultType="AfLoanProductDo">
+        SELECT
+           <include refid="queryFields" />
+        FROM af_loan_product
+        WHERE prd_type = #{prdType}
+        limit 1
+    </select>
+    
 </mapper>

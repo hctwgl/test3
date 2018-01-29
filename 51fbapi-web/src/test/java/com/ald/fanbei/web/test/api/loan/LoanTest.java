@@ -8,6 +8,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.web.test.common.BaseTest;
 
@@ -26,10 +27,18 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, userName, true);
+	}
+	
+	@Test
+	public void getBorrowList() {
+		String url = urlBase + "/borrowCash/getAllBorrowList";
+		Map<String,String> params = new HashMap<>();
+		params.put("pageNo", 1+"");
+		testApi(url, params, userName, true);
 	}
 	
 //	@Test
@@ -81,16 +90,16 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void repayDo() {
 		String url = urlBase + "/h5/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
 		params.put("repayAmount", 12688.06+"");
-		params.put("couponId", "");
-		params.put("rebateAmount", "");
+		params.put("couponId", "0");
+		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464124");
+		params.put("cardId", "3111464125");
 		params.put("actualAmount", 12688.06+"");
 		params.put("loanId", 7+"");
 		params.put("loanPeriodsId", 18+"");
@@ -98,7 +107,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
@@ -107,7 +116,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void loanRepayPlan() {
 		String url = urlBase + "/h5/loan/loanRepayPlan";
 		Map<String,String> params = new HashMap<>();
@@ -118,7 +127,16 @@ public class LoanTest  extends BaseTest{
 	
 //	@Test
 	public void  collect() {
+		String url = urlBase + "/third/ups/collect?";
+		String orderNo = "hq2018012915123212811";
+		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
+		String tradeNo = "xianFenghq2018012915123212811";
+		String tradeState = "00";
 		
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
+		url += reqStr;
+		Map<String,String> params = new HashMap<>();
+		testApi(url, params, userName, true);
 	}
 	
 //	@Test

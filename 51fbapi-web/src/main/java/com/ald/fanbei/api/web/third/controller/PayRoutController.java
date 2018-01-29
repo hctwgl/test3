@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -151,6 +152,8 @@ public class PayRoutController {
 	//贷款
 	@Resource
 	AfLoanService afLoanService;
+	@Resource
+	AfLoanRepaymentService afLoanRepaymentService;
 
 	@Resource
 	private HuichaoUtility huichaoUtility;
@@ -488,6 +491,8 @@ public class PayRoutController {
 					afBorrowLegalRepaymentV2Service.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
 				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2
 					afRenewalLegalDetailV2Service.dealLegalRenewalSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
+					afLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
@@ -519,6 +524,8 @@ public class PayRoutController {
 					afBorrowLegalRepaymentV2Service.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg); // ourTradeNo 为我方还款交易流水号
 				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2失败
 					afRenewalLegalDetailV2Service.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
+				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
+					afLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				}
 			}
 			return "SUCCESS";
