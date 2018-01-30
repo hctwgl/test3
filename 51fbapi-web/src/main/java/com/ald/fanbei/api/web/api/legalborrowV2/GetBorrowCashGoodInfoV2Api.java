@@ -8,6 +8,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +69,8 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoV2Api.class);
 
@@ -77,17 +83,24 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
-		String borrowType = param.getBorrowType();
+		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
 		BigDecimal borrowDay = new BigDecimal(borrowType);
 
 		BigDecimal oriRate = BigDecimal.ZERO;
 		if (userId != null) {
-			oriRate = riskUtil.getRiskOriRate(userId);
+			JSONObject params = new JSONObject();
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			String bqsBlackBox = request.getParameter("bqsBlackBox");
+			params.put("ipAddress",CommonUtil.getIpAddr(request));
+			params.put("appName",appName);
+			params.put("bqsBlackBox",bqsBlackBox);
+			params.put("blackBox",request.getParameter("blackBox"));
+			oriRate = riskUtil.getRiskOriRate(userId,params);
 		}
 
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 
 		double newServiceRate = 0;
@@ -176,6 +189,13 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -185,20 +205,20 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
-				} else {
-					interestRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
-				} else {
-					serviceRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}

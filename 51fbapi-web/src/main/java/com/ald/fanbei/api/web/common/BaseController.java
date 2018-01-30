@@ -1,16 +1,10 @@
 package com.ald.fanbei.api.web.common;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -112,7 +106,17 @@ public abstract class BaseController {
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
-
+			if(contex.getAppVersion()==344){
+				throw new FanbeiException("您使用的app版本过低,请升级",true);
+			}
+			//406强升需要数据拦截的借钱相关接口
+			String apiUrl = "/legalborrow/applyLegalBorrowCash,/legalborrowV2/applyLegalBorrowCash,/legalborrowV2/confirmLegalRenewalPay,/legalborrow/confirmLegalRenewalPay,/borrowCash/applyBorrowCashV1,/borrowCash/confirmRenewalPay";
+			if(apiUrl.toLowerCase().contains(request.getRequestURI().toString().toLowerCase()) && contex.getAppVersion()<406){
+				String afResourceDo = afResourceService.getAfResourceAppVesionV1();
+				if (afResourceDo != null && afResourceDo.equals("true") && requestDataVo.getId().endsWith("www")) {
+					throw new FanbeiException("version is letter 406", FanbeiExceptionCode.VERSION_ERROR);
+				}
+			}
 			// 判断版本更新 后台控制
 			try {
 				AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesion();
@@ -660,7 +664,10 @@ public abstract class BaseController {
 			}
 		}
 		logger.info("signStrBefore = {}", signStrBefore);
-		this.compareSign(signStrBefore, sign);
+		if (needToken){
+			this.compareSign(signStrBefore, sign);
+		}
+
 
 	}
 

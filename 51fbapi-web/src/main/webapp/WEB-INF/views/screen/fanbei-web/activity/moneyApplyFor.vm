@@ -13,7 +13,7 @@
     <div id="moneyApplyFor">
         <div class="moneyApply-pay">
             <div class="currentMoney">
-                <span class="currentDes">当前额度</span><br/>
+                <span class="currentDes">当前购物额度</span><br/>
                 <span class="Money"></span>
             </div>
             <div class="moneyLimit">

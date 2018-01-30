@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
@@ -101,6 +102,8 @@ public class AppH5DoubleEggsController extends BaseController {
 	AfGoodsService afGoodsService;
 	@Resource
 	AfSubjectService afSubjectService;
+	@Resource
+	AfActivityService afActivityService;
 	
 	/**
 	 * 
@@ -501,23 +504,55 @@ public class AppH5DoubleEggsController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
+			
+			//get tag from activityId then get goods from different tag
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			if (activityId == null) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
 
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String paramDate = request.getParameter("startDate");
+			
+			
+			
+			Date startDate = new Date();
+			
+			if (StringUtil.isNotBlank(paramDate)) {
+				startDate = sdf.parse(paramDate);
+			}
+			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
+			//find the name from activityId
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			if (StringUtil.isBlank(tag)) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
+			
+			
 			Date now = new Date() ;
+
+			//get dateList start from the config of specific activity
+			List<Date> dateList = afActivityService.getDateListByName(tag);
 			
-			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
 			
-			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
 				
-				log = log + String.format("middle params dateList.size() = %s", dateList.size());
+				log = log + String.format("middle params dateList.size() = %s ,startDate = %s", dateList.size(),startDate.toString());
 				logger.info(log);
+				
+				if(startDate.before(dateList.get(0))){
+					startDate = dateList.get(0);
+				}
+				
+				
 				
 			//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 				
-				for (Date startDate : dateList) {
+				//for (Date startDate : dateList) {
 					
-					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
+					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate,tag);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
 						
 						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
@@ -558,7 +593,7 @@ public class AppH5DoubleEggsController extends BaseController {
 							}
 
 							// format to the fix form
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							
 							goodsBuffer.setStartDate(sdf.format(startDate));
 							goodsBuffer.setStartTime(startDate);
 							goodsBuffer.setGoodsListForDate(goodsListForDate);
@@ -568,7 +603,7 @@ public class AppH5DoubleEggsController extends BaseController {
 						
 					}
 		
-				}
+				//}
 				
 				
 				java.util.Map<String, Object> data = new HashMap<>();
@@ -624,10 +659,24 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("goodsId = %s",goodsId);
 				logger.info(log);
 				
+			
+				
 				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
 				log = log + String.format("goodsDo = %s",goodsDo.toString());
 				logger.info(log);
+				
+				//根据goodsId查询商品信息
+				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-goodsDo.getAlreadyCount());//秒杀商品余量
+				
+				log = log + String.format("goodsDouble12Count = %d",goodsDouble12Count);
+				logger.info(log);
+				
+				if(goodsDouble12Count <= 0){
+					//报错提示秒杀商品已售空
+					throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+				}
 				
 				if (goodsDo != null) {
 

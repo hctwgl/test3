@@ -24,11 +24,33 @@ public interface AfESdkService {
 
     FileDigestSignResult userSign(Map<String,String> map);//签章
 
+    FileDigestSignResult userStreamSign(Map<String,String> map,byte[] stream);//签章
+
+    FileDigestSignResult userOldSign(Map<String,String> map);//签章
+
+    FileDigestSignResult firstPartySign(Map<String,String> map);//甲方签章
+
+    FileDigestSignResult secondPartySign(Map<String,String> map,byte[] secondStream);//乙方签章
+
+    FileDigestSignResult thirdPartySign(Map<String,String> map);//丙方（阿拉丁）签章
+
+//    FileDigestSignResult fourPartySign(Map<String,String> map);//钱包签章
+
+    FileDigestSignResult selfOldSign(Map<String,String> map);//签章
+
+    FileDigestSignResult secondOldSign(Map<String,String> map);//签章
+
     FileDigestSignResult secondSign(Map<String,String> map);//签章
+
+    FileDigestSignResult secondStreamSign(Map<String,String> map,byte[] secondStream);//签章
 
     FileDigestSignResult thirdSign(Map<String,String> map);//签章
 
+    FileDigestSignResult thirdStreamSign(Map<String,String> map,byte[] stream);//签章
+
     FileDigestSignResult selfSign(Map<String,String> map);//签章
+
+    FileDigestSignResult selfStreamSign(Map<String,String> map,byte[] stream);//签章
 
     AddAccountResult addPerson(Map<String,String> map);//创建个人账户
 

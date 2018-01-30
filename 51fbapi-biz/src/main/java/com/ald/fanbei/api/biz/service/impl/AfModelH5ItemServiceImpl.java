@@ -73,4 +73,10 @@ public class AfModelH5ItemServiceImpl implements AfModelH5ItemService {
 		return afModelH5ItemDao.selectModelByTag();
 	}
 
+
+	@Override
+	public List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(long modelId, String type) {
+		return afModelH5ItemDao.getModelH5ItemListByModelIdAndModelTypeSortById(modelId, type);
+	}
+
 }

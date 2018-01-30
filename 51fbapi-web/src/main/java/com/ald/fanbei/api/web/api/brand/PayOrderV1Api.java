@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +98,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsService afGoodsService;
     @Resource
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+    @Resource
+    AfUserCouponTigerMachineService afUserCouponTigerMachineService;
     
 
     @Override
@@ -154,24 +159,7 @@ public class PayOrderV1Api implements ApiHandle {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
             }
         }
-        //----------------
 
-        // mqp_新人专享活动增加逻辑
-        /*if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
-                && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-            AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
-                    .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-            if(shareUserGoodsDo!= null)
-            {
-                        AfShareUserGoodsDo result = afShareUserGoodsService
-                                .getByUserId(shareUserGoodsDo.getUserId());
-            
-                        if (result != null && result.getIsBuy() == 1) {
-                            logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
-                            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
-                        }
-            }
-        }*/
 
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
                 && afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId()) != 0) {
@@ -184,10 +172,12 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
         //-------------mqp doubleEggs-------------
-        doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
+        // 支付逻辑不验证秒杀库存
+        //doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
 
         // 双十二秒杀新增逻辑+++++++++++++>
-        double12GoodsCheck(userId, orderInfo.getGoodsId());
+        // 支付逻辑不验证秒杀库存
+        //double12GoodsCheck(userId, orderInfo.getGoodsId());
         // +++++++++++++++++++++++++<
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
@@ -359,6 +349,19 @@ public class PayOrderV1Api implements ApiHandle {
             Object payStatus = result.get("status");
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
+                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+                	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
+                	if (resourceDo != null) {
+                		Date current = new Date();
+                		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                		String strCurrent = sFormat.format(current);
+                		if (strCurrent.compareTo(resourceDo.getValue()) > 0 && strCurrent.compareTo(resourceDo.getValue1()) < 0 ) {
+                			afUserCouponTigerMachineService.addOneTime(userId, "SHOPPING");
+						}
+                		
+					}
+                	//----------------------------end map:add one time for tiger machine---------------------------------
+                	
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {
@@ -394,7 +397,6 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
-    
     /**
 	 * 
 	 * @Title: double12GoodsCheck
@@ -450,7 +452,7 @@ public class PayOrderV1Api implements ApiHandle {
 			//根据goodsId查询商品信息
 			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 			int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
-			if(goodsDouble12Count<0){
+			if(goodsDouble12Count <= 0){
 				//报错提示秒杀商品已售空
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}

@@ -39,7 +39,6 @@
 				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>
-
 				<!--<value>fbapi.esign.project.id</value>-->
 				<!--<value>fbapi.esign.project.secret</value>-->
 			</list>

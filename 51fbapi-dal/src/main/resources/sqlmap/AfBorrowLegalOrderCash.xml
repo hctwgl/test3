@@ -422,6 +422,15 @@
 		LIMIT 1
 	</select>
 
+	<select id="calculateRestAmount" resultType="BigDecimal">
+		SELECT IF (oc.`id` IS NULL ,
+           IF (c.`amount` + c.`overdue_amount` + c.`sum_overdue` + c.`rate_amount` +c.`sum_rate` -c.`repay_amount`>=c.`amount`,c.`amount`,c.`amount` + c.`overdue_amount` + c.`sum_overdue` + c.`rate_amount` +c.`sum_rate` -c.`repay_amount`  )
+           ,
+           IF (oc.`amount` + oc.`overdue_amount` + oc.`sum_repaid_overdue` +oc.`poundage_amount` +oc.`sum_repaid_poundage` +oc.`interest_amount` +oc.`sum_repaid_interest` -oc.`repaid_amount`>=oc.`amount`
+              ,oc.`amount` ,oc.`amount` + oc.`overdue_amount` + oc.`sum_repaid_overdue` +oc.`poundage_amount` +oc.`sum_repaid_poundage` +oc.`interest_amount` +oc.`sum_repaid_interest` -oc.`repaid_amount`) )
+FROM `af_borrow_cash` c LEFT JOIN `af_borrow_legal_order_cash` oc on c.`id`  = oc.`borrow_id` and oc.`status` IN ('AWAIT_REPAY','PART_REPAID') WHERE  c.`id` =#{borrowId} LIMIT 1;
+	</select>
+
 	<select id="getByCommonCondition"
 		resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo"
 		parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">

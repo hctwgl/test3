@@ -50,7 +50,6 @@ public class GetCashPageTypeApi implements ApiHandle {
 		Long userId = context.getUserId();
 		String pageType = "old";
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
-
 		String isBack = afResourceDo.getValue();
 		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			pageType = "new";
@@ -89,7 +88,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 			} else {
 				// 查询用户是否有订单借款信息
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
 				if ((StringUtils.equalsIgnoreCase("FINSH", status))) {

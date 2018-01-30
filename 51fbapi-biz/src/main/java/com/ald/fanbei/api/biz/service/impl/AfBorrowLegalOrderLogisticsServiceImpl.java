@@ -6,6 +6,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
+import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -129,6 +134,33 @@ public class AfBorrowLegalOrderLogisticsServiceImpl extends ParentServiceImpl<Af
     }
 
 	private AfBorrowLegalOrderLogisticsDo getByOrderId(long orderId) {
-		return afBorrowLegalOrderLogisticsDao.getByOrderId(orderId);
+		AfBorrowLegalOrderLogisticsDo afBorrowLegalOrderLogisticsDo = afBorrowLegalOrderLogisticsDao.getByOrderId(orderId);
+		if (afBorrowLegalOrderLogisticsDo == null) {
+			return afBorrowLegalOrderLogisticsDo;
+		}
+		if (afBorrowLegalOrderLogisticsDo.getState() != 3) {
+			KdniaoTrackQueryAPI kdniaoTrackQueryAPI = new KdniaoTrackQueryAPI();
+			KdniaoReqDataData kdniaoReqDataData = kdniaoTrackQueryAPI.getOrderTraces(afBorrowLegalOrderLogisticsDo.getShipperCode(), afBorrowLegalOrderLogisticsDo.getLogisticCode());
+			try {
+				if (!kdniaoReqDataData.isSuccess()) {
+					return afBorrowLegalOrderLogisticsDo;
+				}
+				int state = kdniaoReqDataData.getState();
+				AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderDao.getById(afBorrowLegalOrderLogisticsDo.getOrderId());
+				afBorrowLegalOrderLogisticsDo.setState(state);
+				afBorrowLegalOrderLogisticsDo.setTraces(JSON.toJSONString(kdniaoReqDataData.getTraces()));
+				afBorrowLegalOrderLogisticsDo.setGmtModified(new Date());
+				afBorrowLegalOrderLogisticsDao.updateById(afBorrowLegalOrderLogisticsDo);
+				if (state == 3) {//已签收
+					//更新订单状态
+					afBorrowLegalOrderDo.setLogisticsInfo("已签收");
+					afBorrowLegalOrderDao.updateById(afBorrowLegalOrderDo);
+				}
+			} catch (Exception e) {
+				logger.error("kddata process exception：" + e);
+			}
+		}
+		return afBorrowLegalOrderLogisticsDo;
+
 	}
 }

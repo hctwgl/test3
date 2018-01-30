@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -26,5 +27,7 @@ public interface AfActivityDao {
 	List<AfActivityDo> listAllHomeActivity();
 
 	AfActivityDo getHomeMoreActivity();
+
+	List<Date> getDateListByName(@Param("tag")String tag);
 
 }
