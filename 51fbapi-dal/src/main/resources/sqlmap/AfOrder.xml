@@ -1092,6 +1092,9 @@
 			 LEFT JOIN af_sup_game gg ON  gg.id = o.goods_id
 		)ao
 		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId}
+		<if test="activityTime != null">
+		   and br.gmt_create <![CDATA[>=]]>  #{activityTime}
+		</if>
 		INNER JOIN (
 			SELECT
 				o.order_type,			

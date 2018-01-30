@@ -103,7 +103,11 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				// check if this orderId has already been rebated
 				int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
 				if (isHave == 0) {
-
+				    String activityTime = null;
+				    AfResourceDo startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+				    	   if(startTime != null){
+				    	       activityTime =   startTime.getValue();
+				    	   }
 					String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId, userId);
 					logger.info(log);
 					AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
@@ -111,7 +115,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					rebateDo.setOrderId(orderId);
 					rebateDo.setUserId(userId);
 					// check if its the first time for one specific channel
-					int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
+					int orderTimes = afOrderDao.findFirstOrder(orderId, userId,activityTime);
 					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
 					if (orderTimes == 0) {
@@ -133,11 +137,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 
 						// check if the order times for red packet
 						
-					    String activityTime = null;
-					    AfResourceDo startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
-					    	   if(startTime != null){
-					    	       activityTime =   startTime.getValue();
-					    	   }
+					 
 					      //查询此次活动之后的返利次数。
 					       int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId,activityTime);
 					    

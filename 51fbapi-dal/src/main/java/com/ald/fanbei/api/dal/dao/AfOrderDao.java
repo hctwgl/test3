@@ -193,6 +193,7 @@ public interface AfOrderDao {
 	 */
 	AfOrderDo getOrderByOrderNo(String orderNo);
 	/**
+	 * @param activityTime 
 	 * @param userId
 	 * judge the first_order during the second time to light the activity
 	* @Title: findFirstOrder
@@ -202,7 +203,7 @@ public interface AfOrderDao {
 	* @return int
 	* @throws
 	 */
-	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
+	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
 	List<AfOrderDto> selectSumCountByGoodsId(List<AfEncoreGoodsDto> list);
