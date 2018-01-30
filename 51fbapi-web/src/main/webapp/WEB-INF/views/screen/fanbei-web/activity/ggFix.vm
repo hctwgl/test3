@@ -114,6 +114,7 @@
            <p class="toGet" @click="toGetClick()">领取188元 ></p>
        </div>
         <div class="takeOutFood" v-if="alertData.couponToPop && alertData.couponToPop==='Y' && ((alertData.rebateToPop && alertData.rebateToPop==='N') || !alertData.rebateToPop)">
+            <img :src="alertData.couponImage">
             <p class="toUse" @click="contNewUserClick()"></p>
         </div>
     </div>
