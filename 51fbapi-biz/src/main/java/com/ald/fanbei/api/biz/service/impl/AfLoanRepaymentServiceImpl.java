@@ -180,7 +180,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
     	bo.loanRepaymentDo = loanRepaymentDo;
 		
-		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(loanRepaymentDo));
+		logger.info("Repay.add repayment finish,name="+ name +",tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(loanRepaymentDo));
     }
     
 	private AfLoanRepaymentDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount, 
@@ -904,6 +904,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	@Override
 	public BigDecimal calculateAllRestAmount(Long loanId) {
 		
+		Date nowDate = new Date();
 		BigDecimal allRestAmount = BigDecimal.ZERO;
 
 		List<AfLoanPeriodsDo> noRepayList = afLoanPeriodsDao.getNoRepayListByLoanId(loanId);
@@ -930,17 +931,20 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		boolean flag = false;
 		Date now = new Date();
 		Date plan = loanPeriodsDo.getGmtPlanRepay();
-		Integer remindDay = afLoanProductDao.getRemindDayByLoanPeriodsId(loanPeriodsDo.getRid());
 		
+//		Integer remindDay = afLoanProductDao.getRemindDayByLoanPeriodsId(loanPeriodsDo.getRid());
+
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(plan);
-		calendar.add(Calendar.DAY_OF_YEAR, -remindDay);
+//		calendar.add(Calendar.DAY_OF_YEAR, -remindDay);
+		calendar.add(Calendar.MONTH, -1);
+
 		Date startTime = calendar.getTime();
 		
 		if(now.after(startTime)){ // 已出账
 			flag = true;
 		}
-		
+
 		return flag;
 	}
 

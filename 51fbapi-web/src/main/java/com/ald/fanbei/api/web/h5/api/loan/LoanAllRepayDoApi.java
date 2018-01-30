@@ -179,7 +179,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		bo.loanPeriodsDoList = loanPeriodsDoList;
 	}
 	
-	private void checkAmount(LoanRepayBo bo) { //TODO
+	private void checkAmount(LoanRepayBo bo) {
 		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.couponId);
 		bo.userCouponDto = userCouponDto;
 		if (null != userCouponDto && !userCouponDto.getStatus().equals(CouponStatus.NOUSE.getCode())) {
