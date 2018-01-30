@@ -51,11 +51,12 @@ public class AuthMobileApi implements ApiHandle {
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.API_RISK_MOBILE_VERIFYING);
 			return resp;
 		}
-		
-		if(MobileStatus.YES.getCode().equals(currAfUserAuthDo.getMobileStatus())){
-			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.API_RISK_MOBILE_VERIFY_PASSED);
-			return resp;
-		}
+
+		//多场景允许用户再次认证
+//		if(MobileStatus.YES.getCode().equals(currAfUserAuthDo.getMobileStatus())){
+//			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.API_RISK_MOBILE_VERIFY_PASSED);
+//			return resp;
+//		}
 		
 		//调风控
 		RiskOperatorRespBo respBo = riskUtil.operator(context.getUserId()+"", context.getUserName());

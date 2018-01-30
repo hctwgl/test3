@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.common.exception;
 
 /**
- *
  *@类AppExceptionCode.java 的实现描述：错误枚举类
  *@author 陈金虎 2017年1月16日 下午11:27:54
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -9,9 +8,9 @@ package com.ald.fanbei.api.common.exception;
 public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-
+	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
-
+    
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
 
     VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
@@ -133,6 +132,11 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ZM_STATUS_EXPIRED("ZM_STATUS_EXPIRED",1319,"zm status expired","芝麻信用已过期，请至信用中心-基础认证中重新认证芝麻信用分！"),
     CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
     CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
+    
+    AUTH_FUND_GETTOKEN_ERROR("AUTH_FUND_GETTOKEN_ERROR",1322,"auth fund gettoken error","51公积金认证获取令牌失败！"),
+    AUTH_FUND_GETORDERSN_ERROR("AUTH_FUND_GETORDERSN_ERROR",1322,"auth fund getordersn error","51公积金认证获取订单号失败！"),
+    AUTH_FUND_SUBMIT_ERROR("AUTH_FUND_SUBMIT_ERROR",1323,"auth fund submit error","公积金提交认证失败，请稍后重试"),
+    
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
 
@@ -358,14 +362,14 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GAME_IS_NOT_EXIST("GAME_IS_NOT_EXIST",8001,"game_is_not_exist","游戏信息不存在，请确认后操作"),
     GAME_IS_ILLEGAL("GAME_IS_NOT_EXIST",8002,"game_name_is_illegal","游戏名称错误，请确认后操作"),
     AMOUNT_IS_NULL("AMOUNT_IS_NULL",7004,"amount_is_null","对不起，您查询的退还款详情不存在，请刷新后重试"),
-    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
-    AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上");
 
+    AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 
-
-/**
-    TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改"),
-	//用户现金流不存在
+    //调用风控失败
+    CALL_RISK_FAIL("FAIL_RISK_FAIL",7008,"call risk fail","调用风控失败!"),
+    //有过期数据
+    FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
+    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能");
 
 
 

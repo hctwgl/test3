@@ -148,6 +148,7 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/resource/getConfigurableNumDay</value>
 				<value>/legalborrow/getBorrowCashGoodInfo</value>
 				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 				<value>/legalborrow/getCashPageType</value>
@@ -318,6 +319,8 @@
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
 				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authFundNew" value-ref="authFundNewApi" />
+				<entry key="/auth/authFundNew/GiveBack" value-ref="authFundNewGiveBackApi" />
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
@@ -327,6 +330,7 @@
 
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
+				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
@@ -417,6 +421,7 @@
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
+				<entry key="/resource/getConfigurableNumDay" value-ref="getConfigurableNumDayApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />

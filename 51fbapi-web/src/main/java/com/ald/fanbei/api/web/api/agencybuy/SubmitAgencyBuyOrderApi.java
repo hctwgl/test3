@@ -1,27 +1,20 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.checkoutcounter.CocConstants;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAddressService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
@@ -29,13 +22,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -68,6 +54,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
+	@Resource
+	AfOrderService afOrderService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -117,10 +107,41 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setUserCouponId(couponId);
 		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-		afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+		//下单时所有场景额度使用情况
+		List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();
+		//线上使用情况
+		AfOrderSceneAmountDo onlineSceneAmount = new AfOrderSceneAmountDo();
+		//培训使用情况
+		AfOrderSceneAmountDo trainSceneAmount = new AfOrderSceneAmountDo();
+		//获取所有场景额度
+		List<AfUserAccountSenceDo> list = afUserAccountSenceService.getByUserId(userId);
+		//当前场景额度
+		AfUserAccountSenceDo afUserAccountSenceDo = null;
+
+		for (AfUserAccountSenceDo item:list){
+			if(item.getScene().equals(UserAccountSceneType.ONLINE.getCode())){
+				afUserAccountSenceDo = item;
+				onlineSceneAmount.setAuAmount(item.getAuAmount());
+				onlineSceneAmount.setScene(UserAccountSceneType.ONLINE.getCode());
+				onlineSceneAmount.setUsedAmount(item.getUsedAmount());
+				onlineSceneAmount.setUserId(userId);
+			}
+			if(item.getScene().equals(UserAccountSceneType.TRAIN.getCode())){
+				trainSceneAmount.setAuAmount(item.getAuAmount());
+				trainSceneAmount.setScene(UserAccountSceneType.TRAIN.getCode());
+				trainSceneAmount.setUsedAmount(item.getUsedAmount());
+				trainSceneAmount.setUserId(userId);
+			}
+		}
+		if(afUserAccountSenceDo == null){
+			afUserAccountSenceDo = new AfUserAccountSenceDo();
+			afUserAccountSenceDo.setAuAmount(new BigDecimal(0));
+			afUserAccountSenceDo.setFreezeAmount(new BigDecimal(0));
+			afUserAccountSenceDo.setUsedAmount(new BigDecimal(0));
+		}
+		BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+		afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -198,6 +219,35 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
 
 		if (afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper) > 0) {
+			//获取现金贷额度
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+			//现金贷使用情况
+			AfOrderSceneAmountDo cashSceneAmount = new AfOrderSceneAmountDo();
+			cashSceneAmount.setOrderId(afOrder.getRid());
+			cashSceneAmount.setAuAmount(userAccountInfo.getAuAmount());
+			cashSceneAmount.setScene(UserAccountSceneType.CASH.getCode());
+			cashSceneAmount.setUsedAmount(userAccountInfo.getUsedAmount());
+			cashSceneAmount.setUserId(userId);
+			if(onlineSceneAmount.getUserId() == null) {
+				onlineSceneAmount.setAuAmount(new BigDecimal(0));
+				onlineSceneAmount.setScene(UserAccountSceneType.ONLINE.getCode());
+				onlineSceneAmount.setUsedAmount(new BigDecimal(0));
+				onlineSceneAmount.setUserId(userId);
+			}
+			if(trainSceneAmount.getUserId() == null) {
+				trainSceneAmount.setAuAmount(new BigDecimal(0));
+				trainSceneAmount.setScene(UserAccountSceneType.TRAIN.getCode());
+				trainSceneAmount.setUsedAmount(new BigDecimal(0));
+				trainSceneAmount.setUserId(userId);
+			}
+			onlineSceneAmount.setOrderId(afOrder.getRid());
+			trainSceneAmount.setOrderId(afOrder.getRid());
+			listSceneAmount.add(cashSceneAmount);
+			listSceneAmount.add(onlineSceneAmount);
+			listSceneAmount.add(trainSceneAmount);
+			//添加下单时所有场景额度使用情况
+			afOrderService.addSceneAmount(listSceneAmount);
+
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			data.put("isEnoughAmount", isEnoughAmount);

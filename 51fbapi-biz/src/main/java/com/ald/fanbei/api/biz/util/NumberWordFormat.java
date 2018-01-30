@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -30,6 +32,36 @@ public class NumberWordFormat {
             "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
     public static final String[] DECNUM = {"twenty", "thirty", "forty", "fifty", "sixty",
             "seventy", "eighty", "ninety"};
+
+    /**
+     * 借款时间
+     *
+     * @param afBorrowCashDo
+     * @return
+     */
+    public int borrowTime(final String type) {
+        Integer day ;
+        if(isNumeric(type)){
+            day = Integer.parseInt(type);
+        }else{
+            day = parse(type.toLowerCase());
+        }
+        return day;
+    }
+
+    /**
+     * 是否是数字字符串
+     * @param type
+     * @return
+     */
+    public boolean isNumeric(String type) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(type);
+        if( !isNum.matches() ){
+            return false;
+        }
+        return true;
+    }
 
     //数字转换英文
     public String format(int i) {
