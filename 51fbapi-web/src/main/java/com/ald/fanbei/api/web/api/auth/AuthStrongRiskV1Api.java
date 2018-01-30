@@ -22,12 +22,14 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -247,8 +249,10 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				authDo.setGmtRisk(new Date());
 				authDo.setGmtBasic(new Date());
 				try {
+				        String directory = directoryCache.toString();
+				    
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-							card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
+							card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene,directory);
 
 					if (!riskResp.isSuccess()) {
 						return processRishAuthFail(requestDataVo.getId(), riskScene, authDo ,afUserAuthDo, afUserAuthStatusDo);
@@ -273,7 +277,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						afUserAuthStatusDo.setScene(sceneArray[1]);
 						riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						RiskRespBo riskResp1 = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-								card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
+								card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene,directory);
 
 						if (!riskResp1.isSuccess()) {
 							return processRishAuthFail(requestDataVo.getId(), riskScene,authDo, afUserAuthDo, afUserAuthStatusDo);
