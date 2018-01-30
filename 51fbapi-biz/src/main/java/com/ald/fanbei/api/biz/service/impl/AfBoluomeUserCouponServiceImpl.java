@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -159,7 +160,8 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
         									log = log + String.format("userName = %s ", userName);
         									logger.info(log);
         									if (userName != null) {
-        										jpushService.send15Coupon(userName);
+        									     //jpushService.send15Coupon(userName);
+        									     jpushService.boluomeActivityMsg(userName, H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_INVITER.getCode());
         									}
         								}
         
