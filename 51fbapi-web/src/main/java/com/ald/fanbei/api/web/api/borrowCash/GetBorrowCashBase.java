@@ -59,9 +59,7 @@ public class GetBorrowCashBase {
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
 						AfResourceSecType.borrowCashShowNum.getCode())) {
 					data.put("nums", afResourceDo.getValue());
-				}
-			} else {
-				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+				}else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
 					data.put("borrowCashDay", afResourceDo.getTypeDesc());
 				}
 			}
