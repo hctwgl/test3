@@ -69,4 +69,9 @@ public class AfTradeBusinessInfoServiceImpl extends ParentServiceImpl<AfTradeBus
 		afTradeBusinessInfoDto.setTypeName(typeName);
 		return afTradeBusinessInfoDto;
 	}
+
+	@Override
+	public String getCodeById(Integer id) {
+		return afBusinessTypeDao.getCodeById(id);
+	}
 }

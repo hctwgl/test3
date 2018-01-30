@@ -3,32 +3,30 @@ package com.ald.fanbei.api.biz.bo.assetside.edspay;
 import java.math.BigDecimal;
 
 /**
- * 资产方7和14天分配金额
+ * 资产方金额分配
  * @author chengkang
  */
 public class EdspayCreditDetailInfo {
 	/**
-	 * 七天借款期限的债权金额
+	 * 最小借钱天数对应的债权金额
 	 */
-	private BigDecimal SEVEN;
+	private BigDecimal minMoney;
 	/**
-	 * 十四天借款期限的债权金额
+	 * 最大借钱天数对应的的债权金额
 	 */
-	private BigDecimal FOURTEEN;
-
-	public BigDecimal getSEVEN() {
-		return SEVEN;
+	private BigDecimal maxMoney;
+	
+	public BigDecimal getMinMoney() {
+		return minMoney;
 	}
-
-	public void setSEVEN(BigDecimal sEVEN) {
-		SEVEN = sEVEN;
+	public void setMinMoney(BigDecimal minMoney) {
+		this.minMoney = minMoney;
 	}
-
-	public BigDecimal getFOURTEEN() {
-		return FOURTEEN;
+	public BigDecimal getMaxMoney() {
+		return maxMoney;
 	}
-
-	public void setFOURTEEN(BigDecimal fOURTEEN) {
-		FOURTEEN = fOURTEEN;
+	public void setMaxMoney(BigDecimal maxMoney) {
+		this.maxMoney = maxMoney;
 	}
+	
 }

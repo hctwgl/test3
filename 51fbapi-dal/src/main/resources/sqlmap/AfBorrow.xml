@@ -46,6 +46,7 @@
 			gmt_transed,
 			borrow_rate,
 			calculate_method,
+			version,
 			free_nper
 			)
 			VALUES
@@ -68,6 +69,7 @@
 			#{gmtTransed},
 			#{borrowRate},
 			#{calculateMethod},
+			#{version},
 			#{freeNper}
 			)
 	</insert>
