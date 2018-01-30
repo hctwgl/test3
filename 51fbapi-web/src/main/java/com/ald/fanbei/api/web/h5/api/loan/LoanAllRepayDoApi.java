@@ -124,6 +124,8 @@ public class LoanAllRepayDoApi implements H5Handle {
 		bo.couponId = Long.parseLong(dataMap.get("couponId").toString());
 		bo.loanId = Long.parseLong(dataMap.get("loanId").toString());
 		
+		bo.isAllRepay = true;	// 标识提前还款
+		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 		}

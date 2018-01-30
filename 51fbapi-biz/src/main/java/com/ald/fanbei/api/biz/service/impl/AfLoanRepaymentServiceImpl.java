@@ -141,8 +141,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 
 	@Override
 	public void repay(LoanRepayBo bo) {
-		if(!canRepay(bo.loanPeriodsDoList.get(0))){
-			// 未出账
+		if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
+			// 未出账时拦截按期还款
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 		}
 		
@@ -174,7 +174,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String name = bo.name;
 		
     	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repayAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsDoList,bo.loanDo.getPrdType());
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsDoList,bo.loanDo.getPrdType(),bo.isAllRepay);
     	
     	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
 		
@@ -185,7 +185,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     
 	private AfLoanRepaymentDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount, 
 			Long userCouponId, BigDecimal couponAmount, BigDecimal rebateAmount, Long loanId, Long cardId, String payTradeNo, String name, Long userId, 
-			String repayType, String cardNo, List<AfLoanPeriodsDo> loanPeriodsDoList, String prdType) {
+			String repayType, String cardNo, List<AfLoanPeriodsDo> loanPeriodsDoList, String prdType, boolean isAllRepay) {
 
 		AfLoanRepaymentDo loanRepay = new AfLoanRepaymentDo();
 		loanRepay.setUserId(userId);
@@ -200,9 +200,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		loanRepay.setCouponAmount(couponAmount);
 		loanRepay.setUserAmount(rebateAmount);
 		
-		if(loanPeriodsDoList.size() > 1) {
+		if(isAllRepay) {	// 提前还款
 			loanRepay.setPreRepayStatus("Y");
-		} else if(loanPeriodsDoList.size() == 1) {
+		} else {
 			loanRepay.setPreRepayStatus("N");
 		}
 		
@@ -238,8 +238,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				loanRepay.setCardName("线下还款");
 			}
 		} else {
-			AfBankUserBankDto bank = afUserBankcardDao
-					.getUserBankcardByBankId(cardId);
+			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			loanRepay.setCardNo(bank.getCardNumber());
 			loanRepay.setCardName(bank.getBankName());
 		}
@@ -368,7 +367,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                 @Override
                 public Long doInTransaction(TransactionStatus status) {
                     try {
-                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);
+                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);	// TODO
                 		
                     	// 最后一期还完后， 修改loan状态FINSH
                     	dealLoanStatus(LoanRepayDealBo);
@@ -440,30 +439,47 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		LoanRepayDealBo.curCardName = repaymentDo.getCardName();
 		LoanRepayDealBo.curCardNo = repaymentDo.getCardNo();
 		LoanRepayDealBo.curName = repaymentDo.getName();
-
+		
 		LoanRepayDealBo.loanDo = loanDo;
 		LoanRepayDealBo.overdueDay = loanDo.getOverdueDays();
 		LoanRepayDealBo.loanNo = loanDo.getLoanNo();
 		LoanRepayDealBo.refId += repaymentDo.getLoanId();
 		LoanRepayDealBo.userId = loanDo.getUserId();
 		
-		String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
-		for (int i = 0; i < repayPeriodsIds.length; i++) {
-			// 获取分期信息
-			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
-			List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+		List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
+
+		if(repaymentDo.getPreRepayStatus().equals("Y")) {
+			LoanRepayDealBo.isAllRepay = true; // 提前还款
+			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
+			for (int i = 0; i < repayPeriodsIds.length; i++) {
+				// 获取分期信息
+				AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
+				loanPeriodsDoList.add(loanPeriodsDo);
+				if(loanPeriodsDo!=null){
+					if(canRepay(loanPeriodsDo)){
+						dealLoanRepayOverdue(LoanRepayDealBo, loanPeriodsDo);		//逾期费
+						dealLoanRepayPoundage(LoanRepayDealBo, loanPeriodsDo);		//手续费
+						dealLoanRepayInterest(LoanRepayDealBo, loanPeriodsDo);		//利息
+					}
+					// TODO
+					dealLoanAllRepayIfFinish(LoanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
+				}
+				afLoanPeriodsDao.updateById(loanPeriodsDo);
+			}
+		}else {
+			LoanRepayDealBo.isAllRepay = false;	// 按期还款
+			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repaymentDo.getRepayPeriods()));
 			loanPeriodsDoList.add(loanPeriodsDo);
-			LoanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 			if(loanPeriodsDo!=null){
 				dealLoanRepayOverdue(LoanRepayDealBo, loanPeriodsDo);		//逾期费
 				dealLoanRepayPoundage(LoanRepayDealBo, loanPeriodsDo);		//手续费
 				dealLoanRepayInterest(LoanRepayDealBo, loanPeriodsDo);		//利息
 				dealLoanRepayIfFinish(LoanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
-			}else {
-				throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_NOT_EXIST_ERROR);
 			}
 			afLoanPeriodsDao.updateById(loanPeriodsDo);
 		}
+			
+		LoanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 		
         changLoanRepaymentStatus(LoanRepayDealBo.curOutTradeNo, AfLoanRepaymentStatus.SUCC.name(), repaymentDo.getRid());
         
@@ -608,6 +624,29 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
 			loanPeriodsDo.setGmtLastRepay(new Date());
         }
+		loanPeriodsDo.setGmtModified(new Date());
+	}
+
+	
+	/**
+	 * @Description: 提前还款 分期记录 完成处理
+	 * @return  void
+	 */
+	private void dealLoanAllRepayIfFinish(LoanRepayDealBo LoanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {	// TODO
+		
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount());
+		loanPeriodsDo.setRepayAmount(loanPeriodsDo.getAmount());
+		
+		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
+				loanPeriodsDo.getOverdueAmount(), loanPeriodsDo.getRepaidOverdueAmount(),
+				loanPeriodsDo.getInterestFee(), loanPeriodsDo.getRepaidInterestFee(),
+				loanPeriodsDo.getServiceFee(), loanPeriodsDo.getRepaidServiceFee());
+		
+		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
+		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
+			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
+			loanPeriodsDo.setGmtLastRepay(new Date());
+		}
 		loanPeriodsDo.setGmtModified(new Date());
 	}
 
@@ -829,6 +868,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		public String remoteIp;
 		public String name;
 		public String repayType;
+		public boolean isAllRepay = false;	// 是否是提前还款（默认false为按期还款）
 		/* biz 业务处理字段 */
 		
 		/* Response字段 */
@@ -870,6 +910,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		String loanNo;								//借款流水号
     	String refId = "";								//还款的id串
     	Long userId ;									//目标用户id
+    	boolean isAllRepay = false;	// 是否是提前还款（默认false为按期还款）
 	}
 
 	@Override
