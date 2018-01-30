@@ -359,9 +359,11 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GAME_IS_ILLEGAL("GAME_IS_NOT_EXIST",8002,"game_name_is_illegal","游戏名称错误，请确认后操作"),
     AMOUNT_IS_NULL("AMOUNT_IS_NULL",7004,"amount_is_null","对不起，您查询的退还款详情不存在，请刷新后重试"),
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
-    AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上");
+    AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 
-
+	//公信宝认证
+    AUTH_GXB_GETTOKEN_ERROR("AUTH_GXB_GETTOKEN_ERROR",7008,"auth gxb gettoken error","认证公信宝获取token失败");
+	
 
 /**
     TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改"),

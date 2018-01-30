@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -78,4 +79,6 @@ public interface AfUserService {
 	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
 
 	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
+	
+	AfUserDto getUserInfoByUserId(Long userId);
 }

@@ -448,4 +448,8 @@ public class Constants {
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+	  
+	  //公信宝认证的密钥
+	  public static final String AUTH_GXB_APPID = "auth.gxb.appid";
+	  public static final String AUTH_GXB_APPSECURITY = "auth.gxb.appsecurity";
 }

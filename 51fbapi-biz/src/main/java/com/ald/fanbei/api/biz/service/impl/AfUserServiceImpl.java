@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -309,5 +311,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
 	}
 
+	@Override
+	public AfUserDto getUserInfoByUserId(Long userId) {
+		return afUserDao.getUserInfoByUserId(userId);
+	}
+
+	
 
 }

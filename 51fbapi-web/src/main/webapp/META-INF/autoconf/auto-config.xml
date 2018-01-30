@@ -138,6 +138,10 @@
 		<property name="fbapi.sup.business.key" defaultValue="/C9w1LBJUPi3u26ULHnu+EtRQUOeJywL1jRGe/PuasXQroYLtEIaqFC8Jmft4E4B" description="sup 游戏充值配置KEY"/>
 
 		<property name="fbapi.orderfinish.key" defaultValue="51fanbeiOrderV" />
+		
+		<!-- 公信宝认证密钥 -->
+		<property name="auth.gxb.appid" defaultValue="gxb099547a1a9ea2e48"  description="公信宝认证配置的appid"/>
+		<property name="auth.gxb.appsecurity" defaultValue="a8b2a9708cb4487cacdb568fadef19cd" description="公信宝认证配置的appsecurity"/>
 	</group>
 
 	<script>
