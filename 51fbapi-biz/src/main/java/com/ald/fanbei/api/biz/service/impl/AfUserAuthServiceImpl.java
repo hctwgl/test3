@@ -386,6 +386,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		if(!"CASH".equals(scene)){
 			AfUserAuthStatusDo afUserAuthStatus=afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,scene);
 			if(afUserAuthStatus==null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus())|| UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())){//从未认证
+				data.put("basicStatus", "A");
 				data.put("riskStatus", "A");
 				data.put("flag", "N");
 				data.put("title1","你好，"+userDto.getRealName());
@@ -396,6 +397,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
 				between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 				data.put("riskStatus", "N");
+				data.put("basicStatus", "N");
 				data.put("flag", "Y");
 				data.put("title1","暂无信用额度");
 				if (between > 0) {
@@ -408,12 +410,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 					data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
 					data.put("riskRetrialRemind", "可以尝试重新提交啦，完成补充认证可以提高成功率");
                     data.put("riskStatus", "A");
+					data.put("basicStatus", "A");
 				}
 
 				data.put("sceneStatus","3");//强风控失败
 			}
 			else if(UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatus.getStatus()))
 			{
+				data.put("basicStatus", "Y");
 				data.put("riskStatus", "Y");
 				data.put("flag", "Y");
 				data.put("highestAmount",afResource.getValue());//可获取最高额度
