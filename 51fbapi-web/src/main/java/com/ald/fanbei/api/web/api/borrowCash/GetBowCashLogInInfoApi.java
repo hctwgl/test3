@@ -110,7 +110,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		    //另一个banner
@@ -129,7 +129,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		data.put("appName",appName);
 		data.put("bqsBlackBox",bqsBlackBox);
 		data.put("blackBox",request.getParameter("blackBox"));
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String unfinished = YesNoStatus.NO.getCode();
