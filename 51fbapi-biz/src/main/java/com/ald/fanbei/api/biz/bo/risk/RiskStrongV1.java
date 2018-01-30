@@ -82,7 +82,7 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		eventInfo.put("blackBox", blackBox);
 		eventInfo.put("bqsBlackBox", bqsBlackBox);
 		eventInfo.put("ipAddress", ipAddress);
-		setEventInfo(JSON.toJSONString(eventInfo));
+		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 
 	}
 
