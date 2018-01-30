@@ -238,6 +238,12 @@ public class AfResourceServiceImpl implements AfResourceService {
     }
 
     @Override
+    public List<AfResourceDo> newSelectBorrowHomeConfigByAllTypes() {
+        List<AfResourceDo> list = afResourceDao.newSelectBorrowHomeConfigByAllTypes();
+        return list;
+    }
+
+    @Override
     public BorrowRateBo borrowRateWithResource(Integer realTotalNper, String userName) {
         BorrowRateBo borrowRate = new BorrowRateBo();
         JSONObject borrowRateJson = getBorrowRateResource(realTotalNper, userName);

@@ -230,10 +230,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         + afBorrowCashDo.getRid());
             }
         }
-        /*if (resultValue == 1) {
-            contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
-                    afBorrowCashDo.getUserId());// 生成凭据纸质帐单
-        }*/
+        if (resultValue == 1) {
+            contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
+                    afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
+        }
         return resultValue;
     }
 
