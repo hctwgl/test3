@@ -512,13 +512,13 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("virtualCode", virtualCode);
         eventObj.put("productName", productName);
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String uuid = "";
+        /*String uuid = "";
         if (requestAttributes != null){
             String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
             String array[] = id == null?null:id.split("_");
             uuid = array ==null || array.length<2?"":array[1];
         }
-        eventObj.put("uuid",uuid);
+        eventObj.put("uuid",uuid);*/
         //String id = request.getParameter("id");
         //增加3个参数，配合风控策略的改变
         String codeForSecond = null;
