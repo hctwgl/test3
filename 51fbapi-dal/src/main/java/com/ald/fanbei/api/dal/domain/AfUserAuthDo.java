@@ -60,6 +60,8 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String chsiStatus; //学信网认证
 	private Date gmtZhengxin;
 	private String zhengxinStatus;
+	private Date gmtEcommerce;
+	private String ecommerceStatus;//公信宝电商认证
 
 	public String getBasicStatus() {
 		return basicStatus;
@@ -374,5 +376,20 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setZhengxinStatus(String zhengxinStatus) {
 		this.zhengxinStatus = zhengxinStatus;
 	}
-	
+
+	public Date getGmtEcommerce() {
+		return gmtEcommerce;
+	}
+
+	public void setGmtEcommerce(Date gmtEcommerce) {
+		this.gmtEcommerce = gmtEcommerce;
+	}
+
+	public String getEcommerceStatus() {
+		return ecommerceStatus;
+	}
+
+	public void setEcommerceStatus(String ecommerceStatus) {
+		this.ecommerceStatus = ecommerceStatus;
+	}
 }
