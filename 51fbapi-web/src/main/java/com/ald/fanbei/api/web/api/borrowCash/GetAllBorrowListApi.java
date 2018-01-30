@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,7 +112,7 @@ public class GetAllBorrowListApi implements ApiHandle  {
 	 * @param objs
 	 */
 	private void sort(List<Object> objs) {
-		objs.sort(new Comparator<Object>() {//根据申请时间降序排序
+		Collections.sort(objs,new Comparator<Object>() {//根据申请时间降序排序
 			public int compare(Object o1, Object o2) {
 				Date o1GmtCreate = extractGmtCreate(o1);
 				Date o2GmtCreate = extractGmtCreate(o2);

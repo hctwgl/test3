@@ -14,9 +14,11 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
 
 @Component("getUserAuthStatusApi")
+@NeedLogin
 public class GetUserAuthStatusApi implements H5Handle {
 	
 	@Resource
@@ -27,10 +29,7 @@ public class GetUserAuthStatusApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String,Object> data = Maps.newHashMap();
 		Long userId = context.getUserId();
-		// 用户未登录
-		if(userId == null) {
-			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-		}
+		
 		// 获取用户认证信息
 		AfUserAuthDo userAuthInfo =  afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(userAuthInfo == null) {

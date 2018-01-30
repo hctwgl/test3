@@ -200,7 +200,6 @@ public class FanbeiH5Controller extends H5BaseController {
 			}
 		}
 		return false;
-		
 	}
 
 
