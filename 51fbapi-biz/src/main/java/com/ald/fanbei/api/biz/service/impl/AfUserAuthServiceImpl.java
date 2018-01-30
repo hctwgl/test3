@@ -224,8 +224,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
-			} else {
+			} else if (between == 0){
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
+			}
+			else{
+				data.put("riskRetrialRemind", "可以尝试重新提交啦，完成补充认证可以提高成功率");
 			}
 		}
 
@@ -395,13 +398,18 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				data.put("riskStatus", "N");
 				data.put("flag", "Y");
 				data.put("title1","暂无信用额度");
-				data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
 				if (between > 0) {
 					data.put("title2", "请"+between+"天后尝试重新提交");
+					data.put("riskRetrialRemind", "审核不通过，请"+between+"天后可重新提交审核");
+				}else if (between == 0){
+					data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
+					data.put("title2", "审核不通过，明天可以重新提交审核");
 				} else {
 					data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
+					data.put("riskRetrialRemind", "可以尝试重新提交啦，完成补充认证可以提高成功率");
                     data.put("riskStatus", "A");
 				}
+
 				data.put("sceneStatus","3");//强风控失败
 			}
 			else if(UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatus.getStatus()))
