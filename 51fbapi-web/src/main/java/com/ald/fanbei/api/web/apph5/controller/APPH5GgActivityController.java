@@ -528,7 +528,7 @@ public class APPH5GgActivityController extends BaseController {
 				map1.put("name", resourceDo.getValue3());
 				map1.put("value", resourceDo.getValue4());
 				resultList.add(map1);
-
+				  AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
 				// the dark list
 				List<AfCardDo> cardList = new ArrayList<>();
 				AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
@@ -536,6 +536,8 @@ public class APPH5GgActivityController extends BaseController {
 				t.setBoluomeActivityId(1000L);
 
 				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService.getListByCommonCondition(t);
+				String activityTime = null;
+				
 				if (itemsList != null && itemsList.size() > 0) {
 					cardList = convertItemsListToCardList(itemsList, false);
 
@@ -545,7 +547,7 @@ public class APPH5GgActivityController extends BaseController {
 						if (userId != null) {
 
 							//AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
-						    AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+						  
 						    logger.info("/h5GgActivity/homePage do1 = {}",do1);
 							if(do1 != null){
 								String startTime = do1.getValue();
@@ -558,7 +560,7 @@ public class APPH5GgActivityController extends BaseController {
 								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
 								//List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
 								
-								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId);
+								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId,startTime);
 								
 								if (cardsList != null && cardsList.size() > 0) {
 									cardList = cardsList;
@@ -973,11 +975,16 @@ public class APPH5GgActivityController extends BaseController {
 			List<AfBoluomeActivityItemsDo> itemsList,Long userId) {
 		String log = String.format("convertItemsListToCardList params : rebateList.size() = %s , itemsList.size() = %s ", rebateList.size(),itemsList.size());
 		logger.info(log);
+		String activityTime = null;
+		 AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+			if( do1!=null){
+			    activityTime =  do1.getValue();
+			}
 		List<AfCardDo> resultList = new ArrayList<>();
 		if (itemsList != null && itemsList.size() > 0 ) {
 			for (AfBoluomeActivityItemsDo itemsDo : itemsList) {
 				Long shopId = itemsDo.getRefId();
-				int isHave = afBoluomeRebateService.getRebateCount(shopId,userId);
+				int isHave = afBoluomeRebateService.getRebateCount(shopId,userId,activityTime);
 				AfCardDo cardDo = new AfCardDo();
 				if (isHave != 0) {
 					//isDark = false

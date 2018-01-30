@@ -20,7 +20,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	//List<AfBoluomeRebateDo> getListByUserId(Long userId);
 
-	Long getLightShopId(Long orderId);
+	//Long getLightShopId(Long orderId);
 
 	List<AfRebateDo> getRebateList(Long userId,String startTime);
 	
@@ -28,7 +28,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 //	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
 
-	int getRebateCount(Long shopId, Long userId);
+	int getRebateCount(Long shopId, Long userId, String activityTime);
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId);
 

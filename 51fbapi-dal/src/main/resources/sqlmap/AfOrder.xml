@@ -1079,24 +1079,36 @@
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
 	<select id="findFirstOrder" parameterType="java.lang.Long" resultType = "java.lang.Integer">
-		SELECT
-			count(1)
+			SELECT
+			COUNT(1)
 		FROM
-			af_order ao
-		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId} 
+		(
+		        SELECT o.user_id,o.id,o.order_type,o.is_delete,o.status,
+		         CASE 	o.sec_type 
+			 WHEN  'SUPGAME'  THEN   gg.type
+			 ELSE   o.sec_type END 
+			 sec_type	
+			 FROM af_order	o
+			 LEFT JOIN af_sup_game gg ON  gg.id = o.goods_id
+		)ao
+		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId}
 		INNER JOIN (
 			SELECT
-				o.order_type,
-				o.sec_type
+				o.order_type,			
+			 CASE 	o.sec_type 
+			 WHEN 'SUPGAME'  THEN   g.type
+			 ELSE  o.sec_type END 
+			 sec_type				
 			FROM
 				af_order o
+				LEFT JOIN af_sup_game g ON  g.id = o.goods_id
 			WHERE
 				o.id = #{orderId}
 		) t ON t.order_type = ao.order_type
 		AND t.sec_type = ao.sec_type
 		AND br.is_delete = 0
 		AND ao.is_delete = 0
-		AND ao.`status` in ('FINISHED','REBATED');
+		AND ao.`status` IN ('FINISHED','REBATED');
 	</select>
 	
 	<select id="getCountFinishBoluomeOrderByUserId" parameterType="java.lang.Long" resultType = "java.lang.Integer">

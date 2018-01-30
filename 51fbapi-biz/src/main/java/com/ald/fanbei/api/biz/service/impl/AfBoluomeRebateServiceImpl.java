@@ -142,10 +142,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					       int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId,activityTime);
 					    
 					       //查询活动之前是否下过的菠萝觅订单，有(老用户)，则每次额外加1
-					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountBoluomeOrderByUserIdByActivityTime(userId,activityTime);
-					          if(boluomeFinishOrderBeforActivityTime >= 1 ){
-						       redOrderTimes = redOrderTimes +1 ;
-						  }
+//					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountBoluomeOrderByUserIdByActivityTime(userId,activityTime);
+//					          if(boluomeFinishOrderBeforActivityTime >= 1 ){
+//						       redOrderTimes = redOrderTimes +1 ;
+//						  }
 						
 						//cqw
 						log = log + String.format("redOrderTimes = %s ", redOrderTimes);
@@ -308,10 +308,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 * @Title: getLightShopId @author qiao @date 2017年11月17日
 	 *         下午3:59:24 @Description: @param orderId @return @throws
 	 */
-	@Override
-	public Long getLightShopId(Long orderId) {
-		return afBoluomeRebateDao.getLightShopId(orderId);
-	}
+//	@Override
+//	public Long getLightShopId(Long orderId) {
+//		return afBoluomeRebateDao.getLightShopId(orderId);
+//	}
 
 	/**
 	 * 
@@ -350,8 +350,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	}
 
 	@Override
-	public int getRebateCount(Long shopId, Long userId) {
-		return afBoluomeRebateDao.getRebateCount(shopId, userId);
+	public int getRebateCount(Long shopId, Long userId,String activityTime) {
+		return afBoluomeRebateDao.getRebateCount(shopId, userId,activityTime);
 
 	}
 
