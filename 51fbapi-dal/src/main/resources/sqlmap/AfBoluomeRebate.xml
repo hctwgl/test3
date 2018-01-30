@@ -199,11 +199,12 @@
 					    AND o.`gmt_rebated`  <![CDATA[ >= ]]> #{startTime}
 					    AND o.is_delete = 0 
 			        )ss LEFT JOIN af_sup_game g ON  g.id = ss.goods_id
-			            GROUP BY  otype
+			         
 			  )t
 			    LEFT JOIN af_boluome_activity_items i ON t.otype = i.rule_json WHERE i.is_delete = 0
 			    AND i.boluome_activity_id = 1000 
 			    AND i.type = 'ITEM'
+			    GROUP BY  t.otype
 			) AS tt 
 			ON s.id = tt.ref_id AND s.is_delete = 0 AND s.`status`='O'
 			ORDER BY consumeTime DESC , surpriseRebate DESC;	
