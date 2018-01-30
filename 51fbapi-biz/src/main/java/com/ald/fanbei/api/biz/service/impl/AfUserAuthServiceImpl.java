@@ -125,10 +125,19 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	// JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 	JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 	Integer sorce = userDto.getCreditScore();
-	if (!scene.equals(UserAccountSceneType.CASH.getCode())) {
-	    AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene, userId);
-	    userDto.setAuAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount());
-	    userDto.setUsedAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount());
+	if(appVersion >= 406){
+		if (!scene.equals(UserAccountSceneType.CASH.getCode())) {
+			AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene, userId);
+			userDto.setAuAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount());
+			userDto.setUsedAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount());
+		}
+	}
+	else {
+		AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
+		BigDecimal onlineAuAmount = afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount();
+		BigDecimal onlineUsedAmount = afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount();
+		userDto.setAuAmount(userDto.getAuAmount().add(onlineAuAmount));
+		userDto.setUsedAmount(userDto.getUsedAmount().add(onlineUsedAmount));
 	}
 	AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 	int min = Integer.parseInt(afResourceDo.getValue1());// 最小分数
