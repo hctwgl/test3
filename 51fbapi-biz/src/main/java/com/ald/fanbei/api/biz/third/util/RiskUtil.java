@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
@@ -64,6 +65,8 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author 何鑫 2017年3月22日 11:20:23
@@ -169,7 +172,6 @@ public class RiskUtil extends AbstractThird {
     private static String getUrl() {
         if (url == null) {
             url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-            //url = "http://192.168.117.25:8080";
             return url;
         }
         return url;
@@ -509,6 +511,15 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("time", time);
         eventObj.put("virtualCode", virtualCode);
         eventObj.put("productName", productName);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String uuid = "";
+        if (requestAttributes != null){
+            String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+            String array[] = id == null?null:id.split("_");
+            uuid = array ==null || array.length<2?"":array[1];
+        }
+        eventObj.put("uuid",uuid);
+        //String id = request.getParameter("id");
         //增加3个参数，配合风控策略的改变
         String codeForSecond = null;
         String codeForThird = null;

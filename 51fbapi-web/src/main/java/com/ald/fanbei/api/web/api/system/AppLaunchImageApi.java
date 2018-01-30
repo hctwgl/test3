@@ -53,6 +53,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		addAppOpenLog(requestDataVo,context);
 		ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String appVersion = context.getAppVersion()!=null?context.getAppVersion()+"":"";
 		
 		AfResourceDo resourceDo = afResourceService.getLaunchImageInfoByTypeAndVersion(RESOURCE_TYPE,appVersion);

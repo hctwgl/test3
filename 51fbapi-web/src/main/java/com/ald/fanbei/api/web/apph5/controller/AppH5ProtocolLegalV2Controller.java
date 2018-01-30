@@ -176,7 +176,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
 
-	public String protocolFenqiService(HttpServletRequest request, ModelMap model){
+	public void protocolFenqiService(HttpServletRequest request, ModelMap model){
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
@@ -210,7 +210,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		Date date = new Date();
 
 		if (null != borrowId && 0 != borrowId) {
-			GetSeal(model, afUserDo, accountDo);
+			secondSeal(model, afUserDo, accountDo);
+//			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
 			//取当前的分期时间，而不是当前时间
 			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
@@ -254,7 +255,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 		}
 		logger.info(JSON.toJSONString(model));
-		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
 	/**
 	 * 借钱协议
@@ -421,7 +421,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					GetSeal(model, afUserDo, accountDo);
+					secondSeal(model, afUserDo, accountDo);
 					lender(model, fundSideInfo);
 				}
 			}
@@ -653,6 +653,21 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			logger.error("UserSeal create error",e);
 		}
 	}*/
+
+	private void secondSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+		try {
+			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+				model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+			}
+			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+			if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+				model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+			}
+		}catch (Exception e){
+			logger.error("UserSeal create error",e);
+		}
+	}
 
 	private void GetSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
