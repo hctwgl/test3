@@ -245,7 +245,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 											SELECT TYPE  FROM af_sup_game g WHERE g.id = tt.goods_id
 					                      )
 					 ELSE tt.sec_type END 
-					 type,1 AS status
+					 otype,1 AS status
 			     FROM 
 			        (
 					 
@@ -261,9 +261,9 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 					 </if>
 					
 				 )tt  LEFT  JOIN af_sup_game g  ON g.id = tt.goods_id
-				  GROUP BY type
+				  GROUP BY otype
 		) t2
-		ON t1.rule_json = t2.type
+		ON t1.rule_json = t2.otype
 		ORDER BY `sort` 
 		 
     </select>
