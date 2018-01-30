@@ -448,14 +448,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
 
-		if(repaymentDo.getPreRepayStatus().equals("Y")) {
-			loanRepayDealBo.isAllRepay = true; // 提前还款
+		if(repaymentDo.getPreRepayStatus().equals("Y")) {	// 提前还款
+			loanRepayDealBo.isAllRepay = true; 
 			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
 			for (int i = 0; i < repayPeriodsIds.length; i++) {
 				// 获取分期信息
 				AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
 				loanPeriodsDoList.add(loanPeriodsDo);
-				if(loanPeriodsDo!=null){
+				if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
 					BigDecimal repayAmount = BigDecimal.ZERO;
 					if(canRepay(loanPeriodsDo)){
 						dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo);		//逾期费
@@ -465,7 +465,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						repayAmount = calculateRestAmount(loanPeriodsDo.getRid());
 						loanPeriodsDo.setRepayAmount(repayAmount);
 						
-					}else{
+					}else{		// 提前还款,未出账的分期借款,还款金额=分期本金
 						repayAmount = loanPeriodsDo.getAmount();
 						loanPeriodsDo.setRepayAmount(repayAmount);
 					}
@@ -474,12 +474,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 					loanPeriodsDo.setGmtLastRepay(new Date());
 					loanPeriodsDo.setGmtModified(new Date());
 					
-//					loanRepayDealBo.curRepayAmoutStub = BigDecimalUtil.subtract(loanRepayDealBo.curRepayAmoutStub, repayAmount);
+					loanRepayDealBo.curRepayAmoutStub = BigDecimalUtil.subtract(loanRepayDealBo.curRepayAmoutStub, repayAmount);
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
-		}else {
-			loanRepayDealBo.isAllRepay = false;	// 按期还款
+		}else {		// 按期还款
+			loanRepayDealBo.isAllRepay = false;
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repaymentDo.getRepayPeriods()));
 			loanPeriodsDoList.add(loanPeriodsDo);
 			if(loanPeriodsDo!=null){
@@ -934,7 +934,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	@Override
 	public BigDecimal calculateAllRestAmount(Long loanId) {
 		
-		Date nowDate = new Date();
 		BigDecimal allRestAmount = BigDecimal.ZERO;
 
 		List<AfLoanPeriodsDo> noRepayList = afLoanPeriodsDao.getNoRepayListByLoanId(loanId);
