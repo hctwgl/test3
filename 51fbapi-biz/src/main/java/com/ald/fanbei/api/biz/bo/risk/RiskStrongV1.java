@@ -82,6 +82,14 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		eventInfo.put("blackBox", blackBox);
 		eventInfo.put("bqsBlackBox", bqsBlackBox);
 		eventInfo.put("ipAddress", ipAddress);
+		/*ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		String uuid = "";
+		if (requestAttributes != null){
+			String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+			String array[] = id == null?null:id.split("_");
+			uuid = array ==null || array.length<2?"":array[1];
+		}
+		eventInfo.put("uuid",uuid);*/
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 
 	}
