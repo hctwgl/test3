@@ -658,18 +658,32 @@ public class RiskUtil extends AbstractThird {
             riskResp.setSuccess(true);
             JSONObject dataObj = JSON.parseObject(riskResp.getData());
             BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-
+            AfUserAuthDo afUserAuthDo =	afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+            //强风控未通过，则不经额度处理
+            if(!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
+        	au_amount = BigDecimal.ZERO;
+            }
+            
+            AfUserAuthStatusDo afUserAuthStatusOnline = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.ONLINE.getName());
             String limitAmount = dataObj.getString("onlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal onlineAmount = new BigDecimal(limitAmount);
+            if(!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())){
+        	onlineAmount=BigDecimal.ZERO;
+            }
+            
+            AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.TRAIN.getName());
             limitAmount = dataObj.getString("offlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal offlineAmount = new BigDecimal(limitAmount);
+            if(!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())){
+        	offlineAmount=BigDecimal.ZERO;
+            }
+            
 
             Long consumerNum = Long.parseLong(consumerNo);
-
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
             updateUserScenceAmount(userAccountDo,consumerNum,au_amount,onlineAmount,offlineAmount);
 //            AfUserAccountDo accountDo = new AfUserAccountDo();

@@ -28,6 +28,14 @@ public interface AfESdkService {
 
     FileDigestSignResult userOldSign(Map<String,String> map);//签章
 
+    FileDigestSignResult firstPartySign(Map<String,String> map);//甲方签章
+
+    FileDigestSignResult secondPartySign(Map<String,String> map,byte[] secondStream);//乙方签章
+
+    FileDigestSignResult thirdPartySign(Map<String,String> map);//丙方（阿拉丁）签章
+
+//    FileDigestSignResult fourPartySign(Map<String,String> map);//钱包签章
+
     FileDigestSignResult selfOldSign(Map<String,String> map);//签章
 
     FileDigestSignResult secondOldSign(Map<String,String> map);//签章
