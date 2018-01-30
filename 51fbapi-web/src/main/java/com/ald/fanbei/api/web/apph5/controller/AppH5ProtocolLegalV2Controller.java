@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
@@ -176,7 +177,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
 
-	public String protocolFenqiService(HttpServletRequest request, ModelMap model){
+	public void protocolFenqiService(HttpServletRequest request, ModelMap model){
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
@@ -210,8 +211,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		Date date = new Date();
 
 		if (null != borrowId && 0 != borrowId) {
-			GetSeal(model, afUserDo, accountDo);
-			lender(model, null);
+			oldGetSeal(model, afUserDo, accountDo);
+			oldLender(model, null);
 			//取当前的分期时间，而不是当前时间
 			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
 			date= afBorrowDo.getGmtCreate();
@@ -254,7 +255,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 		}
 		logger.info(JSON.toJSONString(model));
-		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
 	/**
 	 * 借钱协议
@@ -421,8 +421,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					GetSeal(model, afUserDo, accountDo);
-					lender(model, fundSideInfo);
+					oldGetSeal(model, afUserDo, accountDo);
+					oldLender(model, fundSideInfo);
 				}
 			}
 		}
@@ -482,8 +482,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					model.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment());
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					GetSeal(model, afUserDo, accountDo);
-					lender(model, fundSideInfo);
+					oldGetSeal(model, afUserDo, accountDo);
+					oldLender(model, fundSideInfo);
 				}
 			}else {
 				getResourceRate(model, type,afResourceDo,"borrow");
@@ -624,22 +624,25 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 	}
 
-	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
-		/*if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
+	private void oldLender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
+		if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
 			model.put("lender", fundSideInfo.getName());// 出借人
 		} else {
 			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 			model.put("lender", lenderDo.getValue());// 出借人
-		}*/
-		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-		model.put("lender", lenderDo.getValue());// 出借人
-		/*AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
+		}
+		AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
 		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 			model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-		}*/
+		}
 	}
 
-	/*private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
+		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+		model.put("lender", lenderDo.getValue());// 出借人
+	}
+
+	private void oldGetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
 			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
@@ -652,7 +655,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}catch (Exception e){
 			logger.error("UserSeal create error",e);
 		}
-	}*/
+	}
 
 	private void GetSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
