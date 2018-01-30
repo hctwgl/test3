@@ -608,9 +608,9 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 							model.put("overdueRate", jsonObject.get("borrowSecondType"));
 						}else if(numberWordFormat.isNumeric(type)){
 							if(oneDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowFirstType"));
+								model.put("overdueRate", jsonObject.get("borrowFirstType"));
 							}else if(twoDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowSecondType"));
+								model.put("overdueRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
@@ -866,8 +866,10 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 //		Integer days = NumberUtil.objToIntDefault(type, 0);
 //		BigDecimal serviceAmount = borrowAmount.multiply(new BigDecimal(days)).multiply(new BigDecimal(model.get("SERVICE_RATE").toString())).divide(BigDecimal.valueOf(360)).setScale(2,BigDecimal.ROUND_HALF_UP);
 		model.put("poundage",poundage);//手续费
-		String overdueRate = (String) model.get("overdueRate");
-		model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
+		if (model.get("overdueRate") != null){
+			String overdueRate =  model.get("overdueRate").toString();
+			model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
+		}
 		if(borrowId > 0){
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if(null != afBorrowCashDo){

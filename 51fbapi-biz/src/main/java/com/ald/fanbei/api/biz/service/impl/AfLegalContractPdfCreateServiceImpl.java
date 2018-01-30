@@ -305,9 +305,9 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             map.put("overdueRate", jsonObject.get("borrowSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
-                                map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                                map.put("overdueRate", jsonObject.get("borrowFirstType"));
                             }else if(twoDay.equals(type)){
-                                map.put("poundageRate", jsonObject.get("borrowSecondType"));
+                                map.put("overdueRate", jsonObject.get("borrowSecondType"));
                             }
                         }
                     }
