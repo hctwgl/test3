@@ -56,6 +56,7 @@ public class AuthContactsV1Api implements ApiHandle {
 		Long userId = context.getUserId();
 		String contacts = (String) requestDataVo.getParams().get("contacts");
 
+		contacts = contacts.replace((char)160, (char)32);
 //		if (StringUtil.isBlank(contacts)) {
 //			throw new FanbeiException("authContactsApi param error", FanbeiExceptionCode.PARAM_ERROR);
 //		}
