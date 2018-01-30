@@ -4,6 +4,8 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 /**
  * @类现描述：
  * @author caowu 2017年1月5日 下午17:25:56
@@ -35,5 +37,7 @@ public interface AfUserAuthStatusService {
      */
     AfUserAuthStatusDo getAfUserAuthStatusByUserIdAndScene(Long userId, String scene);
 
-    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);
+    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);    
+
+    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(Long userId);
 }
