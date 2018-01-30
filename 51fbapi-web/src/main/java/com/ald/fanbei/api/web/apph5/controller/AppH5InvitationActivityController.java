@@ -64,6 +64,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfSigninDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
@@ -777,7 +778,14 @@ public class AppH5InvitationActivityController extends BaseController {
         		     newbieTaskForThirdShopping.setValue1("已购物<i>"+acticityShopOrderList.size()+"</i>次");
         		     
         		 }else{
-        		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
+        		         //  BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
+        		           //
+        		           BigDecimal doubleAmount = new BigDecimal(0.00);
+        		     	   AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
+        		     	   afUserAccountLogDo.setType("DOUBLE_REBATE_CASH");
+        		           afUserAccountLogDo.setUserId(userId);
+        		            doubleAmount =  afUserAccountLogDao.getUserAmountByType(afUserAccountLogDo);
+        		           
         		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
         		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
         		           newbieTaskForThirdShopping.setFinish(1);
