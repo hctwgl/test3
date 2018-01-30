@@ -94,12 +94,15 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 			map.put("billList", billList);
 			map.put("orderDetail", queryOrderDo);
 			map.put("amount", queryBorrowDo.getAmount());
+			map.put("borrowId", queryBorrowDo.getRid());
 			// 手续费
 			BigDecimal interest = afBorrowBillService.getInterestByBorrowId(queryBorrowDo.getRid());
 			map.put("interest", interest);
 			// 逾期利息
 			BigDecimal overdueInterest = afBorrowBillService.getOverdueInterestByBorrowId(queryBorrowDo.getRid());
 			map.put("overdueInterest", overdueInterest);
+			map.put("borrowNo", queryBillDo.getBorrowNo());
+			map.put("gmtBorrow", queryBillDo.getGmtBorrow());
 			resp.setResponseData(map);
 			return resp;
 		} catch (Exception e) {
