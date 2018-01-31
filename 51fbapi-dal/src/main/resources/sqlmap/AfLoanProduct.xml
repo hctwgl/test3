@@ -206,4 +206,12 @@
         limit 1
     </select>
     
+    <select id="getNameByPrdType" resultType="java.lang.String">
+        SELECT
+           name
+        FROM af_loan_product
+        WHERE prd_type = #{prdType}
+        limit 1
+    </select>
+    
 </mapper>

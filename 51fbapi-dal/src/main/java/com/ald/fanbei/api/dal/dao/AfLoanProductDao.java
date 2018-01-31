@@ -22,4 +22,6 @@ public interface AfLoanProductDao extends BaseDao<AfLoanProductDo, Long> {
 	
 	AfLoanProductDo getByPrdType(@Param("prdType") String prdType);
 
+	String getNameByPrdType(String prdType);
+
 }

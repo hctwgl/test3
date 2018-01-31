@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
  */
 public interface AfLoanProductService extends ParentService<AfLoanProductDo, Long>{
 
+	String getNameByPrdType(String prdType);
+
 }
