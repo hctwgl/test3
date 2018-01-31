@@ -290,8 +290,8 @@ public class TestController {
     @ResponseBody
     public String testKafka() throws Exception{
        // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
-        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC,KafkaConstants.SYNC_BORROW_CASH,"13989455786");
-        //HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("13962626262")),HashMap.class,"UserDataSummary");
+        kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
+        HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
 
         return "测试kafka";
     }

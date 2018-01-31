@@ -151,7 +151,7 @@
 
 	<!-- KAFKA -->
 	<!-- MONGODB -->
-	<mongo:mongo-client id="mongoClient"  host="192.168.106.26" port="27017" credentials="root:123456@test">
+	<mongo:mongo-client id="mongoClient"  host="${mongo.host}" port="${mongo.port}" credentials="${mongo.credentials}">
 		<mongo:client-options
 				connections-per-host="8"
 				threads-allowed-to-block-for-connection-multiplier="4"
@@ -161,7 +161,7 @@
 				socket-timeout="1500"/>
 	</mongo:mongo-client>
 
-	<mongo:db-factory dbname="test"  mongo-ref="mongoClient"/>
+	<mongo:db-factory dbname="${mongo.dbname}"  mongo-ref="mongoClient"/>
 
 	<bean id="mongoTemplate"  class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>

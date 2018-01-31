@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.kafka;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
@@ -58,7 +60,7 @@ public class KafkaSync {
             String triggerUrls = resourceDo.getValue1();
             if (triggerUrls.contains(url)) {
                 Long userId = afUserService.getUserIdByMobile(userName);
-                if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
+                if (type.contains(KafkaConstants.SYNC_BORROW_CASH)) {
                     syncUserSummary(userId, force);//同步借钱信息
                 } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
                     //同步用户基础信息
@@ -83,6 +85,7 @@ public class KafkaSync {
             syncUserSummary(userId, force);//同步借钱信息
         } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
             //同步用户基础信息
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_BORROW_CASH, userId.toString());
         }
     }
 
@@ -97,11 +100,11 @@ public class KafkaSync {
             @Override
             public void run() {
                 if (force) {
-                    kafkaTemplate.send(KafkaConstants.SYNC_TOPIC, KafkaConstants.SYNC_BORROW_CASH, userId.toString());
+                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_BORROW_CASH, userId.toString());
                 } else {
                     long count = mongoTemplate.count(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), COLLECTION_USERDATASUMMARY);
                     if (count == 0) {
-                        kafkaTemplate.send(KafkaConstants.SYNC_TOPIC, KafkaConstants.SYNC_BORROW_CASH, userId.toString());
+                        kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_BORROW_CASH, userId.toString());
                     }
                 }
             }
