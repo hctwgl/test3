@@ -73,7 +73,7 @@
         4.1乙方借款利率为$!{yearRate}%，借款利息＝借款本金×借款利率×借款天数/360。<br>
         4.2借款手续费：包括但不限于借款咨询、居间撮合、个人信用审核、通道服务、还款提醒以及支付给第三方的服务费等。乙方借款手续费率为$!{poundageRate}%。借款手续费＝借款本金×借款手续费率×借款天数/360。<br>
         4.3乙方本次借款手续费为$!{poundage}元。<br>
-        4.4乙方借款逾期费率为$!{overdueRate}%，逾期费用按日收取，每日逾期费用=每日逾期本金 x（逾期费率/360）。<br>
+        4.4乙方借款逾期费率为$!{overdueRate}%，逾期费用按日收取，每日逾期费用=每日逾期本金 x逾期费率。<br>
         4.5其他甲方及出借人授权的第三方可能发生的，且须由乙方承担的费用，包括但不限于：<br>
         （1）因债权转让发生的税费；<br>
         （2）仲裁过程中支出的费用，包括仲裁机构收取的费用等；<br>
@@ -136,8 +136,8 @@
     <br>
 ##    <span style="margin: 0 1rem">甲方：      #if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</span>
 ##    <span>乙方：      #if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span>
-        甲方：$!{companyUserSeal}<br>
-        乙方：$!{personUserSeal}<br>
+        甲方：<img style="max-width: 1.5rem" src="$!{companyUserSeal}"><br>
+        乙方：<img style="max-width: 1.5rem" src="$!{personUserSeal}"><br>
         签署时间：$!{time}<br><br>
     </p>
 </div>
@@ -159,6 +159,12 @@
           principalNum = parseFloat(principalNum);
           principalNum = principalNum.toFixed(2);     //截取小数点后2位
           return principalNum;
+        },
+        changeRateType: function(principalNum){ // 按年化取利率
+            principalNum = parseFloat(principalNum);
+            principalNum = principalNum/360;     //按年化取利率360
+            principalNum = principalNum.toFixed(2);     //截取小数点后2位
+            return principalNum;
         }
       }
     });

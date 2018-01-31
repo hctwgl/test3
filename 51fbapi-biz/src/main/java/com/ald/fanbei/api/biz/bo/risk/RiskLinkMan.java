@@ -19,11 +19,11 @@ public class RiskLinkMan extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
 
 	public RiskLinkMan(String consumerNo, String event, AfUserAuthDo afUserAuthDo) {
-		super(consumerNo, event, null, null, afUserAuthDo, null, null, null, null, null, null, null, null, null,null);
+		super(consumerNo, event, null, null, afUserAuthDo, null, null, null, null, null, null, null, null, null,null,null);
 	}
 
 	@Override
-	protected void create(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox) {
+	protected void create(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox, String riskScene) {
 		
 		setConsumerNo(consumerNo);
 		setEvent(event);

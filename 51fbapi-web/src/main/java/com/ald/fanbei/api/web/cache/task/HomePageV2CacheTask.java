@@ -46,7 +46,6 @@ public class HomePageV2CacheTask extends AbstractCacheTask{
 	
 	@Override
 	public void updateCache(Cache cache) {
-		/*
 		try {
 			log.info("update home page v2 cache task start,time =>{}", System.currentTimeMillis());
 			
@@ -66,13 +65,12 @@ public class HomePageV2CacheTask extends AbstractCacheTask{
 				log.info("home page v2 update redis cache success.");
 			}
 			log.info("update home page v2 cache task end,time =>{}", System.currentTimeMillis());
-			TimeUnit.SECONDS.sleep(5);
+			TimeUnit.MINUTES.sleep(cache.getLockInterval());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			lock.unlock();
 		}
-		*/
 	}
 	
 

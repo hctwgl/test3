@@ -283,7 +283,9 @@
 			<if test="address != null and address != '' ">
 				address = #{address,jdbcType=VARCHAR},
 			</if>
-
+			<if test="logisticsInfo != null">
+				logistics_info=#{logisticsInfo,jdbcType=VARCHAR},
+			</if>
 			<if test="goodsName != null and goodsName != '' ">
 				goods_name = #{goodsName,jdbcType=VARCHAR}
 			</if>

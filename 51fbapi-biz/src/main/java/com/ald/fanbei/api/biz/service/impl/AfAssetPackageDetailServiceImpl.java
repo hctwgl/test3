@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfViewAssetBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfViewAssetBorrowService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -33,6 +34,8 @@ import com.ald.fanbei.api.common.enums.AfAssetPackageStatus;
 import com.ald.fanbei.api.common.enums.AfAssetPackageType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -50,6 +53,7 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideOperaLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
@@ -101,6 +105,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	private AfBorrowBillService afBorrowBillService;
 	@Resource
     private AfBorrowDao  afBorrowDao;
+	@Resource
+	private AfResourceService  afResourceService;
 	
 	@Override
 	public BaseDao<AfAssetPackageDetailDo, Long> getDao() {
@@ -286,61 +292,47 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * 根据资产方要求,获取资产方对应的现金贷债权信息
 	 */
 	@Override
-	public List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart,final Date gmtCreateEnd,final BigDecimal sevenMoney){
+	public List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart,final Date gmtCreateEnd,final BigDecimal minMoney){
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
 		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 	        @Override
             public Long doInTransaction(TransactionStatus status) {
-            	BigDecimal sevenMoneyNew = sevenMoney;
-            	List<AfViewAssetBorrowCashDo> sevenDebtList= new ArrayList<AfViewAssetBorrowCashDo>();
-       		    List<AfViewAssetBorrowCashDo> fourteenDebtList=new ArrayList<AfViewAssetBorrowCashDo>();
+            	BigDecimal minMoneyNew = minMoney;
+            	List<AfViewAssetBorrowCashDo> minDebtList= new ArrayList<AfViewAssetBorrowCashDo>();
+       		    List<AfViewAssetBorrowCashDo> maxDebtList=new ArrayList<AfViewAssetBorrowCashDo>();
+       		    //根据resource表灵活配置的天数，目前为10/20天
+				AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+				if (null == afResourceDo) {
+					return 0L;
+				}
+				String minBorrowTime = afResourceDo.getTypeDesc().split(",")[0];
+				String maxBorrowTime = afResourceDo.getTypeDesc().split(",")[1];
             	try {
         			//加锁Lock
         			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);
         			//校验现在金额是否满足
         			if (isLock) {
         				//分配债权资产包
-        				BigDecimal fourteenMoney = BigDecimal.ZERO;
-        				if (sevenMoneyNew!=null) {
-        					//区分7天和14天校验
-        					BigDecimal sumSevenAmount = afViewAssetBorrowCashService.getSumSevenAmount(gmtCreateStart,gmtCreateEnd);
-        					if (sevenMoneyNew.compareTo(sumSevenAmount) > 0) {
-        						logger.error("getBatchCreditInfo  error该时间段内7天资产金额不足，共"+sumSevenAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					BigDecimal sumFourteenAmount = afViewAssetBorrowCashService.getSumFourteenAmount(gmtCreateStart,gmtCreateEnd);
-        					fourteenMoney = BigDecimalUtil.subtract(totalMoney,sevenMoneyNew);
-        					if (fourteenMoney.compareTo(sumFourteenAmount) > 0){
-        						logger.error("getBatchCreditInfo  error该时间段内14天资产金额不足，共"+sumFourteenAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					sevenDebtList = matchingBorrowCashDebt(sevenMoneyNew,gmtCreateStart, gmtCreateEnd,AfBorrowCashType.SEVEN.getName());
-        					fourteenDebtList = matchingBorrowCashDebt(fourteenMoney,gmtCreateStart, gmtCreateEnd,AfBorrowCashType.FOURTEEN.getName());
-        				}else{
-        					//初始化7天金额
-        					sevenMoneyNew = BigDecimal.ZERO;
-        					//总的校验
-        					BigDecimal sumAmount = afViewAssetBorrowCashService.getSumAmount(gmtCreateStart,gmtCreateEnd);
-        					if (totalMoney.compareTo(sumAmount) > 0) {
-        						logger.error("getBatchCreditInfo  error,该时间段内资产总金额不足，共"+sumAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					
-        					List<AfViewAssetBorrowCashDo> debtList = matchingBorrowCashDebt(totalMoney,gmtCreateStart, gmtCreateEnd,null);
-        					for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : debtList) {
-        						if (AfBorrowCashType.SEVEN.getName().equals(afViewAssetBorrowCashDo.getType())) {
-        							sevenDebtList.add(afViewAssetBorrowCashDo);
-        							sevenMoneyNew=sevenMoneyNew.add(afViewAssetBorrowCashDo.getAmount());
-        						}
-        						if (AfBorrowCashType.FOURTEEN.getName().equals(afViewAssetBorrowCashDo.getType())) {
-        							fourteenDebtList.add(afViewAssetBorrowCashDo);
-        						}
-        					}
-        					fourteenMoney = BigDecimalUtil.subtract(totalMoney,sevenMoneyNew);
+        				BigDecimal maxMoney = BigDecimal.ZERO;
+        				if (minMoneyNew==null){
+        					minMoneyNew=BigDecimalUtil.divide(totalMoney, new BigDecimal(2));
         				}
+    					//区分借钱天数校验
+    					BigDecimal sumMinAmount = afViewAssetBorrowCashService.getSumMinAmount(gmtCreateStart,gmtCreateEnd,minBorrowTime);
+    					if (minMoneyNew.compareTo(sumMinAmount) > 0) {
+    						logger.error("getBatchCreditInfo  error该时间段内"+minBorrowTime+"天资产金额不足，共"+sumMinAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
+    						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+    						return 0L;
+    					}
+    					BigDecimal sumMaxAmount = afViewAssetBorrowCashService.getSumMaxAmount(gmtCreateStart,gmtCreateEnd,maxBorrowTime);
+    					maxMoney = BigDecimalUtil.subtract(totalMoney,minMoneyNew);
+    					if (maxMoney.compareTo(sumMaxAmount) > 0){
+    						logger.error("getBatchCreditInfo  error该时间段内"+maxBorrowTime+"天资产金额不足，共"+sumMaxAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
+    						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+    						return 0L;
+    					}
+    					minDebtList = matchingBorrowCashDebt(minMoneyNew,gmtCreateStart, gmtCreateEnd,minBorrowTime);
+    					maxDebtList = matchingBorrowCashDebt(maxMoney,gmtCreateStart, gmtCreateEnd,maxBorrowTime);
         				
         				//生成资产包
         				Date currDate = new Date();
@@ -360,10 +352,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDo.setBeginTime(gmtCreateStart);
         				afAssetPackageDo.setEndTime(gmtCreateEnd);
         				afAssetPackageDo.setTotalMoney(totalMoney);
-        				afAssetPackageDo.setSevenMoney(sevenMoneyNew);
-        				afAssetPackageDo.setSevenNum(sevenDebtList.size());
-        				afAssetPackageDo.setFourteenMoney(fourteenMoney);
-        				afAssetPackageDo.setFourteenNum(fourteenDebtList.size());
+        				afAssetPackageDo.setMinMoney(minMoneyNew);
+        				afAssetPackageDo.setMinNum(minDebtList.size());
+        				afAssetPackageDo.setMaxMoney(maxMoney);
+        				afAssetPackageDo.setMaxNum(maxDebtList.size());
         				afAssetPackageDo.setBorrowRate(afAssetSideInfoDo.getBorrowRate());
         				afAssetPackageDo.setAnnualRate(afAssetSideInfoDo.getAnnualRate());
         				afAssetPackageDo.setRepaymentMethod(afAssetSideInfoDo.getRepaytType());
@@ -373,10 +365,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDo.setBusiType(AfAssetPackageBusiType.BORROWCASH.getCode());
         				afAssetPackageDao.saveRecord(afAssetPackageDo);
         				
-        				BigDecimal realSevenAmount = BigDecimal.ZERO;
-        				BigDecimal realFourteenAmount = BigDecimal.ZERO;
-        				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : sevenDebtList) {
-        					realSevenAmount = realSevenAmount.add(afViewAssetBorrowCashDo.getAmount());
+        				BigDecimal realMinAmount = BigDecimal.ZERO;
+        				BigDecimal realMaxAmount = BigDecimal.ZERO;
+        				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : minDebtList) {
+        					realMinAmount = realMinAmount.add(afViewAssetBorrowCashDo.getAmount());
         					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(currDate);
@@ -389,8 +381,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					//标记重新分配记录
         					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
         				}
-        				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : fourteenDebtList) {
-        					realFourteenAmount = realFourteenAmount.add(afViewAssetBorrowCashDo.getAmount());
+        				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : maxDebtList) {
+        					realMaxAmount = realMaxAmount.add(afViewAssetBorrowCashDo.getAmount());
         					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(new Date());
@@ -405,11 +397,11 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				}
         				
         				//更新实际金额
-        				afAssetPackageDo.setRealTotalMoney(realSevenAmount.add(realFourteenAmount));
+        				afAssetPackageDo.setRealTotalMoney(realMinAmount.add(realMaxAmount));
         				afAssetPackageDao.updateById(afAssetPackageDo);
         				
         				//资产方操作日志添加
-        				AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GET_ASSET.getCode(), afAssetPackageDo.getRealTotalMoney(), afAssetPackageDo.getRid()+"","", "请求现金贷资产包金额totalMoney="+totalMoney+",实际7天："+realSevenAmount+",14天"+realFourteenAmount);
+        				AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GET_ASSET.getCode(), afAssetPackageDo.getRealTotalMoney(), afAssetPackageDo.getRid()+"","", "请求现金贷资产包金额totalMoney="+totalMoney+",实际"+minBorrowTime+"天："+realMinAmount+","+maxBorrowTime+"天"+realMaxAmount);
         				afAssetSideOperaLogDao.saveRecord(operaLogDo);
         				
         				bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
@@ -527,7 +519,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @return
 	 */
 	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo){
-		Long timeLimit = NumberUtil.objToLongDefault(AfBorrowCashType.findRoleTypeByName(afViewAssetBorrowCashDo.getType()).getCode(), 7);
+		Long timeLimit = NumberUtil.objToLongDefault(afViewAssetBorrowCashDo.getType(), null);
 		AfAssetPackageRepaymentType repayTypeEnum = AfAssetPackageRepaymentType.findEnumByCode(afAssetPackageDo.getRepaymentMethod());
 		//借款人平台逾期信息
 		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afViewAssetBorrowCashDo.getUserId());

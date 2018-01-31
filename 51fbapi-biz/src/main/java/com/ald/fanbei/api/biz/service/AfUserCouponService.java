@@ -6,8 +6,8 @@ import java.util.List;
 
 
 
-
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -138,6 +138,7 @@ public interface AfUserCouponService {
 	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
 
 
+
 	String sentUserCouponGroup(Long userId, String tag, String sourceType);
 
 	int sentFirstAuthShoppingUserCoupon(AfOrderDo orderInfo);
@@ -145,4 +146,7 @@ public interface AfUserCouponService {
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
 }
+
+
+
 

@@ -47,7 +47,7 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = new ArrayList<Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		
@@ -61,7 +61,7 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		Map<String, Object> data = new HashMap<String, Object>();
 		
 
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 		
 		
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());

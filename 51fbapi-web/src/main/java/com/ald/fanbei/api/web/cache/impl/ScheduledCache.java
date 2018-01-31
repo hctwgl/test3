@@ -26,7 +26,7 @@ public class ScheduledCache implements Cache {
 	
 	private List<CacheTask> tasks = Lists.newArrayList();
 	
-	private long refreshInterval; // 单位：分钟
+	private long lockInterval; // 单位：分钟，防止多节点同时刷新redis缓存
 	
 	
 	@PostConstruct
@@ -72,14 +72,12 @@ public class ScheduledCache implements Cache {
 		this.tasks = tasks;
 	}
 
-	public long getRefreshInterval() {
-		return refreshInterval;
+	public long getLockInterval() {
+		return lockInterval;
 	}
 
-	public void setRefreshInterval(long refreshInterval) {
-		this.refreshInterval = refreshInterval;
+	public void setLockInterval(long lockInterval) {
+		this.lockInterval = lockInterval;
 	}
-	
-	
-	
+
 }

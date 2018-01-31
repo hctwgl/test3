@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,type,status,asset_name,asset_no,asset_side_id,valid_status,begin_time,end_time,total_money,real_total_money,seven_money,seven_num,fourteen_money,fourteen_num,borrow_rate,annual_rate,repayment_method,send_mode,download_url,remark 
+        id rid,gmt_create,gmt_modified,type,status,asset_name,asset_no,asset_side_id,valid_status,begin_time,end_time,total_money,real_total_money,min_money,min_num,max_money,max_num,borrow_rate,annual_rate,repayment_method,send_mode,download_url,remark 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -50,17 +50,17 @@
         <if test="realTotalMoney != null and realTotalMoney != ''">
             AND real_total_money = #{realTotalMoney,jdbcType=DECIMAL}
         </if>
-        <if test="sevenMoney != null and sevenMoney != ''">
-            AND seven_money = #{sevenMoney,jdbcType=DECIMAL}
+        <if test="minMoney != null and minMoney != ''">
+            AND min_money = #{minMoney,jdbcType=DECIMAL}
         </if>
-        <if test="sevenNum != null and sevenNum != ''">
-            AND seven_num = #{sevenNum,jdbcType=INTEGER}
+        <if test="minNum != null and minNum != ''">
+            AND min_num = #{minNum,jdbcType=INTEGER}
         </if>
-        <if test="fourteenMoney != null and fourteenMoney != ''">
-            AND fourteen_money = #{fourteenMoney,jdbcType=DECIMAL}
+        <if test="maxMoney != null and maxMoney != ''">
+            AND max_money = #{maxMoney,jdbcType=DECIMAL}
         </if>
-        <if test="fourteenNum != null and fourteenNum != ''">
-            AND fourteen_num = #{fourteenNum,jdbcType=INTEGER}
+        <if test="maxNum != null and maxNum != ''">
+            AND max_num = #{maxNum,jdbcType=INTEGER}
         </if>
         <if test="borrowRate != null and borrowRate != ''">
             AND borrow_rate = #{borrowRate,jdbcType=DECIMAL}
@@ -122,17 +122,17 @@
 	        <if test="realTotalMoney != null">        
 	            real_total_money,
 	        </if>
-	        <if test="sevenMoney != null">        
-	            seven_money,
+	        <if test="minMoney != null">        
+	            min_money,
 	        </if>
-	        <if test="sevenNum != null">        
-	            seven_num,
+	        <if test="minNum != null">        
+	            min_num,
 	        </if>
-	        <if test="fourteenMoney != null">        
-	            fourteen_money,
+	        <if test="maxMoney != null">        
+	            max_money,
 	        </if>
-	        <if test="fourteenNum != null">        
-	            fourteen_num,
+	        <if test="maxNum != null">        
+	            max_num,
 	        </if>
 	        <if test="borrowRate != null">        
 	            borrow_rate,
@@ -194,17 +194,17 @@
 		    <if test="realTotalMoney != null" >
 		       #{realTotalMoney,jdbcType=DECIMAL},
 		    </if>
-		    <if test="sevenMoney != null" >
-		       #{sevenMoney,jdbcType=DECIMAL},
+		    <if test="minMoney != null" >
+		       #{minMoney,jdbcType=DECIMAL},
 		    </if>
-		    <if test="sevenNum != null" >
-		       #{sevenNum,jdbcType=INTEGER},
+		    <if test="minNum != null" >
+		       #{minNum,jdbcType=INTEGER},
 		    </if>
-		    <if test="fourteenMoney != null" >
-		       #{fourteenMoney,jdbcType=DECIMAL},
+		    <if test="maxMoney != null" >
+		       #{maxMoney,jdbcType=DECIMAL},
 		    </if>
-		    <if test="fourteenNum != null" >
-		       #{fourteenNum,jdbcType=INTEGER},
+		    <if test="maxNum != null" >
+		       #{maxNum,jdbcType=INTEGER},
 		    </if>
 		    <if test="borrowRate != null" >
 		       #{borrowRate,jdbcType=DECIMAL},
@@ -269,17 +269,17 @@
             <if test="realTotalMoney != null and realTotalMoney != '' ">        
                 real_total_money = #{realTotalMoney,jdbcType=DECIMAL},                
             </if>
-            <if test="sevenMoney != null and sevenMoney != '' ">        
-                seven_money = #{sevenMoney,jdbcType=DECIMAL},                
+            <if test="minMoney != null and minMoney != '' ">        
+                min_money = #{minMoney,jdbcType=DECIMAL},                
             </if>
-            <if test="sevenNum != null and sevenNum != '' ">        
-                seven_num = #{sevenNum,jdbcType=INTEGER},                
+            <if test="minNum != null and minNum != '' ">        
+                min_num = #{minNum,jdbcType=INTEGER},                
             </if>
-            <if test="fourteenMoney != null and fourteenMoney != '' ">        
-                fourteen_money = #{fourteenMoney,jdbcType=DECIMAL},                
+            <if test="maxMoney != null and maxMoney != '' ">        
+                max_money = #{maxMoney,jdbcType=DECIMAL},                
             </if>
-            <if test="fourteenNum != null and fourteenNum != '' ">        
-                fourteen_num = #{fourteenNum,jdbcType=INTEGER},                
+            <if test="maxNum != null and maxNum != '' ">        
+                max_num = #{maxNum,jdbcType=INTEGER},                
             </if>
             <if test="borrowRate != null and borrowRate != '' ">        
                 borrow_rate = #{borrowRate,jdbcType=DECIMAL},                

@@ -213,11 +213,11 @@
 			<artifactId>core</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!--<dependency> -->
-		<!--<groupId>org.bouncycastle</groupId> -->
-		<!--<artifactId>bcprov-jdk15</artifactId> -->
-		<!--<version>1.46</version> -->
-		<!--</dependency> -->
+		<!--<dependency>-->
+			<!--<groupId>org.bouncycastle</groupId>-->
+			<!--<artifactId>bcprov-jdk15</artifactId>-->
+			<!--<version>1.46</version>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
@@ -282,11 +282,10 @@
 			<artifactId>google.guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
-			<version>3.3.2</version>
+			<version>2.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -311,20 +310,20 @@
 		<module>51fbapi-web</module>
 	</modules>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.properties</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
+	    <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -350,7 +349,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>

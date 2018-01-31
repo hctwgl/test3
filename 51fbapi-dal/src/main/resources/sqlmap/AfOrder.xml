@@ -374,7 +374,7 @@
 		)
 		</foreach>
 	</insert>
-	
+
 	<update id="updateOrderByOutTradeNo" parameterType="AfOrderDo">
 		update af_order  set gmt_modified=NOW()
 		<if test="userId != null">
@@ -1189,6 +1189,7 @@
 		AND
 			user_id=#{userId}
 	</select>
+
 	<select id="getCountPaidOrderByUserAndOrderType" resultType="HashMap">
 		 SELECT 	
 		 COUNT(1) 'count' FROM 
@@ -1236,5 +1237,38 @@
 		 WHERE  user_id = #{userId}
 		 AND is_delete = 0
 	</select>
-	
+
+	<update id="updateAuAndUsed">
+		UPDATE
+		af_order
+		SET
+		au_amount = #{auAmount},
+		used_amount = #{usedAmount}
+		WHERE
+		id = #{orderId}
+	</update>
+
+	<insert id="addSceneAmount" parameterType="java.util.List">
+		INSERT INTO af_order_scene_amount(order_id , user_id , scene , au_amount , used_amount , gmt_create)
+		VALUES
+		<foreach collection = "list" separator = "," item = "item" index = "index" >
+			(
+			#{item.orderId},
+			#{item.userId},
+			#{item.scene},
+			#{item.auAmount},
+			#{item.usedAmount},
+			NOW()
+			)
+		</foreach>
+	</insert>
+
+	<select id="getSceneAmountByOrderId" parameterType="java.lang.Long" resultType="AfOrderSceneAmountDto">
+		SELECT
+		*
+		FROM af_order_scene_amount
+		WHERE
+		order_id = #{orderId}
+	</select>
+
 </mapper>

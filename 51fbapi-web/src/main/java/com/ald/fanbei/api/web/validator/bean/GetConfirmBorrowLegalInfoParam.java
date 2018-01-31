@@ -17,7 +17,8 @@ public class GetConfirmBorrowLegalInfoParam {
 	private BigDecimal amount;
 	
 	@NotNull
-	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
+	@Pattern(regexp="^[0-9]*[1-9][0-9]*$")
+
 	private String type;
 	
 	@NotNull
