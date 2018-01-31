@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -59,7 +60,6 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -123,6 +123,8 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	AfBoluomeUserCouponService afBoluomeUserCouponService;
 	@Resource 
 	JpushService jpushService;
+	@Resource
+	AfCouponCategoryService  afCouponCategoryService;
 	
         private static final Logger logger = LoggerFactory.getLogger(AfBoluomeActivityServiceImpl.class);
         private static String couponUrl = null;
@@ -715,7 +717,12 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                 		      int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
                 		      logger.info("sentNewUserBoluomeCouponForDineDash order queryCount = {}, afUserDo = {}", queryCount,JSONObject.toJSONString(afUserDo));
                 		      if (queryCount <= 0) {
-                			  
+                			   try{
+                			       int result =  sentBoluomeCouponGroup(afUserDo);
+                			       logger.info("sentBoluomeCouponGroup result:"+result);
+                			   }catch(Exception e){
+                			       logger.error("sentBoluomeCouponGroup error:"+e);
+                			   }
                 			  
                         		  String  type = H5GgActivity.GG_ACTIVITY.getCode();
                         		  String  secType =  H5GgActivity.BOLUOME_COUPON.getCode();
@@ -760,7 +767,9 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                                     				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
                                     				    //推送极光
                                         				    logger.info("sentNewUserBoluomeCouponForDineDash boluomeUserCoupon saveRecord", JSONObject.toJSONString(boluomeUserCoupon));
-                                    				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
+                                        				    if(i==0){
+                                        				      jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
+                                        				  }
                                     				}
                                     			    }
                                     			}
@@ -773,6 +782,57 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    	}
 	    return 0;					    
 }
+	
+	
+	 private int sentBoluomeCouponGroup(AfUserDo afUserDo) {
+		    int result = 0;
+		    //获取优惠券组
+		    String tag = "_NEW_USER_BOLUOME_COUPON_";
+		    AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
+			if(couponCategory != null){
+			    	String coupons = couponCategory.getCoupons();
+				JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+				for (int i = 0; i < couponsArray.size(); i++) {
+					String couponId = (String) couponsArray.getString(i);
+					AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
+	            			logger.info("sentBoluomeCouponGroup resourceInfo = {},afUserDo = {}",  JSONObject.toJSONString(resourceInfo),JSONObject.toJSONString(afUserDo));
+	            			if(resourceInfo !=null){
+	            			AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
+	            			userCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
+	            			userCouponDo.setUserId(afUserDo.getRid());
+	            			userCouponDo.setCouponId(Long.parseLong(couponId));
+	            			AfBoluomeUserCouponDo  userCoupon =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
+//	            			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
+//	            			logger.info("sentNewUserBoluomeCouponForDineDash resourceInfo = {},afUserDo = {}",  JSONObject.toJSONString(resourceInfo),JSONObject.toJSONString(afUserDo));
+	            			//无券则发券，并推送极光
+	            			if(userCoupon == null){
+	            			   
+	            				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+	            				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+	            				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+	            				logger.info("sentBoluomeCouponGroup afUserDo = {}, resultString = {}", JSONObject.toJSONString(afUserDo), resultString);
+	            				JSONObject resultJson = JSONObject.parseObject(resultString);
+	            				String code = resultJson.getString("code");
+	            		        	//发券成功，推送极光 
+	            				if ("0".equals(code)) {
+	            				    //保存记录
+	            				    AfBoluomeUserCouponDo boluomeUserCoupon = new AfBoluomeUserCouponDo();
+	            				    boluomeUserCoupon.setChannel(H5GgActivity.REGISTER.getCode());
+	            				    boluomeUserCoupon.setCouponId(resourceInfo.getRid());
+	            				    boluomeUserCoupon.setStatus(1);
+	            				    boluomeUserCoupon.setUserId(afUserDo.getRid());
+	            				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
+	            				}
+	            			    }
+	            			}
+				}
+			}	    			    
+	        
+		    return result;
+		    // TODO Auto-generated method stub
+		    
+		}
+	
 	
 	 private String getCouponYesNoStatus(AfResourceDo resourceInfo, AfUserDo UserDo) {
 
