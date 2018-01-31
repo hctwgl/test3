@@ -243,5 +243,5 @@ public interface AfResourceService {
 	 * @param envType (区分预发和线上)
 	 * @return
 	 */
-	List<AfResourceDo> getLoanHomeListByType();
+	List<Object> getLoanHomeListByType();
 }
