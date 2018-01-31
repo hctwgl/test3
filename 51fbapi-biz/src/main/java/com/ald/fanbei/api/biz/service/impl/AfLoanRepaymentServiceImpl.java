@@ -367,7 +367,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                 @Override
                 public Long doInTransaction(TransactionStatus status) {
                     try {
-                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);	// TODO
+                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);
                 		
                     	// 最后一期还完后， 修改loan状态FINSH
                     	dealLoanStatus(LoanRepayDealBo);
