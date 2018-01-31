@@ -27,8 +27,17 @@ public class AfLoanVo extends AbstractSerial {
 	private String cardName;	// 银行卡名称
 	private Date gmtCreate;		// 申请时间
 	private Date gmtArrival;	// 打款时间
-	private String status;		// 逾期状态
+	private String status;		// 贷款状态
+	private String overdueStatus;		// 逾期状态
 	private BigDecimal perPeriodAmount;		// 每期还款金额
+
+	
+	public String getOverdueStatus() {
+		return overdueStatus;
+	}
+	public void setOverdueStatus(String overdueStatus) {
+		this.overdueStatus = overdueStatus;
+	}
 	
 	
 	public BigDecimal getPerPeriodAmount() {
