@@ -399,12 +399,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene) {
-        Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
-        String directory = "";
-        if (directoryCache != null) {
-            directory = directoryCache.toString();
-        }
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene,String directory) {
         AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
         Long userId = Long.parseLong(oldUserInfo.getValue());
         Long consumerId = Long.parseLong(consumerNo);
