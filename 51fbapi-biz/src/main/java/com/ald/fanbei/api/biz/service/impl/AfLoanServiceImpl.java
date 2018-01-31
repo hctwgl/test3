@@ -413,12 +413,13 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.loanArrivalAmount = lastLoanDo.getArrivalAmount();
 		bo.loanGmtApply = lastLoanDo.getGmtCreate();
 		
-		// 处理贷款当期
+		// 处理贷款当期  TODO 获取当期
 		AfLoanPeriodsDo activePeriod = afLoanPeriodsDao.getLastActivePeriodByLoanId(lastLoanDo.getRid());
 		bo.curPeriodId = activePeriod.getRid();
 		bo.curPeriodAmount = activePeriod.getAmount();
 		bo.curPeriodRestAmount = afLoanPeriodsService.calcuRestAmount(activePeriod);
 		bo.curPeriodGmtPlanRepay = activePeriod.getGmtPlanRepay();
+		bo.curPeriodStatus = activePeriod.getStatus();
 		if(activePeriod.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
 			bo.isOverdue = true;
 		}else {
