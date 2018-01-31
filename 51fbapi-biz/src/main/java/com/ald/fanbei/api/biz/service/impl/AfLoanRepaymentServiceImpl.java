@@ -208,7 +208,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		String repayPeriods = "";
 		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
-			if(i == loanPeriodsDoList.size()){
+			if(i == loanPeriodsDoList.size()-1){
 				repayPeriods += loanPeriodsDoList.get(i).getRid();
 			} else {
 				repayPeriods += loanPeriodsDoList.get(i).getRid()+",";
@@ -470,6 +470,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						loanPeriodsDo.setRepayAmount(repayAmount);
 					}
 					
+					loanPeriodsDo.setPreRepayStatus("Y"); 	// 提前还款
 					loanPeriodsDo.setRepayId(repaymentDo.getRid());
 					loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
 					loanPeriodsDo.setGmtLastRepay(new Date());
