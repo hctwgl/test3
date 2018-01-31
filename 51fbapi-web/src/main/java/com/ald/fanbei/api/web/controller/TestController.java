@@ -289,9 +289,15 @@ public class TestController {
     @RequestMapping("/kafka")
     @ResponseBody
     public String testKafka() throws Exception{
-       // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
-        kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
-        HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+        logger.error("testKafka------");
+        try{
+            // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
+            HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+
+        }catch (Exception e){
+    logger.error("eee",e);
+        }
 
         return "测试kafka";
     }
