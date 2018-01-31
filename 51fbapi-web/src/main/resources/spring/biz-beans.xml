@@ -116,9 +116,10 @@
 		<constructor-arg>
 			<map>
 				<!--kafka-cn-hangzhou.aliyun.com:8080 比如华东1的topic，需要在华东1的ECS上面才能访问-->
-				<entry key="bootstrap.servers" value="kafka-ons-internet.aliyun.com:8080"/>
+
+				<entry key="bootstrap.servers" value="${kafka.bootstrap.servers}"/>
 				<!--请修改为自己的路径，最好是绝对路径-->
-				<entry key="ssl.truststore.location" value="C:/home/aladin/project/kafka_ssl_cert/kafka.client.truststore.jks"/>
+				<entry key="ssl.truststore.location" value="${kafka.ssl.truststore.location}"/>
 				<entry key="ssl.truststore.password" value="KafkaOnsClient"/>
 				<entry key="security.protocol" value="SASL_SSL"/>
 				<entry key="sasl.mechanism" value="ONS"/>
@@ -141,7 +142,7 @@
 	<bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
 		<constructor-arg ref="producerFactory" />
 		<constructor-arg name="autoFlush" value="true" />
-		<property name="defaultTopic" value="PUBLIC_KAFKA_TEST1" />
+		<property name="defaultTopic" value="${kafka.default.topic}" />
 		<property name="producerListener" ref="producerListener" >
 
 		</property>
