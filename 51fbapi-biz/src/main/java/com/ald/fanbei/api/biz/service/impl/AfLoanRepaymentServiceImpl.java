@@ -470,6 +470,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						loanPeriodsDo.setRepayAmount(repayAmount);
 					}
 					
+					loanPeriodsDo.setRepayId(repaymentDo.getRid());
 					loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
 					loanPeriodsDo.setGmtLastRepay(new Date());
 					loanPeriodsDo.setGmtModified(new Date());
@@ -634,6 +635,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
+			loanPeriodsDo.setRepayId(repaymentDo.getRid());
 			loanPeriodsDo.setGmtLastRepay(new Date());
         }
 		loanPeriodsDo.setGmtModified(new Date());
