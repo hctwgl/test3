@@ -150,6 +150,14 @@
 		<property name="kafka.ssl.truststore.location" defaultValue="C:/home/aladin/project/kafka_ssl_cert/kafka.client.truststore.jks"  description="阿里证书地址"/>
 		<property name="kafka.default.topic" defaultValue="PUBLIC_KAFKA_TEST1"  description="主题"/>
 
+
+		<property name="mongo.host" defaultValue="WHDrj/+kiw8VYIzT6iQSDg=="  description="kafka服务器"/>
+		<property name="mongo.port" defaultValue="C:/home/aladin/project/kafka_ssl_cert/kafka.client.truststore.jks"  description="阿里证书地址"/>
+		<property name="mongo.credentials" defaultValue="PUBLIC_KAFKA_TEST1"  description="主题"/>
+		mongo.host=WHDrj/+kiw8VYIzT6iQSDg==
+		mongo.port=/1HEnLdEjsMNcGTynf1lzw==
+		mongo.credentials=QMQU2g9rXtb4FGhSLGOOctCuhgu0QhqoULwmZ+3gTgE=
+		mongo.dbname=test
 	</group>
 
 	<script>
