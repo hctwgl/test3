@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -17,6 +18,8 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -52,6 +55,8 @@ public class GetLoanInfoApi implements H5Handle {
 	AfLoanService afLoanService;
 	@Resource
 	AfLoanPeriodsService afLoanPeriodsService;
+	@Resource
+	AfLoanRepaymentService afLoanRepaymentService;
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -101,6 +106,20 @@ public class GetLoanInfoApi implements H5Handle {
 			loanVo.setCardName(loanDo.getCardName());	// 银行卡名称
 			loanVo.setGmtCreate(loanDo.getGmtCreate());		// 申请时间
 			loanVo.setGmtArrival(loanDo.getGmtArrival());	// 打款时间
+			
+			loanVo.setOverdueStatus(afLoanPeriod.getOverdueStatus());
+			loanVo.setStatus(loanDo.getStatus());
+			
+			if(loanDo.getStatus().equals(AfLoanStatus.TRANSFERRED.name())){
+				
+				if(!afLoanRepaymentService.canRepay(afLoanPeriod)){
+					loanVo.setStatus("CURR_COMPLETED");		// 当月已还清，下月的还款时间还没开始
+				}
+				if(afLoanPeriod.getStatus().equals(AfLoanPeriodStatus.REPAYING.name())){
+					loanVo.setStatus(AfLoanPeriodStatus.REPAYING.name());		// 还款中
+				}
+				
+			}
 			
 			resp.setResponseData(loanVo);
 			
