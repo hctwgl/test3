@@ -58,6 +58,8 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -713,13 +715,14 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                 		      int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
                 		      logger.info("sentNewUserBoluomeCouponForDineDash order queryCount = {}, afUserDo = {}", queryCount,JSONObject.toJSONString(afUserDo));
                 		      if (queryCount <= 0) {
+                			  
+                			  
                         		  String  type = H5GgActivity.GG_ACTIVITY.getCode();
                         		  String  secType =  H5GgActivity.BOLUOME_COUPON.getCode();
                         		  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
                         		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {},afUserDo = {}", JSONObject.toJSONString(resourceDo),JSONObject.toJSONString(afUserDo));
                         		     if(resourceDo!= null){
                         			long  boluomeCouponId = 0L;
-                        			
                         			for(int i=0;i<3;i++){
                                 			 if(i==0){
                                 			     boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;

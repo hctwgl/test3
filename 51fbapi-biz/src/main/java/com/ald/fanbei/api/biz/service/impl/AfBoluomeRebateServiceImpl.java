@@ -195,42 +195,42 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 								log = log + String.format("userName = %s , rebateAmount = %s", userName,
 										rebateDo.getRebateAmount());
 								logger.info(log);
-								if (userName != null) {
-									String scence = afBoluomeRebateDao.getScence(orderId);
-									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
-									logger.info(log);
-									
-									//get couponId and couponName from afResource
-									AfResourceDo resourceDo = new AfResourceDo();
-									
-									resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "COUPON_AND_AMOUNT");
-									
-									String couponId = resourceDo.getValue();
-									String twenty = resourceDo.getValue1();
-									String thirty = resourceDo.getValue2();
-									
-									log = log + String.format(" afResource = %s", resourceDo.toString());
-									logger.info(log);
-									
-									//if this user Rebate amount is 20 than send a coupon 
-									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
-										if (StringUtil.isNotBlank(couponId)) {
-											
-											//add coupon to user 
-											Long couponIdL = NumberUtil.objToLong(couponId);
-											
-											log = log + String.format(" before grantCoupon parameters userId = %s ,couponId = %s ", userId.toString(),couponId.toString());
-											logger.info(log);
-											
-											afUserCouponService.grantCoupon(userId, couponIdL, UserCouponSource.GG_ACTIVITY.getName(), orderId.toString());
-											
-											log = log + String.format(" before grantCoupon");
-											logger.info(log);
-										}
-									}
-									
-									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
-								}
+//								if (userName != null) {
+//									String scence = afBoluomeRebateDao.getScence(orderId);
+//									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+//									logger.info(log);
+//									
+//									//get couponId and couponName from afResource
+//									AfResourceDo resourceDo = new AfResourceDo();
+//									
+//									resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "COUPON_AND_AMOUNT");
+//									
+//									String couponId = resourceDo.getValue();
+//									String twenty = resourceDo.getValue1();
+//									String thirty = resourceDo.getValue2();
+//									
+//									log = log + String.format(" afResource = %s", resourceDo.toString());
+//									logger.info(log);
+//									
+//									//if this user Rebate amount is 20 than send a coupon 
+//									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
+//										if (StringUtil.isNotBlank(couponId)) {
+//											
+//											//add coupon to user 
+//											Long couponIdL = NumberUtil.objToLong(couponId);
+//											
+//											log = log + String.format(" before grantCoupon parameters userId = %s ,couponId = %s ", userId.toString(),couponId.toString());
+//											logger.info(log);
+//											
+//											afUserCouponService.grantCoupon(userId, couponIdL, UserCouponSource.GG_ACTIVITY.getName(), orderId.toString());
+//											
+//											log = log + String.format(" before grantCoupon");
+//											logger.info(log);
+//										}
+//									}
+//									
+//									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
+//								}
 							}
 						}
 					}
