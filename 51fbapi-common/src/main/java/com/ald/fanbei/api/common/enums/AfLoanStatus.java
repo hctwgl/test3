@@ -10,7 +10,6 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfLoanStatus {
 	APPLY("申请/未审核"),
-	TRANSFER_FAIL("打款失败"),
 	TRANSFERING("打款中"),
 	TRANSFERRED("已经打款/待还款"),
 	FINISHED("已结清"),

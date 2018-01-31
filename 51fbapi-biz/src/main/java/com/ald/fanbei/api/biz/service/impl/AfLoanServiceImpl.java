@@ -300,8 +300,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			return;
 		}
 		
-		if(AfLoanStatus.CLOSED.name().equals(status) 
-					|| AfLoanStatus.TRANSFER_FAIL.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
+		if(AfLoanStatus.CLOSED.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
 			logger.warn("DealLoanSucc, transfer has fail, but still callback! original status= "+status+",loanId="+loanId+",tradeNoOut="+tradeNoOut);
 		}
 		
@@ -323,8 +322,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
 		Date cur = new Date();
-		loanDo.setStatus(AfLoanStatus.TRANSFER_FAIL.name());
-		loanDo.setRemark(msg);
+		loanDo.setStatus(AfLoanStatus.CLOSED.name());
+		loanDo.setRemark("UPS打款失败，"+msg);
 		loanDo.setGmtClose(cur);
 		afLoanDao.updateById(loanDo);
 	}
@@ -402,7 +401,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		String status = lastLoanDo.getStatus();
 		if(AfLoanStatus.FINISHED.name().equals(status)
-			|| AfLoanStatus.TRANSFER_FAIL.name().equals(status)
 			|| AfLoanStatus.CLOSED.name().equals(status)) {
 			bo.hasLoan = false;
 			return;
