@@ -60,6 +60,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowQuery;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 
 
@@ -369,7 +371,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				BigDecimal realMaxAmount = BigDecimal.ZERO;
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : minDebtList) {
         					realMinAmount = realMinAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
+        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(currDate);
         					afAssetPackageDetailDo.setGmtModified(currDate);
@@ -383,7 +385,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				}
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : maxDebtList) {
         					realMaxAmount = realMaxAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
+        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(new Date());
         					afAssetPackageDetailDo.setGmtModified(new Date());
@@ -518,11 +520,23 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @param afViewAssetBorrowCashDo
 	 * @return
 	 */
-	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo){
+	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo,String minBorrowTime,String maxBorrowTime ){
 		Long timeLimit = NumberUtil.objToLongDefault(afViewAssetBorrowCashDo.getType(), null);
 		AfAssetPackageRepaymentType repayTypeEnum = AfAssetPackageRepaymentType.findEnumByCode(afAssetPackageDo.getRepaymentMethod());
 		//借款人平台逾期信息
 		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afViewAssetBorrowCashDo.getUserId());
+		//获取借款利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		if (afResourceDo!=null &&  afResourceDo.getValue2() != null) {
+			JSONArray array= JSONObject.parseArray(afResourceDo.getValue2());
+			JSONObject jsonObject = array.getJSONObject(1);
+			if (afViewAssetBorrowCashDo.getType()==minBorrowTime) {
+				borrowRate=(BigDecimal) jsonObject.get("borrowFirstType");
+			}else{
+				borrowRate=(BigDecimal) jsonObject.get("borrowSecondType");
+			}
+		}
 		//现金贷的还款计划
 		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
 		RepaymentPlan repaymentPlan = new RepaymentPlan();
@@ -543,7 +557,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setBankNo(afViewAssetBorrowCashDo.getCardNumber());
 		creditRespBo.setAcctName(bankInfo.getAcctName());
 		creditRespBo.setMoney(afViewAssetBorrowCashDo.getAmount());
-		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
+		creditRespBo.setApr(borrowRate);
 		creditRespBo.setTimeLimit(timeLimit.intValue());
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowCashDo.getGmtCreate()));
 		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getBorrowRemark())) {
