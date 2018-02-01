@@ -268,7 +268,7 @@ public class AppH5FreshmanShare extends BaseController{
 		try {
 			doWebCheck(request, false);
 			String cacheKey =  "freshman:share:explosiveGoods";  
-			List<Map<String,Object>> itemList = bizCacheUtil.getObjectList(cacheKey);
+			List<Map<String,Object>> itemList = null;
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			if (itemList  == null) {
 			
@@ -317,11 +317,9 @@ public class AppH5FreshmanShare extends BaseController{
 				        for(int i=0;i<couponList.size();i++){
 				            if(goodsDo.getSaleAmount().compareTo(couponList.get(i).getLimitAmount())>0 || goodsDo.getSaleAmount().compareTo(couponList.get(i).getLimitAmount())==0){
 				        	temp = couponList.get(i).getAmount();
-				        	couponLimitAmount =  couponList.get(i).getLimitAmount();
-				        	couponAmount =  couponList.get(i).getAmount();
-				        	if(couponList.get(i).getAmount().compareTo(temp)>0 ){
+				        	if(temp.compareTo(couponAmount)>0 ){
+				        	    couponAmount = temp;
 				        	    couponLimitAmount =  couponList.get(i).getLimitAmount();
-				        	    couponAmount =  couponList.get(i).getAmount();
 				        	}
 				            }
 				        }
@@ -378,7 +376,7 @@ public class AppH5FreshmanShare extends BaseController{
 				 data.put("itemName",itemName);
 				 list.add(data);
 				 itemList = list;
-				 bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
+				// bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
 				 
 			       
 			 }
