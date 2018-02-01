@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import io.netty.handler.codec.base64.Base64Encoder;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,15 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.*;
-
 import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Base64Utils;
 
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
 import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
@@ -65,6 +67,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -1828,11 +1831,7 @@ public class RiskUtil extends AbstractThird {
         obj.put("productCodeId", productCodeId);
 
         logThird(obj, "virtualProductQuota obj", obj);
-        try {
-	    reqBo.setDetails(com.ald.fanbei.api.common.util.Base64.encode(JSON.toJSONString(obj).getBytes("utf-8")));
-	} catch (UnsupportedEncodingException e) {
-	    logger.error("virtualProductQuota error" ,e);
-	}
+	    reqBo.setDetails(Base64Utils.encodeToString(JSON.toJSONString(obj).getBytes()));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
 
