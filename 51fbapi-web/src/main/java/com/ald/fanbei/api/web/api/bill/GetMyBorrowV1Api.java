@@ -231,7 +231,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     map.put("amount", amount.add(usableAmount).add(onlineAmount));
                 }
             }
-            if (afUserAuthStatusDo != null && StringUtil.equals(afUserAuthStatusDo.getStatus(), RiskStatus.YES.getCode())) {
+            //if (afUserAuthStatusDo != null && StringUtil.equals(afUserAuthStatusDo.getStatus(), RiskStatus.YES.getCode())) {
                 // 获取逾期账单月数量
                 int overduedMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
                 AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
@@ -301,7 +301,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("overduedMonth", overduedMonth);
                 map.put("outMoney", outMoney);
                 map.put("notOutMoeny", notOutMoeny);
-            }
+            //}
             resp.setResponseData(map);
         } catch (Exception e) {
             logger.error("getMyBorrowV1Api error :", e);
