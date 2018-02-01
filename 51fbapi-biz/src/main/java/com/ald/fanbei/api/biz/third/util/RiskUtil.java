@@ -1827,6 +1827,7 @@ public class RiskUtil extends AbstractThird {
         obj.put("productCode", productCode);
         obj.put("productCodeId", productCodeId);
 
+        logThird(obj, "virtualProductQuota obj", obj);
         reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);

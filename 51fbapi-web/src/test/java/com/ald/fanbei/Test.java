@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dbunit.util.Base64;
+
 import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
@@ -75,6 +77,7 @@ public class Test {
 //		}
 	    
         	try {
+        	    
 //        	    //,        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"
 //        	    //AfBoluomeShoujiDo afBoluomeShoujiDo = JSON.parseObject(" {        \"area\": \"北京\",        \"canCancel\": 0,        \"cancelledAt\": 1513056463818,        \"channel\": \"dhst\",        \"displayStatus\": \"已取消\",        \"flow\": \"50M\",        \"goodsId\": \"cucc_50M\", \"id\": \"ala102894012481600\",        \"isp\": \"联通\",        \"name\": \"(全国)北京联通50M - 186****5787\",        \"orderPrice\": 5.9,        \"orderType\": \"liuliang\",        \"partnerId\": \"\",        \"phone\": \"18612115787\",        \"price\": 5.9,        \"status\": 8,        \"userId\": \"1953217\",        \"userPhone\": \"13043324643\"    ,        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"}",AfBoluomeShoujiDo.class);
 //        	    //AfBoluomeJiayoukaDo afBoluomeShoujiDo = JSON.parseObject("{        \"canCancel\": 1,        \"cardId\": \"1000113200005437747\",        \"cardnum\": 1,        \"categoryId\": \"1\",        \"channel\": \"gaoyang\",        \"displayStatus\": \"待支付\",        \"facePrice\": \"100.0\",        \"gameid\": \"GAME60560\",        \"id\": \"ala002893302465069\",        \"isp\": \"中石化\",        \"name\": \"中石化卡:100****7747 充值 100.0元\",        \"orderPrice\": 100,        \"orderType\": \"jiayouka\",        \"orderTypeName\": \"加油卡\",        \"partnerId\": \"\",        \"phone\": \"18612115787\",        \"price\": 100,        \"productId\": \"1503233307\",        \"status\": 2,        \"userId\": \"980186\",        \"userName\": \"\",        \"userPhone\": \"18850843825\",        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"}",AfBoluomeJiayoukaDo.class);
