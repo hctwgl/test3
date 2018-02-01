@@ -1233,11 +1233,17 @@ public class AppH5InvitationActivityController extends BaseController {
     }
     private String activitySwitch(){
 	 String acticitySwitch = "";
-         AfResourceDo  afResourceDo  =  afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "RECOMMEND_NEWBIE_TASK");
-         if(afResourceDo != null){
-             acticitySwitch = afResourceDo.getValue();
-         }
-	return acticitySwitch;
+	 AfResourceDo  afResourceDo  =  afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "RECOMMEND_NEWBIE_TASK");
+	 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	//线上为开启状态
+	  if(afResourceDo != null){
+               if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+        	       acticitySwitch = afResourceDo.getValue();
+        	    } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+        	       acticitySwitch = afResourceDo.getValue1();
+        	  }
+                }
+	  return acticitySwitch;
     }
     
     

@@ -35,6 +35,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -692,7 +693,15 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	public int sentNewUserBoluomeCouponForDineDash(AfUserDo afUserDo) {
 	    AfResourceDo activitySwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","ACTIVITY_SWITCH");
 	    if(activitySwitch != null){
-		if("O".equals(activitySwitch.getValue())){
+		 String aSwitch = "";
+		 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		//线上为开启状态
+		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+		     aSwitch = activitySwitch.getValue();
+		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+		     aSwitch = activitySwitch.getValue1();
+		 }
+		if("O".equals(aSwitch)){
 	         //活动期内该用户没有订单
 		    logger.info("sentNewUserBoluomeCouponForDineDash start afUserDo = {}"+ JSONObject.toJSONString(afUserDo));
         	    AfResourceDo resource =   afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),H5GgActivity.ACTIVITY_TIME.getCode() );

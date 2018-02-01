@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
@@ -171,7 +172,15 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 						}else if("oneYuan".equals("source")){
 						    try{
 							AfResourceDo   biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
-							if(biddingSwitch != null && "O".equals(biddingSwitch.getValue()) ){
+							 String swtich = "";
+			                		 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+			                		//线上为开启状态
+			                		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+			                		     swtich = biddingSwitch.getValue();
+			                		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+			                		     swtich = biddingSwitch.getValue1();
+			                		 }
+							if(StringUtil.isNotBlank(swtich) && "O".equals(swtich) ){
 							    afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 						        }
 						     }catch(Exception e){
