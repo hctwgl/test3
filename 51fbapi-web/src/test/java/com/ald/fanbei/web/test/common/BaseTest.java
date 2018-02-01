@@ -110,6 +110,8 @@ public class BaseTest {
 	    	StringBuilder referer = new StringBuilder();
 			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(header), "UTF-8"));
 	    	header.put("Referer", referer.toString());
+	    	System.out.println("H5 _appInfo =" + URLEncoder.encode(JSON.toJSONString(header), "UTF-8"));
+	    	System.out.println("H5 final Referer=" + referer);
 	    	
 			httpPost(urlString, urlJoin(params), header, "h5");
 		} catch (Exception e) {

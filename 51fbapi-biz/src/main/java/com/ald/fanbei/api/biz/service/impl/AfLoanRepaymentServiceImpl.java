@@ -208,7 +208,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		String repayPeriods = "";
 		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
-			if(i == loanPeriodsDoList.size()){
+			if(i == loanPeriodsDoList.size()-1){
 				repayPeriods += loanPeriodsDoList.get(i).getRid();
 			} else {
 				repayPeriods += loanPeriodsDoList.get(i).getRid()+",";
@@ -367,7 +367,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                 @Override
                 public Long doInTransaction(TransactionStatus status) {
                     try {
-                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);	// TODO
+                    	dealLoanRepay(LoanRepayDealBo, repaymentDo);
                 		
                     	// 最后一期还完后， 修改loan状态FINSH
                     	dealLoanStatus(LoanRepayDealBo);
@@ -470,6 +470,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						loanPeriodsDo.setRepayAmount(repayAmount);
 					}
 					
+					loanPeriodsDo.setPreRepayStatus("Y"); 	// 提前还款
+					loanPeriodsDo.setRepayId(repaymentDo.getRid());
 					loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
 					loanPeriodsDo.setGmtLastRepay(new Date());
 					loanPeriodsDo.setGmtModified(new Date());
@@ -634,6 +636,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
+			loanPeriodsDo.setRepayId(repaymentDo.getRid());
 			loanPeriodsDo.setGmtLastRepay(new Date());
         }
 		loanPeriodsDo.setGmtModified(new Date());

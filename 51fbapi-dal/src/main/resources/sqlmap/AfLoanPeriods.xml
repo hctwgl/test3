@@ -285,13 +285,13 @@
             <if test="overdueDays != null and overdueDays != '' ">        
                 overdue_days = #{overdueDays,jdbcType=INTEGER},                
             </if>
-            <if test="interestFee != null and interestFee != '' ">        
+            <if test="interestFee != null ">        
                 interest_fee = #{interestFee,jdbcType=DECIMAL},                
             </if>
-            <if test="serviceFee != null and serviceFee != '' ">        
+            <if test="serviceFee != null ">        
                 service_fee = #{serviceFee,jdbcType=DECIMAL},                
             </if>
-            <if test="overdueAmount != null and overdueAmount != '' ">        
+            <if test="overdueAmount != null ">        
                 overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
             </if>
             <if test="repayAmount != null and repayAmount != '' ">        

@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -57,6 +58,8 @@ public class GetLoanInfoApi implements H5Handle {
 	AfLoanPeriodsService afLoanPeriodsService;
 	@Resource
 	AfLoanRepaymentService afLoanRepaymentService;
+	@Resource
+	AfLoanProductService afLoanProductService;
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -101,7 +104,9 @@ public class GetLoanInfoApi implements H5Handle {
 			loanVo.setTotalServiceFee(loanDo.getTotalServiceFee());	// 总手续费
 			loanVo.setTotalInterestFee(loanDo.getTotalInterestFee());	// 总利息
 			loanVo.setPeriods(loanDo.getPeriods());		// 还款期限
-			loanVo.setLoanProduct(loanDo.getPrdType());	// 借钱产品
+			
+			String productName = afLoanProductService.getNameByPrdType(loanDo.getPrdType());
+			loanVo.setLoanProduct(productName);	// 借钱产品
 			loanVo.setCardNumber(loanDo.getCardNo());	// 银行卡号
 			loanVo.setCardName(loanDo.getCardName());	// 银行卡名称
 			loanVo.setGmtCreate(loanDo.getGmtCreate());		// 申请时间
