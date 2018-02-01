@@ -324,7 +324,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				// 发放优惠劵工作
 				// creditRebateMsg = getCreditAuthMsg(context,
 				// creditRebateMsg);
-
+                                 logger.info("creditAuth sent coupon userId = "+ context.getUserId());
 				 couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 				// 随机发放奖品
 				try {
@@ -338,6 +338,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				}
 
 				// #region 新增需求 实名认证成功后 给钱5块钱给推荐人
+				logger.info("creditAuth updateRecommendCash userId = "+ userId);
 				afRecommendUserService.updateRecommendCash(userId);
 				// #endregion
 			}
