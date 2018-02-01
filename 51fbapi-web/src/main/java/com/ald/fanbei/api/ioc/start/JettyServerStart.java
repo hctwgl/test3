@@ -14,7 +14,6 @@ import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Scanner;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 public class JettyServerStart {
 	private int port;
@@ -24,6 +23,11 @@ public class JettyServerStart {
 	private boolean jmxEnabled;
 	private Server server;
 	private CustomWebAppContext webapp;
+
+	private String[] _dftConfigurationClasses = { "org.eclipse.jetty.webapp.WebInfConfiguration",
+			"org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
+			"org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+			"com.ald.fanbei.api.jetty.webapp.FanbeiConfiguration" };
 
 	public JettyServerStart(String webappPath, int port, String context) {
 		this(webappPath, port, context, 0, false);
@@ -82,8 +86,7 @@ public class JettyServerStart {
 			startFileWatchScanner();
 		}
 		long ts = System.currentTimeMillis();
-	
-		
+
 		server.start();
 		ts = System.currentTimeMillis() - ts;
 		System.err.println("Jetty Server started: " + String.format("%.2f sec", ts / 1000d));
@@ -92,11 +95,7 @@ public class JettyServerStart {
 
 	protected Handler getHandler() {
 		webapp = new CustomWebAppContext(webappPath, context);
-		try {
-			webapp.setAppClassLoader(new CustomWebAppClassLoader(null,webapp));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		webapp.setConfigurationClasses(_dftConfigurationClasses);
 		return webapp;
 	}
 
