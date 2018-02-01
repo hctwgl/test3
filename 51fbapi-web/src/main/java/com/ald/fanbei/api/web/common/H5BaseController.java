@@ -210,11 +210,16 @@ public abstract class H5BaseController {
 
 		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
 		boolean needLogin = (boolean)context.getData("_needLogin");
-		if (token == null && needLogin) {
-			throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-		}
-		if(token != null) {
+		
+		if (needLogin) {// 需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
 			signStrBefore = signStrBefore + token.getToken();
+		} else {// 否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if (token != null) {
+				signStrBefore = signStrBefore + token.getToken();
+			}
 		}
 		logger.info("signStrBefore = {}", signStrBefore);
 		//this.compareSign(signStrBefore, sign);
