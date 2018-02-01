@@ -1828,7 +1828,11 @@ public class RiskUtil extends AbstractThird {
         obj.put("productCodeId", productCodeId);
 
         logThird(obj, "virtualProductQuota obj", obj);
-        reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+        try {
+	    reqBo.setDetails(com.ald.fanbei.api.common.util.Base64.encode(JSON.toJSONString(obj).getBytes("utf-8")));
+	} catch (UnsupportedEncodingException e) {
+	    logger.error("virtualProductQuota error" ,e);
+	}
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
 
