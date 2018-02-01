@@ -137,6 +137,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		try{
 			AfResourceDo afResourceDo= afResourceDao.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
 			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+				logger.info("find data from mongo:"+userId);
 				return kafkaSync.getUserSummarySync(userId);
 			}else{
 				return afBorrowDao.getUserSummary(userId);
