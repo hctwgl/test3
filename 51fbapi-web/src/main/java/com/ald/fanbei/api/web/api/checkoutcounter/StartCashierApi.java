@@ -516,14 +516,15 @@ public class StartCashierApi implements ApiHandle {
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }
             }
+            
+            cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null?new BigDecimal(virtualMap.get(Constants.VIRTUAL_AMOUNT).toString())
+     	       : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
+            
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
             cashierTypeVo.setUseableAmount(leftAmount);
             cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
         }
-        
-       cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null?BigDecimal.ZERO
-	       : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
         
         return virtualMap;
     }
