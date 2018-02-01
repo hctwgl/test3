@@ -616,6 +616,22 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				lastBorrowBillGmtPayTime= afBorrowBillDos.get(i).getGmtPayTime();
 			}
 		}
+		Integer nper = afViewAssetBorrowDo.getNper();//分期数
+		//获取消费分期协议年化利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONArray array= new JSONArray();
+		if (afResourceDo!=null&& afResourceDo.getValue3()!=null) {
+			array= JSONObject.parseArray(afResourceDo.getValue3());
+		}
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject jsonObject = array.getJSONObject(i);
+			Integer confNper= (Integer) jsonObject.get("nper");
+			if (nper==confNper) {
+				borrowRate=(BigDecimal) jsonObject.get("rate");
+				break;
+			}
+		}
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
 		creditRespBo.setPackageNo(afAssetPackageDo.getAssetNo());
 		creditRespBo.setOrderNo(afViewAssetBorrowDo.getBorrowNo());
@@ -626,7 +642,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setBankNo("");
 		creditRespBo.setAcctName(bankInfo.getAcctName());
 		creditRespBo.setMoney(afViewAssetBorrowDo.getAmount());
-		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
+		creditRespBo.setApr(BigDecimalUtil.multiply(borrowRate, new BigDecimal(100)));
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afViewAssetBorrowDo.getGmtCreate(), lastBorrowBillGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowDo.getGmtCreate()));
 		creditRespBo.setPurpose("个人消费");
