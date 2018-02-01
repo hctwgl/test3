@@ -36,6 +36,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeDianyingDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeJiayoukaDao;
@@ -219,9 +220,9 @@ public class BoluomeController extends AbstractThird {
 	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : BigDecimal.ZERO;
 	    orderInfo.setPriceAmount(priceAmount);
 	    if (OrderSecType.WAI_MAI.getCode().equals(orderType)) {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : null);
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : new Date(System.currentTimeMillis() + 10 * 60 * 1000));
 	    } else {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : new Date(System.currentTimeMillis() + 60 * 60 * 1000));
 	    }
 	    orderInfo.setThirdDetailUrl(detailUrl);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
@@ -256,7 +257,7 @@ public class BoluomeController extends AbstractThird {
 	} else {
 	    if (StringUtils.isNotBlank(status)) {
 		String orderStatus = BoluomeUtil.parseOrderType(status).getCode();
-		//只有NEW状态的订单才处理菠萝觅的关闭请求
+		// 只有NEW状态的订单才处理菠萝觅的关闭请求
 		if (OrderStatus.CLOSED.getCode().equals(orderStatus)) {
 		    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
 			orderInfo.setStatus(orderStatus);
