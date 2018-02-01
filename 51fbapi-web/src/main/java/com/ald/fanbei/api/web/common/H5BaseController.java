@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
+import java.lang.annotation.Annotation;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -71,6 +73,7 @@ public abstract class H5BaseController {
 			checkAppInfo(request);
 			// 解析参数（包括请求头中的参数和报文体中的参数）
 			Context context = parseRequestData(request);
+			checkLogin(context);
 			// 校验请求数据
 			doCheck(context);
 			baseResponse = doProcess(context);
@@ -83,6 +86,30 @@ public abstract class H5BaseController {
 			retMsg = JSON.toJSONString(baseResponse);
 		}
 		return retMsg;
+	}
+
+	private void checkLogin(Context context) {
+		H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
+        
+        // 接口是否需要登录
+        boolean needLogin = isNeedLogin(methodHandle.getClass());
+        context.setData("_needLogin", needLogin);
+        
+        if(needLogin && context.getUserId() == null) {
+        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+        }
+		
+	}
+	
+	
+	private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
+		Annotation[] annotations = clazz.getDeclaredAnnotations();
+		for(Annotation annotation : annotations) {
+			if(annotation instanceof NeedLogin) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void checkAppInfo(HttpServletRequest request) {
@@ -182,11 +209,18 @@ public abstract class H5BaseController {
 				+ userName;
 
 		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
-		if (token == null) {
-			throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+		boolean needLogin = (boolean)context.getData("_needLogin");
+		
+		if (needLogin) {// 需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			signStrBefore = signStrBefore + token.getToken();
+		} else {// 否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if (token != null) {
+				signStrBefore = signStrBefore + token.getToken();
+			}
 		}
-		signStrBefore = signStrBefore + token.getToken();
-
 		logger.info("signStrBefore = {}", signStrBefore);
 		//this.compareSign(signStrBefore, sign);
 

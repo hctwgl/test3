@@ -168,12 +168,6 @@ public class FanbeiH5Controller extends H5BaseController {
 		validationInterceptor.intercept(context);
         H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
         
-        // 接口是否需要登录
-        boolean needLogin = isNeedLogin(methodHandle.getClass());
-        if(needLogin && context.getUserId() == null) {
-        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-        }
-      
         H5HandleResponse handelResult;
         try {
             handelResult = methodHandle.process(context);
@@ -192,15 +186,7 @@ public class FanbeiH5Controller extends H5BaseController {
 	}
 
 
-	private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
-		Annotation[] annotations = clazz.getDeclaredAnnotations();
-		for(Annotation annotation : annotations) {
-			if(annotation instanceof NeedLogin) {
-				return true;
-			}
-		}
-		return false;
-	}
+	
 
 
 }
