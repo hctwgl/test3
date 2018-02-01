@@ -41,7 +41,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void confirmLoan() {
 		String url = urlBase + "/h5/loan/confirmLoan";
 		Map<String,String> params = new HashMap<>();
@@ -51,12 +51,12 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 100000+"");
+		params.put("amount", 50000+"");
 		params.put("periods", 4+"");
 		
 		params.put("remark", "白领贷借款");
@@ -79,10 +79,10 @@ public class LoanTest  extends BaseTest{
 //	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
-		String orderNo = "01dpay23425234545345";
+		String orderNo = "01dpay23425234dfssdfs";
 		String merPriv = UserAccountLogType.LOAN.getCode();
 		String tradeState = "00";
-		String reqExt = "8";
+		String reqExt = "13";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
 		url += reqStr;
