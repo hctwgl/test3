@@ -153,7 +153,7 @@ public class StartCashierApi implements ApiHandle {
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
             BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-            if (useableAmount.subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(4000)) >= 0)
+            if (useableAmount.subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(3000)) >= 0)
                 checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
             else
                 checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
