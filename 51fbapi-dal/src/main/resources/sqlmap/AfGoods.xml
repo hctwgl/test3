@@ -349,7 +349,7 @@
 		FROM
 		af_goods a LEFT JOIN af_model_h5_item b on b.item_value = a.id
 		WHERE
-		a.is_delete = 0
+		a.is_delete = 0 AND a.`status` = 'PUBLISH'
 		AND b.item_value2 = #{categoryId}
 		AND b.item_type = 'GOODS_ID'
 		AND b.type = 'GOODSLIST'

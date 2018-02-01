@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,16 +48,6 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -125,6 +119,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	@Resource
 	CommitRecordUtil commitRecordUtil;
 	@Resource
+	NumberWordFormat numberWordFormat;
+	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
 	@Resource
 	AfUserCouponService afUserCouponService;
@@ -175,8 +171,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"));
 
 		if (StringUtils.isBlank(amountStr) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
-				|| StringUtils.isBlank(longitude)  || StringUtils.isBlank(goodsId)
-				|| AfBorrowCashType.findRoleTypeByCode(type) == null) {
+				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox) || StringUtils.isBlank(goodsId)
+				|| (!isNumeric(type))) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 
@@ -208,7 +204,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 		// 判断用户借款金额是否在后台配置的金额范围内
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 
 		if (rateInfoDo != null) {
 			BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
@@ -460,17 +456,11 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	private Long getTiedGoodsInfo(String borrowAmount, String borrowType, Long userId, BigDecimal oriRate) {
 
 		BigDecimal borrowDay = BigDecimal.ZERO;
-		if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-			borrowDay = BigDecimal.valueOf(7);
-		} else if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-			borrowDay = BigDecimal.valueOf(7);
-		} else {
-			borrowDay = BigDecimal.valueOf(14);
-		}
+		borrowDay = BigDecimal.valueOf(Integer.parseInt(borrowType));
 
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
@@ -489,6 +479,13 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -498,20 +495,20 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
-				} else {
-					interestRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
-				} else {
-					serviceRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}
@@ -571,8 +568,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 					UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-			Integer day = NumberUtil
-					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//			Integer day = NumberUtil
+//					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Integer day = borrowTime(afBorrowCashDo.getType());
 			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			cashDo.setGmtPlanRepayment(repaymentDay);
@@ -648,6 +646,12 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			Long orderId, BigDecimal poundage, Long borrowId, BigDecimal overdueAmount, String borrowRemark,
 			String refundRemark, AfResourceDo rateInfoDo) {
 		Integer day = NumberUtil.objToIntDefault(type, 0);
+		String oneDay = "";
+		String twoDay = "";
+		if(null != rateInfoDo){
+			oneDay = rateInfoDo.getTypeDesc().split(",")[0];
+			twoDay = rateInfoDo.getTypeDesc().split(",")[1];
+		}
 		// 计算手续费和利息
 		String borrowRate = rateInfoDo.getValue3();
 		JSONArray array = JSONObject.parseArray(borrowRate);
@@ -657,16 +661,16 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			JSONObject info = array.getJSONObject(i);
 			String consumeTag = info.getString("consumeTag");
 			if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					interestRate = info.getDouble("consumeSevenDay");
-				} else {
-					interestRate = info.getDouble("consumeFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					interestRate = info.getDouble("consumeFirstType");
+				} else if (StringUtils.equals(twoDay, type)){
+					interestRate = info.getDouble("consumeSecondType");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					serviceRate = info.getDouble("consumeSevenDay");
-				} else {
-					serviceRate = info.getDouble("consumeFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					serviceRate = info.getDouble("consumeFirstType");
+				} else if (StringUtils.equals(twoDay, type)){
+					serviceRate = info.getDouble("consumeSecondType");
 				}
 			}
 		}
@@ -677,7 +681,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				.multiply(goodsAmount).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new AfBorrowLegalOrderCashDo();
 		afBorrowLegalOrderCashDo.setAmount(goodsAmount);
-		afBorrowLegalOrderCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
+		afBorrowLegalOrderCashDo.setType(type);
 		afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.APPLYING.getCode());
 		afBorrowLegalOrderCashDo.setUserId(userId);
 		afBorrowLegalOrderCashDo.setPoundageRate(BigDecimal.valueOf(serviceRate));
@@ -717,7 +721,12 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	public AfBorrowCashDo buildBorrowCashDo(BigDecimal amount, String type, String latitude, String longitude,
 			AfUserBankcardDo afUserBankcardDo, String city, String province, String county, String address, Long userId,
 			int currentDay, AfResourceDo rateInfoDo, BigDecimal oriRate) {
-
+		String oneDay = "";
+		String twoDay = "";
+		if(null != rateInfoDo){
+			oneDay = rateInfoDo.getTypeDesc().split(",")[0];
+			twoDay = rateInfoDo.getTypeDesc().split(",")[1];
+		}
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 
@@ -738,16 +747,16 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString("borrowTag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					interestRate = info.getDouble("borrowSevenDay");
-				} else {
-					interestRate = info.getDouble("borrowFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					interestRate = info.getDouble("borrowFirstType");
+				} else if(StringUtils.equals(twoDay, type)){
+					interestRate = info.getDouble("borrowSecondType");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
-					serviceRate = info.getDouble("borrowSevenDay");
-				} else {
-					serviceRate = info.getDouble("borrowFourteenDay");
+				if (StringUtils.equals(oneDay, type)) {
+					serviceRate = info.getDouble("borrowFirstType");
+				} else if(StringUtils.equals(twoDay, type)){
+					serviceRate = info.getDouble("borrowSecondType");
 				}
 			}
 		}
@@ -767,7 +776,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowCashDo.setCity(city);
 		afBorrowCashDo.setProvince(province);
 		afBorrowCashDo.setCounty(county);
-		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
+		afBorrowCashDo.setType(type);
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);
 		afBorrowCashDo.setRateAmount(rateAmount);
@@ -847,6 +856,36 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		} catch (Exception e) {
 			logger.error("userBorrowCashApply maidian logger error", e);
 		}
+	}
+
+	/**
+	 * 借款时间
+	 *
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowTime(final String type) {
+		Integer day ;
+		if(isNumeric(type)){
+			day = Integer.parseInt(type);
+		}else{
+			day = numberWordFormat.parse(type.toLowerCase());
+		}
+		return day;
+	}
+
+	/**
+	 * 是否是数字字符串
+	 * @param type
+	 * @return
+	 */
+	private boolean isNumeric(String type) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		Matcher isNum = pattern.matcher(type);
+		if( !isNum.matches() ){
+			return false;
+		}
+		return true;
 	}
 
 }

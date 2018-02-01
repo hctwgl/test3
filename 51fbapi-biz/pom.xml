@@ -19,7 +19,7 @@
 			<artifactId>51fbapi-dal</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -42,13 +42,13 @@
 		<dependency>
 			<groupId>cn.jpush.api</groupId>
 			<artifactId>jpush-client</artifactId>
-			<version>3.2.15</version>
+			<version>3.3.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>cn.jpush.api</groupId>
 			<artifactId>jiguang-common</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -132,9 +132,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.third</groupId>
+			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.1.8</version>
+			<version>1.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -184,5 +184,5 @@
 			<artifactId>ComInterface</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 </project>

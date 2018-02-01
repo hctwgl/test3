@@ -34,7 +34,7 @@ public class GetBorrowLegalChargeInfoApi implements ApiHandle {
         Map<String, Object> data = Maps.newHashMap();
         resp.setResponseData(data);
 
-        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
         if (afResourceDo != null) {
             data.put("sevenDayDescription", afResourceDo.getDescription());
             data.put("fourteenDayDescription", afResourceDo.getPic1());

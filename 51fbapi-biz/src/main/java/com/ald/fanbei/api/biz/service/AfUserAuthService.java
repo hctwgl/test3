@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 
 /**
@@ -59,5 +62,7 @@ public interface AfUserAuthService {
 	 * @return
 	 */
 	List<AfUserAuthDo> getUserAuthListWithIvs_statusIsY(AfUserAuthQuery query);
-	
-}
+
+	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene);
+
+	}

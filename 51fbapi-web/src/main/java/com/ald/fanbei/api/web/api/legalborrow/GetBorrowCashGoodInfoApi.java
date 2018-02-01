@@ -10,6 +10,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -67,6 +70,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
 
+	@Resource
+	NumberWordFormat numberWordFormat;
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoApi.class);
 
 	@Override
@@ -85,13 +90,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			throw new FanbeiException("borrowType can't be empty.");
 		}
 		BigDecimal borrowDay = BigDecimal.ZERO;
-		if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-			borrowDay = BigDecimal.valueOf(7);
-		} else if  (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)){
-			borrowDay = BigDecimal.valueOf(7);
-		} else {
-			borrowDay = BigDecimal.valueOf(14);
-		}
+		borrowDay = BigDecimal.valueOf(numberWordFormat.borrowTime(borrowType));
 		List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -132,14 +131,14 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		BigDecimal oriRate = serviceRate.add(poundageRate);
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 
 		double newServiceRate = 0;
 		double newInterestRate = 0;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
-			Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
+			Map<String, Object> rateInfo = getRateInfo(borrowRate, String.valueOf(numberWordFormat.borrowTime(borrowType)), "borrow");
 			newServiceRate = (double) rateInfo.get("serviceRate");
 			newInterestRate = (double) rateInfo.get("interestRate");
 			double totalRate = (double) rateInfo.get("totalRate");
@@ -177,7 +176,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
 
 				String borrowRate = rateInfoDo.getValue3();
-				Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "consume");
+				Map<String, Object> rateInfo = getRateInfo(borrowRate, String.valueOf(numberWordFormat.borrowTime(borrowType)), "consume");
 				double totalRate = (double) rateInfo.get("totalRate");
 				double goodsServiceRate = (double) rateInfo.get("serviceRate");
 				double goodsInterestRate = (double) rateInfo.get("interestRate");
@@ -222,6 +221,13 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -231,20 +237,20 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
-				} else {
-					interestRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)) {
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
-				} else {
-					serviceRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}

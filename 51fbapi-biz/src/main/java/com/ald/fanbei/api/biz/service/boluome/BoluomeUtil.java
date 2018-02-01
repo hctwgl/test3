@@ -429,7 +429,7 @@ public class BoluomeUtil extends AbstractThird {
 	    Map<String, String> buildParams = new HashMap<String, String>();
 	    buildParams.put(BoluomeCore.APP_ID, app_id);
 	    buildParams.put(BoluomeCore.CAMPAIGN_ID, campaign_id);
-	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtils.EMPTY);
+	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis()/1000 + StringUtils.EMPTY);
 
 	    String sign = BoluomeCore.builOrderSign(buildParams);
 	    buildParams.put(BoluomeCore.SIGN, sign);
