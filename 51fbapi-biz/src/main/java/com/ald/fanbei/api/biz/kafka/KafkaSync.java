@@ -8,6 +8,8 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -38,6 +40,7 @@ public class KafkaSync {
     private static final String COLLECTION_PK = "_id";
     private static final String SYNC_GET_DATA_URL_KEY = "SYNC_GET_DATA_URL_KEY";
     private static final String SYNC_EVENT_DATA_URL = "SYNC_EVENT_DATA_URL";
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * url同步事件
@@ -76,22 +79,26 @@ public class KafkaSync {
      * @param type   事件类型
      * @throws Exception
      */
-    public void syncEvent(Long userId, String type, final boolean force) throws Exception {
-        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
-        if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
-            return;
-        }
-        if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
-            //同步用户风控所需的信息
-            syncUserSummary(userId, force);//同步借钱信息
-        } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
-            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_USER_BASIC_DATA, userId.toString());
-        }else if (type.equals(KafkaConstants.SYNC_CASH_LOAN)) {
-            //同步用户借钱
-            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CASH_LOAN, userId.toString());
-        }else if (type.equals(KafkaConstants.SYNC_CONSUMPTION_PERIOD)) {
-            //同步用户基础信息
-            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CONSUMPTION_PERIOD, userId.toString());
+    public void syncEvent(Long userId, String type, final boolean force) {
+        try{
+            AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
+            if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
+                return;
+            }
+            if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
+                //同步用户风控所需的信息
+                syncUserSummary(userId, force);//同步借钱信息
+            } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
+                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_USER_BASIC_DATA, userId.toString());
+            }else if (type.equals(KafkaConstants.SYNC_CASH_LOAN)) {
+                //同步用户借钱
+                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CASH_LOAN, userId.toString());
+            }else if (type.equals(KafkaConstants.SYNC_CONSUMPTION_PERIOD)) {
+                //同步用户基础信息
+                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CONSUMPTION_PERIOD, userId.toString());
+            }
+        }catch (Exception e){
+           logger.error("syncEvent userId:"+userId+",type="+type,e);
         }
     }
 

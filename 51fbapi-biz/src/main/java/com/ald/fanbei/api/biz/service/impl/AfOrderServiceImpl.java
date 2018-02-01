@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -22,6 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -98,7 +100,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     private AfBorrowDao afBorrowDao;
     @Resource
     private KaixinUtil kaixinUtil;
-
+    @Autowired
+    KafkaSync kafkaSync;
     @Resource
     private AfUserCouponDao afUserCouponDao;
 
@@ -1657,6 +1660,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 }
             }
         });
+
         return result;
     }
 
