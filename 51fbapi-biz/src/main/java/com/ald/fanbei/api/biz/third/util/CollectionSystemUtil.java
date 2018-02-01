@@ -271,7 +271,7 @@ public class CollectionSystemUtil extends AbstractThird {
 					if(afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 						AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 						afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, orderCashDo, repayAmount ,tradeNo);
-						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,isAdmin);
+						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
 					}//合规线下还款V2
                     else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
                         afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);

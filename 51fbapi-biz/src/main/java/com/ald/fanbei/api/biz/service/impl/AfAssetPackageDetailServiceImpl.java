@@ -314,46 +314,25 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         			if (isLock) {
         				//分配债权资产包
         				BigDecimal maxMoney = BigDecimal.ZERO;
-        				if (minMoneyNew!=null) {
-        					//区分借钱天数校验
-        					BigDecimal sumMinAmount = afViewAssetBorrowCashService.getSumMinAmount(gmtCreateStart,gmtCreateEnd,minBorrowTime);
-        					if (minMoneyNew.compareTo(sumMinAmount) > 0) {
-        						logger.error("getBatchCreditInfo  error该时间段内"+minBorrowTime+"天资产金额不足，共"+sumMinAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					BigDecimal sumMaxAmount = afViewAssetBorrowCashService.getSumMaxAmount(gmtCreateStart,gmtCreateEnd,maxBorrowTime);
-        					maxMoney = BigDecimalUtil.subtract(totalMoney,minMoneyNew);
-        					if (maxMoney.compareTo(sumMaxAmount) > 0){
-        						logger.error("getBatchCreditInfo  error该时间段内"+maxBorrowTime+"天资产金额不足，共"+sumMaxAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					minDebtList = matchingBorrowCashDebt(minMoneyNew,gmtCreateStart, gmtCreateEnd,minBorrowTime);
-        					maxDebtList = matchingBorrowCashDebt(maxMoney,gmtCreateStart, gmtCreateEnd,maxBorrowTime);
-        				}else{
-        					//初始化7天金额
-        					minMoneyNew = BigDecimal.ZERO;
-        					//总的校验
-        					BigDecimal sumAmount = afViewAssetBorrowCashService.getSumAmount(gmtCreateStart,gmtCreateEnd);
-        					if (totalMoney.compareTo(sumAmount) > 0) {
-        						logger.error("getBatchCreditInfo  error,该时间段内资产总金额不足，共"+sumAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
-        						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        						return 0L;
-        					}
-        					
-        					List<AfViewAssetBorrowCashDo> debtList = matchingBorrowCashDebt(totalMoney,gmtCreateStart, gmtCreateEnd,null);
-        					for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : debtList) {
-        						if (minBorrowTime.equals(afViewAssetBorrowCashDo.getType())) {
-        							minDebtList.add(afViewAssetBorrowCashDo);
-        							minMoneyNew=minMoneyNew.add(afViewAssetBorrowCashDo.getAmount());
-        						}
-        						if (maxBorrowTime.equals(afViewAssetBorrowCashDo.getType())) {
-        							maxDebtList.add(afViewAssetBorrowCashDo);
-        						}
-        					}
-        					maxMoney = BigDecimalUtil.subtract(totalMoney,minMoneyNew);
+        				if (minMoneyNew==null){
+        					minMoneyNew=BigDecimalUtil.divide(totalMoney, new BigDecimal(2));
         				}
+    					//区分借钱天数校验
+    					BigDecimal sumMinAmount = afViewAssetBorrowCashService.getSumMinAmount(gmtCreateStart,gmtCreateEnd,minBorrowTime);
+    					if (minMoneyNew.compareTo(sumMinAmount) > 0) {
+    						logger.error("getBatchCreditInfo  error该时间段内"+minBorrowTime+"天资产金额不足，共"+sumMinAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
+    						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+    						return 0L;
+    					}
+    					BigDecimal sumMaxAmount = afViewAssetBorrowCashService.getSumMaxAmount(gmtCreateStart,gmtCreateEnd,maxBorrowTime);
+    					maxMoney = BigDecimalUtil.subtract(totalMoney,minMoneyNew);
+    					if (maxMoney.compareTo(sumMaxAmount) > 0){
+    						logger.error("getBatchCreditInfo  error该时间段内"+maxBorrowTime+"天资产金额不足，共"+sumMaxAmount+"元"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid());
+    						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+    						return 0L;
+    					}
+    					minDebtList = matchingBorrowCashDebt(minMoneyNew,gmtCreateStart, gmtCreateEnd,minBorrowTime);
+    					maxDebtList = matchingBorrowCashDebt(maxMoney,gmtCreateStart, gmtCreateEnd,maxBorrowTime);
         				
         				//生成资产包
         				Date currDate = new Date();
