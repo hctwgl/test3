@@ -116,7 +116,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	}
     
     public BigDecimal calcuRestAmount(AfLoanPeriodsDo p) {
-    	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getOverdueAmount())
+    	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getRepaidOverdueAmount())
     		.add(p.getServiceFee()).add(p.getInterestFee()).add(p.getOverdueAmount())
     		.subtract(p.getRepayAmount());
     }

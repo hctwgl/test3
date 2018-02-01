@@ -36,6 +36,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.Documents;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.AfLoanRejectType;
 import com.ald.fanbei.api.common.enums.AfLoanReviewStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
@@ -413,20 +414,25 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.loanArrivalAmount = lastLoanDo.getArrivalAmount();
 		bo.loanGmtApply = lastLoanDo.getGmtCreate();
 		
-		// 处理贷款当期  TODO 获取当期
 		AfLoanPeriodsDo activePeriod = afLoanPeriodsDao.getLastActivePeriodByLoanId(lastLoanDo.getRid());
-		bo.curPeriodId = activePeriod.getRid();
-		bo.curPeriodAmount = activePeriod.getAmount();
-		bo.curPeriodRestAmount = afLoanPeriodsService.calcuRestAmount(activePeriod);
-		bo.curPeriodGmtPlanRepay = activePeriod.getGmtPlanRepay();
-		bo.curPeriodStatus = activePeriod.getStatus();
-		if(activePeriod.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
-			bo.isOverdue = true;
+		bo.canRepay = afLoanRepaymentService.canRepay(activePeriod);
+		
+		if(bo.canRepay) {
+			bo.curPeriodId = activePeriod.getRid();
+			bo.curPeriodAmount = activePeriod.getAmount();
+			bo.curPeriodRestAmount = afLoanPeriodsService.calcuRestAmount(activePeriod);
+			bo.curPeriodGmtPlanRepay = activePeriod.getGmtPlanRepay();
+			bo.curPeriodStatus = activePeriod.getStatus();
+			if(activePeriod.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
+				bo.isOverdue = true;
+			}else {
+				bo.isOverdue = false;
+			}
 		}else {
-			bo.isOverdue = false;
+			bo.curPeriodRestAmount = BigDecimal.ZERO;
+			bo.curPeriodStatus = AfLoanPeriodStatus.FINISHED.name();
 		}
 		
-		bo.canRepay = afLoanRepaymentService.canRepay(activePeriod);
 	}
 	/**
 	 * 处理非登陆场景下首页信息
