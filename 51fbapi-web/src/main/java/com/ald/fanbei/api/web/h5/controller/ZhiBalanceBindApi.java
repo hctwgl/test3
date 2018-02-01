@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.profile;
+package com.ald.fanbei.api.web.h5.controller;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserProfileService;
@@ -13,6 +13,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -23,13 +24,12 @@ import javax.servlet.http.HttpServletRequest;
  * @author xieqiang
  * @create 2018-01-25 13:25
  **/
-@Component("zhiBalanceBindApi")
-public class ZhiBalanceBindApi implements ApiHandle {
+@Controller("zhiBalanceBindApi")
+public class ZhiBalanceBindApi extends H5Controller {
     @Resource
     private AfUserProfileService afUserProfileService;
     @Resource
     AfSmsRecordService afSmsRecordService;
-    @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
