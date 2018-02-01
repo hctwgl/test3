@@ -170,7 +170,6 @@ public class AppH5ProtocolController extends BaseController {
 		model.put("poundage", poundage);
 
 
-
 		for (NperDo nperDo : list) {
 			if (nperDo.getNper() == nper) {
 				model.put("yearRate", nperDo.getRate());
@@ -188,6 +187,12 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		model.put("repayDay", repayDay);
 		List<NperDo> rateList = JSONArray.parseArray(consumeDo.getValue3(), NperDo.class);
+		if(nper == 5){
+			nper = 6;
+		}
+		if(nper == 11){
+			nper = 12;
+		}
 		for (NperDo nperDo : rateList) {
 			if (nperDo.getNper() == nper) {
 				model.put("interest", borrowAmount.multiply(nperDo.getRate()).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));

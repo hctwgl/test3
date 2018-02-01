@@ -55,7 +55,7 @@ public interface AfViewAssetBorrowCashDao {
 	 * @param gmtCreateEnd
 	 * @return
 	 */
-	BigDecimal getSumMaxAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd,@Param("minBorrowTime") String maxBorrowTime);
+	BigDecimal getSumMaxAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd,@Param("maxBorrowTime") String maxBorrowTime);
 
 
 	/**

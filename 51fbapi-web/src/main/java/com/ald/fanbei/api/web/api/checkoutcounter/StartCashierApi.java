@@ -113,7 +113,7 @@ public class StartCashierApi implements ApiHandle {
             //endregion
         }
         Long userId = orderInfo.getUserId();
-        AfCheckoutCounterDo checkoutCounter ;
+        AfCheckoutCounterDo checkoutCounter;
         CashierVo cashierVo = new CashierVo();
         cashierVo.setCurrentTime(new Date());
         cashierVo.setGmtPayEnd(orderInfo.getGmtPayEnd());
@@ -140,7 +140,7 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setOrderType(orderType);
         cashierVo.setAmount(orderInfo.getActualAmount());
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
-        cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter,afInterimAuDo));        
+        cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter, afInterimAuDo, context));
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
         if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
@@ -219,7 +219,7 @@ public class StartCashierApi implements ApiHandle {
     }
 
 
-	/**
+    /**
      * 组合支付验证,前置条件分期支付验证通过
      *
      * @param userDto         用户账户信息
@@ -292,13 +292,13 @@ public class StartCashierApi implements ApiHandle {
      * @param checkoutCounter 收银台信息
      * @return
      */
-    private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter,AfInterimAuDo afInterimAuDo) {
+    private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter, AfInterimAuDo afInterimAuDo, FanbeiContext context) {
         if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
 
         //审核状态判定
-        String status = getIsAuth(userDto, authDo, orderInfo);
+        String status = getIsAuth(userDto, authDo, orderInfo, context);
         if (status.equals(YesNoStatus.YES.getCode())) {
             AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
             BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
@@ -370,35 +370,37 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo
      * @return
      */
-    private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo) {
+    private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, FanbeiContext context) {
         String status = YesNoStatus.NO.getCode();
-        //获取不同场景的强风控认证
-        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-            //商圈认证
-            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
-            if (afUserAuthStatusDo == null) {
-                authDo.setRiskStatus(YesNoStatus.NO.getCode());
+        if (context.getAppVersion() >= 406) {
+            //获取不同场景的强风控认证
+            if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+                //商圈认证
+                AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
+                if (afUserAuthStatusDo == null) {
+                    authDo.setRiskStatus(YesNoStatus.NO.getCode());
+                } else {
+                    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+                }
             } else {
-                authDo.setRiskStatus(YesNoStatus.YES.getCode());
-            }
-        } else {
-            //线上分期认证
-            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
-            if (afUserAuthStatusDo == null) {
-                authDo.setRiskStatus(YesNoStatus.NO.getCode());
-            } else {
-                authDo.setRiskStatus(YesNoStatus.YES.getCode());
+                //线上分期认证
+                AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+                if (afUserAuthStatusDo == null) {
+                    authDo.setRiskStatus(YesNoStatus.NO.getCode());
+                } else {
+                    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+                }
             }
         }
-	if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
-	    if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
-		status = YesNoStatus.YES.getCode();
-	    }
-	}
-	return status;
+        if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
+            if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
+                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
+                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
+                status = YesNoStatus.YES.getCode();
+            }
+        }
+        return status;
     }
 
     /**

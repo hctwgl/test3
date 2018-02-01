@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
@@ -64,6 +65,8 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author 何鑫 2017年3月22日 11:20:23
@@ -169,7 +172,6 @@ public class RiskUtil extends AbstractThird {
     private static String getUrl() {
         if (url == null) {
             url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-            //url = "http://192.168.117.25:8080";
             return url;
         }
         return url;
@@ -397,12 +399,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene) {
-        Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
-        String directory = "";
-        if (directoryCache != null) {
-            directory = directoryCache.toString();
-        }
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene,String directory) {
         AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
         Long userId = Long.parseLong(oldUserInfo.getValue());
         Long consumerId = Long.parseLong(consumerNo);
@@ -513,6 +510,15 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("time", time);
         eventObj.put("virtualCode", virtualCode);
         eventObj.put("productName", productName);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        /*String uuid = "";
+        if (requestAttributes != null){
+            String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+            String array[] = id == null?null:id.split("_");
+            uuid = array ==null || array.length<2?"":array[1];
+        }
+        eventObj.put("uuid",uuid);*/
+        //String id = request.getParameter("id");
         //增加3个参数，配合风控策略的改变
         String codeForSecond = null;
         String codeForThird = null;
@@ -657,18 +663,32 @@ public class RiskUtil extends AbstractThird {
             riskResp.setSuccess(true);
             JSONObject dataObj = JSON.parseObject(riskResp.getData());
             BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-
+            AfUserAuthDo afUserAuthDo =	afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+            //强风控未通过，则不经额度处理
+            if(!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
+        	au_amount = BigDecimal.ZERO;
+            }
+            
+            AfUserAuthStatusDo afUserAuthStatusOnline = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.ONLINE.getName());
             String limitAmount = dataObj.getString("onlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal onlineAmount = new BigDecimal(limitAmount);
+            if(!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())){
+        	onlineAmount=BigDecimal.ZERO;
+            }
+            
+            AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.TRAIN.getName());
             limitAmount = dataObj.getString("offlineAmount");
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal offlineAmount = new BigDecimal(limitAmount);
+            if(!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())){
+        	offlineAmount=BigDecimal.ZERO;
+            }
+            
 
             Long consumerNum = Long.parseLong(consumerNo);
-
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
             updateUserScenceAmount(userAccountDo,consumerNum,au_amount,onlineAmount,offlineAmount);
 //            AfUserAccountDo accountDo = new AfUserAccountDo();
@@ -2741,8 +2761,7 @@ public class RiskUtil extends AbstractThird {
 
         }
 
-        String url = "http://testarc.51fanbei.com/modules/api/xj/renew.htm";
-//        String url = getUrl() + "/modules/api/xj/renew.htm";
+        String url = getUrl() + "/modules/api/xj/renew.htm";
         logger.info("summaryData 1233= " + summaryData + "url = " + url);
         String reqResult = requestProxy.post(url, summaryData);
 
@@ -2765,7 +2784,7 @@ public class RiskUtil extends AbstractThird {
      *回调时将af_user_auth_status中运营商过期状态改变
      */
     public void syncOperator(Long userId){
-        List <AfUserAuthStatusDo> afUserAuthStatusDos= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"C");
+        List <AfUserAuthStatusDo> afUserAuthStatusDos= afUserAuthStatusService.selectAfUserAuthStatusByUserId(userId);
         if(afUserAuthStatusDos!=null&&afUserAuthStatusDos.size()>0){
             for (AfUserAuthStatusDo afUserAuthStatusDo: afUserAuthStatusDos) {
                 if(afUserAuthStatusDo!=null){

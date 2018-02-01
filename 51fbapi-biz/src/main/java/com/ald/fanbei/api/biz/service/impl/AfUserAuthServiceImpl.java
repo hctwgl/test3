@@ -125,10 +125,19 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	// JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 	JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 	Integer sorce = userDto.getCreditScore();
-	if (!scene.equals(UserAccountSceneType.CASH.getCode())) {
-	    AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene, userId);
-	    userDto.setAuAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount());
-	    userDto.setUsedAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount());
+	if(appVersion >= 406){
+		if (!scene.equals(UserAccountSceneType.CASH.getCode())) {
+			AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(scene, userId);
+			userDto.setAuAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount());
+			userDto.setUsedAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount());
+		}
+	}
+	else {
+		AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
+		BigDecimal onlineAuAmount = afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount();
+		BigDecimal onlineUsedAmount = afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount();
+		userDto.setAuAmount(userDto.getAuAmount().add(onlineAuAmount));
+		userDto.setUsedAmount(userDto.getUsedAmount().add(onlineUsedAmount));
 	}
 	AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 	int min = Integer.parseInt(afResourceDo.getValue1());// 最小分数
@@ -380,11 +389,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 
 	data.put("showExtraTab", "1");
-	/**
-	 * 是否经过强风控
-	 */
-	// 购物额度 未通过强风控
-	if (!"CASH".equals(scene)) {
+
+	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
+	if (!SceneType.CASH.getName().equals(scene)) {
 	    data.put("showExtraTab", afResourceDoAuth.getValue());
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
@@ -403,13 +410,22 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("title1", "暂无信用额度");
 		if (between > 1) {
 		    data.put("title2", "请" + between + "天后尝试重新提交");
-		    data.put("riskRetrialRemind", "审核不通过，请" + between + "天后可重新提交审核");
+		    if (SceneType.ONLINE.getName().equals(scene))
+			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，请" + between + "天后重新提交审核");
+		    else {
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，" + between + "天后可重试");
+		    }
 		} else if (between == 1) {
-		    data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
-		    data.put("title2", "审核不通过，明天可以重新提交审核");
+		    if (SceneType.ONLINE.getName().equals(scene)) {
+			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，明天可以重新提交审核");
+			data.put("title2", afResourceDo.getValue3() + "，明天可以重新提交审核");
+		    } else {
+			data.put("riskRetrialRemind", afResource.getValue4() + "，明天可以重新提交审核");
+			data.put("title2", afResourceDo.getValue4() + "，明天可以重新提交审核");
+		    }
 		} else {
-		    data.put("title2", "可以尝试重新提交啦，完成补充认证可提高成功率");
-		    data.put("riskRetrialRemind", "可以尝试重新提交啦，完成补充认证可以提高成功率");
+		    data.put("title2", afResourceDo.getValue());
+		    data.put("riskRetrialRemind", afResourceDo.getValue());
 		    data.put("riskStatus", "A");
 		    data.put("basicStatus", "A");
 		}
@@ -422,15 +438,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("highestAmount", afResource.getValue());// 可获取最高额度
 		data.put("currentAmount", userDto.getAuAmount());// 当前认证额度
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
-		data.put("title2", "每完成一项补充认证都会提高相应额度");
+		data.put("title2", afResource.getValue1());
 		data.put("sceneStatus", "4");// 认证成功
-	    }
-	    else {
+	    } else {
 		data.put("basicStatus", "P");
 		data.put("riskStatus", "P");
 		data.put("flag", "Y");
 		data.put("title1", "基础信息认证中");
-		data.put("title2", "完善补充认证能够增加审核通过率");
+		data.put("title2", afResource.getValue2());
 		data.put("sceneStatus", "6");// 认证中
 	    }
 

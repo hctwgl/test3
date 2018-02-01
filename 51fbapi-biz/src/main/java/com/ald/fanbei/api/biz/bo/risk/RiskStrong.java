@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 
@@ -83,6 +85,14 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 		eventInfo.put("blackBox", blackBox);
 		eventInfo.put("bqsBlackBox", bqsBlackBox);
 		eventInfo.put("ipAddress", ipAddress);
+		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		/*String uuid = "";
+		if (requestAttributes != null){
+			String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+			String array[] = id == null?null:id.split("_");
+			uuid = array ==null || array.length<2?"":array[1];
+		}
+		eventInfo.put("uuid",uuid);*/
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 
 	}

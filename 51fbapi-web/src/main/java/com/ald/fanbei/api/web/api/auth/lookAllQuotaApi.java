@@ -102,9 +102,11 @@ public class lookAllQuotaApi implements ApiHandle {
             cashMap.put("showAmount", listDesc1.get(0));
             cashMap.put("desc", listDesc1.get(1));
             cashMap.put("status","2");
+            cashMap.put("realName", afUserDo.getRealName());
             onlineMap.put("showAmount", listDesc2.get(0));
             onlineMap.put("desc", listDesc2.get(1));
             onlineMap.put("status","2");
+            onlineMap.put("realName", afUserDo.getRealName());
 //            trainMap.put("desc", trainDesc);
 //            trainMap.put("status","2");
 
@@ -130,6 +132,7 @@ public class lookAllQuotaApi implements ApiHandle {
             trainMap.put("auAmount", trainAuAmount);//线下授予额度
             trainMap.put("amount", trainAmount);//线下可用额度
             trainMap.put("status","2");
+            trainMap.put("realName", afUserDo.getRealName());
 
             String value2=afResourceDoAuth.getValue2();//线下描述
             JSONObject jsonObject =JSON.parseObject(value2);
@@ -190,7 +193,7 @@ public class lookAllQuotaApi implements ApiHandle {
                     if(interimExist){//有临时额度下的描述
                 	trainDesc="总额度"+trainAuAmount+"元";
                     }
-                    trainMap.put("desc",onlineDesc);//线上描述
+                    trainMap.put("desc",trainDesc);//线上描述
                     trainMap.put("status","4");
                 }
                  else if (afUserAuthStatusTrain.getStatus().equals("P") || afUserAuthStatusTrain.getStatus().equals("N")) {                

@@ -142,7 +142,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
-		List<AfResourceDo> borrowHomeConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> borrowHomeConfigList = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
@@ -156,7 +156,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 
-		Map<String, Object> rate = getObjectWithResourceDolist(borrowHomeConfigList);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(borrowHomeConfigList);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String finishFlag = YesNoStatus.NO.getCode();
@@ -479,7 +479,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("isLogin", "N");
 
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = new ArrayList<Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 
@@ -489,7 +489,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
 		}
 
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());

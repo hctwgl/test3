@@ -238,6 +238,12 @@ public class AfResourceServiceImpl implements AfResourceService {
     }
 
     @Override
+    public List<AfResourceDo> newSelectBorrowHomeConfigByAllTypes() {
+        List<AfResourceDo> list = afResourceDao.newSelectBorrowHomeConfigByAllTypes();
+        return list;
+    }
+
+    @Override
     public BorrowRateBo borrowRateWithResource(Integer realTotalNper, String userName) {
         BorrowRateBo borrowRate = new BorrowRateBo();
         JSONObject borrowRateJson = getBorrowRateResource(realTotalNper, userName);
@@ -507,12 +513,13 @@ public class AfResourceServiceImpl implements AfResourceService {
 
     public String getAfResourceAppVesionV1() {
         String afResource = (String) bizCacheUtil.getObject("check_app_versionV1");
-        if (afResource != null) return afResource;
-        List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_versionV1");
-        if (list != null && list.size() > 0) {
-            AfResourceDo afResourceDo = list.get(0);
-            afResource = afResourceDo.getValue();
-            bizCacheUtil.saveObject("check_app_versionV1", afResource);
+        if(afResource == null){
+            List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_versionV1");
+            if (list != null && list.size() > 0) {
+                AfResourceDo afResourceDo = list.get(0);
+                afResource = afResourceDo.getValue();
+                bizCacheUtil.saveObjectForever("check_app_versionV1", afResource);
+            }
         }
         return afResource;
     }
