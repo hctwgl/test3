@@ -139,6 +139,15 @@ public class AppH5InvitationActivityController extends BaseController {
         Long userId = -1l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         AfUserDo afUser = null;
+        String  activityTime = null;
+        String invitationCode = "";
+        HashMap<String,Object> map =new HashMap<>();
+        List<HashMap> hashMapList =new ArrayList<>();
+        List<String> listRule = new ArrayList<String>();
+        List<String> listPic = new ArrayList<String>();
+        List<String> listTitle = new ArrayList<String>();
+        List<String> listDesc = new ArrayList<String>();
+        
         try{
             context = doWebCheck(request, true);
             if(context.isLogin()){
@@ -150,21 +159,19 @@ public class AppH5InvitationActivityController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-        }catch  (Exception e) {
-            logger.error("activityUserInfo error", e);
-            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
-            return resp.toString();
-        }
-
-        HashMap<String,Object> map =new HashMap<>();
-        List<HashMap> hashMapList =new ArrayList<>();
+       
+      
         //查看活动规则,图片,标题,描述
-        List<String> listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
-        List<String> listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
-        List<String> listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
-        List<String> listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+        listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
+        listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
+        listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
+        listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+        logger.info("activityUserInfo listRule: "+JSON.toJSONString(listRule));
+        logger.info("activityUserInfo listPic: "+JSON.toJSONString(listPic));
+        logger.info("activityUserInfo listTitle: "+JSON.toJSONString(listTitle));
+        logger.info("activityUserInfo listDesc: "+JSON.toJSONString(listDesc));
         //用户的邀请码
-        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+         invitationCode=afRecommendUserService.getUserRecommendCode(userId);
         if(invitationCode.equals("0")){
             //生成邀请码
             AfUserDo userDo = new AfUserDo();
@@ -175,14 +182,20 @@ public class AppH5InvitationActivityController extends BaseController {
 	    afUserService.updateUser(userDo);
 	    invitationCode = inviteCode;
         }
-        String  activityTime = null;
+     
 	    AfResourceDo activityStart = new AfResourceDo();
 		   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
 		   activityStart = list.get(0);
 		    if(activityStart !=null){
 			activityTime = activityStart.getValue();
-    }
+       }
         
+        }catch  (Exception e) {
+            logger.error("activityUserInfo error", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+
         //用户的总共奖励金额
         double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
         DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数

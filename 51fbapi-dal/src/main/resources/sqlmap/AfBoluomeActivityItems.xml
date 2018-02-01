@@ -233,7 +233,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 		(SELECT
 		 s.id,s.`name`,s.`icon`,s.`type`,a.`id` AS activityId,a.`sort` ,a.`icon_url` ,a.`logo`,a.rule_json
 		 FROM af_boluome_activity_items a JOIN `af_shop` s ON a.`ref_id` = s.`id` AND
-		 a.`boluome_activity_id` =1000
+		 a.`boluome_activity_id` =1000 and a.is_delete = 0
 		) t1
 		LEFT JOIN
 		(       
