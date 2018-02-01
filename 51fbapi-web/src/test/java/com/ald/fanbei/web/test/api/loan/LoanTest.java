@@ -27,13 +27,13 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-//	@Test
+	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
-		testH5(url, null, userName, true);
+		testH5(url, null, "", false);
 	}
 	
-	@Test
+//	@Test
 	public void getBorrowList() {
 		String url = urlBase + "/borrowCash/getAllBorrowList";
 		Map<String,String> params = new HashMap<>();
@@ -47,7 +47,7 @@ public class LoanTest  extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
 		params.put("amount", 50000+"");
-		params.put("periods", 4+"");
+		params.put("periods", 1+"");
 		testH5(url, params, userName, true);
 	}
 	
@@ -90,7 +90,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void repayDo() {
 		String url = urlBase + "/h5/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
@@ -107,7 +107,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void allRepayDo() {
 		String url = urlBase + "/h5/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
@@ -123,7 +123,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
@@ -141,7 +141,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "hq2018013114255212824";

@@ -14,11 +14,13 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 
 /**
  * 贷款发起前确认
  * @author ZJF
  */
+@NeedLogin
 @Component("confirmLoanApi")
 public class ConfirmLoanApi implements H5Handle {
 

@@ -4,12 +4,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -60,6 +63,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
     AfUserAccountDao afUserAccountDao;
     @Resource
     AfUserAccountLogDao afUserAccountLogDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
 
     @Resource
     AfRecommendUserService afRecommendUserService;
@@ -100,8 +105,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                 logger.info("borrowSuccess--begin");
                 Date currDate = new Date(System.currentTimeMillis());
                 afBorrowCashDo.setGmtArrival(currDate);
-                Integer day = NumberUtil
-                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//                Integer day = NumberUtil
+//                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                 Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
                 Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
                 afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -183,8 +189,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                 logger.info("borrowSuccess--begin");
                 Date currDate = new Date(System.currentTimeMillis());
                 afBorrowCashDo.setGmtArrival(currDate);
-                Integer day = NumberUtil
-                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//                Integer day = NumberUtil
+//                        .objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                 Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
                 Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
                 afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -224,12 +231,14 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         + afBorrowCashDo.getRid());
             }
         }
-        /*if (resultValue == 1) {
-            contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
-                    afBorrowCashDo.getUserId());// 生成凭据纸质帐单
-        }*/
+        if (resultValue == 1) {
+            contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
+                    afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
+        }
         return resultValue;
     }
+
+
 
     @Override
     public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {

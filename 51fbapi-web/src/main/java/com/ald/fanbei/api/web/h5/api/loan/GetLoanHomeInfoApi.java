@@ -35,6 +35,8 @@ public class GetLoanHomeInfoApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		
+		resp.addResponseData("isLogin", userId == null?false:true);
+		
 		resp.addResponseData("bannerList", afResourceService.getLoanHomeListByType());
 		resp.addResponseData("loanInfos", afLoanService.getHomeInfo(userId));
 		resp.addResponseData("xdInfo", afBorrowLegalService.getHomeInfo(userId));

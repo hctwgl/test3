@@ -28,6 +28,7 @@ public class LoanHomeInfoBo {
 	public BigDecimal curPeriodAmount;
 	public BigDecimal curPeriodRestAmount;
 	public Date curPeriodGmtPlanRepay;
+	public String curPeriodStatus;
 	public boolean isOverdue;
 	
 }

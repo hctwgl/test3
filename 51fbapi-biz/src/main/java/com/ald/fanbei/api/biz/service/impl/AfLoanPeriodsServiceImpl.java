@@ -57,9 +57,9 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	BigDecimal interestRate = new BigDecimal(dbCfg.interestRate);
     	BigDecimal poundageRate = new BigDecimal(dbCfg.poundageRate);
     	BigDecimal layRate = interestRate.add(poundageRate);
-    	BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 4, RoundingMode.HALF_UP);
+    	BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 10, RoundingMode.HALF_UP);
     	
-    	BigDecimal interestRatio = interestRate.divide(layRate, 4, RoundingMode.HALF_UP);
+    	BigDecimal interestRatio = interestRate.divide(layRate, 10, RoundingMode.HALF_UP);
     	
     	List<Object> result = new ArrayList<Object>();
     	
@@ -70,7 +70,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	// 月均总还款:b ＝ a×i×（1＋i）^n÷〔（1＋i）^n－1〕 
     	BigDecimal totalFeePerPeriod = a.multiply(i)
     				.multiply( (i.add(BigDecimal.ONE)).pow(n) )
-    				.divide( (i.add(BigDecimal.ONE)).pow(n).subtract(BigDecimal.ONE) , 4, RoundingMode.HALF_UP);
+    				.divide( (i.add(BigDecimal.ONE)).pow(n).subtract(BigDecimal.ONE) , 10, RoundingMode.HALF_UP);
     	// 还款总额:n * b
     	BigDecimal totalFee = totalFeePerPeriod.multiply( BigDecimal.valueOf(periods) );
     	// 支付总利息:n * b - a 
@@ -116,7 +116,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	}
     
     public BigDecimal calcuRestAmount(AfLoanPeriodsDo p) {
-    	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getOverdueAmount())
+    	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getRepaidOverdueAmount())
     		.add(p.getServiceFee()).add(p.getInterestFee()).add(p.getOverdueAmount())
     		.subtract(p.getRepayAmount());
     }

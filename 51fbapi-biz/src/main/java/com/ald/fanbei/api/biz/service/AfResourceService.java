@@ -113,6 +113,13 @@ public interface AfResourceService {
 	 * @return
 	 */
 	List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
+
+	/**
+	 * 借钱模块配置信息
+	 *
+	 * @return
+	 */
+	List<AfResourceDo> newSelectBorrowHomeConfigByAllTypes();
 	/*
 	 * 获取借款手续费等信息
 	 */
@@ -185,6 +192,8 @@ public interface AfResourceService {
 	List<AfResourceDo> getNavigationDownTwoResourceDoList(String code);
 
 	AfResourceDo getAfResourceAppVesion();
+
+	String getAfResourceAppVesionV1();
 
 	ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum);
 

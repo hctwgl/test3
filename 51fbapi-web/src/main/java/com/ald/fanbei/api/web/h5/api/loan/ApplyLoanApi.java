@@ -14,12 +14,14 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyLoanParam;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 
 /**
  * 发起贷款申请
  * @author ZJF
  * @类描述：申请贷款 参考{@link com.ald.fanbei.api.web.api.legalborrowV2.ApplyLegalBorrowCashV2Api}
  */
+@NeedLogin
 @Component("applyLoanApi")
 @Validator("applyLoanParam")
 public class ApplyLoanApi implements H5Handle {

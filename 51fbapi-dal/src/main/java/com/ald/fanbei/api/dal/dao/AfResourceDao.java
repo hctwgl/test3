@@ -63,6 +63,13 @@ public interface AfResourceDao {
 	List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
 
 	/**
+	 * 借钱模块配置信息
+	 *
+	 * @return
+	 */
+	List<AfResourceDo> newSelectBorrowHomeConfigByAllTypes();
+
+	/**
 	 * 根据type获取资源列表
 	 * 
 	 * @param type

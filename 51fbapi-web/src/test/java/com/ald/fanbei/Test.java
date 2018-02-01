@@ -95,8 +95,11 @@ public class Test {
 //        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
 //        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
 //        
-//        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-//        	    // "testC1b6x@6aH$2dlw"));
+        	    System.out.println(AesUtil.decrypt("EjxHo0U8fOjuwprOOe5jjg==",
+               	     "testC1b6x@6aH$2dlw"));
+        	    
+//        	     params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+//        	     "testC1b6x@6aH$2dlw"));
 //        	    params.put("appKey", "7887978286");
 //        	    params.put(BoluomeCore.SIGN, sign);
 //        	    String paramsStr = BoluomeCore.createLinkString(params);
@@ -104,21 +107,21 @@ public class Test {
 //        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?appKey=7887978286&orderId=ala202984909354292&sign=51EED26F1F954FBE0635F56D6DD02BA2&timestamp=1513748955";//"https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
 //        	    System.out.println(HttpUtil.doGet(urlString, 100));        	    
         	    
-        	    BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
-        	    reqBo.setOrderId("ala202998187465112");
-        	    reqBo.setStatus(PushStatus.REFUND_SUC.getCode());
-        	    reqBo.setAmount(new BigDecimal("2.5"));
-        	    reqBo.setUserId(5972008L);
-        	    reqBo.setRefundNo("ala202998187465112");
-        	    reqBo.setTimestamp(System.currentTimeMillis());
-        
-        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-        	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
-        	    String sign = DigestUtil.MD5(beforeSign);        
-        	    reqBo.setSign(sign);
-        	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
-        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
-        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
+//        	    BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
+//        	    reqBo.setOrderId("ala202998187465112");
+//        	    reqBo.setStatus(PushStatus.REFUND_SUC.getCode());
+//        	    reqBo.setAmount(new BigDecimal("2.5"));
+//        	    reqBo.setUserId(5972008L);
+//        	    reqBo.setRefundNo("ala202998187465112");
+//        	    reqBo.setTimestamp(System.currentTimeMillis());
+//        
+//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+//        	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
+//        	    String sign = DigestUtil.MD5(beforeSign);        
+//        	    reqBo.setSign(sign);
+//        	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
+//        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
+//        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
         	    
 //        	    getBoluomeString("ala202987058023378","5885340","7");
 //        	    getBoluomeString("ala202987059088560","5895274","0.01");

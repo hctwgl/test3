@@ -73,6 +73,9 @@ public class ApplyRenewalApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 
+		if(context.getAppVersion()<=375){
+			throw new FanbeiException("续借功能维护中,为避免产生逾期，请及时还款",true);
+		}
 		// 对402版本借钱，低版本还款情况做控制
         afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), rid);
 		
@@ -106,7 +109,7 @@ public class ApplyRenewalApi implements ApiHandle {
 	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion,BigDecimal renewAmount) {
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		/*AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）

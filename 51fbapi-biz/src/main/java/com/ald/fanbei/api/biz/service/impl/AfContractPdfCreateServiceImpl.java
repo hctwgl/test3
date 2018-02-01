@@ -1,10 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.EviDoc;
-import com.ald.fanbei.api.biz.util.OssUploadResult;
-import com.ald.fanbei.api.biz.util.PdfCreateUtil;
+import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -40,6 +37,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service("afContractPdfCreateService")
@@ -55,6 +54,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     AfBorrowCashService afBorrowCashService;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    NumberWordFormat numberWordFormat;
     @Resource
     AfESdkService afESdkService;
     @Resource
@@ -76,18 +77,14 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     @Resource
     EviDoc eviDoc;
     @Resource
+    AfBorrowService afBorrowService;
+    @Resource
     private EsignPublicInit esignPublicInit;
 
     private static final String src = "/home/aladin/project/app_contract";
 
     @Override
     public void protocolInstalment(long userId, Integer nper, BigDecimal amount, Long borrowId) {//分期
-
-//        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
-//        Integer nper = NumberUtil.objToIntDefault(content.get("nper"), 0);
-//        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("amount"), new BigDecimal(0));
-//        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(content.get("poundage"), new BigDecimal(0));
-//        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"),0);
         try {
             AfUserDo afUserDo = afUserService.getUserById(userId);
             Map map = new HashMap();
@@ -101,7 +98,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("realName", accountDo.getRealName());
             AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
             AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
-//            AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
             AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
             if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
                 logger.error("创建个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
@@ -111,7 +107,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("borrowId", borrowId);
             map.put("personUserSeal", afUserSealDo.getUserSeal());
             map.put("accountId", afUserSealDo.getUserAccountId());
-//            map.put("lender", lenderDo.getValue());// 出借人
             AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
             if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
                 map.put("lender", fundSideInfo.getName());// 出借人
@@ -123,7 +118,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 map.put("lender", lenderDo.getValue());// 出借人
                 secondSeal(map, lenderDo, afUserDo, accountDo);
             }
-//            secondSeal(map, lenderDo,afUserDo, accountDo);
             if (null == map.get("companySelfSeal")) {
                 logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
@@ -143,6 +137,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
             map.put("amountCapital", "人民币" + toCapital(amount.doubleValue()));
             map.put("amountLower", "￥" + amount);
+            AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
             List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
             BigDecimal poundageAmount = new BigDecimal(0);
             for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList) {
@@ -150,16 +145,25 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                     poundageAmount.add(afBorrowBillDo.getPoundageAmount());//账单手续费
                 }
             }
+            Date repayDay = null;
+            if (afBorrowBillDoList.size() > 0){
+                AfBorrowBillDo billDo = afBorrowBillDoList.get(afBorrowBillDoList.size()-1);
+                repayDay = billDo.getGmtPayTime();
+            }
             map.put("poundage", "￥" + poundageAmount);
             Date date = new Date();
+            if (afBorrowDo != null){
+                date = afBorrowDo.getGmtCreate();
+            }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-            map.put("gmtTime", simpleDateFormat.format(date) + "至" + simpleDateFormat.format(DateUtil.addMonths(date, nper)));
+            map.put("gmtTime", simpleDateFormat.format(date) + "至" + simpleDateFormat.format(repayDay));
 
             for (NperDo nperDo : list) {
                 if (nperDo.getNper() == nper) {
                     map.put("yearRate", nperDo.getRate());
                 }
             }
+
             for (NperDo nperDo : overduelist) {
                 if (nperDo.getNper() == nper) {
                     map.put("overdueRate", nperDo.getRate() != null ? nperDo.getRate() : "");
@@ -238,7 +242,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 if (afBorrowCashDo != null) {
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtTime", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()) + "至" + simpleDateFormat.format(repaymentDay));
@@ -423,7 +428,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 if (afBorrowCashDo != null) {
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                     if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+                        Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                         map.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -816,5 +822,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         System.out.println(temp);
         return temp;
     }
+
+
 
 }
