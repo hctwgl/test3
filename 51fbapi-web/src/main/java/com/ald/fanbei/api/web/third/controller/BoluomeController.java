@@ -222,7 +222,7 @@ public class BoluomeController extends AbstractThird {
 	    if (OrderSecType.WAI_MAI.getCode().equals(orderType)) {
 		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : new Date(System.currentTimeMillis() + 10 * 60 * 1000));
 	    } else {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : new Date(System.currentTimeMillis() + 60 * 60 * 1000));
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : new Date(System.currentTimeMillis() + 30 * 60 * 1000));
 	    }
 	    orderInfo.setThirdDetailUrl(detailUrl);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
