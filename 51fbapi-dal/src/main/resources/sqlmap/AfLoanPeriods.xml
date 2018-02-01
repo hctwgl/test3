@@ -358,16 +358,6 @@
         LIMIT 1
     </select>
     
-    <select id="getLastActivePeriodByLoanId" resultType="AfLoanPeriodsDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_loan_periods 
-        WHERE is_delete = 0 AND loan_id = #{loanId}
-            AND status = 'AWAIT_REPAY'
-        ORDER BY nper ASC
-        LIMIT 1
-    </select>
-    
     <select id="listByLoanId" resultType="AfLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />
