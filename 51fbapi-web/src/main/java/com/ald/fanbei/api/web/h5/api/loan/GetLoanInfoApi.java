@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.h5.api.loan;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -26,14 +23,11 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.dao.AfLoanDao;
-import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.vo.AfLoanVo;
-import com.alibaba.fastjson.JSON;
 
 /**
  * @Description: 白领贷借款信息

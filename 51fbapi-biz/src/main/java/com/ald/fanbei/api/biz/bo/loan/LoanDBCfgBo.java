@@ -8,5 +8,5 @@ public class LoanDBCfgBo {
 	public BigDecimal minQuota = BigDecimal.valueOf(500);
 	public String interestRate = "0.020";
 	public String poundageRate = "0.020";
-	public String overdueRate = "0.036";
+	public String overdueRate = "0.36";
 }

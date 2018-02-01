@@ -27,7 +27,7 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, "", false);
@@ -41,7 +41,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void confirmLoan() {
 		String url = urlBase + "/h5/loan/confirmLoan";
 		Map<String,String> params = new HashMap<>();
@@ -79,10 +79,10 @@ public class LoanTest  extends BaseTest{
 //	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
-		String orderNo = "01dpay23425234545345";
+		String orderNo = "01dpay23425234dfssdfs";
 		String merPriv = UserAccountLogType.LOAN.getCode();
 		String tradeState = "00";
-		String reqExt = "8";
+		String reqExt = "13";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
 		url += reqStr;

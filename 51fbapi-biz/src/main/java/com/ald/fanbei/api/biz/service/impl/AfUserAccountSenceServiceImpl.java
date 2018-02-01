@@ -60,4 +60,14 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     public List<AfUserAccountSenceDo> getByUserId(Long userId) {
         return afUserAccountSenceDao.getByUserId(userId);
     }
+    
+    @Override
+    public BigDecimal getAuAmountByScene(String scene, Long userId) {
+    	AfUserAccountSenceDo accScene = afUserAccountSenceDao.getByUserIdAndScene(scene, userId);
+    	if(accScene != null) {
+    		return accScene.getAuAmount();
+    	}else {
+    		return BigDecimal.ZERO;
+    	}
+    }
 }
