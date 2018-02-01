@@ -496,12 +496,13 @@ public class StartCashierApi implements ApiHandle {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
             cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
 
-            cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
             if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                cashierTypeVo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
                 cashierTypeVo.setUseableAmount(BigDecimal.ZERO);
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
             } else {
+                cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
                 if (leftAmount.compareTo(orderInfo.getActualAmount()) >= 0) {
                     cashierTypeVo.setUseableAmount(leftAmount);
                     cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
