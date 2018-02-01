@@ -7,10 +7,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -23,6 +26,12 @@ public class GetUserAuthStatusApi implements H5Handle {
 	
 	@Resource
 	AfUserAuthService afUserAuthService;
+	
+	@Resource
+	RiskUtil riskUtil;
+	
+	@Resource
+	AfUserAccountService afUserAccountService;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -54,12 +63,30 @@ public class GetUserAuthStatusApi implements H5Handle {
 		}
 		data.put("fundStatus", fundStatus);
 		data.put("jinpoStatus", jinpoStatus);
-		data.put("chsiStatus", chsiStatus);
 		data.put("zhengxinStatus", zhengxinStatus);
 
 		//网银认证
 		data.put("onlinebankStatus", "Y");
 		
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+		
+		String idNumber = afUserAccountDo.getIdNumber();
+		
+		String fundRiskOrderNo = riskUtil.getOrderNo("fund", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+
+		data.put("fundAuthParam", fundRiskOrderNo + "," + userId);
+
+		String zxinRiskOrderNo = riskUtil.getOrderNo("zxin", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+
+		data.put("zxinAuthParam", zxinRiskOrderNo + "," + userId);
+		
+		String sociRiskOrderNo = riskUtil.getOrderNo("soci", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+
+		data.put("jinpoAuthParam", sociRiskOrderNo + "," + userId);
+
+		// 网银认证
+		data.put("onlinebankAuthParam", sociRiskOrderNo + "," + userId);
+
 		resp.setResponseData(data);
 		return resp;
 	}

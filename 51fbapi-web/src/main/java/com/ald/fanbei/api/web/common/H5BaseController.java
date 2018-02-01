@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
+import java.lang.annotation.Annotation;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -71,6 +73,7 @@ public abstract class H5BaseController {
 			checkAppInfo(request);
 			// 解析参数（包括请求头中的参数和报文体中的参数）
 			Context context = parseRequestData(request);
+			checkLogin(context);
 			// 校验请求数据
 			doCheck(context);
 			baseResponse = doProcess(context);
@@ -83,6 +86,30 @@ public abstract class H5BaseController {
 			retMsg = JSON.toJSONString(baseResponse);
 		}
 		return retMsg;
+	}
+
+	private void checkLogin(Context context) {
+		H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
+        
+        // 接口是否需要登录
+        boolean needLogin = isNeedLogin(methodHandle.getClass());
+        context.setData("_needLogin", needLogin);
+        
+        if(needLogin && context.getUserId() == null) {
+        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+        }
+		
+	}
+	
+	
+	private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
+		Annotation[] annotations = clazz.getDeclaredAnnotations();
+		for(Annotation annotation : annotations) {
+			if(annotation instanceof NeedLogin) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void checkAppInfo(HttpServletRequest request) {
@@ -182,11 +209,13 @@ public abstract class H5BaseController {
 				+ userName;
 
 		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
-		if (token == null) {
+		boolean needLogin = (boolean)context.getData("_needLogin");
+		if (token == null && needLogin) {
 			throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 		}
-		signStrBefore = signStrBefore + token.getToken();
-
+		if(token != null) {
+			signStrBefore = signStrBefore + token.getToken();
+		}
 		logger.info("signStrBefore = {}", signStrBefore);
 		//this.compareSign(signStrBefore, sign);
 
