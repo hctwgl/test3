@@ -141,6 +141,10 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setAmount(orderInfo.getActualAmount());
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
         cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter, afInterimAuDo, context));
+        
+        if(cashierVo.getAp().getTotalVirtualAmount()==null){
+            cashierVo.getAp().setTotalVirtualAmount(BigDecimal.ZERO);
+        }        
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
         if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
@@ -410,7 +414,7 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo     订单信息
      * @param userDto       用户账户信息
      */
-    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
+    private Map<String, Object> riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode = resp.getRejectCode();
@@ -454,7 +458,7 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setOverduedCode(erorrCode.getCode());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
-                        return;
+                        return null;
                     } else {
                         logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + borrowNo);
                     }
@@ -471,7 +475,7 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setBorrowId(cashInfo.getRid());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
-                        return;
+                        return null;
                     } else {
                         logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
                     }
@@ -479,7 +483,7 @@ public class StartCashierApi implements ApiHandle {
                 default:
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                     cashierTypeVo.setReasonType("未知原因：" + rejectCode);
-                    return;
+                    return null;
             }
         }
 
@@ -517,6 +521,11 @@ public class StartCashierApi implements ApiHandle {
             cashierTypeVo.setUseableAmount(leftAmount);
             cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
         }
+        
+       cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null?BigDecimal.ZERO
+	       : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
+        
+        return virtualMap;
     }
 
     /**

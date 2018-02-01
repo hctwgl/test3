@@ -2334,9 +2334,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
             //虚拟剩余额度大于信用可用额度 则为可用额度
             leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-
-            if(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null)
-        	resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT, 0);
             
             return leftAmount;
         } else {
