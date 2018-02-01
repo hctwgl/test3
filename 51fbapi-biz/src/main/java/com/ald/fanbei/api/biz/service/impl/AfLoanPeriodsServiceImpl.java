@@ -56,6 +56,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	
     	BigDecimal interestRate = new BigDecimal(dbCfg.interestRate);
     	BigDecimal poundageRate = new BigDecimal(dbCfg.poundageRate);
+    	BigDecimal overdueRate = new BigDecimal(dbCfg.overdueRate);
     	BigDecimal layRate = interestRate.add(poundageRate);
     	BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 10, RoundingMode.HALF_UP);
     	
@@ -78,7 +79,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     	
     	BigDecimal totalInterestFee = totalIncome.multiply(interestRatio);
     	BigDecimal totalServiceFee = totalIncome.subtract(totalInterestFee);
-    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, poundageRate, interestRate, userLayDailyRate, 
+    	result.add(AfLoanDo.gen(userId, loanNo, prdType, periods, poundageRate, interestRate, overdueRate, userLayDailyRate, 
     			amount.setScale(2, RoundingMode.HALF_UP), 
     			totalServiceFee.setScale(2, RoundingMode.HALF_UP), 
     			totalInterestFee.setScale(2, RoundingMode.HALF_UP)));

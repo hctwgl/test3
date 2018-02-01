@@ -19,7 +19,7 @@ import java.math.BigDecimal;
     private static final long serialVersionUID = 1L;
 
     public static AfLoanDo gen(Long userId, String loanNo, String prdType, int periods, 
-    			BigDecimal serviceRate, BigDecimal interestRate, BigDecimal userLayDailyRate,
+    			BigDecimal serviceRate, BigDecimal interestRate, BigDecimal overdueRate, BigDecimal userLayDailyRate,
     			BigDecimal amount, BigDecimal totalServiceFee, BigDecimal totalInterestFee) {
     	AfLoanDo l = new AfLoanDo();
 		l.userId = userId;
@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 		l.riskDailyRate = userLayDailyRate;
 		l.serviceRate = serviceRate;
 		l.interestRate = interestRate;
+		l.overdueRate = overdueRate;
 		l.amount = amount;
 		l.totalServiceFee = totalServiceFee;
 		l.totalInterestFee = totalInterestFee;
@@ -97,6 +98,11 @@ import java.math.BigDecimal;
      * 逾期总金额（未还）
      */
     private BigDecimal overdueAmount;
+    
+    /**
+     * 逾期费率
+     */
+    private BigDecimal overdueRate;
 
     /**
      * 逾期状态，Y表示逾期，N表示未逾期
@@ -982,6 +988,14 @@ import java.math.BigDecimal;
     public void setAddress(String address){
       this.address = address;
     }
+
+	public BigDecimal getOverdueRate() {
+		return overdueRate;
+	}
+
+	public void setOverdueRate(BigDecimal overdueRate) {
+		this.overdueRate = overdueRate;
+	}
 
 
 }

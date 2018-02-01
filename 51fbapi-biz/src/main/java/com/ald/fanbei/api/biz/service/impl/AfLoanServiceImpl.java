@@ -339,7 +339,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
         		afUserAccountSenceDao.updateUsedAmount(loanDo.getPrdType(), loanDo.getUserId(), loanDo.getAmount());
                 return 1L;
             } catch (Exception e) {
-                logger.error("dealLoanSucc.saveLoanRecords,DB error", e);
+                logger.error("dealLoanSucc update db error", e);
                 throw e;
             }
 		}});
