@@ -138,6 +138,38 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
+	
+	
+	
+	/**
+	 * 开通白领贷回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/dredgeWhiteCollarLoan" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String dredgeWhiteCollarLoan(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyRegisterStrongRiskV1 begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyDredgeWhiteCollarLoan(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
+	
+	
+	
 	/**
 	 * 公积金异步回调
 	 * @param request

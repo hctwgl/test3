@@ -8,7 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * default value
+ * need login
  * @author rongbo
  *
  */

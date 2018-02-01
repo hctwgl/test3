@@ -28,6 +28,28 @@ public class DredgeWhiteCollarLoanParam {
 	@NotNull
 	@Pattern(regexp="(UNMARRIED|LOVING|MARRIED)")
 	private String maritalStatus; // 婚恋状态
+	
+	@NotNull
+	private String blackBox;
+	
+	@NotNull
+	private String bqsBlackBox;
+
+	public String getBlackBox() {
+		return blackBox;
+	}
+
+	public void setBlackBox(String blackBox) {
+		this.blackBox = blackBox;
+	}
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		this.bqsBlackBox = bqsBlackBox;
+	}
 
 	public String getCompany() {
 		return company;
