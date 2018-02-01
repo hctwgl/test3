@@ -306,6 +306,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     LOAN_UPS_CALLBACK_FAIL("",2108,"","请求打款失败"),
     LOAN_REPEAT_APPLY("",2109,"","已有处理中的贷款申请，不可重复申请"),
     LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
+    LOAN_OVERFLOW("",2111,"","贷款额违法"),
     
 
     //3000-3999

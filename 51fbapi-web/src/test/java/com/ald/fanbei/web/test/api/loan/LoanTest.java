@@ -27,7 +27,7 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, "", false);
@@ -51,12 +51,12 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 50000+"");
+		params.put("amount", 100000+"");
 		params.put("periods", 4+"");
 		
 		params.put("remark", "白领贷借款");

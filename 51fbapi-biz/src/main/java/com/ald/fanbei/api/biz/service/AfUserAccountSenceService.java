@@ -28,4 +28,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
     AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId);
 
     List<AfUserAccountSenceDo> getByUserId(Long userId);
+    
+    BigDecimal getAuAmountByScene(String scene, Long userId);
 }

@@ -13,6 +13,7 @@ public class ApplyLoanBo {
 	/* carrier区域，业务处理中继参数 */
 	public Long userId;
 	public String userName;
+	public BigDecimal auAmount;
 	
 	public static class ReqParam{
 		public String prdType;
