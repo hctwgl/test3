@@ -319,8 +319,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 		String creditRebateMsg = "";
 		List<AfUserAuthStatusDo> afUserAuthStatusDoSuccess = afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId, UserAuthSceneStatus.YES.getCode());
-		if (afUserAuthStatusDoSuccess != null && afUserAuthStatusDoSuccess.size() > 0) {//判断是否有场景认证通过了,第一次通过发奖品
-			if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
+		//if (afUserAuthStatusDoSuccess != null && afUserAuthStatusDoSuccess.size() > 0) {//判断是否有场景认证通过了,第一次通过发奖品
+			if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())) {
 				// 发放优惠劵工作
 				// creditRebateMsg = getCreditAuthMsg(context,
 				// creditRebateMsg);
@@ -341,7 +341,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				afRecommendUserService.updateRecommendCash(userId);
 				// #endregion
 			}
-		}
+		//}
 
 		bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
 		if (context.getAppVersion() > 367) {
