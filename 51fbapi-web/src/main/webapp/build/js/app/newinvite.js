@@ -67,7 +67,23 @@ window.onload = ()=>{
         alert('已复制到剪贴板，可粘贴')
     })
 
+    //左右移动动画
+    let cont = $(".cont1").html();
+    $(".cont2").html(cont);
+    wordMove();
 
+    //首页顶部栏动画-------------------------
+    var speed = 30;
+    function wordMove(){
+        var left = $(".personAmount").scrollLeft();
+        if(left >= $(".cont1").width()){
+            left = 0;
+        }else{
+            left++;
+        }
+        $(".personAmount").scrollLeft(left);
+        setTimeout("wordMove()",speed);
+    }
 
     function exec(data) {
         let rule = data.listRule
