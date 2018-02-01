@@ -5,9 +5,12 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
+import org.jsoup.helper.DataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +42,7 @@ public class KafkaSync {
     @Autowired
     private BizCacheUtil bizCacheUtil;
     private static final String COLLECTION_USERDATASUMMARY = "UserDataSummary";
+    private static final String COLLECTION_SYNCHISTORY = "SyncHistory";
     private static final String COLLECTION_PK = "_id";
     private static final String SYNC_GET_DATA_URL_KEY = "SYNC_GET_DATA_URL_KEY";
     private static final String SYNC_EVENT_DATA_URL = "SYNC_EVENT_DATA_URL";
@@ -53,28 +59,34 @@ public class KafkaSync {
         if (userName.length() > 15) {//不是正常的手机号码
             return;
         }
-        logger.info("trigger sync data:"+userName+",url:"+url);
+        logger.info("trigger sync data:" + userName + ",url:" + url);
+        String topic=ConfigProperties.get(KafkaConstants.SYNC_TOPIC);
+        //同步开关
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
         if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
             return;
         }
+
+        //页面级同步触发配置
         List<AfResourceDo> dataTypeUrlList = afResourceService.getConfigByTypes(SYNC_EVENT_DATA_URL);
+        Long userId = afUserService.getUserIdByMobile(userName);
+
+        //同步历史
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         for (AfResourceDo resourceDo : dataTypeUrlList) {
             String type = resourceDo.getValue();
             String triggerUrls = resourceDo.getValue1();
+            int frequency = Integer.parseInt(resourceDo.getValue2());//频率/天
             if (triggerUrls.contains(url)) {
-                Long userId = afUserService.getUserIdByMobile(userName);
-                if (type.contains(KafkaConstants.SYNC_BORROW_CASH)) {
-                    syncUserSummary(userId, force);//同步借钱信息
-                } else if (type.contains(KafkaConstants.SYNC_USER_BASIC_DATA)) {
-                    //同步用户基础信息
-                }else if (type.contains(KafkaConstants.SYNC_CASH_LOAN)) {
-                    //同步用户借钱
-                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CASH_LOAN, userId.toString());
-                }else if (type.contains(KafkaConstants.SYNC_CONSUMPTION_PERIOD)) {
-                    //同步用户基础信息
-                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CONSUMPTION_PERIOD, userId.toString());
+                HashMap syncHistory = mongoTemplate.findOne(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), HashMap.class, COLLECTION_SYNCHISTORY);
+                if (syncHistory != null && syncHistory.get(type) != null) {
+                    Date lastDate =parser.parse(syncHistory.get(type).toString());
+                    if (DateUtil.beforeDay( new Date(),DateUtil.addDays(lastDate, frequency))) {
+                        continue;//上次更新时间再频率之内，不更新
+                    }
                 }
+                //发送更新通知
+                kafkaTemplate.send(topic, type, userId.toString());
             }
         }
     }
@@ -87,49 +99,17 @@ public class KafkaSync {
      * @throws Exception
      */
     public void syncEvent(Long userId, String type, final boolean force) {
-        try{
+        try {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
             if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
                 return;
             }
-            if (type.equals(KafkaConstants.SYNC_BORROW_CASH)) {
-                //同步用户风控所需的信息
-                syncUserSummary(userId, force);//同步借钱信息
-            } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
-                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_USER_BASIC_DATA, userId.toString());
-            }else if (type.equals(KafkaConstants.SYNC_CASH_LOAN)) {
-                //同步用户借钱
-                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CASH_LOAN, userId.toString());
-            }else if (type.equals(KafkaConstants.SYNC_CONSUMPTION_PERIOD)) {
-                //同步用户基础信息
-                kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CONSUMPTION_PERIOD, userId.toString());
-            }
-        }catch (Exception e){
-           logger.error("syncEvent userId:"+userId+",type="+type,e);
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), type, userId.toString());
+        } catch (Exception e) {
+            logger.error("syncEvent userId:" + userId + ",type=" + type, e);
         }
     }
 
-    /**
-     * 用户数据 同步事件
-     *
-     * @param userId 用户id
-     * @param force  是否强制刷新
-     */
-    private void syncUserSummary(final Long userId, final boolean force) {
-        pool.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (force) {
-                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_BORROW_CASH, userId.toString());
-                } else {
-                    long count = mongoTemplate.count(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), COLLECTION_USERDATASUMMARY);
-                    if (count == 0) {
-                        kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_BORROW_CASH, userId.toString());
-                    }
-                }
-            }
-        });
-    }
 
     /**
      * 同步获取用户信息
