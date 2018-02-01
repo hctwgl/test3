@@ -53,6 +53,7 @@ public class KafkaSync {
         if (userName.length() > 15) {//不是正常的手机号码
             return;
         }
+        logger.info("trigger sync data:"+userName+",url:"+url);
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
         if (afResourceDo == null || !afResourceDo.getValue().equals("Y")) {
             return;
@@ -65,8 +66,14 @@ public class KafkaSync {
                 Long userId = afUserService.getUserIdByMobile(userName);
                 if (type.contains(KafkaConstants.SYNC_BORROW_CASH)) {
                     syncUserSummary(userId, force);//同步借钱信息
-                } else if (type.equals(KafkaConstants.SYNC_USER_BASIC_DATA)) {
+                } else if (type.contains(KafkaConstants.SYNC_USER_BASIC_DATA)) {
                     //同步用户基础信息
+                }else if (type.contains(KafkaConstants.SYNC_CASH_LOAN)) {
+                    //同步用户借钱
+                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CASH_LOAN, userId.toString());
+                }else if (type.contains(KafkaConstants.SYNC_CONSUMPTION_PERIOD)) {
+                    //同步用户基础信息
+                    kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC), KafkaConstants.SYNC_CONSUMPTION_PERIOD, userId.toString());
                 }
             }
         }
