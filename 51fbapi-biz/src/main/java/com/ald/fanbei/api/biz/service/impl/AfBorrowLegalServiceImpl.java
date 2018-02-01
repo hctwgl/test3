@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -92,20 +90,6 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	}
 	
 	private void dealResource(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
-		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
-
-		//获取配置的公司名称
-		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
-		bo.companyName = companyInfo != null? companyInfo.getValue() : "";
-		 
-		BigDecimal bankRate = new BigDecimal(oldBorrowCfg.get("bankRate").toString());
-		BigDecimal bankDouble = new BigDecimal(oldBorrowCfg.get("bankDouble").toString());
-		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		bo.interestRate = bankService.toString();
-		bo.overdueRate = oldBorrowCfg.get("overduePoundage").toString();
-		bo.borrowCashDay = oldBorrowCfg.get("borrowCashDay").toString();
-		bo.lender = oldBorrowCfg.get("lender").toString();
-		
 		//获取 最大/最小 借款额
 		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
 		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
