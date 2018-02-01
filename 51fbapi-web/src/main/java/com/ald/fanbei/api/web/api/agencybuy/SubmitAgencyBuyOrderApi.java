@@ -197,18 +197,18 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			if (useableAmount.compareTo(actualAmount) < 0) {
 				isEnoughAmount = "N";
 			}
-			RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-			String quotaData = quotaBo.getData();
-			if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-				JSONObject json = JSONObject.parseObject(quotaData);
-				String virtualCode = json.getString("virtualCode");
-				BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-				if (goodsUseableAmount.compareTo(actualAmount) < 0) {
-					isEnoughAmount = "N";
-				}
-				if (goodsUseableAmount.compareTo(leftAmount) < 0)
-					leftAmount = goodsUseableAmount;
-			}
+			//RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+			//String quotaData = quotaBo.getData();
+//			if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
+//				JSONObject json = JSONObject.parseObject(quotaData);
+//				String virtualCode = json.getString("virtualCode");
+//				BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+//				if (goodsUseableAmount.compareTo(actualAmount) < 0) {
+//					isEnoughAmount = "N";
+//				}
+//				if (goodsUseableAmount.compareTo(leftAmount) < 0)
+//					leftAmount = goodsUseableAmount;
+//			}
 			if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
 				isNoneQuota = "Y";
 			}
