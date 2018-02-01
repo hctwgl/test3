@@ -47,16 +47,12 @@ public class GetUserAuthStatusApi implements H5Handle {
 		
 		String fundStatus = userAuthInfo.getFundStatus();
 		String jinpoStatus = userAuthInfo.getJinpoStatus();
-		String chsiStatus = userAuthInfo.getChsiStatus();
 		String zhengxinStatus = userAuthInfo.getZhengxinStatus();
 		if(StringUtils.isBlank(fundStatus)) {
 			fundStatus = "A";
 		}
 		if(StringUtils.isBlank(jinpoStatus)) {
 			jinpoStatus = "A";
-		}
-		if(StringUtils.isBlank(chsiStatus)) {
-			chsiStatus = "A";
 		}
 		if(StringUtils.isBlank(zhengxinStatus)) {
 			zhengxinStatus = "A";
