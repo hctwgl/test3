@@ -2318,7 +2318,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
                 BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
                 if(virtualAmount.compareTo(orderInfo.getActualAmount())<=0) {
-                    leftAmount = BigDecimal.ZERO;
+                    leftAmount = virtualAmount;//BigDecimal.ZERO;
                 }
             }
 
