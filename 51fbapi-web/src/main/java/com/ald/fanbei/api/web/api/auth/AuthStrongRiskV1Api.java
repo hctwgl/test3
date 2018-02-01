@@ -256,20 +256,18 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 					if (!riskResp.isSuccess()) {
 						return processRishAuthFail(requestDataVo.getId(), riskScene, authDo ,afUserAuthDo, afUserAuthStatusDo);
-					} else {
+					} else {						
 						if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 							authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 						}
-						authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
 						if (SceneType.CASH.getCode().equals(riskScene)) {
+							processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
 							afUserAuthService.updateUserAuth(authDo);
 						} else {
 							afUserAuthStatusDo.setGmtModified(new Date());
 							afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 						}
-
-						processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
 					}
 
 					if (numberOfAuth) {//新手引导过来的二次调用
@@ -282,7 +280,17 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						if (!riskResp1.isSuccess()) {
 							return processRishAuthFail(requestDataVo.getId(), riskScene,authDo, afUserAuthDo, afUserAuthStatusDo);
 						} else {
-							processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
+							if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+								authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+							}
+							if (SceneType.CASH.getCode().equals(riskScene)) {
+								processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
+								afUserAuthService.updateUserAuth(authDo);
+							} else {
+								afUserAuthStatusDo.setGmtModified(new Date());
+								afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
+								afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+							}
 						}
 					}
 				} catch (Exception e) {

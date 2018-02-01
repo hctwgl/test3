@@ -252,7 +252,7 @@ public class TestController {
     @ResponseBody
     public String cuishou() {
         KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
-        String requestData = api.getOrderTracesByJson("SF","058029296755");
+        String requestData = api.getOrderTracesByJson("SF", "058029296755");
 
         KdniaoReqDataData kdniaoReqData = JSON.parseObject(requestData, KdniaoReqDataData.class);
         System.out.print(requestData);
@@ -276,6 +276,14 @@ public class TestController {
 
     }
 
+    @RequestMapping("/clearredis")
+    @ResponseBody
+    public String clearredis(String key) {
+        bizCacheUtil.delCache(key);
+        return "redis 清除成功";
+
+    }
+
     @RequestMapping("/transed")
     @ResponseBody
     public String transed() {
@@ -285,14 +293,14 @@ public class TestController {
             pool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try{
+                    try {
                         transactionTemplate.execute(new TransactionCallback<Integer>() {
                             @Override
                             public Integer doInTransaction(TransactionStatus transactionStatus) {
                                 AfBorrowDo borrowDo = new AfBorrowDo();
-                                AppOpenLogDo appOpenLogDo=new AppOpenLogDo();
+                                AppOpenLogDo appOpenLogDo = new AppOpenLogDo();
                                 appOpenLogDo.setRid(1l);
-                                appOpenLogDo.setAppVersion("123:"+new Date().getTime());
+                                appOpenLogDo.setAppVersion("123:" + new Date().getTime());
                                 appOpenLogDao.updateById(appOpenLogDo);
                                 try {
                                     Thread.sleep(10000);
@@ -302,8 +310,8 @@ public class TestController {
                                 return 1;
                             }
                         });
-                    }catch (Exception e){
-                        logger.info("error:",e);
+                    } catch (Exception e) {
+                        logger.info("error:", e);
                     }
 
                 }
