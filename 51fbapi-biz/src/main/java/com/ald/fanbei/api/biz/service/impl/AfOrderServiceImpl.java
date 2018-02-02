@@ -12,16 +12,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.*;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -34,7 +29,6 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -50,13 +44,17 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -68,6 +66,30 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderSecType;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.RefundSource;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -76,11 +98,56 @@ import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
+import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
+import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
+import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfShopDao;
+import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
 
@@ -195,6 +262,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfInterimDetailDao afInterimDetailDao;
 
+    @Autowired
+    private AfShopDao afShopDao;
 	@Resource
 	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
 
@@ -218,6 +287,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Resource
     AfUserAmountService afUserAmountService;
+    @Autowired
+    AfGoodsCategoryDao afGoodsCategoryDao;
 
     @Override
     public int createOrderTrade(final String content) {
@@ -924,7 +995,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 //	}
 
     @Override
-    public Map<String, Object> payBrandOrder(final Long payId, final String payType, final Long orderId,
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId,
                                              final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName,
                                              final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress) {
         final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
@@ -976,10 +1047,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         return resultMap;
                     } else if (payType.equals(PayType.AGENT_PAY.getCode())) {
                         // 先做判断
-                        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+                        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);//afUserAccountService.getUserAccountByUserId(userId);
                         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
                         // 判断使用额度
-                        checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+                        BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+                        if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+                            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+                        }
 
                         orderInfo.setNper(nper);
                         BorrowRateBo bo = null;
@@ -990,7 +1064,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
                                 bo = afResourceService.borrowRateWithResourceForTrade(nper);
                             } else {
-                                bo = afResourceService.borrowRateWithResource(nper, userAccountInfo.getUserName());
+                                bo = afResourceService.borrowRateWithResource(nper, userName);
                             }
                         }
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -1029,7 +1103,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         logger.info("verify userId" + userId);
                         RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-                                ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
+                                ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName,
                                 orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
                                 orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,riskDataMap,orderInfo.getBqsBlackBox(),orderInfo);
                         logger.info("verybo=" + verybo);
@@ -1043,34 +1117,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
                         // verybo.getResult()=10,则成功，活动返利
                     } else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {// 组合支付
-                        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+                        // 先做判断
+                        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);//afUserAccountService.getUserAccountByUserId(userId);
                         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-
-                        //获取临时额度
-                        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
-                        if (afInterimAuDo == null) {
-                            afInterimAuDo = new AfInterimAuDo();
-                            afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
-                        }
-                        //可使用额度
-                        BigDecimal useableAmount = getUseableAmount(orderInfo, userAccountInfo, afInterimAuDo);
-
-                        BigDecimal leftAmount = useableAmount;
-                        BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
-                        String virtualCode = "";
-                        if (virtualTotalAmount != null) {
-                            virtualCode = afOrderService.getVirtualCode(virtualMap);
-                            leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(),
-                                    virtualCode, virtualTotalAmount);
-                            // 虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
-                            leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-                        }
+                        // 判断使用额度
+                        BigDecimal leftAmount= checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 
                         // 银行卡需要支付的金额
                         BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
 
                         orderInfo.setNper(nper);
-                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userAccountInfo.getUserName());
+                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
                         orderInfo.setBorrowRate(boStr);
 
@@ -1096,7 +1153,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         // 通过弱风控后才进行后续操作
                         RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-                                ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(), leftAmount,
+                                ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount,
                                 BigDecimal.ZERO, borrowTime,
                                 OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
                                         ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
@@ -2136,29 +2193,34 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (orderInfo == null) {
             return resultMap;
         }
+        RiskVirtualProductQuotaRespBo response;
         // 菠萝觅传code，其他的传goodsName
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-            VirtualGoodsCateogy type = VirtualGoodsCateogy.findRoleTypeByCategory(orderInfo.getSecType());
-            if (type == null) {
-                return resultMap;
-            }
-            virtualCode = type.getCode();
-            resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
 
-            RiskVirtualProductQuotaRespBo response = riskUtil
-                    .virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
+            AfShopDo shopDo= afShopDao.getShopInfoBySecType(orderInfo.getSecType());
+            response = riskUtil
+                    .virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, orderInfo.getOrderType(),orderInfo.getSecType(),shopDo.getName());
             if (response != null) {
-                resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
+                resultMap.put(Constants.VIRTUAL_CODE, orderInfo.getSecType());
+                resultMap.put(Constants.VIRTUAL_CHECK_NAME,shopDo.getName());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
             return null;
         } else {
-            RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(
-                    orderInfo.getUserId() + StringUtils.EMPTY, StringUtils.EMPTY, orderInfo.getGoodsName());
+            AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
+            AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
+            response = riskUtil.virtualProductQuota(
+                    orderInfo.getUserId() + StringUtils.EMPTY, orderInfo.getOrderType(), afGoodsCategoryDo.getName(),afGoodsCategoryDo.getId()+StringUtils.EMPTY);
             if (response != null) {
-                resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
-                resultMap.put(Constants.VIRTUAL_CODE, response.getVirtualCode());
+                resultMap.put(Constants.VIRTUAL_CODE, afGoodsCategoryDo.getId());
+                resultMap.put(Constants.VIRTUAL_CHECK_NAME,afGoodsCategoryDo.getName());
             }
+        }
+        if (response != null && (response.getData().getAmount() != null||response.getData().getTotalAmount() !=null)) {
+            resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
+            resultMap.put(Constants.VIRTUAL_RECENT_DAY,response.getData().getRecentDay());
+            resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT,response.getData().getTotalAmount());
+            resultMap.put(Constants.VIRTUAL_CHECK,"TRUE");
         }
         return resultMap;
     }
@@ -2236,28 +2298,48 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param orderInfo
      * @param userAccountInfo
      */
-    private void checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
+    @Override
+    public BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo) {
         //获取临时额度
         AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
         if (afInterimAuDo == null) {
             afInterimAuDo = new AfInterimAuDo();
             afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
         }
-        if (afOrderService.isVirtualGoods(resultMap)) {
-            BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
-            String virtualCode = afOrderService.getVirtualCode(resultMap);
-            BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
-            BigDecimal useableAmount = getUseableAmount(orderInfo,userAccountInfo,afInterimAuDo);
+        if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
+            BigDecimal leftAmount =new BigDecimal(0);
+            if(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)!=null) {
+                String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
+                BigDecimal virtualTotalAmount =new BigDecimal(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
+                Integer virtualRecentDay = new Integer(resultMap.get(Constants.VIRTUAL_RECENT_DAY).toString());
+                //验证累计额度
+                leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount, virtualRecentDay);
+            }
+            if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
+                BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+                //if(virtualAmount.compareTo(orderInfo.getActualAmount())<=0) {
+                    leftAmount = virtualAmount;//BigDecimal.ZERO;
+                //}
+            }
+
+            BigDecimal useableAmount;
+            //判断临时额度是否到期
+            if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
+                //获取当前用户可用临时额度
+                BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                //用户额度加上临时额度
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
+            } else {
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+            }
             //虚拟剩余额度大于信用可用额度 则为可用额度
             leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-            if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-            }
+            
+            return leftAmount;
         } else {
             BigDecimal useableAmount = getUseableAmount(orderInfo,userAccountInfo,afInterimAuDo);
-            if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-            }
+
+            return useableAmount;
         }
     }
 
@@ -2269,7 +2351,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	 * @param afInterimAuDo
 	 * @return
 	 */
-	private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDo userDo, AfInterimAuDo afInterimAuDo) {
+	private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountSenceDo userDo, AfInterimAuDo afInterimAuDo) {
 		BigDecimal useableAmount = BigDecimal.ZERO;
 		//判断商圈订单
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {

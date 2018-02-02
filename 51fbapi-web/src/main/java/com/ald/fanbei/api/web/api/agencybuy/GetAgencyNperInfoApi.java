@@ -133,23 +133,23 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         
         //是否是限额类目
 		String isQuotaGoods = "N";
-        if (!StringUtil.isBlank(goodsName)) {
-    		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-    		String data = quotaBo.getData();
-    		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
-    			JSONObject json = JSONObject.parseObject(data);
-    			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
-    			String virtualCode = json.getString("virtualCode");
-    			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-    			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
-    			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-    			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-    			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-    				useableAmount = goodsUseableAmount;
-    				isQuotaGoods = "Y";
-    			}
-    		}      	
-        }
+//        if (!StringUtil.isBlank(goodsName)) {
+//    		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+//    		String data = quotaBo.getData();
+//    		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
+//    			JSONObject json = JSONObject.parseObject(data);
+//    			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
+//    			String virtualCode = json.getString("virtualCode");
+//    			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+//    			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
+//    			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
+//    			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
+//    			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
+//    				useableAmount = goodsUseableAmount;
+//    				isQuotaGoods = "Y";
+//    			}
+//    		}
+//        }
         BigDecimal calculateAmount = amount;
         if (amount.compareTo(useableAmount) > 0) {
         	calculateAmount = useableAmount;
