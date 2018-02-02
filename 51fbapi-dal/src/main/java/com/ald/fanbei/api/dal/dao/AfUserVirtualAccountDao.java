@@ -16,7 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
  */
 public interface AfUserVirtualAccountDao extends BaseDao<AfUserVirtualAccountDo, Long> {
 
-	BigDecimal getCurrentMonthUsedAmount(@Param("year")Integer year, @Param("month")Integer month, @Param("userId")Long userId, 
-			@Param("virtualCode")String virtualCode);
+	BigDecimal getCurrentMonthUsedAmount( @Param("userId")Long userId,
+			@Param("virtualCode")String virtualCode, @Param("virtualRecentDay") Integer virtualRecentDay);
 
 }

@@ -22,12 +22,14 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -247,25 +249,25 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				authDo.setGmtRisk(new Date());
 				authDo.setGmtBasic(new Date());
 				try {
+				        String directory = directoryCache.toString();
+				    
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-							card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
+							card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene,directory);
 
 					if (!riskResp.isSuccess()) {
 						return processRishAuthFail(requestDataVo.getId(), riskScene, authDo ,afUserAuthDo, afUserAuthStatusDo);
-					} else {
+					} else {						
 						if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
 							authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 						}
-						authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
 						if (SceneType.CASH.getCode().equals(riskScene)) {
+							processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
 							afUserAuthService.updateUserAuth(authDo);
 						} else {
 							afUserAuthStatusDo.setGmtModified(new Date());
 							afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 						}
-
-						processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
 					}
 
 					if (numberOfAuth) {//新手引导过来的二次调用
@@ -273,12 +275,22 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						afUserAuthStatusDo.setScene(sceneArray[1]);
 						riskOrderNo = riskUtil.getOrderNo("regi", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						RiskRespBo riskResp1 = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-								card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene);
+								card.getCardNumber(), riskOrderNo, bqsBlackBox, riskScene,directory);
 
 						if (!riskResp1.isSuccess()) {
 							return processRishAuthFail(requestDataVo.getId(), riskScene,authDo, afUserAuthDo, afUserAuthStatusDo);
 						} else {
-							processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
+							if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+								authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+							}
+							if (SceneType.CASH.getCode().equals(riskScene)) {
+								processRishComplete(afUserAuthDo, requestDataVo, context, request, userId, idNumberDo, resp);
+								afUserAuthService.updateUserAuth(authDo);
+							} else {
+								afUserAuthStatusDo.setGmtModified(new Date());
+								afUserAuthStatusDo.setStatus(UserAuthSceneStatus.CHECKING.getCode());
+								afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -303,39 +315,40 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	}
 
 	private  void processRishComplete(AfUserAuthDo afUserAuthDo,RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request,Long userId, AfIdNumberDo idNumberDo,ApiHandleResponse resp){
-		// 提交过信用认证,第一次给用户发放优惠劵
-		HashMap<String, String> creditRebateMap = new HashMap<String, String>();
-		String creditRebateMsg = "";
-		List<AfUserAuthStatusDo> afUserAuthStatusDoSuccess = afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId, UserAuthSceneStatus.YES.getCode());
-		if (afUserAuthStatusDoSuccess != null && afUserAuthStatusDoSuccess.size() > 0) {//判断是否有场景认证通过了,第一次通过发奖品
-			if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
-				// 发放优惠劵工作
-				// creditRebateMsg = getCreditAuthMsg(context,
-				// creditRebateMsg);
 
-				// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
-				// 随机发放奖品
-				try {
-					Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
-					if (prizeInfo != null) {
-						creditRebateMsg = (String) prizeInfo.get("prizeName");
-					}
-				} catch (Exception e) {
-					// ignore error
-					logger.error("getAuthPrize=>" + e.getMessage());
-				}
+	 // 提交过信用认证,第一次给用户发放优惠劵
+	 		HashMap<String, String> creditRebateMap = new HashMap<String, String>();
+	 		String creditRebateMsg = "";
+	 		//List<AfUserAuthStatusDo> afUserAuthStatusDoSuccess = afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId, UserAuthSceneStatus.YES.getCode());
+	 		//if (afUserAuthStatusDoSuccess != null && afUserAuthStatusDoSuccess.size() > 0) {//判断是否有场景认证通过了,第一次通过发奖品
+	 			if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())) {
+	 				// 发放优惠劵工作
+	 				// creditRebateMsg = getCreditAuthMsg(context,
+	 				// creditRebateMsg);
 
-				// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
-				afRecommendUserService.updateRecommendCash(userId);
-				// #endregion
-			}
-		}
+	 				// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+	 				// 随机发放奖品
+	 				try {
+	 					Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
+	 					if (prizeInfo != null) {
+	 						creditRebateMsg = (String) prizeInfo.get("prizeName");
+	 					}
+	 				} catch (Exception e) {
+	 					// ignore error
+	 					logger.error("getAuthPrize=>" + e.getMessage());
+	 				}
 
-		bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
-		if (context.getAppVersion() > 367) {
-			creditRebateMap.put("creditRebateMsg", creditRebateMsg);
-			resp.setResponseData(creditRebateMap);
-		}
+	 				// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
+	 				afRecommendUserService.updateRecommendCash(userId);
+	 				// #endregion
+	 			}
+	 		//}
+
+	 		bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
+	 		if (context.getAppVersion() > 367) {
+	 			creditRebateMap.put("creditRebateMsg", creditRebateMsg);
+	 			resp.setResponseData(creditRebateMap);
+	 		}
 	}
 
 	private ApiHandleResponse processRishAuthFail(String requestId, String riskScene, AfUserAuthDo authDo ,AfUserAuthDo afUserAuthDo, AfUserAuthStatusDo afUserAuthStatusDo)

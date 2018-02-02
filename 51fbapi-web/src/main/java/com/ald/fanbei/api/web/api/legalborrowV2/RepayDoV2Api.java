@@ -216,8 +216,13 @@ public class RepayDoV2Api implements ApiHandle {
 			calculateAmount = BigDecimal.ZERO;
 		}
 		
+		//如果用户选择余额支付，则actualAmount必须为0，否则抛异（支付漏洞）
+		if(bo.cardId == -2 && bo.actualAmount.compareTo(BigDecimal.ZERO) != 0 ) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REBATE_ERROR);
+		}
+		
 		// 对比
-		if (bo.actualAmount.compareTo(calculateAmount) != 0) {
+		if (bo.actualAmount.compareTo(calculateAmount) != 0 ) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
 		

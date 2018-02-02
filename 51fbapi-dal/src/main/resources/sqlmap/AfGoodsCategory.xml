@@ -122,4 +122,13 @@
 			AND parent_id = #{parentId}
 			order by sort desc
 	</select>
+
+	<select id="getGoodsCategoryById" resultType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo">
+		SELECT
+		<include refid="activitySqlField"></include>
+		FROM
+		af_goods_category
+		WHERE
+		is_delete=0 AND id = #{rid}
+	</select>
 </mapper>

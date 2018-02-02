@@ -399,12 +399,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene) {
-        Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
-        String directory = "";
-        if (directoryCache != null) {
-            directory = directoryCache.toString();
-        }
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox,String riskScene,String directory) {
         AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
         Long userId = Long.parseLong(oldUserInfo.getValue());
         Long consumerId = Long.parseLong(consumerNo);
@@ -459,7 +454,6 @@ public class RiskUtil extends AbstractThird {
      * @param virtualCode 商品编号
      *                    增加里那个字段
      * @param SecSence    二级场景
-     * @param ThirdSence 三级场景
      * @param orderid 订单号
      * @return
      */
@@ -755,7 +749,6 @@ public class RiskUtil extends AbstractThird {
      * @param borrow      借款信息
      * @param orderNo     订单编号
      * @param verifybo    风控返回结果
-     * @param virtualCode 虚拟值
      * @return
      */
     public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap,AfOrderDo orderInfo) throws FanbeiException {
@@ -882,7 +875,6 @@ public class RiskUtil extends AbstractThird {
      * @param tradeNo
      * @param resultMap
      * @param isSelf
-     * @param virtualCode
      * @param bankAmount
      * @param borrow
      * @param verybo
@@ -1357,8 +1349,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 上树运营商数据查询异步通知
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param msg --用户唯一标识
+     * @param code   --用户名
      * @return
      */
     public int operatorNotify(String code, String data, String msg, String signInfo) {
@@ -1571,8 +1563,8 @@ public class RiskUtil extends AbstractThird {
     }
 
     /**
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param code --用户唯一标识
+     * @param data   --用户名
      * @return
      */
 
@@ -1682,8 +1674,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 风控异步审核
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param msg --用户唯一标识
+     * @param code   --用户名
      * @return
      */
     public int asyVerify(String code, String data, String msg, String signInfo) {
@@ -1824,19 +1816,19 @@ public class RiskUtil extends AbstractThird {
      * 获取虚拟商品可使用额度
      *
      * @param consumerNo  用户id
-     * @param virtualCode 虚拟商品代码 //菠萝觅已知
-     * @param productName 商品名称
      * @return
      */
-    public RiskVirtualProductQuotaRespBo virtualProductQuota(String consumerNo, String virtualCode, String productName) {
+    public RiskVirtualProductQuotaRespBo virtualProductQuota(String consumerNo, String businessType, String productCode,String productCodeId) {
         RiskVirtualProductQuotaReqBo reqBo = new RiskVirtualProductQuotaReqBo();
         reqBo.setConsumerNo(consumerNo);
 
         JSONObject obj = new JSONObject();
-        obj.put("virtualCode", virtualCode);
-        obj.put("productName", productName);
+        obj.put("businessType", businessType.replaceAll("\r|\n", ""));
+        obj.put("productCode", productCode.replaceAll("\r|\n", ""));
+        obj.put("productCodeId", productCodeId.replaceAll("\r|\n", ""));
 
-        reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+        logThird(obj, "virtualProductQuota obj", obj);
+        reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)).replaceAll("\r|\n", ""));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
 
@@ -1847,13 +1839,13 @@ public class RiskUtil extends AbstractThird {
         RiskVirtualProductQuotaRespBo riskResp = JSONObject.parseObject(reqResult, RiskVirtualProductQuotaRespBo.class);
         if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
             riskResp.setSuccess(true);
-            String data = riskResp.getData();
-            if (StringUtils.isNotBlank(data)) {
-                JSONObject json = JSONObject.parseObject(data);
-                //如果有code,没有amount 那么默认100
-                riskResp.setAmount(json.getBigDecimal("amount"));
-                riskResp.setVirtualCode(json.getString("virtualCode"));
-            }
+//            VirtualProductQuota data = riskResp.getData();
+//            if (data != null) {
+//                //JSONObject json = JSONObject.parseObject(data);
+//                //如果有code,没有amount 那么默认100
+//                riskResp.setAmount(json.getBigDecimal("amount"));
+//                riskResp.setVirtualCode(json.getString("virtualCode"));
+//            }
             return riskResp;
         } else {
             throw new FanbeiException(FanbeiExceptionCode.VIRTUAL_PRODUCT_QUOTA_ERROR);
@@ -1918,8 +1910,6 @@ public class RiskUtil extends AbstractThird {
     /**
      * 魔蝎公积金第三方数据查询异步通知
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
      * @return
      */
     public int fundNotify(String code, String data, String msg, String signInfo) {
@@ -2025,8 +2015,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 魔蝎社保第三方数据查询异步通知
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param code --用户唯一标识
+     * @param msg   --用户名
      * @return
      */
     public int socialSecurityNotify(String code, String data, String msg, String signInfo) {
@@ -2080,8 +2070,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 魔蝎信用卡第三方数据查询异步通知
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param code --用户唯一标识
+     * @param msg   --用户名
      * @return
      */
     public int creditCardNotify(String code, String data, String msg, String signInfo) {
@@ -2137,8 +2127,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 魔蝎支付宝第三方数据查询异步通知
      *
-     * @param consumerNo --用户唯一标识
-     * @param userName   --用户名
+     * @param msg --用户唯一标识
+     * @param code   --用户名
      * @return
      */
     public int alipayNotify(String code, String data, String msg, String signInfo) {
@@ -2239,8 +2229,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 登录可信验证码
      *
-     * @param userName
-     * @param device
+     * @param consumerNo
+     * @param consumerNo
      * @return
      */
     public boolean verifySynLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
@@ -2336,13 +2326,13 @@ public class RiskUtil extends AbstractThird {
      * @param phone
      * @param blackBox
      * @param deviceUuid
-     * @param loginType
-     * @param loginTime
+     * @param registerTime
+     * @param registerTime
      * @param ip
      * @param phoneType
      * @param networkType
      * @param osType
-     * @param result
+     * @param registerTime
      * @param event
      */
     public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid, String registerTime,
@@ -2373,8 +2363,8 @@ public class RiskUtil extends AbstractThird {
     /**
      * 判断用户是否可以使用信用支付
      *
-     * @param riskCreditBo
-     * @param userName
+     * @param userId
+     * @param userId
      * @param orderNo
      * @return
      */

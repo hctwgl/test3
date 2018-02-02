@@ -149,7 +149,17 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			return new ApiHandleResponse(requestDataVo.getId(),
 					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+        try{
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+            if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
+                throw new FanbeiException(afResourceDo.getValue2(),true);
+            }
+        }catch (FanbeiException e){
+            throw e;
 
+        }catch (Exception e){
+            logger.error("enabled_type_borrow error",e);
+        }
         // 密码判断
         AfUserAccountDo accountDo = afUserAccountService
                 .getUserAccountByUserId(userId);

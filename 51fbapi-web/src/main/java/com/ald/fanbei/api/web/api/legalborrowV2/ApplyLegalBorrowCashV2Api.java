@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,6 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BeanUtil;
@@ -78,7 +75,17 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		Long userId = context.getUserId();
 		// 获取客户端请求参数
 		ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamObj();
+		try{
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+			if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(param.getType())){
+				throw new FanbeiException(afResourceDo.getValue2(),true);
+			}
+		}catch (FanbeiException e){
+			throw e;
 
+		}catch (Exception e){
+			logger.error("enabled_type_borrow error",e);
+		}
 		ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
 
 		BeanUtil.copyProperties(paramBo,param);

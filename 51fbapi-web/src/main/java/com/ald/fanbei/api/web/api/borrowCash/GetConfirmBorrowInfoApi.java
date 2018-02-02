@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
@@ -218,6 +219,17 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 																		// 服务费的计算
 																		// 去掉利息
 
+			try{
+				AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+				if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
+					throw new FanbeiException(afResourceDo.getValue2(),true);
+				}
+			}catch (FanbeiException e){
+				throw e;
+
+			}catch (Exception e){
+				logger.error("enabled_type_borrow error",e);
+			}
 			Integer day = NumberUtil.objToIntDefault(type, 0);
 
 			BigDecimal serviceAmount = serviceAmountDay.multiply(new BigDecimal(day));

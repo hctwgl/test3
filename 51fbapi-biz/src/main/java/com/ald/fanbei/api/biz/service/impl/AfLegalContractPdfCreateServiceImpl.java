@@ -214,7 +214,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
     }
 
     private void getResourceRate(Map map, String type,AfResourceDo afResourceDo,String borrowType) {
-        if (afResourceDo != null && afResourceDo.getValue2() != null){
+        if (afResourceDo != null && afResourceDo.getValue2() != null) {
             String oneDay = "";
             String twoDay = "";
             if(null != afResourceDo){
@@ -222,16 +222,16 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 twoDay = afResourceDo.getTypeDesc().split(",")[1];
             }
             JSONArray array = new JSONArray();
-            if ("instalment".equals(borrowType)){
+            if ("instalment".equals(borrowType)) {
                 array = JSONObject.parseArray(afResourceDo.getValue3());
                 for (int i = 0; i < array.size(); i++) {
                     JSONObject jsonObject = array.getJSONObject(i);
                     String consumeTag = jsonObject.get("consumeTag").toString();
-                    if ("INTEREST_RATE".equals(consumeTag)){//借款利率
-                        if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("consumeSecondType"));
+                    if ("INTEREST_RATE".equals(consumeTag)) {//借款利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("yearRate", jsonObject.get("consumeFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("yearRate", jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
                                 map.put("yearRate",jsonObject.get("consumeFirstType"));
@@ -240,11 +240,11 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             }
                         }
                     }
-                    if ("SERVICE_RATE".equals(consumeTag)){//手续费利率
-                        if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("consumeSecondType"));
+                    if ("SERVICE_RATE".equals(consumeTag)) {//手续费利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("poundageRate", jsonObject.get("consumeFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("poundageRate", jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
                                 map.put("poundageRate", jsonObject.get("consumeFirstType"));
@@ -253,11 +253,11 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             }
                         }
                     }
-                    if ("OVERDUE_RATE".equals(consumeTag)){//逾期利率
-                        if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("consumeSecondType"));
+                    if ("OVERDUE_RATE".equals(consumeTag)) {//逾期利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("overdueRate", jsonObject.get("consumeFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("overdueRate", jsonObject.get("consumeSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
                                 map.put("overdueRate", jsonObject.get("consumeFirstType"));
@@ -267,16 +267,16 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                         }
                     }
                 }
-            }else if ("borrow".equals(borrowType)){
+            } else if ("borrow".equals(borrowType)) {
                 array = JSONObject.parseArray(afResourceDo.getValue2());
                 for (int i = 0; i < array.size(); i++) {
                     JSONObject jsonObject = array.getJSONObject(i);
                     String borrowTag = jsonObject.get("borrowTag").toString();
-                    if ("INTEREST_RATE".equals(borrowTag)){//借款利率
-                        if ("SEVEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("yearRate",jsonObject.get("borrowSecondType"));
+                    if ("INTEREST_RATE".equals(borrowTag)) {//借款利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("yearRate", jsonObject.get("borrowFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("yearRate", jsonObject.get("borrowSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
                                 map.put("yearRate", jsonObject.get("borrowFirstType"));
@@ -285,11 +285,11 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             }
                         }
                     }
-                    if ("SERVICE_RATE".equals(borrowTag)){//手续费利率
-                        if ("SEVEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("poundageRate",jsonObject.get("borrowSecondType"));
+                    if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("poundageRate", jsonObject.get("borrowSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
                                 map.put("poundageRate", jsonObject.get("borrowFirstType"));
@@ -298,16 +298,16 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                             }
                         }
                     }
-                    if ("OVERDUE_RATE".equals(borrowTag)){//逾期利率
-                        if ("SEVEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowFirstType"));
-                        }else if ("FOURTEEN".equals(type)){
-                            map.put("overdueRate",jsonObject.get("borrowSecondType"));
+                    if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
+                        if ("SEVEN".equals(type)) {
+                            map.put("overdueRate", jsonObject.get("borrowFirstType"));
+                        } else if ("FOURTEEN".equals(type)) {
+                            map.put("overdueRate", jsonObject.get("borrowSecondType"));
                         }else if(numberWordFormat.isNumeric(type)){
                             if(oneDay.equals(type)){
-                                map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                                map.put("overdueRate", jsonObject.get("borrowFirstType"));
                             }else if(twoDay.equals(type)){
-                                map.put("poundageRate", jsonObject.get("borrowSecondType"));
+                                map.put("overdueRate", jsonObject.get("borrowSecondType"));
                             }
                         }
                     }
@@ -606,10 +606,12 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 map.put("time", time);// 签署日期
                 secondSeal(map,null,afUserDo, accountDo);
             }
+            String overdueRate = (String) map.get("overdueRate");
+            map.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
             long time = new Date().getTime();
 //            map.put("templatePath",src+"renewal"+".pdf");
             map.put("protocolCashType","4");
-            map.put("templatePath", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-01-29/18/platform.pdf");
+            map.put("templatePath", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-01-30/18/platform.pdf");
             map.put("PDFPath", src + accountDo.getUserName() + "platform" + time + 1 + ".pdf");
             map.put("userPath", src + accountDo.getUserName() + "platform" + time + 2 + ".pdf");
             map.put("selfPath", src + accountDo.getUserName() + "platform" + time + 3 + ".pdf");

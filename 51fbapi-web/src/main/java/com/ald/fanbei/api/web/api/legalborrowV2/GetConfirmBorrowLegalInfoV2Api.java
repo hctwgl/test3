@@ -79,7 +79,17 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		Long userId = context.getUserId();
 		
 		GetConfirmBorrowLegalInfoParam param =  (GetConfirmBorrowLegalInfoParam)requestDataVo.getParamObj();
-		
+		try{
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+			if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(param.getType())){
+				throw new FanbeiException(afResourceDo.getValue2(),true);
+			}
+		}catch (FanbeiException e){
+			throw e;
+
+		}catch (Exception e){
+			logger.error("enabled_type_borrow error",e);
+		}
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (StringUtils.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())&&StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
