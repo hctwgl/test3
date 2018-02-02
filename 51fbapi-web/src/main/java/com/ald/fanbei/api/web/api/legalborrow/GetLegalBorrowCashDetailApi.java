@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +64,8 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -102,7 +107,8 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (afBorrowCashDo.getGmtPlanRepayment() == null) {
-			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 			Date createEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtCreate());
 			Date repaymentDay = DateUtil.addDays(createEnd, day - 1);
 			afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -116,7 +122,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
 
-		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
+//		AfBorrowCashType borrowCashType = AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType());
 
 		data.put("gmtLastRepay", afBorrowCashDo.getGmtPlanRepayment());
 
@@ -125,7 +131,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 			data.put("renewalStatus", "P");
 		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
 			BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 			AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 			BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
@@ -153,7 +159,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 
 		}
 
-		data.put("type", borrowCashType.getCode());
+		data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 		data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
 		data.put("rejectReason", afBorrowCashDo.getReviewDetails());
 		data.put("serviceAmount", afBorrowCashDo.getPoundage());
@@ -168,7 +174,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		// 判断是否显示续借按钮
 		String renewalRate = rateInfoDo.getValue();
 
@@ -199,5 +205,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		return data;
 
 	}
+
+
 
 }

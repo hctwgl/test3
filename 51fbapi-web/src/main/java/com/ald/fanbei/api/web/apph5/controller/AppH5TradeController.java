@@ -1,34 +1,39 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author 沈铖 2017/7/14 下午3:14
@@ -47,6 +52,10 @@ public class AppH5TradeController extends BaseController {
     AfUserAuthService afUserAuthService;
     @Resource
     AfUserService afUserService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     @RequestMapping(value = "initTradeInfo", method = RequestMethod.GET)
     public void initTradeInfo(HttpServletRequest request, ModelMap model) {
@@ -85,6 +94,15 @@ public class AppH5TradeController extends BaseController {
         }
         AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
         AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+        String code = afTradeBusinessInfoService.getCodeById(afTradeBusinessInfoDo.getType());
+        model.put("scene", code);
+        //商圈认证
+        AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(account.getUserId(), code, YesNoStatus.YES.getCode());
+        if (afUserAuthStatusDo == null) {
+            auth.setRiskStatus(YesNoStatus.NO.getCode());
+        } else {
+            auth.setRiskStatus(afUserAuthStatusDo.getStatus());
+        }
         Integer status = getAuthStatus(auth, account, context.getAppVersion());
         model.put("isShowMention", status);
         if (status.equals(3)) {
@@ -95,10 +113,10 @@ public class AppH5TradeController extends BaseController {
         model.put("name", afTradeBusinessInfoDo.getName());
         model.put("id", afTradeBusinessInfoDo.getBusinessId());
         model.put("isLogin", "yes");
-        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
-        BigDecimal auAmount = afUserAccountDo.getAuAmount()==null?BigDecimal.ZERO:afUserAccountDo.getAuAmount();
-        BigDecimal usedAmount = afUserAccountDo.getUsedAmount()==null?BigDecimal.ZERO:afUserAccountDo.getUsedAmount();
-        BigDecimal freezeAmount = afUserAccountDo.getFreezeAmount()==null?BigDecimal.ZERO:afUserAccountDo.getFreezeAmount();
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(code, account.getUserId());
+        BigDecimal auAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getAuAmount();
+        BigDecimal usedAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getUsedAmount();
+        BigDecimal freezeAmount = afUserAccountSenceDo==null?BigDecimal.ZERO:afUserAccountSenceDo.getFreezeAmount();
         Double canUseAmount = BigDecimalUtil.subtract(auAmount, BigDecimalUtil.add(usedAmount, freezeAmount)).doubleValue();
         model.put("canUseAmount", canUseAmount);
 
@@ -168,4 +186,25 @@ public class AppH5TradeController extends BaseController {
         return status;
     }
 
+    @RequestMapping(value = {"CreditPromote"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getCreditPromote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "");
+        try {
+            FanbeiWebContext context = doWebCheck(request, true);
+
+            AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+            // 账户关联信息
+            AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(afUserDo.getRid());
+            AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(afUserDo.getRid());
+            Map<String, Object> data = afUserAuthService.getCreditPromoteInfo(afUserDo.getRid(), new Date(), userDto, authDo, context.getAppVersion(), UserAccountSceneType.TRAIN.getCode());
+            resp.setData(data);
+
+            return JsonUtil.toJSONString(resp);
+        } catch (Exception e) {
+            logger.error("CreditPromote", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return JsonUtil.toJSONString(resp);
+        }
+    }
 }

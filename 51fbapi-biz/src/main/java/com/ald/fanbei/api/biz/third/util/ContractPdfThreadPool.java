@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class ContractPdfThreadPool{
     protected static final Logger logger = LoggerFactory.getLogger(ContractPdfThreadPool.class);
     @Resource
     private AfContractPdfCreateService afContractPdfCreateService;
+    @Resource
+    private AfLegalContractPdfCreateService afLegalContractPdfCreateService;
     private int nThreads = Runtime.getRuntime().availableProcessors() ;
     private int maxThreads = Runtime.getRuntime().availableProcessors() * 2;
     private ExecutorService service;// 线程池
@@ -43,6 +46,10 @@ public class ContractPdfThreadPool{
     public void protocolInstalmentPdf(Long userId,Integer nper,BigDecimal amount,Long borrowId){
 //        ProtocolInstalmentTask protocolInstalmentTask = new ProtocolInstalmentTask(userId,nper,amount,borrowId);
 //        service.execute(protocolInstalmentTask);
+    }
+    public void PlatformServiceProtocolPdf(Long platformBorrowId,String platformType,BigDecimal platformPoundage,Long userId){
+        PlatformServiceProtocolTask platformServiceProtocolTask = new PlatformServiceProtocolTask(platformBorrowId,platformType,platformPoundage,userId);
+        service.execute(platformServiceProtocolTask);
     }
 
     class ProtocolCashLoanTask implements Runnable {
@@ -74,6 +81,23 @@ public class ContractPdfThreadPool{
         @Override
         public void run() {
             afContractPdfCreateService.protocolInstalment(userId, nper, amount, borrowId);
+        }
+    }
+
+    class PlatformServiceProtocolTask implements Runnable {
+        private Long borrowId;
+        private String type;
+        private BigDecimal poundage;
+        private Long userId;
+        public PlatformServiceProtocolTask(Long platformBorrowId,String platformType,BigDecimal platformPoundage,Long uId) {
+            borrowId = platformBorrowId;
+            type = platformType;
+            poundage = platformPoundage;
+            userId = uId;
+        }
+        @Override
+        public void run() {
+            afLegalContractPdfCreateService.platformServiceProtocol(borrowId, type, poundage, userId);
         }
     }
 

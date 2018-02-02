@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
@@ -74,6 +76,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	@Resource
 	AfUserCouponService afUserCouponService;
 
+	@Resource
+	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
@@ -154,7 +158,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			// 可以借钱
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+			if (StringUtils.equals(amountStr, "") || !(numberWordFormat.isNumeric(type))) {
 				// 推送处理
 				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
@@ -216,6 +220,17 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 																		// 服务费的计算
 																		// 去掉利息
 
+			try{
+				AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+				if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
+					throw new FanbeiException(afResourceDo.getValue2(),true);
+				}
+			}catch (FanbeiException e){
+				throw e;
+
+			}catch (Exception e){
+				logger.error("enabled_type_borrow error",e);
+			}
 			Integer day = NumberUtil.objToIntDefault(type, 0);
 
 			BigDecimal serviceAmount = serviceAmountDay.multiply(new BigDecimal(day));

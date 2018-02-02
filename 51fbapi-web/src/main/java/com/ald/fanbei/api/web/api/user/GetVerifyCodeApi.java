@@ -52,6 +52,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String typeParam = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(typeParam)) {
 			logger.error("verifyCode or type is empty mobile = " + mobile + " type = " + typeParam);

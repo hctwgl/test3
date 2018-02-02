@@ -120,8 +120,8 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		//获取续期天数
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		
 		//上一笔订单记录
 		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
@@ -137,7 +137,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		BigDecimal capital =BigDecimal.ZERO;
 		
 		//续借需还本金比例
-		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal renewalCapitalRate = (new BigDecimal(capitalRateResource.getValue())).divide(new BigDecimal(100));// 续借需还本金比例
 		//续借需要支付本金 = 借款金额 * 续借需还本金比例
 		capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
