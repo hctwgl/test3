@@ -146,11 +146,9 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-			String bqsBlackBox = request.getParameter("bqsBlackBox");
 			data.put("ipAddress", CommonUtil.getIpAddr(request));
-			data.put("appName",appName);
-			data.put("bqsBlackBox",bqsBlackBox);
-			data.put("blackBox",request.getParameter("blackBox"));
+			data.put("appName",appName);data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 			Object poundageRateCash = getUserPoundageRate(userId,data);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
