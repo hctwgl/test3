@@ -3,25 +3,25 @@ package com.ald.fanbei.api.dal.domain.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class BoluomeAirplaneDto {
     private Integer canCancel;
     private String channel;
-    private BoluomeAirplaneContactDto contactor;
     private Integer count;
     private String displayStatus;
-    private List<BoluomeAirplaneFlightDto> flights;
-    private String id;
+    @JSONField(name="id")
+    private String third_order_no;
     private String name;
     private BigDecimal orderPrice;
     private String orderType;
-
-    private List<BoluomeAirplanePassengerDto> passengers;
-
-    private List<String> paymentSerialList;
     private BigDecimal price;
     private Integer status;
     private String userId;
     private String userPhone;
+    private BoluomeAirplaneContactDto contactor;
+    private List<BoluomeAirplaneFlightDto> flights;
+    private List<BoluomeAirplanePassengerDto> passengers;
 
     public Integer getCanCancel() {
 	return canCancel;
@@ -111,14 +111,6 @@ public class BoluomeAirplaneDto {
 	this.passengers = passengers;
     }
 
-    public List<String> getPaymentSerialList() {
-	return paymentSerialList;
-    }
-
-    public void setPaymentSerialList(List<String> paymentSerialList) {
-	this.paymentSerialList = paymentSerialList;
-    }
-
     public BigDecimal getPrice() {
 	return price;
     }
@@ -153,7 +145,7 @@ public class BoluomeAirplaneDto {
 
     @Override
     public String toString() {
-	return "BoluomeAirplaneDto [canCancel=" + canCancel + ", channel=" + channel + ", contactor=" + contactor + ", count=" + count + ", displayStatus=" + displayStatus + ", flights=" + flights + ", id=" + id + ", name=" + name + ", orderPrice=" + orderPrice + ", orderType=" + orderType + ", passengers=" + passengers + ", paymentSerialList=" + paymentSerialList + ", price=" + price + ", status=" + status + ", userId=" + userId + ", userPhone=" + userPhone + "]";
+	return "BoluomeAirplaneDto [canCancel=" + canCancel + ", channel=" + channel + ", contactor=" + contactor + ", count=" + count + ", displayStatus=" + displayStatus + ", flights=" + flights + ", id=" + id + ", name=" + name + ", orderPrice=" + orderPrice + ", orderType=" + orderType + ", passengers=" + passengers + ", price=" + price + ", status=" + status + ", userId=" + userId + ", userPhone=" + userPhone + "]";
     }
 
 }
