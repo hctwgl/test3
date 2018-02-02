@@ -120,6 +120,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
+        if (context.getAppVersion() < 390) {
+            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        }
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
