@@ -124,13 +124,19 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}else{
 			data.put("gmtMobileExist", YesNoStatus.NO.getCode());
 		}
-		
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
 		data.put("contactorModel", contactorModel);
 		data.put("realNameStatus", authDo.getRealnameStatus());
 		data.put("bankCardStatus", authDo.getBankcardStatus());
+		data.put("onlinebankStatus", authDo.getOnlinebankStatus());
+		//添加是否已发起过网银认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtOnlinebank() != null) {
+			data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtOnlinebankExist", YesNoStatus.NO.getCode());
+		}
 		// 3.6.7是否显示运营图片
 //		if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())){
 //			data.put("isShowImage", "N");
