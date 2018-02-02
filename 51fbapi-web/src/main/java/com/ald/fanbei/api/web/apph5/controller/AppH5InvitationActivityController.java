@@ -649,17 +649,29 @@ public class AppH5InvitationActivityController extends BaseController {
 	      	    onlineTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
 	      	   bizCacheUtil.saveObject("recommend:activity:newbie_onlinetime", onlineTime, Constants.SECOND_OF_TEN_MINITS);
 	      	 }
+	      	
+		
+		AfResourceDo oneYuanOnlineTime = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:oneyuan_onlinetime");
+	      	if (oneYuanOnlineTime == null) {
+	      	  //并且加入redis
+	      	    oneYuanOnlineTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+	      	   bizCacheUtil.saveObject("recommend:activity:oneyuan_onlinetime", onlineTime, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	      	
 	        String activityTime = "";
 	        if(onlineTime != null){
 	            activityTime = onlineTime.getValue();
 	        }
-	        
+	        String oneYuanTime = "";
+	        if(oneYuanOnlineTime != null){
+	            oneYuanTime = oneYuanOnlineTime.getValue();
+	        }
 	        
 	  	
 	        
 	        //是否点外卖
 	        int firstOrder = 1;
-	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
+	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder,oneYuanTime);
 	        //活动之前是否点过外卖
 	        NewbieTaskVo newbieTaskForFood  = new NewbieTaskVo();
 	         newbieTaskForFood =  assignment(foodResource,rebateCount);

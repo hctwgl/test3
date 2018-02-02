@@ -362,9 +362,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	}
 
 	@Override
-	public int getCountByUserIdAndFirstOrder(Long userId, int firstOrder) {
+	public int getCountByUserIdAndFirstOrder(Long userId, int firstOrder,String oneYuanTime) {
 	    // TODO Auto-generated method stub
-	    	return afBoluomeRebateDao.getCountByUserIdAndFirstOrder(userId,firstOrder);
+	    	return afBoluomeRebateDao.getCountByUserIdAndFirstOrder(userId,firstOrder,oneYuanTime);
 	}
 
 

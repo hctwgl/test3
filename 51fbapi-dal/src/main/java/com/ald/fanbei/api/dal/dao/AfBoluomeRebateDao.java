@@ -41,7 +41,7 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(@Param("startId")Long startId,@Param("endId") Long endId,@Param("userId") Long userId);
 
-	int getCountByUserIdAndFirstOrder(@Param("userId")Long userId,@Param("firstOrder") int firstOrder);
+	int getCountByUserIdAndFirstOrder(@Param("userId")Long userId,@Param("firstOrder") int firstOrder,@Param("oneYuanTime") String oneYuanTime);
 
 
 	int checkOrderTimes(@Param("userId")Long userId,@Param("activityTime") String activityTime);

@@ -198,7 +198,7 @@ public class APPH5GgActivityController extends BaseController {
 					AfOrderDo order = new AfOrderDo();
 					order.setUserId(uDo.getUserId());
 					int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-					logger.info("/h5GgActivity/returnCoupon queryCount = {},userId = {}",queryCount,userId);
+					logger.info("/h5GgActivity/returnCoupon queryCount = {}"+queryCount+",userId = {}"+userId);
 					if (queryCount <= 0) {
 						returnCouponVo.setStatus(H5GgActivity.NO_CONSUME.getDescription());
 					}
@@ -207,7 +207,7 @@ public class APPH5GgActivityController extends BaseController {
 						orderStatus.setUserId(uDo.getUserId());
 						orderStatus.setOrderStatus("FINISHED");
 						int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
-						logger.info("/h5GgActivity/returnCoupon orderCount = {},userId = {}",orderCount,userId);
+						logger.info("/h5GgActivity/returnCoupon orderCount = {}"+orderCount+",userId = {}"+userId);
 						if (orderCount <= 0) {
 							returnCouponVo.setStatus(H5GgActivity.NO_FINISH.getDescription());
 						} else {
@@ -220,7 +220,7 @@ public class APPH5GgActivityController extends BaseController {
 
 							AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
 									.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
-							logger.info("/h5GgActivity/returnCoupon userCoupon = {},userId = {}",userCoupon,userId);
+							logger.info("/h5GgActivity/returnCoupon userCoupon = {}"+userCoupon+",userId = {}"+userId);
 							if (userCoupon != null) {
 								long couponId = userCoupon.getCouponId();
 								//AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
@@ -230,7 +230,7 @@ public class APPH5GgActivityController extends BaseController {
 								// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
 								try {
 									AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
-									logger.info("/h5GgActivity/returnCoupon afResourceDo = {},couponId = {}",userCoupon,couponId);
+									logger.info("/h5GgActivity/returnCoupon afResourceDo = {},"+userCoupon+"couponId = {}"+couponId);
 									if (afResourceDo != null) {
 										BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
 										returnCouponVo.setReward(money + "元外卖券");

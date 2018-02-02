@@ -32,7 +32,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId);
 
-	int getCountByUserIdAndFirstOrder(Long userId, int firstOrder);
+	int getCountByUserIdAndFirstOrder(Long userId, int firstOrder, String oneYuanTime);
 
 	List<AfBoluomeRebateDo> getListByUserId(Long userId, String startTime);
 
