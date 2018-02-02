@@ -738,7 +738,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping);
 	        if(newbieTaskForFirstShopShopping !=null){
         	         if(firstShopping == 1){
-        	             newbieTaskForFirstShopShopping.setTitle("商城购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
+        	             newbieTaskForFirstShopShopping.setTitle("商城首次购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
         	         }
         	         newbieTaskList.add(newbieTaskForFirstShopShopping);
 	       }

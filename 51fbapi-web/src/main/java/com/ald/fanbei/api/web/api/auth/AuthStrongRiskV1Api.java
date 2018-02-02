@@ -325,7 +325,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	 				// 发放优惠劵工作
 	 				// creditRebateMsg = getCreditAuthMsg(context,
 	 				// creditRebateMsg);
-
+	 			         logger.info("processRishComplete userId = " + userId);
 	 				 couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 	 				// 随机发放奖品
 	 				try {
