@@ -389,7 +389,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
 		for(AfLoanProductDo prdDo : prdDos) {
 			LoanHomeInfoBo bo = new LoanHomeInfoBo();
-			bo.isLogin = true;
 			
 			String prdType = prdDo.getPrdType();
 			
@@ -471,7 +470,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		for(AfLoanProductDo prdDo : prdDos) {
 			LoanHomeInfoBo bo = new LoanHomeInfoBo();
 			bo.rejectCode = AfLoanRejectType.PASS.name();
-			bo.isLogin = false;
 
 			bo.loanRates = afLoanProductService.listByPrdType(prdDo.getPrdType());
 			bo.maxQuota = prdDo.getMaxAmount();
