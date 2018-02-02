@@ -1,24 +1,23 @@
 package com.ald.fanbei.api.common.enums;
 
-public enum SceneType {
+public enum WeakRiskSceneType {
 
-    ONLINE("ONLINE", "21","线上分期"),
-    TRAIN("TRAIN", "22","线下培训"),
-    CASH("CASH", "20","现金"),
-    BLD_LOAN("BLD_LOAN","23","白领贷");
+    ONLINE("ONLINE", "40","线上分期"),
+    CASH("CASH", "50","现金"),
+    BLD_LOAN("BLD_LOAN","140","白领贷");
 
     private String code;
     private String name;
     private String description;
 
-    SceneType(String name,String code,String description) {
+    WeakRiskSceneType(String name,String code,String description) {
         this.code = code;
         this.name = name;
         this.description = description;
     }
 
-    public static SceneType findSceneTypeByCode(String code) {
-        for (SceneType cceneType : SceneType.values()) {
+    public static WeakRiskSceneType findSceneTypeByCode(String code) {
+        for (WeakRiskSceneType cceneType : WeakRiskSceneType.values()) {
             if (cceneType.getCode().equals(code)) {
                 return cceneType;
             }

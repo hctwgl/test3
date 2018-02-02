@@ -10,6 +10,9 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import java.util.Map;
+
 import org.dbunit.util.Base64;
 
 /**
@@ -19,11 +22,13 @@ import org.dbunit.util.Base64;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 
-public class RiskStrongV1 extends RiskRegisterStrongReqBo {
+public class DredgeWhiteCollarLoan extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
-
-	public RiskStrongV1(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene) {
+	Map<String,Object> extUserInfo;
+	
+	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
 		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene);
+		this.extUserInfo = extUserInfo;
 	}
 
 	@Override
@@ -44,6 +49,8 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		userInfo.put("phone", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));
 		userInfo.put("idNo", RSAUtil.encrypt(PRIVATE_KEY, accountDo.getIdNumber()));
 		userInfo.put("email", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getEmail()));
+		userInfo.putAll(extUserInfo);
+		
 		setUserInfo(JSON.toJSONString(userInfo));
 
 		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
@@ -63,7 +70,7 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 			setLinkManInfo(JSON.toJSONString(linkManInfo));
 		}
 
-		String notifyUrl = "/third/risk/registerStrongRiskV1";
+		String notifyUrl = "/third/risk/dredgeWhiteCollarLoan";
 		JSONObject riskInfo = new JSONObject();
 		riskInfo.put("channel", CHANNEL);
 		riskInfo.put("scene", riskScene);

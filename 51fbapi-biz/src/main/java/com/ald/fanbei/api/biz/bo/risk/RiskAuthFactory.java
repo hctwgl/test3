@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.bo.risk;
 
+import java.util.Map;
+
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -68,5 +70,32 @@ public class RiskAuthFactory {
 			return new RiskReauthV1(consumerNo, event, riskOrderNo, appName, ipAddress, blackBox, cardNum, CHANNEL, notifyHost,bqsBlackBox,riskScene);
 		}
 		return null;
+	}
+	
+	
+	/**
+	 * 3.9.7认证流程兼容新老版本
+	 * @param consumerNo
+	 * @param event
+	 * @param riskOrderNo
+	 * @param afUserDo
+	 * @param afUserAuthDo
+	 * @param appName
+	 * @param ipAddress
+	 * @param accountDo
+	 * @param blackBox
+	 * @param cardNum
+	 * @param CHANNEL
+	 * @param PRIVATE_KEY
+	 * @param directory
+	 * @param notifyHost
+	 * @param extUserInfo 
+	 * @return
+	 */
+	public static RiskRegisterStrongReqBo createDredgeWhiteCollarLoanBo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
+													   String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
+		
+		return new DredgeWhiteCollarLoan(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo);
+		
 	}
 }
