@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.dto.BoluomeAirplaneContactDto;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -99,6 +100,8 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      */
     private String contactorPhone;
 
+    private BoluomeAirplaneContactDto contactor;
+    
     private List<AfBoluomeJipiaoPassengerDo> passengers;
     private List<AfBoluomeJipiaoFlightDo> flights;
 
@@ -405,6 +408,17 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      */
     public void setContactorPhone(String contactorPhone) {
 	this.contactorPhone = contactorPhone;
+    }
+    
+    public BoluomeAirplaneContactDto getContactor() {
+        return contactor;
+    }
+
+    public void setContactor(BoluomeAirplaneContactDto contactor) {
+        this.contactor = contactor;
+
+        this.contactorName = contactor.getName();
+        this.contactorPhone = contactor.getPhone();
     }
 
     public List<AfBoluomeJipiaoPassengerDo> getPassengers() {
