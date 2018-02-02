@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -73,6 +74,8 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
 
     @Resource
     YiBaoUtility yiBaoUtility;
+    @Resource
+    RiskUtil riskUtil;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -149,10 +152,12 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
             BigDecimal capital =BigDecimal.ZERO;
 
             //续借需还本金比例
-            AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-    		BigDecimal renewalCapitalRate = (new BigDecimal(capitalRateResource.getValue())).divide(new BigDecimal(100));// 续借需还本金比例
+            AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
+    		/*BigDecimal renewalCapitalRate = (new BigDecimal(capitalRateResource.getValue())).divide(new BigDecimal(100));// 续借需还本金比例
             capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-       
+       */
+            JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",afBorrowCashDo.getAmount());
+            capital = new BigDecimal(response.getJSONObject("data").getString("money"));
     		// 上期借款手续费
     		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
     		// 上期借款利息

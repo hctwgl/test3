@@ -18,22 +18,24 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	private String pwd;
 	@NotNull
-	@Pattern(regexp = "(7|14)")
+	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	private String type;
 	@NotNull
 	private BigDecimal latitude;
 	@NotNull
 	private BigDecimal longitude;
-	@NotNull
+	
 	private String province;
-	@NotNull
+	
 	private String city;
-	@NotNull
+	
 	private String county;
 	@NotNull
 	private String address;
 	@NotNull
 	private String blackBox;
+	@NotNull
+	private String bqsBlackBox;
 	@NotNull
 	private String borrowRemark;
 	@NotNull
@@ -160,5 +162,13 @@ public class ApplyLegalBorrowCashParam {
 	}
 	public void setDeliveryPhone(String deliveryPhone) {
 		this.deliveryPhone = deliveryPhone;
+	}
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		this.bqsBlackBox = bqsBlackBox;
 	}
 }

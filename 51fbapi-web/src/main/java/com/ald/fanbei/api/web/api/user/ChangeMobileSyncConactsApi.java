@@ -111,13 +111,13 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 				}else {
 					// 更新通讯录 DIRECTORY
 					bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + uidStr, contacts, Constants.SECOND_OF_ONE_DAY);
-					RiskRespBo riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.DIRECTORY.name(), null, null, "", "", null, "", "", "");
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.DIRECTORY.name(), null, null, "", "", null, "", "", "","");
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_SYNC_CONTACTS_ERROR);
 					}
 					
 					// 更新用户信息 USER
-					riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "","");
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}

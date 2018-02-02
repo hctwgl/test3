@@ -83,6 +83,10 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 	}
 
 	@Override
+	public BigDecimal calculateRestAmount(long borrowid) {
+		return afBorrowLegalOrderCashDao.calculateRestAmount(borrowid);
+	}
+	@Override
 	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
 		if(cashDo != null) {

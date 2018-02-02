@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -45,6 +46,8 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
@@ -87,7 +90,7 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 				}
 				afBorrowLegalOrderDeatilVo.setReturnAmount(returnAmount);
 				afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
-				afBorrowLegalOrderDeatilVo.setType(afBorrowLegalOrderCashDo.getType());
+				afBorrowLegalOrderDeatilVo.setType(String.valueOf(numberWordFormat.borrowTime(afBorrowLegalOrderCashDo.getType())));
 				afBorrowLegalOrderDeatilVo.setPoundageAmount(sumRepaidPoundage.add(poundageAmount));
 				afBorrowLegalOrderDeatilVo.setInterestAmount(sumRepaidInterest.add(interestAmount));
 				afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());

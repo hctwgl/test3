@@ -92,5 +92,11 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
+	@Override
+	public String toString() {
+		return "AfCouponCategoryDo [id=" + id + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified
+				+ ", creator=" + creator + ", modifier=" + modifier + ", isDelete=" + isDelete + ", name=" + name
+				+ ", coupons=" + coupons + ", url=" + url + ", tag=" + tag + ", type=" + type + "]";
+	}
 	
 }

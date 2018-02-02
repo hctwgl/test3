@@ -123,6 +123,14 @@ public interface AfBorrowBillDao {
 	 */
 	public AfBorrowBillDo getBillAmountByIds(@Param("ids") List<String> ids);
 
+	/**
+	 * 获取培训账单金额,本金总额
+	 *
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillTrainAmountByIds(@Param("ids") List<String> ids);
+
 	AfBorrowBillDo getBillHouseAmountByIds(@Param("ids") List<String> ids);
 
 	/**
@@ -242,6 +250,15 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int getSumOverdueCountByBorrowId(@Param("borrowId") Long borrowId);
+	
+	/**
+	 * 根据借款ID获取该借款账单的最大逾期时间
+	 * @author gaojb
+	 * @Time 2018年1月5日 下午2:12:16
+	 * @param borrowId
+	 * @return
+	 */
+	int getMaxOverdueCountByBorrowId(@Param("borrowId") Long borrowId);
 	
 	/**
 	 * 根据借款id找出逾期未还且逾期天数最大的借款ID
@@ -458,4 +475,11 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 获取当前用户还款中的数量
+	 * @param userId
+	 * @return
+	 */
+	int getOnRepaymentCountByUserId(@Param("userId")Long userId);
 }

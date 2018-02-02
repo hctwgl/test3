@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
-import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.ibatis.annotations.Param;
@@ -22,8 +22,6 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
@@ -31,6 +29,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 
@@ -52,6 +51,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	@Resource
     TransactionTemplate transactionTemplate;
+
+	@Resource
+	AfUserSeedDao afUserSeedDao;
 
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
@@ -389,8 +391,11 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 				}else{
 					needPlusFree = true;
 				}
-
-
+				//种子用户不减免手续费
+				AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
+				if(afUserSeedDo != null){
+					needPlusFree = false;
+				}
 				BigDecimal amount = needPlusFree? allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getPrincipleAmount()):allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount());
 				allBarlyClearanceBo.setAmount(amount);
 				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
@@ -645,4 +650,15 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getBillIdListByQuery(query);
 	}
+
+	@Override
+	public int getOnRepaymentCountByUserId(Long userId) {
+		return afBorrowBillDao.getOnRepaymentCountByUserId(userId);
+	}
+
+	@Override
+        public int getMaxOverdueCountByBorrowId(Long borrowId) {
+    
+    		return afBorrowBillDao.getMaxOverdueCountByBorrowId(borrowId);
+        }
 }

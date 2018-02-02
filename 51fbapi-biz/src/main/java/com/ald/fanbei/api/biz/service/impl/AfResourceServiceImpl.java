@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -231,6 +234,12 @@ public class AfResourceServiceImpl implements AfResourceService {
         List<AfResourceDo> list = afResourceDao.selectBorrowHomeConfigByAllTypes();
 //			bizCacheUtil.saveObjectList(CacheConstants.RESOURCE.RESOURCE_BORROW_CONFIG_LIST.getCode(), list);
 //		}
+        return list;
+    }
+
+    @Override
+    public List<AfResourceDo> newSelectBorrowHomeConfigByAllTypes() {
+        List<AfResourceDo> list = afResourceDao.newSelectBorrowHomeConfigByAllTypes();
         return list;
     }
 
@@ -502,6 +511,19 @@ public class AfResourceServiceImpl implements AfResourceService {
         return afResourceDo;
     }
 
+    public String getAfResourceAppVesionV1() {
+        String afResource = (String) bizCacheUtil.getObject("check_app_versionV1");
+        if(afResource == null){
+            List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_versionV1");
+            if (list != null && list.size() > 0) {
+                AfResourceDo afResourceDo = list.get(0);
+                afResource = afResourceDo.getValue();
+                bizCacheUtil.saveObjectForever("check_app_versionV1", afResource);
+            }
+        }
+        return afResource;
+    }
+
 	/**
 	 * 获取第三方支付通道
 	 * @param thirdPayTypeEnum
@@ -649,6 +671,17 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getFinancialEntranceInfo();
 	}
 
+    public AfResourceDo getWechatConfig() {
+	// 获取配置信息
+	String resourceType = "ACCESSTOKEN";
+	String resourceSecType = "WX";
+	String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+	    resourceType = "ACCESSTOKEN_PRE";
+	    resourceSecType = "WX_PRE";
+	}
+	return afResourceDao.getConfigByTypesAndSecType(resourceType, resourceSecType);
+    }
 
 	@Override
 	public AfResourceDo getConfigByTypesAndValue(String type, String value) {

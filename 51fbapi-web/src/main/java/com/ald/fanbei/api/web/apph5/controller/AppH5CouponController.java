@@ -194,7 +194,7 @@ public class AppH5CouponController extends BaseController {
 							if (afResourceDo != null) {
 								List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
 										.getActivityCouponList(afResourceDo.getValue());
-
+								if(activityCouponList !=null && activityCouponList.size() >0){
 								for (BrandActivityCouponResponseBo brandActivityCouponResponseBo : activityCouponList) {
 									if (brandActivityCouponResponseBo.getType().equals(1)) {
 										couponInfoMap.put("type", "FULLVOUCHER");
@@ -259,6 +259,7 @@ public class AppH5CouponController extends BaseController {
 									allCouponInfoList.add(new HashMap<String, Object>(couponInfoMap));
 
 								}
+							    }
 							}
 						}
 

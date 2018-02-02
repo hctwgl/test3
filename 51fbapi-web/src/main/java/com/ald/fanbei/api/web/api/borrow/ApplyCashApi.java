@@ -61,6 +61,7 @@ public class ApplyCashApi implements ApiHandle {
 		BigDecimal money = NumberUtil
 				.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("money")), BigDecimal.ZERO);
 //		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+				String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 
 		Long userId = context.getUserId();
 		logger.info("userId=" + userId + ",money=" + money);
