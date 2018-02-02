@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
 
+import java.util.List;
 
 
 /**
@@ -39,4 +43,18 @@ public class AfLoanProductServiceImpl extends ParentServiceImpl<AfLoanProductDo,
 	public String getNameByPrdType(String prdType) {
 		return afLoanProductDao.getNameByPrdType(prdType);
 	}
+
+	@Override
+	public AfLoanRateDo getByPrdTypeAndNper(String prdType,String nper) {
+		AfLoanProductDo productDo = afLoanProductDao.getByPrdType(prdType);
+		String conf = productDo.getConf();
+		List<AfLoanRateDo> list = JSONArray.parseArray(conf, AfLoanRateDo.class);
+		for (AfLoanRateDo rate:list) {
+			if (nper.equals(rate.getBorrowTag())){
+				return rate;
+			}
+		}
+		return null;
+	}
+
 }
