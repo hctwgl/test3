@@ -26,8 +26,8 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.ald.fanbei.api.web.vo.AfLoanPeriodsVo;
-import com.alibaba.fastjson.JSON;
 
 /**
  * @Description: 白领贷还款计划
@@ -35,6 +35,7 @@ import com.alibaba.fastjson.JSON;
  * @author yanghailong
  * @date 2018年1月22日
  */
+@NeedLogin
 @Component("loanRepayPlanApi")
 public class LoanRepayPlanApi implements H5Handle {
 
@@ -82,6 +83,9 @@ public class LoanRepayPlanApi implements H5Handle {
 				throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_NOT_EXIST_ERROR);
 			}
 			
+			BigDecimal allRestAmount = BigDecimal.ZERO;
+			BigDecimal allActualAmount = BigDecimal.ZERO;
+			
 			for (AfLoanPeriodsDo loanPeriodsDo : loanPeriods) {
 				// 每期待还金额(本金+手续费+利息+逾期费)
 				BigDecimal perPeriodAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),loanPeriodsDo.getServiceFee(),
@@ -91,6 +95,7 @@ public class LoanRepayPlanApi implements H5Handle {
 				loanPeriodsVo.setLoanPeriodsId(loanPeriodsDo.getRid());	// 借款期数id
 				loanPeriodsVo.setNper(loanPeriodsDo.getNper());		// 期数
 				loanPeriodsVo.setPerAmount(perPeriodAmount);		// 每期还款金额
+				loanPeriodsVo.setRestAmount(afLoanPeriodsService.calcuRestAmount(loanPeriodsDo));
 				loanPeriodsVo.setServiceFee(loanPeriodsDo.getServiceFee());		// 手续费
 				loanPeriodsVo.setInterestFee(loanPeriodsDo.getInterestFee());	// 利息
 				loanPeriodsVo.setOverdueAmount(loanPeriodsDo.getOverdueAmount());	// 逾期费
@@ -107,6 +112,11 @@ public class LoanRepayPlanApi implements H5Handle {
 					if(loanPeriodsDo.getOverdueStatus().equals("Y")){	// 未还款已逾期
 						loanPeriodsVo.setStatus("O");
 					}
+					
+					allRestAmount = allRestAmount.add(perPeriodAmount);
+					if(!afLoanRepaymentService.canRepay(loanPeriodsDo)) { 
+						allActualAmount = allActualAmount.add(loanPeriodsDo.getAmount()); //未出账的期 只用还本金
+					}
 				}else if(status.equals(AfLoanPeriodStatus.REPAYING.name())){	// 还款中
 					loanPeriodsVo.setStatus("D");
 				}else if(status.equals(AfLoanPeriodStatus.FINISHED.name())){	// 已结清
@@ -115,8 +125,12 @@ public class LoanRepayPlanApi implements H5Handle {
 				
 				data.add(loanPeriodsVo);
 			}
+			resp.addResponseData("loanPeriods", data);
 			
-			resp.setResponseData(data);
+			resp.addResponseData("allRestAmount", allRestAmount);
+			resp.addResponseData("allActualAmount", allActualAmount);
+			resp.addResponseData("allDerateAmount", allRestAmount.subtract(allActualAmount));
+			resp.addResponseData("rebateAmount", afUserAccountService.getUserAccountByUserId(context.getUserId()).getRebateAmount());
 			
 		} catch (Exception e) {
 			logger.error("/loanRepayPlanApi error = {}", e.getStackTrace());

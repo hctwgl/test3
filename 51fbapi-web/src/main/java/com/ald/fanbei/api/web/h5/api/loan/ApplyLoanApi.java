@@ -36,7 +36,7 @@ public class ApplyLoanApi implements H5Handle {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		
 		ApplyLoanBo bo = new ApplyLoanBo();
-		copyFields((ApplyLoanParam)context.getParamEntity(), bo);
+		map((ApplyLoanParam)context.getParamEntity(), bo);
 		
 		bo.reqParam.ip = context.getClientIp();
 		String reqId = context.getId();
@@ -53,7 +53,7 @@ public class ApplyLoanApi implements H5Handle {
 		return resp;
 	}
 	
-	public void copyFields(ApplyLoanParam p, ApplyLoanBo bo) {
+	public void map(ApplyLoanParam p, ApplyLoanBo bo) {
 		ReqParam rp = bo.reqParam;
 		rp.amount = p.amount;
 		rp.prdType = p.prdType;

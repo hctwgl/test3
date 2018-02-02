@@ -22,6 +22,7 @@ public class AfLoanPeriodsVo extends AbstractSerial {
 	private BigDecimal interestFee;	// 利息
 	private BigDecimal overdueAmount;	// 逾期费
 	private BigDecimal perAmount;	// 每期还款金额
+	private BigDecimal restAmount;	// 每期剩余应还金额
 	
 	public Long getLoanPeriodsId() {
 		return loanPeriodsId;
@@ -70,5 +71,11 @@ public class AfLoanPeriodsVo extends AbstractSerial {
 	}
 	public void setPerAmount(BigDecimal perAmount) {
 		this.perAmount = perAmount;
+	}
+	public BigDecimal getRestAmount() {
+		return restAmount;
+	}
+	public void setRestAmount(BigDecimal restAmount) {
+		this.restAmount = restAmount;
 	}
 }

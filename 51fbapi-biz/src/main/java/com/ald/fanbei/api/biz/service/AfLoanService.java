@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
-import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 
@@ -46,14 +45,6 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	 * @param tradeNoOut
 	 */
 	void dealLoanFail(Long loanId, String tradeNoOut, String msgOut);
-	
-	/**
-	 * 获取数据库中配置有关贷款的全部配置信息
-	 * @param prdType 对应product表中的prdType字段值
-	 * @param periods 还款期数
-	 * @return
-	 */
-	LoanDBCfgBo getDBCfg(String prdType, int periods);
 	
 	/**
 	 * 获取用户白领贷分层日利率,缓存1小时
