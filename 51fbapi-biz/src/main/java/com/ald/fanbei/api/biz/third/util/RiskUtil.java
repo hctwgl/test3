@@ -3345,4 +3345,38 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
+
+    /**
+     * 网银通知推送
+     * @param code
+     * @param data
+     * @param msg
+     * @param signInfo
+     * @return
+     */
+    public int onlinebankNotify(String code, String data, String msg, String signInfo) {
+        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+        reqBo.setCode(code);
+        reqBo.setData(data);
+        reqBo.setMsg(msg);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        logger.info(createLinkString(reqBo));
+        logThird(signInfo, "onlinebankNotify", reqBo);
+        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+            logger.info("onlinebankNotify process user account");
+            AfUserAuthDo auth = new AfUserAuthDo();
+            JSONObject obj = JSON.parseObject(data);
+            String consumerNo = obj.getString("consumerNo");
+            String result = obj.getString("result");
+            auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+            auth.setGmtOnlinebank(new Date(System.currentTimeMillis()));
+            if (StringUtil.equals("10", result)) {
+                auth.setOnlinebankStatus(YesNoStatus.YES.getCode());
+            } else {
+                auth.setOnlinebankStatus(YesNoStatus.NO.getCode());
+            }
+            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
 }
