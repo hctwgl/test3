@@ -71,14 +71,6 @@ public class BoluomeAirplaneDto {
 	this.flights = flights;
     }
 
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
-
     public String getName() {
 	return name;
     }
@@ -145,7 +137,7 @@ public class BoluomeAirplaneDto {
 
     @Override
     public String toString() {
-	return "BoluomeAirplaneDto [canCancel=" + canCancel + ", channel=" + channel + ", contactor=" + contactor + ", count=" + count + ", displayStatus=" + displayStatus + ", flights=" + flights + ", id=" + id + ", name=" + name + ", orderPrice=" + orderPrice + ", orderType=" + orderType + ", passengers=" + passengers + ", price=" + price + ", status=" + status + ", userId=" + userId + ", userPhone=" + userPhone + "]";
+	return "BoluomeAirplaneDto [canCancel=" + canCancel + ", channel=" + channel + ", contactor=" + contactor + ", count=" + count + ", displayStatus=" + displayStatus + ", flights=" + flights + ", name=" + name + ", orderPrice=" + orderPrice + ", orderType=" + orderType + ", passengers=" + passengers + ", price=" + price + ", status=" + status + ", userId=" + userId + ", userPhone=" + userPhone + "]";
     }
 
 }
