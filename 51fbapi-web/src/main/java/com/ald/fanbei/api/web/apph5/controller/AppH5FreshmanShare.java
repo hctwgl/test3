@@ -268,7 +268,7 @@ public class AppH5FreshmanShare extends BaseController{
 		try {
 			doWebCheck(request, false);
 			String cacheKey =  "freshman:share:explosiveGoods";  
-			List<Map<String,Object>> itemList = null;
+			List<Map<String,Object>> itemList = bizCacheUtil.getObjectList(cacheKey);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			if (itemList  == null) {
 			
@@ -376,7 +376,7 @@ public class AppH5FreshmanShare extends BaseController{
 				 data.put("itemName",itemName);
 				 list.add(data);
 				 itemList = list;
-				// bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
+				bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
 				 
 			       
 			 }
