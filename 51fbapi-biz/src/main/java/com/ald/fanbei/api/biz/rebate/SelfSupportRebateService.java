@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class SelfSupportRebateService extends BaseRebateService {
         orderInfo.setGmtModified(new Date());
         orderInfo.setLogisticsInfo("已签收");
         afOrderDao.updateOrder(orderInfo);
+        String log = String.format("selfsupport updateOrder order and orderInfo = %s",JSONObject.toJSONString(orderInfo));
+	logger.info(log);
         return super.addRebateAmount(rebateAmount,orderInfo);
     }
 

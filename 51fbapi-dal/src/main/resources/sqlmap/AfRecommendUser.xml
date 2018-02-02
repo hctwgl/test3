@@ -239,6 +239,7 @@
 		<if test="isSelfsupportRebate != null">
 			is_selfsupport_rebate = #{isSelfsupportRebate}
 		</if>
+		       gmt_modified = now()
 		where id = #{id}
 	</update>
 	

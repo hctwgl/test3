@@ -90,10 +90,14 @@ public abstract class BaseRebateService {
     protected  boolean addRebateAmount(BigDecimal rebateAmount,AfOrderDo orderInfo){
 
         AfUserAccountLogDo existItem= afUserAccountLogDao.getByRefAndType(orderInfo.getRid(),UserAccountLogType.REBATE_CASH.getCode());
+        String logs = String.format("selfsupport order existItem = %s",JSONObject.toJSONString(existItem));
+       	logger.info(logs);
         if(existItem!=null){
            return false;
         }
         AfUserAccountLogDo existDoubleRebate = afUserAccountLogDao.getByRefAndType(orderInfo.getRid(),UserAccountLogType.DOUBLE_REBATE_CASH.getCode());
+        logs =  logs + String.format("selfsupport order existDoubleRebate = %s",JSONObject.toJSONString(existDoubleRebate));
+       	logger.info(logs);
         if(existDoubleRebate!=null){
            return false;
         }
@@ -104,10 +108,12 @@ public abstract class BaseRebateService {
         AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
         accountLog.setRefId(orderInfo.getRid() + StringUtils.EMPTY);
         accountLog.setUserId(orderInfo.getUserId());
-        
+        String log = String.format("selfsupport order rebate start = %s",JSONObject.toJSONString(accountLog));
+       	logger.info(log);
         
         try{
                     List<AfOrderDo> shopOrderList =   afOrderDao.getSelfsupportOrderByUserIdOrActivityTime(orderInfo.getUserId(),null);
+                    log = log +  String.format("selfsupport first order rebate shopOrderList start = %s",JSONObject.toJSONString(shopOrderList));
                     //订单首次完成，邀请有礼记录用户订单id
                     if(shopOrderList.size() == 1 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
             	    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(orderInfo.getUserId());
@@ -115,7 +121,7 @@ public abstract class BaseRebateService {
             		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
             		     afRecommendUserDo.setFirstSelfsupportOrder(orderInfo.getRid());
             		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
-            	             String log = String.format("selfsupport first order rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
+            		      log = log +  String.format("selfsupport first order rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
             		     logger.info(log);
             		     log =log + String.format("updateRecommend result =  %s", updateRecommend);
             		      logger.info(log);
@@ -125,7 +131,7 @@ public abstract class BaseRebateService {
                     }
                     //自营商城活动第三单双倍返利
                     if(shopOrderList.size() == 3 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
-                         String log = String.format("selfsupport double rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
+                	log =  log + String.format("selfsupport double rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
             	     logger.info(log);
             	       BigDecimal max = new BigDecimal(30.00);
             	       BigDecimal doubleAmount = rebateAmount;
@@ -172,7 +178,7 @@ public abstract class BaseRebateService {
 	       AfUserAccountDo userInfo =afUserAccountDao.getUserAccountInfoByUserId( orderInfo.getUserId()) ;
 	       //返利已经到账通知
 	       smsUtil.sendRebate(userInfo.getUserName(), new Date(),orderInfo.getRebateAmount());
-	     
+	       log =log + String.format("selfsupport order rebate afUserAccountLogDao = %s", accountLog);
 	 
         return true;
     }
