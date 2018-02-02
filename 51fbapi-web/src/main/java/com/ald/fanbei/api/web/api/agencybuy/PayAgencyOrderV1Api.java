@@ -109,7 +109,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 			payType = PayType.COMBINATION_PAY.getCode();
 		}		
 		
-		afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress);
+		afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress);
 
 		// String success = result.get("success").toString();
 		// if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {

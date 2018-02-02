@@ -343,7 +343,7 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");

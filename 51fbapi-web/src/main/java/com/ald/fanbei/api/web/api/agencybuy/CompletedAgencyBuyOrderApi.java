@@ -7,6 +7,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -48,7 +50,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
 	@Resource
 	AfUserAccountDao afUserAccountDao;
-
+	@Autowired
+	KafkaSync kafkaSync;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -141,6 +144,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrderDo.getUserId());
 				}
 			}
+			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
 		}
 	}
 

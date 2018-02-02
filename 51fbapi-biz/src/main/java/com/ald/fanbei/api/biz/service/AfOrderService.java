@@ -174,7 +174,7 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
@@ -247,7 +247,9 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo);
-	
+
+	BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo);
+
 	/**
 	 * 判断是否为虚拟商品
 	 * @param orderInfo

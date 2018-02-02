@@ -10,10 +10,13 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -85,6 +88,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
     @Resource
     AfFundSideBorrowCashService afFundSideBorrowCashService;
 
+    @Autowired
+    KafkaSync kafkaSync;
     @Resource
     ContractPdfThreadPool contractPdfThreadPool;
     @Resource
@@ -200,6 +205,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
             }
         }
         if (resultValue == 1) {
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+
             contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
                     afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
@@ -294,10 +302,15 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         + afBorrowCashDo.getRid());
             }
         }
+
         if (resultValue == 1) {
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+
             contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
+
         return resultValue;
     }
 

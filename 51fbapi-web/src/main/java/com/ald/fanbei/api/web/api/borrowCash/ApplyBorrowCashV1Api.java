@@ -394,7 +394,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                         .currentTimeMillis()));
                 HashMap<String, HashMap> riskDataMap = new HashMap();
 
-                HashMap summaryData = afBorrowDao.getUserSummary(userId);
+                HashMap summaryData = afBorrowService.getUserSummary(userId);
                 riskDataMap.put("summaryData", summaryData);
                 riskDataMap.put("summaryOrderData", new HashMap<>());
                 RiskVerifyRespBo verybo = riskUtil.verifyNew(
