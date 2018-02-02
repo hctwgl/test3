@@ -156,11 +156,10 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 
 			JSONObject params = new JSONObject();
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-			String bqsBlackBox = request.getParameter("bqsBlackBox");
 			params.put("ipAddress", CommonUtil.getIpAddr(request));
 			params.put("appName",appName);
-			params.put("bqsBlackBox",bqsBlackBox);
-			params.put("blackBox",request.getParameter("blackBox"));
+			params.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			params.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 			Object poundageRateCash = getUserPoundageRate(userId,params);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
