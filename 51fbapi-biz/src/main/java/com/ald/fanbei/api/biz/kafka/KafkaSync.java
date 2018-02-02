@@ -8,7 +8,9 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONObject;
 import org.jsoup.helper.DataUtil;
 import org.slf4j.Logger;
@@ -69,7 +71,7 @@ public class KafkaSync {
 
         //页面级同步触发配置
         List<AfResourceDo> dataTypeUrlList = afResourceService.getConfigByTypes(SYNC_EVENT_DATA_URL);
-        Long userId = afUserService.getUserIdByMobile(userName);
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
         //同步历史
         SimpleDateFormat parser = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -78,7 +80,7 @@ public class KafkaSync {
             String triggerUrls = resourceDo.getValue1();
             int frequency = Integer.parseInt(resourceDo.getValue2());//频率/天
             if (triggerUrls.contains(url)) {
-                HashMap syncHistory = mongoTemplate.findOne(Query.query(Criteria.where(COLLECTION_PK).is(userId.toString())), HashMap.class, COLLECTION_SYNCHISTORY);
+                HashMap syncHistory = mongoTemplate.findOne(Query.query(Criteria.where(COLLECTION_PK).is(afUserDo.getRid().toString())), HashMap.class, COLLECTION_SYNCHISTORY);
                 if (syncHistory != null && syncHistory.get(type) != null) {
                     Date lastDate =parser.parse(syncHistory.get(type).toString());
                     if (DateUtil.beforeDay( new Date(),DateUtil.addDays(lastDate, frequency))) {
@@ -86,7 +88,7 @@ public class KafkaSync {
                     }
                 }
                 //发送更新通知
-                kafkaTemplate.send(topic, type, userId.toString());
+                kafkaTemplate.send(topic, type, afUserDo.getRid().toString());
             }
         }
     }
