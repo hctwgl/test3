@@ -10,8 +10,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
@@ -20,6 +20,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 
 
 
@@ -41,6 +42,8 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	
 	@Resource
 	private AfLoanService afLoanService;
+	@Resource
+	private AfLoanProductService afLoanProductService;
 	
     @Resource
     private AfLoanPeriodsDao afLoanPeriodsDao;
@@ -52,11 +55,11 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     
     @Override
 	public List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType){
-    	LoanDBCfgBo dbCfg = afLoanService.getDBCfg(prdType, periods);
+    	AfLoanRateDo loanRateDo = afLoanProductService.getByPrdTypeAndNper(prdType, periods+"");
     	
-    	BigDecimal interestRate = new BigDecimal(dbCfg.interestRate);
-    	BigDecimal poundageRate = new BigDecimal(dbCfg.poundageRate);
-    	BigDecimal overdueRate = new BigDecimal(dbCfg.overdueRate);
+    	BigDecimal interestRate = new BigDecimal(loanRateDo.getInterestRate());
+    	BigDecimal poundageRate = new BigDecimal(loanRateDo.getPoundageRate());
+    	BigDecimal overdueRate = new BigDecimal(loanRateDo.getOverdueRate());
     	BigDecimal layRate = interestRate.add(poundageRate);
     	BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 10, RoundingMode.HALF_UP);
     	

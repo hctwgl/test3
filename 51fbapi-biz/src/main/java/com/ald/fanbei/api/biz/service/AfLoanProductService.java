@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 
@@ -16,5 +18,7 @@ public interface AfLoanProductService extends ParentService<AfLoanProductDo, Lon
 	String getNameByPrdType(String prdType);
 
 	AfLoanRateDo getByPrdTypeAndNper(String prdType, String nper);
+	
+	List<AfLoanRateDo> listByPrdType(String prdType);
 
 }

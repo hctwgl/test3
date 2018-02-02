@@ -57,6 +57,11 @@ import java.math.BigDecimal;
     private String prdType;
 
     /**
+     * 开关
+     */
+    private String switch_;
+    
+    /**
      * 到期还款提醒天数
      */
     private Integer remindDay;
@@ -270,6 +275,14 @@ import java.math.BigDecimal;
     public void setGmtModified(Date gmtModified){
       this.gmtModified = gmtModified;
     }
+
+	public String getSwitch() {
+		return switch_;
+	}
+
+	public void setSwitch(String switch_) {
+		this.switch_ = switch_;
+	}
 
 
 }

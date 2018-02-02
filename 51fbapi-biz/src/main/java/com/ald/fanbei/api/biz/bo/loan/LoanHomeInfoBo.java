@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.bo.loan;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 
 public class LoanHomeInfoBo {
 	public String rejectCode; //拒绝码，通过则为 "PASS"
@@ -9,9 +12,7 @@ public class LoanHomeInfoBo {
 	public boolean isLogin;
 	public BigDecimal maxQuota;
 	public BigDecimal minQuota;
-	public BigDecimal interestRate;
-	public BigDecimal poundageRate;
-	public BigDecimal overdueRate;
+	public List<AfLoanRateDo> loanRates;
 	public int periods;
 	public String prdType;
 	public String prdName;

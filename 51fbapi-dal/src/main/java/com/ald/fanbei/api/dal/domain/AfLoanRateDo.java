@@ -1,10 +1,6 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.common.enums.AfLoanStatus;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 贷款业务实体
@@ -20,7 +16,7 @@ import java.util.Date;
 
    private String interestRate;
 
-   private String serviceRate;
+   private String poundageRate;
 
    private String overdueRate;
 
@@ -34,12 +30,12 @@ import java.util.Date;
       this.interestRate = interestRate;
    }
 
-   public String getServiceRate() {
-      return serviceRate;
+   public String getPoundageRate() {
+      return poundageRate;
    }
 
-   public void setServiceRate(String serviceRate) {
-      this.serviceRate = serviceRate;
+   public void setPoundageRate(String poundageRate) {
+      this.poundageRate = poundageRate;
    }
 
    public String getOverdueRate() {

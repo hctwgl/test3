@@ -20,9 +20,9 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo.ReqParam;
-import com.ald.fanbei.api.biz.bo.loan.LoanDBCfgBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -46,6 +46,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -94,6 +95,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	private AfUserAuthStatusService afUserAuthStatusService;
+	@Resource
+	private AfLoanProductService afLoanProductService;
 	
 	@Resource
 	private BizCacheUtil bizCacheUtil;
@@ -214,7 +217,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		//自检是否放行贷款
 		AfUserAccountSenceDo accScene = afUserAccountSenceService.getByUserIdAndScene(prdType, userId);
-		AfLoanRejectType res = rejectCheck(userId, accScene, prdType, lastLoanDo, getDBCfg(prdType, bo.reqParam.periods));
+		AfLoanRejectType res = rejectCheck(userId, accScene, afLoanProductDao.getByPrdType(prdType), lastLoanDo);
 		if(!res.equals(AfLoanRejectType.PASS)) {
 			throw new FanbeiException(res.exceptionCode);
 		}
@@ -279,7 +282,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				userId.toString(),
 				tarLoanDo.getLoanNo(), 
 				tarLoanDo.getPrdType(),
-				"50", 
+				WeakRiskSceneType.valueOf(bo.reqParam.prdType).getCode(),
 				tarLoanDo.getCardNo(), 
 				bo.reqParam.appType, 
 				bo.reqParam.ip, 
@@ -362,13 +365,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 	
 	@Override
-	public LoanDBCfgBo getDBCfg(String prdType, int periods) {
-		LoanDBCfgBo bo = new LoanDBCfgBo();
-		// TODO
-		return bo;
-	}
-	
-	@Override
 	@Deprecated
 	public BigDecimal getUserLayDailyRate(Long userId, String prdType) {
 		try {
@@ -396,10 +392,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.isLogin = true;
 			
 			String prdType = prdDo.getPrdType();
-			LoanDBCfgBo loanCfg = this.getDBCfg(prdType, prdDo.getPeriods());
 			
 			// 处理 配置 信息
-			BigDecimal maxAuota = loanCfg.maxQuota;
+			BigDecimal maxAuota = prdDo.getMaxAmount();
 			AfUserAccountSenceDo accScene = afUserAccountSenceService.getByUserIdAndScene(prdType, userAccount.getUserId());
 			BigDecimal auAmount = BigDecimal.ZERO;
 			BigDecimal usableAmount = BigDecimal.ZERO;
@@ -410,11 +405,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			
 			maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
 			bo.maxQuota = maxAuota;
-			bo.minQuota = loanCfg.minQuota;
+			bo.minQuota = prdDo.getMinAmount();
 			
-			bo.interestRate = new BigDecimal(loanCfg.interestRate);
-			bo.poundageRate = new BigDecimal(loanCfg.poundageRate);
-			bo.overdueRate = new BigDecimal(loanCfg.overdueRate);
+			bo.loanRates = afLoanProductService.listByPrdType(prdDo.getPrdType());
 			
 			bo.periods = prdDo.getPeriods();
 			bo.prdName = prdDo.getName();
@@ -423,7 +416,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
 			
-			bo.rejectCode = rejectCheck(userAccount.getUserId(), accScene, prdType, lastLoanDo, loanCfg).name();
+			bo.rejectCode = rejectCheck(userAccount.getUserId(), accScene, prdDo, lastLoanDo).name();
 			
 			infoBos.add(bo);
 		}
@@ -476,19 +469,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private List<LoanHomeInfoBo> dealHomeUnlogin(List<AfLoanProductDo> prdDos){
 		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
 		for(AfLoanProductDo prdDo : prdDos) {
-			LoanDBCfgBo loanCfg = getDBCfg(prdDo.getPrdType(), prdDo.getPeriods());
-			
 			LoanHomeInfoBo bo = new LoanHomeInfoBo();
 			bo.rejectCode = AfLoanRejectType.PASS.name();
 			bo.isLogin = false;
 
-			bo.interestRate = new BigDecimal(loanCfg.interestRate);
-			bo.poundageRate = new BigDecimal(loanCfg.poundageRate);
-			bo.overdueRate = new BigDecimal(loanCfg.overdueRate);
-			bo.maxQuota = loanCfg.maxQuota;
-			bo.minQuota = loanCfg.minQuota;
+			bo.loanRates = afLoanProductService.listByPrdType(prdDo.getPrdType());
+			bo.maxQuota = prdDo.getMaxAmount();
+			bo.minQuota = prdDo.getMinAmount();
 			
-			if(YesNoStatus.YES.getCode().equals(loanCfg.switch_)) {//贷款总开关
+			if(YesNoStatus.YES.getCode().equals(prdDo.getSwitch())) {//贷款总开关
 				bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
 			}
 			
@@ -503,13 +492,13 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 * @param loanCfg
 	 * @return
 	 */
-	private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, String prdType, AfLoanDo lastLoanDo, LoanDBCfgBo loanCfg) {
+	private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, AfLoanProductDo prdDo, AfLoanDo lastLoanDo) {
 		//贷款总开关
-		if(YesNoStatus.NO.getCode().equals(loanCfg.switch_)) {
+		if(YesNoStatus.NO.getCode().equals(prdDo.getSwitch())) {
 			return AfLoanRejectType.SWITCH_OFF;
 		}
 		
-		if(accScene == null || !afUserAuthStatusService.isPass(prdType, userId)) {
+		if(accScene == null || !afUserAuthStatusService.isPass(prdDo.getPrdType(), userId)) {
 			return AfLoanRejectType.NO_AUTHZ;
 		}
 		
@@ -534,7 +523,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		// 检查额度
-		if(loanCfg.minQuota.compareTo(accScene.getAuAmount()) > 0) {
+		if(prdDo.getMinAmount().compareTo(accScene.getAuAmount()) > 0) {
 			return AfLoanRejectType.QUOTA_TOO_SMALL;
 		}
 		
