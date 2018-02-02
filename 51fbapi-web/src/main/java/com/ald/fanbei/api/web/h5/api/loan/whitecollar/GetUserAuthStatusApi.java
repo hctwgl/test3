@@ -47,22 +47,29 @@ public class GetUserAuthStatusApi implements H5Handle {
 		
 		String fundStatus = userAuthInfo.getFundStatus();
 		String jinpoStatus = userAuthInfo.getJinpoStatus();
-		String zhengxinStatus = userAuthInfo.getZhengxinStatus();
+		String alipayStatus = userAuthInfo.getAlipayStatus();
+		String onlinebankStatus = userAuthInfo.getOnlinebankStatus();
+		
 		if(StringUtils.isBlank(fundStatus)) {
 			fundStatus = "A";
 		}
 		if(StringUtils.isBlank(jinpoStatus)) {
 			jinpoStatus = "A";
 		}
-		if(StringUtils.isBlank(zhengxinStatus)) {
-			zhengxinStatus = "A";
+	
+		if(StringUtils.isBlank(alipayStatus)) {
+			alipayStatus = "A";
 		}
+		if(StringUtils.isBlank(onlinebankStatus)) {
+			onlinebankStatus = "A";
+		}
+		
 		data.put("fundStatus", fundStatus);
 		data.put("jinpoStatus", jinpoStatus);
-		data.put("zhengxinStatus", zhengxinStatus);
-
+		data.put("alipayStatus", alipayStatus);
+		
 		//网银认证
-		data.put("onlinebankStatus", "Y");
+		data.put("onlinebankStatus", onlinebankStatus);
 		
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		
@@ -72,16 +79,18 @@ public class GetUserAuthStatusApi implements H5Handle {
 
 		data.put("fundAuthParam", fundRiskOrderNo + "," + userId);
 
-		String zxinRiskOrderNo = riskUtil.getOrderNo("zxin", idNumber.substring(idNumber.length() - 4, idNumber.length()));
-
-		data.put("zxinAuthParam", zxinRiskOrderNo + "," + userId);
-		
 		String sociRiskOrderNo = riskUtil.getOrderNo("soci", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 
 		data.put("jinpoAuthParam", sociRiskOrderNo + "," + userId);
+		
+		String onbkRiskOrderNo = riskUtil.getOrderNo("onbk", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 
 		// 网银认证
-		data.put("onlinebankAuthParam", sociRiskOrderNo + "," + userId);
+		data.put("onlinebankAuthParam", onbkRiskOrderNo + "," + userId);
+		
+		String alipRiskOrderNo = riskUtil.getOrderNo("alip", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+
+		data.put("alipayAuthParam", alipRiskOrderNo + "," + userId);
 
 		resp.setResponseData(data);
 		return resp;

@@ -84,8 +84,6 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo);
 		
 		
-		
-		
 		resp.setResponseData(data);
 		return resp;
 	}
