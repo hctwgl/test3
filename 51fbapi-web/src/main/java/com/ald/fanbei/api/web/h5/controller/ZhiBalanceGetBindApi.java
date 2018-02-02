@@ -3,10 +3,12 @@ package com.ald.fanbei.api.web.h5.controller;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserProfileService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserProfileDo;
@@ -35,25 +37,16 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping(value = "/userprofile", produces = "application/json;charset=UTF-8")
-public class ZhiBalanceGetBindApi implements ApiHandle {
+public class ZhiBalanceGetBindApi extends H5Controller {
     @Resource
     private AfUserProfileService afUserProfileService;
     @Resource
     AfUserService afUserService;
     @Resource
     AfSmsRecordService afSmsRecordService;
-    @Override
-    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Long userId = context.getUserId();
+    @Resource
+    SmsUtil smsUtil;
 
-        AfUserProfileDo userProfileDo = new AfUserProfileDo();
-        userProfileDo.setType("Z");
-        userProfileDo.setUserId(userId);
-        AfUserProfileDo userprofile = afUserProfileService.getUserProfileByCommonCondition(userProfileDo);
-        resp.addResponseData("zhiBind",userprofile);
-        return resp;
-    }
     @RequestMapping(value = "/zhiBalanceGetBindApi", method = RequestMethod.POST)
     public String zhiBalanceGetBindApi(HttpServletRequest request, HttpServletResponse response){
         String resultStr = "获取支付宝绑定信息失败";
@@ -76,7 +69,7 @@ public class ZhiBalanceGetBindApi implements ApiHandle {
         }catch (Exception e){
             logger.info("获取支付宝绑定信息失败"+e);
         }
-        return H5CommonResponse.getNewInstance(true, resultStr, null, null).toString();
+        return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
     }
     @RequestMapping(value = "/zhiBalanceBindApi", method = RequestMethod.POST)
     public String zhiBalanceBindApi(HttpServletRequest request, HttpServletResponse response){
@@ -101,11 +94,13 @@ public class ZhiBalanceGetBindApi implements ApiHandle {
             //账号已被别人绑定
             AfUserProfileDo userprofileOther = afUserProfileService.getUserProfileByCommonCondition(userProfileDo);
             if (userprofileOther != null){
+                resultStr = "支付宝账号已被绑定";
                 throw new FanbeiException(FanbeiExceptionCode.ZHI_BALANCE_EXITS_ERROR);
             }
             //验证码错误
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(account, SmsType.ZHI_BIND.getCode());
             if(smsDo == null || !verifycode.equals(smsDo.getVerifyCode())){
+                resultStr = "验证码有误";
                 throw new FanbeiException(FanbeiExceptionCode.ZHI_BALANCE_CODE_INVALID_ERROR);
             }
             //删除已有绑定账号
@@ -118,10 +113,39 @@ public class ZhiBalanceGetBindApi implements ApiHandle {
             //绑定新账号
             userProfileDo.setAccount(account);
             afUserProfileService.saveUserProfile(userProfileDo);
-            return H5CommonResponse.getNewInstance(true, "支付宝绑定失败成功", null, null).toString();
+            return H5CommonResponse.getNewInstance(true, "支付宝绑定成功", null, null).toString();
         }catch (Exception e){
             logger.info("支付宝绑定失败"+e);
         }
-        return H5CommonResponse.getNewInstance(true, resultStr, null, null).toString();
+        return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
     }
+public String zhiBalanceGetVerifyCodeApi(HttpServletRequest request, HttpServletResponse response){
+        String resultStr = "发送绑定验证码失败";
+        try {
+            String account = ObjectUtils.toString(request.getParameter("account"), null);
+            String userName = ObjectUtils.toString(request.getParameter("userName"), null);
+            if ((!CommonUtil.isMobile(account) && !CommonUtil.isEmail(account)) || userName == null){
+                resultStr = "支付宝账号有误";
+                throw new FanbeiException(FanbeiExceptionCode.ZHI_BALANCE_INVALID_ERROR);
+            }
+            AfUserDo user = afUserService.getUserByUserName(userName);
+            if (user == null){
+                resultStr = "用户不存在";
+                throw new FanbeiException(resultStr);
+            }
+            if (CommonUtil.isMobile(account)){
+                smsUtil.sendMobileBindVerifyCode(account, SmsType.ZHI_BIND,user.getRid());
+            }else{
+                smsUtil.sendEmailVerifyCode(account, SmsType.ZHI_BIND,user.getRid());
+            }
+            return H5CommonResponse.getNewInstance(true, "支付宝绑定成功", null, null).toString();
+        }catch (Exception e){
+            resultStr = "发送绑定验证码失败";
+            logger.info("支付宝绑定失败"+e);
+
+        }
+    return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
+
+}
+
 }
