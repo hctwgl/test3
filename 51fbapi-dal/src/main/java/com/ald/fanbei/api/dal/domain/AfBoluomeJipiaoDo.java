@@ -1,18 +1,20 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 菠萝觅订单详情实体
  * 
  * @author gaojb
  * @version 1.0.0 初始化
- * @date 2018-02-02 16:34:00
- * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @date 2018-02-02 16:34:00 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfBoluomeJipiaoDo extends AbstractSerial {
+public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +22,6 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
-    
 
     /**
      * 创建时间
@@ -35,6 +36,7 @@ import java.math.BigDecimal;
     /**
      * 第三方订单号
      */
+    @JSONField(name = "id")
     private String thirdOrderNo;
 
     /**
@@ -97,29 +99,16 @@ import java.math.BigDecimal;
      */
     private String contactorPhone;
 
-    /**
-     * 优惠劵金额
-     */
-    private BigDecimal couponPrice;
-
-    /**
-     * 优惠卷描述
-     */
-    private String couponTitle;
-
-    /**
-     * 优惠劵id
-     */
-    private Long couponId;
-
+    private List<AfBoluomeJipiaoPassengerDo> passengers;
+    private List<AfBoluomeJipiaoFlightDo> flights;
 
     /**
      * 获取主键Id
      *
      * @return rid
      */
-    public Long getRid(){
-      return rid;
+    public Long getRid() {
+	return rid;
     }
 
     /**
@@ -127,27 +116,27 @@ import java.math.BigDecimal;
      * 
      * @param 要设置的主键Id
      */
-    public void setRid(Long rid){
-      this.rid = rid;
+    public void setRid(Long rid) {
+	this.rid = rid;
     }
-    
 
     /**
      * 获取创建时间
      *
      * @return 创建时间
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public Date getGmtCreate() {
+	return gmtCreate;
     }
 
     /**
      * 设置创建时间
      * 
-     * @param gmtCreate 要设置的创建时间
+     * @param gmtCreate
+     *            要设置的创建时间
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
+    public void setGmtCreate(Date gmtCreate) {
+	this.gmtCreate = gmtCreate;
     }
 
     /**
@@ -155,17 +144,18 @@ import java.math.BigDecimal;
      *
      * @return 最后修改时间
      */
-    public Date getGmtModified(){
-      return gmtModified;
+    public Date getGmtModified() {
+	return gmtModified;
     }
 
     /**
      * 设置最后修改时间
      * 
-     * @param gmtModified 要设置的最后修改时间
+     * @param gmtModified
+     *            要设置的最后修改时间
      */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+    public void setGmtModified(Date gmtModified) {
+	this.gmtModified = gmtModified;
     }
 
     /**
@@ -173,17 +163,20 @@ import java.math.BigDecimal;
      *
      * @return 第三方订单号
      */
-    public String getThirdOrderNo(){
-      return thirdOrderNo;
+    @JSONField(name = "id")
+    public String getThirdOrderNo() {
+	return thirdOrderNo;
     }
 
     /**
      * 设置第三方订单号
      * 
-     * @param thirdOrderNo 要设置的第三方订单号
+     * @param thirdOrderNo
+     *            要设置的第三方订单号
      */
-    public void setThirdOrderNo(String thirdOrderNo){
-      this.thirdOrderNo = thirdOrderNo;
+    @JSONField(name = "id")
+    public void setThirdOrderNo(String thirdOrderNo) {
+	this.thirdOrderNo = thirdOrderNo;
     }
 
     /**
@@ -191,17 +184,18 @@ import java.math.BigDecimal;
      *
      * @return 登录用户id
      */
-    public Long getUserId(){
-      return userId;
+    public Long getUserId() {
+	return userId;
     }
 
     /**
      * 设置登录用户id
      * 
-     * @param userId 要设置的登录用户id
+     * @param userId
+     *            要设置的登录用户id
      */
-    public void setUserId(Long userId){
-      this.userId = userId;
+    public void setUserId(Long userId) {
+	this.userId = userId;
     }
 
     /**
@@ -209,17 +203,18 @@ import java.math.BigDecimal;
      *
      * @return 登录用户名
      */
-    public String getUserPhone(){
-      return userPhone;
+    public String getUserPhone() {
+	return userPhone;
     }
 
     /**
      * 设置登录用户名
      * 
-     * @param userPhone 要设置的登录用户名
+     * @param userPhone
+     *            要设置的登录用户名
      */
-    public void setUserPhone(String userPhone){
-      this.userPhone = userPhone;
+    public void setUserPhone(String userPhone) {
+	this.userPhone = userPhone;
     }
 
     /**
@@ -227,17 +222,18 @@ import java.math.BigDecimal;
      *
      * @return 订单状态
      */
-    public Integer getStatus(){
-      return status;
+    public Integer getStatus() {
+	return status;
     }
 
     /**
      * 设置订单状态
      * 
-     * @param status 要设置的订单状态
+     * @param status
+     *            要设置的订单状态
      */
-    public void setStatus(Integer status){
-      this.status = status;
+    public void setStatus(Integer status) {
+	this.status = status;
     }
 
     /**
@@ -245,17 +241,18 @@ import java.math.BigDecimal;
      *
      * @return 金额
      */
-    public BigDecimal getPrice(){
-      return price;
+    public BigDecimal getPrice() {
+	return price;
     }
 
     /**
      * 设置金额
      * 
-     * @param price 要设置的金额
+     * @param price
+     *            要设置的金额
      */
-    public void setPrice(BigDecimal price){
-      this.price = price;
+    public void setPrice(BigDecimal price) {
+	this.price = price;
     }
 
     /**
@@ -263,17 +260,18 @@ import java.math.BigDecimal;
      *
      * @return 订单类型
      */
-    public String getOrderType(){
-      return orderType;
+    public String getOrderType() {
+	return orderType;
     }
 
     /**
      * 设置订单类型
      * 
-     * @param orderType 要设置的订单类型
+     * @param orderType
+     *            要设置的订单类型
      */
-    public void setOrderType(String orderType){
-      this.orderType = orderType;
+    public void setOrderType(String orderType) {
+	this.orderType = orderType;
     }
 
     /**
@@ -281,17 +279,18 @@ import java.math.BigDecimal;
      *
      * @return 订单金额
      */
-    public BigDecimal getOrderPrice(){
-      return orderPrice;
+    public BigDecimal getOrderPrice() {
+	return orderPrice;
     }
 
     /**
      * 设置订单金额
      * 
-     * @param orderPrice 要设置的订单金额
+     * @param orderPrice
+     *            要设置的订单金额
      */
-    public void setOrderPrice(BigDecimal orderPrice){
-      this.orderPrice = orderPrice;
+    public void setOrderPrice(BigDecimal orderPrice) {
+	this.orderPrice = orderPrice;
     }
 
     /**
@@ -299,17 +298,18 @@ import java.math.BigDecimal;
      *
      * @return 订单状态
      */
-    public String getDisplayStatus(){
-      return displayStatus;
+    public String getDisplayStatus() {
+	return displayStatus;
     }
 
     /**
      * 设置订单状态
      * 
-     * @param displayStatus 要设置的订单状态
+     * @param displayStatus
+     *            要设置的订单状态
      */
-    public void setDisplayStatus(String displayStatus){
-      this.displayStatus = displayStatus;
+    public void setDisplayStatus(String displayStatus) {
+	this.displayStatus = displayStatus;
     }
 
     /**
@@ -317,17 +317,18 @@ import java.math.BigDecimal;
      *
      * @return 购票数量
      */
-    public short getCount(){
-      return count;
+    public short getCount() {
+	return count;
     }
 
     /**
      * 设置购票数量
      * 
-     * @param count 要设置的购票数量
+     * @param count
+     *            要设置的购票数量
      */
-    public void setCount(short count){
-      this.count = count;
+    public void setCount(short count) {
+	this.count = count;
     }
 
     /**
@@ -335,17 +336,18 @@ import java.math.BigDecimal;
      *
      * @return 渠道
      */
-    public String getChannel(){
-      return channel;
+    public String getChannel() {
+	return channel;
     }
 
     /**
      * 设置渠道
      * 
-     * @param channel 要设置的渠道
+     * @param channel
+     *            要设置的渠道
      */
-    public void setChannel(String channel){
-      this.channel = channel;
+    public void setChannel(String channel) {
+	this.channel = channel;
     }
 
     /**
@@ -353,17 +355,18 @@ import java.math.BigDecimal;
      *
      * @return 是否可以取消
      */
-    public Integer getCanCancel(){
-      return canCancel;
+    public Integer getCanCancel() {
+	return canCancel;
     }
 
     /**
      * 设置是否可以取消
      * 
-     * @param canCancel 要设置的是否可以取消
+     * @param canCancel
+     *            要设置的是否可以取消
      */
-    public void setCanCancel(Integer canCancel){
-      this.canCancel = canCancel;
+    public void setCanCancel(Integer canCancel) {
+	this.canCancel = canCancel;
     }
 
     /**
@@ -371,17 +374,18 @@ import java.math.BigDecimal;
      *
      * @return 联系人名称
      */
-    public String getContactorName(){
-      return contactorName;
+    public String getContactorName() {
+	return contactorName;
     }
 
     /**
      * 设置联系人名称
      * 
-     * @param contactorName 要设置的联系人名称
+     * @param contactorName
+     *            要设置的联系人名称
      */
-    public void setContactorName(String contactorName){
-      this.contactorName = contactorName;
+    public void setContactorName(String contactorName) {
+	this.contactorName = contactorName;
     }
 
     /**
@@ -389,71 +393,34 @@ import java.math.BigDecimal;
      *
      * @return 联系人电话
      */
-    public String getContactorPhone(){
-      return contactorPhone;
+    public String getContactorPhone() {
+	return contactorPhone;
     }
 
     /**
      * 设置联系人电话
      * 
-     * @param contactorPhone 要设置的联系人电话
+     * @param contactorPhone
+     *            要设置的联系人电话
      */
-    public void setContactorPhone(String contactorPhone){
-      this.contactorPhone = contactorPhone;
+    public void setContactorPhone(String contactorPhone) {
+	this.contactorPhone = contactorPhone;
     }
 
-    /**
-     * 获取优惠劵金额
-     *
-     * @return 优惠劵金额
-     */
-    public BigDecimal getCouponPrice(){
-      return couponPrice;
+    public List<AfBoluomeJipiaoPassengerDo> getPassengers() {
+	return passengers;
     }
 
-    /**
-     * 设置优惠劵金额
-     * 
-     * @param couponPrice 要设置的优惠劵金额
-     */
-    public void setCouponPrice(BigDecimal couponPrice){
-      this.couponPrice = couponPrice;
+    public void setPassengers(List<AfBoluomeJipiaoPassengerDo> passengers) {
+	this.passengers = passengers;
     }
 
-    /**
-     * 获取优惠卷描述
-     *
-     * @return 优惠卷描述
-     */
-    public String getCouponTitle(){
-      return couponTitle;
+    public List<AfBoluomeJipiaoFlightDo> getFlights() {
+	return flights;
     }
 
-    /**
-     * 设置优惠卷描述
-     * 
-     * @param couponTitle 要设置的优惠卷描述
-     */
-    public void setCouponTitle(String couponTitle){
-      this.couponTitle = couponTitle;
-    }
-
-    /**
-     * 获取优惠劵id
-     *
-     * @return 优惠劵id
-     */
-    public Long getCouponId(){
-      return couponId;
-    }
-
-    /**
-     * 设置优惠劵id
-     * 
-     * @param couponId 要设置的优惠劵id
-     */
-    public void setCouponId(Long couponId){
-      this.couponId = couponId;
+    public void setFlights(List<AfBoluomeJipiaoFlightDo> flights) {
+	this.flights = flights;
     }
 
 }

@@ -16,10 +16,13 @@ import com.ald.fanbei.api.dal.dao.AfBoluomeJiudianDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeShoujiDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeWaimaiDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeDianyingDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeHuocheDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeJiayoukaDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeJipiaoDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeJiudianDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeShoujiDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeWaimaiDo;
+import com.ald.fanbei.api.dal.domain.dto.BoluomeAirplaneDto;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeOrderResponseDto;
 import com.alibaba.fastjson.JSON;
 
@@ -48,7 +51,11 @@ public class BoluomeOrderInfoThread extends BaseService implements BoluomeOrderI
     @Override
     public void addBoluomeOrderInfo(String thirdOrderNo, String secOrderType) {
 	try {
-	    if (OrderSecType.DIAN_YING.getCode().equals(secOrderType) || OrderSecType.JIU_DIAN.getCode().equals(secOrderType) || OrderSecType.WAI_MAI.getCode().equals(secOrderType) || OrderSecType.HUA_FEI.getCode().equals(secOrderType) || OrderSecType.LIU_LIANG.getCode().equals(secOrderType) || OrderSecType.JIA_YOU_KA.getCode().equals(secOrderType)) {
+	    if (OrderSecType.HUO_CHE.getCode().equals(secOrderType) || OrderSecType.JI_PIAO.getCode().equals(secOrderType) 
+		    || OrderSecType.DIAN_YING.getCode().equals(secOrderType) || OrderSecType.JIU_DIAN.getCode().equals(secOrderType) 
+		    || OrderSecType.WAI_MAI.getCode().equals(secOrderType) || OrderSecType.HUA_FEI.getCode().equals(secOrderType) 
+		    || OrderSecType.LIU_LIANG.getCode().equals(secOrderType) || OrderSecType.JIA_YOU_KA.getCode().equals(secOrderType)) {
+		
 		// 构造查询参数
 		Map<String, String> params = new HashMap<String, String>();
 		params.put(BoluomeCore.ORDER_ID, thirdOrderNo);
@@ -75,6 +82,14 @@ public class BoluomeOrderInfoThread extends BaseService implements BoluomeOrderI
 		    } else if (OrderSecType.JIA_YOU_KA.getCode().equals(secOrderType)) {
 			AfBoluomeJiayoukaDo afBoluomeJiayoukaDo = JSON.parseObject(orderResponse.getData(), AfBoluomeJiayoukaDo.class);
 			afBoluomeJiayoukaDao.saveRecord(afBoluomeJiayoukaDo);
+		    }else if (OrderSecType.HUO_CHE.getCode().equals(secOrderType)) {
+			//AfBoluomeJiayoukaDo afBoluomeJiayoukaDo = JSON.parseObject(orderResponse.getData(), AfBoluomeJiayoukaDo.class);
+			//afBoluomeJiayoukaDao.saveRecord(afBoluomeJiayoukaDo);
+			AfBoluomeHuocheDo afBoluomeHuocheDo = JSON.parseObject(orderResponse.getData(), AfBoluomeHuocheDo.class);
+		    }else if (OrderSecType.JI_PIAO.getCode().equals(secOrderType)) {
+			//BoluomeAirplaneDto afBoluomeJiayoukaDo = JSON.parseObject(orderResponse.getData(), BoluomeAirplaneDto.class);
+			//afBoluomeJiayoukaDao.saveRecord(afBoluomeJiayoukaDo);
+			AfBoluomeJipiaoDo afBoluomeJipiaoDo = JSON.parseObject(orderResponse.getData(), AfBoluomeJipiaoDo.class);
 		    }
 		} else {
 		    logger.error("addBoluomeOrderInfo response error:" + orderResponse);
