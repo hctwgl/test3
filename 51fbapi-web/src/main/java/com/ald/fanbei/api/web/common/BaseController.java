@@ -106,7 +106,7 @@ public abstract class BaseController {
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
-			if(contex.getAppVersion()==344){
+			if(contex.getAppVersion()<390){
 				throw new FanbeiException("您使用的app版本过低,请升级",true);
 			}
 			//406强升需要数据拦截的借钱相关接口
