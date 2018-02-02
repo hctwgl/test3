@@ -76,27 +76,27 @@ public class GetAllowConsumeApi implements ApiHandle {
 		BigDecimal leftAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 		String isNoneQuota = "N";// 可用额度是否为0
 		
-		if (numId != null) {
-			try {
-				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
-				if (null != nTbkItemList && nTbkItemList.size() > 0) {
-					XItem item = nTbkItemList.get(0);
-					String title = item.getTitle();
-					RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", title);
-					String quotaData = quotaBo.getData();
-					if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-						JSONObject json = JSONObject.parseObject(quotaData);
-						String virtualCode = json.getString("virtualCode");
-						BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-						if (goodsUseableAmount.compareTo(leftAmount) < 0) {
-							leftAmount = goodsUseableAmount;
-						}
-					}
-				}
-			} catch (ApiException e) {
-				e.printStackTrace();
-			}
-		}
+//		if (numId != null) {
+//			try {
+//				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+//				if (null != nTbkItemList && nTbkItemList.size() > 0) {
+//					XItem item = nTbkItemList.get(0);
+//					String title = item.getTitle();
+//					RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", title);
+//					String quotaData = quotaBo.getData();
+//					if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
+//						JSONObject json = JSONObject.parseObject(quotaData);
+//						String virtualCode = json.getString("virtualCode");
+//						BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+//						if (goodsUseableAmount.compareTo(leftAmount) < 0) {
+//							leftAmount = goodsUseableAmount;
+//						}
+//					}
+//				}
+//			} catch (ApiException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		
 		if (leftAmount.compareTo(BigDecimal.ONE) <= 0) {
 			isNoneQuota = "Y";
