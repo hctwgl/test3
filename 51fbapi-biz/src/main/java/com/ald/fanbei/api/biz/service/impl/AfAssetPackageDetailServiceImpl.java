@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -528,13 +529,19 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		//获取借款利率配置
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONObject jsonObject=new JSONObject();
 		if (afResourceDo!=null &&  afResourceDo.getValue2() != null) {
 			JSONArray array= JSONObject.parseArray(afResourceDo.getValue2());
-			JSONObject jsonObject = array.getJSONObject(1);
+			for (int i = 0; i < array.size(); i++) {
+				if (StringUtils.equals((String)array.getJSONObject(i).get("borrowTag"), AfResourceSecType.INTEREST_RATE.getCode())) {
+					jsonObject = array.getJSONObject(i);
+					break;
+				}
+			}
 			if (afViewAssetBorrowCashDo.getType()==minBorrowTime) {
-				borrowRate=(BigDecimal) jsonObject.get("borrowFirstType");
+				borrowRate=new BigDecimal((String)jsonObject.get("borrowFirstType"));
 			}else{
-				borrowRate=(BigDecimal) jsonObject.get("borrowSecondType");
+				borrowRate=new BigDecimal((String) jsonObject.get("borrowSecondType"));
 			}
 		}
 		//现金贷的还款计划
@@ -623,13 +630,13 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		JSONArray array= new JSONArray();
 		if (afResourceDo!=null&& afResourceDo.getValue3()!=null) {
 			array= JSONObject.parseArray(afResourceDo.getValue3());
-		}
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject jsonObject = array.getJSONObject(i);
-			Integer confNper= (Integer) jsonObject.get("nper");
-			if (nper==confNper) {
-				borrowRate=(BigDecimal) jsonObject.get("rate");
-				break;
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject jsonObject = array.getJSONObject(i);
+				Integer confNper= (Integer) jsonObject.get("nper");
+				if (nper == confNper) {
+					borrowRate=new BigDecimal((String)jsonObject.get("rate"));
+					break;
+				}
 			}
 		}
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
