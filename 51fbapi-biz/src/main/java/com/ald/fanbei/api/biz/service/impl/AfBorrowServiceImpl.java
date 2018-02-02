@@ -135,13 +135,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	@Override
 	public HashMap getUserSummary(Long userId){
 		try{
-			AfResourceDo afResourceDo= afResourceDao.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
-			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
-				logger.info("find data from mongo:"+userId);
-				return kafkaSync.getUserSummarySync(userId);
-			}else{
+//			AfResourceDo afResourceDo= afResourceDao.getSingleResourceBytype(KafkaConstants.KAFKA_OPEN);
+//			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+//				logger.info("find data from mongo:"+userId);
+//				return kafkaSync.getUserSummarySync(userId);
+//			}else{
 				return afBorrowDao.getUserSummary(userId);
-			}
+			//}
 		}catch (Exception e){
 			logger.error("getUserSummary error:",e);
 			return new HashMap();
