@@ -95,7 +95,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			params.put("appName",appName);
 			params.put("bqsBlackBox",bqsBlackBox);
 			params.put("blackBox",request.getParameter("blackBox"));
-			oriRate = riskUtil.getRiskOriRate(userId,params);
+			oriRate = riskUtil.getRiskOriRate(userId,params,borrowType);
 		}
 
 		// 查询新利率配置
