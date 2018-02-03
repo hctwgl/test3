@@ -88,6 +88,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
 		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
+		String tmpBorrowType = borrowType;
 		BigDecimal borrowDay = new BigDecimal(borrowType);
 
 		BigDecimal oriRate = BigDecimal.ZERO;
@@ -100,19 +101,20 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			params.put("bqsBlackBox",bqsBlackBox);
 			params.put("blackBox",request.getParameter("blackBox"));
 			try{
+				// FIXME 客户端不发版临时解决方案，后续需要客户端配合改造
 				AfBorrowCashDo borrowCash = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 				if(borrowCash != null) {
 					String status = borrowCash.getStatus();
 					if(StringUtils.equals(status, "TRANSED")) {
 						// 借款未结清，说明是续期查询商品
-						borrowType = borrowCash.getType();
+						tmpBorrowType = borrowCash.getType();
 					}
 				}
 			} catch(Exception e) {
 				logger.error("get user last borrow info error,msg=>{}", e.getMessage());
 			}
 			
-			oriRate = riskUtil.getRiskOriRate(userId,params,borrowType);
+			oriRate = riskUtil.getRiskOriRate(userId,params,tmpBorrowType);
 		}
 
 		// 查询新利率配置
