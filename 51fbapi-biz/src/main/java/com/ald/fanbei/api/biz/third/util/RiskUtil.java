@@ -171,8 +171,7 @@ public class RiskUtil extends AbstractThird {
 
 	private static String getUrl() {
 		if (url == null) {
-			//url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-			url = "http://btestarc.51fanbei.com";
+			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			return url;
 		}
 		return url;
@@ -180,8 +179,7 @@ public class RiskUtil extends AbstractThird {
 
 	private static String getNotifyHost() {
 		if (notifyHost == null) {
-			//notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
-			notifyHost = "https://btestapp.51fanbei.com";
+			notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 			return notifyHost;
 		}
 		return notifyHost;
