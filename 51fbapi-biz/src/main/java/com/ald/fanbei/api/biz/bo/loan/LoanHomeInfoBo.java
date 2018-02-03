@@ -9,7 +9,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 public class LoanHomeInfoBo {
 	public String rejectCode; //拒绝码，通过则为 "PASS"
 	
-	public boolean isLogin;
 	public BigDecimal maxQuota;
 	public BigDecimal minQuota;
 	public List<AfLoanRateDo> loanRates;
