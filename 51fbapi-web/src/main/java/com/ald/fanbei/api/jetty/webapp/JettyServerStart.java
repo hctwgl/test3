@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.ioc.start;
+package com.ald.fanbei.api.jetty.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,14 @@ import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Scanner;
+import org.eclipse.jetty.webapp.WebAppContext;
 
+/**
+ * Jetty嵌入式启动类
+ * 
+ * @author rongbo
+ *
+ */
 public class JettyServerStart {
 	private int port;
 	private String context;
@@ -22,7 +29,7 @@ public class JettyServerStart {
 	private int scanIntervalSeconds;
 	private boolean jmxEnabled;
 	private Server server;
-	private CustomWebAppContext webapp;
+	private WebAppContext webapp;
 
 	private String[] _dftConfigurationClasses = { "org.eclipse.jetty.webapp.WebInfConfiguration",
 			"org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
@@ -94,7 +101,7 @@ public class JettyServerStart {
 	}
 
 	protected Handler getHandler() {
-		webapp = new CustomWebAppContext(webappPath, context);
+		webapp = new WebAppContext(webappPath, context);
 		webapp.setConfigurationClasses(_dftConfigurationClasses);
 		return webapp;
 	}
