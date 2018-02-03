@@ -237,7 +237,7 @@
 			first_selfsupport_order = #{firstSelfsupportOrder},
 		</if>
 		<if test="isSelfsupportRebate != null">
-			is_selfsupport_rebate = #{isSelfsupportRebate}
+			is_selfsupport_rebate = #{isSelfsupportRebate},
 		</if>
 		       gmt_modified = now()
 		where id = #{id}
