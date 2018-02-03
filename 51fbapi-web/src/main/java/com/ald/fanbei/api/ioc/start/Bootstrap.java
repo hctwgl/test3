@@ -6,7 +6,5 @@ public class Bootstrap {
 		String webapp = "src/main/webapp";
 		new JettyServerStart(webapp, 9090, "/").start();
 		
-		
-		
 	}
 }
