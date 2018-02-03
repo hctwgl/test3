@@ -115,7 +115,7 @@ public abstract class BaseRebateService {
                     List<AfOrderDo> shopOrderList =   afOrderDao.getSelfsupportOrderByUserIdOrActivityTime(orderInfo.getUserId(),null);
                     log = log +  String.format("selfsupport first order rebate shopOrderList start = %s",JSONObject.toJSONString(shopOrderList));
                     //订单首次完成，邀请有礼记录用户订单id
-                    if(shopOrderList.size() == 1 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+                    if(shopOrderList.size() <= 1 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
             	    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(orderInfo.getUserId());
             	     if(afRecommendUserDo != null){
             		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
