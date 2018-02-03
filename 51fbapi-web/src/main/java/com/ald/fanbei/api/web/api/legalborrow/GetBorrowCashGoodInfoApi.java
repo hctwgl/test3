@@ -107,11 +107,10 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				try {
 					JSONObject params = new JSONObject();
 					String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-					String bqsBlackBox = request.getParameter("bqsBlackBox");
 					params.put("ipAddress", CommonUtil.getIpAddr(request));
 					params.put("appName",appName);
-					params.put("bqsBlackBox",bqsBlackBox);
-					params.put("blackBox",request.getParameter("blackBox"));
+					params.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+					params.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 					RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 					String poundage = riskResp.getPoundageRate();
 					if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
