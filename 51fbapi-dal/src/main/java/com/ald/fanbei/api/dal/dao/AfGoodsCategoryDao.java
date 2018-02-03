@@ -64,4 +64,6 @@ public interface AfGoodsCategoryDao {
 	 * @return
 	 */
 	List<AfGoodsCategoryDo> listByParentIdAndLevel(AfGoodsCategoryDo queryAfGoodsCategory);
+
+	AfGoodsCategoryDo getGoodsCategoryById(Long rid);
 }

@@ -8,15 +8,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -26,11 +24,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -60,6 +53,8 @@ public class GetPayAmountApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -106,22 +101,12 @@ public class GetPayAmountApi implements ApiHandle {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
 		}
 
-        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-        BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
 		//是否是限额类目
 		String isQuotaGoods = "N";
-        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-		if (afOrderService.isVirtualGoods(virtualMap)) {
-			isQuotaGoods = "Y";
-			String virtualCode = afOrderService.getVirtualCode(virtualMap);
-			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-			resp.addResponseData("goodsTotalAmount", totalVirtualAmount);
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
-			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-			useableAmount = goodsUseableAmount.compareTo(useableAmount) < 0 ? goodsUseableAmount : useableAmount;
-		}
+		AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
+		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		// 判断使用额度
+		BigDecimal useableAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 		
 		BigDecimal bankPayAmount = BigDecimal.ZERO;
 		if (amount.compareTo(useableAmount) > 0) {

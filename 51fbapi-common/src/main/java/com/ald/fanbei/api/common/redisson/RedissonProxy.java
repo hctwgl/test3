@@ -212,7 +212,7 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getListMultimapCache(name, codec);
 	}
 
-	
+
 	@Override
 	public <K, V> RMap<K, V> getMap(String name) {
 		return delegateRedissonClient.getMap(name);
@@ -319,6 +319,7 @@ public class RedissonProxy implements RedissonClient{
 
 	@Override
 	public <M> RTopic<M> getTopic(String name, Codec codec) {
+		
 		return delegateRedissonClient.getTopic(name, codec);
 	}
 
@@ -332,20 +333,17 @@ public class RedissonProxy implements RedissonClient{
 		return delegateRedissonClient.getPatternTopic(pattern, codec);
 	}
 
-
+	
 	@Override
 	public <V> RQueue<V> getQueue(String name) {
 		return delegateRedissonClient.getQueue(name);
 	}
 
-
-
+	
 	@Override
 	public <V> RQueue<V> getQueue(String name, Codec codec) {
 		return delegateRedissonClient.getQueue(name, codec);
 	}
-
-
 
 	@Override
 	public <V> RBlockingQueue<V> getBlockingQueue(String name) {
@@ -432,6 +430,7 @@ public class RedissonProxy implements RedissonClient{
 	public RScheduledExecutorService getExecutorService(Codec codec, String name) {
 		return delegateRedissonClient.getExecutorService(codec, name);
 	}
+
 
 	@Override
 	public RRemoteService getRemoteService() {

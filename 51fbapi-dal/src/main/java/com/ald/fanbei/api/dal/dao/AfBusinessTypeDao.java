@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfBusinessTypeDo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ import java.util.List;
 public interface AfBusinessTypeDao extends BaseDao<AfBusinessTypeDo, Long> {
 
 
-    List<AfBusinessTypeDo> getList();   
+    List<AfBusinessTypeDo> getList();
+
+    String getCodeById(@Param("id")Integer id);
 }

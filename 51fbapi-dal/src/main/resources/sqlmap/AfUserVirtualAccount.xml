@@ -195,14 +195,12 @@ id,gmt_create,gmt_modified,user_id,order_id,status,order_no,code,year,month,amou
         	is_delete = 0
         and 
         	status='Y'
-        AND	
-        	year = #{year}
-        AND
-        	month = #{month}
         AND
         	user_id = #{userId}
         AND
         	code = #{virtualCode}
+        AND
+            gmt_create >= DATE_ADD(CURDATE(),INTERVAL -#{virtualRecentDay}+1 DAY)
        	LIMIT 1
     </select>
     

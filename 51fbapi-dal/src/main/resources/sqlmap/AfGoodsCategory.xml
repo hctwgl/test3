@@ -62,7 +62,7 @@
 	<select id="selectOneLevel" resultType="AfGoodsCategoryDo">
 		SELECT
 			<include refid="activitySqlField"></include>
-		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 'Y' and id != 307 ORDER BY sort
+		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 'Y'  ORDER BY sort
 	</select>
 
 	<select id="selectSecondLevel" resultType="AfGoodsCategoryDo" parameterType="java.lang.Long">
@@ -121,5 +121,14 @@
 			AND level = #{level}
 			AND parent_id = #{parentId}
 			order by sort desc
+	</select>
+
+	<select id="getGoodsCategoryById" resultType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo">
+		SELECT
+		<include refid="activitySqlField"></include>
+		FROM
+		af_goods_category
+		WHERE
+		is_delete=0 AND id = #{rid}
 	</select>
 </mapper>

@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -109,11 +110,12 @@ public class AuthStrongRiskApi implements ApiHandle {
 		Integer appVersion = context.getAppVersion();
 
 		String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
-		boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
-
-		if (!isGetLock) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
-		}
+        	if (bizCacheUtil.getObject(lockKey) == null) {
+        	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+        	} else {
+        	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
+        	}
+        	
 		try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 

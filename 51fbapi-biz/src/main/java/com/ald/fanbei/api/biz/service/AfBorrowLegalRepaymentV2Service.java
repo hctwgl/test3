@@ -22,7 +22,7 @@ public interface AfBorrowLegalRepaymentV2Service extends ParentService<AfRepayme
 			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
 	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
-	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator,AfBorrowCashDo cashDo,String isBalance);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	

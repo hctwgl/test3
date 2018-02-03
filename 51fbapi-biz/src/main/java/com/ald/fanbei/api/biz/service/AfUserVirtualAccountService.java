@@ -20,7 +20,7 @@ public interface AfUserVirtualAccountService extends ParentService<AfUserVirtual
 	 * @param virtualCode
 	 * @return
 	 */
-	BigDecimal getCurrentMonthUsedAmount(Long userId, String virtualCode);
+	BigDecimal getCurrentMonthUsedAmount(Long userId, String virtualCode, Integer virtualRecentDay);
 	
 	/**
 	 *  获取用户当前月份剩余可使用额度
@@ -29,7 +29,7 @@ public interface AfUserVirtualAccountService extends ParentService<AfUserVirtual
 	 * @param virtualTotalAmount 当月总额度
 	 * @return
 	 */
-	BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount);
+	BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount, Integer virtualRecentDay);
 	
 	
 }

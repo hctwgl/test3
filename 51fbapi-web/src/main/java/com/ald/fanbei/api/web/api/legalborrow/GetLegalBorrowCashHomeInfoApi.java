@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.StringUtils;
@@ -107,6 +108,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Resource
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
@@ -132,7 +135,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
-		List<AfResourceDo> borrowHomeConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> borrowHomeConfigList = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
@@ -146,7 +149,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 
-		Map<String, Object> rate = getObjectWithResourceDolist(borrowHomeConfigList);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(borrowHomeConfigList);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String finishFlag = YesNoStatus.NO.getCode();
@@ -161,7 +164,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		String strMinAmount = "0";
 		String strMaxAmount = "0";
 		if (rateInfoDo != null) {
@@ -189,11 +192,10 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				try {
 					JSONObject params = new JSONObject();
 					String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-					String bqsBlackBox = request.getParameter("bqsBlackBox");
 					params.put("ipAddress",CommonUtil.getIpAddr(request));
 					params.put("appName",appName);
-					params.put("bqsBlackBox",bqsBlackBox);
-					params.put("blackBox",request.getParameter("blackBox"));
+					params.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+					params.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 					RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 					String poundage = riskResp.getPoundageRate();
 					if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
@@ -219,11 +221,11 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
 				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-					newInterestRate = info.getDouble("borrowFourteenDay");
+					newInterestRate = info.getDouble("borrowSecondType");
 					totalRate += newInterestRate;
 				}
 				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					newServiceRate = info.getDouble("borrowFourteenDay");
+					newServiceRate = info.getDouble("borrowSecondType");
 					totalRate += newServiceRate;
 				}
 			}
@@ -233,7 +235,10 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(14));
+		String str = rateInfoDo.getTypeDesc().split(",")[rateInfoDo.getTypeDesc().split(",").length-1];
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
+
+
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
@@ -250,7 +255,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			maxAmount= new BigDecimal(strMaxAmount);
 		}
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
-		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
+		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(Integer.parseInt(str)));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
 		BigDecimal tmpLimitAmount = BigDecimal.ZERO;
 		if (tmpGoodsId != null) {
@@ -340,7 +345,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", paidAmount);
 			data.put("overdueAmount", overdueAmount);
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			Date now = DateUtil.getEndOfDate(new Date());
 
 			data.put("overdueStatus", "N");
@@ -573,7 +578,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("isLogin", "N");
 
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 		List<Object> bannerList = new ArrayList<Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 
@@ -583,7 +588,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
 		}
 
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -594,7 +599,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		data.put("overdueRate", rate.get("overduePoundage"));
 
 		// 获取后台配置的最大金额和最小金额
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);
 
 		String strMinAmount = rateInfoDo.getValue4();
 		String strMaxAmount = rateInfoDo.getValue1();
