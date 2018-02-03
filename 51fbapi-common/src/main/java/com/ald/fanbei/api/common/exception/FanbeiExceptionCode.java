@@ -294,7 +294,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
     LOAN_REPAY_REBATE_ERROR("LOAN_REPAY_REBATE_ERROR",2015,"loan repay rebate error","余额还款失败，请检查您的输入或重试"),
     BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2016,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
-    BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2012,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
     /* 2100-2200 贷款相关！！！！！！！ */
     LOAN_NO_AUTHZ("",2101,"", "您还未认证"),
     LOAN_QUOTA_TOO_SMALL("",2102,"", "可用额度小于最小借款额"),
