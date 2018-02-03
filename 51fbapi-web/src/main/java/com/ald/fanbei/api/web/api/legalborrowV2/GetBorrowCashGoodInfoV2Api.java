@@ -134,12 +134,14 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		} else {
 			newRate = BigDecimal.valueOf(0.36);
 		}
+		
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(borrowAmount).multiply(borrowDay);
 		if (profitAmount.compareTo(BigDecimal.ZERO) <= 0) {
 			profitAmount = BigDecimal.ZERO;
 		}
+		logger.info("GetBorrowCashGoodInfoV2Api profitAmount =>{}",profitAmount);
 		// 计算服务费和手续费
 		BigDecimal serviceFee = new BigDecimal(newServiceRate / 100).multiply(borrowAmount).multiply(borrowDay)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
