@@ -8,26 +8,27 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -71,6 +72,9 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 	private AfGoodsPriceService afGoodsPriceService;
 	@Resource
 	NumberWordFormat numberWordFormat;
+	
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoV2Api.class);
 
@@ -80,7 +84,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		Map<String, Object> respData = Maps.newHashMap();
 		// 判断用户是否登录
 		Long userId = context.getUserId();
-
+		
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
 		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
@@ -95,6 +99,19 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			params.put("appName",appName);
 			params.put("bqsBlackBox",bqsBlackBox);
 			params.put("blackBox",request.getParameter("blackBox"));
+			try{
+				AfBorrowCashDo borrowCash = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+				if(borrowCash != null) {
+					String status = borrowCash.getStatus();
+					if(StringUtils.equals(status, "TRANSED")) {
+						// 借款未结清，说明是续期查询商品
+						borrowType = borrowCash.getType();
+					}
+				}
+			} catch(Exception e) {
+				logger.error("get user last borrow info error,msg=>{}", e.getMessage());
+			}
+			
 			oriRate = riskUtil.getRiskOriRate(userId,params,borrowType);
 		}
 
