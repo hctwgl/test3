@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dbunit.util.Base64;
+
 import com.ald.fanbei.api.biz.bo.BoluomePushPayRequestBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushRefundRequestBo;
@@ -75,6 +77,10 @@ public class Test {
 //		}
 	    
         	try {
+        	    String ss = "eyJwcm9kdWN0Q29kZSI6IueUteiEkeW5s+advyIsInByb2R1Y3RDb2RlSWQiOiIzMSIsImJ1c2luZXNzVHlwZSI6IlNFTEZTVVBQT1JUIn0=".replaceAll("\r|\n", "");
+        	    
+        	    System.out.println(ss);
+        	    System.out.println(org.bouncycastle.util.encoders.Base64.decode(ss).toString());
 //        	    //,        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"
 //        	    //AfBoluomeShoujiDo afBoluomeShoujiDo = JSON.parseObject(" {        \"area\": \"北京\",        \"canCancel\": 0,        \"cancelledAt\": 1513056463818,        \"channel\": \"dhst\",        \"displayStatus\": \"已取消\",        \"flow\": \"50M\",        \"goodsId\": \"cucc_50M\", \"id\": \"ala102894012481600\",        \"isp\": \"联通\",        \"name\": \"(全国)北京联通50M - 186****5787\",        \"orderPrice\": 5.9,        \"orderType\": \"liuliang\",        \"partnerId\": \"\",        \"phone\": \"18612115787\",        \"price\": 5.9,        \"status\": 8,        \"userId\": \"1953217\",        \"userPhone\": \"13043324643\"    ,        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"}",AfBoluomeShoujiDo.class);
 //        	    //AfBoluomeJiayoukaDo afBoluomeShoujiDo = JSON.parseObject("{        \"canCancel\": 1,        \"cardId\": \"1000113200005437747\",        \"cardnum\": 1,        \"categoryId\": \"1\",        \"channel\": \"gaoyang\",        \"displayStatus\": \"待支付\",        \"facePrice\": \"100.0\",        \"gameid\": \"GAME60560\",        \"id\": \"ala002893302465069\",        \"isp\": \"中石化\",        \"name\": \"中石化卡:100****7747 充值 100.0元\",        \"orderPrice\": 100,        \"orderType\": \"jiayouka\",        \"orderTypeName\": \"加油卡\",        \"partnerId\": \"\",        \"phone\": \"18612115787\",        \"price\": 100,        \"productId\": \"1503233307\",        \"status\": 2,        \"userId\": \"980186\",        \"userName\": \"\",        \"userPhone\": \"18850843825\",        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"}",AfBoluomeJiayoukaDo.class);
@@ -83,46 +89,44 @@ public class Test {
 //        	   // AfBoluomeWaimaiDo afBoluomeJiudianDo  = JSON.parseObject("{        \"canCancel\": 0,        \"cancelledAt\": 1513070958782,        \"cartId\": \"cf33eba4df1c11e79a5f707990a81cc5\",        \"channel\": \"ele\",        \"channelName\": \"饿了么\",        \"contact\": {            \"address\": \"星耀城1期江陵路2028附近1栋2304\",            \"latitude\": 30.2135370853725,            \"longitude\": 120.214486948808,            \"name\": \"马巧盼\"        },        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },        \"couponId\": \"18879352\",        \"deliveryTimeShow\": \"18:19\",        \"displayStatus\": \"已取消\",        \"food\": {            \"abandoned_extra\": [],            \"group\": [                [                    {                        \"attrs\": [],                        \"category_id\": 1,                        \"garnish\": [],                        \"id\": 70597072,                        \"name\": \"梅干菜扣肉套餐\",                        \"new_specs\": [],                        \"price\": 29,                        \"quantity\": 3,                        \"sale_mode\": 0,                        \"sku_code\": \"\",                        \"sku_id\": \"3890636101\",                        \"specs\": [],                        \"supply_type\": 0,                        \"upc_code\": \"\",                        \"vfood_id\": 30398569,                        \"weight\": 1                    }                ]            ]        },        \"icon\": \"https://fuss10.elemecdn.com/8/d2/e45c0cae4109952d8ab0d6e1a670dpng.png?imageView2/1/w/150/h/150/format/png\",        \"id\": \"ala202895912378377\",        \"isOnlinePaid\": 1,        \"isVipDelivery\": 0,        \"name\": \"老娘舅（杭州星耀城店）\",        \"orderPrice\": 81,        \"orderType\": \"waimai\",        \"orderTypeName\": \"外卖\",        \"partnerId\": \"3016562176256905297\",        \"phone\": \"18730627127\",        \"price\": 71,        \"quantity\": 1,       \"restaurantId\": 50806125,        \"restaurantName\": \"老娘舅（杭州星耀城店）\",        \"restaurantPhone\": \"18058410527\",        \"status\": 8,        \"userId\": \"1953217\",        \"userPhone\": \"13043324643\"    }",AfBoluomeWaimaiDo.class);
 //        	    
 //        	   // System.out.println(afBoluomeJiudianDo.toString());
-//        	    Map<String, String> params = new HashMap<String, String>();
-//        	    params.put(BoluomeCore.ORDER_ID, "ala202984855614619");
-//        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime()));
-//        
-//        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-//        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
-//        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
-//        	    // "testC1b6x@6aH$2dlw");
-//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-//        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
-//        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
-//        
-        	    System.out.println(AesUtil.decrypt("EjxHo0U8fOjuwprOOe5jjg==",
-               	     "testC1b6x@6aH$2dlw"));
+
+        	    Map<String, String> params = new HashMap<String, String>();
+        	    params.put(BoluomeCore.ORDER_ID, "ala203261407055990");
+        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(System.currentTimeMillis()/1000));
+
+        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
+        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
+        	    // "testC1b6x@6aH$2dlw");
+        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
+        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+
+        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+        	    // "testC1b6x@6aH$2dlw"));
+        	    params.put("appKey", "7887978286");
+        	    params.put(BoluomeCore.SIGN, sign);
+        	    String paramsStr = BoluomeCore.createLinkString(params);
+
+        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
+        	    System.out.println(HttpUtil.doGet(urlString, 100));
         	    
-//        	     params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-//        	     "testC1b6x@6aH$2dlw"));
-//        	    params.put("appKey", "7887978286");
-//        	    params.put(BoluomeCore.SIGN, sign);
-//        	    String paramsStr = BoluomeCore.createLinkString(params);
-//        
-//        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?appKey=7887978286&orderId=ala202984909354292&sign=51EED26F1F954FBE0635F56D6DD02BA2&timestamp=1513748955";//"https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
-//        	    System.out.println(HttpUtil.doGet(urlString, 100));        	    
-        	    
-//        	    BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
-//        	    reqBo.setOrderId("ala202998187465112");
-//        	    reqBo.setStatus(PushStatus.REFUND_SUC.getCode());
-//        	    reqBo.setAmount(new BigDecimal("2.5"));
-//        	    reqBo.setUserId(5972008L);
-//        	    reqBo.setRefundNo("ala202998187465112");
-//        	    reqBo.setTimestamp(System.currentTimeMillis());
-//        
-//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-//        	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
-//        	    String sign = DigestUtil.MD5(beforeSign);        
-//        	    reqBo.setSign(sign);
-//        	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
-//        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
-//        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
-        	    
+        	    BoluomePushRefundRequestBo reqBo = new BoluomePushRefundRequestBo();
+        	    reqBo.setOrderId("ala202998187465112");
+        	    reqBo.setStatus(PushStatus.REFUND_SUC.getCode());
+        	    reqBo.setAmount(new BigDecimal("2.5"));
+        	    reqBo.setUserId(5972008L);
+        	    reqBo.setRefundNo("ala202998187465112");
+        	    reqBo.setTimestamp(System.currentTimeMillis());
+        
+        	    beforeSign = "7887978286" + BoluomeCore.concatParams(reqBo) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+        	    System.out.println(String.format("beforeSignStr params = %s, beforeSign = %s", reqBo, beforeSign));
+        	    sign = DigestUtil.MD5(beforeSign);        
+        	    reqBo.setSign(sign);
+        	    System.out.println(String.format("pushPayStatus begin, reqBo = %s", reqBo));
+        	    String reqResult = HttpUtil.doHttpPostJsonParam("https://91ala.otosaas.com/api/refundment/v1", JSONObject.toJSONString(reqBo));
+        	    System.out.println(reqResult + ",pushPayStatus:"+reqBo);
+
 //        	    getBoluomeString("ala202987058023378","5885340","7");
 //        	    getBoluomeString("ala202987059088560","5895274","0.01");
 //        	    getBoluomeString("ala202987131293491","5880995","14");

@@ -443,11 +443,10 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 
 		try {
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-			String bqsBlackBox = request.getParameter("bqsBlackBox");
 			data.put("ipAddress", CommonUtil.getIpAddr(request));
 			data.put("appName",appName);
-			data.put("bqsBlackBox",bqsBlackBox);
-			data.put("blackBox",request.getParameter("blackBox"));
+			data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 			// 用户点击借钱页面时去风控获取用户的借钱手续费
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
