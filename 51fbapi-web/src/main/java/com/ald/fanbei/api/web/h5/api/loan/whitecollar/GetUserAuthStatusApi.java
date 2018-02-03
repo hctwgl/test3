@@ -20,8 +20,8 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
 
-@Component("getUserAuthStatusApi")
 @NeedLogin
+@Component("getUserAuthStatusApi")
 public class GetUserAuthStatusApi implements H5Handle {
 	
 	@Resource
