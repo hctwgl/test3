@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
+
+
 
 
 
@@ -114,9 +117,55 @@ public class GetMineInfoApi implements ApiHandle {
 			String phone = randomPhone();
 			data.put("customerPhone", phone);
 		} 
+		//增加运营位
+		
+		// 快速导航信息
+		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
+						afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()));
+		
+		// 快速导航
+		if (!navigationInfo.isEmpty()) {
+				data.put("navigationInfo", navigationInfo);
+		}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
+	
+	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist) {
+		Map<String, Object> navigationInfo = new HashMap<String, Object>();
+		List<Object> navigationList = new ArrayList<Object>();
+		int navCount = navResclist.size();
+		for (int i = 0; i < navCount; i++) {
+			// 如果配置大于4个，小于8个，则只显示4个
+		      
+			if (navCount >= 4 && navCount < 8) {
+				if (i >= 4) {
+					break;
+				}
+			} else if (navCount >= 8) {
+				// 如果配置大于等于8个，则只显示8个
+				if (i >= 8) {
+					break;
+				}
+			}else if(navCount < 4 ){
+			    break;
+			}
+			AfResourceDo afResourceDo = navResclist.get(i);
+			String secType = afResourceDo.getSecType();
+			Map<String, Object> dataMap = new HashMap<String, Object>();
+			dataMap.put("imageUrl", afResourceDo.getValue());
+			dataMap.put("titleName", afResourceDo.getName());
+			dataMap.put("type", secType);
+			dataMap.put("content", afResourceDo.getValue2());
+			dataMap.put("sort", afResourceDo.getSort());
+			dataMap.put("color", afResourceDo.getValue3());
+			navigationList.add(dataMap);
+		}
+		navigationInfo.put("navigationList", navigationList);
+		return navigationInfo;
+	}
+
 	
 	/**
 	 * 随机生成一个客服电话号码
