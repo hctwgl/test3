@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.web.h5.api.loan;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -24,14 +29,23 @@ public class GetLoanRepaymentsApi implements H5Handle {
 	
 	@Resource
 	private AfLoanRepaymentService afLoanRepaymentService;
+	@Resource
+	private AfLoanPeriodsService afLoanPeriodsService;
 	
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		Long loanId = Long.valueOf(context.getData("loanId").toString());
 		
+		BigDecimal totalRepaidAmount = BigDecimal.ZERO;
+		List<AfLoanPeriodsDo> periods = afLoanPeriodsService.listByLoanId(loanId);
+		for(AfLoanPeriodsDo p : periods) {
+			totalRepaidAmount = totalRepaidAmount.add(p.getRepayAmount());
+		}
+		resp.addResponseData("totalRepaidAmount", totalRepaidAmount);
+		
 		List<AfLoanRepaymentDo> rs = afLoanRepaymentService.listDtoByLoanId(loanId);
-		resp.setResponseData(rs);
+		resp.addResponseData("repayments", rs);
 		return resp;
 	}
 	
