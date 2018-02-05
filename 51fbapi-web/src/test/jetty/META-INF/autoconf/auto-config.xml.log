@@ -1,9 +1,0 @@
-Last Configured at: Sat Feb 03 20:59:53 CST 2018
-
-Base URL: file:/C:/Users/rongbo/Desktop/51fanbei/code_new/51fbapi/51fbapi-web/src/main/webapp/
-Descriptor: META-INF/autoconf/auto-config.xml
-
-Generating WEB-INF/classes/props/config.properties [ISO-8859-1] => WEB-INF/classes/props/config.properties [ISO-8859-1]
-Generating WEB-INF/classes/spring/biz-beans.xml [UTF-8] => WEB-INF/classes/spring/biz-beans.xml [UTF-8]
-Generating WEB-INF/classes/props/encrypt.properties [ISO-8859-1] => WEB-INF/classes/props/encrypt.properties [ISO-8859-1]
-Generating WEB-INF/classes/props/log4j.xml [UTF-8] => WEB-INF/classes/props/log4j.xml [UTF-8]
