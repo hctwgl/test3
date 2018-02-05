@@ -734,7 +734,7 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal offlineAmount = new BigDecimal(limitAmount);
-			if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
+			if (afUserAuthStatusTrain == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
 				offlineAmount = BigDecimal.ZERO;
 			}
 
