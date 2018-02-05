@@ -48,7 +48,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
     /**
      * 登录用户名
      */
-    private String userPhone;
+    private String userName;
 
     /**
      * 订单状态
@@ -78,7 +78,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
     /**
      * 购票数量
      */
-    private short count;
+    private short ticketCount;
 
     /**
      * 渠道
@@ -105,7 +105,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
     /**
      * 乘车日期
      */
-    private String date;
+    private String startDate;
 
     /**
      * 开车时间
@@ -115,12 +115,12 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
     /**
      * 起始站
      */
-    private String from;
+    private String station;
 
     /**
      * 到达站
      */
-    private String to;
+    private String destination;
 
     /**
      * 到达时间
@@ -245,8 +245,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 登录用户名
      */
-    public String getUserPhone() {
-	return userPhone;
+    @JSONField(name="userPhone")
+    public String getUserName() {
+	return userName;
     }
 
     /**
@@ -255,8 +256,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param userPhone
      *            要设置的登录用户名
      */
-    public void setUserPhone(String userPhone) {
-	this.userPhone = userPhone;
+    @JSONField(name="userPhone")
+    public void setUserName(String userName) {
+	this.userName = userName;
     }
 
     /**
@@ -359,8 +361,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 购票数量
      */
-    public short getCount() {
-	return count;
+    @JSONField(name="count")
+    public short getTicketCount() {
+	return ticketCount;
     }
 
     /**
@@ -369,8 +372,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param count
      *            要设置的购票数量
      */
-    public void setCount(short count) {
-	this.count = count;
+    @JSONField(name="count")
+    public void setTicketCount(short ticketCount) {
+	this.ticketCount = ticketCount;
     }
 
     /**
@@ -458,8 +462,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 乘车日期
      */
-    public String getDate() {
-	return date;
+    @JSONField(name="date")
+    public String getStartDate() {
+	return startDate;
     }
 
     /**
@@ -468,8 +473,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param date
      *            要设置的乘车日期
      */
-    public void setDate(String date) {
-	this.date = date;
+    @JSONField(name="date")
+    public void setStartDate(String startDate) {
+	this.startDate = startDate;
     }
 
     /**
@@ -496,8 +502,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 起始站
      */
-    public String getFrom() {
-	return from;
+    @JSONField(name="from")
+    public String getStation() {
+	return station;
     }
 
     /**
@@ -506,8 +513,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param from
      *            要设置的起始站
      */
-    public void setFrom(String from) {
-	this.from = from;
+    @JSONField(name="from")
+    public void setStation(String station) {
+	this.station = station;
     }
 
     /**
@@ -515,8 +523,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 到达站
      */
-    public String getTo() {
-	return to;
+    @JSONField(name="to")
+    public String getDestination() {
+	return destination;
     }
 
     /**
@@ -525,8 +534,9 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param to
      *            要设置的到达站
      */
-    public void setTo(String to) {
-	this.to = to;
+    @JSONField(name="to")
+    public void setDestination(String destination) {
+	this.destination = destination;
     }
 
     /**

@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,third_order_no,user_id,user_phone,status,price,order_type,order_price,display_status,`count`,channel,can_cancel,contactor_name,contactor_phone,date,start_time,`from`,`to`,end_time,train_number,seat_name,name,coupon_price,coupon_title,coupon_id 
+        id rid,gmt_create,gmt_modified,third_order_no,user_id,user_name,status,price,order_type,order_price,display_status,`ticket_count`,channel,can_cancel,contactor_name,contactor_phone,start_date,start_time,`station`,`destination`,end_time,train_number,seat_name,name,coupon_price,coupon_title,coupon_id 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -26,8 +26,8 @@
         <if test="userId != null and userId != ''">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="userPhone != null and userPhone != ''">
-            AND user_phone = #{userPhone,jdbcType=VARCHAR}
+        <if test="userName != null and userName != ''">
+            AND user_name = #{userName,jdbcType=VARCHAR}
         </if>
         <if test="status != null and status != ''">
             AND status = #{status,jdbcType=INTEGER}
@@ -44,8 +44,8 @@
         <if test="displayStatus != null and displayStatus != ''">
             AND display_status = #{displayStatus,jdbcType=VARCHAR}
         </if>
-        <if test="count != null and count != ''">
-            AND `count` = #{count,jdbcType=INTEGER}
+        <if test="ticketCount != null and ticketCount != ''">
+            AND `ticket_count` = #{ticketCount,jdbcType=INTEGER}
         </if>
         <if test="channel != null and channel != ''">
             AND channel = #{channel,jdbcType=VARCHAR}
@@ -59,20 +59,20 @@
         <if test="contactorPhone != null and contactorPhone != ''">
             AND contactor_phone = #{contactorPhone,jdbcType=VARCHAR}
         </if>
-        <if test="date != null and date != ''">
-            AND date = #{date,jdbcType=VARCHAR}
+        <if test="startDate != null and startDate != ''">
+            AND start_date = #{startDate,jdbcType=TIMESTAMP}
         </if>
         <if test="startTime != null and startTime != ''">
-            AND start_time = #{startTime,jdbcType=VARCHAR}
+            AND start_time = #{startTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="from != null and from != ''">
-            AND `from` = #{from,jdbcType=VARCHAR}
+        <if test="station != null and station != ''">
+            AND `station` = #{station,jdbcType=VARCHAR}
         </if>
-        <if test="to != null and to != ''">
-            AND `to` = #{to,jdbcType=VARCHAR}
+        <if test="destination != null and destination != ''">
+            AND `destination` = #{destination,jdbcType=VARCHAR}
         </if>
         <if test="endTime != null and endTime != ''">
-            AND end_time = #{endTime,jdbcType=VARCHAR}
+            AND end_time = #{endTime,jdbcType=TIMESTAMP}
         </if>
         <if test="trainNumber != null and trainNumber != ''">
             AND train_number = #{trainNumber,jdbcType=VARCHAR}
@@ -114,8 +114,8 @@
 	        <if test="userId != null">        
 	            user_id,
 	        </if>
-	        <if test="userPhone != null">        
-	            user_phone,
+	        <if test="userName != null">        
+	            user_name,
 	        </if>
 	        <if test="status != null">        
 	            status,
@@ -132,8 +132,8 @@
 	        <if test="displayStatus != null">        
 	            display_status,
 	        </if>
-	        <if test="count != null">        
-	            `count`,
+	        <if test="ticketCount != null">        
+	            `ticket_count`,
 	        </if>
 	        <if test="channel != null">        
 	            channel,
@@ -147,17 +147,17 @@
 	        <if test="contactorPhone != null">        
 	            contactor_phone,
 	        </if>
-	        <if test="date != null">        
-	            date,
+	        <if test="startDate != null">        
+	            start_date,
 	        </if>
 	        <if test="startTime != null">        
 	            start_time,
 	        </if>
-	        <if test="from != null">        
-	            `from`,
+	        <if test="station != null">        
+	            `station`,
 	        </if>
-	        <if test="to != null">        
-	            `to`,
+	        <if test="destination != null">        
+	            `destination`,
 	        </if>
 	        <if test="endTime != null">        
 	            end_time,
@@ -195,8 +195,8 @@
 		    <if test="userId != null" >
 		       #{userId,jdbcType=INTEGER},
 		    </if>
-		    <if test="userPhone != null" >
-		       #{userPhone,jdbcType=VARCHAR},
+		    <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
 		    </if>
 		    <if test="status != null" >
 		       #{status,jdbcType=INTEGER},
@@ -213,8 +213,8 @@
 		    <if test="displayStatus != null" >
 		       #{displayStatus,jdbcType=VARCHAR},
 		    </if>
-		    <if test="count != null" >
-		       #{count,jdbcType=INTEGER},
+		    <if test="ticketCount != null" >
+		       #{ticket_count,jdbcType=INTEGER},
 		    </if>
 		    <if test="channel != null" >
 		       #{channel,jdbcType=VARCHAR},
@@ -228,17 +228,17 @@
 		    <if test="contactorPhone != null" >
 		       #{contactorPhone,jdbcType=VARCHAR},
 		    </if>
-		    <if test="date != null" >
-		       #{date,jdbcType=VARCHAR},
+		    <if test="startDate != null" >
+		       #{startDate,jdbcType=VARCHAR},
 		    </if>
 		    <if test="startTime != null" >
 		       #{startTime,jdbcType=VARCHAR},
 		    </if>
-		    <if test="from != null" >
-		       #{from,jdbcType=VARCHAR},
+		    <if test="station != null" >
+		       #{station,jdbcType=VARCHAR},
 		    </if>
-		    <if test="to != null" >
-		       #{to,jdbcType=VARCHAR},
+		    <if test="destination != null" >
+		       #{destination,jdbcType=VARCHAR},
 		    </if>
 		    <if test="endTime != null" >
 		       #{endTime,jdbcType=VARCHAR},
@@ -279,8 +279,8 @@
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="userPhone != null and userPhone != '' ">        
-                user_phone = #{userPhone,jdbcType=VARCHAR},                
+            <if test="userName != null and userName != '' ">        
+                user_name = #{userName,jdbcType=VARCHAR},                
             </if>
             <if test="status != null and status != '' ">        
                 status = #{status,jdbcType=INTEGER},                
@@ -297,8 +297,8 @@
             <if test="displayStatus != null and displayStatus != '' ">        
                 display_status = #{displayStatus,jdbcType=VARCHAR},                
             </if>
-            <if test="count != null and count != '' ">        
-                `count` = #{count,jdbcType=INTEGER},                
+            <if test="ticketCount != null and ticketCount != '' ">        
+                `ticket_count` = #{ticketCount,jdbcType=INTEGER},                
             </if>
             <if test="channel != null and channel != '' ">        
                 channel = #{channel,jdbcType=VARCHAR},                
@@ -312,20 +312,20 @@
             <if test="contactorPhone != null and contactorPhone != '' ">        
                 contactor_phone = #{contactorPhone,jdbcType=VARCHAR},                
             </if>
-            <if test="date != null and date != '' ">        
-                date = #{date,jdbcType=VARCHAR},                
+            <if test="startDate != null and startDate != '' ">        
+                start_date = #{startDate,jdbcType=TIMESTAMP},                
             </if>
             <if test="startTime != null and startTime != '' ">        
-                start_time = #{startTime,jdbcType=VARCHAR},                
+                start_time = #{startTime,jdbcType=TIMESTAMP},                
             </if>
-            <if test="from != null and from != '' ">        
-                `from` = #{from,jdbcType=VARCHAR},                
+            <if test="station != null and station != '' ">        
+                `station` = #{station,jdbcType=VARCHAR},                
             </if>
-            <if test="to != null and to != '' ">        
-                `to` = #{to,jdbcType=VARCHAR},                
+            <if test="destination != null and destination != '' ">        
+                `destination` = #{destination,jdbcType=VARCHAR},                
             </if>
             <if test="endTime != null and endTime != '' ">        
-                end_time = #{endTime,jdbcType=VARCHAR},                
+                end_time = #{endTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="trainNumber != null and trainNumber != '' ">        
                 train_number = #{trainNumber,jdbcType=VARCHAR},                

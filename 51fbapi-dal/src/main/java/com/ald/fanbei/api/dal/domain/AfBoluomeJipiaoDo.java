@@ -48,7 +48,7 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
     /**
      * 登录用户名
      */
-    private String userPhone;
+    private String userName;
 
     /**
      * 订单状态
@@ -78,7 +78,7 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
     /**
      * 购票数量
      */
-    private short count;
+    private short ticketCount;
 
     /**
      * 渠道
@@ -206,8 +206,9 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      *
      * @return 登录用户名
      */
-    public String getUserPhone() {
-	return userPhone;
+    @JSONField(name="userPhone")
+    public String getUserName() {
+	return userName;
     }
 
     /**
@@ -216,8 +217,9 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      * @param userPhone
      *            要设置的登录用户名
      */
-    public void setUserPhone(String userPhone) {
-	this.userPhone = userPhone;
+    @JSONField(name="userPhone")
+    public void setUserName(String userName) {
+	this.userName = userName;
     }
 
     /**
@@ -320,8 +322,9 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      *
      * @return 购票数量
      */
-    public short getCount() {
-	return count;
+    @JSONField(name="count")
+    public short getTicketCount() {
+	return ticketCount;
     }
 
     /**
@@ -330,8 +333,9 @@ public class AfBoluomeJipiaoDo extends BoluomeCouponDto {
      * @param count
      *            要设置的购票数量
      */
-    public void setCount(short count) {
-	this.count = count;
+    @JSONField(name="count")
+    public void setTicketCount(short ticketCount) {
+	this.ticketCount = ticketCount;
     }
 
     /**

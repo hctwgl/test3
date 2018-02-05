@@ -30,10 +30,10 @@
             AND arrival_city = #{arrivalCity,jdbcType=VARCHAR}
         </if>
         <if test="arrivalDate != null and arrivalDate != ''">
-            AND arrival_date = #{arrivalDate,jdbcType=VARCHAR}
+            AND arrival_date = #{arrivalDate,jdbcType=TIMESTAMP}
         </if>
         <if test="arrivalTime != null and arrivalTime != ''">
-            AND arrival_time = #{arrivalTime,jdbcType=VARCHAR}
+            AND arrival_time = #{arrivalTime,jdbcType=TIMESTAMP}
         </if>
         <if test="cabinType != null and cabinType != ''">
             AND cabin_type = #{cabinType,jdbcType=VARCHAR}
@@ -51,13 +51,13 @@
             AND departure_city = #{departureCity,jdbcType=VARCHAR}
         </if>
         <if test="departureDate != null and departureDate != ''">
-            AND departure_date = #{departureDate,jdbcType=VARCHAR}
+            AND departure_date = #{departureDate,jdbcType=TIMESTAMP}
         </if>
         <if test="departureTerminal != null and departureTerminal != ''">
             AND departure_terminal = #{departureTerminal,jdbcType=VARCHAR}
         </if>
         <if test="departureTime != null and departureTime != ''">
-            AND departure_time = #{departureTime,jdbcType=VARCHAR}
+            AND departure_time = #{departureTime,jdbcType=TIMESTAMP}
         </if>
         <if test="duration != null and duration != ''">
             AND duration = #{duration,jdbcType=VARCHAR}
@@ -211,10 +211,10 @@
                 arrival_city = #{arrivalCity,jdbcType=VARCHAR},                
             </if>
             <if test="arrivalDate != null and arrivalDate != '' ">        
-                arrival_date = #{arrivalDate,jdbcType=VARCHAR},                
+                arrival_date = #{arrivalDate,jdbcType=TIMESTAMP},                
             </if>
             <if test="arrivalTime != null and arrivalTime != '' ">        
-                arrival_time = #{arrivalTime,jdbcType=VARCHAR},                
+                arrival_time = #{arrivalTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="cabinType != null and cabinType != '' ">        
                 cabin_type = #{cabinType,jdbcType=VARCHAR},                
@@ -232,13 +232,13 @@
                 departure_city = #{departureCity,jdbcType=VARCHAR},                
             </if>
             <if test="departureDate != null and departureDate != '' ">        
-                departure_date = #{departureDate,jdbcType=VARCHAR},                
+                departure_date = #{departureDate,jdbcType=TIMESTAMP},                
             </if>
             <if test="departureTerminal != null and departureTerminal != '' ">        
                 departure_terminal = #{departureTerminal,jdbcType=VARCHAR},                
             </if>
             <if test="departureTime != null and departureTime != '' ">        
-                departure_time = #{departureTime,jdbcType=VARCHAR},                
+                departure_time = #{departureTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="duration != null and duration != '' ">        
                 duration = #{duration,jdbcType=VARCHAR},                

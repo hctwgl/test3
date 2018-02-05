@@ -24,7 +24,7 @@
             AND third_order_no = #{thirdOrderNo,jdbcType=VARCHAR}
         </if>
         <if test="birthday != null and birthday != ''">
-            AND birthday = #{birthday,jdbcType=VARCHAR}
+            AND birthday = #{birthday,jdbcType=TIMESTAMP}
         </if>
         <if test="credentialCode != null and credentialCode != ''">
             AND credential_code = #{credentialCode,jdbcType=VARCHAR}
@@ -85,7 +85,7 @@
 		       #{thirdOrderNo,jdbcType=VARCHAR},
 		    </if>
 		    <if test="birthday != null" >
-		       #{birthday,jdbcType=VARCHAR},
+		       #{birthday,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="credentialCode != null" >
 		       #{credentialCode,jdbcType=VARCHAR},
@@ -115,7 +115,7 @@
                 third_order_no = #{thirdOrderNo,jdbcType=VARCHAR},                
             </if>
             <if test="birthday != null and birthday != '' ">        
-                birthday = #{birthday,jdbcType=VARCHAR},                
+                birthday = #{birthday,jdbcType=TIMESTAMP},                
             </if>
             <if test="credentialCode != null and credentialCode != '' ">        
                 credential_code = #{credentialCode,jdbcType=VARCHAR},                

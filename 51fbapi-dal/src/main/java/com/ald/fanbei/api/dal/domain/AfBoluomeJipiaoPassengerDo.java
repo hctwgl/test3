@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -45,7 +47,7 @@ import java.math.BigDecimal;
     /**
      * 生日
      */
-    private String birthday;
+    private Date birthday;
 
     /**
      * 证件号码
@@ -65,7 +67,7 @@ import java.math.BigDecimal;
     /**
      * 乘客姓名
      */
-    private String name;
+    private String passengerName;
 
 
     /**
@@ -164,7 +166,7 @@ import java.math.BigDecimal;
      *
      * @return 生日
      */
-    public String getBirthday(){
+    public Date getBirthday(){
       return birthday;
     }
 
@@ -173,7 +175,7 @@ import java.math.BigDecimal;
      * 
      * @param birthday 要设置的生日
      */
-    public void setBirthday(String birthday){
+    public void setBirthday(Date birthday){
       this.birthday = birthday;
     }
 
@@ -236,8 +238,9 @@ import java.math.BigDecimal;
      *
      * @return 乘客姓名
      */
-    public String getName(){
-      return name;
+    @JSONField(name="name")
+    public String getPassengerName(){
+      return passengerName;
     }
 
     /**
@@ -245,8 +248,9 @@ import java.math.BigDecimal;
      * 
      * @param name 要设置的乘客姓名
      */
-    public void setName(String name){
-      this.name = name;
+    @JSONField(name="name")
+    public void setPassengerName(String passengerName){
+      this.passengerName = passengerName;
     }
 
 }
