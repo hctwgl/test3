@@ -432,7 +432,7 @@
             <if test="overdueDays != null and overdueDays != '' ">        
                 overdue_days = #{overdueDays,jdbcType=INTEGER},                
             </if>
-            <if test="overdueAmount != null and overdueAmount != '' ">        
+            <if test="overdueAmount != null">        
                 overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
             </if>
             <if test="overdueRate != null and overdueRate != '' ">        
