@@ -538,7 +538,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 					break;
 				}
 			}
-			if (afViewAssetBorrowCashDo.getType()==minBorrowTime) {
+			if (StringUtils.equals(afViewAssetBorrowCashDo.getType(), minBorrowTime)) {
 				borrowRate=new BigDecimal((String)jsonObject.get("borrowFirstType"));
 			}else{
 				borrowRate=new BigDecimal((String) jsonObject.get("borrowSecondType"));
@@ -634,7 +634,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				JSONObject jsonObject = array.getJSONObject(i);
 				Integer confNper= (Integer) jsonObject.get("nper");
 				if (nper == confNper) {
-					borrowRate=new BigDecimal((String)jsonObject.get("rate"));
+					borrowRate=(BigDecimal) jsonObject.get("rate");
 					break;
 				}
 			}
