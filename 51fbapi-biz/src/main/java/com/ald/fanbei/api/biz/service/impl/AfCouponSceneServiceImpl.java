@@ -4,10 +4,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfCouponSceneService;
+import com.ald.fanbei.api.common.enums.CouponScene;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.dao.AfCouponSceneDao;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.alibaba.fastjson.JSONObject;
@@ -36,5 +40,27 @@ public class AfCouponSceneServiceImpl implements AfCouponSceneService {
 		String signIn = signInRule.getString(key);
 		return JSONObject.parseArray(signIn, CouponSceneRuleBo.class);
 	}
+	@Override
+	public List<CouponSceneRuleBo> getRules(CouponScene scene) {
+		AfCouponSceneDo afCouponSceneDo = afCouponSceneDao.getCouponSceneByType(scene.getType());
+		JSONObject signInRule = JSONObject.parseObject(afCouponSceneDo.getRuleJson());
+		String signIn = signInRule.getString(scene.getKey());
+		return JSONObject.parseArray(signIn, CouponSceneRuleBo.class);
+	}
+	@Override
+	public List<Long> getCounponIds(CouponScene scene) {
+		List<CouponSceneRuleBo> rules = getRules(scene);
+		List<Long> couponIds = null;
+		if (CollectionUtils.isNotEmpty(rules)) {
+			couponIds = CollectionConverterUtil.convertToListFromList(rules, new Converter<CouponSceneRuleBo, Long>() {
+				@Override
+				public Long convert(CouponSceneRuleBo source) {
+					return source.getCouponId();
+				}
+			});
+		}
+		return couponIds;
+	}
 
+	
 }

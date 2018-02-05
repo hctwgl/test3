@@ -3,16 +3,20 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,6 +28,9 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.CouponActivityType;
+import com.ald.fanbei.api.common.enums.CouponCateGoryType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -34,6 +41,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author suweili 2017年3月24日下午5:04:43
@@ -80,8 +88,15 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
     @Resource
     AfFundSideBorrowCashService afFundSideBorrowCashService;
 
+    @Autowired
+    KafkaSync kafkaSync;
     @Resource
     ContractPdfThreadPool contractPdfThreadPool;
+    @Resource
+    AfUserCouponService afUserCouponService;
+    
+    
+    
 
     @Override
     public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -146,7 +161,30 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         "afRecommendUserService.updateRecommendByBorrow error，borrowCashId=" + afBorrowCashDo.getRid(),
                         e);
             }
-
+            try{
+ 		//是否是第一次借款,给该用户送优惠券（还款券）
+ 		String tag = CouponCateGoryType._FIRST_LOAN_.getCode();
+		String sourceType = CouponActivityType.FIRST_LOAN.getCode();
+ 		
+ 		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
+ 		    //该用户是否拥有该类型优惠券
+ 		 if(countNum >0){
+ 		         return 0;   
+ 	        }
+ 		         HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(afBorrowCashDo.getUserId());
+ 			logger.info("setnt first loan coupon userId=" + afBorrowCashDo.getUserId());
+ 			
+ 				Long count = (Long) map.get("count");
+ 				logger.info("setnt first loan coupon count="+count+"userId=" + afBorrowCashDo.getUserId());
+ 				if (count > 1)
+ 					return 0;
+ 		 
+ 		//第一次借款
+ 		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
+ 		logger.info("first loan sent coupon msg = " + msg+" afBorrowCashDo = " +JSONObject.toJSONString(afBorrowCashDo));
+ 	    }catch(Exception e){
+ 	        logger.error("first borrow sentUserCoupon error", e);
+ 	   }
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
                     ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
                     AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
@@ -167,6 +205,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
             }
         }
         if (resultValue == 1) {
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+
             contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
                     afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
@@ -211,6 +252,37 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         e);
             }
 
+            try{
+		//是否是第一次借款,给该用户送优惠券（还款券）
+		
+		String tag = CouponCateGoryType._FIRST_LOAN_.getCode();
+		String sourceType = CouponActivityType.FIRST_LOAN.getCode();
+		
+		 int countNum =  afUserCouponService.getUserCouponByUserIdAndCouponCource(afBorrowCashDo.getUserId(), sourceType);
+		    //该用户是否拥有该类型优惠券
+		 if(countNum >0){
+		         return 0;   
+	        }
+		         HashMap map = afBorrowCashDao.getBorrowCashByRemcommend(afBorrowCashDo.getUserId());
+			
+			String log = String.format("setnt first loan coupon userId = %s",afBorrowCashDo.getUserId());
+			logger.info(log);
+			Long count = (Long) map.get("count");
+			log =log + String.format("count =  %s", count);
+			logger.info(log);
+				if (count > 1)
+					return 0;
+		 
+		//第一次借款
+		String msg = afUserCouponService.sentUserCouponGroup(afBorrowCashDo.getUserId(),tag,sourceType);
+		log =log + String.format("msg =  %s", msg);
+		logger.info(log);
+		log =log + String.format("afBorrowCashDo =  %s", JSONObject.toJSONString(afBorrowCashDo));
+		logger.info(log);
+	    }catch(Exception e){
+	        logger.error("first borrow sentUserCouponGroup error", e);
+	   }
+            
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
                     ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
                     AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
@@ -230,10 +302,15 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         + afBorrowCashDo.getRid());
             }
         }
+
         if (resultValue == 1) {
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+
             contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
+
         return resultValue;
     }
 
@@ -388,5 +465,17 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo) {
 		return afBorrowCashDao.getBorrowCashInfoByBorrowNoV1(borrowNo);
+	}
+
+	@Override
+	public int getCashBorrowSuccessByUserId(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	       return afBorrowCashDao.getCashBorrowSuccessByUserId(userId,activityTime);
+	}
+
+	@Override
+	public int getCashBorrowByUserIdAndActivity(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	    return afBorrowCashDao.getCashBorrowByUserIdAndActivity(userId,activityTime);
 	}
 }

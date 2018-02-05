@@ -44,8 +44,8 @@ public class AfBoluomeActivityItemsServiceImpl extends ParentServiceImpl<AfBoluo
 	}
 
 	@Override
-	public List<AfCardDo> getUserCards(Long userId) {
+	public List<AfCardDo> getUserCards(Long userId,String activityTime) {
 		// TODO Auto-generated method stub
-		return afBoluomeActivityItemsDao.getUserCards(userId);
+		return afBoluomeActivityItemsDao.getUserCards(userId,activityTime);
 	}
 }

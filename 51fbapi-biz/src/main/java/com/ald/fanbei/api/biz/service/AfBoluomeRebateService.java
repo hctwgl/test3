@@ -18,9 +18,9 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	void addRedPacket(Long rid, Long userId) throws Exception;
 
-	List<AfBoluomeRebateDo> getListByUserId(Long userId);
+	//List<AfBoluomeRebateDo> getListByUserId(Long userId);
 
-	Long getLightShopId(Long orderId);
+	//Long getLightShopId(Long orderId);
 
 	List<AfRebateDo> getRebateList(Long userId,String startTime);
 	
@@ -28,9 +28,13 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 //	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
 
-	int getRebateCount(Long shopId, Long userId);
+	int getRebateCount(Long shopId, Long userId, String activityTime);
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId);
+
+	int getCountByUserIdAndFirstOrder(Long userId, int firstOrder, String oneYuanTime);
+
+	List<AfBoluomeRebateDo> getListByUserId(Long userId, String startTime);
 
 
 
