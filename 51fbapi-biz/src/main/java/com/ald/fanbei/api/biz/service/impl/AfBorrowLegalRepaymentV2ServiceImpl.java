@@ -531,7 +531,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
         /**------------------------------------fmai风控提额end--------------------------------------------------*/
 
         //会对逾期的借款还款，向催收平台同步还款信息
-        if (DateUtil.compareDate(new Date(), repayDealBo.cashDo.getGmtPlanRepayment()) ){
+        if (DateUtil.compareDate(new Date(), repayDealBo.cashDo.getGmtPlanRepayment()) && repayDealBo.curName != Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE){
             try {
                 CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
                 		repayDealBo.curTradeNo,
@@ -667,7 +667,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(payTradeNo);
+		repay.setPayTradeNo(repayNo);
 		repay.setRebateAmount(rebateAmountForBorrow);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
