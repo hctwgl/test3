@@ -214,7 +214,7 @@
 		       #{displayStatus,jdbcType=VARCHAR},
 		    </if>
 		    <if test="ticketCount != null" >
-		       #{ticket_count,jdbcType=INTEGER},
+		       #{ticketCount,jdbcType=INTEGER},
 		    </if>
 		    <if test="channel != null" >
 		       #{channel,jdbcType=VARCHAR},
