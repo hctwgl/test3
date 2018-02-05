@@ -9,6 +9,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -30,10 +33,6 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -70,6 +69,8 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -77,7 +78,7 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 		Long userId = context.getUserId();
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
+		if (StringUtils.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())&&StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -113,15 +114,15 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 		if (isPromote == true || StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 			// 可以借钱
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
-			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+			String type = String.valueOf(numberWordFormat.borrowTime(ObjectUtils.toString(requestDataVo.getParams().get("type"))));
+			if (StringUtils.equals(amountStr, "") || !numberWordFormat.isNumeric(type)) {
 				// 推送处理
 				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
 			}
 			// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-					Constants.BORROW_CASH_INFO_LEGAL);
+					Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			if (rateInfoDo != null) {
 				BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
 				BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());
@@ -152,7 +153,14 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
-			Object poundageRateCash = getUserPoundageRate(userId);
+
+			JSONObject params = new JSONObject();
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			params.put("ipAddress", CommonUtil.getIpAddr(request));
+			params.put("appName",appName);
+			params.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			params.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
+			Object poundageRateCash = getUserPoundageRate(userId,params);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -174,12 +182,12 @@ public class GetConfirmBorrowLegalInfoApi extends GetBorrowCashBase implements A
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId) {
+	private Object getUserPoundageRate(Long userId,JSONObject params) {
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate == null
 				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 				String poundageRate = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

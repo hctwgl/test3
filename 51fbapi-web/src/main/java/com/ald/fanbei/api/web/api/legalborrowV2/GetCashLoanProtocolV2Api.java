@@ -51,7 +51,7 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
         Map<String, Object> data = new HashMap<>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
-        String type = numberWordFormat.format(Integer.parseInt(param.getBorrowType())).toUpperCase();
+        String type = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
         map.put("type",type);
         map.put("borrowId","");
         map.put("poundage",param.getPoundage());

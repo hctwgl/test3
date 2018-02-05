@@ -2,14 +2,12 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -65,7 +63,7 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox);
+			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox);
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -176,7 +174,7 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
@@ -249,7 +247,9 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo);
-	
+
+	BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountSenceDo userAccountInfo);
+
 	/**
 	 * 判断是否为虚拟商品
 	 * @param orderInfo
@@ -364,5 +364,28 @@ public interface AfOrderService {
      * @return
      */
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
+
+
+	/**
+	 * 
+	* author chenqiwei
+	* @Title: getCountOrderByUserAndOrderType 
+	* @Description: 统计订单根据用户和订单类型
+	* @param userId
+	* @return     
+	* return HashMap 返回类型 
+	* @throws
+	 */
+	HashMap getCountPaidOrderByUserAndOrderType(Long userId, String orderType);
+
+	List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(Long userId, String activityTime);
 	
+	int getAuthShoppingByUserId(Long userId, String activityTime);
+
+	int getCountByUserId(Long rid);
+
+	int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount);
+
+	int addSceneAmount(List<AfOrderSceneAmountDo> list);
+
 }

@@ -15,7 +15,7 @@ public class GetCashLoanProtocolParam {
 	@DecimalMin("0")
 	private BigDecimal borrowAmount;
 	@NotNull
-	@Pattern(regexp = "(7|14)")
+	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	private String borrowType;
 	@NotNull
 	private BigDecimal poundage;

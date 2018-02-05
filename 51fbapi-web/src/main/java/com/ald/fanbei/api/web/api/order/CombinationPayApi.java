@@ -7,17 +7,15 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.VirtualGoodsCateogy;
@@ -26,11 +24,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -54,19 +47,21 @@ public class CombinationPayApi implements ApiHandle {
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
-	AfUserBankcardService afUserBankcardService;	
+	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfUserVirtualAccountService afUserVirtualAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Map<String, Object> params = requestDataVo.getParams();
-		
+
 		Long orderId = NumberUtil.objToLongDefault(params.get("orderId"), null);
 		String goodsName = ObjectUtils.toString(params.get("goodsName"));
-		
+
 		if (orderId == null) {
 			logger.error("orderId is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -77,38 +72,23 @@ public class CombinationPayApi implements ApiHandle {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
-		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
-		//是否是限额类目
-        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-		if (afOrderService.isVirtualGoods(virtualMap)) {
-			String virtualCode = afOrderService.getVirtualCode(virtualMap);
-			BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-			resp.addResponseData("goodsTotalAmount", totalVirtualAmount);
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
-			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-			useableAmount = goodsUseableAmount.compareTo(useableAmount) < 0 ? goodsUseableAmount : useableAmount;
+
+		//专项额度控制
+		Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+		//获取可使用额度+临时额度
+		AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
+		BigDecimal useableAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+		if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))){
+				if (virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) != null) {
+					BigDecimal virtualTotalAmount = new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
+					resp.addResponseData("goodsTotalAmount", virtualTotalAmount);
+				} else if (virtualMap.get(Constants.VIRTUAL_AMOUNT) != null) {
+					BigDecimal virtualAmount = new BigDecimal(virtualMap.get(Constants.VIRTUAL_AMOUNT).toString());
+					resp.addResponseData("goodsTotalAmount", virtualAmount);
+				}
+			resp.addResponseData("goodsUseableAmount", useableAmount);
+			resp.addResponseData("categoryName", virtualMap.get(Constants.VIRTUAL_CHECK_NAME));
 		}
-//		// 是否是限额类目
-//		String isQuotaGoods = "N";
-//		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-//		String quotaData = quotaBo.getData();
-//		if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-//			JSONObject json = JSONObject.parseObject(quotaData);
-//			isQuotaGoods = "Y";
-//			resp.addResponseData("goodsTotalAmount", json.getBigDecimal("amount"));
-//			String virtualCode = json.getString("virtualCode");
-//			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-//			resp.addResponseData("goodsUseableAmount", goodsUseableAmount);
-//			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-//			resp.addResponseData("categoryName", virtualGoodsCateogy.getName());
-//			if (goodsUseableAmount.compareTo(useableAmount) < 0) {
-//				useableAmount = goodsUseableAmount;
-//			}
-//		}
 		
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		

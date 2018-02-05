@@ -9,6 +9,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -33,10 +37,6 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -77,6 +77,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	AfUserCouponService afUserCouponService;
 
 	@Resource
+	NumberWordFormat numberWordFormat;
+	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
 	@Override
@@ -107,7 +109,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		}
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
+		if (StringUtils.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())&& StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -156,7 +158,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			// 可以借钱
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+			if (StringUtils.equals(amountStr, "") || !(numberWordFormat.isNumeric(type))) {
 				// 推送处理
 				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
@@ -202,7 +204,13 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-			Object poundageRateCash = getUserPoundageRate(userId,context.getUserName());
+			JSONObject params = new JSONObject();
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			params.put("ipAddress", CommonUtil.getIpAddr(request));
+			params.put("appName",appName);
+			data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
+			Object poundageRateCash = getUserPoundageRate(userId,context.getUserName(),params);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -211,6 +219,17 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 																		// 服务费的计算
 																		// 去掉利息
 
+			try{
+				AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+				if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
+					throw new FanbeiException(afResourceDo.getValue2(),true);
+				}
+			}catch (FanbeiException e){
+				throw e;
+
+			}catch (Exception e){
+				logger.error("enabled_type_borrow error",e);
+			}
 			Integer day = NumberUtil.objToIntDefault(type, 0);
 
 			BigDecimal serviceAmount = serviceAmountDay.multiply(new BigDecimal(day));
@@ -242,11 +261,11 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId,String userName) {
+	private Object getUserPoundageRate(Long userId,String userName,JSONObject params) {
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
 		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
 			//直接从风控系统取，没的话，走之前逻辑
-			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
 			if (!StringUtils.isBlank(poundageRate)) {
 				logger.info("direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
@@ -255,20 +274,20 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 				return poundageRate;
 			}else{
 				logger.info("direct get user poundage rate from risk,is null,getUserPoundageRateByUserId:.userName=" + userName);
-				return getUserPoundageRateByUserId(userId);
+				return getUserPoundageRateByUserId(userId,params);
 			}
 		}else{
 			logger.info("getUserPoundageRateByUserId from risk: userName=" + userName );
-			return getUserPoundageRateByUserId(userId);
+			return getUserPoundageRateByUserId(userId,params);
 		}
 	}
 	
-	private Object getUserPoundageRateByUserId(Long userId){
+	private Object getUserPoundageRateByUserId(Long userId,JSONObject params){
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate == null
 				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),params);
 				String poundageRate = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
 					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="

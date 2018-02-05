@@ -362,6 +362,7 @@
 
 	<select id="getBorrowCashByRemcommend" resultType="HashMap">
 		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','FINSH')
+	   and is_delete = 0
 	</select>
 
 	<update id="updateBalancedDate" parameterType="AfBorrowCashDo">
@@ -466,6 +467,7 @@
 
 	<select id="getBorrowCash" resultType="AfBorrowCashDo">
 		SELECT <include refid="queryFields" />  FROM  af_borrow_cash where user_id = #{userId}  and status in ('TRANSEDING','TRANSED')
+		and is_delete = 0
 	</select>
 
 	<update id="updateAuAmountByRid">
@@ -524,4 +526,28 @@
 			`status` IN ('TRANSED', 'FINSH') and overdue_status='Y' 
 		 and user_id = #{userId}
 	</select>
+
+	<select id="getCashBorrowSuccessByUserId" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			`af_borrow_cash`
+		WHERE `is_delete` =0 AND `status` IN ("FINSH","TRANSED")
+		and user_id = #{userId}
+		<if test="activityTime != null">
+		and gmt_arrival &lt; #{activityTime}
+		</if>
+	</select>
+		<select id="getCashBorrowByUserIdAndActivity" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			`af_borrow_cash`
+		WHERE `is_delete` =0 AND `status` IN ('TRANSEDING','TRANSED','CLOSED','FINSH')
+		and user_id = #{userId}
+		<if test="activityTime != null">
+		and gmt_arrival &lt; #{activityTime}
+		</if>
+	</select>
+
 </mapper>

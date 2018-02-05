@@ -162,6 +162,12 @@ import java.math.BigDecimal;
      */
     private BigDecimal sumRepaidInterest;
 
+
+    /**
+    * 对应借款的搭售商品价格
+    */
+    BigDecimal legalOrderAmount = BigDecimal.ZERO;
+
     public BigDecimal getSumRepaidOverdue() {
     	return sumRepaidOverdue;
     }
@@ -185,7 +191,15 @@ import java.math.BigDecimal;
     public void setSumRepaidInterest(BigDecimal sumRepaidInterest) {
     	this.sumRepaidInterest = sumRepaidInterest;
     }
-    
+
+    public BigDecimal getLegalOrderAmount() {
+        return legalOrderAmount;
+    }
+
+    public void setLegalOrderAmount(BigDecimal legalOrderAmount) {
+        this.legalOrderAmount = legalOrderAmount;
+    }
+
     /**
      * 获取主键Id
      *
@@ -197,8 +211,6 @@ import java.math.BigDecimal;
 
     /**
      * 设置主键Id
-     * 
-     * @param 要设置的主键Id
      */
     public void setRid(Long rid){
       this.rid = rid;

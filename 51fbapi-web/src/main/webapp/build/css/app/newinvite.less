@@ -17,7 +17,32 @@ body {
   bottom: 0;
   overflow: hidden;
 }
-
+.personAmount{
+  width:100%;
+  height:.54rem;
+  overflow:hidden;
+  background: #f15e26;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index: 5;
+  display: none;
+  .amountCont{
+    width:36rem;
+    height:.54rem;
+    .cont{
+      float:left;
+      width:14rem;
+      height:.54rem;
+      p{
+        color:#fff;
+        font-size:.26rem;
+        line-height:.54rem;
+        margin-left:4rem;
+      }
+    }
+  }
+}
 #invitecode {
   position: absolute;
   top: -100px;
@@ -85,8 +110,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  overflow: scroll;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 @keyframes itrotate {
@@ -157,9 +183,36 @@ body {
     transform: rotateZ(0deg) scale(1);
   }
 }
-
+/*左右移动动画*/
+.personAmount{
+  width:100%;
+  height:.54rem;
+  overflow:hidden;
+  background: #f15e26;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index: 5;
+  .amountCont{
+    width:36rem;
+    height:.54rem;
+    .cont{
+      float:left;
+      width:14rem;
+      height:.54rem;
+      p{
+        color:#fff;
+        font-size:.26rem;
+        line-height:.54rem;
+        margin-left:4rem;
+      }
+    }
+  }
+}
 .top {
+  margin-top: .54rem;
   position: relative;
+  margin-top:.54rem;
   .rule {
     position: absolute;
     width: 0.56rem;

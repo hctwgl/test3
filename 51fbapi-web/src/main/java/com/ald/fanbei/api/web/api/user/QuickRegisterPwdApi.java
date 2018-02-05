@@ -68,6 +68,7 @@ public class QuickRegisterPwdApi implements ApiHandle {
 		//风控可信异步通知
 		String ip = CommonUtil.getIpAddr(request);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
@@ -144,7 +145,7 @@ public class QuickRegisterPwdApi implements ApiHandle {
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
 		userDo.setMajiabaoName(majiabaoName);
-		long userId = afUserService.addUser(userDo);
+		long userId = afUserService.toAddUser(userDo,"quickRegister");
 
 		Long invteLong = Constants.INVITE_START_VALUE + userId;
 		String inviteCode = Long.toString(invteLong, 36);
@@ -160,7 +161,7 @@ public class QuickRegisterPwdApi implements ApiHandle {
 		//风控可信异步通知
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
-					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY,bqsBlackBox);
 		}
 		return resp;
 	}

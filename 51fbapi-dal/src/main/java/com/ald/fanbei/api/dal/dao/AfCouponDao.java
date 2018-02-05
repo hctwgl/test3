@@ -35,4 +35,8 @@ public interface AfCouponDao {
 
 	List<AfCouponDto> getCouponByActivityIdAndType(@Param("activityId")Long activityId, @Param("activityType")String activityType);
 
+	List<AfCouponDo> listCouponByIds(@Param("items")List<Long> couponIds);
+
+	List<AfCouponDo> getByActivityType(@Param("activityType")String activityType);
+
 }

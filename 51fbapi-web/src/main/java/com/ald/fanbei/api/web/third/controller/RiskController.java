@@ -159,6 +159,29 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
+	
+	/**
+	 * 51公积金风控异步回调（魔蝎换成51）
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/newFund" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String newFund(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal newFund begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.newFundNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
 	/**
 	 * 社保异步回调
 	 * @param request

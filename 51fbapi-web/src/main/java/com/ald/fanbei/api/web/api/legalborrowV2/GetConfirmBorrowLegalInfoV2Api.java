@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -26,15 +28,8 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -84,9 +79,19 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		Long userId = context.getUserId();
 		
 		GetConfirmBorrowLegalInfoParam param =  (GetConfirmBorrowLegalInfoParam)requestDataVo.getParamObj();
-		
+		try{
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+			if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(param.getType())){
+				throw new FanbeiException(afResourceDo.getValue2(),true);
+			}
+		}catch (FanbeiException e){
+			throw e;
+
+		}catch (Exception e){
+			logger.error("enabled_type_borrow error",e);
+		}
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if (StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
+		if (StringUtils.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())&&StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -122,7 +127,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		if (isPromote == true || StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 			// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)
 			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-					Constants.BORROW_CASH_INFO_LEGAL);
+					Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			if (rateInfoDo != null) {
 				BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
 				BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());
@@ -150,7 +155,11 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
-			Object poundageRateCash = getUserPoundageRate(userId);
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			data.put("ipAddress", CommonUtil.getIpAddr(request));
+			data.put("appName",appName);data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
+			Object poundageRateCash = getUserPoundageRate(userId,data,param.getType());
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -192,26 +201,19 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId) {
-		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
-		if (saveRateDate == null
-				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
+	private Object getUserPoundageRate(Long userId,Map<String, Object> data,String borrowType) {
+			BigDecimal orgRate = null;
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data),borrowType);
 				String poundageRate = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
-					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="
-							+ riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
-					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate,
-							Constants.SECOND_OF_ONE_MONTH);
-					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-							new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
+					orgRate = new BigDecimal(poundageRate);
 				}
 			} catch (Exception e) {
 				logger.info(userId + "从风控获取分层用户额度失败：" + e);
 			}
-		}
-		return bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+			return orgRate;
+		
 	}
 
 	/**
@@ -228,6 +230,13 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 	}
 	
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -237,20 +246,20 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
-				} else {
-					interestRate = info.getDouble(tag + "FourteenDay");
+				} else if (StringUtils.equals(twoDay, borrowType)){
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
-				} else {
-					serviceRate = info.getDouble(tag + "FourteenDay");
+				} else if (StringUtils.equals(twoDay, borrowType)){
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}

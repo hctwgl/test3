@@ -93,22 +93,22 @@ import java.math.BigDecimal;
     /**
      * 七天的金额
      */
-    private BigDecimal sevenMoney;
+    private BigDecimal minMoney;
 
     /**
      * 七天的金额对应笔数
      */
-    private Integer sevenNum;
+    private Integer minNum;
 
     /**
      * 十四天的金额
      */
-    private BigDecimal fourteenMoney;
+    private BigDecimal maxMoney;
 
     /**
      * 十四天的金额对应笔数
      */
-    private Integer fourteenNum;
+    private Integer maxNum;
 
     /**
      * 借钱利率%
@@ -382,78 +382,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取七天的金额
-     *
-     * @return 七天的金额
-     */
-    public BigDecimal getSevenMoney(){
-      return sevenMoney;
-    }
-
-    /**
-     * 设置七天的金额
-     * 
-     * @param sevenMoney 要设置的七天的金额
-     */
-    public void setSevenMoney(BigDecimal sevenMoney){
-      this.sevenMoney = sevenMoney;
-    }
-
-    /**
-     * 获取七天的金额对应笔数
-     *
-     * @return 七天的金额对应笔数
-     */
-    public Integer getSevenNum(){
-      return sevenNum;
-    }
-
-    /**
-     * 设置七天的金额对应笔数
-     * 
-     * @param sevenNum 要设置的七天的金额对应笔数
-     */
-    public void setSevenNum(Integer sevenNum){
-      this.sevenNum = sevenNum;
-    }
-
-    /**
-     * 获取十四天的金额
-     *
-     * @return 十四天的金额
-     */
-    public BigDecimal getFourteenMoney(){
-      return fourteenMoney;
-    }
-
-    /**
-     * 设置十四天的金额
-     * 
-     * @param fourteenMoney 要设置的十四天的金额
-     */
-    public void setFourteenMoney(BigDecimal fourteenMoney){
-      this.fourteenMoney = fourteenMoney;
-    }
-
-    /**
-     * 获取十四天的金额对应笔数
-     *
-     * @return 十四天的金额对应笔数
-     */
-    public Integer getFourteenNum(){
-      return fourteenNum;
-    }
-
-    /**
-     * 设置十四天的金额对应笔数
-     * 
-     * @param fourteenNum 要设置的十四天的金额对应笔数
-     */
-    public void setFourteenNum(Integer fourteenNum){
-      this.fourteenNum = fourteenNum;
-    }
-
-    /**
      * 获取借钱利率%
      *
      * @return 借钱利率%
@@ -560,5 +488,37 @@ import java.math.BigDecimal;
     public void setRemark(String remark){
       this.remark = remark;
     }
+
+	public BigDecimal getMinMoney() {
+		return minMoney;
+	}
+
+	public void setMinMoney(BigDecimal minMoney) {
+		this.minMoney = minMoney;
+	}
+
+	public Integer getMinNum() {
+		return minNum;
+	}
+
+	public void setMinNum(Integer minNum) {
+		this.minNum = minNum;
+	}
+
+	public BigDecimal getMaxMoney() {
+		return maxMoney;
+	}
+
+	public void setMaxMoney(BigDecimal maxMoney) {
+		this.maxMoney = maxMoney;
+	}
+
+	public Integer getMaxNum() {
+		return maxNum;
+	}
+
+	public void setMaxNum(Integer maxNum) {
+		this.maxNum = maxNum;
+	}
 
 }

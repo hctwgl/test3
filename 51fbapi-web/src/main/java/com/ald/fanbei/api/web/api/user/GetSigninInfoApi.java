@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -40,6 +41,8 @@ public class GetSigninInfoApi implements ApiHandle {
 	AfSigninService  afSigninService;
 	@Resource
 	AfCouponSceneService afCouponSceneService;
+	@Resource
+	AfUserService  afUserService;
 
 
 	@Override
@@ -90,7 +93,7 @@ public class GetSigninInfoApi implements ApiHandle {
         	data.put("seriesCount", seriesCount);
 
 		}
-
+      
         resp.setResponseData(data);
 
 		return resp;

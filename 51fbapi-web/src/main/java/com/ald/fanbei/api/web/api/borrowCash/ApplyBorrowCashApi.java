@@ -5,10 +5,13 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -94,12 +97,16 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	CommitRecordUtil commitRecordUtil;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-
+		if (context.getAppVersion() < 390) {
+			throw new FanbeiException("您使用的app版本过低,请升级", true);
+		}
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
@@ -111,7 +118,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 
-		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
+		if (StringUtils.isBlank(amountStr) || (!numberWordFormat.isNumeric(type)) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
@@ -307,7 +314,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setCity(city);
 		afBorrowCashDo.setProvince(province);
 		afBorrowCashDo.setCounty(county);
-		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
+		afBorrowCashDo.setType(type);
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);
 		afBorrowCashDo.setRateAmount(rateAmount);
@@ -316,6 +323,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount, poundageBig));
 		afBorrowCashDo.setPoundageRate(poundage);
 		afBorrowCashDo.setBaseBankRate(bankRate);
+		afBorrowCashDo.setRiskDailyRate(poundage);
 		return afBorrowCashDo;
 	}
 
@@ -343,5 +351,7 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
 	}
+
+
 
 }

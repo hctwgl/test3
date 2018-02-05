@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 
@@ -23,12 +25,12 @@ import com.alibaba.fastjson.JSONObject;
 public class RiskStrong extends RiskRegisterStrongReqBo {
 	private static final long serialVersionUID = 1L;
 
-	public RiskStrong(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost);
+	public RiskStrong(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox) {
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,null);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox, String riskScene) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -81,7 +83,16 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 		eventInfo.put("appName", appName);
 		eventInfo.put("cardNo", cardNum);
 		eventInfo.put("blackBox", blackBox);
+		eventInfo.put("bqsBlackBox", bqsBlackBox);
 		eventInfo.put("ipAddress", ipAddress);
+		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		String uuid = "";
+		if (requestAttributes != null){
+			String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+			String array[] = id == null?null:id.split("_");
+			uuid = array ==null || array.length<2?"":array[1];
+		}
+		eventInfo.put("uuid",uuid);
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 
 	}

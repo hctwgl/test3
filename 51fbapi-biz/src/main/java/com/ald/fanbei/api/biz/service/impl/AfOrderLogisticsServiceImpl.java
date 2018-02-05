@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
+import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,15 +19,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataDataTraces;
-import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderLogisticsDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderLogisticsDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -41,14 +38,16 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
 
     @Resource
     private AfOrderLogisticsDao afOrderLogisticsDao;
-    
+
     @Resource
     private AfBorrowLegalOrderLogisticsDao afBorrowLegalOrderLogisticsDao;
     @Resource
     private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
-    
+
     @Resource
     private AfOrderDao afOrderDao;
+    @Resource
+    private AfUserDao afUserDao;
 
     @Override
     public BaseDao<AfOrderLogisticsDo, Long> getDao() {
@@ -57,10 +56,41 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
 
     @Override
     public AfOrderLogisticsDo getByOrderId(Long orderId) {
-        return afOrderLogisticsDao.getByOrderId(orderId);
+        AfOrderLogisticsDo afOrderLogisticsDo = afOrderLogisticsDao.getByOrderId(orderId);
+        try{
+            if (afOrderLogisticsDo == null) {
+                return afOrderLogisticsDo;
+            }
+            if (afOrderLogisticsDo.getState() != 3) {
+                KdniaoTrackQueryAPI kdniaoTrackQueryAPI = new KdniaoTrackQueryAPI();
+                KdniaoReqDataData kdniaoReqDataData = kdniaoTrackQueryAPI.getOrderTraces(afOrderLogisticsDo.getShipperCode(), afOrderLogisticsDo.getLogisticCode());
+                try {
+                    if (!kdniaoReqDataData.isSuccess()) {
+                        return afOrderLogisticsDo;
+                    }
+                    int state = kdniaoReqDataData.getState();
+                    AfOrderDo afOrderDo = afOrderDao.getOrderById(afOrderLogisticsDo.getOrderId());
+                    afOrderLogisticsDo.setState(state);
+                    afOrderLogisticsDo.setTraces(JSON.toJSONString(kdniaoReqDataData.getTraces()));
+                    afOrderLogisticsDo.setGmtModified(new Date());
+                    afOrderLogisticsDao.updateById(afOrderLogisticsDo);
+                    if (state == 3) {//已签收
+                        //更新订单状态
+                        afOrderDo.setLogisticsInfo("已签收");
+                        afOrderDao.updateOrder(afOrderDo);
+                    }
+                } catch (Exception e) {
+                    logger.error("kddata process exception：" + e);
+                }
+            }
+        }catch (Exception e){
+            logger.error("getByOrderId error：",e);
+        }
+
+        return afOrderLogisticsDo;
     }
-    
-  
+
+
     @Override
     public AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces) {
         AfOrderLogisticsDo afOrderLogisticsDo = getByOrderId(orderId);
@@ -104,10 +134,7 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
             return afOrderLogisticsBo;
         }
     }
-    
-    
-    
-   
+
 
     /**
      * 枚举转换

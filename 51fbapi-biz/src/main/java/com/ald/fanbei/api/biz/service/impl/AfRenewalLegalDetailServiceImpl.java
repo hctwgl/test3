@@ -398,7 +398,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						//续期本金
 						BigDecimal waitPaidAmount =afRenewalDetailDo.getRenewalAmount();
 						// 查询新利率配置
-			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			    		//借款利率
 			    		BigDecimal newRate = null;
 			    		//借款手续费率
@@ -413,10 +413,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			    				JSONObject info = array.getJSONObject(i);
 			    				String borrowTag = info.getString("borrowTag");
 			    				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-			    						rate = info.getDouble("borrowSevenDay");
+			    						rate = info.getDouble("borrowFirstType");
 			    				}
 			    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-			    					serviceRate = info.getDouble("borrowSevenDay");
+			    					serviceRate = info.getDouble("borrowFirstType");
 			    				}
 			    			}
 			    			newRate = BigDecimal.valueOf(rate / 100);
@@ -571,62 +571,17 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 	 */
 	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
 
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 		
-		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
-		//借款利率
-		BigDecimal newRate = null;
-		//借款手续费率
-		BigDecimal newServiceRate = null;
-		
-		if (rateInfoDo != null) {
-			String borrowRate = rateInfoDo.getValue2();
-			JSONArray array = JSONObject.parseArray(borrowRate);
-			double rate = 0;
-			double serviceRate = 0;
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject info = array.getJSONObject(i);
-				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-						rate = info.getDouble("borrowSevenDay");
-				}
-				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					serviceRate = info.getDouble("borrowSevenDay");
-				}
-			}
-			newRate = BigDecimal.valueOf(rate / 100);
-			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
-		}		
-
-        //---------
-		
 		//上期借款手续费
-		BigDecimal borrowPoundage = BigDecimal.ZERO;
+		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
 		//上期借款利息
-		BigDecimal borrowRateAmount = BigDecimal.ZERO;
-		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
-		
-		if(afBorrowCashDo.getRenewalNum()>0){
-			//续借过
-			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
-			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
-			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
-			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
-			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
-		}else {
-			//未续借过
-			borrowPoundage = afBorrowCashDo.getPoundage();
-			borrowRateAmount = afBorrowCashDo.getRateAmount();
-		}
-
+		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
 		
 		// 续借本金（总） 
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
@@ -723,14 +678,14 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
 		}
 		
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		//新增订单借钱记录
 		AfBorrowLegalOrderCashDo borrowLegalOrderCash = new AfBorrowLegalOrderCashDo();
 		borrowLegalOrderCash.setUserId(userId);
 		borrowLegalOrderCash.setBorrowId(afBorrowCashDo.getRid());
 		borrowLegalOrderCash.setCashNo(payTradeNo);
-		borrowLegalOrderCash.setType("SEVEN");
+		borrowLegalOrderCash.setType(String.valueOf(allowRenewalDay));
 		borrowLegalOrderCash.setAmount(goodsDo.getSaleAmount());
 		borrowLegalOrderCash.setStatus("APPLYING");
 		borrowLegalOrderCash.setBorrowRemark(afBorrowLegalOrderCash.getBorrowRemark());
@@ -743,7 +698,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setPlanRepayDays(allowRenewalDay.intValue());
 
 		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		//借款利率
 		BigDecimal newRate = null;
 		//借款手续费率
@@ -758,10 +713,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				JSONObject info = array.getJSONObject(i);
 				String consumeTag = info.getString("consumeTag");
 				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-						interestRate = info.getDouble("consumeSevenDay");
+						interestRate = info.getDouble("consumeFirstType");
 				}
 				if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-					serviceRate = info.getDouble("consumeSevenDay");
+					serviceRate = info.getDouble("consumeFirstType");
 				}
 			}
 			newRate = BigDecimal.valueOf(interestRate / 100);
@@ -779,7 +734,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
 		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		
-		Date date = DateUtil.addDays(afBorrowLegalOrderCash.getGmtPlanRepay(), 7);
+		Date date = DateUtil.addDays(afBorrowLegalOrderCash.getGmtPlanRepay(), allowRenewalDay.intValue());
 		borrowLegalOrderCash.setGmtPlanRepay(date);
 		logger.info("buildAfBorrowLegalOrderCashDo :",borrowLegalOrderCash);
 		return borrowLegalOrderCash;

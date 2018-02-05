@@ -69,6 +69,7 @@ public class ApplyConsumeApi implements ApiHandle {
 		String numId = ObjectUtils.toString(requestDataVo.getParams().get("numId"));
 		String name = ObjectUtils.toString(requestDataVo.getParams().get("name"));
 //		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 
 		int nper = NumberUtil
 				.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get(Constants.DEFAULT_NPER)), 2);

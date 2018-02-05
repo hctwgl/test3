@@ -45,5 +45,14 @@ public interface AfModelH5ItemDao {
 	List<AfModelH5ItemDo> getModelH5ItemByGoodsId(@Param("goodsId")Long goodsId);
 
 	List<AfModelH5ItemDo> selectModelByTag();
+
+
+	List<AfModelH5ItemDo> getModelH5ItemForFirstSingleByGoodsId(@Param("goodsId")Long goodsId);
+
+	List<AfModelH5ItemDo> getModelH5ItemCategoryByModelTag(@Param("tag")String tag);
+
+
+	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(@Param("modelId")long modelId, @Param("type")String type);
+
 	
 }

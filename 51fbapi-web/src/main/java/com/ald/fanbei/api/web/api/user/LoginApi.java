@@ -87,7 +87,7 @@ public class LoginApi implements ApiHandle {
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
 	AfAbTestDeviceService afAbTestDeviceService;
-
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		
@@ -104,6 +104,7 @@ public class LoginApi implements ApiHandle {
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 
@@ -194,13 +195,25 @@ public class LoginApi implements ApiHandle {
 				isNeedRisk = false;
 			}
 		}
+		//首次登陆，弹窗
+		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+		if(successTime < 1){
+			 new Timer().schedule(new TimerTask() {
+		         public void run() {
+				jpushService.jPushCoupon("COUPON_POPUPS", userName);
+				this.cancel();
+				 }
+		   }, 1000 * 5);// 一分钟
+		}
+		
+		
 		// 调用风控可信接口
 		if (context.getAppVersion() >= 381 && isNeedRisk && !isInWhiteList(userName)) {
 
 			boolean riskSucc = false;
 			try {
 				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox,
-						uuid, loginType, loginTime, ip, phoneType, networkType, osType);
+						uuid, loginType, loginTime, ip, phoneType, networkType, osType,bqsBlackBox);
 			} catch (Exception e) {
 				if (e instanceof FanbeiException) {
 					logger.error("用户登录调风控可信验证失败", e);
@@ -263,20 +276,30 @@ public class LoginApi implements ApiHandle {
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
-					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY);
+					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY,bqsBlackBox);
 		}
 
 		resp.setResponseData(jo);
 
-		if (failCount == -1) {
-			new Timer().schedule(new TimerTask() {
-				public void run() {
-					jpushService.jPushCoupon("COUPON_POPUPS", userName);
-					this.cancel();
-				}
-			}, 1000 * 5);// 一分钟
-		}
+//		if (failCount == -1) {
+//			new Timer().schedule(new TimerTask() {
+//				public void run() {
+//					jpushService.jPushCoupon("COUPON_POPUPS", userName);
+//					this.cancel();
+//				}
+//			}, 1000 * 5);// 一分钟
+//		}
 		
+//		//首次登陆，弹窗
+//		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+//		if(successTime <= 1){
+//		        new Timer().schedule(new TimerTask() {
+//		        public void run() {
+//		        	jpushService.jPushCoupon("COUPON_POPUPS", userName);
+//		        	this.cancel();
+//		        	}
+//		        }, 1000 * 5);// 一分钟
+//		}
 		// 记录用户设备信息
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));

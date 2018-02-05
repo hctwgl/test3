@@ -19,7 +19,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
+import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
@@ -28,7 +32,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -39,7 +47,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
@@ -154,7 +161,12 @@ public class TestController {
     AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
-
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    @Autowired
+    private KafkaSync kafkaSync;
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
@@ -250,21 +262,51 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
-        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
-        ExecutorService pool = Executors.newFixedThreadPool(16);
-        for (int i = 0; i < 1000; i++) {
-            pool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
-                    System.out.println("---" + repayNo);
-                }
-            });
-        }
+        KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
+        String requestData = api.getOrderTracesByJson("SF", "058029296755");
+
+        KdniaoReqDataData kdniaoReqData = JSON.parseObject(requestData, KdniaoReqDataData.class);
+        System.out.print(requestData);
+
+//        jpushService.strongRiskSuccess("15990182307");
+//        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+//        ExecutorService pool = Executors.newFixedThreadPool(16);
+//        for (int i = 0; i < 1000; i++) {
+//            pool.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
+//                    System.out.println("---" + repayNo);
+//                }
+//            });
+//        }
 
 
         // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
+
+    }
+    @RequestMapping("/kafka")
+    @ResponseBody
+    public String testKafka() throws Exception{
+        logger.error("testKafka------");
+        try{
+            // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
+            HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+
+        }catch (Exception e){
+    logger.error("eee",e);
+        }
+
+        return "测试kafka";
+    }
+
+    @RequestMapping("/clearredis")
+    @ResponseBody
+    public String clearredis(String key) {
+        bizCacheUtil.delCache(key);
+        return "redis 清除成功";
 
     }
 
@@ -277,14 +319,14 @@ public class TestController {
             pool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try{
+                    try {
                         transactionTemplate.execute(new TransactionCallback<Integer>() {
                             @Override
                             public Integer doInTransaction(TransactionStatus transactionStatus) {
                                 AfBorrowDo borrowDo = new AfBorrowDo();
-                                AppOpenLogDo appOpenLogDo=new AppOpenLogDo();
+                                AppOpenLogDo appOpenLogDo = new AppOpenLogDo();
                                 appOpenLogDo.setRid(1l);
-                                appOpenLogDo.setAppVersion("123:"+new Date().getTime());
+                                appOpenLogDo.setAppVersion("123:" + new Date().getTime());
                                 appOpenLogDao.updateById(appOpenLogDo);
                                 try {
                                     Thread.sleep(10000);
@@ -294,8 +336,8 @@ public class TestController {
                                 return 1;
                             }
                         });
-                    }catch (Exception e){
-                        logger.info("error:",e);
+                    } catch (Exception e) {
+                        logger.info("error:", e);
                     }
 
                 }

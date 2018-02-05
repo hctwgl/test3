@@ -32,6 +32,21 @@
 		sort desc
 	</select>
 	
+	<select id="getModelH5ItemListByModelIdAndModelTypeSortById" resultType="AfModelH5ItemDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+			af_model_h5_item
+		WHERE
+			model_id = #{modelId}
+		AND
+			is_delete = 0
+		AND
+		type =#{type}
+		order by id
+	</select>
+	
+	
 	<select id="getModelH5ItemCategoryListByModelIdAndModelType" resultType="AfModelH5ItemDo">
 		SELECT
 		<include refid="queryCategoryFields" />
@@ -143,9 +158,39 @@
 		AND
 			is_delete = 0
 	</select>
-
+	<select id="getModelH5ItemForFirstSingleByGoodsId" resultType="AfModelH5ItemDo">
+		SELECT
+			i.id
+		rid,i.gmt_create,i.gmt_modified,i.creator,i.modifier,i.type,i.model_id,i.item_icon,i.item_type,i.item_value,i.item_value2,i.sort
+			 FROM af_model_h5  m
+	        LEFT JOIN af_model_h5_item i 
+	        ON m.id=i.model_id
+	        WHERE m.tag = 'FIRST_SINGLE' 
+	        AND m.is_delete = 0
+	        AND i.item_type = 'GOODS_ID'
+	        AND i.item_value = #{goodsId}
+	        and i.is_delete = 0
+	</select>
+	
 	<select id="selectModelByTag" resultType="AfModelH5ItemDo">
 		select <include refid = "queryAllFields" /> from af_model_h5_item where model_id = (select id from af_model_h5  where  tag = 'HOMEPAGE') and type = 'CATEGORY';
 	</select>
+
+
+	<select id="getModelH5ItemCategoryByModelTag" resultType="AfModelH5ItemDo">
+		SELECT
+			<include refid = "queryAllFields" />
+		FROM
+			af_model_h5_item
+		WHERE
+		type = 'CATEGORY'
+		and model_id =(
+		select id from af_model_h5 where tag = #{tag} 
+		and is_delete = 0
+		limit 1
+		)
+	    ORDER BY sort DESC
+	</select>
+
 
 </mapper>
