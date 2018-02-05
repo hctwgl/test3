@@ -667,7 +667,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(repayNo);
+		repay.setPayTradeNo(payTradeNo);
 		repay.setRebateAmount(rebateAmountForBorrow);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
