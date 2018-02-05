@@ -109,7 +109,7 @@
 			<artifactId>jetty-server</artifactId>
 			<version>${jetty-version}</version>
 		</dependency>
-		<!-- 测试 <dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty-version}</version>
@@ -118,7 +118,7 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-jmx</artifactId>
 			<version>${jetty-version}</version>
-		</dependency> -->
+		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -251,11 +251,7 @@
 			<artifactId>core</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.bouncycastle</groupId>-->
-			<!--<artifactId>bcprov-jdk15</artifactId>-->
-			<!--<version>1.46</version>-->
-		<!--</dependency>-->
+		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
@@ -387,7 +383,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-						<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>

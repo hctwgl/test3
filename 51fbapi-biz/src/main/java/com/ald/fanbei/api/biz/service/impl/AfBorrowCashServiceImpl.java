@@ -482,17 +482,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return restAmount;
 	}
 	
-	@Override
-		BigDecimal restAmount = BigDecimal.ZERO;
-		if(cashDo != null) {
-					cashDo.getOverdueAmount(), cashDo.getSumOverdue(), 
-					cashDo.getRateAmount(),cashDo.getSumRate(),
-					cashDo.getPoundage(),cashDo.getSumRenewalPoundage())
-					.subtract(cashDo.getRepayAmount());
-		}
-		return restAmount;
-	
-	}
+
 	
 	@Override
 	public int getCashBorrowSuccessByUserId(Long userId, String activityTime) {
