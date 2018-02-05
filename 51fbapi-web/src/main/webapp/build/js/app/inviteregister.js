@@ -451,7 +451,8 @@ window.onload = () => {
             smsCode: $('#verify').val(),
             password: String(CryptoJS.MD5($("#pwd").val())),
             recommendCode: recommendCode,
-            token: token
+            token: token,
+            'source':'recommend'
           },
           success: function (returnData) {
             maidianFnNew("registerSuccess", $('#user').val());
