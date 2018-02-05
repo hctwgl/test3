@@ -469,7 +469,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 	
 	
-		@Override
+	@Override
 	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
 		if(cashDo != null) {
@@ -480,18 +480,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					.subtract(cashDo.getRepayAmount());
 		}
 		return restAmount;
-	}
-	
-	@Override
-		BigDecimal restAmount = BigDecimal.ZERO;
-		if(cashDo != null) {
-					cashDo.getOverdueAmount(), cashDo.getSumOverdue(), 
-					cashDo.getRateAmount(),cashDo.getSumRate(),
-					cashDo.getPoundage(),cashDo.getSumRenewalPoundage())
-					.subtract(cashDo.getRepayAmount());
-		}
-		return restAmount;
-	
 	}
 	
 	@Override
