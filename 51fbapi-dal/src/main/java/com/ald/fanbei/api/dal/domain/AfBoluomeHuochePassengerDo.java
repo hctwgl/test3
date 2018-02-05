@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Date;
 import java.math.BigDecimal;
 

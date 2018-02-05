@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 /**
  * 菠萝觅订单详情实体
@@ -92,11 +93,13 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
     /**
      * 联系人名称
      */
+    @JSONField(name="contactName")
     private String contactorName;
 
     /**
      * 联系人电话
      */
+    @JSONField(name="contactPhone")
     private String contactorPhone;
 
     /**
@@ -413,6 +416,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 联系人名称
      */
+    @JSONField(name="contactName")
     public String getContactorName() {
 	return contactorName;
     }
@@ -423,6 +427,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param contactorName
      *            要设置的联系人名称
      */
+    @JSONField(name="contactName")
     public void setContactorName(String contactorName) {
 	this.contactorName = contactorName;
     }
@@ -432,6 +437,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      *
      * @return 联系人电话
      */
+    @JSONField(name="contactPhone")
     public String getContactorPhone() {
 	return contactorPhone;
     }
@@ -442,6 +448,7 @@ public class AfBoluomeHuocheDo extends BoluomeCouponDto {
      * @param contactorPhone
      *            要设置的联系人电话
      */
+    @JSONField(name="contactPhone")
     public void setContactorPhone(String contactorPhone) {
 	this.contactorPhone = contactorPhone;
     }
