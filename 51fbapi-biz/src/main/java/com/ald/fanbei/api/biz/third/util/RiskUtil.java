@@ -714,7 +714,7 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 			// 强风控未通过，则不经额度处理
-			if (!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+			if (afUserAuthDo==null || !RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
 				au_amount = BigDecimal.ZERO;
 			}
 
@@ -724,7 +724,7 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal onlineAmount = new BigDecimal(limitAmount);
-			if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
+			if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
 				onlineAmount = BigDecimal.ZERO;
 			}
 
@@ -734,7 +734,7 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal offlineAmount = new BigDecimal(limitAmount);
-			if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
+			if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
 				offlineAmount = BigDecimal.ZERO;
 			}
 
