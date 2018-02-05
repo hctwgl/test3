@@ -165,7 +165,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String tradeNo = bo.tradeNo;
     	String name = bo.name;
 		
-    	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repayAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
+    	AfLoanRepaymentDo loanRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
 				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.loanId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo,bo.loanPeriodsDoList,bo.loanDo.getPrdType(),bo.isAllRepay);
     	
     	afLoanRepaymentDao.saveRecord(loanRepaymentDo);
@@ -450,7 +450,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
 					BigDecimal repayAmount = BigDecimal.ZERO;
 					if(canRepay(loanPeriodsDo)){
-						dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo);		//逾期费
+						dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
 						dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
 						dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
 						
@@ -477,14 +477,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repaymentDo.getRepayPeriods()));
 			loanPeriodsDoList.add(loanPeriodsDo);
 			if(loanPeriodsDo!=null){
-				dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo);		//逾期费
+				dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
 				dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
 				dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
 				dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
 			}
 			afLoanPeriodsDao.updateById(loanPeriodsDo);
 		}
-			
+		afLoanDao.updateById(loanDo);
 		loanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 		
         changLoanRepaymentStatus(loanRepayDealBo.curOutTradeNo, AfLoanRepaymentStatus.SUCC.name(), repaymentDo.getRid());
@@ -558,7 +558,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 * @Description: 分期记录逾期费处理
 	 * @return  void
 	 */
-	private void dealLoanRepayOverdue(LoanRepayDealBo LoanRepayDealBo, AfLoanPeriodsDo loanPeriodsDo) {
+	private void dealLoanRepayOverdue(LoanRepayDealBo LoanRepayDealBo, AfLoanPeriodsDo loanPeriodsDo, AfLoanDo loanDo) {
 		if(LoanRepayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
 		
 		BigDecimal repayAmount = LoanRepayDealBo.curRepayAmoutStub;
@@ -567,9 +567,19 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         if (repayAmount.compareTo(overdueAmount) > 0) {
         	loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), overdueAmount));
         	loanPeriodsDo.setOverdueAmount(BigDecimal.ZERO);
-            LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
+        	LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
+        	
+        	if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO)>0){
+        		loanDo.setOverdueAmount(BigDecimal.ZERO);
+        	}
         } else {
-        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+        	loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), repayAmount));
+        	loanPeriodsDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
+        	LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+        	
+        	if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO)>0){
+        		loanDo.setOverdueAmount(loanDo.getOverdueAmount().subtract(repayAmount));
+        	}
         }
 	}
 	
@@ -588,7 +598,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	loanPeriodsDo.setServiceFee(BigDecimal.ZERO);
             LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
         } else {
-        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+        	loanPeriodsDo.setRepaidServiceFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidServiceFee(), repayAmount));
+        	loanPeriodsDo.setServiceFee(poundageAmount.subtract(repayAmount));
+        	LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
         }
 	}
 	
@@ -607,7 +619,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	loanPeriodsDo.setInterestFee(BigDecimal.ZERO);
             LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
         } else {
-        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+        	loanPeriodsDo.setRepaidInterestFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(), repayAmount));
+        	loanPeriodsDo.setInterestFee(rateAmount.subtract(repayAmount));
+        	LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
         }
 	}
 	
@@ -653,8 +667,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		
 		bo.cardId = (long) -4;
-		bo.repayAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
-		bo.actualAmount =  bo.repayAmount;
+		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.actualAmount =  bo.repaymentAmount;
 		bo.loanId = cashDo.getRid();
 		
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
@@ -833,7 +847,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		public Long userId;
 		
 		/* request字段 */
-		public BigDecimal repayAmount = BigDecimal.ZERO;	// 还款金额
+		public BigDecimal repaymentAmount = BigDecimal.ZERO;	// 还款金额
 		public BigDecimal actualAmount = BigDecimal.ZERO; 
 		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
 		public String payPwd;			
