@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.web.common.H5Handle;
