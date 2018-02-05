@@ -86,7 +86,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("rid", bo.loanId);
-		data.put("amount", bo.repayAmount.setScale(2, RoundingMode.HALF_UP));
+		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
 		data.put("status", AfLoanRepaymentStatus.SUCC.name());
 		if(bo.userCouponDto != null) {
@@ -119,7 +119,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		
 		LoanRepayDoParam param = (LoanRepayDoParam) requestDataVo.getParamObj();
 		
-		bo.repayAmount = param.repayAmount;
+		bo.repaymentAmount = param.repaymentAmount;
 		bo.rebateAmount = param.rebateAmount;
 		bo.actualAmount = param.actualAmount;
 		bo.payPwd = param.payPwd;
@@ -175,7 +175,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		
 		// 检查 用户 是否多还钱
 		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(bo.loanPeriodsId);
-		if(bo.repayAmount.compareTo(shouldRepayAmount) > 0) {
+		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
@@ -198,11 +198,11 @@ public class LoanRepayDoApi implements ApiHandle {
         	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
         }
 		
-		BigDecimal calculateAmount = bo.repayAmount;
+		BigDecimal calculateAmount = bo.repaymentAmount;
 		
 		// 使用优惠券结算金额
 		if (userCouponDto != null) {
-			calculateAmount = BigDecimalUtil.subtract(bo.repayAmount, userCouponDto.getAmount());
+			calculateAmount = BigDecimalUtil.subtract(bo.repaymentAmount, userCouponDto.getAmount());
 			if (calculateAmount.compareTo(BigDecimal.ZERO) <= 0) {
 				logger.info(bo.userDo.getUserName() + "coupon repayment");
 				bo.rebateAmount = BigDecimal.ZERO;
