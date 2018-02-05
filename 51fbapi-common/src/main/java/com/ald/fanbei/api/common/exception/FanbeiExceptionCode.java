@@ -133,12 +133,12 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
     CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
     
+	USER_AUTH_INFO_NOT_EXIST("USER_AUTH_INFO_NOT_EXIST",1322,"user auth info not exist","用户认证信息不存在"),
     AUTH_FUND_GETTOKEN_ERROR("AUTH_FUND_GETTOKEN_ERROR",1322,"auth fund gettoken error","51公积金认证获取令牌失败！"),
     AUTH_FUND_GETORDERSN_ERROR("AUTH_FUND_GETORDERSN_ERROR",1322,"auth fund getordersn error","51公积金认证获取订单号失败！"),
     AUTH_FUND_SUBMIT_ERROR("AUTH_FUND_SUBMIT_ERROR",1323,"auth fund submit error","公积金提交认证失败，请稍后重试"),
     
-    USER_AUTH_INFO_NOT_EXIST("USER_AUTH_INFO_NOT_EXIST",1324,"user auth info not exist","用户认证信息不存在"),
-    
+ 
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
 
@@ -294,7 +294,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
     LOAN_REPAY_REBATE_ERROR("LOAN_REPAY_REBATE_ERROR",2015,"loan repay rebate error","余额还款失败，请检查您的输入或重试"),
     BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2016,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
-    
     /* 2100-2200 贷款相关！！！！！！！ */
     LOAN_NO_AUTHZ("",2101,"", "您还未认证"),
     LOAN_QUOTA_TOO_SMALL("",2102,"", "可用额度小于最小借款额"),
@@ -307,7 +306,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     LOAN_REPEAT_APPLY("",2109,"","已有处理中的贷款申请，不可重复申请"),
     LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
     LOAN_OVERFLOW("",2111,"","贷款额违法"),
-    
 
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),

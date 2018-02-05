@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -139,6 +141,10 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setAmount(orderInfo.getActualAmount());
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
         cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter, afInterimAuDo, context));
+        
+        if(cashierVo.getAp().getTotalVirtualAmount()==null){
+            cashierVo.getAp().setTotalVirtualAmount(BigDecimal.ZERO);
+        }        
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
         if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
@@ -147,7 +153,7 @@ public class StartCashierApi implements ApiHandle {
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setCreditStatus(YesNoStatus.NO.getCode());
             BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-            if (useableAmount.subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(4000)) >= 0)
+            if (useableAmount.subtract(userDto.getUsedAmount()).compareTo(new BigDecimal(3000)) >= 0)
                 checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
             else
                 checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
@@ -408,7 +414,7 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo     订单信息
      * @param userDto       用户账户信息
      */
-    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
+    private Map<String, Object> riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode = resp.getRejectCode();
@@ -452,7 +458,7 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setOverduedCode(erorrCode.getCode());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
-                        return;
+                        return null;
                     } else {
                         logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + borrowNo);
                     }
@@ -469,7 +475,7 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setBorrowId(cashInfo.getRid());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
-                        return;
+                        return null;
                     } else {
                         logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
                     }
@@ -477,29 +483,26 @@ public class StartCashierApi implements ApiHandle {
                 default:
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                     cashierTypeVo.setReasonType("未知原因：" + rejectCode);
-                    return;
+                    return null;
             }
         }
+
+        //专项额度控制
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         //获取可使用额度+临时额度
-        BigDecimal useableAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-        if (afOrderService.isVirtualGoods(virtualMap)) {
+        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
+        BigDecimal leftAmount= afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+        if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
-            String virtualCode = afOrderService.getVirtualCode(virtualMap);
-            VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-            BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-            BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-            cashierTypeVo.setCategoryName(virtualGoodsCateogy.getName());
-            //每月总额度
-            cashierTypeVo.setTotalVirtualAmount(totalVirtualAmount);
+            cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
 
-            // 虚拟剩余额度大于信用可用额度 则为可用额度
-            leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-            cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
             if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                cashierTypeVo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
+                cashierTypeVo.setUseableAmount(BigDecimal.ZERO);
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
             } else {
+                cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
                 if (leftAmount.compareTo(orderInfo.getActualAmount()) >= 0) {
                     cashierTypeVo.setUseableAmount(leftAmount);
                     cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
@@ -515,11 +518,17 @@ public class StartCashierApi implements ApiHandle {
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }
             }
+            
+            cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null?new BigDecimal(virtualMap.get(Constants.VIRTUAL_AMOUNT).toString())
+     	       : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
+            
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
-            cashierTypeVo.setUseableAmount(useableAmount);
-            cashierTypeVo.setPayAmount(useableAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : useableAmount);
+            cashierTypeVo.setUseableAmount(leftAmount);
+            cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
         }
+        
+        return virtualMap;
     }
 
     /**

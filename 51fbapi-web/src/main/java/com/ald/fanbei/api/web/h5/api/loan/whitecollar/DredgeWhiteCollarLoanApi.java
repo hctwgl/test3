@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -55,6 +57,9 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
+	@Resource
+	AfUserAuthStatusService afUserAuthStatusService;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -83,6 +88,14 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
 				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo);
 		
+		
+		if (!riskResp.isSuccess()) {
+			AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+			// 新增失败记录
+			afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+		} else {						
+			
+		}
 		
 		resp.setResponseData(data);
 		return resp;

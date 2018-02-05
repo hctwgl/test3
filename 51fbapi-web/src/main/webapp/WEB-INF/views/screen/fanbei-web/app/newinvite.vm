@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201712211843")
+    #set($version="201802011412")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>邀请好友拿奖励</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/newinvite.css?version=$version">
@@ -16,6 +16,15 @@
     </div>
 </div>
 <div id="newinvite">
+    <!--公告左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>邀请活动将于近日升级！新旧版本奖励不予延续！敬请关注！</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--公告左右移动--end-->
     <div class="top">
         <img src="$commonUrl/app/images/user/invite/topbg.png"/>
         <div class="rule">活动规则</div>
