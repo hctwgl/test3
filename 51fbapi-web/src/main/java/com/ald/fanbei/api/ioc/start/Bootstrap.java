@@ -6,8 +6,11 @@ public class Bootstrap {
 	
 	public static void main(String[] args) {
 	
-		String webapp = "src/main/webapp";
-		new JettyServerStart(webapp, 8089, "/").start();
+		String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+		rootPath = rootPath.replace("target/classes/", "");
+		String webPath = rootPath + "src/main/webapp";
+		
+		new JettyServerStart(webPath, 8089, "/").start();
 		
 	}
 }
