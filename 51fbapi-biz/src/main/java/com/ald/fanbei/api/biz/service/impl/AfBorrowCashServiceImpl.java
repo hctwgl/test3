@@ -469,7 +469,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 	
 	
-		@Override
+	@Override
 	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
 		if(cashDo != null) {
