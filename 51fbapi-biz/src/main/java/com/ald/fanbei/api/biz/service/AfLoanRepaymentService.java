@@ -1,13 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 
 /**
  * 贷款业务Service
@@ -49,4 +48,6 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	boolean canRepay(AfLoanPeriodsDo loanPeriodsDo);
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
+	
+	List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId);
 }

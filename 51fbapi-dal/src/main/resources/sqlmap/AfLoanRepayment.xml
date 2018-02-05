@@ -328,4 +328,13 @@
 		gmt_create DESC
 
 	</select>
+	
+	<select id="listDtoByLoanId" resultType="AfLoanRepaymentDo">
+        SELECT
+        id rid,name,repay_amount,actual_amount,status,trade_no,coupon_amount,user_amount,pre_repay_status,repay_periods,card_no,card_name,remark,repay_channel,gmt_create
+        FROM af_loan_repayment
+        WHERE is_delete = 0
+            AND loan_id=#{loanId}
+        ORDER BY id DESC
+    </select>
 </mapper>

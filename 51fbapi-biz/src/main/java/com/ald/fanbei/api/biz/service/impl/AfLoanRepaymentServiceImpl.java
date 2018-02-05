@@ -21,7 +21,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
@@ -50,7 +49,6 @@ import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfLoanProductDao;
 import com.ald.fanbei.api.dal.dao.AfLoanRepaymentDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
@@ -89,13 +87,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private static final Logger logger = LoggerFactory.getLogger(AfLoanRepaymentServiceImpl.class);
    
     @Resource
-    private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-    @Resource
     private GeneratorClusterNo generatorClusterNo;
     @Resource
     private AfUserAccountDao afUserAccountDao;
-    @Resource
-    private AfBorrowCashService afBorrowCashService;
     @Resource
     private TransactionTemplate transactionTemplate;
     @Resource
@@ -800,9 +794,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
 	
 	private void checkOfflineRepayment(AfBorrowCashDo cashDo, String offlineRepayAmount ,String outTradeNo) {
-		if(afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, outTradeNo) != null) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
-		}
+//		if(afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, outTradeNo) != null) {
+//			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+//		}
 		
 //		BigDecimal restAmount = calculateRestAmount(cashDo); TODO
 		BigDecimal restAmount=BigDecimal.ZERO;
@@ -976,6 +970,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}
 
 		return flag;
+	}
+
+	@Override
+	public List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId) {
+		return afLoanRepaymentDao.listDtoByLoanId(loanId);
 	}
 
 }

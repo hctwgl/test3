@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 
 /**
@@ -16,6 +18,6 @@ public interface AfLoanRepaymentDao extends BaseDao<AfLoanRepaymentDo, Long> {
 
 	AfLoanRepaymentDo getRepayByTradeNo(String tradeNo);
 
-    
+	List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId);
 
 }
