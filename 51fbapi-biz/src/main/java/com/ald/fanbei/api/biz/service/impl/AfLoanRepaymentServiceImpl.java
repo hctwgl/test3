@@ -484,7 +484,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			}
 			afLoanPeriodsDao.updateById(loanPeriodsDo);
 		}
-		afLoanDao.updateById(loanDo);
+		
 		loanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 		
         changLoanRepaymentStatus(loanRepayDealBo.curOutTradeNo, AfLoanRepaymentStatus.SUCC.name(), repaymentDo.getRid());
@@ -571,6 +571,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	
         	if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO)>0){
         		loanDo.setOverdueAmount(BigDecimal.ZERO);
+        		afLoanDao.updateById(loanDo);
         	}
         } else {
         	loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), repayAmount));
@@ -579,6 +580,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	
         	if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO)>0){
         		loanDo.setOverdueAmount(loanDo.getOverdueAmount().subtract(repayAmount));
+        		afLoanDao.updateById(loanDo);
         	}
         }
 	}
