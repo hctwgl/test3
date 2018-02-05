@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.biz.rebate;
 
+import java.util.concurrent.TimeUnit;
+
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -34,7 +39,7 @@ public class RebateContext {
         AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
         return rebate(afOrderDo);
     }
-
+   
     public boolean rebate(final AfOrderDo afOrderDo) {
         transactionTemplate.execute(new TransactionCallback<Boolean>() {
             @Override
@@ -54,6 +59,7 @@ public class RebateContext {
                 }
             }
         });
+        
         return true;
     }
 }

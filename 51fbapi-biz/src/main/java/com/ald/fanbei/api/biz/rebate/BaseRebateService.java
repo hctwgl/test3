@@ -39,7 +39,7 @@ public abstract class BaseRebateService {
     @Resource
     AfRecommendUserService afRecommendUserService;
     @Resource
-    AfResourceService AfResourceService;
+    AfResourceService afResourceService;
     /**
      * 是否可以进行返利的前置数据验证
      *
@@ -112,32 +112,54 @@ public abstract class BaseRebateService {
        	logger.info(log);
         
         try{
+            
+            	    AfResourceDo newbileTaskKTime = new AfResourceDo();
+            	    String activityTime = "";
+            	    newbileTaskKTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
+            	    if(newbileTaskKTime !=null){
+            		activityTime = newbileTaskKTime.getValue();
+            	    }
                     List<AfOrderDo> shopOrderList =   afOrderDao.getSelfsupportOrderByUserIdOrActivityTime(orderInfo.getUserId(),null);
-                    log = log +  String.format("selfsupport first order rebate shopOrderList start = %s",JSONObject.toJSONString(shopOrderList));
+                    List<AfOrderDo> shopOrderListForTime =   afOrderDao.getSelfsupportOrderByUserIdOrActivityTime(orderInfo.getUserId(),activityTime);
+                    log = log +  String.format("selfsupport first order rebate shopOrderList start = %s",JSONObject.toJSONString(shopOrderList),"and shopOrderList.size()=",shopOrderList.size());
                     //订单首次完成，邀请有礼记录用户订单id
                     if(shopOrderList.size() <= 1 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+               
             	    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(orderInfo.getUserId());
             	     if(afRecommendUserDo != null){
-            		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
+            		 if(afRecommendUserDo.getFirstSelfsupportOrder() == null){
             		     afRecommendUserDo.setFirstSelfsupportOrder(orderInfo.getRid());
             		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
             		      log = log +  String.format("selfsupport first order rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
-            		     logger.info(log);
-            		     log =log + String.format("updateRecommend result =  %s", updateRecommend);
+            		      logger.info(log);
+            		      log =log + String.format("updateRecommend result =  %s", updateRecommend);
             		      logger.info(log);
             	             
-            		 }
+            		
             	     }
                     }
+                    }
+                    log =  log + String.format("selfsupport double rebate statr = %s",JSONObject.toJSONString(shopOrderListForTime),"and shopOrderListForTime.size()=",shopOrderListForTime.size());
+                    logger.info(log);
                     //自营商城活动第三单双倍返利
-                    if(shopOrderList.size() == 3 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+                    int num =0;
+                    num = shopOrderListForTime.size();
+                    if(1<num && num < 4){
+                	for(int i = 0;i<num;i++){
+                	    if(shopOrderListForTime.get(i).getRid().longValue() == orderInfo.getRid().longValue()){
+                		num = num - 1;
+                	    }
+                	}
+                    }
+                    
+                    if(num == 2 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
                 	log =  log + String.format("selfsupport double rebate orderInfo = %s",JSONObject.toJSONString(orderInfo));
             	     logger.info(log);
             	       BigDecimal max = new BigDecimal(30.00);
             	       BigDecimal doubleAmount = rebateAmount;
             	       BigDecimal doubleAmount1 = orderInfo.getRebateAmount();
             	       //读取配置
-            	     AfResourceDo afresourceDo =   AfResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "DOUBLE_REBATE_LIMIT");
+            	     AfResourceDo afresourceDo =   afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "DOUBLE_REBATE_LIMIT");
             	     if(afresourceDo != null){
             		 max = new BigDecimal(afresourceDo.getValue());
             	     }
@@ -164,7 +186,7 @@ public abstract class BaseRebateService {
                             return true;  
                   }
              }catch(Exception e){
-        	logger.error("selfSupport rebate error", e);
+        	logger.error("selfSupport rebate error"+ e);
              }
 	      //用户账户操作
 	       accountInfo.setRebateAmount(rebateAmount);

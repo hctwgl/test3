@@ -826,7 +826,9 @@ public class AppH5InvitationActivityController extends BaseController {
         		     	   afUserAccountLogDo.setType("DOUBLE_REBATE_CASH");
         		           afUserAccountLogDo.setUserId(userId);
         		            doubleAmount =  afUserAccountLogDao.getUserAmountByType(afUserAccountLogDo);
-        		           
+        		           if(doubleAmount == null){
+        		               doubleAmount = new  BigDecimal(0.00);
+        		           }
         		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
         		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
         		           newbieTaskForThirdShopping.setFinish(1);
