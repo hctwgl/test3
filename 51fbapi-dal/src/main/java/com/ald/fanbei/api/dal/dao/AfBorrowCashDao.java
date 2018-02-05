@@ -235,8 +235,13 @@ public interface AfBorrowCashDao {
 	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
+
+
+	int getCashBorrowSuccessByUserId(@Param("userId") Long userId,@Param("activityTime") String activityTime);
+
+
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
-	
+	int getCashBorrowByUserIdAndActivity(@Param("userId") Long userId,@Param("activityTime") String activityTime);
 	AfBorrowCashDo fetchLastByUserId(@Param("userId")Long userId);
 }

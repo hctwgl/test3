@@ -151,6 +151,7 @@
 		af_share_goods
 		WHERE
 		goods_id=#{goodsId}
+		and is_delete = 0
     </select>
     
 </mapper>

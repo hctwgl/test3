@@ -7,6 +7,11 @@ import java.util.Date;
 
 public class AfRecommendUserDo extends AbstractSerial {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * 主键
      */
     private int id ;
@@ -70,6 +75,18 @@ public class AfRecommendUserDo extends AbstractSerial {
      * 颜色加重 前台展示用的
      */
     private String color;
+    
+    private String source;
+
+    
+    
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getColor() {
         return color;
@@ -93,6 +110,19 @@ public class AfRecommendUserDo extends AbstractSerial {
      * userName 手机号码 前台展示用的
      */
     private String userName;
+    
+    /**
+     * type 活动类型  0 默认，1新的
+     */
+    private Integer type;
+    
+    
+    private Integer isSelfsupportRebate;
+    
+    private Long firstSelfsupportOrder;
+    
+    private Long firstBoluomeOrder;
+    
 
     public String getUserName() {
         return userName;
@@ -220,4 +250,39 @@ public class AfRecommendUserDo extends AbstractSerial {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getIsSelfsupportRebate() {
+        return isSelfsupportRebate;
+    }
+
+    public void setIsSelfsupportRebate(Integer isSelfsupportRebate) {
+        this.isSelfsupportRebate = isSelfsupportRebate;
+    }
+
+    public Long getFirstSelfsupportOrder() {
+        return firstSelfsupportOrder;
+    }
+
+    public void setFirstSelfsupportOrder(Long firstSelfsupportOrder) {
+        this.firstSelfsupportOrder = firstSelfsupportOrder;
+    }
+
+    public Long getFirstBoluomeOrder() {
+        return firstBoluomeOrder;
+    }
+
+    public void setFirstBoluomeOrder(Long firstBoluomeOrder) {
+        this.firstBoluomeOrder = firstBoluomeOrder;
+    }
+    
+    
+    
 }

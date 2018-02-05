@@ -205,10 +205,13 @@ public interface AfBorrowCashService {
 
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId);
+
+
+	int getCashBorrowSuccessByUserId(Long userId, String activityTime);
+
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
-	
-	
+	int getCashBorrowByUserIdAndActivity(Long userId, String activityTime);
 	/**
 	 * 计算剩余应还的金额
 	 * @param cashDo

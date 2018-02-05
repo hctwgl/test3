@@ -44,6 +44,7 @@ public enum UserAccountLogType {
 	SETTLEMENT_PAY("SETTLEMENT_PAY", "结算单划账"),
 
 	REBATE_CASH("REBATE_CASH", "返利现金"),
+	DOUBLE_REBATE_CASH("DOUBLE_REBATE_CASH", "双倍返利现金"),
 	REBATE_JFB("REBATE_JFB", "返利集分宝"),
     AUTHNAME("AUTHNAME", "实名认证"),
 	SELFSUPPORT("SELFSUPPORT","自营商品"),
