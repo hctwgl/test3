@@ -138,7 +138,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		logger.info("newRate = > {}, borrowAmount = > {}",newRate,borrowAmount);
-		logger.info("borrowDay = > {}",borrowDay);
+		logger.info("borrowDay = > {}，oriRate = > {}",borrowDay,oriRate);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(borrowAmount).multiply(borrowDay);
 		if (profitAmount.compareTo(BigDecimal.ZERO) <= 0) {
 			profitAmount = BigDecimal.ZERO;
