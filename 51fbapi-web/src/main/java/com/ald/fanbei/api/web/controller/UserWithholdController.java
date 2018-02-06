@@ -150,7 +150,7 @@ public class UserWithholdController extends BaseController {
                         afBorrowCashDo.getSumRate());
                 //判断是否搭售二期，加入手续费
                 if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)){
-                    allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage());
+                    allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage(),afBorrowCashDo.getSumRenewalPoundage());
                 }
                 BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
                         afBorrowCashDo.getRepayAmount());

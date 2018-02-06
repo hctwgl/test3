@@ -125,6 +125,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     @Autowired
     AfBorrowLegalOrderService afBorrowLegalOrderService;
 
+    @Resource
+    AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
+
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -225,6 +228,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         if (cardId > 0) {
             dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment);
         }
+        final Boolean isV2 = afBorrowLegalOrderService.isV2BorrowCash(borrow);
         //return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
         // @Override
         //public Map<String, Object> doInTransaction(TransactionStatus status) {
@@ -233,9 +237,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             if (cardId == -1) {// 微信支付
                 map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
             } else if (cardId > 0) {// 银行卡支付
+                String merPriv = UserAccountLogType.REPAYMENTCASH.getCode();
+                if(isV2){
+                    merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
+                }
                 AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
                 UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv);
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
                         dealRepaymentFail(payTradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment);
@@ -246,7 +254,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
                 map.put("resp", respBo);
             } else if (cardId == -2) {// 余额支付
-                dealRepaymentSucess(repayment.getPayTradeNo(), "");
+                //判断是否搭售V2
+                if(isV2){
+                    afBorrowLegalRepaymentV2Service.dealRepaymentSucess(repayment.getPayTradeNo(), "");
+                }else{
+                    dealRepaymentSucess(repayment.getPayTradeNo(), "");
+                }
+
             }
             map.put("refId", repayment.getRid());
             map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
@@ -400,16 +414,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     }
 
                     BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
-                    //判断是否搭售二期，加入手续费
-                    try{
-                        if(StringUtils.equals("代扣付款",repayment.getName())){
-                            if(afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid())){
-                                allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage());
-                            }
-                        }
-                    }catch (Exception ex){
-                        logger.error("withhold isV2BorrowCash error for" + ex);
-                    }
+
                     AfBorrowCashDo bcashDo = new AfBorrowCashDo();
                     bcashDo.setRid(afBorrowCashDo.getRid());
                     bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
@@ -573,7 +578,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         if (resultValue == 1L) {
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-                if (repayment.getName().equals("代扣付款")) {
+                if (StringUtils.equals("代扣付款",repayment.getName())) {
                     //if (isCashOverdueOld) {
                         //sendRepaymentBorrowCashOverdueWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
                     //} else {
