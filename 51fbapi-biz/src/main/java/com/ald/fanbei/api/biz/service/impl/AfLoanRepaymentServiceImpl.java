@@ -493,7 +493,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
 	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
 		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
-		if(nper > 1 || (nper == 1 && LoanRepayDealBo.loanPeriodsDoList.get(0).getNper() == LoanRepayDealBo.loanDo.getPeriods())) {
+		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(0);
+		if(nper > 1 || 
+				(nper == 1 && loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus()))) {
 			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
 			loanDo.setRid(LoanRepayDealBo.loanDo.getRid());

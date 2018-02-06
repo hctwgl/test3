@@ -9,15 +9,17 @@ package com.ald.fanbei.api.common.enums;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum AfLoanStatus {
-	APPLY("申请/未审核"),
-	TRANSFERING("打款中"),
-	TRANSFERRED("已经打款/待还款"),
-	FINISHED("已结清"),
-	CLOSED("关闭");
+	APPLY("申请/未审核", "APPLY"),
+	TRANSFERING("打款中", "TRANSEDING"),
+	TRANSFERRED("已经打款/待还款", "TRANSED"),
+	FINISHED("已结清", "FINSH"),
+	CLOSED("关闭", "CLOSED");
 	
     public String desz;
+    public String referBorrowCashCode;
 
-    AfLoanStatus(String desz) {
+    AfLoanStatus(String desz,String referBorrowCashCode) {
     	this.desz = desz;
+    	this.referBorrowCashCode = referBorrowCashCode;
     }
 }
