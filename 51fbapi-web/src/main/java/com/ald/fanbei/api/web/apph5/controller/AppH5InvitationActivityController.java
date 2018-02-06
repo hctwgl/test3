@@ -589,7 +589,7 @@ public class AppH5InvitationActivityController extends BaseController {
 				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 				}
 			} catch (Exception e) {
-				logger.error("/fanbei-web/newbieTask" + context + "error = {}", e.getStackTrace());
+				logger.error("/fanbei-web/newbieTask" + context + "error = {}"+e.getStackTrace());
 		}
 	        HashMap<String,Object> map =new HashMap<>();
 	        List<HashMap> hashMapList =new ArrayList<>();
@@ -725,7 +725,9 @@ public class AppH5InvitationActivityController extends BaseController {
         	        }
         	        
         	        newbieTaskList.add(newbieTaskForAuth);
+        	        logger.info("get newbieTaskForAuth  = "+JSONObject.toJSONString(newbieTaskForAuth));
 	        }
+	        try{
 	        //商城购物返利
 	        int shopShopping = 0;
 	        //afOrderService.getRebateShopOrderByUserId(userId);
@@ -741,9 +743,13 @@ public class AppH5InvitationActivityController extends BaseController {
         	             newbieTaskForFirstShopShopping.setTitle("商城首次购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
         	         }
         	         newbieTaskList.add(newbieTaskForFirstShopShopping);
+        	         logger.info("get newbieTaskForFirstShopShopping  = "+JSONObject.toJSONString(newbieTaskForFirstShopShopping));
 	       }
-	      
+	        }catch(Exception e){
+	            logger.error("get newbieTaskForFirstShopShopping error= "+e);
+	        }
 	        //信用购物
+	        try{
 	        int authShopping = 0;
 	       
 	        //活动之前是否信用购物
@@ -765,8 +771,13 @@ public class AppH5InvitationActivityController extends BaseController {
         		     newbieTaskForAuthShopping.setValue1(onlineTime.getValue1());
         		 }
         		 newbieTaskList.add(newbieTaskForAuthShopping);
+        		  logger.info("get newbieTaskForAuthShopping  = "+JSONObject.toJSONString(newbieTaskForAuthShopping));
+	        }
+	        }catch(Exception e){
+	            logger.error("get newbieTaskForAuthShopping error= "+e);
 	        }
 	        
+	        try{
 	        //借钱
 	        int borrow = 0;
 	        if(onlineTime != null){
@@ -788,10 +799,15 @@ public class AppH5InvitationActivityController extends BaseController {
         		     newbieTaskForBorrow.setValue1(onlineTime.getValue1());
         		}
         		 newbieTaskList.add(newbieTaskForBorrow);
+        		  logger.info("get newbieTaskForBorrow  = "+JSONObject.toJSONString(newbieTaskForBorrow));
 	        }
+	        }catch(Exception e){
+	            logger.error("get newbieTaskList error= "+e);
+	        }
+	        
 		 //活动期间三次商城购物。（自营）
 		 //活动期间商城购物数据
-		 
+	try{
 		 List<AfOrderDo> acticityShopOrderList = afOrderService.getSelfsupportOrderByUserIdOrActivityTime(userId,activityTime);
 		 int count = 0;
 		 if(acticityShopOrderList.size()>=3){
@@ -810,16 +826,23 @@ public class AppH5InvitationActivityController extends BaseController {
         		     	   afUserAccountLogDo.setType("DOUBLE_REBATE_CASH");
         		           afUserAccountLogDo.setUserId(userId);
         		            doubleAmount =  afUserAccountLogDao.getUserAmountByType(afUserAccountLogDo);
-        		           
+        		           if(doubleAmount == null){
+        		               doubleAmount = new  BigDecimal(0.00);
+        		           }
         		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
         		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
         		           newbieTaskForThirdShopping.setFinish(1);
+        		           logger.info("get newbieTaskForThirdShopping  = "+JSONObject.toJSONString(newbieTaskForThirdShopping));
         		 }
         		 newbieTaskList.add(newbieTaskForThirdShopping);	 
               }
+	}catch(Exception e){
+	    logger.error("get newbieTaskForThirdShopping error = "+e);
+	}
         map.put("newbieTaskList",newbieTaskList);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
+        logger.info("get newbieTask hashMapList = "+JSONObject.toJSONString(hashMapList));
         return ret;
     }
     

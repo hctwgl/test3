@@ -27,6 +27,7 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -48,6 +49,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author suweili 2017年2月28日上午11:50:34
@@ -320,7 +322,9 @@ public class AppH5UserContorler extends BaseController {
     public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
         Calendar calStart = Calendar.getInstance();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-
+        logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer")));
+        logger.info("commitRegister requestURL"+JSONObject.toJSONString(request.getRequestURL()));
+	// 如果是测试环境
         try {
             String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
