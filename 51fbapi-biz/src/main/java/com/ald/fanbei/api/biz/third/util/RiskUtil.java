@@ -3013,6 +3013,29 @@ public class RiskUtil extends AbstractThird {
 			return data;
 		}
 	}
+	
+	public int supplementAuthNotify(String code, String data, String msg, String signInfo) {
+		
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logger.info(createLinkString(reqBo));
+		logThird(signInfo, "zhengxin taskFinishNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+			if (StringUtil.equals("50", result)) {// 不做任何更新
+				return 0;
+			}
+			
+		}
+		return 0;
+		
+		
+	}
 
 	public int taskFinishNotify(String code, String data, String msg, String signInfo) {
 		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();

@@ -29,7 +29,7 @@ import java.util.*;
  * @date 2017年11月13日 上午10:51:12
  */
 @Component("lookAllQuotaApi")
-public class lookAllQuotaApi implements ApiHandle {
+public class LookAllQuotaApi implements ApiHandle {
 
     @Resource
     AfUserService afUserService;
