@@ -644,9 +644,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
-			loanPeriodsDo.setRepayId(repaymentDo.getRid());
-			loanPeriodsDo.setGmtLastRepay(new Date());
+        } else if (minus.compareTo(BigDecimal.ZERO) < 0) {	// 部分还款
+        	loanPeriodsDo.setStatus(AfLoanPeriodStatus.PART_REPAY.name());
         }
+		loanPeriodsDo.setRepayId(repaymentDo.getRid());
+		loanPeriodsDo.setGmtLastRepay(new Date());
 		loanPeriodsDo.setGmtModified(new Date());
 	}
 
@@ -933,7 +935,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		if(loanPeriodsDo!=null){
 			restAmount = BigDecimalUtil.add(restAmount,loanPeriodsDo.getAmount(),
-						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getOverdueAmount());
+					loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+					loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+					loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+					.subtract(loanPeriodsDo.getRepayAmount());
 		}
 		
 		return restAmount;
@@ -953,7 +958,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			
 			if(canRepay(loanPeriodsDo)) { // 已出账
 				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount(),
-						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getOverdueAmount());
+						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+						.subtract(loanPeriodsDo.getRepayAmount());
 			}else { // 未出账， 提前还款时不用还手续费和利息
 				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount());
 			}
