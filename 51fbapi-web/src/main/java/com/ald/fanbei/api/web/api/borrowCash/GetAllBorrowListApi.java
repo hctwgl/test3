@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -100,7 +101,7 @@ public class GetAllBorrowListApi implements ApiHandle  {
 		data.put("rid", afLoanDo.getRid());
 		data.put("amount", afLoanDo.getAmount());
 		data.put("gmtCreate", afLoanDo.getGmtCreate());
-		data.put("status", afLoanDo.getStatus());
+		data.put("status", AfLoanStatus.valueOf(afLoanDo.getStatus()).referBorrowCashCode);
 		
 		AfLoanProductDo prd = afLoanProductDao.getByPrdType(afLoanDo.getPrdType());
 		data.put("prdType", prd.getPrdType());

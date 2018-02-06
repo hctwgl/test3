@@ -16,7 +16,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.106.75:8180";
+	String urlBase = "https://btestapp.51fanbei.com";
 	String userName = "15669066271";
 	
 	/**
