@@ -30,8 +30,15 @@ public class AfLoanVo extends AbstractSerial {
 	private String status;		// 贷款状态
 	private String overdueStatus;		// 逾期状态
 	private BigDecimal perPeriodAmount;		// 每期还款金额
+	private BigDecimal rebateAmount;		// 用户余额
 
 	
+	public BigDecimal getRebateAmount() {
+		return rebateAmount;
+	}
+	public void setRebateAmount(BigDecimal rebateAmount) {
+		this.rebateAmount = rebateAmount;
+	}
 	public String getOverdueStatus() {
 		return overdueStatus;
 	}
