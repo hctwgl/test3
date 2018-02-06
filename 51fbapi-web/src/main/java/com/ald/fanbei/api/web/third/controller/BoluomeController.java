@@ -39,7 +39,12 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeDianyingDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeHuocheDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeHuochePassengerDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeJiayoukaDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoFlightDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoPassengerDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeJiudianDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeShoujiDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeWaimaiDao;
@@ -49,6 +54,7 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.tgtext.text.af;
 import com.timevale.tgtext.text.pdf.fi;
 
 /**
@@ -85,6 +91,16 @@ public class BoluomeController extends AbstractThird {
     private AfBoluomeWaimaiDao afBoluomeWaimaiDao;
     @Autowired
     private AfBoluomeShoujiDao afBoluomeShoujiDao;
+    @Autowired
+    private AfBoluomeHuocheDao afBoluomeHuocheDao;
+    @Autowired
+    private AfBoluomeJipiaoDao afBoluomeJipiaoDao;
+    @Autowired
+    private AfBoluomeHuochePassengerDao afBoluomeHuochePassengerDao;
+    @Autowired
+    private AfBoluomeJipiaoFlightDao afBoluomeJipiaoFlightDao;
+    @Autowired
+    private AfBoluomeJipiaoPassengerDao afBoluomeJipiaoPassengerDao;
 
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -114,7 +130,8 @@ public class BoluomeController extends AbstractThird {
 			    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
 			    // 获取菠萝觅订单详情(线程池)
 			    ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
-			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, afBoluomeWaimaiDao, afBoluomeShoujiDao));
+			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, 
+				    afBoluomeWaimaiDao, afBoluomeShoujiDao, afBoluomeHuocheDao,afBoluomeHuochePassengerDao, afBoluomeJipiaoDao,afBoluomeJipiaoFlightDao,afBoluomeJipiaoPassengerDao));
 			} else {
 			    afOrderService.dealBoluomeOrder(orderInfo);
 			}

@@ -22,7 +22,9 @@ public enum OrderSecType {
 	DAI_JIA("DAIJIA", "代驾"),
 	JIA_DIAN_QING_XI("JIADIANQINGXI", "家电清洗"),
 	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修"),
-	SUP_GAME("SUPGAME","游戏产品");
+	SUP_GAME("SUPGAME","游戏产品"),
+	HUO_CHE("HUOCHE","火车票"),
+	JI_PIAO("JIPIAO","机票");
     
     private String code;
     private String name;
