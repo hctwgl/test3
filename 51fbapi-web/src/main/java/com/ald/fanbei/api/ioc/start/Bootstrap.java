@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.ioc.start;
 
 import com.ald.fanbei.api.jetty.webapp.JettyServerStart;
-
+/**
+ * 启动类
+ * @author rongbo
+ *
+ */
 public class Bootstrap {
 	
 	public static String ENV_TYPE = "test"; // test,pre_env,online

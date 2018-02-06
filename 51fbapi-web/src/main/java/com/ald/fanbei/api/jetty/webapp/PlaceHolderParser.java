@@ -9,7 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.ald.fanbei.api.ioc.start.Bootstrap;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
+/**
+ * placeholder解析类
+ * @author rongbo
+ *
+ */
 public class PlaceHolderParser {
 
 	private AutoConfigParser autoConfigParser = new AutoConfigParser();
