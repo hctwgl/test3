@@ -1538,7 +1538,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 try {
                     // 菠萝觅，临时增加CLOSED订单：因为额度支付可能会先关闭订单
                     if (orderInfo == null || (!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode())
-                            //&& !orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())
+                            && !orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())
                             && !orderInfo.getStatus().equals(OrderStatus.NEW.getCode())
                             && !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
                         return 0;
