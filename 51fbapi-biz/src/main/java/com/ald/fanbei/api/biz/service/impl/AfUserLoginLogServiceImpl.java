@@ -42,4 +42,10 @@ public class AfUserLoginLogServiceImpl extends BaseService implements AfUserLogi
 	public AfUserLoginLogDo getUserLastLoginInfo(String userName) {
 		return afUserLoginLogDao.getUserLastLoginInfo(userName);
 	}
+
+	@Override
+	public long getCountByUserNameAndResultTrue(String userName) {
+	    // TODO Auto-generated method stub
+	        return afUserLoginLogDao.getCountByUserNameAndResultTrue(userName);
+	}
 }

@@ -315,6 +315,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	}
 
 	private  void processRishComplete(AfUserAuthDo afUserAuthDo,RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request,Long userId, AfIdNumberDo idNumberDo,ApiHandleResponse resp){
+
 	 // 提交过信用认证,第一次给用户发放优惠劵
 	 		HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 	 		String creditRebateMsg = "";
@@ -324,8 +325,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	 				// 发放优惠劵工作
 	 				// creditRebateMsg = getCreditAuthMsg(context,
 	 				// creditRebateMsg);
-
-	 				// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+	 			         logger.info("processRishComplete userId = " + userId);
+	 				 couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 	 				// 随机发放奖品
 	 				try {
 	 					Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);

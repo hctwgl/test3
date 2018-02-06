@@ -327,6 +327,7 @@ public class AppH5UserContorler extends BaseController {
             String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
             String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String source = ObjectUtils.toString(request.getParameter("source"), "").toString();
 
             AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
             if (eUserDo != null) {
@@ -382,8 +383,10 @@ public class AppH5UserContorler extends BaseController {
                 AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
                 userDo.setRecommendId(userRecommendDo.getRid());
             }
-            long userId = afUserService.addUser(userDo);
-
+//            if(StringUtil.isBlank(source)){
+//        	source = "recommend";
+//            }
+            long userId = afUserService.toAddUser(userDo,source);
             Long invteLong = Constants.INVITE_START_VALUE + userId;
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);

@@ -133,56 +133,83 @@
     </select>
     <select id="checkOrderTimes" parameterType="java.lang.Long" resultType = "java.lang.Integer">
     	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId}
-    	AND is_delete = 0;
+    	AND is_delete = 0
+    	 <if test="activityTime != null">
+    			and gmt_create <![CDATA[ >= ]]> #{activityTime}
+		</if>
     </select>
     <select id="getListByUserId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
     	SELECT * FROM af_boluome_rebate WHERE user_id = #{userId} 
-		AND is_delete = 0;
+		AND is_delete = 0
+	    <if test="startTime != null">
+    			and gmt_create <![CDATA[ >= ]]> #{startTime}
+		</if>
     </select>
-    <select id="getLightShopId" parameterType="java.lang.Long"  resultType="java.lang.Long">
+   <!--  <select id="getLightShopId" parameterType="java.lang.Long"  resultType="java.lang.Long">
 			SELECT
 				s.id
 			FROM
 				af_shop s
 			INNER JOIN (
 				SELECT
-				IF (
-					o.sec_type = 'HUAFEI'
-					OR o.sec_type = 'LIULIANG',
-					'CHONGZHI',
-					o.sec_type
-				) AS type
-				FROM af_order o
-				WHERE
-					o.id = #{orderId}
-				AND o.is_delete = 0
+					CASE	o.sec_type 	WHEN 'HUAFEI'   THEN 	'CHONGZHI'
+                 	WHEN 'LIULIANG' THEN 	'CHONGZHI' 
+                 	WHEN 'SUPGAME'  THEN    (SELECT TYPE  FROM af_sup_game g INNER JOIN af_order o  ON  o.goods_id = g.id  WHERE o.id = #{orderId})
+                 	ELSE o.sec_type END 
+                 	TYPE
+			FROM af_order o
+			WHERE
+			o.id = #{orderId}
 			) AS tt ON s.type = tt.type
 			AND s.is_delete = 0
 			LIMIT 0,1;
-    </select>
+    </select> -->
     <select id="getRebateList"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
-			SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d %H:%i') as consumeTime,tt.sceneRebate
+			
+		
+			
+			
+			SELECT s.name AS consumeScene, tt.surpriseRebate,DATE_FORMAT(tt.consumeTime, '%Y-%m-%d %H:%i') AS consumeTime,tt.sceneRebate
 			FROM af_shop s 
 			INNER JOIN 
 			(
-			    SELECT br.rebate_amount as surpriseRebate ,o.gmt_create as consumeTime,o.rebate_amount as sceneRebate,
-			    IF (
-			        o.sec_type = 'HUAFEI'
-			        OR o.sec_type = 'LIULIANG',
-			        'CHONGZHI',
-			        o.sec_type
-			    ) as type 
-			    FROM
-			    af_order o  
-			    LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND br.is_delete = 0
-			    WHERE
-			    o.user_id =  #{userId}
-			    AND o.`status` in ('FINISHED','REBATED')
-			    AND o.`gmt_create` >= #{startTime}
-			    And o.is_delete = 0 
-			) as tt 
-			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
-			ORDER BY consumeTime DESC , surpriseRebate DESC;
+			SELECT t.surpriseRebate,t.consumeTime,t.sceneRebate,i.ref_id
+			FROM 
+		        (
+				SELECT 
+				ss.surpriseRebate,ss.consumeTime,ss.sceneRebate,
+				CASE ss.otype 
+			        WHEN 'SUPGAME'  THEN   g.type		
+				ELSE ss.otype END 
+				otype
+							
+				FROM 
+				(
+		        
+					SELECT  br.rebate_amount AS surpriseRebate ,o.gmt_create AS consumeTime,o.rebate_amount AS sceneRebate,o.goods_id,
+						CASE o.sec_type WHEN 'HUAFEI'   THEN 	'CHONGZHI'
+					        WHEN 'LIULIANG' THEN 'CHONGZHI' 
+						ELSE  o.sec_type END 
+					        otype
+					    FROM af_order o
+					    LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND br.is_delete = 0
+					    WHERE
+					    o.user_id =   #{userId}
+					    AND o.`status` IN ('FINISHED','REBATED')
+					    AND o.`gmt_rebated`  <![CDATA[ >= ]]> #{startTime}
+					    AND o.is_delete = 0 
+			        )ss LEFT JOIN af_sup_game g ON  g.id = ss.goods_id
+			         
+			  )t
+			    LEFT JOIN af_boluome_activity_items i ON t.otype = i.rule_json WHERE i.is_delete = 0
+			    AND i.boluome_activity_id = 1000 
+			    AND i.type = 'ITEM'
+			    GROUP BY  t.otype
+			) AS tt 
+			ON s.id = tt.ref_id AND s.is_delete = 0 AND s.`status`='O'
+			ORDER BY consumeTime DESC , surpriseRebate DESC;	
+				
+			
 
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
@@ -210,34 +237,22 @@
     </select>
    
     <select id="getScence" parameterType="java.lang.Long" resultType="java.lang.String">
-    	
-	 SELECT name 
+	 SELECT i.name 
 		FROM af_boluome_activity_items i                 
-		WHERE  i.ref_id = (
-	    	SELECT
-					s.id
-				FROM
-					af_shop s
-				INNER JOIN (
-					SELECT
-					IF (
-						o.sec_type = 'HUAFEI'
-						OR o.sec_type = 'LIULIANG',
-						'CHONGZHI',
-						o.sec_type
-					) AS type
-					FROM af_order o
-					WHERE
-						o.id = #{orderId}
-					AND o.is_delete = 0
-				) AS tt ON s.type = tt.type
-				AND s.is_delete = 0
-				LIMIT 0,1
+		WHERE  i.rule_json = (
+			SELECT
+                    CASE o.sec_type  
+                    WHEN 'HUAFEI'   THEN 	'CHONGZHI'
+                 	WHEN 'LIULIANG' THEN 	'CHONGZHI' 
+                 	WHEN 'SUPGAME'  THEN    (SELECT TYPE  FROM af_sup_game g INNER JOIN af_order o  ON  o.goods_id = g.id  WHERE o.id = #{orderId})
+                 	ELSE o.sec_type END 
+                 	TYPE	
+                 	FROM af_order o WHERE o.id =  #{orderId}
+		            LIMIT 0,1
 	    	)
-	    	
-	    	AND i.status = 'O'
+	        AND i.status = 'O'
 			AND i.is_delete = 0
-			AND i.boluome_activity_id =  1000
+			AND i.boluome_activity_id =  1000  
     </select>
     
     <select id="getRebateNumByOrderId" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -250,35 +265,61 @@
 		AND order_id = #{orderId};
     </select>
     <select id= "getRebateCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
-    	SELECT COUNT(1) FROM
-			(
-			SELECT
-				s.id AS shopId,
-				tt.user_id
-			FROM
-				af_shop s
-			INNER JOIN (
+    			<!--  大于活动时间-->
+		SELECT COUNT(1) FROM
+		(
 				SELECT
-					br.rebate_amount AS surpriseRebate,
-					br.user_id,
-				IF (
-					o.sec_type = 'HUAFEI'
-					OR o.sec_type = 'LIULIANG',
-					'CHONGZHI',
-					o.sec_type
-				) AS type
+					s.id AS shopId,
+					tt.user_id
 				FROM
-					af_boluome_rebate br
-				INNER JOIN af_order o ON o.id = br.order_id
-				AND o.is_delete = 0
-				AND br.is_delete = 0
-			) AS tt ON s.type = tt.type
-			AND s.is_delete = 0
-			GROUP BY s.`name` ,	tt.user_id
-			)t
-			WHERE t.shopId = #{shopId}
-			AND t.user_id = #{userId}
-			LIMIT 0,1;
+				af_shop s
+		    	INNER JOIN (
+			        		SELECT ss.surpriseRebate,ss.user_id,ss.order_id,ss.otype,ss.goods_id,
+			       		    CASE ss.otype 
+			       		    WHEN 'SUPGAME'  THEN   g.type
+							ELSE ss.otype END 
+							type			
+			        		FROM
+			       				 (
+									SELECT
+										br.rebate_amount AS surpriseRebate,
+										br.user_id,o.id order_id,o.goods_id,
+										CASE o.sec_type WHEN 'HUAFEI'   THEN 	'CHONGZHI'
+										WHEN 'LIULIANG' THEN 	'CHONGZHI' 
+										ELSE o.sec_type END 
+				        				otype			      			
+									FROM
+										af_boluome_rebate br
+									INNER JOIN af_order o ON o.id = br.order_id
+									AND o.is_delete = 0
+									AND br.is_delete = 0
+									
+									 <if test="activityTime != null">
+    									and gmt_rebated <![CDATA[ >= ]]> #{activityTime}
+									</if>
+									
+									
+								 )ss LEFT JOIN af_sup_game g ON  g.id = ss.goods_id
+				
+							) AS tt ON s.type = tt.otype
+				AND s.is_delete = 0
+				GROUP BY s.`name` ,tt.user_id
+		)t
+		WHERE t.shopId = #{shopId}
+		AND t.user_id =  #{userId}
+		LIMIT 0,1;
     </select>
+    <select id= "getCountByUserIdAndFirstOrder"  resultType="java.lang.Integer">
+        select count(0) 
+        from af_boluome_rebate 
+        where is_delete = 0
+        and user_id = #{userId}
+        and first_order = #{firstOrder}
+        <if test="oneYuanTime != null" >
+		and   gmt_create  <![CDATA[ >= ]]>    #{oneYuanTime}
+		</if>
+    </select>
+    
+    
     
 </mapper>

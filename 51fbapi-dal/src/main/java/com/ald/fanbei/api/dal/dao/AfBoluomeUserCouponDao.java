@@ -21,7 +21,7 @@ public interface AfBoluomeUserCouponDao extends BaseDao<AfBoluomeUserCouponDo, L
 
     List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
-    AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
+    int getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
 
     int checkIfHaveCoupon(@Param("userId") Long userId);
 
@@ -33,6 +33,8 @@ public interface AfBoluomeUserCouponDao extends BaseDao<AfBoluomeUserCouponDo, L
 
 
     AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(@Param("userId")Long userId,@Param("newUser") Long newUser,@Param("inviter") Long inviter);
+
+    int getTodayNumByUserId(@Param("userId")Long  userId);
 
 
     

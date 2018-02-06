@@ -12,40 +12,24 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.RiskErrorCode;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -86,6 +70,8 @@ public class GetConfirmOrderApi implements ApiHandle {
     BoluomeUtil boluomeUtil;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -132,7 +118,6 @@ public class GetConfirmOrderApi implements ApiHandle {
      * @param orderInfo
      */
     private void dealWithVirtualCodeGt368(BoluomeConfirmOrderVo vo, AfOrderDo orderInfo, AfUserAccountDto userDto) {
-        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode = resp.getRejectCode();
@@ -163,18 +148,17 @@ public class GetConfirmOrderApi implements ApiHandle {
             vo.setOverduedCode(SUCCESS_CODE);
         }
 
-        if (afOrderService.isVirtualGoods(virtualMap)) {
-            String virtualCode = afOrderService.getVirtualCode(virtualMap);
-            BigDecimal totalVirtualAmount = afOrderService.getVirtualAmount(virtualMap);
-            BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, totalVirtualAmount);
-            BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
-            // 虚拟剩余额度大于信用可用额度 则为可用额度
-            leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-            vo.setVirtualGoodsUsableAmount(leftAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : leftAmount);
-            vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
-        } else {
+        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
+        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+        // 判断使用额度
+        BigDecimal leftAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+
+        if (leftAmount.compareTo(BigDecimal.ZERO) < 0) {
             vo.setIsVirtualGoods(YesNoStatus.NO.getCode());
             vo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
+        } else {
+            vo.setVirtualGoodsUsableAmount(leftAmount);
+            vo.setIsVirtualGoods(YesNoStatus.YES.getCode());
         }
     }
 

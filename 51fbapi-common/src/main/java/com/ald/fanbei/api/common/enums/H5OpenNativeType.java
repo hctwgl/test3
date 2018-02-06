@@ -10,7 +10,11 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum H5OpenNativeType {
 	GoodsInfo("GOODS_DETAIL_INFO", "商品详情"),
-	AppLogin("APP_LOGIN", "去登录");
+	AppLogin("APP_LOGIN", "去登录"),
+	DoScanId("DO_SCAN_ID","银行卡认证"),
+	DoPromoteBasic("DO_PROMOTE_BASIC","基础认证");
+	
+	
 
     private String    code;
 

@@ -1,6 +1,7 @@
 
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -10,22 +11,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserLoginDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONObject;
-import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 
 /**
  * 点亮活动新版ServiceImpl
@@ -53,6 +58,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	AfUserDao afUserDao;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfBoluomeUserCouponService afBoluomeUserCouponService;
 
 	@Override
 	public BaseDao<AfBoluomeUserCouponDo, Long> getDao() {
@@ -71,7 +80,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 
 		try {
 			if (lock) {
-
+			    
 				int isHave = afBoluomeUserCouponDao.checkIfHaveCoupon(userId);
 				
 				log = log + String.format("middle business params isHave =  %s", isHave);
@@ -79,66 +88,87 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				
 				if (isHave == 0) {
 					// have never sent coupon before , right now send it .
-					Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
-					
-					log = log + String.format("refUserIdTemp =  %s", refUserIdTemp);
-					logger.info(log);
-
-					if (refUserIdTemp != null) {
-						AfBoluomeUserCouponDo afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
-						afBoluomeUserCouponDo.setGmtCreate(new Date());
-						afBoluomeUserCouponDo.setGmtModified(new Date());
-						afBoluomeUserCouponDo.setRefId(userId);
-						afBoluomeUserCouponDo.setUserId(refUserIdTemp);
-						afBoluomeUserCouponDo.setStatus(1);
-						afBoluomeUserCouponDo.setChannel("RECOMMEND");
-
-						AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY",
-								"BOLUOME_COUPON");
-
-						log = log + String.format("AfBoluomeUserCouponDo = %s , AfResourceDo = %s ",
-								afBoluomeUserCouponDo.toString(), resourceDo.toString());
-						logger.info(log);
-
-						if (resourceDo != null) {
-							String couponIdStr = resourceDo.getValue1();
-							Long couponId = Long.parseLong(couponIdStr);
-							afBoluomeUserCouponDo.setCouponId(couponId);
-
-							log = log + String.format("couponId =  %s ", couponId);
-							logger.info(log);
-
-							// send coupon
-							AfResourceDo temCoupon = afResourceDao.getResourceByResourceId(couponId);
-							if (temCoupon != null) {
-								PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-								bo.setUser_id(refUserIdTemp + StringUtil.EMPTY);
-								String resultString = HttpUtil.doHttpPostJsonParam(temCoupon.getValue(),
-										JSONObject.toJSONString(bo));
-								
-								log = log + String.format("sendBoluomeCoupon  bo =  %s, resultString =  %s",
-										JSONObject.toJSONString(bo), resultString);
-								logger.info(log);
-								
-								JSONObject resultJson = JSONObject.parseObject(resultString);
-								String code = resultJson.getString("code");
-								
-								// 发券成功，保存记录，推送极光
-								if ("0".equals(code)) {
-									afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
-									result = true;
-									// call Jpush for rebate
-									String userName = convertToUserName(refUserIdTemp);
-									log = log + String.format("userName = %s ", userName);
-									logger.info(log);
-									if (userName != null) {
-										jpushService.send15Coupon(userName);
-									}
-								}
-
-							}
-
-						}
+					//Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
+				        //绑定记录必须在活动开始时间之后
+				    	AfResourceDo startTime = new  AfResourceDo();
+				    	startTime = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+				    	   if(startTime != null){
+        				        AfRecommendUserDo queryRecommendUser = new AfRecommendUserDo();
+        					queryRecommendUser.setUser_id(userId);
+        					queryRecommendUser.setType(1);
+ 				    	        SimpleDateFormat parser = new SimpleDateFormat(DateUtil.DATE_TIME_SHORT);
+ 				    	        Date gmtCreate =  parser.parse(startTime.getValue());
+ 				    	        queryRecommendUser.setGmt_create(gmtCreate);
+        					Long refUserIdTemp = afRecommendUserService.findRefUserId(queryRecommendUser);
+        				   //   Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
+        					log = log + String.format("refUserIdTemp =  %s", refUserIdTemp);
+        					logger.info(log);
+        					
+        					if (refUserIdTemp != null) {
+        					         //查询该邀请者今日获得的优惠券,若大于限制不发放
+        					         int couponNum =  afBoluomeUserCouponService.getTodayNumByUserId(refUserIdTemp);
+                				        if(getRecommendRecourceForStrongWind()!=null){
+                				            int limitNum = Integer.valueOf(getRecommendRecourceForStrongWind().getValue3()) ;
+                						   if(limitNum != 0 && limitNum < couponNum){
+                						       return false;
+                						   }
+                					 }
+        						AfBoluomeUserCouponDo afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
+        						afBoluomeUserCouponDo.setGmtCreate(new Date());
+        						afBoluomeUserCouponDo.setGmtModified(new Date());
+        						afBoluomeUserCouponDo.setRefId(userId);
+        						afBoluomeUserCouponDo.setUserId(refUserIdTemp);
+        						afBoluomeUserCouponDo.setStatus(1);
+        						afBoluomeUserCouponDo.setChannel("RECOMMEND");
+        
+        						AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY",
+        								"BOLUOME_COUPON");
+        
+        						log = log + String.format("AfBoluomeUserCouponDo = %s , AfResourceDo = %s ",
+        								afBoluomeUserCouponDo.toString(), resourceDo.toString());
+        						logger.info(log);
+        
+        						if (resourceDo != null) {
+        							String couponIdStr = resourceDo.getValue1();
+        							Long couponId = Long.parseLong(couponIdStr);
+        							afBoluomeUserCouponDo.setCouponId(couponId);
+        
+        							log = log + String.format("couponId =  %s ", couponId);
+        							logger.info(log);
+        
+        							// send coupon
+        							AfResourceDo temCoupon = afResourceDao.getResourceByResourceId(couponId);
+        							if (temCoupon != null) {
+        								PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+        								bo.setUser_id(refUserIdTemp + StringUtil.EMPTY);
+        								String resultString = HttpUtil.doHttpPostJsonParam(temCoupon.getValue(),
+        										JSONObject.toJSONString(bo));
+        								
+        								log = log + String.format("sendBoluomeCoupon  bo =  %s, resultString =  %s",
+        										JSONObject.toJSONString(bo), resultString);
+        								logger.info(log);
+        								
+        								JSONObject resultJson = JSONObject.parseObject(resultString);
+        								String code = resultJson.getString("code");
+        								
+        								// 发券成功，保存记录，推送极光
+        								if ("0".equals(code)) {
+        									afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
+        									result = true;
+        									// call Jpush for rebate
+        									String userName = convertToUserName(refUserIdTemp);
+        									log = log + String.format("userName = %s ", userName);
+        									logger.info(log);
+        									if (userName != null) {
+        									     //jpushService.send15Coupon(userName);
+        									     jpushService.boluomeActivityMsg(userName, H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_INVITER.getCode());
+        									}
+        								}
+        
+        							}
+        
+        						}
+        					}
 
 					}
 				}
@@ -150,6 +180,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		}
 		return result;
 
+	}
+	private AfResourceDo getRecommendRecourceForStrongWind(){
+		List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_STROLL");
+		return list.get(0);
 	}
 
 	private String convertToUserName(Long userId) {
@@ -179,7 +213,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	}
 
 	@Override
-	public AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
+	public int getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
 		// TODO Auto-generated method stub
 		return afBoluomeUserCouponDao.getByCouponIdAndUserIdAndChannel(userCoupon);
 	}
@@ -188,6 +222,13 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	public AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(Long userId, Long newUser, Long inviter) {
 		// TODO Auto-generated method stub
 		return afBoluomeUserCouponDao.getLastUserCouponByUserIdSentCouponId(userId, newUser, inviter);
+	}
+
+
+	@Override
+	public int getTodayNumByUserId(Long userId) {
+	    // TODO Auto-generated method stub
+	    	return afBoluomeUserCouponDao.getTodayNumByUserId(userId);
 	}
 
 }

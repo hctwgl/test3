@@ -18,6 +18,7 @@ public class GetConfirmBorrowLegalInfoParam {
 	
 	@NotNull
 	@Pattern(regexp="^[0-9]*[1-9][0-9]*$")
+
 	private String type;
 	
 	@NotNull

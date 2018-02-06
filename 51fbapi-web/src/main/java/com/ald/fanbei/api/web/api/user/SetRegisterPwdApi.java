@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
-import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -62,8 +61,6 @@ public class SetRegisterPwdApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
-	@Resource
-	AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@Resource
 	AfResourceService afResourceService;
 	
@@ -174,7 +171,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
 		userDo.setMajiabaoName(majiabaoName);
-		long userId = afUserService.addUser(userDo);
+		long userId = afUserService.toAddUser(userDo,"app");
 	
 		Long invteLong = Constants.INVITE_START_VALUE + userId;
 		String inviteCode = Long.toString(invteLong, 36);
@@ -190,7 +187,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY,bqsBlackBox);
 		}
-		//--------------------------------------------霸王餐活动start--------------------------------------------
+/*		//--------------------------------------------霸王餐活动start--------------------------------------------
 		//霸王餐活动绑定关系开关
 		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
 		    if(biddingSwitch != null){
@@ -218,7 +215,7 @@ public class SetRegisterPwdApi implements ApiHandle {
       		      }
 			}
 		    }
-		
+*/
 		 //吃玩住行活动被邀请的新用户登录送券
 		try{
 			  afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
@@ -227,7 +224,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
 		   }
 		//------------------------------------------霸王餐活动end----------------------------------------
-		
+
 		return resp;
 	}
 

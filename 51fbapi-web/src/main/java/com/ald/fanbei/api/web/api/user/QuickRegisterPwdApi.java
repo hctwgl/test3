@@ -145,7 +145,7 @@ public class QuickRegisterPwdApi implements ApiHandle {
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
 		userDo.setMajiabaoName(majiabaoName);
-		long userId = afUserService.addUser(userDo);
+		long userId = afUserService.toAddUser(userDo,"quickRegister");
 
 		Long invteLong = Constants.INVITE_START_VALUE + userId;
 		String inviteCode = Long.toString(invteLong, 36);

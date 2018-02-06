@@ -343,7 +343,7 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
@@ -378,6 +378,18 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+
+                    //首次信用购物（自营信用支付）送还款券
+                    if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) ){
+             	   if(payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
+     		       try{
+     		           afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
+     		         }catch(Exception e){
+     		           logger.error("first selesupport shopping sentUserCoupon error:"+e+orderInfo.toString());
+     		       }
+		    
+                    }
+
                     
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");

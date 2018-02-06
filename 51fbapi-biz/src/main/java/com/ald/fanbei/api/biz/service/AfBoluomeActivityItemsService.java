@@ -17,6 +17,6 @@ public interface AfBoluomeActivityItemsService extends ParentService<AfBoluomeAc
 
     AfBoluomeActivityItemsDo getItemsInfoByOrderId(long orderId);
 
-	List<AfCardDo> getUserCards(Long userId);
+	List<AfCardDo> getUserCards(Long userId, String startTime);
 
 }
