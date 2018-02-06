@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import org.apache.commons.lang.StringUtils;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
@@ -79,7 +81,16 @@ public class CollectionController {
     AfContractPdfService afContractPdfService;
 
     @Resource
-    private AfContractPdfCreateService afContractPdfCreateService;
+    AfContractPdfCreateService afContractPdfCreateService;
+
+    @Resource
+    AfLegalContractPdfCreateService afLegalContractPdfCreateService;
+
+    @Resource
+    AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
+
+    @Resource
+    AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 
     /**
      * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
@@ -568,32 +579,50 @@ public class CollectionController {
         String data = ObjectUtils.toString(request.getParameter("data"));
         JSONObject object = JSON.parseObject(data);
         String borrowNo = object.getString("borrowNo");
-        int type = NumberUtil.objToIntDefault(object.getString("type"), 0);//1:现金借款协议 2:旧版商品分期协议 3:续借协议 4：
+        int type = NumberUtil.objToIntDefault(object.getString("type"), 0);//1:现金借款协议 2:旧版商品分期协议 3:续借协议 4：搭售V1商品分期协议
         String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
         String sign = ObjectUtils.toString(request.getParameter("sign"));
         logger.info("getContractProtocolPdf id=" + borrowNo + ",timestamp=" + timestamp + ",sign1=" + sign + ",type=" + type);
         CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
         Long id = 0l;
+        String version = "";
         AfBorrowDo afBorrowDo = null;
         AfBorrowCashDo afBorrowCashDo = null;
-        if (type == 1) {//旧版现金借款协议
+        if (type == 1) {//现金借款协议
             afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
             if (afBorrowCashDo == null) {
                 logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
                 updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
                 return updteBo;
+            }else {
+                if (afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
+                    version = "V1";
+                }//合规线下还款V2
+                else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid())) {
+                    version = "V2";
+                } else {//老版借钱协议
+                    version = "old";
+                }
             }
             id = afBorrowCashDo.getRid();
-        } else if (type == 2) {//旧版商品分期协议
+        } else if (type == 2) {//商品分期协议
             afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
             if (afBorrowDo == null) {
                 logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
                 updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
                 return updteBo;
+            }else {
+                if (afBorrowDo.getVersion() == 1){
+                    version = "V2";
+                }else {
+                    version = "old";
+                }
             }
             id = afBorrowDo.getRid();
+        } else if (type == 4){
+            version = "V1";
         } else {
             logger.error("getContractProtocolPdf type is error,type =>{}", type);
             updteBo.setCode(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getCode());
@@ -602,11 +631,37 @@ public class CollectionController {
         }
         AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
         if (afContractPdfDo == null) {
-            if (type == 1) {
+            if ("V2".equals(version)){//v2版本
+                try {
+                    String url = afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((type-1), borrowNo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                /*if (type == 1) {//借款协议
+                    afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
+                } else if (type == 2) {//分期协议
+                    AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+                    afLegalContractPdfCreateService.protocolLegalInstalment(afBorrowDo.getUserId(), afBorrowDo.getAmount(), afBorrowDo.getRid());
+                }*/
+            }else if ("V1".equals(version)){//v1版本
+                if (type == 1) {
+                    afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
+                } else if (type == 4) {
+                    AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+                    afLegalContractPdfCreateService.protocolLegalInstalment(afBorrowDo.getUserId(), afBorrowDo.getAmount(), afBorrowLegalOrderDo.getRid());
+                }
+            }else {//老版协议
+                if (type == 1) {
+                    afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
+                } else if (type == 2) {
+                    afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(), afBorrowDo.getNper(), afBorrowDo.getAmount(), afBorrowDo.getRid());
+                }
+            }
+            /*if (type == 1) {
                 afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
             } else if (type == 2) {
                 afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(), afBorrowDo.getNper(), afBorrowDo.getAmount(), afBorrowDo.getRid());
-            }
+            }*/
             afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
             if (afContractPdfDo == null) {
                 logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}", id);
