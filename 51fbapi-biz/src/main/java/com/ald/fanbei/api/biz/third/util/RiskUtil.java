@@ -2957,15 +2957,17 @@ public class RiskUtil extends AbstractThird {
 	 */
 	public BigDecimal getRiskOriRate(Long userId, JSONObject param, String borrowType) {
 		
-		BigDecimal oriRate = null;
+		BigDecimal oriRate = BigDecimal.valueOf(0.001);
 		try {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(), param, borrowType);
 			String poundage = riskResp.getPoundageRate();
+			if(StringUtils.isBlank(poundage)) {
+				poundage = "0.001";
+			}
 			oriRate = new BigDecimal(poundage);
 		} catch (Exception e) {
 			logger.info(userId + "从风控获取分层用户额度失败：" + e);
 		}
-		// 计算原始利率
 		return oriRate;
 	}
 
