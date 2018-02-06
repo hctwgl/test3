@@ -324,6 +324,7 @@ public class AppH5UserContorler extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer")));
         logger.info("commitRegister requestURL"+JSONObject.toJSONString(request.getRequestURL()));
+        logger.info("commitRegister request = "+JSONObject.toJSONString(request));
 	// 如果是测试环境
         try {
             String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
