@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONObject;
@@ -64,6 +65,7 @@ public class CreditAuthRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 			Map<String, List<CouponSceneRuleBo>> rules) {
 		Long userId = (Long)inputData.get("userId");
 		List<CouponSceneRuleBo> ruleList = rules.get(CREDITAUTHKEY);
+		logger.info(StringUtil.appendStrs("userId=",userId,",ruleList=",ruleList));
 		for(CouponSceneRuleBo item:ruleList){
 			// 根据规则发放优惠劵
 			if(null != userId){

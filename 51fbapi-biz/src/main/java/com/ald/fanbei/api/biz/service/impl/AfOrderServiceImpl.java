@@ -93,6 +93,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -902,7 +903,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             AfResourceDo afResourceDo = new AfResourceDo();
                             afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
                             if (afResourceDo != null) {
-                                String swtich = afResourceDo.getValue();
+                        	 String swtich = "";
+                		 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+                		//线上为开启状态
+                		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+                		     swtich = afResourceDo.getValue();
+                		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+                		     swtich = afResourceDo.getValue1();
+                		 }
+                                //String swtich = afResourceDo.getValue();
 
                                 if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
                                     // qiao+2017-11-14 15:30:27:the second time to light the activity
@@ -2674,10 +2683,37 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
     }
 
+
+    @Override
+    public HashMap getCountPaidOrderByUserAndOrderType(Long userId, String orderType) {
+	// TODO Auto-generated method stub
+	return orderDao.getCountPaidOrderByUserAndOrderType(userId,orderType);
+    }
+
+    @Override
+    public List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(Long userId, String activityTime) {
+	// TODO Auto-generated method stub
+	return orderDao.getSelfsupportOrderByUserIdOrActivityTime(userId,activityTime);
+    }
+
+    @Override
+    public int getAuthShoppingByUserId(Long userId, String activityTime) {
+	// TODO Auto-generated method stub
+	return orderDao.getAuthShoppingByUserId(userId,activityTime);
+    }
+
+    @Override
+    public int getCountByUserId(Long rid) {
+	// TODO Auto-generated method stub
+	return orderDao.getCountByUserId(rid);
+    }
+
+
 	@Override
 	public int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount) {
 		return orderDao.updateAuAndUsed(orderId, auAmount, usedAmount);
 	}
+
 
     @Override
     public int addSceneAmount(List<AfOrderSceneAmountDo> list) {

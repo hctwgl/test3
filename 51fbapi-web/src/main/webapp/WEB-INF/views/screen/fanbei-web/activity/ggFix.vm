@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712221243")
+    #set($version="201801261414")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -20,7 +20,7 @@
         </div>
     </div><!--公告左右移动--end-->
     <div class="banner">
-        <img class="first" src="$src/ggFix01.jpg">
+        <img class="first" src="$src/ggFix01.png">
         <div class="firstStep">
             <p class="word01"></p>
             <p class="lineBox01"><span class="line01"></span></p>
@@ -114,6 +114,7 @@
            <p class="toGet" @click="toGetClick()">领取188元 ></p>
        </div>
         <div class="takeOutFood" v-if="alertData.couponToPop && alertData.couponToPop==='Y' && ((alertData.rebateToPop && alertData.rebateToPop==='N') || !alertData.rebateToPop)">
+            <img :src="alertData.couponImage">
             <p class="toUse" @click="contNewUserClick()"></p>
         </div>
     </div>

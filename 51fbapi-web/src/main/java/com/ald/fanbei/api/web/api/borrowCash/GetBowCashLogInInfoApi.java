@@ -124,11 +124,10 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-		String bqsBlackBox = request.getParameter("bqsBlackBox");
 		data.put("ipAddress", CommonUtil.getIpAddr(request));
 		data.put("appName",appName);
-		data.put("bqsBlackBox",bqsBlackBox);
-		data.put("blackBox",request.getParameter("blackBox"));
+		data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+		data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
 		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();

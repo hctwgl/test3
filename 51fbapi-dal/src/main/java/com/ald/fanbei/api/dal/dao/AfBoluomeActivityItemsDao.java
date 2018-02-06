@@ -23,7 +23,7 @@ public interface AfBoluomeActivityItemsDao extends BaseDao<AfBoluomeActivityItem
 	AfBoluomeActivityItemsDo getItemsInfoByOrderId(@Param("orderId") long orderId);
 
 
-	List<AfCardDo> getUserCards(@Param("userId")Long userId);
+	List<AfCardDo> getUserCards(@Param("userId")Long userId,@Param("activityTime") String activityTime);
 
     
 
