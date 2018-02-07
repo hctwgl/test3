@@ -720,7 +720,7 @@ public class AppH5InvitationActivityController extends BaseController {
         	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         	            try {
         			Date time  = sdf.parse(onlineTime.getValue()) ;
-        			 if(riskTime.before(time)){
+        			 if(riskTime.before(time) && riskStatus.equals("Y")){
         			     newbieTaskForAuth.setValue1(onlineTime.getValue1());
         			}
         		    } catch (ParseException e) {
