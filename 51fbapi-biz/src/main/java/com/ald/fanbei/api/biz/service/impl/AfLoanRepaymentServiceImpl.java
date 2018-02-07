@@ -690,7 +690,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		LoanRepayBo bo = buildLoanRepayBo(loanDo, loanNo, repayType, repayTime, repayAmount, restAmount, outTradeNo, isBalance, repayCardNum, repayChannel, isAdmin);
 		bo.isAllRepay = true;
-		// TODO 分期信息
+		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsDao.getNoRepayListByLoanId(loanDo.getRid());
+		bo.loanPeriodsDoList = loanPeriodsDoList;
 		
 		checkOfflineRepayment(bo, repayAmount, outTradeNo);
 		
