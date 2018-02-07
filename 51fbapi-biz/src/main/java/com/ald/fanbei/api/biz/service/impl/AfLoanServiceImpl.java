@@ -475,7 +475,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.maxQuota = prdDo.getMaxAmount();
 			bo.minQuota = prdDo.getMinAmount();
 			
-			if(YesNoStatus.YES.getCode().equals(prdDo.getSwitch())) {//贷款总开关
+			if(YesNoStatus.NO.getCode().equals(prdDo.getSwitch())) {//贷款总开关
 				bo.rejectCode = AfLoanRejectType.SWITCH_OFF.name();
 			}
 			
