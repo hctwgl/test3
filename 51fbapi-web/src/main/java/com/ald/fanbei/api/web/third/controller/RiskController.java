@@ -392,7 +392,7 @@ public class RiskController {
 		String data = request.getParameter("data");
 		String msg = request.getParameter("msg");
 		String signInfo = request.getParameter("signInfo");
-		logger.info("deal chsi begin,code=" + code + ",data=" + data);
+		logger.info("deal supplementAuth begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
 			riskUtil.supplementAuthNotify(code, data, msg, signInfo);
 			return "SUCCESS";

@@ -16,12 +16,12 @@ public class Bootstrap {
 		String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		ROOT_PATH = rootPath.replace("target/classes/", "");
 	}
-	
 	public static void main(String[] args) {
 	
 		String webPath = ROOT_PATH + "src/main/webapp";
-		
+
 		new JettyServerStart(webPath, 8089, "/").start();
-		
+
 	}
 }
+
