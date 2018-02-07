@@ -8,7 +8,18 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum RiskSceneType {
 
-	FUND_XJD_PASS("80","FUND_XJD_PASS","公积金现金贷(强风控通过)");
+	FUND_XJD_PASS("80","FUND_XJD_PASS","公积金现金贷(强风控通过)"),
+	FUND_XJD_UNPASS("81","FUND_XJD_UNPASS","公积金现金贷(强风控不通过)"),
+	FUND_BLD("85","FUND_BLD","公积金白领贷"),
+	INSURANCE_XJD_PASS("70","INSURANCE_XJD_PASS","社保现金贷（强风控通过）"),
+	INSURANCE_XJD_UNPASS("71","INSURANCE_XJD_UNPASS","社保现金额（强风控不通过）"),
+	INSURANCE_BLD("75","INSURANCE_BLD","社保白领贷"),
+	ALIPAY_XJD_PASS("93","ALIPAY_XJD_PASS","支付宝现金贷（强风控通过）"),
+	ALIPAY_XJD_UNPASS("94","ALIPAY_XJD_UNPASS","支付宝现金贷(强风控不通过)"),
+	ALIPAY_BLD("95","ALIPAY_BLD","支付宝白领贷"),
+	ZHENGXIN_XJD_PASS("110","ZHENGXIN_XJD_PASS","现金贷(强风控通过)"),
+	BANK_BLD("155","BANK_BLD","网银白领贷"),
+	CARDMAIL_XJD_PASS("60","CARDMAIL_XJD_PASS","信用卡邮箱现金贷(强风控通过)");
 	
     private String code;
     private String name;

@@ -47,7 +47,6 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
                 JSONArray jsonArray = JSON.parseArray(afUserAuthStatusDo.getCauseReason());
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String auth = jsonObject.getString("auth");
                     String status = jsonObject.getString("status");
                     if (YesNoStatus.NO.getCode().equals(status)) {
                         afUserAuthStatusDo.setStatus("N");
