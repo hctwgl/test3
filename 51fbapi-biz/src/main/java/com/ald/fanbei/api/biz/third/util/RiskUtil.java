@@ -25,6 +25,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ald.fanbei.api.biz.auth.executor.AuthCallbackManager;
+import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
@@ -244,6 +246,9 @@ public class RiskUtil extends AbstractThird {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
+
+	@Resource
+	AuthCallbackManager authCallbackManager;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -604,8 +609,8 @@ public class RiskUtil extends AbstractThird {
 	 *            商品编号 增加里那个字段
 	 * @param SecSence
 	 *            二级场景
-     * @param ThirdSence 三级场景
-	 *            三级场景
+	 * @param ThirdSence
+	 *            三级场景 三级场景
 	 * @param orderid
 	 *            订单号
 	 * @return
@@ -928,8 +933,8 @@ public class RiskUtil extends AbstractThird {
 	 *            订单编号
 	 * @param verifybo
 	 *            风控返回结果
-     * @param virtualCode 虚拟值
-	 *            虚拟值
+	 * @param virtualCode
+	 *            虚拟值 虚拟值
 	 * @return
 	 */
 	public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow,
@@ -1068,7 +1073,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param tradeNo
 	 * @param resultMap
 	 * @param isSelf
-     * @param virtualCode
+	 * @param virtualCode
 	 * @param bankAmount
 	 * @param borrow
 	 * @param verybo
@@ -1715,8 +1720,8 @@ public class RiskUtil extends AbstractThird {
 	/**
 	 * 上树运营商数据查询异步通知
 	 *
-	 *            --用户唯一标识
-	 *            --用户名
+	 * --用户唯一标识 --用户名
+	 * 
 	 * @return
 	 */
 	public int operatorNotify(String code, String data, String msg, String signInfo) {
@@ -1938,8 +1943,8 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
-	 *            --用户唯一标识
-	 *            --用户名
+	 * --用户唯一标识 --用户名
+	 * 
 	 * @return
 	 */
 
@@ -2057,8 +2062,8 @@ public class RiskUtil extends AbstractThird {
 	/**
 	 * 风控异步审核
 	 *
-	 *            --用户唯一标识
-	 *            --用户名
+	 * --用户唯一标识 --用户名
+	 * 
 	 * @return
 	 */
 	public int asyVerify(String code, String data, String msg, String signInfo) {
@@ -2299,7 +2304,7 @@ public class RiskUtil extends AbstractThird {
 		return riskResp;
 	}
 
-/**
+	/**
 	 * 魔蝎公积金第三方数据查询异步通知
 	 *
 	 * @return
@@ -2354,7 +2359,6 @@ public class RiskUtil extends AbstractThird {
 		}
 		return 0;
 	}
-
 
 	/**
 	 * 51公积金认证风控异步通知
@@ -2419,8 +2423,8 @@ public class RiskUtil extends AbstractThird {
 	/**
 	 * 魔蝎社保第三方数据查询异步通知
 	 *
-	 *            --用户唯一标识
-	 *            --用户名
+	 * --用户唯一标识 --用户名
+	 * 
 	 * @return
 	 */
 	public int socialSecurityNotify(String code, String data, String msg, String signInfo) {
@@ -2647,8 +2651,7 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
 		}
 	}
-	
-	
+
 	/**
 	 * 获取用户分层利率
 	 *
@@ -2665,9 +2668,11 @@ public class RiskUtil extends AbstractThird {
 			JSONObject eventObj = new JSONObject();
 			eventObj.put("appName", params.get("appName") + "");
 			eventObj.put("cardNo", card == null ? "" : card.getCardNumber());
-			//eventObj.put("blackBox", params.get("blackBox") == null ? "" : params.get("blackBox"));
+			// eventObj.put("blackBox", params.get("blackBox") == null ? "" :
+			// params.get("blackBox"));
 			eventObj.put("ipAddress", params.get("ipAddress") == null ? "" : params.get("ipAddress"));
-			//eventObj.put("bqsBlackBox", params.get("bqsBlackBox") == null ? "" : params.get("bqsBlackBox"));
+			// eventObj.put("bqsBlackBox", params.get("bqsBlackBox") == null ?
+			// "" : params.get("bqsBlackBox"));
 			reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
 		}
 		HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
@@ -2697,9 +2702,8 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
 		}
 	}
-	
 
-		/**
+	/**
 	 * 登录可信验证码
 	 *
 	 * @param consumerNo
@@ -2752,7 +2756,6 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
-
 	/**
 	 * 风控异步登录
 	 *
@@ -2802,13 +2805,13 @@ public class RiskUtil extends AbstractThird {
 	 * @param phone
 	 * @param blackBox
 	 * @param deviceUuid
-     * @param loginType
-     * @param loginTime
+	 * @param loginType
+	 * @param loginTime
 	 * @param ip
 	 * @param phoneType
 	 * @param networkType
 	 * @param osType
-     * @param result
+	 * @param result
 	 * @param event
 	 */
 	public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid,
@@ -2840,8 +2843,8 @@ public class RiskUtil extends AbstractThird {
 	/**
 	 * 判断用户是否可以使用信用支付
 	 *
-     * @param riskCreditBo
-     * @param userName
+	 * @param riskCreditBo
+	 * @param userName
 	 * @param orderNo
 	 * @return
 	 */
@@ -3172,6 +3175,7 @@ public class RiskUtil extends AbstractThird {
 		BigDecimal oriRate = serviceRate.add(poundageRate);
 		return oriRate;
 	}
+
 	/**
 	 * 获取用户分层利率
 	 * 
@@ -3180,7 +3184,7 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public BigDecimal getRiskOriRate(Long userId, JSONObject param, String borrowType) {
-		
+
 		BigDecimal oriRate = null;
 		try {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(), param, borrowType);
@@ -3406,37 +3410,58 @@ public class RiskUtil extends AbstractThird {
 		}
 	}
 
-    /**
-     * 网银通知推送
-     * @param code
-     * @param data
-     * @param msg
-     * @param signInfo
-     * @return
-     */
-    public int onlinebankNotify(String code, String data, String msg, String signInfo) {
-        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
-        reqBo.setCode(code);
-        reqBo.setData(data);
-        reqBo.setMsg(msg);
-        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        logger.info(createLinkString(reqBo));
-        logThird(signInfo, "onlinebankNotify", reqBo);
-        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
-            logger.info("onlinebankNotify process user account");
-            AfUserAuthDo auth = new AfUserAuthDo();
-            JSONObject obj = JSON.parseObject(data);
-            String consumerNo = obj.getString("consumerNo");
-            String result = obj.getString("result");
-            auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
-            auth.setGmtOnlinebank(new Date(System.currentTimeMillis()));
-            if (StringUtil.equals("10", result)) {
-                auth.setOnlinebankStatus(YesNoStatus.YES.getCode());
-            } else {
-                auth.setOnlinebankStatus(YesNoStatus.NO.getCode());
-            }
-            return afUserAuthService.updateUserAuth(auth);
-        }
-        return 0;
-    }
+	/**
+	 * 网银通知推送
+	 * 
+	 * @param code
+	 * @param data
+	 * @param msg
+	 * @param signInfo
+	 * @return
+	 */
+	public int onlinebankNotify(String code, String data, String msg, String signInfo) {
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logger.info(createLinkString(reqBo));
+		logThird(signInfo, "onlinebankNotify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			logger.info("onlinebankNotify process user account");
+			AfUserAuthDo auth = new AfUserAuthDo();
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String result = obj.getString("result");
+			auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+			auth.setGmtOnlinebank(new Date(System.currentTimeMillis()));
+			if (StringUtil.equals("10", result)) {
+				auth.setOnlinebankStatus(YesNoStatus.YES.getCode());
+			} else {
+				auth.setOnlinebankStatus(YesNoStatus.NO.getCode());
+			}
+			return afUserAuthService.updateUserAuth(auth);
+		}
+		return 0;
+	}
+
+	public int supplementAuthNotify(String code, String data, String msg, String signInfo) {
+
+		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+		reqBo.setCode(code);
+		reqBo.setData(data);
+		reqBo.setMsg(msg);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		logger.info(createLinkString(reqBo));
+		logThird(signInfo, "auth Notify", reqBo);
+		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String consumerNo = obj.getString("consumerNo");
+			String authItem = obj.getString("authItem");
+			String orderNo = obj.getString("orderNo");
+			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, code);
+			authCallbackManager.execute(callbackBo);
+		}
+		return 0;
+	}
 }

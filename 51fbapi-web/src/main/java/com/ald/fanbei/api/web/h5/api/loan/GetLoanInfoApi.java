@@ -25,6 +25,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.vo.AfLoanVo;
@@ -82,6 +83,11 @@ public class GetLoanInfoApi implements H5Handle {
 				throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_NOT_EXIST_ERROR);
 			}
 			
+			AfUserAccountDo userDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
+			if (userDo == null) {
+				throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			}
+			
 			// 每期待还金额
 			BigDecimal perPeriodAmount = BigDecimalUtil.add(afLoanPeriod.getAmount(),afLoanPeriod.getServiceFee(),afLoanPeriod.getInterestFee());
 			
@@ -105,6 +111,7 @@ public class GetLoanInfoApi implements H5Handle {
 			loanVo.setCardName(loanDo.getCardName());	// 银行卡名称
 			loanVo.setGmtCreate(loanDo.getGmtCreate());		// 申请时间
 			loanVo.setGmtArrival(loanDo.getGmtArrival());	// 打款时间
+			loanVo.setRebateAmount(userDo.getRebateAmount());	// 账户余额
 			
 			loanVo.setOverdueStatus(afLoanPeriod.getOverdueStatus());
 			loanVo.setStatus(loanDo.getStatus());

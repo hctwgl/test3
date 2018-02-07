@@ -18,7 +18,11 @@ import org.xml.sax.SAXException;
 
 import com.ald.fanbei.api.ioc.start.Bootstrap;
 import com.google.common.collect.Lists;
-
+/**
+ * 解析autoconfig配置文件
+ * @author rongbo
+ *
+ */
 public class AutoConfigParser {
 
 	private static String autoConfigPath = "src/main/webapp/META-INF/autoconf/auto-config.xml";

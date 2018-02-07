@@ -20,4 +20,6 @@ public interface AfLoanRepaymentDao extends BaseDao<AfLoanRepaymentDo, Long> {
 
 	List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId);
 
+	AfLoanRepaymentDo getLoanRepaymentByTradeNo(String outTradeNo);
+
 }

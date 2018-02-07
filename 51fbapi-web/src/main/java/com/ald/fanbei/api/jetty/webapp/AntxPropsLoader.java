@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.ald.fanbei.api.ioc.start.Bootstrap;
-
+/**
+ * 加载properties
+ * @author rongbo
+ *
+ */
 public class AntxPropsLoader {
 
 	Properties pros = new Properties();
@@ -35,8 +39,6 @@ public class AntxPropsLoader {
 		return pros;
 	}
 	
-	public static void main(String[] args) {
-		new AntxPropsLoader().load();
-	}
+	
 
 }

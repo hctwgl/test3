@@ -19,7 +19,7 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_loan_product,af_loan,af_loan_periods,af_loan_repayment";
+		String tables = "af_auth_raise_status";
 
 		// 配置作者及Domain说明
 		String classAuthor = "Jiang Rongbo";

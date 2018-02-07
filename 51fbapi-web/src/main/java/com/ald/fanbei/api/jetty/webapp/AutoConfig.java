@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.jetty.webapp;
 
 import java.util.List;
-
+/**
+ * AutoConfig配置描述类
+ * @author rongbo
+ *
+ */
 public class AutoConfig {
 	
 	List<Property> groupList;

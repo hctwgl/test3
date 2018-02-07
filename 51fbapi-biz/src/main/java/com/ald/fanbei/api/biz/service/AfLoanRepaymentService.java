@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 
@@ -20,7 +21,11 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	
 	void repay(LoanRepayBo bo);
 	
-	void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
+	void offlineRepay(AfLoanDo loanDo, String loanNo, 
+			String repayType, String repayTime, String repayAmount,
+			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
+
+	void offlineAllRepay(AfLoanDo loanDo, String loanNo, 
 			String repayType, String repayTime, String repayAmount,
 			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
 	

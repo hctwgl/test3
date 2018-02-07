@@ -74,6 +74,8 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
+	
+	
 
 	@RequestMapping(value = { "/operator" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -373,6 +375,26 @@ public class RiskController {
 		logger.info("deal chsi begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
 			riskUtil.taskFinishNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	
+	/**
+	 * 补充认证回调
+	 */
+	@RequestMapping(value = { "/supplementAuth" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String supplementAuth(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal supplementAuth begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.supplementAuthNotify(code, data, msg, signInfo);
 			return "SUCCESS";
 		} else {
 			return "ERROR";
