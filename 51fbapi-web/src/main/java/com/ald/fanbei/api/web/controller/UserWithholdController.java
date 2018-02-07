@@ -212,6 +212,8 @@ public class UserWithholdController extends BaseController {
         if(useBalance==1){
             //账户余额
             BigDecimal userAccount = userDto.getRebateAmount();
+            //不再使用余额
+            userAccount = BigDecimal.ZERO;
             // 余额处理
             if (userAccount.compareTo(BigDecimal.ZERO) > 0
                     && repaymentAmount.compareTo(userAccount) > 0) {
@@ -353,7 +355,7 @@ public class UserWithholdController extends BaseController {
     }
 
     /**
-     * 借款代扣
+     * 分期代扣
      *
      * @return
      * @throws Exception
@@ -445,6 +447,8 @@ public class UserWithholdController extends BaseController {
             if(useBalance==1){
                 //账户余额
                 BigDecimal userAccount = afUserAccountDo.getRebateAmount();
+                //不再使用余额
+                userAccount = BigDecimal.ZERO;
                 // 余额处理
                 if (userAccount.compareTo(BigDecimal.ZERO) > 0
                         && repaymentAmount.compareTo(userAccount) > 0) {

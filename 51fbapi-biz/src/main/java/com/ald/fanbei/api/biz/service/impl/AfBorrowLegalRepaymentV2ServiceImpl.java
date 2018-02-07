@@ -265,16 +265,21 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			Map<String,String> replaceMapData = new HashMap<String, String>();
 			replaceMapData.put("errorMsg", errorMsg);
 			//还款失败短信通知
+			boolean isCashOverdue = false;
 			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
 				AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repaymentDo.getBorrowId());
 				//判断是否逾期，逾期不发短信
-				Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
-				gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
-				Date newDate = new Date();
-				newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
-				boolean isCashOverdue = false;
-				if (gmtPlanTime.getTime() < newDate.getTime()) {
-					isCashOverdue = true;
+				try{
+					Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
+					gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
+					Date newDate = new Date();
+					newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
+
+					if (gmtPlanTime.getTime() < newDate.getTime()) {
+						isCashOverdue = true;
+					}
+				}catch(Exception ex){
+					logger.info("dealRepaymentFalse isCashOverdue error", ex);
 				}
 				if(isCashOverdue){
 					logger.info("borrowCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
