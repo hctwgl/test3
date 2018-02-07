@@ -180,9 +180,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		}
 		
 		AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getLastActivePeriodByLoanId(loanDo.getRid());
-		List<AfLoanPeriodsDo> loanPeriodsDoList = new ArrayList<AfLoanPeriodsDo>();
-		loanPeriodsDoList.add(loanPeriodsDo);
-		bo.loanPeriodsDoList = loanPeriodsDoList;
+		bo.loanPeriodsDoList.add(loanPeriodsDo);
 	}
 	
 	private void checkAmount(LoanRepayBo bo) {
