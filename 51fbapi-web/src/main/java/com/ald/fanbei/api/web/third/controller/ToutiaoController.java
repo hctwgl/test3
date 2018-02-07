@@ -45,7 +45,7 @@ public class ToutiaoController extends BaseController {
     @ResponseBody
     public JSONObject getUser( HttpServletRequest request, HttpServletResponse response) throws Exception{
         JSONObject returnjson = new JSONObject();
-        try{
+       /* try{
             StringBuilder sb = new StringBuilder();
             sb.append("---kdnotify begin:");
             Map<String, String[]> paramMap = request.getParameterMap();
@@ -78,12 +78,12 @@ public class ToutiaoController extends BaseController {
                     Long rid = tdo.getRid();
                     afUserToutiaoService.uptUser(rid);
                     logger.error("toutiaoresult:update success"+tdo.toString());
-                    /*if(active!=0){
+                    if(active!=0){
                         String result= HttpUtil.doGet(callbackUrl,20);
                         logger.error("toutiaoresult:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
                     }else{
                         logger.error("toutiaoresult:update success,active=0,id="+rid);
-                    }*/
+                    }
                 }
             }else{
                 returnjson.put("ret",-1);
@@ -96,7 +96,7 @@ public class ToutiaoController extends BaseController {
             returnjson.put("msg","missing params");
             logger.error("toutiaoresult:catch error",e.getMessage());
             return returnjson;
-        }
+        }*/
 
         returnjson.put("ret",0);
         returnjson.put("msg","success");
