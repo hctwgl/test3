@@ -39,6 +39,7 @@ import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueOrderBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderReqBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
+import com.ald.fanbei.api.biz.bo.RiskQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
@@ -146,6 +147,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 /**
  * @author 何鑫 2017年3月22日 11:20:23
@@ -3454,7 +3456,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setMsg(msg);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logger.info(createLinkString(reqBo));
-		logThird(signInfo, "auth Notify", reqBo);
+		logThird(signInfo, "supplement auth notify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
@@ -3474,9 +3476,15 @@ public class RiskUtil extends AbstractThird {
 	 * @return
 	 */
 	public RiskQuotaRespBo userSupplementQuota(String consumerNo, String[] scenes, String sceneType) {
-		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		RiskQuotaReqBo reqBo = new RiskQuotaReqBo();
 		reqBo.setConsumerNo(consumerNo);
-
+		Map<String,Object> detailsMap = Maps.newHashMap();
+		detailsMap.put("sceneType", sceneType);
+		detailsMap.put("scenes", scenes);
+		String details = JSONObject.toJSONString(detailsMap);
+		// 生成Base64编码
+		String detailsBase64 = Base64.encodeString(details);
+		reqBo.setDetails(detailsBase64);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/thrid/userSupplementQuota.htm";
@@ -3489,11 +3497,10 @@ public class RiskUtil extends AbstractThird {
 
 		RiskQuotaRespBo riskResp = null;
 		try {
-			JSONObject.parseObject(reqResult, RiskQuotaRespBo.class);
+			riskResp = JSONObject.parseObject(reqResult, RiskQuotaRespBo.class);
 		} catch (Exception e) {
 
 		}
-
 		return riskResp;
 	}
 }
