@@ -334,6 +334,11 @@ public class AppH5UserContorler extends BaseController {
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String source = ObjectUtils.toString(request.getParameter("source"), "").toString();
 
+
+            logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer"))+"mobile = "+mobile);
+            logger.info("commitRegister requestURL"+JSONObject.toJSONString(request.getRequestURL())+"mobile = "+mobile);
+            logger.info("commitRegister request source = "+source+" mobile = "+mobile);
+
             AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
             if (eUserDo != null) {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null);

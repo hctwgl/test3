@@ -125,6 +125,8 @@ public class AppH5InvitationActivityController extends BaseController {
     @Resource
     AfResourceDao afResourceDao;
     String opennative = "/fanbei-web/opennative?name=";
+    String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + "/fanbei-web/opennative?name="
+		+ H5OpenNativeType.AppLogin.getCode();
     
     /**
      * 活动页面的基本信息
@@ -231,9 +233,9 @@ public class AppH5InvitationActivityController extends BaseController {
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
-            }else{
-                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
-                return resp.toString();
+//            }else{
+//                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), loginUrl, null);
+//                return resp.toString();
             }
         }catch  (Exception e) {
             logger.error("getSigninInfo error", e);
@@ -322,16 +324,26 @@ public class AppH5InvitationActivityController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.USER_SIGNIN_SUCCESS.getDesc(),"",null);
         AfUserDo afUser = null;
         try{
-            context = doWebCheck(request, false);
+            context = doWebCheck(request, true);
             if(context.isLogin()){
                 afUser = afUserService.getUserByUserName(context.getUserName());
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
             }else{
-                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), loginUrl, null);
                 return resp.toString();
             }
+        }catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				logger.error("/fanbei-web/signin" + context + "login error ");
+			        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
         }catch  (Exception e) {
             logger.error("signin error", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
@@ -571,31 +583,21 @@ public class AppH5InvitationActivityController extends BaseController {
     @RequestMapping(value = "newbieTask", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String newbieTask(HttpServletRequest request){
 	 FanbeiWebContext context = new FanbeiWebContext();
-	        Long userId = -1l;
+	 HashMap<String,Object> map =new HashMap<>();
+	 List<HashMap> hashMapList =new ArrayList<>();
+	 List<NewbieTaskVo>  newbieTaskList = new ArrayList<NewbieTaskVo>();
+	 Long userId = -1l;
 //	        H5CommonResponse resp = H5CommonResponse.getNewInstance();
 //	        AfUserDo afUser = null;
 	        try {
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
 			 String userName = context.getUserName();
 			 userId = convertUserNameToUserId(userName);
-	            }catch (FanbeiException e) {
-				if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-						|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-					Map<String, Object> data = new HashMap<>();
-					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-							+ H5OpenNativeType.AppLogin.getCode();
-					data.put("loginUrl", loginUrl);
-					logger.error("/fanbei-web/newbieTask" + context + "login error ");
-				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-				}
-			} catch (Exception e) {
-				logger.error("/fanbei-web/newbieTask" + context + "error = {}"+e.getStackTrace());
-		}
-	        HashMap<String,Object> map =new HashMap<>();
-	        List<HashMap> hashMapList =new ArrayList<>();
-	        List<NewbieTaskVo>  newbieTaskList = new ArrayList<NewbieTaskVo>();
-	        
-	        
+			 boolean isLogin = false;
+	                if(userId != null){
+	                    isLogin = true;
+	                }
+			  
 	  	AfResourceDo foodResource = new AfResourceDo();
 	        String activitySwitch = activitySwitch();
 	  	if("O".equals(activitySwitch)){
@@ -674,14 +676,17 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder,oneYuanTime);
 	        //活动之前是否点过外卖
 	        NewbieTaskVo newbieTaskForFood  = new NewbieTaskVo();
-	         newbieTaskForFood =  assignment(foodResource,rebateCount);
+	         newbieTaskForFood =  assignment(foodResource,rebateCount, isLogin);
 	        if(newbieTaskForFood !=null){
         	        if(rebateCount == 0){
         	            AfUserDo   afUser = afUserService.getUserByUserName(context.getUserName());
+        	            String shopUrl = loginUrl;
+        	            if(afUser !=null){
         	            AfShopDo queryShop = new AfShopDo();
         	            queryShop.setType("WAIMAI");
         	            AfShopDo shopInfo = afShopService.getShopInfoBySecType(queryShop);
-        	            String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, afUser.getMobile());
+        	             shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, afUser.getMobile());
+        	            }
         	            newbieTaskForFood.setUrl(shopUrl);
         	        }
 	        newbieTaskList.add(newbieTaskForFood);
@@ -704,9 +709,9 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if("Y".equals(riskStatus)){
 	            auth = 1;
 	        }
-	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth);
+	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth,isLogin);
 	        if(newbieTaskForAuth!=null){
-        	        if("N".equals(afUserAuthDo.getBankcardStatus())){
+        	        if(afUserAuthDo != null &&"N".equals(afUserAuthDo.getBankcardStatus())){
         	            newbieTaskForAuth.setUrl("/fanbei-web/opennative?name=DO_SCAN_ID");
         	        }
         	        
@@ -715,7 +720,7 @@ public class AppH5InvitationActivityController extends BaseController {
         	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
         	            try {
         			Date time  = sdf.parse(onlineTime.getValue()) ;
-        			 if(riskTime.before(time)){
+        			 if(riskTime.before(time) && riskStatus.equals("Y")){
         			     newbieTaskForAuth.setValue1(onlineTime.getValue1());
         			}
         		    } catch (ParseException e) {
@@ -737,7 +742,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	       if(shopOrderList.size()>0){
 		   firstShopping =1;
 	        }
-	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping);
+	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping,isLogin);
 	        if(newbieTaskForFirstShopShopping !=null){
         	         if(firstShopping == 1){
         	             newbieTaskForFirstShopShopping.setTitle("商城首次购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
@@ -762,12 +767,12 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if(activityBeforeAuthShopping == 0 && isAuthShopping >= 1){
 	            authShopping = 1;
 	        }
-	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
+	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping,isLogin);
 	          //活动之前借过钱
 	        if(newbieTaskForAuthShopping !=null){
         		 if(activityBeforeAuthShopping >= 1){
         		     authShopping = 1;
-        		     newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
+        		     newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping,isLogin);
         		     newbieTaskForAuthShopping.setValue1(onlineTime.getValue1());
         		 }
         		 newbieTaskList.add(newbieTaskForAuthShopping);
@@ -790,12 +795,12 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if(activityBeforeBorrow == 0 && isBorrow >= 1){
 	            borrow = 1;
 	        }
-	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow);
+	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow,isLogin);
 	          //活动之前借过钱
 	        if(newbieTaskForBorrow!=null){
         		 if(activityBeforeBorrow >= 1){
         		     borrow = 1;
-        		     newbieTaskForBorrow =  assignment(borrowResource,borrow);
+        		     newbieTaskForBorrow =  assignment(borrowResource,borrow,isLogin);
         		     newbieTaskForBorrow.setValue1(onlineTime.getValue1());
         		}
         		 newbieTaskList.add(newbieTaskForBorrow);
@@ -813,7 +818,7 @@ public class AppH5InvitationActivityController extends BaseController {
 		 if(acticityShopOrderList.size()>=3){
 		     count = acticityShopOrderList.size();
 		}
-		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,count);
+		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,count,isLogin);
 		 if(newbieTaskForThirdShopping!=null){
         		 if(acticityShopOrderList.size()<3){
         		     newbieTaskForThirdShopping.setValue1("已购物<i>"+acticityShopOrderList.size()+"</i>次");
@@ -839,6 +844,19 @@ public class AppH5InvitationActivityController extends BaseController {
 	}catch(Exception e){
 	    logger.error("get newbieTaskForThirdShopping error = "+e);
 	}
+//	 }catch (FanbeiException e) {
+//			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+//					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+//				Map<String, Object> data = new HashMap<>();
+//				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+//						+ H5OpenNativeType.AppLogin.getCode();
+//				data.put("loginUrl", loginUrl);
+//				logger.error("/fanbei-web/newbieTask" + context + "login error ");
+//			        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+//			}
+		} catch (Exception e) {
+			logger.error("/fanbei-web/newbieTask" + context + "error = {}"+e.getStackTrace());
+	}
         map.put("newbieTaskList",newbieTaskList);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
@@ -863,9 +881,9 @@ public class AppH5InvitationActivityController extends BaseController {
 		}
 		return userId;
 	}
-    
+  
 
-    private NewbieTaskVo assignment(AfResourceDo resource,int count) {
+    private NewbieTaskVo assignment(AfResourceDo resource,int count,boolean isLogin) {
 
 	NewbieTaskVo  newbieTaskVo = new NewbieTaskVo();
 	if(resource ==null){
@@ -881,12 +899,17 @@ public class AppH5InvitationActivityController extends BaseController {
         	newbieTaskVo.setFinish(0);
         	newbieTaskVo.setTitle(title[0]);
         	newbieTaskVo.setButton(button[0]);
-        	newbieTaskVo.setUrl(url[0]);
+        	newbieTaskVo.setUrl(loginUrl);
+        	if(isLogin){
+        	  newbieTaskVo.setUrl(url[0]);
+        	}
         	if(count>0){
         	        newbieTaskVo.setFinish(1);
         	        newbieTaskVo.setTitle(title[1]);
         	        newbieTaskVo.setButton(button[1]);
-        	        newbieTaskVo.setUrl(url[1]);
+        	        if(isLogin){
+        	          newbieTaskVo.setUrl(url[1]);
+        	        }
         	        newbieTaskVo.setValue1(resource.getValue4());
         	        return newbieTaskVo;
                 }
