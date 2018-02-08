@@ -591,5 +591,13 @@
             AND status IN ('APPLY','TRANSFERING','TRANSFERRED')
         ORDER BY gmt_create DESC
     </select>
+
+    <select id="selectById">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan
+        WHERE is_delete = 0
+        and id = #{loanId}
+    </select>
     
 </mapper>

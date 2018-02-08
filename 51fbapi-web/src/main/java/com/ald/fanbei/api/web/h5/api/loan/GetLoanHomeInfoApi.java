@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
@@ -26,9 +27,9 @@ public class GetLoanHomeInfoApi implements H5Handle {
 	@Resource
 	private AfLoanService afLoanService;
 	@Resource
-	private AfRecommendUserService afRecommendUserService;
-	@Resource
 	private AfResourceService afResourceService;
+	@Resource
+	private AfUserAccountService userAccountService;
 	
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -36,6 +37,10 @@ public class GetLoanHomeInfoApi implements H5Handle {
 		Long userId = context.getUserId();
 		
 		resp.addResponseData("isLogin", userId == null?false:true);
+		
+		if(userId != null) {
+			resp.addResponseData("rebateAmount", userAccountService.getUserAccountByUserId(userId).getRebateAmount());
+		}
 		
 		resp.addResponseData("bannerList", afResourceService.getLoanHomeListByType());
 		resp.addResponseData("loanInfos", afLoanService.getHomeInfo(userId));

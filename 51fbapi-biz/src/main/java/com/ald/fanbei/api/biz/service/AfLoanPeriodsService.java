@@ -15,6 +15,19 @@ import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
  */
 public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Long>{
 	
+	/**
+	 * 根据贷款额、期数信息、贷款产品类型 计算贷款详情和各分期详情
+	 * @param amount NotNull
+	 * @param userId Nullable
+	 * @param periods NotNull
+	 * @param loanNo Nullable
+	 * @param prdType NotNull
+	 * @return 
+	 * 	index-0：{@link AfLoanDo} 对应贷款总信息 <br/>
+	 * 	index-1: {@link AfLoanPeriodsDo} 对应第一期信息<br/> 
+	 *  index-2: {@link AfLoanPeriodsDo} 对应第二期信息<br/>
+	 *  index-*: {@link AfLoanPeriodsDo} 对应第*期信息
+	 */
 	List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
 	
 	BigDecimal calcuRestAmount(AfLoanPeriodsDo period);

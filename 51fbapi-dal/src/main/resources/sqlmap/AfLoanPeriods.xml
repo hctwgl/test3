@@ -371,7 +371,7 @@
         <include refid="queryFields" />
         FROM af_loan_periods 
         WHERE is_delete = 0 AND loan_id = #{loanId}
-        	AND status = 'AWAIT_REPAY'
+        	AND status IN ('AWAIT_REPAY', 'PART_REPAY')
         ORDER BY nper ASC
     </select>
     

@@ -549,4 +549,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		return afLoanDao;
 	}
 
+	@Override
+	public AfLoanDo selectById(Long id){
+		return afLoanDao.selectById(id);
+	}
+
 }
