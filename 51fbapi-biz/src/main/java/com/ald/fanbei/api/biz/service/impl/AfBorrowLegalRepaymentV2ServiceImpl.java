@@ -449,7 +449,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
         try {
             AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
             if(repayDealBo.curName.equals("代扣付款")){
-                sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), repayDealBo.sumAmount);
+                sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), repayDealBo.curSumRepayAmount);
             }else if (YesNoStatus.YES.getCode().equals(isBalance)){
 				sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, BigDecimal.ZERO);
             }else {
