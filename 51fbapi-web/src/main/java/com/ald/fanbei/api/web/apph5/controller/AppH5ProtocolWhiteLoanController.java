@@ -175,8 +175,8 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 	 * @param model
 	 * @throws IOException
 	 */
-	@RequestMapping(value = {"whiteLoanProtocolLegalCashLoanV2"}, method = RequestMethod.GET)
-	public void whiteLoanProtocolLegalCashLoanV2(HttpServletRequest request, ModelMap model) throws IOException {
+	@RequestMapping(value = {"whiteLoanProtocol"}, method = RequestMethod.GET)
+	public void whiteLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
