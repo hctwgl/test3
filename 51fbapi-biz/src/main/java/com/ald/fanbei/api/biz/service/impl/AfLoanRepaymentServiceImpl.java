@@ -455,7 +455,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
 						
 						repayAmount = calculateRestAmount(loanPeriodsDo.getRid());
-						loanPeriodsDo.setRepayAmount(repayAmount);
+						loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
 						
 					}else{		// 提前还款,未出账的分期借款,还款金额=分期本金
 						repayAmount = loanPeriodsDo.getAmount();
