@@ -21,13 +21,14 @@ public class SmartAddressEngine {
     public static int getScore(String address){
         try {
             logger.info("百度地址评分："+address);
-            JSONObject json=JSONObject.parseObject(HttpUtil.doGet("http://api.map.baidu.com/geocoder?address="+address+"&output=json&key=6eea93095ae93db2c77be9ac910ff311",3000)) ;
+            String result = HttpUtil.doGet("http://api.map.baidu.com/geocoder?address="+address+"&output=json&key=6eea93095ae93db2c77be9ac910ff311",3000);
+            JSONObject json=JSONObject.parseObject(result) ;
             if(json.getString("status").equals("OK")){
                 logger.info("---------address:"+address+"---------score:"+json.getJSONObject("result").getInteger("confidence"));
                 return json.getJSONObject("result").getInteger("confidence");
             }
         }catch (Exception e){
-            logger.info("获取百度地址评分异常"+e);
+            logger.info("获取百度地址评分异常{}",e);
         }
         return 0;
     }
