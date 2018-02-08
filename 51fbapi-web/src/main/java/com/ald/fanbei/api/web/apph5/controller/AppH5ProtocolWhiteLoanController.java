@@ -558,7 +558,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 	 * @param model
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "protocolAgentBuyService" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "protocolAgentBuyService2" }, method = RequestMethod.GET)
 	public void protocolAgentBuyService(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
