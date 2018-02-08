@@ -231,6 +231,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			}
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
+			if(bank == null) throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			loanRepay.setCardNo(bank.getCardNumber());
 			loanRepay.setCardName(bank.getBankName());
 		}
