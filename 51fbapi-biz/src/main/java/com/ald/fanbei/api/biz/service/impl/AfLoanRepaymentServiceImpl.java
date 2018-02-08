@@ -416,7 +416,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
     /**
 	 * 需在事务管理块中调用此函数!
-	 * @param LoanRepayDealBo
+	 * @param loanRepayDealBo
 	 * @param repaymentDo
 	 */
 	private void dealLoanRepay(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo) {
@@ -446,8 +446,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			for (int i = 0; i < repayPeriodsIds.length; i++) {
 				// 获取分期信息
 				AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
-				loanPeriodsDoList.add(loanPeriodsDo);
 				if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
+					loanPeriodsDoList.add(loanPeriodsDo);
 					BigDecimal repayAmount = BigDecimal.ZERO;
 					if(canRepay(loanPeriodsDo)){
 						dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
@@ -475,8 +475,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}else {		// 按期还款
 			loanRepayDealBo.isAllRepay = false;
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repaymentDo.getRepayPeriods()));
-			loanPeriodsDoList.add(loanPeriodsDo);
 			if(loanPeriodsDo!=null){
+				loanPeriodsDoList.add(loanPeriodsDo);
 				dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
 				dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
 				dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
