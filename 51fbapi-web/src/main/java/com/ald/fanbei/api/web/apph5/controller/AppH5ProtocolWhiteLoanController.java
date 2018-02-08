@@ -200,16 +200,15 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		model.put("mobile", afUserDo.getUserName());// 联系电话
 		model.put("amountCapital", toCapital(amount.doubleValue()));//大写本金金额
 		model.put("amount", amount);//借钱本金
-		AfLoanDo afLoanDo = new AfLoanDo();
 		if(loanId>0){//借了钱的借钱协议
-			getModelNoLoanId(model, nper, loanId, afUserDo, accountDo);
+			getModelLoanId(model, nper, loanId, afUserDo, accountDo,repayRemark,loanRemark);
 		}else{//借钱前的借钱协议
-			getModelLoanId(model, amount, nper, loanRemark, repayRemark, userId);
+			getModelNoLoanId(model, amount, nper, loanRemark, repayRemark, userId);
 		}
 		logger.info(JSON.toJSONString(model));
 	}
 
-	private void getModelNoLoanId(ModelMap model, Integer nper, long loanId, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+	private void getModelLoanId(ModelMap model, Integer nper, long loanId, AfUserDo afUserDo, AfUserAccountDo accountDo,String repayRemark,String loanRemark) {
 		AfLoanDo afLoanDo = afLoanService.selectById(loanId);
 		Calendar c = Calendar.getInstance();
 		c.setTime(afLoanDo.getGmtCreate());
@@ -218,6 +217,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		int year = c.get(Calendar.YEAR);
 		String time = year + "年" + month + "月" + day + "日";
 		model.put("time", time);// 签署日期
+		model.put("gmtStart",time);
 		model.put("loanNo", afLoanDo.getLoanNo());//原始借款协议编号
 		List<AfLoanPeriodsDo> afLoanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanId);
 		if(null != afLoanPeriodsDoList && afLoanPeriodsDoList.size()>0){
@@ -232,6 +232,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     int periodsYear = c.get(Calendar.YEAR);
                     String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd",periodsTime);
+                    model.put("days",periodsDay);
                 }
                 map.put("gmtPlanRepay",afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount",afLoanPeriodsDo.getAmount());
@@ -240,17 +241,18 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             }
 			model.put("nperArray",array);
         }
-		model.put("repayRemark",afLoanDo.getRepayRemark());//还款方式
-		model.put("loanRemark",afLoanDo.getLoanRemark());//借钱用途
+		model.put("repayRemark",repayRemark);//还款方式
+		model.put("loanRemark",loanRemark);//借钱用途
 		model.put("totalPeriods",afLoanDo);//总借钱信息
 		GetSeal(model, afUserDo, accountDo);
+		getEdspayInfo(model, loanId, (byte) 2);
 	}
 
-	private void getModelLoanId(ModelMap model, BigDecimal amount, Integer nper, String loanRemark, String repayRemark, Long userId) {
-		AfLoanDo afLoanDo;List<Object> resultList = afLoanPeriodsService.resolvePeriods(amount,userId,nper,"","BLD_LOAN");
+	private void getModelNoLoanId(ModelMap model, BigDecimal amount, Integer nper, String loanRemark, String repayRemark, Long userId) {
+		List<Object> resultList = afLoanPeriodsService.resolvePeriods(amount,userId,nper,"","BLD_LOAN");
 		if(null != resultList && resultList.size()>0){
             //借钱总汇
-            afLoanDo = (AfLoanDo)resultList.get(0);
+			AfLoanDo afLoanDo = (AfLoanDo)resultList.get(0);
             Calendar c = Calendar.getInstance();
             c.setTime(afLoanDo.getGmtCreate());
             int loanMonth = c.get(Calendar.MONTH)+1;
@@ -271,6 +273,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     int year = c.get(Calendar.YEAR);
                     String time = year + "年" + month + "月" + day + "日";
                     model.put("gmtEnd",time);
+					model.put("days",day);
                 }
                 map.put("gmtPlanRepay",afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount",afLoanPeriodsDo.getAmount());
