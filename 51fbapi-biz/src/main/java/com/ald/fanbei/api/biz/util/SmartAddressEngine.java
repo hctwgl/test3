@@ -22,7 +22,7 @@ public class SmartAddressEngine {
     public static int getScore(String address){
         try {
             logger.info("百度地址评分："+address);
-            String result = HttpUtil.doGet("http://api.map.baidu.com/geocoder?address="+ URLEncoder.encode(address,"utf-8") +"&output=json&key=6eea93095ae93db2c77be9ac910ff311",3000);
+            String result = HttpUtil.doGet("http://api.map.baidu.com/geocoder?address="+ address +"&output=json&key=6eea93095ae93db2c77be9ac910ff311",3000);
             JSONObject json=JSONObject.parseObject(result) ;
             if(json.getString("status").equals("OK")){
                 logger.info("---------address:"+address+"---------score:"+json.getJSONObject("result").getInteger("confidence"));
