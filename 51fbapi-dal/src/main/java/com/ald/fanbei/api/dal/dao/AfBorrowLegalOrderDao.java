@@ -26,6 +26,6 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 	
 	Long tuchByBorrowId(Long borrowId);
 
-	void updateSmartAddressScore (@Param("smartAddressScore") int smartAddressScore,@Param("borrowId") long borrowId);
+	void updateSmartAddressScore (@Param("smartAddressScore") int smartAddressScore,@Param("borrowId") long borrowId,@Param("orderNo") String orderno);
 
 }

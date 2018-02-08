@@ -146,7 +146,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 					//百度智能地址
 					try {
-						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId);
+						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
 					}catch (Exception e){
 						logger.info("smart address {}",e);
 					}
