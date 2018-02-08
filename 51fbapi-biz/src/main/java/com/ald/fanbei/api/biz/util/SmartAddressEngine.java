@@ -34,13 +34,13 @@ public class SmartAddressEngine {
         return 0;
     }
     public  void setScoreAsyn(final String address,final long borrowid,final String orderno){
-        pool.execute(new Runnable() {
-            @Override
-            public void run() {
-               int score = SmartAddressEngine.getScore(address);
-                afBorrowLegalOrderService.updateSmartAddressScore(score,borrowid,orderno);
-            }
-        });
+//        pool.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//               int score = SmartAddressEngine.getScore(address);
+//                afBorrowLegalOrderService.updateSmartAddressScore(score,borrowid,orderno);
+//            }
+//        });
     }
 
 }
