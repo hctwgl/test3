@@ -7,7 +7,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum LoanType {
 
-	BORROW("BORROW","小额贷"),
+	CASH("CASH","小额贷"),
 	BLD_LOAN("BLD_LOAN", "白领贷");
 
     private String code;
