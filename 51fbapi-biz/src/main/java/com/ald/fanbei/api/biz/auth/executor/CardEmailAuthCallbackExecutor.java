@@ -14,6 +14,7 @@ public class CardEmailAuthCallbackExecutor implements Executor{
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
 		
+		
 	}
 
 }
