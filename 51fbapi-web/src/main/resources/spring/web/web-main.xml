@@ -543,6 +543,10 @@
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
+				
+				<!-- 贷款相关接口 -->
+				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
+				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 
 			</map>
 		</constructor-arg>
@@ -558,8 +562,7 @@
 				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
 				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
 				<entry key="/h5/loan/getLoanHomeInfo" value-ref="getLoanHomeInfoApi" />
-				<entry key="/h5/loan/loanRepayDo" value-ref="loanRepayDoApi" />
-				<entry key="/h5/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
+				
 				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
 				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />
 				<entry key="/h5/loan/getLoanRepayments" value-ref="getLoanRepaymentsApi" />
