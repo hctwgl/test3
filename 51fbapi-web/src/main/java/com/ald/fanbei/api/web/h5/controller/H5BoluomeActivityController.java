@@ -276,6 +276,7 @@ public class H5BoluomeActivityController extends BaseController {
 		    register.setMobile(mobile);
 		    register.setTypeFrom(typeFrom);
 		    register.setTypeFromNum(typeFromNum);
+		    register.setInviter(inviteer);
 		    if (!StringUtils.isBlank(recommendCode)) {
 			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 			if(userRecommendDo != null){

@@ -2539,7 +2539,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
                                     orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 
-
+		    AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(), BorrowStatus.TRANSED.getCode());
+		    if (borrowInfo != null) {
+			// 修改借款状态
+			afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+			// 修改账单状态
+			afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
+		    }
                     // 恢复虚拟额度
                     AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
                     queryVirtualAccountDo.setUserId(orderInfo.getUserId());
