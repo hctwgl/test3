@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -15,9 +16,10 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
-//	String urlBase = "http://localhost:8080";
+//	String urlBase = "https://btestapp.51fanbei.com";
+	String urlBase = "http://localhost:8080";
 	String userName = "13638668564";
+//	String userName = "15669066271";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -92,35 +94,35 @@ public class LoanTest  extends BaseTest{
 	
 //	@Test
 	public void repayDo() {
-		String url = urlBase + "/h5/loan/loanRepayDo";
+		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repayAmount", 12688.06+"");
+		params.put("repaymentAmount", 10.67+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("actualAmount", 12688.06+"");
-		params.put("loanId", 9+"");
-		params.put("loanPeriodsId", 26+"");
+		params.put("cardId", "3111464412");
+		params.put("actualAmount", 10.67+"");
+		params.put("loanId", 15+"");
+		params.put("loanPeriodsId", 50+"");
 		
-		testH5(url, params, userName, true);
+		testApi(url, params, userName, true);
 	}
 	
 //	@Test
 	public void allRepayDo() {
-		String url = urlBase + "/h5/loan/loanAllRepayDo";
+		String url = urlBase + "/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repayAmount", 37837.61+"");
+		params.put("repaymentAmount", 501+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("actualAmount", 37837.61+"");
-		params.put("loanId", 9+"");
+		params.put("cardId", "3111464412");
+		params.put("actualAmount", 501+"");
+		params.put("loanId", 15+"");
 		
-		testH5(url, params, userName, true);
+		testApi(url, params, userName, true);
 	}
 	
 //	@Test
@@ -150,12 +152,12 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018013114255212824";
+		String orderNo = "hq2018020814474113011";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018013114255212824";
+		String tradeNo = "xianFenghq2018020814474113011";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
