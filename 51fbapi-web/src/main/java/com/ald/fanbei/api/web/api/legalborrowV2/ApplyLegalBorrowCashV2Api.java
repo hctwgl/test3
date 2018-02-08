@@ -148,7 +148,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					try {
 						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId);
 					}catch (Exception e){
-						logger.info("smart address "+e);
+						logger.info("smart address {}",e);
 					}
 				} else {
 					// 风控拒绝，更新借款状态
