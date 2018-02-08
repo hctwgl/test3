@@ -39,6 +39,7 @@ import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueOrderBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderReqBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
+import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRaiseQuotaReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
@@ -3463,5 +3464,36 @@ public class RiskUtil extends AbstractThird {
 			authCallbackManager.execute(callbackBo);
 		}
 		return 0;
+	}
+
+	/**
+	 * 风控补充认证提额接口
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public RiskQuotaRespBo userSupplementQuota(String consumerNo, String[] scenes, String sceneType) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/thrid/userSupplementQuota.htm";
+
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "userSupplementQuota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+		}
+
+		RiskQuotaRespBo riskResp = null;
+		try {
+			JSONObject.parseObject(reqResult, RiskQuotaRespBo.class);
+		} catch (Exception e) {
+
+		}
+
+		return riskResp;
 	}
 }

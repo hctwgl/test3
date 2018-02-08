@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +23,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import com.ald.fanbei.api.ioc.start.Bootstrap;
 
 /**
  * Jetty嵌入式启动类
@@ -35,6 +45,8 @@ public class JettyServerStart {
 			"org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
 			"org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
 			"com.ald.fanbei.api.jetty.webapp.FanbeiConfiguration" };
+
+	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target" };
 
 	public JettyServerStart(String webappPath, int port, String context) {
 		this(webappPath, port, context, 0, false);
@@ -90,7 +102,19 @@ public class JettyServerStart {
 			server.addBean(mBeanContainer);
 		}
 		if (scanIntervalSeconds > 0) {
-			startFileWatchScanner();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						//由于jetty内置的Scanner监听文件修改效率极低，采用Nio监控文件修改
+						// startFileWatchScanner();
+						startNioFileWatcher();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+
 		}
 		long ts = System.currentTimeMillis();
 
@@ -106,29 +130,81 @@ public class JettyServerStart {
 		return webapp;
 	}
 
+	private void startNioFileWatcher() throws Exception {
+		List<File> scanList = new ArrayList<File>();
+		getAllDirectory(new File(Bootstrap.ROOT_PATH).getParentFile(), scanList);
+		FileSystem fileSystem = FileSystems.getDefault();
+		WatchService watcher = fileSystem.newWatchService();
+		for (File dir : scanList) {
+			Path listenPath = Paths.get(dir.getAbsolutePath());
+			listenPath.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE,
+					StandardWatchEventKinds.ENTRY_MODIFY);
+		}
+		while (true) {
+			WatchKey watckKey = watcher.take();
+			List<WatchEvent<?>> events = watckKey.pollEvents();
+			for (WatchEvent event : events) {
+				if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+					System.out.println("file create: " + event.context().toString());
+					webapp.stop();
+					webapp.start();
+					System.out.println("Loading complete.\n");
+					break;
+				}
+				if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+					System.out.println("file delete: " + event.context().toString());
+					webapp.stop();
+					webapp.start();
+					System.out.println("Loading complete.\n");
+					break;
+				}
+				if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+					System.out.println("file modify: " + event.context().toString());
+					webapp.stop();
+					webapp.start();
+					System.out.println("Loading complete.\n");
+					break;
+				}
+			}
+			watckKey.reset();
+		}
+
+	}
+
+	/**
+	 * Jetty 监听文件修改
+	 * 
+	 * @throws Exception
+	 */
 	private void startFileWatchScanner() throws Exception {
 		List<File> scanList = new ArrayList<File>();
 		scanList.add(new File(webappPath, "WEB-INF"));
 		scanList.add(new File(webappPath));
+		scanList.add(new File(Bootstrap.ROOT_PATH).getParentFile());
+		// getAllDirectory(new File(Bootstrap.ROOT_PATH).getParentFile(),
+		// scanList);
+
 		Scanner scanner = new Scanner();
-		scanner.setReportExistingFilesOnStartup(true);
+		scanner.setReportExistingFilesOnStartup(false);
 		scanner.setScanInterval(scanIntervalSeconds);
 		scanner.setScanDirs(scanList);
 		scanner.addListener(new Scanner.BulkListener() {
-			@SuppressWarnings("rawtypes")
-			public void filesChanged(List changes) {
+			public void filesChanged(List<String> changes) {
 				try {
-					System.err.println("Loading changes ......");
+					System.out.println("Loading changes ......");
+					for (String change : changes) {
+						System.out.println(change);
+					}
 					webapp.stop();
 					webapp.start();
-					System.err.println("Loading complete.\n");
+					System.out.println("Loading complete.\n");
 				} catch (Exception e) {
-					System.err.println("Error reconfiguring/restarting webapp after change in watched files");
+					System.out.println("Error reconfiguring/restarting webapp after change in watched files");
 					e.printStackTrace();
 				}
 			}
 		});
-		System.err.println("Starting scanner at interval of " + scanIntervalSeconds + " seconds.");
+		System.out.println("Starting scanner at interval of " + scanIntervalSeconds + " seconds.");
 		scanner.start();
 	}
 
@@ -156,5 +232,25 @@ public class JettyServerStart {
 				}
 		}
 		return false;
+	}
+
+	public void getAllDirectory(File file, List<File> subDirList) {
+		File[] files = file.listFiles();
+		for (File subFile : files) {
+			if (subFile.isDirectory()) {
+				String path = subFile.getAbsolutePath();
+				boolean ignore = false;
+				for (String ignoreDir : IGNORE_DIRS) {
+					if (path.contains(ignoreDir)) {
+						ignore = true;
+						break;
+					}
+				}
+				if (ignore == false) {
+					getAllDirectory(subFile, subDirList);
+					subDirList.add(new File(path));
+				}
+			}
+		}
 	}
 }

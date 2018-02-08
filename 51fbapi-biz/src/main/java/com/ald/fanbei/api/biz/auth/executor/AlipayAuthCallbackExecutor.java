@@ -45,7 +45,6 @@ public class AlipayAuthCallbackExecutor implements Executor{
 		raiseStatusDo.setAuthType(AuthType.ALIPAY.getCode());
 		raiseStatusDo.setPrdType(LoanType.BLD_LOAN.getCode());
 		raiseStatusDo.setUserId(userId);
-		
 		if(StringUtils.equals(authCallbackBo.getCode(), RiskAuthStatus.SUCCESS.getCode())){
 			// 认证成功,向风控发起提额申请
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -54,8 +53,8 @@ public class AlipayAuthCallbackExecutor implements Executor{
 			// 根据强风控状态判断提额场景
 			if(StringUtils.equals("Y", basicStatus)) {
 				// RiskSceneType.ALIPAY_XJD_PASS场景
-				
 			} else if (StringUtils.equals("N", basicStatus)){
+				
 				
 			}
 			
