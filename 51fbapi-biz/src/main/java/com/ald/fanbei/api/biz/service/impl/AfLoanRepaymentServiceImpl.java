@@ -654,9 +654,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		loanPeriodsDo.setGmtModified(new Date());
 	}
 
-	// -----------------------------------------------------------------------------------------
 	
    	
+	
 	/**
      * 线下 按期还款
      * 
@@ -666,27 +666,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	public void offlineRepay(AfLoanDo loanDo, String loanNo, 
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String repayChannel,String isAdmin) {
-		checkOfflineRepayment(loanDo, repayAmount, outTradeNo);
 		
-		LoanRepayBo bo = new LoanRepayBo();
-		bo.userId = loanDo.getUserId();
-		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
+		LoanRepayBo bo = buildLoanRepayBo(loanDo, loanNo, repayType, repayTime, repayAmount, restAmount, outTradeNo, isBalance, repayCardNum, repayChannel, isAdmin);
+		// TODO 分期信息
 		
-		bo.cardId = (long) -4;
-		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
-		bo.actualAmount =  bo.repaymentAmount;
-		bo.loanDo = loanDo;
-		bo.loanId = loanDo.getRid();
-		
-		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
-		if (isAdmin != null && "Y".equals(isAdmin)){
-			bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
-		}else {
-			bo.name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
-		}
-		bo.outTradeNo = outTradeNo;
-		bo.cardNo = repayCardNum;
-		bo.repayType = repayType;
+		checkOfflineRepayment(bo, repayAmount, outTradeNo);
+
 		generateRepayRecords(bo);
 
 		dealRepaymentSucess(bo.tradeNo, null, bo.loanRepaymentDo,repayChannel);
@@ -694,7 +679,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	}
 	
 	/**
-	 * 线下 提前还款
+	 * 线下 提前结清
 	 * 
 	 * @param restAmount 
 	 */
@@ -702,8 +687,23 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	public void offlineAllRepay(AfLoanDo loanDo, String loanNo, 
 			String repayType, String repayTime, String repayAmount,
 			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String repayChannel,String isAdmin) {
-		checkOfflineRepayment(loanDo, repayAmount, outTradeNo);
 		
+		LoanRepayBo bo = buildLoanRepayBo(loanDo, loanNo, repayType, repayTime, repayAmount, restAmount, outTradeNo, isBalance, repayCardNum, repayChannel, isAdmin);
+		bo.isAllRepay = true;
+		List<AfLoanPeriodsDo> loanPeriodsDoList = afLoanPeriodsDao.getNoRepayListByLoanId(loanDo.getRid());
+		bo.loanPeriodsDoList = loanPeriodsDoList;
+		
+		checkOfflineRepayment(bo, repayAmount, outTradeNo);
+		
+		generateRepayRecords(bo);
+		
+		dealRepaymentSucess(bo.tradeNo, null, bo.loanRepaymentDo,repayChannel);
+		
+	}
+
+	private LoanRepayBo buildLoanRepayBo(AfLoanDo loanDo, String loanNo, 
+			String repayType, String repayTime, String repayAmount,
+			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String repayChannel,String isAdmin){
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = loanDo.getUserId();
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
@@ -722,20 +722,20 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.outTradeNo = outTradeNo;
 		bo.cardNo = repayCardNum;
 		bo.repayType = repayType;
-		bo.isAllRepay = true; // 提前还款
-		generateRepayRecords(bo);
-		
-		dealRepaymentSucess(bo.tradeNo, null, bo.loanRepaymentDo,repayChannel);
-		
+		return bo;
 	}
 	
-	private void checkOfflineRepayment(AfLoanDo loanDo, String offlineRepayAmount ,String outTradeNo) {
+	private void checkOfflineRepayment(LoanRepayBo bo, String offlineRepayAmount ,String outTradeNo) {
 		if(afLoanRepaymentDao.getLoanRepaymentByTradeNo(outTradeNo) != null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
 		}
 		
-//		BigDecimal restAmount = calculateRestAmount(cashDo); TODO
 		BigDecimal restAmount=BigDecimal.ZERO;
+		if(bo.isAllRepay){		// 提前结清
+			restAmount = calculateAllRestAmount(bo.loanId);
+		}else{		// 按期还款
+//			restAmount = calculateRestAmount(cashDo); TODO
+		}
 		BigDecimal offlineRepayAmountYuan = NumberUtil.objToBigDecimalDivideOnehundredDefault(offlineRepayAmount, BigDecimal.ZERO);
 		// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+1元 时，返回错误
 		if (offlineRepayAmountYuan.compareTo(restAmount.add(BigDecimal.ONE)) > 0) {
@@ -744,8 +744,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}
 	}
 	
+	// -----------------------------------------------------------------------------------------
+
 	
-    private void notifyUserBySms(LoanRepayDealBo LoanRepayDealBo) {
+	private void notifyUserBySms(LoanRepayDealBo LoanRepayDealBo) {
     	logger.info("notifyUserBySms info begin,sumAmount="+LoanRepayDealBo.sumAmount+",curSumRepayAmount="+LoanRepayDealBo.curSumRepayAmount+",sumRepaidAmount="+LoanRepayDealBo.sumRepaidAmount);
         try {
             AfUserDo afUserDo = afUserService.getUserById(LoanRepayDealBo.userId);

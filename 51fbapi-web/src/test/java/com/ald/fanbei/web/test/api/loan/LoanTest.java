@@ -16,8 +16,8 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
-	String userName = "15669066271";
+	String urlBase = "http://localhost:8080";
+	String userName = "13638668564";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -34,7 +34,7 @@ public class LoanTest  extends BaseTest{
 	}
 	
 //	@Test
-	public void getBorrowList() {
+	public void getAllBorrowList() {
 		String url = urlBase + "/borrowCash/getAllBorrowList";
 		Map<String,String> params = new HashMap<>();
 		params.put("pageNo", 1+"");
