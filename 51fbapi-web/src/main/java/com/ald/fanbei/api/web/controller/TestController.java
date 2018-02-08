@@ -165,8 +165,6 @@ public class TestController {
     private MongoTemplate mongoTemplate;
     @Autowired
     private KafkaSync kafkaSync;
-    @Autowired
-    private SmartAddressEngine smartAddressEngine;
 
     @RequestMapping("/compensate")
     @ResponseBody
@@ -358,7 +356,7 @@ public class TestController {
         s.add("	广东省汕尾市陆丰市汕尾市陆丰市甲东镇雨亭村	");
 
         for(String item :s){
-           int scoreItem= smartAddressEngine.getScore(item.trim());
+           int scoreItem= SmartAddressEngine.getScore(item.trim());
             score.put(item,scoreItem);
         }
 

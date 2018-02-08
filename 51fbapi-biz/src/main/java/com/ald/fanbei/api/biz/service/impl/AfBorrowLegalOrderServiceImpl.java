@@ -81,4 +81,9 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 		
 	}
 
+	@Override
+	public void updateSmartAddressScore(int smartAddressScore,long borrowId) {
+		 afBorrowLegalOrderDao.updateSmartAddressScore(smartAddressScore, borrowId);
+	}
+
 }
