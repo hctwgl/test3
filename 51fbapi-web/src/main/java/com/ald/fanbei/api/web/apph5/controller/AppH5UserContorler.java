@@ -322,8 +322,7 @@ public class AppH5UserContorler extends BaseController {
     public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
         Calendar calStart = Calendar.getInstance();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer")));
-        logger.info("commitRegister requestURL"+JSONObject.toJSONString(request.getRequestURL()));
+      
 	// 如果是测试环境
         try {
             String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
@@ -332,6 +331,11 @@ public class AppH5UserContorler extends BaseController {
             String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String source = ObjectUtils.toString(request.getParameter("source"), "").toString();
+            
+            
+            logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer"))+"mobile = "+mobile);
+            logger.info("commitRegister requestURL"+JSONObject.toJSONString(request.getRequestURL())+"mobile = "+mobile);
+            logger.info("commitRegister request source = "+source+" mobile = "+mobile);
 
             AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
             if (eUserDo != null) {
