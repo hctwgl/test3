@@ -469,4 +469,22 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 		return data;
 	}
+
+	@Override
+	public boolean allSupplementAuthPassed(Long userId) {
+		AfUserAuthDo authInfo = afUserAuthDao.getUserAuthInfoByUserId(userId);
+		String alipayStatus = authInfo.getAlipayStatus();
+		String creditStatus = authInfo.getCreditStatus();
+		String fundStatus = authInfo.getFundStatus();
+		String jinpoStatus = authInfo.getJinpoStatus();
+		String zhengxinStatus = authInfo.getZhengxinStatus();
+		if(StringUtils.equals("Y", alipayStatus)
+				&& StringUtils.equals("Y", creditStatus)
+				&& StringUtils.equals("Y", fundStatus)
+				&& StringUtils.equals("Y", jinpoStatus)
+				&& StringUtils.equals("Y", zhengxinStatus)) {
+			return true;
+		}
+		return false;
+	}
 }

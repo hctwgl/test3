@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.bo;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class RiskQuotaRespBo extends RiskRespBo {
 
 	private String code;
@@ -33,12 +35,15 @@ public class RiskQuotaRespBo extends RiskRespBo {
 	}
 
 	public static class Data {
+		
 		private String consumerNo;
 		private Result[] results;
 		private String amount;
 		private Result[] bldResults;
 		private String bldAmount;
 		private String totalAmount;
+		
+		
 		public String getConsumerNo() {
 			return consumerNo;
 		}
@@ -75,8 +80,6 @@ public class RiskQuotaRespBo extends RiskRespBo {
 		public void setTotalAmount(String totalAmount) {
 			this.totalAmount = totalAmount;
 		}
-		
-		
 	}
 	
 	public static class Result {
@@ -94,6 +97,9 @@ public class RiskQuotaRespBo extends RiskRespBo {
 		public void setResult(String result) {
 			this.result = result;
 		}
-		
+	}
+	
+	public boolean isSuccess() {
+		return StringUtils.equals("0000", code);
 	}
 }
