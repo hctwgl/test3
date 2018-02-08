@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowQuery;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 
 
@@ -369,7 +372,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				BigDecimal realMaxAmount = BigDecimal.ZERO;
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : minDebtList) {
         					realMinAmount = realMinAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
+        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(currDate);
         					afAssetPackageDetailDo.setGmtModified(currDate);
@@ -383,7 +386,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				}
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : maxDebtList) {
         					realMaxAmount = realMaxAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo));
+        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(new Date());
         					afAssetPackageDetailDo.setGmtModified(new Date());
@@ -518,11 +521,29 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @param afViewAssetBorrowCashDo
 	 * @return
 	 */
-	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo){
+	private EdspayGetCreditRespBo buildCreditBorrowCashRespBo(AfAssetPackageDo afAssetPackageDo,FanbeiBorrowBankInfoBo bankInfo,AfViewAssetBorrowCashDo afViewAssetBorrowCashDo,String minBorrowTime,String maxBorrowTime ){
 		Long timeLimit = NumberUtil.objToLongDefault(afViewAssetBorrowCashDo.getType(), null);
 		AfAssetPackageRepaymentType repayTypeEnum = AfAssetPackageRepaymentType.findEnumByCode(afAssetPackageDo.getRepaymentMethod());
 		//借款人平台逾期信息
 		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afViewAssetBorrowCashDo.getUserId());
+		//获取借款利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONObject jsonObject=new JSONObject();
+		if (afResourceDo!=null &&  afResourceDo.getValue2() != null) {
+			JSONArray array= JSONObject.parseArray(afResourceDo.getValue2());
+			for (int i = 0; i < array.size(); i++) {
+				if (StringUtils.equals((String)array.getJSONObject(i).get("borrowTag"), AfResourceSecType.INTEREST_RATE.getCode())) {
+					jsonObject = array.getJSONObject(i);
+					break;
+				}
+			}
+			if (StringUtils.equals(afViewAssetBorrowCashDo.getType(), minBorrowTime)) {
+				borrowRate=new BigDecimal((String)jsonObject.get("borrowFirstType"));
+			}else{
+				borrowRate=new BigDecimal((String) jsonObject.get("borrowSecondType"));
+			}
+		}
 		//现金贷的还款计划
 		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
 		RepaymentPlan repaymentPlan = new RepaymentPlan();
@@ -543,7 +564,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setBankNo(afViewAssetBorrowCashDo.getCardNumber());
 		creditRespBo.setAcctName(bankInfo.getAcctName());
 		creditRespBo.setMoney(afViewAssetBorrowCashDo.getAmount());
-		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
+		creditRespBo.setApr(borrowRate);
 		creditRespBo.setTimeLimit(timeLimit.intValue());
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowCashDo.getGmtCreate()));
 		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getBorrowRemark())) {
@@ -602,6 +623,22 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				lastBorrowBillGmtPayTime= afBorrowBillDos.get(i).getGmtPayTime();
 			}
 		}
+		Integer nper = afViewAssetBorrowDo.getNper();//分期数
+		//获取消费分期协议年化利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONArray array= new JSONArray();
+		if (afResourceDo!=null&& afResourceDo.getValue3()!=null) {
+			array= JSONObject.parseArray(afResourceDo.getValue3());
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject jsonObject = array.getJSONObject(i);
+				Integer confNper= (Integer) jsonObject.get("nper");
+				if (nper == confNper) {
+					borrowRate=(BigDecimal) jsonObject.get("rate");
+					break;
+				}
+			}
+		}
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
 		creditRespBo.setPackageNo(afAssetPackageDo.getAssetNo());
 		creditRespBo.setOrderNo(afViewAssetBorrowDo.getBorrowNo());
@@ -612,7 +649,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setBankNo("");
 		creditRespBo.setAcctName(bankInfo.getAcctName());
 		creditRespBo.setMoney(afViewAssetBorrowDo.getAmount());
-		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
+		creditRespBo.setApr(BigDecimalUtil.multiply(borrowRate, new BigDecimal(100)));
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afViewAssetBorrowDo.getGmtCreate(), lastBorrowBillGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowDo.getGmtCreate()));
 		creditRespBo.setPurpose("个人消费");
