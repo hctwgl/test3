@@ -19,6 +19,7 @@ public enum CouponSenceRuleType {
     INVITE("INVITE", "邀请"),
     RESERVATION("RESERVATION","预约活动"),
     CREDITAUTH("CREDITAUTH", "信用认证");
+  
     
 
     private String code;

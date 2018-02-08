@@ -19,6 +19,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
 import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
@@ -30,7 +33,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -72,10 +79,6 @@ import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
-import com.ald.fanbei.api.biz.util.BuildInfoUtil;
-import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -86,6 +89,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
+import redis.clients.jedis.BinaryClient;
 
 
 @Controller
@@ -155,6 +159,12 @@ public class TestController {
     AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    @Autowired
+    private KafkaSync kafkaSync;
 
     @RequestMapping("/compensate")
     @ResponseBody
@@ -274,6 +284,85 @@ public class TestController {
         // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
 
+    }
+    @RequestMapping("/kafka")
+    @ResponseBody
+    public String testKafka() throws Exception{
+        logger.error("testKafka------");
+        try{
+            // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
+            HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+
+        }catch (Exception e){
+    logger.error("eee",e);
+        }
+
+        return "测试kafka";
+    }
+    @RequestMapping("/address")
+    @ResponseBody
+    public String testAddress() throws Exception{
+        List<String> s=new ArrayList<>();
+        HashMap<String,Integer> score=new HashMap<>();
+        s.add("	重庆市重庆市涪陵区珍溪镇西桥村5组	");
+        s.add("	湖北省武汉市武昌区南湖花园军威苑3栋2单元1602	");
+        s.add("	上海市上海市闵行区桂林路929号	");
+        s.add("	江西省景德镇市珠山区加州印象3栋	");
+        s.add("	广东省深圳市龙岗区南湾街道锦航酒店附近代收点	");
+        s.add("	辽宁省沈阳市大东区天润广场3号楼1301	");
+        s.add("	甘肃省平凉市华亭县华亭煤业大柳煤矿	");
+        s.add("	浙江省台州市椒江区洪家街道前高桥小区55-4号	");
+        s.add("	上海市上海市闵行区上海上海市闵行区七宝镇上海上海市闵行区七宝镇闵行区糟宝路3366号七宝万科广场L2层221单元	");
+        s.add("	上海市上海市宝山区联杨路1078弄3号楼1701	");
+        s.add("	江西省赣州市寻乌县长宁镇金茂花园401	");
+        s.add("	北京市北京市平谷区北京市平谷区金海湖镇黑水湾村南大街60号	");
+        s.add("	广东省深圳市龙岗区布吉上水径街道第278号美利达自行车厂	");
+        s.add("	辽宁省大连市中山区人民路66号	");
+        s.add("	浙江省温州市鹿城区七都镇板桥北路35号");
+        s.add("	湖南省湘西土家族苗族自治州吉首市湘泉城市花园长景阁二单元1108	");
+        s.add("	浙江省宁波市江东区百丈东路1188号	");
+        s.add("	广东省茂名市茂南区高凉南路111号1梯402	");
+        s.add("	河北省邯郸市邯山区陵园路立新胡同11号楼一单元8号	");
+        s.add("	贵州省黔西南布依族苗族自治州兴义市水木清华1单元	");
+        s.add("	云南省临沧市凤庆县客运站进口烟酒副食百货店	");
+        s.add("	山东省泰安市宁阳县堽城镇中心医院家属院	");
+        s.add("	云南省昆明市官渡区华潮水产批发市场五号门	");
+        s.add("	江苏省南京市浦口区旭日爱上城星岛园9栋704	");
+        s.add("	重庆市重庆市渝中区中山三路129号腾宇地产	");
+        s.add("	辽宁省大连市金州区新青年汇三期三单元0916	");
+        s.add("	广西壮族自治区桂林市七星区建干里32号	");
+        s.add("	重庆市重庆市沙坪坝区洪逸新村3单元6-2	");
+        s.add("	四川省南充市蓬安县金街宋氏佳厨	");
+        s.add("	江西省赣州市崇义县步行街日泰皮鞋	");
+        s.add("	云南省普洱市思茅区云南省普洱市思茅区宁洱大道64号新四中对面迪诺牛肉面馆	");
+        s.add("	贵州省贵阳市云岩区三桥新街54号（美凤超市）	");
+        s.add("	江苏省扬州市仪征市江苏省仪征市青山镇钢管厂宿舍二号楼603	");
+        s.add("	重庆市重庆市开县开县大进镇	");
+        s.add("	江苏省常州市金坛市尧塘镇东巷9号	");
+        s.add("	广东省深圳市华繁路工业区工业楼鑫富艺有限公司	");
+        s.add("	山东省潍坊市坊子区坊子区南流镇前苏村144号	");
+        s.add("	重庆市重庆市九龙坡区杨家坪步行街珠江路24号6-1	");
+        s.add("	北京市北京市西城区中央大学城菜鸟驿站	");
+        s.add("	广东省云浮市云安区镇安镇沿江路适心百货商店	");
+        s.add("	四川省成都市锦江区工农院街60号	");
+        s.add("	黑龙江省齐齐哈尔市铁锋区鑫鑫花园53号楼2号门市	");
+        s.add("	陕西省渭南市韩城市中环广场红鑫中央公园营销中心	");
+        s.add("	江苏省盐城市阜宁县益林镇健康路178号	");
+        s.add("	江苏省淮安市涟水县高沟镇三口小区	");
+        s.add("	广东省清远市清城区清远市清新区太平镇龙湾工业园中骏森驰汽車配件有限公司	");
+        s.add("	湖北省荆州市石首市小河口镇天鹅村一组	");
+        s.add("	山东省青岛市平度市青岛市平度市仁兆镇	");
+        s.add("	广东省汕尾市陆丰市汕尾市陆丰市甲东镇雨亭村	");
+
+        for(String item :s){
+           int scoreItem= SmartAddressEngine.getScore(item.trim());
+            score.put(item,scoreItem);
+        }
+
+
+
+        return "测试kafka";
     }
 
     @RequestMapping("/clearredis")

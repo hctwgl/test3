@@ -28,5 +28,7 @@ public interface AfUserLoginLogDao {
 	 * @return
 	 */
 	AfUserLoginLogDo getUserLastLoginInfo(@Param("userName")String userName);
+
+	long getCountByUserNameAndResultTrue(String userName);
 	
 }

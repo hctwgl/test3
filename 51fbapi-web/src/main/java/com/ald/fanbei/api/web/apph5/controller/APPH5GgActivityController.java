@@ -1,7 +1,9 @@
+
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +28,6 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityMsgIndexService;
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -51,15 +52,16 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityMsgIndexDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCardDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -112,13 +114,16 @@ public class APPH5GgActivityController extends BaseController {
 	@Resource
 	AfUserDao afUserDao;
 	@Resource
+	AfResourceDao afResourceDao;
+	@Resource
 	AfBoluomeActivityMsgIndexService afBoluomeActivityMsgIndexService;
 	@Resource
 	AfBoluomeRebateService afBoluomeRebateService;
 	@Resource
 	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
-	@Resource
-	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
+//	@Resource
+//	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
+	
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -165,20 +170,35 @@ public class APPH5GgActivityController extends BaseController {
 
 			// 从登录表取数据，遍历list.查询是否有订单，没有订单：未消费。有订单未完成：未完成。有订单且已完成：已消费
 
-			long activityId = 1000L;
-			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
-					.getByRefUserIdAndActivityId(userId, activityId);
-			if (afBoluomeActivityUserLoginList.size() > 0) {
-				for (AfBoluomeActivityUserLoginDo uDo : afBoluomeActivityUserLoginList) {
+//			long activityId = 1000L;
+//			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
+//					.getByRefUserIdAndActivityId(userId, activityId);
+			
+			
+			AfRecommendUserDo queryRecommendUser = new AfRecommendUserDo();
+        			queryRecommendUser.setParentId(userId);
+        			queryRecommendUser.setType(1);
+        			AfResourceDo startTime = new  AfResourceDo();
+        		    	startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+		    	   if(startTime != null){
+		    	        SimpleDateFormat parser = new SimpleDateFormat(DateUtil.DATE_TIME_SHORT);
+		    	        Date gmtCreate =  parser.parse(startTime.getValue());
+        		        queryRecommendUser.setGmt_create(gmtCreate);
+		    	   }
+		    	
+			List<AfRecommendUserDo> afRecommendUserDoList = afRecommendUserService.getListByParentIdAndType(queryRecommendUser);
+			
+			if (afRecommendUserDoList.size() > 0) {
+				for (AfRecommendUserDo uDo : afRecommendUserDoList) {
 					userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
 					returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
-					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
+					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmt_create()));
 					returnCouponVo.setReward("0");
 					// 订单状态
 					AfOrderDo order = new AfOrderDo();
 					order.setUserId(uDo.getUserId());
 					int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-					logger.info("/h5GgActivity/returnCoupon queryCount = {},userId = {}",queryCount,userId);
+					logger.info("/h5GgActivity/returnCoupon queryCount = {}"+queryCount+",userId = {}"+userId);
 					if (queryCount <= 0) {
 						returnCouponVo.setStatus(H5GgActivity.NO_CONSUME.getDescription());
 					}
@@ -187,20 +207,20 @@ public class APPH5GgActivityController extends BaseController {
 						orderStatus.setUserId(uDo.getUserId());
 						orderStatus.setOrderStatus("FINISHED");
 						int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
-						logger.info("/h5GgActivity/returnCoupon orderCount = {},userId = {}",orderCount,userId);
+						logger.info("/h5GgActivity/returnCoupon orderCount = {}"+orderCount+",userId = {}"+userId);
 						if (orderCount <= 0) {
 							returnCouponVo.setStatus(H5GgActivity.NO_FINISH.getDescription());
 						} else {
 							returnCouponVo.setStatus(H5GgActivity.ALREADY_FINISH.getDescription());
 							// 查询该优惠券金额
 							AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
-							queryUserCoupon.setUserId(uDo.getRefUserId());
+							queryUserCoupon.setUserId(uDo.getParentId());
 							queryUserCoupon.setRefId(uDo.getUserId());
 							queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
 
 							AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
 									.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
-							logger.info("/h5GgActivity/returnCoupon userCoupon = {},userId = {}",userCoupon,userId);
+							logger.info("/h5GgActivity/returnCoupon userCoupon = {}"+userCoupon+",userId = {}"+userId);
 							if (userCoupon != null) {
 								long couponId = userCoupon.getCouponId();
 								//AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
@@ -210,7 +230,7 @@ public class APPH5GgActivityController extends BaseController {
 								// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
 								try {
 									AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
-									logger.info("/h5GgActivity/returnCoupon afResourceDo = {},couponId = {}",userCoupon,couponId);
+									logger.info("/h5GgActivity/returnCoupon afResourceDo = {},"+userCoupon+"couponId = {}"+couponId);
 									if (afResourceDo != null) {
 										BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
 										returnCouponVo.setReward(money + "元外卖券");
@@ -227,8 +247,16 @@ public class APPH5GgActivityController extends BaseController {
 				} // for
 			} // if
 
+			String  activityTime = null;
+			    AfResourceDo activityStart = new AfResourceDo();
+				   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+				   activityStart = list.get(0);
+				    if(activityStart !=null){
+					activityTime = activityStart.getValue();
+                           }
+			
 			// 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
-			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
+			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId,activityTime));
 
 			vo.setReturnCouponList(returnCouponList);
 			vo.setInviteAmount(inviteAmount);
@@ -242,7 +270,7 @@ public class APPH5GgActivityController extends BaseController {
 		return resultStr;
 
 	}
-
+	
 	/** 
 	* author chenqiwei
 	* @Title: inviteFriend 
@@ -500,7 +528,7 @@ public class APPH5GgActivityController extends BaseController {
 				map1.put("name", resourceDo.getValue3());
 				map1.put("value", resourceDo.getValue4());
 				resultList.add(map1);
-
+				  AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
 				// the dark list
 				List<AfCardDo> cardList = new ArrayList<>();
 				AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
@@ -508,6 +536,8 @@ public class APPH5GgActivityController extends BaseController {
 				t.setBoluomeActivityId(1000L);
 
 				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService.getListByCommonCondition(t);
+				String activityTime = null;
+				
 				if (itemsList != null && itemsList.size() > 0) {
 					cardList = convertItemsListToCardList(itemsList, false);
 
@@ -516,19 +546,21 @@ public class APPH5GgActivityController extends BaseController {
 						Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
 
-							AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
-							logger.info("/h5GgActivity/homePage do1 = {}",do1);
+							//AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
+						  
+						    logger.info("/h5GgActivity/homePage do1 = {}",do1);
 							if(do1 != null){
 								String startTime = do1.getValue();
 								if (StringUtil.isNotBlank(startTime)) {
 
 								List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
-								rebateList = afBoluomeRebateService.getListByUserId(userId);
+								//在活动时间之后
+								rebateList = afBoluomeRebateService.getListByUserId(userId,startTime);
 								// the status of items
 								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
 								//List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
 								
-								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId);
+								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId,startTime);
 								
 								if (cardsList != null && cardsList.size() > 0) {
 									cardList = cardsList;
@@ -631,6 +663,7 @@ public class APPH5GgActivityController extends BaseController {
 								couponResourceDo);
 						if (couponResourceDo != null) {
 							String uri = couponResourceDo.getValue();
+							String name = couponResourceDo.getName();
 							String[] pieces = uri.split("/");
 							if (pieces.length > 9) {
 								String app_id = pieces[6];
@@ -679,6 +712,7 @@ public class APPH5GgActivityController extends BaseController {
 														}
 													}
 												}
+												BoluomeCouponResponseBo.setName(name);
 												boluomeCouponList.add(BoluomeCouponResponseBo);
 												Map<String, Object> data = new HashMap<>();
 												data.put("boluomeCouponList", boluomeCouponList);
@@ -768,7 +802,7 @@ public class APPH5GgActivityController extends BaseController {
 			// 该用户获得最后一张优惠券是否有记录
 			if (userCouponDo != null) {
 				// 设置金额
-				long couponId = userCouponDo.getCouponId();
+				Long couponId = userCouponDo.getCouponId();
 				AfResourceDo couponInfo = afResourceService.getResourceByResourceId(couponId);
 				if (couponInfo != null) {
 					logger.error("popUp couponInfo = {},userId = {}", couponInfo, userId);
@@ -777,9 +811,15 @@ public class APPH5GgActivityController extends BaseController {
 				// 设置图片
 				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
 						H5GgActivity.COUPON_IMAGE.getCode());
+				
 				if (imageInfo != null) {
 					logger.error("popUp coupon imageInfo = {}", imageInfo);
-					poPupVo.setCouponImage(imageInfo.getValue());
+					if(newUser.longValue() == couponId.longValue() ){
+					    poPupVo.setCouponImage(imageInfo.getValue());
+					}else{
+					    poPupVo.setCouponImage(imageInfo.getValue1());
+					}
+					
 				}
 				// 是否有弹窗记录
 				AfBoluomeActivityMsgIndexDo msgIndexDo = afBoluomeActivityMsgIndexService.getByUserId(userId);
@@ -935,11 +975,16 @@ public class APPH5GgActivityController extends BaseController {
 			List<AfBoluomeActivityItemsDo> itemsList,Long userId) {
 		String log = String.format("convertItemsListToCardList params : rebateList.size() = %s , itemsList.size() = %s ", rebateList.size(),itemsList.size());
 		logger.info(log);
+		String activityTime = null;
+		 AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+			if( do1!=null){
+			    activityTime =  do1.getValue();
+			}
 		List<AfCardDo> resultList = new ArrayList<>();
 		if (itemsList != null && itemsList.size() > 0 ) {
 			for (AfBoluomeActivityItemsDo itemsDo : itemsList) {
 				Long shopId = itemsDo.getRefId();
-				int isHave = afBoluomeRebateService.getRebateCount(shopId,userId);
+				int isHave = afBoluomeRebateService.getRebateCount(shopId,userId,activityTime);
 				AfCardDo cardDo = new AfCardDo();
 				if (isHave != 0) {
 					//isDark = false
@@ -1004,3 +1049,4 @@ public class APPH5GgActivityController extends BaseController {
 	}
 
 }
+

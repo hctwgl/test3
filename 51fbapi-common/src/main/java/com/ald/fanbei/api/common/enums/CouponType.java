@@ -19,6 +19,7 @@ public enum CouponType {
 	REBATE("REBATE", "返现(签到、注册)"),
 	ACTIVITY("ACTIVITY", "会场券"),
 	FREEINTEREST("FREEINTEREST","借款免息券");
+	
     private String code;
     private String name;
     

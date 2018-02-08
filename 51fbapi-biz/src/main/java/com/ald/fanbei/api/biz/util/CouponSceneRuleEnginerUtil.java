@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +21,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
  */
 @Component("couponSceneRuleEnginerUtil")
 public class CouponSceneRuleEnginerUtil {
-	
+        protected static Logger logger = LoggerFactory.getLogger(CouponSceneRuleEnginerUtil.class);
 	@Resource
 	private CouponSceneRuleEnginer authRealnameRuleEngine; 
 	@Resource
@@ -75,6 +77,7 @@ public class CouponSceneRuleEnginerUtil {
 	public void creditAuth(Long userId){
 		Map<String,Object> inputData = new HashMap<String,Object>();
 		inputData.put("userId", userId);
+		logger.info("creditAuth sent coupon userId = " + userId);
 		creditAuthRuleEngine.executeRule(inputData);
 	}
 }

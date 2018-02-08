@@ -17,6 +17,7 @@ body{
     top:0;
     left:0;
     z-index: 5;
+    display: none;
     .amountCont{
       width:36rem;
       height:.54rem;
@@ -38,7 +39,7 @@ body{
 .ggFix .banner{
   width:100%;
   position:relative;
-  margin-top:.54rem;/*显示公告时添加*/
+  /*margin-top:.54rem;*//*显示公告时添加*/
 }
 /*路线轨迹*/
 //transition 延迟时间来决定顺序
@@ -119,13 +120,13 @@ body{
   }
 }
 .thirdStep{
-  position:absolute;
-  top:30%;
-  left:79%;
+  position: absolute;
+  top: 37%;
+  left: 74%;
   .word03{
-    width:.84rem;
-    height:.23rem;
-    background:url('@{url}/ggFix30.png') no-repeat;
+    width: 1.12rem;
+    height: .4rem;
+    background:url('@{url}/ggFix31.png') no-repeat;
     background-size:cover;
     margin: 0 0 .1rem .1rem;
     opacity: 0;
@@ -161,11 +162,11 @@ body{
   top:78%;
   left:36%;
   .word04{
-    width:.93rem;
-    height:.4rem;
-    background:url('@{url}/ggFix31.png') no-repeat;
+    width: .85rem;
+    height: .23rem;
+    background:url('@{url}/ggFix30.png') no-repeat;
     background-size:cover;
-    margin: 0 0 0 -225%;
+    margin: 18% 0 0 -260%;
     opacity: 0;
     transition: opacity 0.5s linear 4s;
     &.wordShow04{
@@ -667,19 +668,18 @@ body{
 }
 .toast{
   .takeOutFood{
-    width:5.38rem;
-    height:5.63rem;
-    background:url('@{url}/ggFix38.png') no-repeat;
-    background-size:cover;
-    position:absolute;
+    width:5.4rem;
+    height:6.6rem;
+    position:fixed;
     top:2.5rem;
-    left:14.13%;
+    left:50%;
+    transform: translateX(-2.7rem);
     z-index:200;
     .toUse{
       width:2.6rem;
       height:.55rem;
       position:absolute;
-      bottom:.5rem;
+      bottom:.77rem;
       left:24.2%;
       border-radius: .21rem;
     }
@@ -687,7 +687,7 @@ body{
   .fanMoney{
     width:5.4rem;
     height:6.6rem;
-    position:absolute;
+    position:fixed;
     top:2.5rem;
     left:14.13%;
     background:url('@{url}/ggFix40.png') no-repeat;

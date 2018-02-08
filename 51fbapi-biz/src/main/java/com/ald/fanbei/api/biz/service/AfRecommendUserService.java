@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -77,9 +79,10 @@ public interface AfRecommendUserService {
     /**
      * 用户总共的奖励金额
      * @param userId
+     * @param activityTime 
      * @return
      */
-    double getSumPrizeMoney(long userId);
+    double getSumPrizeMoney(long userId, String activityTime);
 
     /**
      * 奖励查询
@@ -87,7 +90,7 @@ public interface AfRecommendUserService {
      * @param type
      * @return
      */
-    List<AfRecommendUserDo> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
+    List<AfRecommendUserDto> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
 
     /**
      * 总奖励查询总条数
@@ -105,4 +108,20 @@ public interface AfRecommendUserService {
      * @return
      */
     int insertShareWithData(String uuid,long userId,Integer type,String invitationCode);
+
+
+    /**
+     * 获取邀请记录
+     * @param parentId
+     * @param type
+     * @return
+     */
+    List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser);
+
+    Long findRefUserId(AfRecommendUserDo queryRecommendUser);
+
+
+    int updateRecommendUserById(AfRecommendUserDo afRecommendUserDo);
+
+    AfRecommendUserDo getARecommendUserById(Long userId);
 }
