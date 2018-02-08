@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -16,7 +15,8 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "https://btestapp.51fanbei.com";
+//	String urlBase = "http://localhost:8080";
 	String userName = "13638668564";
 	
 	/**
@@ -27,7 +27,7 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, userName, true);
