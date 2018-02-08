@@ -411,6 +411,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.periods = prdDo.getPeriods();
 			bo.prdName = prdDo.getName();
 			bo.prdType = prdType;
+			bo.isSecAuthzAllPass = true;// TODO 荣波提供
 			
 			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
