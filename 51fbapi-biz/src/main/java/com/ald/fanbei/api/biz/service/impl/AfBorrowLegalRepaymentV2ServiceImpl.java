@@ -650,6 +650,23 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}
+		//判断是否代扣逾期则平账
+		try{
+			Boolean isCashOverdueOld = false;
+			Date gmtPlanTime = cashDo.getGmtPlanRepayment();
+			gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
+			Date newDate = new Date();
+			newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
+			if (StringUtils.equals("代扣付款",repaymentDo.getName())&&gmtPlanTime.getTime() < newDate.getTime()) {
+				isCashOverdueOld = true;
+			}
+			if(isCashOverdueOld){
+				cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+				cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+			}
+		}catch(Exception ex){
+			logger.info("dealRepaymentSucess isCashOverdue error", ex);
+		}
 	}
 	
 	private void checkOfflineRepayment(AfBorrowCashDo cashDo, String offlineRepayAmount ,String outTradeNo) {
