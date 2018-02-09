@@ -33,6 +33,6 @@ public class LoanRepayDoParam {
 	@Min(value=0)
 	public Long loanId;
 	
-	@Min(value=0)
-	public Long loanPeriodsId;
+	@NotNull
+	public String loanPeriodsIds;
 }
