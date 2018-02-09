@@ -125,11 +125,11 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 15+"");
+		params.put("loanId", 18+"");
 		
 		testH5(url, params, userName, true);
 	}
