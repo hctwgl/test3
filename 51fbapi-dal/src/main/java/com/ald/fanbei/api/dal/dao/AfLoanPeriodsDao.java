@@ -23,5 +23,7 @@ public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 	List<AfLoanPeriodsDo> getNoRepayListByLoanId(Long loanId);
 
 	AfLoanPeriodsDo getPeriodByLoanIdAndNper(@Param("loanId")Long loanId, @Param("nper")Integer nper);
+	
+	List<AfLoanPeriodsDo> listCanRepayPeriods(Long loanId);
 
 }
