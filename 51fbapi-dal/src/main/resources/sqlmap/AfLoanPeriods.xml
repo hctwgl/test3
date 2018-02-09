@@ -393,7 +393,7 @@
         WHERE is_delete = 0 
             AND loan_id = #{loanId}
             AND status IN ('AWAIT_REPAY', 'PART_REPAY')
-            AND DATE_SUB(gmt_plan_repay,INTERVAL 1 MONTH) &lt NOW();
+            AND DATE_SUB(gmt_plan_repay,INTERVAL 1 MONTH) &lt; NOW();
         ORDER BY nper ASC
     </select>
 </mapper>
