@@ -128,6 +128,9 @@ let vm = new Vue({
                     }
                 }
             });
+        },
+        closeFn: function () {
+            this.barShow = false
         }
     }
 });

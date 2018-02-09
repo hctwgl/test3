@@ -10,13 +10,15 @@
 </head>
 
 <body style="background-color:#fff;">
-    <div class="bar" v-if="barShow" id="topBar" v-cloak>
-        <img class="fl" src="$commonUrl2/lb.png">
-        <a class="fl">
-            <span v-if="content.length<20">{{content}}</span>
-            <marquee scrollamount="3" v-else>{{content}}</marquee>
-        </a>
-        <img class="fr" src="$commonUrl2/x.png" @click="barShow=false">
+    <div class="por topbar" v-if="barShow" id="topBar" v-cloak>
+        <div class="bar">
+            <img class="fl" src="$commonUrl2/lb.png">
+            <a class="fl">
+                <span v-if="content.length<20">{{content}}</span>
+                <marquee scrollamount="3" v-else>{{content}}</marquee>
+            </a>
+            <img class="fr" src="$commonUrl2/x.png" @click="closeFn()">
+        </div>
     </div>
     <div id="navWrap">
         <ul class="nav">
