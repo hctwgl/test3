@@ -27,7 +27,7 @@ import java.util.Map;
  * @类描述：展示商品代买提示语
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("getWhiteLoanProtocolV2Api")
+@Component("getWhiteLoanProtocolApi")
 @Validator("getWhiteLoanProtocolParam")
 public class GetWhiteLoanProtocolApi extends GetBorrowCashBase implements ApiHandle {
 
@@ -46,8 +46,7 @@ public class GetWhiteLoanProtocolApi extends GetBorrowCashBase implements ApiHan
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
         String type = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
-        map.put("type",type);
-        map.put("borrowId","");
+        map.put("loanId","");
         map.put("poundage",param.getPoundage());
         map.put("borrowAmount",param.getBorrowAmount());
         List<AfResourceDo> cashLoanList = protocolUtil.getProtocolList("cashLoan",map);
