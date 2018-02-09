@@ -92,17 +92,17 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 24+"");//351.27-25=326.27-2.67=323.6-24
+		params.put("repaymentAmount", 289.6+"");//351.27-25=326.27-2.67=323.6-24-10-289.6
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
-		params.put("actualAmount", 24+"");
+		params.put("actualAmount",289.6+"");
 		params.put("loanId", 18+"");
 		params.put("loanPeriodsIds", 54+"");
 		
@@ -125,7 +125,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
@@ -155,9 +155,9 @@ public class LoanTest  extends BaseTest{
 //	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018020915385913049";
+		String orderNo = "hq2018020915492913052";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018020915385913049";
+		String tradeNo = "xianFenghq2018020915492913052";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
