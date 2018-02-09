@@ -59,7 +59,8 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 
     @Resource
     private AfRepaymentDetalDao afRepaymentDetalDao;
-
+    @Resource
+    AfRepaymentBorrowCashService afRepaymentBorrowCashService;
     @Resource
     AfUserWithholdService afUserWithholdService;
     @Override
@@ -95,6 +96,10 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
 
+        String borrowProcessingNO = afRepaymentBorrowCashService.getProcessingRepayNo(context.getUserId());
+        if (!StringUtil.isEmpty(borrowProcessingNO)) {
+            throw new FanbeiException("还款处理中,无法进行还款操作", true);
+        }
         if (cardId > 0 || cardId == -2) {//支付密码验证
             String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
             if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
