@@ -18,8 +18,8 @@ public class LoanTest  extends BaseTest{
 	 */
 //	String urlBase = "https://btestapp.51fanbei.com";
 	String urlBase = "http://localhost:8080";
-//	String userName = "13638668564";
-	String userName = "15669066271";
+//	String userName = "13638668564";	//cardId:3111464412
+	String userName = "15669066271";	//cardId:3111464125
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -53,7 +53,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -92,19 +92,19 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 10.67+"");
+		params.put("repaymentAmount", 24+"");//351.27-25=326.27-2.67=323.6-24
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464412");
-		params.put("actualAmount", 10.67+"");
-		params.put("loanId", 15+"");
-		params.put("loanPeriodsId", 50+"");
+		params.put("cardId", "3111464125");
+		params.put("actualAmount", 24+"");
+		params.put("loanId", 18+"");
+		params.put("loanPeriodsIds", 54+"");
 		
 		testApi(url, params, userName, true);
 	}
@@ -125,11 +125,11 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 7+"");
+		params.put("loanId", 15+"");
 		
 		testH5(url, params, userName, true);
 	}
@@ -155,9 +155,9 @@ public class LoanTest  extends BaseTest{
 //	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018020814474113011";
+		String orderNo = "hq2018020915385913049";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018020814474113011";
+		String tradeNo = "xianFenghq2018020915385913049";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;

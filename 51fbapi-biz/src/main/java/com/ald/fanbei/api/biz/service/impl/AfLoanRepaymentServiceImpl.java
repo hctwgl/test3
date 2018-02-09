@@ -151,6 +151,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		// 根据 还款金额  更新期数信息
 		List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+		bo.loanPeriodsIds.clear();
+		bo.loanPeriodsDoList.clear();
 		for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
 			bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
 			bo.loanPeriodsDoList.add(afLoanPeriodsDo);
@@ -983,10 +985,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		AfLoanPeriodsDo loanPeriodDo = afLoanPeriodsDao.getLastActivePeriodByLoanId(loanId);
 		
 		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
-		int mostNper = repaymentAmount.divide(BigDecimalUtil.add(loanPeriodDo.getAmount(),
-														loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
-														loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()), RoundingMode.UP).intValue();
-		
+		int mostNper = BigDecimalUtil.divHalfUp(repaymentAmount, BigDecimalUtil.add(loanPeriodDo.getAmount(),
+				loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
+				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()), 0).intValue();
+
 		BigDecimal restAmount = BigDecimal.ZERO;
 		Integer nper = loanPeriodDo.getNper();
 		
