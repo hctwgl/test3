@@ -52,7 +52,8 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			AfUserBankcardDo userBankcard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			
 			resp.addResponseData("isLogin", true);
-			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
+			resp.addResponseData("isSecAuthzAllPass", true);
+//			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
 			resp.addResponseData("isBindCard", userBankcard != null);
 			resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getRealnameStatus()));
 			resp.addResponseData("rebateAmount", accInfo.getRebateAmount());

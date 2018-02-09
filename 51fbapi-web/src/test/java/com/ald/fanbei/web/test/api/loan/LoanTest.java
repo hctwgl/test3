@@ -29,7 +29,7 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-//	@Test
+	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, userName, true);
@@ -92,7 +92,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
@@ -125,7 +125,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
