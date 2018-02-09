@@ -53,8 +53,6 @@ public class AppH5ServiceHintsController extends BaseController {
 	@Resource
 	AfCouponService afCouponService;
 
-	@Resource
-	AfResourceService afResourceService;
 
 
 
