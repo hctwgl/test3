@@ -18,8 +18,8 @@ public class LoanTest  extends BaseTest{
 	 */
 //	String urlBase = "https://btestapp.51fanbei.com";
 	String urlBase = "http://localhost:8080";
-	String userName = "13638668564";
-//	String userName = "15669066271";
+//	String userName = "13638668564";
+	String userName = "15669066271";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -53,13 +53,13 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 50000+"");
-		params.put("periods", 4+"");
+		params.put("amount", 1000+"");
+		params.put("periods", 3+"");
 		
 		params.put("remark", "白领贷借款");
 		params.put("loanRemark", "装修");

@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Component("LoanAllRepayDoParam")
+@Component("getWhiteLoanProtocolParam")
 public class getWhiteLoanProtocolParam {
 	@NotNull
 	@DecimalMin("0")

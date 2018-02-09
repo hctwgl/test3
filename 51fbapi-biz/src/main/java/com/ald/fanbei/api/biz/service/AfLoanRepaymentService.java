@@ -51,6 +51,13 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * @return
 	 */
 	boolean canRepay(AfLoanPeriodsDo loanPeriodsDo);
+	
+	
+	/**
+	 * @Description:  根据还款金额，匹配实际需还的期数信息
+	 * @return  List<AfLoanPeriodsDo>
+	 */
+	public List<AfLoanPeriodsDo> getLoanPeriodsIds(Long loanId, BigDecimal repaymentAmount);
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 	

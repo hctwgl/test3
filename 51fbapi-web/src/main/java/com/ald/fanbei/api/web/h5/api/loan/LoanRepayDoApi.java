@@ -126,7 +126,11 @@ public class LoanRepayDoApi implements ApiHandle {
 		bo.cardId = param.cardId;
 		bo.couponId = param.couponId;
 		bo.loanId = param.loanId;
-		bo.loanPeriodsId = param.loanPeriodsId;
+		String[] loanPeriodsIdStrs = param.loanPeriodsIds.split(",");
+		for (int i = 0; i < loanPeriodsIdStrs.length; i++) {
+			bo.loanPeriodsIds.add(Long.parseLong(loanPeriodsIdStrs[i]));
+		}
+			
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
@@ -174,13 +178,17 @@ public class LoanRepayDoApi implements ApiHandle {
 		}
 		
 		// 检查 用户 是否多还钱
-		BigDecimal shouldRepayAmount = afLoanRepaymentService.calculateRestAmount(bo.loanPeriodsId);
+		BigDecimal shouldRepayAmount = BigDecimal.ZERO;
+		for (Long loanPeriodsId : bo.loanPeriodsIds) {
+			shouldRepayAmount = BigDecimalUtil.add(shouldRepayAmount,afLoanRepaymentService.calculateRestAmount(loanPeriodsId));
+			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getById(loanPeriodsId);
+			bo.loanPeriodsDoList.add(loanPeriodsDo);
+		}
+		
 		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
-		AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getLastActivePeriodByLoanId(loanDo.getRid());
-		bo.loanPeriodsDoList.add(loanPeriodsDo);
 	}
 	
 	private void checkAmount(LoanRepayBo bo) {
