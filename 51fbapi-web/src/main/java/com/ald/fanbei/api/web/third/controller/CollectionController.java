@@ -657,11 +657,6 @@ public class CollectionController {
                     afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(), afBorrowDo.getNper(), afBorrowDo.getAmount(), afBorrowDo.getRid());
                 }
             }
-            /*if (type == 1) {
-                afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
-            } else if (type == 2) {
-                afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(), afBorrowDo.getNper(), afBorrowDo.getAmount(), afBorrowDo.getRid());
-            }*/
             afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
             if (afContractPdfDo == null) {
                 logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}", id);
