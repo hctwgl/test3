@@ -46,8 +46,7 @@ public class GetWhiteLoanProtocolApi extends GetBorrowCashBase implements ApiHan
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
         String type = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
-        map.put("type",type);
-        map.put("borrowId","");
+        map.put("loanId","");
         map.put("poundage",param.getPoundage());
         map.put("borrowAmount",param.getBorrowAmount());
         List<AfResourceDo> cashLoanList = protocolUtil.getProtocolList("cashLoan",map);
