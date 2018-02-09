@@ -473,6 +473,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	@Override
 	public boolean allSupplementAuthPassed(Long userId) {
 		AfUserAuthDo authInfo = afUserAuthDao.getUserAuthInfoByUserId(userId);
+		return allSupplementAuthPassed(authInfo);
+	}
+	@Override
+	public boolean allSupplementAuthPassed(AfUserAuthDo authInfo) {
 		String alipayStatus = authInfo.getAlipayStatus();
 		String creditStatus = authInfo.getCreditStatus();
 		String fundStatus = authInfo.getFundStatus();

@@ -15,7 +15,6 @@ public class LoanHomeInfoBo {
 	public int periods;
 	public String prdType;
 	public String prdName;
-	public boolean isSecAuthzAllPass;
 	
 	public boolean hasLoan;
 	public Long loanId;
@@ -24,12 +23,13 @@ public class LoanHomeInfoBo {
 	public BigDecimal loanArrivalAmount;
 	public Date loanGmtApply;
 	
-	public Long curPeriodId;
+	public String curPeriodIds;
 	public boolean canRepay;
 	public BigDecimal curPeriodAmount;
 	public BigDecimal curPeriodRestAmount;
 	public Date curPeriodGmtPlanRepay;
 	public String curPeriodStatus;
+	
 	public boolean isOverdue;
 	
 	public boolean shouldTipNextPeriod;
