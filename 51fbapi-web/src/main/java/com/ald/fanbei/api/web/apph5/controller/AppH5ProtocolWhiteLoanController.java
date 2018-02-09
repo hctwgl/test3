@@ -49,21 +49,13 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
-	AfRenewalDetailDao afRenewalDetailDao;
-	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
 	@Resource
-	AfFundSideBorrowCashService afFundSideBorrowCashService;
-	@Resource
 	AfESdkService afESdkService;
-	@Resource
-	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	@Resource
-	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	@Resource
 	AfUserSealDao afUserSealDao;
 	@Resource
@@ -114,7 +106,6 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
 		model.put("interest", BigDecimal.valueOf(Double.parseDouble(consumeDo.getValue3())));
-//		getResourceRate(model, type, afResourceDo, "instalment");
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
@@ -148,23 +139,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
-//		model.put("poundage", consumeDo.getValue1());
 		model.put("poundage", poundage);
-
-		/*model.put("gmtStart", date);
-		if ("SEVEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 6));
-		}else if ("FOURTEEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 13));
-		}
-
-		int repayDay = 20;
-		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
-		if(afUserOutDayDo !=null) {
-			repayDay = afUserOutDayDo.getPayDay();
-		}
-		model.put("repayDay", repayDay);*/
-
 		logger.info(JSON.toJSONString(model));
 		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
@@ -313,97 +288,15 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		}
 	}
 
-	private void getResourceRate(ModelMap model, String type, AfResourceDo afResourceDo, String borrowType) {
-		if (afResourceDo != null && afResourceDo.getValue2() != null) {
-			JSONArray array = new JSONArray();
-			if ("instalment".equals(borrowType)) {
-				array = JSONObject.parseArray(afResourceDo.getValue3());
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject jsonObject = array.getJSONObject(i);
-					String consumeTag = jsonObject.get("consumeTag").toString();
-					if ("INTEREST_RATE".equals(consumeTag)) {//借款利率
-						if ("SEVEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("consumeSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("consumeFourteenDay"));
-						}
-					}
-					if ("SERVICE_RATE".equals(consumeTag)) {//手续费利率
-						if ("SEVEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("consumeSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("consumeFourteenDay"));
-						}
-					}
-					if ("OVERDUE_RATE".equals(consumeTag)) {//逾期利率
-						if ("SEVEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("consumeSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("consumeFourteenDay"));
-						}
-					}
-				}
-			} else if ("borrow".equals(borrowType)) {
-				array = JSONObject.parseArray(afResourceDo.getValue2());
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject jsonObject = array.getJSONObject(i);
-					String borrowTag = jsonObject.get("borrowTag").toString();
-					if ("INTEREST_RATE".equals(borrowTag)) {//借款利率
-						if ("SEVEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowFourteenDay"));
-						}
-					}
-					if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
-						if ("SEVEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowFourteenDay"));
-						}
-					}
-					if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
-						if ("SEVEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowSevenDay"));
-						} else if ("FOURTEEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowFourteenDay"));
-						}
-					}
-				}
-			}
 
-		}
-	}
 
 	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
-		/*if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
-			model.put("lender", fundSideInfo.getName());// 出借人
-		} else {
-			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-			model.put("lender", lenderDo.getValue());// 出借人
-		}*/
+
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 		model.put("lender", lenderDo.getValue());// 出借人
-		/*AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
-		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-			model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-		}*/
 	}
 
-	/*private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
-		try {
-			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
-			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
-				model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-			}
-			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
-			if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
-				model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
-			}
-		}catch (Exception e){
-			logger.error("UserSeal create error",e);
-		}
-	}*/
+
 
 	private void GetSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
@@ -432,173 +325,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		}
 	}
 
-	@RequestMapping(value = {"protocolLegalRenewalV2"}, method = RequestMethod.GET)
-	public void protocolLegalRenewal(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		if (userName == null || !webContext.isLogin()) {
-			throw new FanbeiException("非法用户");
-		}
-		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
-		Long renewalId = NumberUtil.objToLongDefault(request.getParameter("renewalId"), 0l);
-		int renewalDay = NumberUtil.objToIntDefault(request.getParameter("renewalDay"), 0);
-		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("renewalAmount"), BigDecimal.ZERO);
 
-		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-		if (afUserDo == null) {
-			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
-		Long userId = afUserDo.getRid();
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-		if (accountDo == null) {
-			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
-
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
-		getResourceRate(model, type, afResourceDo, "borrow");
-		model.put("realName", accountDo.getRealName());//借款人
-		model.put("idNumber", accountDo.getIdNumber());//身份证号
-		model.put("mobile", afUserDo.getUserName());// 联系电话
-		model.put("email", afUserDo.getEmail());//电子邮箱
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		AfBorrowCashDo afBorrowCashDo = null;
-		if (borrowId > 0) {
-			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-			if (afBorrowCashDo != null) {
-				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
-				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
-					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
-					model.put("gmtBorrowEnd", repaymentDay);//借款结束日
-					model.put("amountCapital", toCapital(afBorrowCashDo.getAmount().doubleValue()));
-					model.put("amountLower", afBorrowCashDo.getAmount());
-					//查看有无和资金方关联，有的话，替换里面的借出人信息
-					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					if (renewalId > 0) {
-						lender(model, fundSideInfo);
-						model.put("lender", "金泰嘉鼎（深圳）资产管理有限公司");
-						GetSeal(model, afUserDo, accountDo);
-						AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
-						if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-							model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-						}
-					}
-					/*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
-						model.put("lender", fundSideInfo.getName());// 出借人
-					}else{
-						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-						model.put("lender", lenderDo.getValue());// 出借人
-					}*/
-				}
-			}
-
-			if (renewalId > 0) {
-				AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(renewalId);
-				Date gmtCreate = afRenewalDetailDo.getGmtCreate();
-				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
-				if (afRenewalDetailDo != null) {
-					/*AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getLastOrderCashByBorrowId(afRenewalDetailDo.getBorrowId());
-					if (afBorrowLegalOrderCashDo != null){
-						model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
-						model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
-						model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
-						model.put("overdueRate","36");
-					}else {
-						getResourceRate(model, type,afResourceDo,"borrow");
-					}*/
-				}
-				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
-				if (gmtPlanRepayment.after(gmtCreate)) {
-					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
-					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-					model.put("gmtRenewalBegin", gmtPlanRepayment);
-					model.put("gmtRenewalEnd", repaymentDay);
-					model.put("repaymentDay", repaymentDay);
-				} else {
-					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
-					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-					model.put("gmtRenewalBegin", gmtCreate);
-					model.put("gmtRenewalEnd", repaymentDay);
-					model.put("repaymentDay", repaymentDay);
-				}
-				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
-				model.put("renewalGmtCreate", afRenewalDetailDo.getGmtCreate());//续借时间
-				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写
-				model.put("repayAmountLower", afRenewalDetailDo.getCapital());//续借金额小写
-				model.put("repayAmountCapital", toCapital(afRenewalDetailDo.getCapital().doubleValue()));//续借金额大写
-//				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
-//				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay());
-			} else {
-				getResourceRate(model, type, afResourceDo, "borrow");
-				Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
-				Date now = new Date(System.currentTimeMillis());
-				// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的续期截止时间
-				if (gmtPlanRepayment.after(now)) {
-					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, renewalDay));
-					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-					model.put("gmtRenewalBegin", gmtPlanRepayment);
-					model.put("gmtRenewalEnd", repaymentDay);
-					model.put("repaymentDay", repaymentDay);
-				} else {
-					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(now, renewalDay));
-					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-					model.put("gmtRenewalBegin", now);
-					model.put("gmtRenewalEnd", repaymentDay);
-					model.put("repaymentDay", repaymentDay);
-				}
-
-				model.put("renewalAmountLower", renewalAmount);//续借金额小写
-				model.put("renewalAmountCapital", toCapital(renewalAmount.doubleValue()));//续借金额大写
-//				AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
-//				BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
-				String yearRate = afResourceDo.getValue();
-				if (yearRate != null && !"".equals(yearRate)) {
-					BigDecimal capital = afBorrowCashDo.getAmount().divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(yearRate)).setScale(2, RoundingMode.HALF_UP);
-					model.put("repayAmountLower", capital);//续借金额小写
-					model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写
-				}
-			}
-		}
-
-		logger.info(JSON.toJSONString(model));
-	}
-
-	/**
-	 * 代买协议
-	 * @param request
-	 * @param model
-	 * @throws IOException
-	 */
-	@RequestMapping(value = { "protocolAgentBuyService2" }, method = RequestMethod.GET)
-	public void protocolAgentBuyService(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(userName == null || !webContext.isLogin() ) {
-			throw new FanbeiException("非法用户");
-		}
-		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-		if (afUserDo == null) {
-			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
-		Long userId = afUserDo.getRid();
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-		if (accountDo == null) {
-			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-		}
-		if(!StringUtils.isEmpty(accountDo.getRealName())){
-			model.put("realName", accountDo.getRealName());//借款人
-		}else{
-			logger.error("realName not exist" + FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
-			throw new FanbeiException(FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
-		}
-	}
 
 	/**
 	 * 平台服务协议(白领贷)
