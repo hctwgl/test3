@@ -102,3 +102,32 @@ $(function(){
         window.location.href="/fanbei-web/opennative?name=APP_CONTACT_CUSTOMER"
     })
 });
+
+let vm = new Vue({
+    el: '#topBar',
+    data: {
+        content: '',
+        barShow: true
+    },
+    created: function () {
+        this.logData();
+
+    },
+    methods: {
+        logData() {
+            let self = this;
+            $.ajax({
+                url: '/fanbei-web/activity/getServiceHints',
+                type: 'post',
+                success: function (data) {
+                    data = eval('(' + data + ')');
+                    if (data.success) {
+                        self.content = data.data.hint;
+                    } else {
+                        self.barShow = false;
+                    }
+                }
+            });
+        }
+    }
+});
