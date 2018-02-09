@@ -22,18 +22,12 @@ public class LoanHomeInfoBo {
 	public BigDecimal loanAmount;
 	public BigDecimal loanArrivalAmount;
 	public Date loanGmtApply;
-	
-	public String curPeriodIds;
-	public boolean canRepay;
-	public BigDecimal curPeriodAmount;
-	public BigDecimal curPeriodRestAmount;
-	public Date curPeriodGmtPlanRepay;
-	public String curPeriodStatus;
-	
 	public boolean isOverdue;
 	
-	public boolean shouldTipNextPeriod;
-	public int nextPeriodDays;
-	public int nextPeriodRestAmount;
+	public String periodIds;
+	public BigDecimal periodsRestAmount;
+	public BigDecimal periodsOverdueAmount;
+	public Date periodsLastGmtPlanRepay;
+	public String periodsStatus;
 	
 }

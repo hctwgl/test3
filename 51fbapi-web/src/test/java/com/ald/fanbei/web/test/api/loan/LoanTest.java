@@ -152,7 +152,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "hq2018020814474113011";
