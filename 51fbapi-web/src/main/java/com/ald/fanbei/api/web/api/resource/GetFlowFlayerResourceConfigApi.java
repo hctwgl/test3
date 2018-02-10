@@ -28,7 +28,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @date 2018年2月10日 下午4:34:33
  * @version V1.0  
  */
-@Component("getFlowFlayerResourceConfigApi")
+@Component("GetFlowFlayerResourceConfigApi")
 public class GetFlowFlayerResourceConfigApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
