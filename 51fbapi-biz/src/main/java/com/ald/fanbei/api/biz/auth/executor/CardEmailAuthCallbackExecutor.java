@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
 import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
+import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
@@ -37,6 +40,12 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	
+	@Resource
+	AfUserAuthService afUserAuthService;
+	
+	@Resource
+	AfAuthRaiseStatusService afAuthRaiseStatusService;
 
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
@@ -46,6 +55,12 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
 		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
+			// 初始化提额状态
+			afAuthRaiseStatusService.initCreditRaiseStatus(userId, AuthType.CARDEMAIL.getCode());
+			
+			afUserAuthDo.setCreditStatus("Y");
+			afUserAuthService.updateUserAuth(afUserAuthDo);
+
 			RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId),
 					new String[] { RiskScene.CARDMAIL_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 			// 提额成功
@@ -61,6 +76,9 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 				AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 				afUserAccountSenceService.updateById(totalAccountSenceDo);
 			}
+		} else {
+			afUserAuthDo.setCreditStatus("N");
+			afUserAuthService.updateUserAuth(afUserAuthDo);
 		}
 	}
 

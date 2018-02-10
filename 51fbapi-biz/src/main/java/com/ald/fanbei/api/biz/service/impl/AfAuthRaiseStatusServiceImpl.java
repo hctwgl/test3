@@ -74,4 +74,34 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
 
 	}
+
+	@Override
+	public void initCreditRaiseStatus(Long userId, String authType) {
+		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId,
+				authType, LoanType.BLD_LOAN.getCode(), RaiseStatus.Y.getCode(), BigDecimal.ZERO,
+				new Date());
+		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
+		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId,
+				authType, LoanType.CASH.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
+				new Date());
+		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
+	}
+
+	@Override
+	public void initZhengxinRaiseStatus(Long userId, String authType) {
+		this.initCreditRaiseStatus(userId, authType);
+	}
+
+	@Override
+	public void initOnlinebankRaiseStatus(Long userId, String authType) {
+		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId,
+				authType, LoanType.BLD_LOAN.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
+				new Date());
+		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
+		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId,
+				authType, LoanType.CASH.getCode(), RaiseStatus.Y.getCode(), BigDecimal.ZERO,
+				new Date());
+		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
+		
+	}
 }

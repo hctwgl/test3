@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
 import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
+import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
@@ -36,6 +39,12 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
 	
+	@Resource
+	AfUserAuthService afUserAuthService;
+	
+	@Resource
+	AfAuthRaiseStatusService afAuthRaiseStatusService;
+	
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
 		String consumerNo = authCallbackBo.getConsumerNo();
@@ -43,6 +52,12 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
 		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
+			// 初始化认证状态
+			afAuthRaiseStatusService.initZhengxinRaiseStatus(userId, AuthType.ZHENGXIN.getCode());
+			
+			afUserAuthDo.setZhengxinStatus("Y");
+			afUserAuthService.updateUserAuth(afUserAuthDo);
+			
 			RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId),
 					new String[] { RiskScene.ZHENGXIN_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 			// 提额成功
@@ -58,6 +73,9 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 				AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 				afUserAccountSenceService.updateById(totalAccountSenceDo);
 			}
+		} else {
+			afUserAuthDo.setZhengxinStatus("N");
+			afUserAuthService.updateUserAuth(afUserAuthDo);
 		}
 	}
 	

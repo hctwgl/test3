@@ -57,6 +57,9 @@ public class BankAuthCallbackExecutor implements Executor {
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
 		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
+			// 初始化提额状态
+			afAuthRaiseStatusService.initOnlinebankRaiseStatus(userId,AuthType.BANK.getCode());
+			
 			// 认证成功
 			afUserAuthDo.setOnlinebankStatus("Y");
 			afUserAuthService.updateUserAuth(afUserAuthDo);

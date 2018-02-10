@@ -63,6 +63,9 @@ public class FundAuthCallbackExecutor implements Executor {
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
 		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
+			
+			// 首先初始化提额状态
+			afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.FUND.getCode());
 			// 认证通过，更新支付宝认证状态
 			afUserAuthDo.setFundStatus("Y");
 			afUserAuthService.updateUserAuth(afUserAuthDo);

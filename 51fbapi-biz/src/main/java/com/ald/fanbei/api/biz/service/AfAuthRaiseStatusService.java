@@ -22,4 +22,10 @@ public interface AfAuthRaiseStatusService extends ParentService<AfAuthRaiseStatu
 			BigDecimal amount, Date gmtFinish);
 
 	void initRaiseStatus(Long userId, String authType);
+
+	public void initCreditRaiseStatus(Long userId, String authType);
+
+	public void initZhengxinRaiseStatus(Long userId, String authType);
+
+	public void initOnlinebankRaiseStatus(Long userId, String authType);
 }
