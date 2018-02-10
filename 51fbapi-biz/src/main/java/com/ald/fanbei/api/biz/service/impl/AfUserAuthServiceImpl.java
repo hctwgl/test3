@@ -329,7 +329,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("alipayStatus", authDo.getAlipayStatus());
 		data.put("chsiStatus", authDo.getChsiStatus());
 		data.put("zhengxinStatus", authDo.getZhengxinStatus());
-
+		data.put("onlinebankStatus", authDo.getOnlinebankStatus());
+		
+		if (authDo.getGmtOnlinebank() != null) {
+			data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtOnlinebankExist", YesNoStatus.NO.getCode());
+		}
+		
 		// 添加是否已发起过公积金认证，来区分对应状态是初始化还是之前认证失败
 		if (authDo.getGmtFund() != null) {
 			data.put("gmtFundExist", YesNoStatus.YES.getCode());
