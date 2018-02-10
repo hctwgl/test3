@@ -487,10 +487,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
 	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
 		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
-		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(0);
-		if(nper > 1 || // TODO ................................
-				(nper == 1 && loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus()))) {
-			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
+		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(nper-1);
+		if(loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus())) {
+			// 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
 			loanDo.setRid(LoanRepayDealBo.loanDo.getRid());
 			loanDo.setStatus(AfLoanStatus.FINISHED.name());
@@ -631,9 +630,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
-		if(repayAmount.compareTo(calculateRestAmount) >= 0){
+		if(repayAmount.compareTo(loanPeriodsDo.getAmount()) >= 0){
 			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
-			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
 		}else {
 			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
