@@ -53,7 +53,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -96,15 +96,15 @@ public class LoanTest  extends BaseTest{
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 289.6+"");//351.27-25=326.27-2.67=323.6-24-10-289.6
+		params.put("repaymentAmount", 403.54+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
-		params.put("actualAmount",289.6+"");
-		params.put("loanId", 18+"");
-		params.put("loanPeriodsIds", 54+"");
+		params.put("actualAmount",403.54+"");
+		params.put("loanId", 21+"");
+		params.put("loanPeriodsIds", "63,64");
 		
 		testApi(url, params, userName, true);
 	}
@@ -125,11 +125,11 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 18+"");
+		params.put("loanId", 20+"");
 		
 		testH5(url, params, userName, true);
 	}
@@ -152,12 +152,12 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018020915492913052";
+		String orderNo = "hq2018021011262113059";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018020915492913052";
+		String tradeNo = "xianFenghq2018021011262113059";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;

@@ -462,7 +462,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
-		}else {		// 按期还款（部分还款）
+		}else if(repaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
 			loanRepayDealBo.isAllRepay = false;
 			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
 			for (int i = 0; i < repayPeriodsIds.length; i++) {
@@ -488,7 +488,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
 		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
 		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(0);
-		if(nper > 1 || 
+		if(nper > 1 || // TODO ................................
 				(nper == 1 && loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus()))) {
 			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
@@ -629,13 +629,22 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 */
 	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
 		
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount());
-		loanPeriodsDo.setRepayAmount(allRepayAmount);
-
+		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
+		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
+		if(repayAmount.compareTo(calculateRestAmount) >= 0){
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+		}else {
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
+			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+		
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
 				loanPeriodsDo.getOverdueAmount(), loanPeriodsDo.getRepaidOverdueAmount(),
 				loanPeriodsDo.getInterestFee(), loanPeriodsDo.getRepaidInterestFee(),
 				loanPeriodsDo.getServiceFee(), loanPeriodsDo.getRepaidServiceFee());
+		
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
