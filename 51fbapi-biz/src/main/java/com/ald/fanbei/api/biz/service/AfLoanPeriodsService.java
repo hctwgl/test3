@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 
@@ -30,6 +31,16 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	 */
 	List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
 	
+	/**
+	 * 统计目标贷款下的全部应还期数的汇总信息
+	 * @param loanId
+	 * @return Map Keys如下<br/>
+	 * 	periodIds Nullable 期数id串，以逗号相连<br/>
+	 * 	restAmount Nullable 剩余应还总金额<br/> 
+	 * 	gmtPlanRepay Nullable 应还期数的最后一期计划还款时间<br/>
+	 */
+	Map<String,Object> getTotalRestInfo(Long loanId);
+	
 	BigDecimal calcuRestAmount(AfLoanPeriodsDo period);
 
 	AfLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
@@ -37,5 +48,9 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	List<AfLoanPeriodsDo> listByLoanId(Long loanId);
 
 	List<AfLoanPeriodsDo> getNoRepayListByLoanId(Long rid);
+
+	List<AfLoanPeriodsDo> listCanRepayPeriods(Long loanId);
+
+	AfLoanPeriodsDo getOneByLoanId(Long loanId);
 	
 }
