@@ -56,7 +56,7 @@ public class BankAuthCallbackExecutor implements Executor {
 		Long userId = Long.parseLong(consumerNo);
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
-		if (StringUtils.equals(authCallbackBo.getCode(), RiskAuthStatus.SUCCESS.getCode())) {
+		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
 			// 认证成功
 			afUserAuthDo.setOnlinebankStatus("Y");
 			afUserAuthService.updateUserAuth(afUserAuthDo);

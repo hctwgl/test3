@@ -63,7 +63,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
-		if (StringUtils.equals(authCallbackBo.getCode(), RiskAuthStatus.SUCCESS.getCode())) {
+		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
 			// 认证通过，更新支付宝认证状态
 			afUserAuthDo.setJinpoStatus("Y");
 			afUserAuthService.updateUserAuth(afUserAuthDo);

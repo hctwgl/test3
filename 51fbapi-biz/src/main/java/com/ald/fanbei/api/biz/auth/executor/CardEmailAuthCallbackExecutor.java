@@ -45,7 +45,7 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 		Long userId = Long.parseLong(consumerNo);
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 		afUserAuthDo.setUserId(userId);
-		if (StringUtils.equals(authCallbackBo.getCode(), RiskAuthStatus.SUCCESS.getCode())) {
+		if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
 			RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId),
 					new String[] { RiskScene.CARDMAIL_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 			// 提额成功

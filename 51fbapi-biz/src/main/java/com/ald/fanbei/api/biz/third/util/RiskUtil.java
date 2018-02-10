@@ -3462,7 +3462,8 @@ public class RiskUtil extends AbstractThird {
 			String consumerNo = obj.getString("consumerNo");
 			String authItem = obj.getString("authItem");
 			String orderNo = obj.getString("orderNo");
-			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, code);
+			String result = obj.getString("result");
+			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
 			authCallbackManager.execute(callbackBo);
 		}
 		return 0;

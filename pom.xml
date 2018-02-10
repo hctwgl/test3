@@ -77,7 +77,7 @@
 			<artifactId>spring-kafka</artifactId>
 			<version>1.2.3.RELEASE</version>
 			<exclusions>
-				<!-- 建议这里排除掉Kafka依赖，避免版本问题带来困扰-->
+				<!-- 建议这里排除掉Kafka依赖，避免版本问题带来困扰 -->
 				<exclusion>
 					<groupId>org.apache.kafka</groupId>
 					<artifactId>kafka-clients</artifactId>
@@ -95,9 +95,9 @@
 			<version>0.1</version>
 		</dependency>
 		<dependency>
-		<groupId>org.springframework.data</groupId>
-		<artifactId>spring-data-mongodb</artifactId>
-		<version>1.10.1.RELEASE</version>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>1.10.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -211,9 +211,9 @@
 			<version>1.7</version>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.jmockit</groupId>
+			<groupId>org.jmockit</groupId>
 			<artifactId>jmockit</artifactId>
-			<version>1.0</version>
+			<version>1.8</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -251,7 +251,7 @@
 			<artifactId>core</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
@@ -349,20 +349,20 @@
 		<module>51fbapi-web</module>
 	</modules>
 	<build>
-	    <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
