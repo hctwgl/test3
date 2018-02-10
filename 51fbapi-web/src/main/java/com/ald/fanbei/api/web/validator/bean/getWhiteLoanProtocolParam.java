@@ -1,15 +1,14 @@
 package com.ald.fanbei.api.web.validator.bean;
 
-import java.math.BigDecimal;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
-import org.springframework.stereotype.Component;
-
-@Component("LoanRepayDoParam")
-public class LoanRepayDoParam {
+@Component("getWhiteLoanProtocolParam")
+public class getWhiteLoanProtocolParam {
 	@NotNull
 	@DecimalMin("0")
 	public BigDecimal repaymentAmount;
@@ -32,7 +31,4 @@ public class LoanRepayDoParam {
 	
 	@Min(value=0)
 	public Long loanId;
-	
-	@NotNull
-	public String loanPeriodsIds;
 }

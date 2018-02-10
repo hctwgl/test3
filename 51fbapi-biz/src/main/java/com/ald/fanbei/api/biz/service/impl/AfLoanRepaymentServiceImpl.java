@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -148,6 +149,17 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 		
+		// 根据 还款金额  更新期数信息
+		if(!bo.isAllRepay) {	// 非提前结清
+			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			bo.loanPeriodsIds.clear();
+			bo.loanPeriodsDoList.clear();
+			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+			}
+		}
+		
 		// 增加还款记录
 		generateRepayRecords(bo);
 		
@@ -246,15 +258,15 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      */
     private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment) {
 		if (bo.cardId > 0) {// 银行卡支付
+			if(repayment != null) {
+				changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
+			}
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
-			if(repayment != null) {
-				changLoanRepaymentStatus(respBo.getTradeNo(), AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
-			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
 					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
@@ -304,28 +316,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
         
-		/*if(isNeedMsgNotice){
-			//用户信息及当日还款失败次数校验
-			int errorTimes = 0;
-			AfUserDo afUserDo = afUserService.getUserById(loanRepaymentDo.getUserId());
-			//如果是代扣，不校验次数
-			String payType = loanRepaymentDo.getName();
-			//模版数据map处理
-			Map<String,String> replaceMapData = new HashMap<String, String>();
-			replaceMapData.put("errorMsg", errorMsg);
-			//还款失败短信通知
-			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
-				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
-			}else{
-				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
-				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
-				String title = "本次还款支付失败";
-				String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
-				content = content.replace("&errorMsg",errorMsg);
-				pushService.pushUtil(title,content,afUserDo.getMobile());
-			}
-		}*/
-		
 	}
     
     
@@ -382,7 +372,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             });
 
             if (resultValue == 1L) {
-//            	notifyUserBySms(LoanRepayDealBo);
 //            	nofityRisk(LoanRepayDealBo);
             }
     		
@@ -473,17 +462,21 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
-		}else {		// 按期还款
+		}else if(repaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
 			loanRepayDealBo.isAllRepay = false;
-			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repaymentDo.getRepayPeriods()));
-			if(loanPeriodsDo!=null){
-				loanPeriodsDoList.add(loanPeriodsDo);
-				dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
-				dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
-				dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
-				dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
+			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
+			for (int i = 0; i < repayPeriodsIds.length; i++) {
+				
+				AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
+				if(loanPeriodsDo!=null){
+					loanPeriodsDoList.add(loanPeriodsDo);
+					dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo);		//逾期费
+					dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
+					dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
+					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
+				}
+				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
-			afLoanPeriodsDao.updateById(loanPeriodsDo);
 		}
 		
 		loanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
@@ -495,7 +488,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
 		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
 		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(0);
-		if(nper > 1 || 
+		if(nper > 1 || // TODO ................................
 				(nper == 1 && loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus()))) {
 			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
@@ -636,13 +629,22 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 */
 	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
 		
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount());
-		loanPeriodsDo.setRepayAmount(allRepayAmount);
-
+		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
+		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
+		if(repayAmount.compareTo(calculateRestAmount) >= 0){
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+		}else {
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
+			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+		
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
 				loanPeriodsDo.getOverdueAmount(), loanPeriodsDo.getRepaidOverdueAmount(),
 				loanPeriodsDo.getInterestFee(), loanPeriodsDo.getRepaidInterestFee(),
 				loanPeriodsDo.getServiceFee(), loanPeriodsDo.getRepaidServiceFee());
+		
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
@@ -745,63 +747,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		}
 	}
 	
-	// -----------------------------------------------------------------------------------------
 
 	
-	private void notifyUserBySms(LoanRepayDealBo LoanRepayDealBo) {
-    	logger.info("notifyUserBySms info begin,sumAmount="+LoanRepayDealBo.sumAmount+",curSumRepayAmount="+LoanRepayDealBo.curSumRepayAmount+",sumRepaidAmount="+LoanRepayDealBo.sumRepaidAmount);
-        try {
-            AfUserDo afUserDo = afUserService.getUserById(LoanRepayDealBo.userId);
-            if(LoanRepayDealBo.curName.equals("代扣付款")){
-                sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), LoanRepayDealBo.sumAmount);
-            }else{
-            	sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), LoanRepayDealBo.curSumRepayAmount, LoanRepayDealBo.sumAmount.subtract(LoanRepayDealBo.sumRepaidAmount));
-            }
-        } catch (Exception e) {
-            logger.error("Sms notify user error, userId:" + LoanRepayDealBo.userId + ",nowRepayAmount:" + LoanRepayDealBo.curSumRepayAmount + ",notRepayMoney" + LoanRepayDealBo.sumAmount.subtract(LoanRepayDealBo.sumRepaidAmount), e);
-        }
-    }
-    
-    
-    /**
-     * 代扣现金贷还款成功短信发送
-     * @param mobile
-     * @param nowRepayAmountStr
-     */
-    private boolean sendRepaymentBorrowCashWithHold(String mobile,BigDecimal nowRepayAmount){
-    	//模版数据map处理
-		Map<String,String> replaceMapData = new HashMap<String, String>();
-		replaceMapData.put("nowRepayAmountStr", nowRepayAmount+"");
-		return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_SUCCESS.getCode());
-    }
-    
-    
-    /**
-     * 用户手动现金贷还款成功短信发送
-     * @param mobile
-     * @param nowRepayAmountStr
-     */
-    private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
-    	//模版数据map处理
-    	Map<String,String> replaceMapData = new HashMap<String, String>();
- 		replaceMapData.put("repayMoney", repayMoney+"");
- 		replaceMapData.put("remainAmount", notRepayMoney+"");
-         if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
-			 String title = "恭喜您，借款已还清！";
-			 String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
-			 content = content.replace("&repayMoney",repayMoney.toString());
-			 pushService.pushUtil(title,content,mobile);
-         	return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
-         } else {
-			 String title = "部分还款成功！";
-			 String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
-			 content = content.replace("&repayMoney",repayMoney.toString());
-			 content = content.replace("&remainAmount",notRepayMoney.toString());
-			 pushService.pushUtil(title,content,mobile);
-         	return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
-         }
-    }
-    
     private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
     	String cardNo = LoanRepayDealBo.curCardNo;
     	cardNo = StringUtils.isNotBlank(cardNo)?cardNo:String.valueOf(System.currentTimeMillis());
@@ -899,7 +846,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		public Long cardId;
 		public Long couponId;			//可选字段
 		public Long loanId;			
-		public Long loanPeriodsId;			
+		public List<Long> loanPeriodsIds = new ArrayList<Long>();			
 		/* request字段 */
 		
 		/* biz 业务处理字段 */
@@ -1037,6 +984,41 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		return flag;
 	}
 
+	
+	
+	/**
+	 * @Description:  根据还款金额，匹配实际需还的期数信息
+	 * @return  List<AfLoanPeriodsDo>
+	 */
+	public List<AfLoanPeriodsDo> getLoanPeriodsIds(Long loanId, BigDecimal repaymentAmount){
+		List<AfLoanPeriodsDo> loanPeriodsIds = new ArrayList<AfLoanPeriodsDo>();
+		
+		AfLoanPeriodsDo loanPeriodDo = afLoanPeriodsDao.getLastActivePeriodByLoanId(loanId);
+		
+		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
+		int mostNper = BigDecimalUtil.divHalfUp(repaymentAmount, BigDecimalUtil.add(loanPeriodDo.getAmount(),
+				loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
+				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()), 0).intValue();
+
+		BigDecimal restAmount = BigDecimal.ZERO;
+		Integer nper = loanPeriodDo.getNper();
+		
+		for (int i = 0; i < mostNper; i++) {
+			if(repaymentAmount.compareTo(BigDecimal.ZERO)>0){
+				// 根据 loanId&期数  获取分期信息
+				AfLoanPeriodsDo nextLoanPeriodDo = afLoanPeriodsDao.getPeriodByLoanIdAndNper(loanId, nper+i);
+				// 当前期需还金额
+				restAmount = calculateRestAmount(nextLoanPeriodDo.getRid());
+				// 更新还款金额
+				repaymentAmount = repaymentAmount.subtract(restAmount);
+				
+				loanPeriodsIds.add(nextLoanPeriodDo);
+			}
+		}
+		
+		return loanPeriodsIds;
+	}
+	
 	@Override
 	public List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId) {
 		return afLoanRepaymentDao.listDtoByLoanId(loanId);

@@ -13,7 +13,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
 public class AfLoanVo extends AbstractSerial {
 	
 	private static final long serialVersionUID = 1L;
-	private Long loanPeriodsId;		// 当前借款期数id
+	private String loanPeriodsIds;		// 借款期数id(多期用英文逗号隔开)
 	private int nper;		// 当前期数	
 	private BigDecimal currentPeriodAmount;		// 本月待还金额
 	private Date gmtPlanRepay;		// 本月还款时间
@@ -131,11 +131,11 @@ public class AfLoanVo extends AbstractSerial {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Long getLoanPeriodsId() {
-		return loanPeriodsId;
+	public String getLoanPeriodsIds() {
+		return loanPeriodsIds;
 	}
-	public void setLoanPeriodsId(Long loanPeriodsId) {
-		this.loanPeriodsId = loanPeriodsId;
+	public void setLoanPeriodsIds(String loanPeriodsIds) {
+		this.loanPeriodsIds = loanPeriodsIds;
 	}
 	public int getNper() {
 		return nper;

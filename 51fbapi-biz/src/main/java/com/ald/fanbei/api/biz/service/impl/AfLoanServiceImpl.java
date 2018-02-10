@@ -64,6 +64,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
@@ -411,7 +412,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.periods = prdDo.getPeriods();
 			bo.prdName = prdDo.getName();
 			bo.prdType = prdType;
-			bo.isSecAuthzAllPass = true;// TODO 荣波提供
 			
 			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
@@ -443,24 +443,40 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.loanArrivalAmount = lastLoanDo.getArrivalAmount();
 		bo.loanGmtApply = lastLoanDo.getGmtCreate();
 		
-		AfLoanPeriodsDo activePeriod = afLoanPeriodsDao.getLastActivePeriodByLoanId(lastLoanDo.getRid());
-		bo.canRepay = afLoanRepaymentService.canRepay(activePeriod);
-		
-		if(bo.canRepay) {
-			bo.curPeriodId = activePeriod.getRid();
-			bo.curPeriodAmount = activePeriod.getAmount();
-			bo.curPeriodRestAmount = afLoanPeriodsService.calcuRestAmount(activePeriod);
-			bo.curPeriodGmtPlanRepay = activePeriod.getGmtPlanRepay();
-			bo.curPeriodStatus = activePeriod.getStatus();
-			if(activePeriod.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
-				bo.isOverdue = true;
-			}else {
-				bo.isOverdue = false;
-			}
-		}else {
-			bo.curPeriodRestAmount = BigDecimal.ZERO;
-			bo.curPeriodStatus = AfLoanPeriodStatus.FINISHED.name();
-		}
+    	List<AfLoanPeriodsDo> ps = afLoanPeriodsDao.listCanRepayPeriods(lastLoanDo.getRid());
+    	boolean isOverdue = false;
+    	String periodIds = new String("");
+    	BigDecimal restAmount = BigDecimal.ZERO;
+    	BigDecimal periodsOverdueAmount = BigDecimal.ZERO;
+    	Date lastGmtPlanRepay = null;
+    	String periodsStatus = AfLoanPeriodStatus.FINISHED.name();
+    	if(ps.size() > 0) {
+    		for(AfLoanPeriodsDo p : ps) {
+        		periodIds += p.getRid() + ",";
+        		restAmount = restAmount.add(afLoanPeriodsService.calcuRestAmount(p));
+        		
+        		if(YesNoStatus.YES.getCode().equals(p.getOverdueStatus())) {
+        			isOverdue = true;
+        			periodsOverdueAmount = periodsOverdueAmount.add(p.getOverdueAmount());
+        		}
+        		periodsStatus = AfLoanPeriodStatus.AWAIT_REPAY.name();
+        	}
+    		periodIds = periodIds.substring(0, periodIds.length()-1);
+    		lastGmtPlanRepay = ps.get(ps.size()-1).getGmtPlanRepay();
+    	}
+    	
+    	// 查询是否有处理中的还款
+    	AfLoanRepaymentDo repayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
+    	if(repayment != null) {
+    		periodsStatus = AfLoanPeriodStatus.REPAYING.name();
+    	}
+    	
+    	bo.isOverdue = isOverdue;
+    	bo.periodIds = periodIds;
+    	bo.periodsRestAmount = restAmount;
+    	bo.periodsOverdueAmount = periodsOverdueAmount;
+    	bo.periodsLastGmtPlanRepay = lastGmtPlanRepay;
+    	bo.periodsStatus = periodsStatus;
 		
 	}
 	/**
@@ -503,7 +519,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		//检查强风控
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if(RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
+		if(afUserAuthDo == null || RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
