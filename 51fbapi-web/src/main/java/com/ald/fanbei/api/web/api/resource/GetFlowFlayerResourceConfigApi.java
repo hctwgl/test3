@@ -24,11 +24,10 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @Package com.ald.fanbei.api.web.api.resource
  * @Description: TODO(用一句话描述该文件做什么)
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
- * @author qiao
  * @date 2018年2月10日 下午4:34:33
  * @version V1.0  
  */
-@Component("GetFlowFlayerResourceConfigApi")
+@Component("getFlowFlayerResourceConfigApi")
 public class GetFlowFlayerResourceConfigApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
