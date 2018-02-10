@@ -150,12 +150,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.name = name;
 		
 		// 根据 还款金额  更新期数信息
-		List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-		bo.loanPeriodsIds.clear();
-		bo.loanPeriodsDoList.clear();
-		for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-			bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-			bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+		if(!bo.isAllRepay) {	// 非提前结清
+			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			bo.loanPeriodsIds.clear();
+			bo.loanPeriodsDoList.clear();
+			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+			}
 		}
 		
 		// 增加还款记录

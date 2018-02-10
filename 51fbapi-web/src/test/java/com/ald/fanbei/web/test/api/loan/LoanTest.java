@@ -109,18 +109,18 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void allRepayDo() {
 		String url = urlBase + "/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 501+"");
+		params.put("repaymentAmount", 675.41+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464412");
-		params.put("actualAmount", 501+"");
-		params.put("loanId", 15+"");
+		params.put("cardId", "3111464125");
+		params.put("actualAmount", 675.41+"");
+		params.put("loanId", 18+"");
 		
 		testApi(url, params, userName, true);
 	}
