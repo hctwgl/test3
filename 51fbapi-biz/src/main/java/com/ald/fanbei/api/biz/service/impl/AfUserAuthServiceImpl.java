@@ -51,6 +51,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	AfUserAuthStatusService afUserAuthStatusService;
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	@Resource
+	AfAuthRaiseStatusService afAuthRaiseStatusService;
 
 	@Override
 	public int addUserAuth(AfUserAuthDo afUserAuthDo) {
@@ -330,13 +332,28 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("chsiStatus", authDo.getChsiStatus());
 		data.put("zhengxinStatus", authDo.getZhengxinStatus());
 		data.put("onlinebankStatus", authDo.getOnlinebankStatus());
-		
+		if(scene.equals(UserAccountSceneType.CASH.getCode())){
+			AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,
+					UserAccountSceneType.BLD_LOAN.getCode());
+			data.put("bldRiskStatus",afUserAuthStatusDo == null ? "N" : afUserAuthStatusDo.getStatus());
+			AfAuthRaiseStatusDo afAuthRaiseStatusDo = new AfAuthRaiseStatusDo();
+			afAuthRaiseStatusDo.setUserId(userDto.getUserId());
+			List<AfAuthRaiseStatusDo> listRaiseStatus = afAuthRaiseStatusService.getListByCommonCondition(afAuthRaiseStatusDo);
+			AfResourceDo authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY");
+			setAuthRaiseStatus(listRaiseStatus,authDay,data,authDo);
+			//白领贷强风控是否通过
+			if(data.get("bldRiskStatus").equals("Y")){
+				AfResourceDo dialogShow = afResourceService.getSingleResourceBytype("ONLINEBANK_DIALOG_SHOW");
+				data.put("onlinebankDialogShow", dialogShow == null ? "N" : dialogShow.getValue());
+			}
+		}
+
+		// 添加是否已发起过网银认证，来区分对应状态是初始化还是之前认证失败
 		if (authDo.getGmtOnlinebank() != null) {
 			data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
 		} else {
 			data.put("gmtOnlinebankExist", YesNoStatus.NO.getCode());
 		}
-		
 		// 添加是否已发起过公积金认证，来区分对应状态是初始化还是之前认证失败
 		if (authDo.getGmtFund() != null) {
 			data.put("gmtFundExist", YesNoStatus.YES.getCode());
@@ -497,5 +514,141 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			return true;
 		}
 		return false;
+	}
+
+	private Map<String, Object> getAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus,AfResourceDo authDay,String scene,String auth_type){
+		Map<String, Object> data = new HashMap<String, Object>();
+		for (AfAuthRaiseStatusDo afAuthRaiseStatusDo :listRaiseStatus) {
+			if(afAuthRaiseStatusDo.getPrdType().equals(scene)&&afAuthRaiseStatusDo.getAuthType().equals(auth_type)&& !afAuthRaiseStatusDo.getRaiseStatus().equals("Y")){
+				data.put("status","F");
+				Integer day = 0;
+				JSONArray jsonArray = JSON.parseArray(authDay.getValue());
+				for (int i = 0; i < jsonArray.size(); i++) {
+					JSONObject obj = jsonArray.getJSONObject(i);
+					day = obj.getInteger(auth_type) == null ? 0 : obj.getInteger(auth_type);
+				}
+				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afAuthRaiseStatusDo.getGmtFinish()), day);
+				long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())),
+						afterTenDay);
+				if (between > 1) {
+					data.put("title","请" + between + "天后重新认证");
+				}else if (between == 1) {
+					data.put("title","明天可以重新认证");
+				}
+				else {
+					data.put("title","");
+				}
+			}
+		}
+		return data;
+	}
+
+	private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus,AfResourceDo authDay,Map<String, Object> data, AfUserAuthDo authDo){
+		Map<String, Object> supplementAuth = new HashMap<String, Object>();
+		if(authDo.getFundStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.FUND.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("fundStatus", supplementAuth.get("status"));
+				data.put("fundTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.FUND.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("fundStatus", supplementAuth.get("status"));
+					data.put("fundTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getJinpoStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.INSURANCE.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("socialSecurityStatus", supplementAuth.get("status"));
+				data.put("socialSecurityTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.INSURANCE.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("socialSecurityStatus", supplementAuth.get("status"));
+					data.put("socialSecurityTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getCreditStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.CARDEMAIL.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("creditStatus", supplementAuth.get("status"));
+				data.put("creditTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.CARDEMAIL.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("creditStatus", supplementAuth.get("status"));
+					data.put("creditTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getAlipayStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.ALIPAY.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("alipayStatus", supplementAuth.get("status"));
+				data.put("alipayTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.ALIPAY.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("alipayStatus", supplementAuth.get("status"));
+					data.put("alipayTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getChsiStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.CHSI.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("chsiStatus", supplementAuth.get("status"));
+				data.put("chsiTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.CHSI.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("chsiStatus", supplementAuth.get("status"));
+					data.put("chsiTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getZhengxinStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.ZHENGXIN.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("zhengxinStatus", supplementAuth.get("status"));
+				data.put("zhengxinTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.ZHENGXIN.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("zhengxinStatus", supplementAuth.get("status"));
+					data.put("zhengxinTitle", supplementAuth.get("title"));
+				}
+			}
+		}
+		if(authDo.getOnlinebankStatus().equals("Y")){
+			supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.CASH.getCode(),AuthType.BANK.getCode());
+			if(supplementAuth.get("status") != null){
+				data.put("onlinebankStatus", supplementAuth.get("status"));
+				data.put("onlinebankTitle", supplementAuth.get("title"));
+			}
+			//如果白领贷强风控通过判断是否提额
+			if(data.get("bldRiskStatus").equals("Y")){
+				supplementAuth = getAuthRaiseStatus(listRaiseStatus,authDay,UserAccountSceneType.BLD_LOAN.getCode(),AuthType.BANK.getCode());
+				if(supplementAuth.get("status") != null){
+					data.put("onlinebankStatus", supplementAuth.get("status"));
+					data.put("onlinebankTitle", supplementAuth.get("title"));
+				}
+			}
+		}
 	}
 }

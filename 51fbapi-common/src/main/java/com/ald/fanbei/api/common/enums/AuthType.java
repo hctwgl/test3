@@ -13,7 +13,8 @@ public enum AuthType {
 	INSURANCE("insurance","社保"),
 	ZHENGXIN("zhengxin","人行征信"),
 	BANK("bank","网银"),
-	CARDEMAIL("cardEmail","信用卡邮箱");
+	CARDEMAIL("cardEmail","信用卡邮箱"),
+	CHSI("chsi","学信");
     private String code;
     private String name;
     
