@@ -8,27 +8,36 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Component("getWhiteLoanProtocolParam")
-public class getWhiteLoanProtocolParam {
+public class GetWhiteLoanProtocolParam {
 	@NotNull
 	@DecimalMin("0")
-	public BigDecimal repaymentAmount;
-	
+	public BigDecimal amount;
+
+	@NotNull
+	public String loanRemark;
+
+	@NotNull
+	public String repayRemark;
+
 	@NotNull
 	@DecimalMin("0")
-	public BigDecimal actualAmount = BigDecimal.ZERO;
-	
+	public BigDecimal interestRate;
+
+	@NotNull
 	@DecimalMin("0")
-	public BigDecimal rebateAmount = BigDecimal.ZERO;
-	
+	public BigDecimal serviceRate;
+
 	@NotNull
-	public String payPwd;
-	
-	@NotNull
-	public Long cardId;
+	@DecimalMin("0")
+	public BigDecimal overdueRate;
 	
 	@Min(value=0)
-	public Long couponId;
+	public Integer nper;
 	
 	@Min(value=0)
 	public Long loanId;
+
+	@NotNull
+	@DecimalMin("0")
+	public BigDecimal totalServiceFee;
 }
