@@ -253,4 +253,6 @@ public interface AfResourceService {
 	 * @return
 	 */
 	List<Object> getLoanHomeListByType();
+
+	List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType);
 }

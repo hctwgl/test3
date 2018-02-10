@@ -766,4 +766,10 @@ public class AfResourceServiceImpl implements AfResourceService {
         return list;
     }
 
+	@Override
+	public List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType) {
+		
+		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
+	}
+
 }
