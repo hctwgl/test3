@@ -1,12 +1,16 @@
 package com.ald.fanbei.api.biz.bo;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class RiskQuotaRespBo extends RiskRespBo {
+public class RiskQuotaRespBo extends RiskRespBo implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private String code;
 
-	private Data data;
+	private Data data = new Data();
 
 	private String msg;
 
@@ -34,8 +38,9 @@ public class RiskQuotaRespBo extends RiskRespBo {
 		this.msg = msg;
 	}
 
-	public static class Data {
+	public static class Data implements Serializable{
 		
+		private static final long serialVersionUID = 1L;
 		private String consumerNo;
 		private Result[] results;
 		private String amount;
@@ -82,7 +87,7 @@ public class RiskQuotaRespBo extends RiskRespBo {
 		}
 	}
 	
-	public static class Result {
+	public static class Result implements Serializable{
 		private String scene ;
 		private String result;
 		public String getScene() {

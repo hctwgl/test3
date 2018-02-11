@@ -81,7 +81,7 @@ public class BankAuthCallbackExecutor implements Executor {
 
 					afUserAccountSenceService.updateById(bldAccountSenceDo);
 					afUserAccountSenceService.updateById(totalAccountSenceDo);
-
+					
 					AfAuthRaiseStatusDo raiseStatusDo = buildAuthRaiseStatusDo(userId, AuthType.BANK.getCode(),
 							LoanType.BLD_LOAN.getCode(), "Y");
 					// 提额成功，记录提额状态
