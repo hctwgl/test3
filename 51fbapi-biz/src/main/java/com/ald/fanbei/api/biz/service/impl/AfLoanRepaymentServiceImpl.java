@@ -628,6 +628,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 */
 	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
 		
+		// 本期需还金额
 		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
 		if(repayAmount.compareTo(loanPeriodsDo.getAmount()) >= 0){
@@ -638,11 +639,13 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		
+		// 所有需还金额
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
 				loanPeriodsDo.getOverdueAmount(), loanPeriodsDo.getRepaidOverdueAmount(),
 				loanPeriodsDo.getInterestFee(), loanPeriodsDo.getRepaidInterestFee(),
 				loanPeriodsDo.getServiceFee(), loanPeriodsDo.getRepaidServiceFee());
 		
+		// 所有已还金额
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
@@ -764,7 +767,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             obj.put("overdueAmount", LoanRepayDealBo.sumOverdueAmount);
             obj.put("overdueDay", LoanRepayDealBo.overdueDay);
             details.add(obj);
-            riskUtil.transferBorrowInfo(LoanRepayDealBo.userId.toString(), "50", riskOrderNo, details);
+            riskUtil.transferBorrowInfo(LoanRepayDealBo.userId.toString(), "23", riskOrderNo, details);
         } catch (Exception e) {
             logger.error("还款时给风控传输数据出错", e);
         }
@@ -778,10 +781,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                     overdueCount = 1;
                 }
                 riskUtil.raiseQuota(LoanRepayDealBo.userId.toString(), 
-                			LoanRepayDealBo.loanNo, "50", riskOrderNo, 
+                			LoanRepayDealBo.loanNo, "23", riskOrderNo, 
                 			LoanRepayDealBo.sumLoanAmount,
                 			LoanRepayDealBo.sumIncome, 
-                			LoanRepayDealBo.overdueDay, overdueCount, LoanRepayDealBo.overdueDay, overdueCount);
+                			LoanRepayDealBo.overdueDay, overdueCount, LoanRepayDealBo.overdueDay, LoanRepayDealBo.loanDo.getPeriods());
             }
         } catch (Exception e) {
             logger.error("notifyRisk.raiseQuota error！", e);
