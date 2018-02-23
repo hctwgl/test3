@@ -468,4 +468,9 @@ public class Constants {
 	//快递鸟配置
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
+	
+	//轮播图
+	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
 }
+
+

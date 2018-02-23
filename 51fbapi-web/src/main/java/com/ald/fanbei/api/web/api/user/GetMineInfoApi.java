@@ -9,9 +9,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
+
+
+
 
 
 
@@ -127,10 +131,49 @@ public class GetMineInfoApi implements ApiHandle {
 		if (!navigationInfo.isEmpty()) {
 				data.put("navigationInfo", navigationInfo);
 		}
-		
+		List<Object> bannerList = addBannerList(requestDataVo);
+		data.put("bannerList", bannerList);
 		resp.setResponseData(data);
 		return resp;
 	}
+	private List<Object> addBannerList(RequestDataVo requestDataVo){
+	 //String resourceType =  ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
+	 String resourceType =  Constants.PERSONAL_CENTER_BANNER;
+	 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	 logger.info("getDrainageBannerListApi and type = {}", type);
+	 List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
+	//线上为开启状态
+	 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+	 bannerList1 = afResourceService
+			.getResourceHomeListByTypeOrderBy(resourceType);
+	 }
+	 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+	//预发不区分状态
+	 bannerList1 =  afResourceService
+			.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+	 }
+	logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
+	List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
+	//resp.addResponseData("bannerList", bannerList);
+	return bannerList;
+}
+private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+	List<Object> bannerList = new ArrayList<Object>();
+	
+	for (AfResourceDo afResourceDo : bannerResclist) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("imageUrl", afResourceDo.getValue());
+	data.put("titleName", afResourceDo.getName());
+	data.put("type", afResourceDo.getValue1());
+	data.put("content", afResourceDo.getValue2());
+	data.put("sort", afResourceDo.getSort());
+	
+	bannerList.add(data);
+	
+	}
+	return bannerList;
+	}
+
 	
 	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist) {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
