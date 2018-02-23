@@ -518,7 +518,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	private Map<String, Object> getAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus,AfResourceDo authDay,String scene,String auth_type){
 		Map<String, Object> data = new HashMap<String, Object>();
+		boolean isExist = false;
 		for (AfAuthRaiseStatusDo afAuthRaiseStatusDo :listRaiseStatus) {
+			if(afAuthRaiseStatusDo.getPrdType().equals(scene)&&afAuthRaiseStatusDo.getAuthType().equals(auth_type)){
+				isExist = true;
+			}
 			if(afAuthRaiseStatusDo.getPrdType().equals(scene)&&afAuthRaiseStatusDo.getAuthType().equals(auth_type)&& !afAuthRaiseStatusDo.getRaiseStatus().equals("Y")){
 				data.put("status","F");
 				Integer day = 0;
@@ -539,6 +543,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 					data.put("title","");
 				}
 			}
+		}
+		if(!isExist && scene.equals(UserAccountSceneType.BLD_LOAN.getCode())){
+			data.put("status","F");
+			data.put("title","");
 		}
 		return data;
 	}
