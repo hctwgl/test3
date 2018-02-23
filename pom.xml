@@ -14,7 +14,7 @@
 		<spring-version>4.2.1.RELEASE</spring-version>
 		<springext-plugin-version>1.0</springext-plugin-version>
 		<jackson-version>1.9.9</jackson-version>
-		<jetty-version>8.1.8.v20121106</jetty-version>
+		<jetty-version>9.2.21.v20170120</jetty-version>
 		<autoconfig.plugin.version>1.0.10</autoconfig.plugin.version>
 		<project.build.sourceEncoding>
 			${java.encoding}
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.4</version>
+			<version>1.2.44</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -341,6 +341,12 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.8.9</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock</artifactId>
+			<version>2.14.0</version>
+		</dependency>
+
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>

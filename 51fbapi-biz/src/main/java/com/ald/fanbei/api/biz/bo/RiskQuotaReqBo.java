@@ -28,6 +28,7 @@ public class RiskQuotaReqBo extends HashMap<String, String>{
 	}
 	public void setDetails(String details) {
 		this.details = details;
+		this.put("details", details);
 	}
 	public String getSignInfo() {
 		return signInfo;

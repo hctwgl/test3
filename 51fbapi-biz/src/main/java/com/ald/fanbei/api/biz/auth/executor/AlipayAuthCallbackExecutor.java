@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RaiseStatus;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
+import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
@@ -83,16 +84,29 @@ public class AlipayAuthCallbackExecutor implements Executor {
 						new String[] { RiskScene.ALIPAY_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 				// 提额成功
 				if (respBo != null && respBo.isSuccess()) {
-					String amount = respBo.getData().getAmount();
-					String totalAmount = respBo.getData().getTotalAmount();
-					// 更新小贷额度
-					AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-					afUserAccountDo.setUserId(userId);
-					afUserAccountDo.setAuAmount(new BigDecimal(amount));
-					afUserAccountService.updateUserAccount(afUserAccountDo);
-					// 更新总额度
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					String raiseStatus = respBo.getData().getResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String amount = respBo.getData().getAmount();
+						String totalAmount = respBo.getData().getTotalAmount();
+						// 更新小贷额度
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(new BigDecimal(amount));
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+						// 更新总额度
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+								LoanType.CASH.getCode(), "F",BigDecimal.ZERO,new Date());
+						// 提额失败，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
 				}
 
 			} else if (StringUtils.equals("N", basicStatus)) {
@@ -100,16 +114,29 @@ public class AlipayAuthCallbackExecutor implements Executor {
 						new String[] { RiskScene.ALIPAY_XJD_UNPASS.getCode() }, RiskSceneType.XJD.getCode());
 				// 提额成功
 				if (respBo != null && respBo.isSuccess()) {
-					String amount = respBo.getData().getAmount();
-					String totalAmount = respBo.getData().getTotalAmount();
-					// 更新小贷额度
-					AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-					afUserAccountDo.setUserId(userId);
-					afUserAccountDo.setAuAmount(new BigDecimal(amount));
-					afUserAccountService.updateUserAccount(afUserAccountDo);
-					// 更新总额度
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					String raiseStatus = respBo.getData().getResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String amount = respBo.getData().getAmount();
+						String totalAmount = respBo.getData().getTotalAmount();
+						// 更新小贷额度
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(new BigDecimal(amount));
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+						// 更新总额度
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+								LoanType.CASH.getCode(), "F",BigDecimal.ZERO,new Date());
+						// 提额失败，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
 				}
 			}
 			// 获取白领贷强风控状态
@@ -123,20 +150,29 @@ public class AlipayAuthCallbackExecutor implements Executor {
 							new String[] { RiskScene.ALIPAY_BLD.getCode() }, RiskSceneType.BLD.getCode());
 					// 提额成功
 					if (respBo != null && respBo.isSuccess()) {
-						String bldAmount = respBo.getData().getBldAmount();
-						String totalAmount = respBo.getData().getTotalAmount();
-						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
-								bldAmount);
-						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						// 获取提额结果
+						String raiseStatus = respBo.getData().getResults()[0].getResult();
+						if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+							String bldAmount = respBo.getData().getBldAmount();
+							String totalAmount = respBo.getData().getTotalAmount();
+							AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
+									bldAmount);
+							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 
-						afUserAccountSenceService.updateById(bldAccountSenceDo);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
+							afUserAccountSenceService.updateById(bldAccountSenceDo);
+							afUserAccountSenceService.updateById(totalAccountSenceDo);
 
-						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId,
-								AuthType.ALIPAY.getCode(), LoanType.BLD_LOAN.getCode(), "Y", BigDecimal.ZERO,
-								new Date());
-						// 提额成功，记录提额状态
-						afAuthRaiseStatusService.saveRecord(raiseStatusDo);
+							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+									LoanType.BLD_LOAN.getCode(), "Y",new BigDecimal(bldAmount),new Date());
+							// 提额成功，记录提额状态
+							afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						} else {
+							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
+									LoanType.BLD_LOAN.getCode(), "F",BigDecimal.ZERO,new Date());
+							// 提额成功，记录提额状态
+							afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						}
+						
 					}
 				} catch (Exception e) {
 					logger.error("raise amount fail =>{}", e.getMessage());

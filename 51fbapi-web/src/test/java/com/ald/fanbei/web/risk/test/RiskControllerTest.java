@@ -14,7 +14,6 @@ import com.google.common.collect.Maps;
 
 public class RiskControllerTest extends RiskBaseTest{
 
-
 	@Test
 	public void mockServerSupplementAuth() {
 		String url = "/third/risk/supplementAuth.htm";
@@ -27,20 +26,22 @@ public class RiskControllerTest extends RiskBaseTest{
 				.respond(response().withStatusCode(200));
 	}
 
+	
+	
 	@Test
 	public void testSupplementAuth() throws ClientProtocolException, IOException {
 
 		String uri = "/third/risk/supplementAuth.htm";
-		
 		String code = "0000";
 		String msg = "success";
 		Map<String,Object> dataMap = Maps.newHashMap();
 		dataMap.put("orderNo", "12342134");
-		dataMap.put("consumerNo", "232432");
+		dataMap.put("consumerNo", "18637962789");
 		dataMap.put("authItem", "fund");
 		dataMap.put("result", "10");
 		submitRequest(uri, code, msg, dataMap);
 	}
+	
 	
 	
 	
