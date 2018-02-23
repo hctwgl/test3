@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,6 +59,7 @@ import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
@@ -90,7 +92,9 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -99,6 +103,7 @@ import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.SupplyCertifyStatus;
@@ -112,7 +117,6 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -126,6 +130,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -246,7 +251,7 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfUserAccountSenceDao afUserAccountSenceDao;
 
-	@Autowired
+	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
@@ -254,9 +259,12 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AuthCallbackManager authCallbackManager;
 
+	@Resource
+	AfAuthRaiseStatusService afAuthRaiseStatusService;
+
 	private static String getUrl() {
 		if (url == null) {
-			//url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+			// url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			url = "http://ctestarc.51fanbei.com";
 			return url;
 		}
@@ -1491,106 +1499,74 @@ public class RiskUtil extends AbstractThird {
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
 			logger.info("asyDredgeWhiteCollarLoan reqBo.getSignInfo()" + reqBo.getSignInfo());
 			JSONObject obj = JSON.parseObject(data);
-			String limitAmount = obj.getString("amount");
-			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-				limitAmount = "0";
-			BigDecimal au_amount = new BigDecimal(limitAmount);
+			String whiteCollarAmount = obj.getString("whiteCollarAmount");
+			if (StringUtil.equals(whiteCollarAmount, "") || whiteCollarAmount == null) {
+				whiteCollarAmount = "0";
+			}
+			String totalAmount = obj.getString("totalAmount");
 
-			limitAmount = obj.getString("onlineAmount");
-			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-				limitAmount = "0";
-			BigDecimal onlineAmount = new BigDecimal(limitAmount);
-			limitAmount = obj.getString("offlineAmount");
-			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-				limitAmount = "0";
-			BigDecimal offlineAmount = new BigDecimal(limitAmount);
-
+			if (StringUtil.equals(totalAmount, "") || totalAmount == null) {
+				totalAmount = "0";
+			}
 			Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
 			String result = obj.getString("result");
-			String orderNo = obj.getString("orderNo");
 			String scene = obj.getString("scene");
-
-			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
-			// 风控异步回调的话，以第一次异步回调成功为准
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
 			if (StringUtils.equals("10", result)) {
-				if (SceneType.CASH.getCode().equals(scene)) {
-					if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())
-							&& !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode())
-							|| orderNo.contains("sdrz")) {
-						AfUserAuthDo authDo = new AfUserAuthDo();
-						authDo.setUserId(consumerNo);
-						authDo.setRiskStatus(RiskStatus.YES.getCode());
-						authDo.setBasicStatus(RiskStatus.YES.getCode());
-						authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-						authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-						afUserAuthService.updateUserAuth(authDo);
-						updateUserScenceAmount(userAccountDo, consumerNo, au_amount, new BigDecimal(0),
-								new BigDecimal(0));
-					}
-				} else if (SceneType.ONLINE.getCode().equals(scene)) {
-					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-					afUserAuthStatusDo.setGmtModified(new Date());
-					afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-					afUserAuthStatusDo.setUserId(consumerNo);
-					afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
-					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-					updateUserScenceAmount(userAccountDo, consumerNo, new BigDecimal(0), onlineAmount,
-							new BigDecimal(0));
-				} else if (SceneType.TRAIN.getCode().equals(scene)) {
-					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-					afUserAuthStatusDo.setGmtModified(new Date());
-					afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-					afUserAuthStatusDo.setUserId(consumerNo);
-					afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
-					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-					updateUserScenceAmount(userAccountDo, consumerNo, new BigDecimal(0), new BigDecimal(0),
-							offlineAmount);
-				}
+				AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+				afUserAuthStatusDo.setGmtCreate(new Date());
+				afUserAuthStatusDo.setGmtModified(new Date());
+				afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
+				afUserAuthStatusDo.setUserId(consumerNo);
+				afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
+				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+				// 更新白领贷额度和总额度
+				AfUserAccountSenceDo bldAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
+						LoanType.BLD_LOAN.getCode(), whiteCollarAmount);
+				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
+						"LOAN_TOTAL", totalAmount);
+				afUserAccountSenceService.updateById(bldAccountSenceDo);
+				afUserAccountSenceService.updateById(totalAccountSenceDo);
+
+				// 处理已认证，未提额的补充认证
+				processAuthedNotRaiseAuth(consumerNo);
 
 				jpushService.strongRiskSuccess(userAccountDo.getUserName());
 				smsUtil.sendRiskSuccess(userAccountDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
-				if (SceneType.CASH.getCode().equals(scene)) {
-					AfUserAuthDo authDo = new AfUserAuthDo();
-					authDo.setUserId(consumerNo);
-					if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-						authDo.setRiskStatus(RiskStatus.NO.getCode());
-					}
-					authDo.setBasicStatus("N");
-					authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-					authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-					afUserAuthService.updateUserAuth(authDo);
-
-					/*
-					 * 如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
-					 * 否则把用户的额度设置成分控返回的额度
-					 */
-					// 这里修改逻辑永远以风控为准
-					if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-						AfUserAccountDo accountDo = new AfUserAccountDo();
-						accountDo.setUserId(consumerNo);
-						accountDo.setAuAmount(au_amount);
-						afUserAccountService.updateUserAccount(accountDo);
-					} else {
-						AfUserAccountDo accountDo = new AfUserAccountDo();
-						accountDo.setUserId(consumerNo);
-						accountDo.setAuAmount(au_amount);
-						afUserAccountService.updateUserAccount(accountDo);
-					}
-				} else if (SceneType.ONLINE.getCode().equals(scene) || SceneType.TRAIN.getCode().equals(scene)) {
-					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-					afUserAuthStatusDo.setGmtModified(new Date());
-					afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-					afUserAuthStatusDo.setUserId(consumerNo);
-					afUserAuthStatusDo.setStatus(UserAuthSceneStatus.FAILED.getCode());
-					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-				}
 				jpushService.strongRiskFail(userAccountDo.getUserName());
 				smsUtil.sendRiskFail(userAccountDo.getUserName());
 			}
 		}
 		return 0;
+	}
+
+	private void processAuthedNotRaiseAuth(Long userId) {
+		AfUserAuthDo userAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		Map<String, String> authInfoMap = Maps.newHashMap();
+		authInfoMap.put(AuthType.ALIPAY.getCode(), userAuthInfo.getAlipayStatus());
+		authInfoMap.put(AuthType.CARDEMAIL.getCode(), userAuthInfo.getCreditStatus());
+		authInfoMap.put(AuthType.ZHENGXIN.getCode(), userAuthInfo.getZhengxinStatus());
+		authInfoMap.put(AuthType.BANK.getCode(), userAuthInfo.getOnlinebankStatus());
+		authInfoMap.put(AuthType.FUND.getCode(), userAuthInfo.getFundStatus());
+		authInfoMap.put(AuthType.INSURANCE.getCode(), userAuthInfo.getJinpoStatus());
+		for (Map.Entry<String, String> entry : authInfoMap.entrySet()) {
+			String authType = entry.getKey();
+			String authStatus = entry.getValue();
+			if (StringUtils.equals(authStatus, "Y")) {
+				AfAuthRaiseStatusDo authRaiseStatusDo = new AfAuthRaiseStatusDo();
+				authRaiseStatusDo.setAuthType(authType);
+				authRaiseStatusDo.setPrdType(LoanType.BLD_LOAN.getCode());
+				authRaiseStatusDo.setUserId(userId);
+				authRaiseStatusDo = afAuthRaiseStatusService.getByCommonCondition(authRaiseStatusDo);
+				if(authRaiseStatusDo == null || !StringUtils.equals("Y", authRaiseStatusDo.getRaiseStatus())) {
+					AuthCallbackBo authCallbackBo = new AuthCallbackBo("", ObjectUtils.toString(userId), authType,
+							RiskAuthStatus.SUCCESS.getCode());
+					authCallbackManager.execute(authCallbackBo);
+				}
+			}
+		}
+
 	}
 
 	private void updateUserScenceAmount(AfUserAccountDo userAccountDo, Long consumerNo, BigDecimal au_amount,
@@ -1600,8 +1576,6 @@ public class RiskUtil extends AbstractThird {
 		 * 如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度
 		 */
 		if (au_amount.compareTo(new BigDecimal(0)) > 0) {
-			// if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0
-			// || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
 			AfUserAccountDo accountDo = new AfUserAccountDo();
 			accountDo.setUserId(consumerNo);
 			accountDo.setAuAmount(au_amount);
@@ -3481,7 +3455,7 @@ public class RiskUtil extends AbstractThird {
 	public RiskQuotaRespBo userSupplementQuota(String consumerNo, String[] scenes, String sceneType) {
 		RiskQuotaReqBo reqBo = new RiskQuotaReqBo();
 		reqBo.setConsumerNo(consumerNo);
-		Map<String,Object> detailsMap = Maps.newHashMap();
+		Map<String, Object> detailsMap = Maps.newHashMap();
 		detailsMap.put("sceneType", sceneType);
 		detailsMap.put("scenes", scenes);
 		String details = JSONObject.toJSONString(detailsMap);
