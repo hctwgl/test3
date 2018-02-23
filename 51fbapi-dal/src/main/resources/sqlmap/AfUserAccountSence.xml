@@ -164,7 +164,7 @@
 		AND c.order_type <> 'TRADE' AND a.`user_id` = #{userId}
 		GROUP BY a.`user_id`) t
 		on s.user_id = t.user_id
-		set s.used_amount = IFNULL(t.principle_amount,0),
+		set s.used_amount = s.used_amount + IFNULL(t.principle_amount,0),
 		s.gmt_modified = NOW()
 		where s.scene = 'ONLINE' AND s.`user_id` = #{userId};
     </update>
