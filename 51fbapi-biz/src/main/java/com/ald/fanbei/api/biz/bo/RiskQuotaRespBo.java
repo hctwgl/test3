@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class RiskQuotaRespBo extends RiskRespBo implements Serializable{
+public class RiskQuotaRespBo  implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
 	private String code;
 
-	private Data data = new Data();
+	private Data data;
 
 	private String msg;
 
@@ -88,6 +88,8 @@ public class RiskQuotaRespBo extends RiskRespBo implements Serializable{
 	}
 	
 	public static class Result implements Serializable{
+		
+		private static final long serialVersionUID = 1L;
 		private String scene ;
 		private String result;
 		public String getScene() {

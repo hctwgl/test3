@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.auth.executor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
+import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
@@ -78,16 +80,30 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 						new String[] { RiskScene.INSURANCE_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 				// 提额成功
 				if (respBo != null && respBo.isSuccess()) {
-					String amount = respBo.getData().getAmount();
-					String totalAmount = respBo.getData().getTotalAmount();
-					// 更新小贷额度
-					AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-					afUserAccountDo.setUserId(userId);
-					afUserAccountDo.setAuAmount(new BigDecimal(amount));
-					afUserAccountService.updateUserAccount(afUserAccountDo);
-					// 更新总额度
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					// 获取提额结果
+					String raiseStatus = respBo.getData().getResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String amount = respBo.getData().getAmount();
+						String totalAmount = respBo.getData().getTotalAmount();
+						// 更新小贷额度
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(new BigDecimal(amount));
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+						// 更新总额度
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+								LoanType.CASH.getCode(), "F", BigDecimal.ZERO,new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
+					
 				}
 				
 			} else if (StringUtils.equals("N", basicStatus)) {
@@ -95,16 +111,28 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 						new String[] { RiskScene.INSURANCE_XJD_UNPASS.getCode() }, RiskSceneType.XJD.getCode());
 				// 提额成功
 				if (respBo != null && respBo.isSuccess()) {
-					String amount = respBo.getData().getAmount();
-					String totalAmount = respBo.getData().getTotalAmount();
-					// 更新小贷额度
-					AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-					afUserAccountDo.setUserId(userId);
-					afUserAccountDo.setAuAmount(new BigDecimal(amount));
-					afUserAccountService.updateUserAccount(afUserAccountDo);
-					// 更新总额度
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					String raiseStatus = respBo.getData().getResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String amount = respBo.getData().getAmount();
+						String totalAmount = respBo.getData().getTotalAmount();
+						// 更新小贷额度
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(new BigDecimal(amount));
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+						// 更新总额度
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+								LoanType.CASH.getCode(), "F", BigDecimal.ZERO,new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
 				}
 			}
 			// 获取白领贷强风控状态
@@ -118,19 +146,27 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 							new String[] { RiskScene.INSURANCE_BLD.getCode() }, RiskSceneType.BLD.getCode());
 					// 提额成功
 					if (respBo != null && respBo.isSuccess()) {
-						String bldAmount = respBo.getData().getBldAmount();
-						String totalAmount = respBo.getData().getTotalAmount();
-						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
-								bldAmount);
-						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						String raiseStatus = respBo.getData().getResults()[0].getResult();
+						if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+							String bldAmount = respBo.getData().getBldAmount();
+							String totalAmount = respBo.getData().getTotalAmount();
+							AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
+									bldAmount);
+							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 
-						afUserAccountSenceService.updateById(bldAccountSenceDo);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
-
-						AfAuthRaiseStatusDo raiseStatusDo = buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
-								LoanType.BLD_LOAN.getCode(), "Y");
-						// 提额成功，记录提额状态
-						afAuthRaiseStatusService.saveRecord(raiseStatusDo);
+							afUserAccountSenceService.updateById(bldAccountSenceDo);
+							afUserAccountSenceService.updateById(totalAccountSenceDo);
+							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+									LoanType.BLD_LOAN.getCode(), "Y",new BigDecimal(bldAmount),new Date());
+							// 提额成功，记录提额状态
+							afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						} else {
+							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
+									LoanType.BLD_LOAN.getCode(), "F",BigDecimal.ZERO,new Date());
+							// 提额成功，记录提额状态
+							afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+						}
+						
 					}
 				} catch (Exception e) {
 					logger.error("raise amount fail =>{}", e.getMessage());

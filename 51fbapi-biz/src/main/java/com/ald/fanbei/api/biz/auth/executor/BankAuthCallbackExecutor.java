@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.auth.executor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -18,6 +19,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
+import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
@@ -63,7 +65,7 @@ public class BankAuthCallbackExecutor implements Executor {
 			// 认证成功
 			afUserAuthDo.setOnlinebankStatus("Y");
 			afUserAuthService.updateUserAuth(afUserAuthDo);
-			// 获取白领贷强风控状态
+			// 获取白领贷强风s控状态
 			AfUserAuthStatusDo bldAuthDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,
 					LoanType.BLD_LOAN.getCode());
 
@@ -73,19 +75,23 @@ public class BankAuthCallbackExecutor implements Executor {
 						new String[] { RiskScene.BANK_BLD.getCode() }, RiskSceneType.BLD.getCode());
 				// 提额成功
 				if (respBo != null && respBo.isSuccess()) {
-					String bldAmount = respBo.getData().getBldAmount();
-					String totalAmount = respBo.getData().getTotalAmount();
-					AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
-							bldAmount);
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-
-					afUserAccountSenceService.updateById(bldAccountSenceDo);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
 					
-					AfAuthRaiseStatusDo raiseStatusDo = buildAuthRaiseStatusDo(userId, AuthType.BANK.getCode(),
-							LoanType.BLD_LOAN.getCode(), "Y");
-					// 提额成功，记录提额状态
-					afAuthRaiseStatusService.saveRecord(raiseStatusDo);
+					String raiseStatus = respBo.getData().getResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String bldAmount = respBo.getData().getBldAmount();
+						String totalAmount = respBo.getData().getTotalAmount();
+						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
+								bldAmount);
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+
+						afUserAccountSenceService.updateById(bldAccountSenceDo);
+						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.BANK.getCode(),
+								LoanType.BLD_LOAN.getCode(), "Y",BigDecimal.ZERO,new Date());
+						// 提额成功，记录提额状态
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
 				}
 			}	
 		} else {
@@ -101,16 +107,6 @@ public class BankAuthCallbackExecutor implements Executor {
 		bldAuthStatusDo.setScene(loanType);
 		bldAuthStatusDo.setAuAmount(new BigDecimal(amount));
 		return bldAuthStatusDo;
-	}
-
-	private AfAuthRaiseStatusDo buildAuthRaiseStatusDo(Long userId, String authType, String prdType,
-			String raiseStatus) {
-		AfAuthRaiseStatusDo raiseStatusDo = new AfAuthRaiseStatusDo();
-		raiseStatusDo.setAuthType(authType);
-		raiseStatusDo.setPrdType(prdType);
-		raiseStatusDo.setUserId(userId);
-		raiseStatusDo.setRaiseStatus(raiseStatus);
-		return raiseStatusDo;
 	}
 
 }

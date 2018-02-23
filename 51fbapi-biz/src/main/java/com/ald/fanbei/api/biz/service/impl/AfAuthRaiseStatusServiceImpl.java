@@ -41,7 +41,7 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 
 	@Override
 	public AfAuthRaiseStatusDo buildAuthRaiseStatusDo(Long userId, String authType, String prdType, String raiseStatus,
-			BigDecimal amount,Date gmtFinish) {
+			BigDecimal amount, Date gmtFinish) {
 		AfAuthRaiseStatusDo raiseStatusDo = new AfAuthRaiseStatusDo();
 		raiseStatusDo.setAuthType(authType);
 		raiseStatusDo.setPrdType(prdType);
@@ -54,8 +54,12 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 
 	@Override
 	public void saveOrUpdateRaiseStatus(AfAuthRaiseStatusDo raiseStatus) {
-		AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByCommonCondition(raiseStatus);
-		if(existRaiseStatusDo != null) {
+		AfAuthRaiseStatusDo delegateRaiseStatus = new AfAuthRaiseStatusDo();
+		delegateRaiseStatus.setAuthType(raiseStatus.getAuthType());
+		delegateRaiseStatus.setPrdType(raiseStatus.getPrdType());
+		delegateRaiseStatus.setUserId(raiseStatus.getUserId());
+		AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByCommonCondition(delegateRaiseStatus);
+		if (existRaiseStatusDo != null) {
 			afAuthRaiseStatusDao.updateById(raiseStatus);
 		} else {
 			afAuthRaiseStatusDao.saveRecord(raiseStatus);
@@ -63,27 +67,23 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 	}
 
 	@Override
-	public void initRaiseStatus(Long userId ,String authType) {
-		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.BLD_LOAN.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
-				new Date());
+	public void initRaiseStatus(Long userId, String authType) {
+		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
+				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
-		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.CASH.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
-				new Date());
+		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
+				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
 
 	}
 
 	@Override
 	public void initCreditRaiseStatus(Long userId, String authType) {
-		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.BLD_LOAN.getCode(), RaiseStatus.Y.getCode(), BigDecimal.ZERO,
-				new Date());
+		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
+				RaiseStatus.Y.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
-		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.CASH.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
-				new Date());
+		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
+				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
 	}
 
@@ -94,14 +94,12 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 
 	@Override
 	public void initOnlinebankRaiseStatus(Long userId, String authType) {
-		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.BLD_LOAN.getCode(), RaiseStatus.N.getCode(), BigDecimal.ZERO,
-				new Date());
+		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
+				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
-		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId,
-				authType, LoanType.CASH.getCode(), RaiseStatus.Y.getCode(), BigDecimal.ZERO,
-				new Date());
+		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
+				RaiseStatus.Y.getCode(), BigDecimal.ZERO, new Date());
 		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
-		
+
 	}
 }

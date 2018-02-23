@@ -3500,11 +3500,10 @@ public class RiskUtil extends AbstractThird {
 
 		RiskQuotaRespBo riskResp = null;
 		try {
-			//riskResp = JsonUtil.toJavaBean(reqResult, RiskQuotaRespBo.class);
-			riskResp = JSON.toJavaObject(JSON.parseObject(reqResult), RiskQuotaRespBo.class);
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
 		} catch (Exception e) {
 			e.printStackTrace();
-			//throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
 		return riskResp;
 	}

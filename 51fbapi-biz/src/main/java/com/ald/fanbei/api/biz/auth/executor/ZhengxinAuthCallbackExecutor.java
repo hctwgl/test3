@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.auth.executor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -16,9 +17,12 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.enums.AuthType;
+import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RiskAuthStatus;
+import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -62,16 +66,28 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 					new String[] { RiskScene.ZHENGXIN_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 			// 提额成功
 			if (respBo != null && respBo.isSuccess()) {
-				String amount = respBo.getData().getAmount();
-				String totalAmount = respBo.getData().getTotalAmount();
-				// 更新小贷额度
-				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-				afUserAccountDo.setUserId(userId);
-				afUserAccountDo.setAuAmount(new BigDecimal(amount));
-				afUserAccountService.updateUserAccount(afUserAccountDo);
-				// 更新总额度
-				AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-				afUserAccountSenceService.updateById(totalAccountSenceDo);
+				String raiseStatus = respBo.getData().getResults()[0].getResult();
+				if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+					String amount = respBo.getData().getAmount();
+					String totalAmount = respBo.getData().getTotalAmount();
+					// 更新小贷额度
+					AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+					afUserAccountDo.setUserId(userId);
+					afUserAccountDo.setAuAmount(new BigDecimal(amount));
+					afUserAccountService.updateUserAccount(afUserAccountDo);
+					// 更新总额度
+					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ZHENGXIN.getCode(),
+							LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				} else {
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ZHENGXIN.getCode(),
+							LoanType.CASH.getCode(), "F", BigDecimal.ZERO,new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				}
 			}
 		} else {
 			afUserAuthDo.setZhengxinStatus("N");
