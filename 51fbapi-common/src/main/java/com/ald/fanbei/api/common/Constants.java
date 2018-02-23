@@ -233,6 +233,9 @@ public class Constants {
 	// 客服电话
 	public static final String RES_COMSUMER_PHONE = "CONSUMER_PHONE";
 
+
+	//白领贷相关信息
+	public static final String WHITE_AGREEMENT = "WHITE_AGREEMENT";
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";
 	public static final String CONFKEY_JPUSH_APPKEY = "fbapi.jpush.appkey";
