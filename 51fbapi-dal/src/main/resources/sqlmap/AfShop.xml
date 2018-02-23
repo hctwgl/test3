@@ -63,6 +63,7 @@
 			is_delete = 0
 		AND
 			type = #{type}
+		limit 1
 	</select>
 		<select id="getShopInfoBySecTypeOpen" parameterType="AfShopDo" resultType="AfShopDo">
 		SELECT
