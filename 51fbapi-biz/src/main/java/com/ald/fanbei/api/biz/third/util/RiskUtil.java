@@ -112,6 +112,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -255,7 +256,8 @@ public class RiskUtil extends AbstractThird {
 
 	private static String getUrl() {
 		if (url == null) {
-			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+			//url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+			url = "http://ctestarc.51fanbei.com";
 			return url;
 		}
 		return url;
@@ -3462,7 +3464,8 @@ public class RiskUtil extends AbstractThird {
 			String consumerNo = obj.getString("consumerNo");
 			String authItem = obj.getString("authItem");
 			String orderNo = obj.getString("orderNo");
-			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, code);
+			String result = obj.getString("result");
+			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
 			authCallbackManager.execute(callbackBo);
 		}
 		return 0;
@@ -3492,14 +3495,15 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = requestProxy.post(url, reqBo);
 		logThird(reqResult, "userSupplementQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_AMOUNT_ERROR);
 		}
 
 		RiskQuotaRespBo riskResp = null;
 		try {
-			riskResp = JSONObject.parseObject(reqResult, RiskQuotaRespBo.class);
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
 		} catch (Exception e) {
-
+			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
 		return riskResp;
 	}

@@ -396,4 +396,14 @@
             AND DATE_SUB(gmt_plan_repay,INTERVAL 1 MONTH) &lt; NOW()
         ORDER BY nper ASC
     </select>
+
+    <select id="getOneByLoanId" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_periods 
+        WHERE is_delete = 0 
+            AND loan_id = #{loanId}
+        ORDER BY nper ASC
+        LIMIT 1
+    </select>
 </mapper>

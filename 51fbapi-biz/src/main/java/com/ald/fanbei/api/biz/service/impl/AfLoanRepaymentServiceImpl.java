@@ -150,12 +150,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.name = name;
 		
 		// 根据 还款金额  更新期数信息
-		List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-		bo.loanPeriodsIds.clear();
-		bo.loanPeriodsDoList.clear();
-		for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-			bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-			bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+		if(!bo.isAllRepay) {	// 非提前结清
+			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			bo.loanPeriodsIds.clear();
+			bo.loanPeriodsDoList.clear();
+			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+			}
 		}
 		
 		// 增加还款记录
@@ -256,15 +258,15 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      */
     private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment) {
 		if (bo.cardId > 0) {// 银行卡支付
+			if(repayment != null) {
+				changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
+			}
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
-			if(repayment != null) {
-				changLoanRepaymentStatus(respBo.getTradeNo(), AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
-			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
 					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
@@ -460,7 +462,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
-		}else {		// 按期还款（部分还款）
+		}else if(repaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
 			loanRepayDealBo.isAllRepay = false;
 			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
 			for (int i = 0; i < repayPeriodsIds.length; i++) {
@@ -485,10 +487,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	
 	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
 		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
-		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(0);
-		if(nper > 1 || 
-				(nper == 1 && loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus()))) {
-			// 提前还款 || 最后一期结清， 修改loan状态FINISHED
+		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(nper-1);
+		if(loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus())) {
+			// 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
 			loanDo.setRid(LoanRepayDealBo.loanDo.getRid());
 			loanDo.setStatus(AfLoanStatus.FINISHED.name());
@@ -627,13 +628,25 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 */
 	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
 		
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount());
-		loanPeriodsDo.setRepayAmount(allRepayAmount);
-
+		// 本期需还金额
+		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
+		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
+		if(repayAmount.compareTo(loanPeriodsDo.getAmount()) >= 0){
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
+		}else {
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
+			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+		
+		// 所有需还金额
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
 				loanPeriodsDo.getOverdueAmount(), loanPeriodsDo.getRepaidOverdueAmount(),
 				loanPeriodsDo.getInterestFee(), loanPeriodsDo.getRepaidInterestFee(),
 				loanPeriodsDo.getServiceFee(), loanPeriodsDo.getRepaidServiceFee());
+		
+		// 所有已还金额
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
@@ -754,7 +767,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             obj.put("overdueAmount", LoanRepayDealBo.sumOverdueAmount);
             obj.put("overdueDay", LoanRepayDealBo.overdueDay);
             details.add(obj);
-            riskUtil.transferBorrowInfo(LoanRepayDealBo.userId.toString(), "50", riskOrderNo, details);
+            riskUtil.transferBorrowInfo(LoanRepayDealBo.userId.toString(), "23", riskOrderNo, details);
         } catch (Exception e) {
             logger.error("还款时给风控传输数据出错", e);
         }
@@ -768,10 +781,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                     overdueCount = 1;
                 }
                 riskUtil.raiseQuota(LoanRepayDealBo.userId.toString(), 
-                			LoanRepayDealBo.loanNo, "50", riskOrderNo, 
+                			LoanRepayDealBo.loanNo, "23", riskOrderNo, 
                 			LoanRepayDealBo.sumLoanAmount,
                 			LoanRepayDealBo.sumIncome, 
-                			LoanRepayDealBo.overdueDay, overdueCount, LoanRepayDealBo.overdueDay, overdueCount);
+                			LoanRepayDealBo.overdueDay, overdueCount, LoanRepayDealBo.overdueDay, LoanRepayDealBo.loanDo.getPeriods());
             }
         } catch (Exception e) {
             logger.error("notifyRisk.raiseQuota error！", e);

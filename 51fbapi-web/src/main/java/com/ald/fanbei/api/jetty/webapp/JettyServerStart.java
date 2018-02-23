@@ -46,7 +46,7 @@ public class JettyServerStart {
 			"org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
 			"com.ald.fanbei.api.jetty.webapp.FanbeiConfiguration" };
 
-	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target" };
+	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target", "test" };
 
 	public JettyServerStart(String webappPath, int port, String context) {
 		this(webappPath, port, context, 0, false);

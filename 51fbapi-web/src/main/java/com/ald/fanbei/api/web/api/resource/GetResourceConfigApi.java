@@ -49,7 +49,7 @@ public class GetResourceConfigApi implements ApiHandle{
         
   		List<AfAppResourceVo> batchResourceVo =convertToAfAppResourceVos(batchAfResourceDo);
   		
-  		map.put("resources", batchResourceVo);
+  		map.put("resources", batchResourceVo.get(0));
         resp.setResponseData(map);
 		return resp;
 	}

@@ -10,14 +10,26 @@ public class AuthCallbackBo {
 	
 	private String code;
 	
+	private String result;
+	
 	
 
-	public AuthCallbackBo(String orderNo, String consumerNo, String authItem, String code) {
+	public AuthCallbackBo(String orderNo, String consumerNo, String authItem, String result) {
 		
 		this.orderNo = orderNo;
 		this.consumerNo = consumerNo;
 		this.authItem = authItem;
-		this.code = code;
+		this.result = result;
+	}
+	
+	
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
 	}
 
 	public String getOrderNo() {

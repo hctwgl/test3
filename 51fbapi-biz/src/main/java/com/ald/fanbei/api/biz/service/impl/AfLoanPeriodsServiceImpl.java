@@ -139,5 +139,15 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	public List<AfLoanPeriodsDo> getNoRepayListByLoanId(Long loanId) {
 		return afLoanPeriodsDao.getNoRepayListByLoanId(loanId);
 	}
+
+	@Override
+	public List<AfLoanPeriodsDo> listCanRepayPeriods(Long loanId) {
+		return afLoanPeriodsDao.listCanRepayPeriods(loanId);
+	}
+
+	@Override
+	public AfLoanPeriodsDo getOneByLoanId(Long loanId) {
+		return afLoanPeriodsDao.getOneByLoanId(loanId);
+	}
 	
 }
