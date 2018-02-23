@@ -45,7 +45,7 @@ public class ChangXiaoController {
     public JSONObject insertChangXiaoUser(HttpServletRequest request) throws IOException {
         JSONObject returnjson = new JSONObject();
         try {
-            StringBuilder sb = new StringBuilder();
+   /*         StringBuilder sb = new StringBuilder();
             sb.append("---/third/changxiao/notice  begin:");
             Map<String, String[]> paramMap = request.getParameterMap();
             for (String key : paramMap.keySet()) {
@@ -68,9 +68,10 @@ public class ChangXiaoController {
                 returnjson.put("msg", "参数错误");
                 logger.debug("/third/changxiao/notice 参数错误" + sb.toString());
                 return returnjson;
-            }
+            }*/
             returnjson.put("success", true);
             returnjson.put("msg", null);
+        	
         } catch (Exception e) {
             logger.debug("/third/changxiao/notice Exception" + e);
         }

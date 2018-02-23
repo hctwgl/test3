@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -131,6 +132,8 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+	@Resource
+	SmartAddressEngine smartAddressEngine;
     
 	@Override
 	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
@@ -163,7 +166,12 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 				}
 			}
 		});
-		
+		//百度智能地址
+		try {
+			smartAddressEngine.setScoreAsyn(borrowLegalOrder.getAddress(),borrowLegalOrder.getBorrowId(),borrowLegalOrder.getOrderNo());
+		}catch (Exception e){
+			logger.info("smart address {}",e);
+		}
 		if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
