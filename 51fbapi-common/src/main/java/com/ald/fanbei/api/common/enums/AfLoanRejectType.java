@@ -5,7 +5,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 public enum AfLoanRejectType {
 	PASS("通过", null), 
 	NO_AUTHZ("未认证", FanbeiExceptionCode.LOAN_NO_AUTHZ),
-	QUOTA_TOO_SMALL("额度小于最快借款额", FanbeiExceptionCode.LOAN_QUOTA_TOO_SMALL),
+	QUOTA_TOO_SMALL("额度小于最底借款额", FanbeiExceptionCode.LOAN_QUOTA_TOO_SMALL),
 	NO_PASS_STRO_RISK("未通过强风控审核", FanbeiExceptionCode.LOAN_NO_PASS_STRO_RISK),
 	NO_PASS_WEAK_RISK("未通过弱风控审核", FanbeiExceptionCode.LOAN_NO_PASS_WEAK_RISK),
 	SWITCH_OFF("贷款开关关闭", FanbeiExceptionCode.LOAN_SWITCH_OFF);

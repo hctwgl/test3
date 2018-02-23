@@ -691,7 +691,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 	}
 	
 	public Map<String, Object> getBorrowCfgInfo() {
-		List<AfResourceDo> borrowHomeConfigList = this.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> borrowHomeConfigList = this.newSelectBorrowHomeConfigByAllTypes();
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		for (AfResourceDo afResourceDo : borrowHomeConfigList) {
@@ -728,13 +728,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 				} else if (StringUtils.equals(afResourceDo.getSecType(),
 						AfResourceSecType.borrowCashShowNum.getCode())) {
 					data.put("nums", afResourceDo.getValue());
-				}
-			} else {
-				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
-					data.put("borrowCashDay", afResourceDo.getValue());
+				}else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+					data.put("borrowCashDay", afResourceDo.getTypeDesc());
 				}
 			}
 		}
+
 		return data;
 	}
 

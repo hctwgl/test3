@@ -16,11 +16,12 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
-//	String urlBase = "http://localhost:8080";
+//	String urlBase = "https://btestapp.51fanbei.com";
+	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//cardId:3111464412
 //	String userName = "15669066271";	//cardId:3111464125
-	String userName = "13958004662";	//胡朝永
+//	String userName = "13958004662";	//胡朝永
+	String userName = "13460011555";	//张飞凯
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -54,7 +55,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -93,7 +94,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
@@ -110,7 +111,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void allRepayDo() {
 		String url = urlBase + "/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
@@ -126,7 +127,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
@@ -153,7 +154,7 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "hq2018021013355213061";
