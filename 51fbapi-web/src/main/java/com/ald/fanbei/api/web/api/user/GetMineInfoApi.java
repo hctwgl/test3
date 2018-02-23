@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,21 +9,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-
-
-
-
-
-
-
-
 import com.ald.fanbei.api.biz.bo.GetBrandCouponCountRequestBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -35,10 +27,12 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.RandomUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -71,6 +65,8 @@ public class GetMineInfoApi implements ApiHandle {
 	
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfSigninService afSigninService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -133,6 +129,25 @@ public class GetMineInfoApi implements ApiHandle {
 		}
 		List<Object> bannerList = addBannerList(requestDataVo);
 		data.put("bannerList", bannerList);
+		//获取签到状态
+		
+		   AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+		   // data.put("isSignin", "N");
+		   
+		    if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
+		       data.put("isSignin", "N");
+
+			}else{
+
+				Date seriesTime = afSigninDo.getGmtSeries();
+				if(DateUtil.isSameDay(new Date(), seriesTime)){
+		        	data.put("isSignin", "Y");
+
+				}else{
+		        	 data.put("isSignin", "N");
+				}
+			}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -155,6 +170,7 @@ public class GetMineInfoApi implements ApiHandle {
 	logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
 	List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
 	//resp.addResponseData("bannerList", bannerList);
+	
 	return bannerList;
 }
 private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
