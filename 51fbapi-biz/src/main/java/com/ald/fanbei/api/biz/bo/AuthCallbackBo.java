@@ -13,7 +13,6 @@ public class AuthCallbackBo {
 	private String result;
 	
 	
-
 	public AuthCallbackBo(String orderNo, String consumerNo, String authItem, String result) {
 		
 		this.orderNo = orderNo;
