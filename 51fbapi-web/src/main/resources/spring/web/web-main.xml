@@ -162,6 +162,7 @@
 				<value>/legalborrowV2/getCashPageType</value>
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
+				<value>/resource/getFlowFlayerResourceConfig</value>
 
 
 				<value>/order/dmNperEnabled</value>
