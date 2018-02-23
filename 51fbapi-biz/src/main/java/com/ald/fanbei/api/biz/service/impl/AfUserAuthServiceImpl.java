@@ -529,7 +529,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				JSONArray jsonArray = JSON.parseArray(authDay.getValue());
 				for (int i = 0; i < jsonArray.size(); i++) {
 					JSONObject obj = jsonArray.getJSONObject(i);
-					day = obj.getInteger(auth_type) == null ? 0 : obj.getInteger(auth_type);
+					if(obj.getString("type").equals(auth_type)) {
+					    day = obj.getInteger("day");
+                    }
 				}
 				Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afAuthRaiseStatusDo.getGmtFinish()), day);
 				long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())),
