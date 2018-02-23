@@ -44,6 +44,7 @@ public class GetFlowFlayerResourceConfigApi implements ApiHandle{
   		
   		Map<String,Object> map = new HashMap<String,Object>();
   		List<AfResourceDo> batchAfResourceDo =  afResourceService.getFlowFlayerResourceConfig(resourceType,secType);
+  		logger.info("getFlowFlayerResourceConfigApi result = {}",batchAfResourceDo == null ? "" :batchAfResourceDo.toString());
   		map.put("resources", batchAfResourceDo);
         resp.setResponseData(map);
 		return resp;
