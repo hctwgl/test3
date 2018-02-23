@@ -70,4 +70,13 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     		return BigDecimal.ZERO;
     	}
     }
+
+	@Override
+	public AfUserAccountSenceDo buildAccountScene(Long userId, String loanType, String amount) {
+		AfUserAccountSenceDo authAccountSceneDo = new AfUserAccountSenceDo();
+		authAccountSceneDo.setUserId(userId);
+		authAccountSceneDo.setScene(loanType);
+		authAccountSceneDo.setAuAmount(new BigDecimal(amount));
+		return authAccountSceneDo;
+	}
 }

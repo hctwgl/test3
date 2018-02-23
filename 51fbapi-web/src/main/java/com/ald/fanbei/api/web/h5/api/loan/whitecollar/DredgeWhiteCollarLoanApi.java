@@ -92,11 +92,11 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getCode());
 		afUserAuthStatusDo.setUserId(userId);
 		if (!riskResp.isSuccess()) {
-			afUserAuthStatusDo.setStatus("Y");
-			// 白领贷强风控成功
-			
-		} else {						
-			afUserAuthStatusDo.setStatus("N");
+			// 认证失败
+			afUserAuthStatusDo.setStatus("C");
+		} else {
+			// 认证中
+			afUserAuthStatusDo.setStatus("A");
 		}
 		// 新增或修改认证记录
 		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);

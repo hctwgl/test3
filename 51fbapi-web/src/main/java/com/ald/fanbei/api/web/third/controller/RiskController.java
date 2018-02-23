@@ -157,7 +157,7 @@ public class RiskController {
 		String msg = ObjectUtils.toString(request.getParameter("msg"));
 		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
 
-		logger.info("asyRegisterStrongRiskV1 begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		logger.info("dredgeWhiteCollarLoan begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
 		if (TRADE_STATUE_SUCC.equals(code)) {
 			try {
 				riskUtil.asyDredgeWhiteCollarLoan(code, data, msg, signInfo);

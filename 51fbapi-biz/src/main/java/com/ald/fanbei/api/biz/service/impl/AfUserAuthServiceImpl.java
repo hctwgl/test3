@@ -496,22 +496,23 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 
 	@Override
-	public boolean allSupplementAuthPassed(Long userId) {
+	public boolean allBasicAuthPassed(Long userId) {
 		AfUserAuthDo authInfo = afUserAuthDao.getUserAuthInfoByUserId(userId);
-		return allSupplementAuthPassed(authInfo);
+		return allBasicAuthPassed(authInfo);
 	}
 	@Override
-	public boolean allSupplementAuthPassed(AfUserAuthDo authInfo) {
-		String alipayStatus = authInfo.getAlipayStatus();
-		String creditStatus = authInfo.getCreditStatus();
-		String fundStatus = authInfo.getFundStatus();
-		String jinpoStatus = authInfo.getJinpoStatus();
-		String zhengxinStatus = authInfo.getZhengxinStatus();
-		if(StringUtils.equals("Y", alipayStatus)
-				&& StringUtils.equals("Y", creditStatus)
-				&& StringUtils.equals("Y", fundStatus)
-				&& StringUtils.equals("Y", jinpoStatus)
-				&& StringUtils.equals("Y", zhengxinStatus)) {
+	public boolean allBasicAuthPassed(AfUserAuthDo authInfo) {
+		String bankcardStatus = authInfo.getBankcardStatus();
+		String contactorStatus = authInfo.getContactorStatus();
+		String mobileStatus = authInfo.getMobileStatus();
+		String zmStatus = authInfo.getZmStatus();
+		String realnameStatus = authInfo.getRealnameStatus();
+		
+		if(StringUtils.equals("Y", bankcardStatus)
+				&& StringUtils.equals("Y", contactorStatus)
+				&& StringUtils.equals("Y", mobileStatus)
+				&& StringUtils.equals("Y", zmStatus)
+				&& StringUtils.equals("Y", realnameStatus)) {
 			return true;
 		}
 		return false;

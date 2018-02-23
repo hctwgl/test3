@@ -39,6 +39,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 
 /**
+ * 参考 {@link GetBorrowCashHomeInfoApi}
  * @author ZJF
  * @version 1.0.0 初始化
  * @date 2017-12-10 10:14:21
@@ -103,6 +104,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		
 		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
 		
+		Map<String, Object> rate = afResourceService.getBorrowCfgInfo();
+		bo.borrowCashDay = rate.get("borrowCashDay").toString();
 	}
 	
 	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
