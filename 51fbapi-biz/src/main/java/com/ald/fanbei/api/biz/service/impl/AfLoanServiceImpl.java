@@ -416,7 +416,11 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
 			
-			bo.rejectCode = rejectCheck(userAccount.getUserId(), accScene, prdDo, lastLoanDo).name();
+			AfLoanRejectType res = rejectCheck(userAccount.getUserId(), accScene, prdDo, lastLoanDo);
+			if(!AfLoanRejectType.PASS.equals(res)) {
+				bo.maxQuota = prdDo.getMaxAmount();
+			}
+			bo.rejectCode = res.name();
 			
 			infoBos.add(bo);
 		}
