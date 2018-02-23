@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
@@ -81,22 +82,24 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		Object directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 		String riskOrderNo = riskUtil.getOrderNo("loan", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 		
-		
 		Map<String,Object> extUserInfo = getExtUserInfo(param);
 		
 		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
 				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
 				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo);
 		
-		
+		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getCode());
+		afUserAuthStatusDo.setUserId(userId);
 		if (!riskResp.isSuccess()) {
-			AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-			// 新增失败记录
-			afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-		} else {						
+			afUserAuthStatusDo.setStatus("Y");
+			// 白领贷强风控成功
 			
+		} else {						
+			afUserAuthStatusDo.setStatus("N");
 		}
-		
+		// 新增或修改认证记录
+		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 		resp.setResponseData(data);
 		return resp;
 	}

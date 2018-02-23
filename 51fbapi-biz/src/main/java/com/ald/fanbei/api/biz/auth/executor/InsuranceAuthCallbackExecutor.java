@@ -187,14 +187,5 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 		return bldAuthStatusDo;
 	}
 
-	private AfAuthRaiseStatusDo buildAuthRaiseStatusDo(Long userId, String authType, String prdType,
-			String raiseStatus) {
-		AfAuthRaiseStatusDo raiseStatusDo = new AfAuthRaiseStatusDo();
-		raiseStatusDo.setAuthType(authType);
-		raiseStatusDo.setPrdType(prdType);
-		raiseStatusDo.setUserId(userId);
-		raiseStatusDo.setRaiseStatus(raiseStatus);
-		return raiseStatusDo;
-	}
 
 }
