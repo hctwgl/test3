@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -115,29 +113,6 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 		
 		return result;
 	}
-    
-    @Override
-    public Map<String,Object> getTotalRestInfo(Long loanId) {
-    	Map<String,Object> info = new HashMap<String, Object>();
-    	List<AfLoanPeriodsDo> ps = afLoanPeriodsDao.listCanRepayPeriods(loanId);
-    	
-    	StringBuilder periodIds = new StringBuilder();
-    	BigDecimal restAmount = BigDecimal.ZERO;
-    	
-    	if(ps.size() == 0) {
-    		return info;
-    	}
-    	
-    	for(AfLoanPeriodsDo p : ps) {
-    		periodIds.append(p.getRid()).append(",");
-    		restAmount = restAmount.add(this.calcuRestAmount(p));
-    	}
-    	info.put("periodIds", periodIds.substring(0, periodIds.length()-1));
-    	info.put("periodsRestAmount", restAmount);
-    	info.put("periodsLastGmtPlanRepay", ps.get(ps.size()-1).getGmtPlanRepay());
-    	
-    	return info;
-    }
     
     public BigDecimal calcuRestAmount(AfLoanPeriodsDo p) {
     	return p.getAmount().add(p.getRepaidServiceFee()).add(p.getRepaidInterestFee()).add(p.getRepaidOverdueAmount())
