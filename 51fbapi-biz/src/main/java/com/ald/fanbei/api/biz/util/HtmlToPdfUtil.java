@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerFontProvider;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
@@ -25,7 +26,7 @@ public final class HtmlToPdfUtil {
     private static Document document;
     private static PdfWriter writer = null;
     private static OutputStream outputStream;
-
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HtmlToPdfUtil.class);
     /**
      * 初始化
      */
@@ -176,8 +177,10 @@ public final class HtmlToPdfUtil {
             render.createPDF(new FileOutputStream(outFilePath));
         } catch (DocumentException e) {
             e.printStackTrace();
+            logger.info("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
         } catch (IOException e) {
             e.printStackTrace();
+            logger.info("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
         }
     }
 
