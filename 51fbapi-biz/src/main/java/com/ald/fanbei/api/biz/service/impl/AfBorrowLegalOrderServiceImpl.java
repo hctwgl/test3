@@ -1,11 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -16,6 +10,12 @@ import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * ServiceImpl
@@ -28,6 +28,8 @@ import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 @Service("afBorrowLegalOrderService")
 public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLegalOrderDo, Long>
 		implements AfBorrowLegalOrderService {
+
+	private static final Logger logger = LoggerFactory.getLogger(AfBorrowLegalOrderServiceImpl.class);
 
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
@@ -66,8 +68,10 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 	
 	public boolean isV2BorrowCash(Long borrowId) {
 		Long orderId = afBorrowLegalOrderDao.tuchByBorrowId(borrowId);
+		logger.info("isV2BorrowCash orderId=>{}",orderId);
 		if(orderId != null) {
 			Long orderCashId = afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId);
+			logger.info("isV2BorrowCash orderCashId=>{}",orderCashId);
 			if(orderCashId == null) return true;
 		}
 		return false;

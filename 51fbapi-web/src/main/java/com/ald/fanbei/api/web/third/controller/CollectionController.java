@@ -602,10 +602,12 @@ public class CollectionController {
                 }//合规线下还款V2
                 else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid())) {
                     version = "V2";
+                    logger.info("getContractProtocolPdf version =>{}",version);
                 } else {//老版借钱协议
                     version = "old";
                 }
             }
+            logger.info("getContractProtocolPdf version =>{}",version);
             id = afBorrowCashDo.getRid();
         } else if (type == 2) {//商品分期协议
             afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
