@@ -1,9 +1,12 @@
+
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 
+
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -134,4 +137,16 @@ public interface AfUserCouponService {
 
 	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
 
+
+
+	String sentUserCouponGroup(Long userId, String tag, String sourceType);
+
+	int sentFirstAuthShoppingUserCoupon(AfOrderDo orderInfo);
+
+	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
+
 }
+
+
+
+

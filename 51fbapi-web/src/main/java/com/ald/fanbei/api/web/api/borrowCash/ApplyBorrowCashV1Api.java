@@ -120,6 +120,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
+        if (context.getAppVersion() < 390) {
+            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        }
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
@@ -150,7 +153,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
         try{
-            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否不允许这种类型的借款
             if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
                 throw new FanbeiException(afResourceDo.getValue2(),true);
             }
@@ -394,7 +397,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                         .currentTimeMillis()));
                 HashMap<String, HashMap> riskDataMap = new HashMap();
 
-                HashMap summaryData = afBorrowDao.getUserSummary(userId);
+                HashMap summaryData = afBorrowService.getUserSummary(userId);
                 riskDataMap.put("summaryData", summaryData);
                 riskDataMap.put("summaryOrderData", new HashMap<>());
                 RiskVerifyRespBo verybo = riskUtil.verifyNew(

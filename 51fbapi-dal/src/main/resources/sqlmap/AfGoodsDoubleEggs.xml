@@ -186,7 +186,16 @@
 		END AS STATUS,
 		 de.goods_id,
 		 g.stock_count,
-		 g.stock_count - de.already_count AS count,
+		 <![CDATA[
+		 CASE WHEN(
+		 g.stock_count - de.already_count 
+			)<0
+			THEN 0
+			ELSE
+			g.stock_count - de.already_count 
+			END
+			AS count,
+		]]>
 		 g.price_amount AS sale_amount,
 		 g.sale_amount AS real_amount,
 		 g.`name` AS goods_name,

@@ -93,6 +93,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -837,6 +838,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public int callbackCompleteOrder(final AfOrderDo afOrder) {
         logger.info("callbackCompleteOrder begin , afOrder = {}" + afOrder);
+        final String key = Constants.GG_SURPRISE_LOCK + ":" + afOrder.getUserId() + ":" + afOrder.getRid();
+        long c = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 60, TimeUnit.SECONDS);
+        if (c > 1) {
+            return 0;
+        }
         return transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus status) {
@@ -851,15 +858,65 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     afUserAccountDao.updateOriginalUserAccount(accountInfo);
                     afUserAccountLogDao.addUserAccountLog(accountLog);
                     orderDao.updateOrder(afOrder);
+                    try{
+                	doboluomeActivityRebate(afOrder,userId,key);
+                    } catch (Exception e) {
+        		// TODO Auto-generated catch block
+        		// e.printStackTrace(); 不影响主业务
+        		 logger.info("doboluomeActivityRebate error:", e);
+        	    }
+                    redisTemplate.delete(key);
                     return 1;
                 } catch (Exception e) {
                     status.setRollbackOnly();
+                    redisTemplate.delete(key);
                     logger.info("callbackCompleteOrder error:", e);
                     return 0;
                 }
             }
         });
     }
+   private void doboluomeActivityRebate(AfOrderDo afOrder,Long userId,String key){
+    
+    //----------------------------------------------mqp add a switch--------------------------------------------------
+    AfResourceDo afResourceDo = new AfResourceDo();
+    afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
+    if (afResourceDo != null) {
+	 String swtich = "";
+	 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	//线上为开启状态
+	 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+	     swtich = afResourceDo.getValue();
+	 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+	     swtich = afResourceDo.getValue1();
+	 }
+        //String swtich = afResourceDo.getValue();
+
+        if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
+            // qiao+2017-11-14 15:30:27:the second time to light the activity
+            logger.info("doboluomeActivityRebate afBoluomeRebateService.doboluomeActivityRebate params orderId = {} , userId = {}",
+                    afOrder.getRid(), userId);
+            // send red packet
+            try {
+		afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
+	    } catch (Exception e) {
+		// TODO Auto-generated catch block
+		 e.printStackTrace(); 
+		 logger.info("doboluomeActivityRebate addRedPacket error:", e);
+	    }
+
+            // qiao+2017-11-14 15:30:27:the second time to light the activity
+            logger.info("doboluomeActivityRebate afBoluomeRebateService.sendCoupon  doboluomeActivityRebateparams orderId = {} , userId = {}",
+                    afOrder.getRid(), userId);
+            // send coupon
+            boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+        }
+    }
+
+    //----------------------------------------------mqp end add a switch--------------------------------------------------
+    logger.info("doboluomeActivityRebate complete!");
+    redisTemplate.delete(key);
+   }
 
     @Resource
     RedisTemplate redisTemplate;
@@ -902,7 +959,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             AfResourceDo afResourceDo = new AfResourceDo();
                             afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
                             if (afResourceDo != null) {
-                                String swtich = afResourceDo.getValue();
+                        	 String swtich = "";
+                		 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+                		//线上为开启状态
+                		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+                		     swtich = afResourceDo.getValue();
+                		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+                		     swtich = afResourceDo.getValue1();
+                		 }
+                                //String swtich = afResourceDo.getValue();
 
                                 if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
                                     // qiao+2017-11-14 15:30:27:the second time to light the activity
@@ -2307,19 +2372,25 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
         }
         if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
-            BigDecimal leftAmount =new BigDecimal(0);
+            BigDecimal leftAmount =BigDecimal.ZERO;
             if(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)!=null) {
                 String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
                 BigDecimal virtualTotalAmount =new BigDecimal(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
                 Integer virtualRecentDay = new Integer(resultMap.get(Constants.VIRTUAL_RECENT_DAY).toString());
                 //验证累计额度
                 leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount, virtualRecentDay);
+                
+                //判断单笔限额
+                if(leftAmount.compareTo(BigDecimal.ZERO)>0 && resultMap.get(Constants.VIRTUAL_AMOUNT)!=null)
+                {
+                    BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+                    leftAmount = leftAmount.compareTo(virtualAmount) > 0 ? virtualAmount : leftAmount;
+                }
             }
-            if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
+            else if(resultMap.get(Constants.VIRTUAL_AMOUNT)!=null){
                 BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
-                //if(virtualAmount.compareTo(orderInfo.getActualAmount())<=0) {
-                    leftAmount = virtualAmount;//BigDecimal.ZERO;
-                //}
+                //当前可用额度为虚拟限额额度（后面逻辑再与用户账户可用额度判断）
+                leftAmount = virtualAmount;
             }
 
             BigDecimal useableAmount;
@@ -2530,7 +2601,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
                                     orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 
-
+		    AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(), BorrowStatus.TRANSED.getCode());
+		    if (borrowInfo != null) {
+			// 修改借款状态
+			afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+			// 修改账单状态
+			afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(), BorrowBillStatus.CLOSE.getCode());
+		    }
                     // 恢复虚拟额度
                     AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
                     queryVirtualAccountDo.setUserId(orderInfo.getUserId());
@@ -2674,10 +2751,37 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
     }
 
+
+    @Override
+    public HashMap getCountPaidOrderByUserAndOrderType(Long userId, String orderType) {
+	// TODO Auto-generated method stub
+	return orderDao.getCountPaidOrderByUserAndOrderType(userId,orderType);
+    }
+
+    @Override
+    public List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(Long userId, String activityTime) {
+	// TODO Auto-generated method stub
+	return orderDao.getSelfsupportOrderByUserIdOrActivityTime(userId,activityTime);
+    }
+
+    @Override
+    public int getAuthShoppingByUserId(Long userId, String activityTime) {
+	// TODO Auto-generated method stub
+	return orderDao.getAuthShoppingByUserId(userId,activityTime);
+    }
+
+    @Override
+    public int getCountByUserId(Long rid) {
+	// TODO Auto-generated method stub
+	return orderDao.getCountByUserId(rid);
+    }
+
+
 	@Override
 	public int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount) {
 		return orderDao.updateAuAndUsed(orderId, auAmount, usedAmount);
 	}
+
 
     @Override
     public int addSceneAmount(List<AfOrderSceneAmountDo> list) {

@@ -19,11 +19,11 @@ import com.ald.fanbei.api.dal.domain.AfRebateDo;
  */
 public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
-	int checkOrderTimes(@Param("userId")Long userId);
+	//int checkOrderTimes(@Param("userId")Long userId);
 
 	AfShopDo getShopInfoByOrderId(@Param("orderId") long orderId);
 
-	List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId);
+	//List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId);
 
 	Long getLightShopId(@Param("orderId")Long orderId);
 
@@ -37,9 +37,16 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	int getRebateNumByOrderId(@Param("orderId")Long orderId);
 
-	int getRebateCount(@Param("shopId")Long shopId, @Param("userId")Long userId);
+	int getRebateCount(@Param("shopId")Long shopId, @Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(@Param("startId")Long startId,@Param("endId") Long endId,@Param("userId") Long userId);
+
+	int getCountByUserIdAndFirstOrder(@Param("userId")Long userId,@Param("firstOrder") int firstOrder,@Param("oneYuanTime") String oneYuanTime);
+
+
+	int checkOrderTimes(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+	List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId,@Param("startTime")String startTime);
 
 
     

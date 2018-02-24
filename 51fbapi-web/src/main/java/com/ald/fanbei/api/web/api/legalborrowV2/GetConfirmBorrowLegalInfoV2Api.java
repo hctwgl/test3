@@ -156,12 +156,10 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-			String bqsBlackBox = request.getParameter("bqsBlackBox");
 			data.put("ipAddress", CommonUtil.getIpAddr(request));
-			data.put("appName",appName);
-			data.put("bqsBlackBox",bqsBlackBox);
-			data.put("blackBox",request.getParameter("blackBox"));
-			Object poundageRateCash = getUserPoundageRate(userId,data);
+			data.put("appName",appName);data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+			data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
+			Object poundageRateCash = getUserPoundageRate(userId,data,param.getType());
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -203,26 +201,19 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId,Map<String, Object> data) {
-		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
-		if (saveRateDate == null
-				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
+	private Object getUserPoundageRate(Long userId,Map<String, Object> data,String borrowType) {
+			BigDecimal orgRate = null;
 			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data));
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data),borrowType);
 				String poundageRate = riskResp.getPoundageRate();
 				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
-					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="
-							+ riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
-					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate,
-							Constants.SECOND_OF_ONE_MONTH);
-					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-							new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
+					orgRate = new BigDecimal(poundageRate);
 				}
 			} catch (Exception e) {
 				logger.info(userId + "从风控获取分层用户额度失败：" + e);
 			}
-		}
-		return bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+			return orgRate;
+		
 	}
 
 	/**

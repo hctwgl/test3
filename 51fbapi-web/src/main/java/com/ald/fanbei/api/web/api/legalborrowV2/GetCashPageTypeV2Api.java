@@ -73,7 +73,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status)) {
+				if (StringUtils.equalsIgnoreCase("FINSH", status) ) {
 					if (borrowLegalOrder == null) {
 						pageType = "V2";
 					} else if (borrowLegalOrder != null) {

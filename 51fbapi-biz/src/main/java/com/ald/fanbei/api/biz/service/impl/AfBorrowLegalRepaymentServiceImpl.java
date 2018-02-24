@@ -688,7 +688,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         /**------------------------------------fmai风控提额end--------------------------------------------------*/
 
         //会对逾期的借款还款，向催收平台同步还款信息
-        if (DateUtil.compareDate(new Date(), repayDealBo.cashDo.getGmtPlanRepayment()) ){
+        if (DateUtil.compareDate(new Date(), repayDealBo.cashDo.getGmtPlanRepayment()) && repayDealBo.curName != Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE){
             try {
                 CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
                 		repayDealBo.curTradeNo,
@@ -702,7 +702,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                         repayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),	
                         repayDealBo.sumOverdueAmount,
                 		repayDealBo.sumRepaidAmount,
-                		repayDealBo.sumInterest);
+                		repayDealBo.sumInterest,false);
                 logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
             } catch (Exception e) {
                 logger.error("向催收平台同步还款信息失败", e);

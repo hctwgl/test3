@@ -315,4 +315,11 @@ public interface AfBorrowService {
 	 */
 	Integer countNperRepaymentByBorrowId(Long rid);
 
+	/**
+	 * 获取用户统计信息
+	 * @param userId 用户id
+	 * @return 用户信息
+	 */
+	HashMap getUserSummary(Long userId);
+
 }

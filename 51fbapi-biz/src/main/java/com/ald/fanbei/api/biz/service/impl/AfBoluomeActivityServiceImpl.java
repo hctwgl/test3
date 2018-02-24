@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -58,6 +60,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -121,6 +124,8 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	AfBoluomeUserCouponService afBoluomeUserCouponService;
 	@Resource 
 	JpushService jpushService;
+	@Resource
+	AfCouponCategoryService  afCouponCategoryService;
 	
         private static final Logger logger = LoggerFactory.getLogger(AfBoluomeActivityServiceImpl.class);
         private static String couponUrl = null;
@@ -688,9 +693,17 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	public int sentNewUserBoluomeCouponForDineDash(AfUserDo afUserDo) {
 	    AfResourceDo activitySwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","ACTIVITY_SWITCH");
 	    if(activitySwitch != null){
-		if("O".equals(activitySwitch.getValue())){
+		 String aSwitch = "";
+		 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		//线上为开启状态
+		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+		     aSwitch = activitySwitch.getValue();
+		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+		     aSwitch = activitySwitch.getValue1();
+		 }
+		if("O".equals(aSwitch)){
 	         //活动期内该用户没有订单
-		    logger.info("sentNewUserBoluomeCouponForDineDash start afUserDo = {}", JSONObject.toJSONString(afUserDo));
+		    logger.info("sentNewUserBoluomeCouponForDineDash start afUserDo = {}"+ JSONObject.toJSONString(afUserDo));
         	    AfResourceDo resource =   afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),H5GgActivity.ACTIVITY_TIME.getCode() );
                 	    if(resource != null){
                 		SimpleDateFormat   formatter   =   new   SimpleDateFormat   ("yyyy-MM-dd HH:mm:ss");  
@@ -704,61 +717,142 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                 		    // TODO Auto-generated catch block
                 		    e.printStackTrace();
                 		}
-                		 logger.info("sentNewUserBoluomeCouponForDineDash startTime = {}, endTime = {}", startTime,endTime);
+                		 logger.info("sentNewUserBoluomeCouponForDineDash startTime = {}"+startTime+"endTime = {}"+endTime);
                 	         if(DateUtil.afterDay(endTime,curDate) && DateUtil.afterDay(curDate,startTime)){
                 		// 该用户是否有订单，没有，则送券
                 	       
                 	              AfOrderDo order = new AfOrderDo();
                 		      order.setUserId(afUserDo.getRid());
                 		      int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-                		      logger.info("sentNewUserBoluomeCouponForDineDash order queryCount = {}, afUserDo = {}", queryCount,JSONObject.toJSONString(afUserDo));
+                		      logger.info("sentNewUserBoluomeCouponForDineDash order queryCount = {}"+ queryCount+" afUserDo = {}"+JSONObject.toJSONString(afUserDo));
                 		      if (queryCount <= 0) {
+                			   try{
+                			       int result =  sentBoluomeCouponGroup(afUserDo);
+                			       logger.info("sentBoluomeCouponGroup result:"+result);
+                			   }catch(Exception e){
+                			       logger.error("sentBoluomeCouponGroup error:"+e);
+                			   }
+                			  
                         		  String  type = H5GgActivity.GG_ACTIVITY.getCode();
                         		  String  secType =  H5GgActivity.BOLUOME_COUPON.getCode();
                         		  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
-                        		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {},afUserDo = {}", JSONObject.toJSONString(resourceDo),JSONObject.toJSONString(afUserDo));
+                        		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {}"+ JSONObject.toJSONString(resourceDo)+"afUserDo = {}"+JSONObject.toJSONString(afUserDo));
                         		     if(resourceDo!= null){
-                        			long  boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;
-                        			//2.记录表查询是否有券
-                        			AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
-                        			userCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
-                        			userCouponDo.setUserId(afUserDo.getRid());
-                        			userCouponDo.setCouponId(boluomeCouponId);
-                        			AfBoluomeUserCouponDo  userCoupon =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
-                        			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
-                        			logger.info("sentNewUserBoluomeCouponForDineDash resourceInfo = {},afUserDo = {}",  JSONObject.toJSONString(resourceInfo),JSONObject.toJSONString(afUserDo));
-                        			//无券则发券，并推送极光
-                        			if(userCoupon == null){
-                        			    if (resourceInfo != null) {
-                        				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-                        				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
-                        				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
-                        				logger.info("sentNewUserBoluomeCouponForDineDash afUserDo = {}, resultString = {}", JSONObject.toJSONString(afUserDo), resultString);
-                        				JSONObject resultJson = JSONObject.parseObject(resultString);
-                        				String code = resultJson.getString("code");
-                        		        	//发券成功，推送极光 
-                        				if ("0".equals(code)) {
-                        				    //保存记录
-                        				    AfBoluomeUserCouponDo boluomeUserCoupon = new AfBoluomeUserCouponDo();
-                        				    boluomeUserCoupon.setChannel(H5GgActivity.REGISTER.getCode());
-                        				    boluomeUserCoupon.setCouponId(resourceInfo.getRid());
-                        				    boluomeUserCoupon.setStatus(1);
-                        				    boluomeUserCoupon.setUserId(afUserDo.getRid());
-                        				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
-                        				    //推送极光
-                            				    logger.info("sentNewUserBoluomeCouponForDineDash boluomeUserCoupon saveRecord", JSONObject.toJSONString(boluomeUserCoupon));
-                        				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
-                			    }
-                			}
-                		    }
-                              }
-                      }
-                  }
-              }    
-	 }
-    }
+                        			long  boluomeCouponId = 0L;
+//                        			for(int i=0;i<3;i++){
+//                                			 if(i==0){
+                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;
+//                                			 }else if(i==1){
+//                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue2()) ;
+//                                			 }else if(i==2){
+//                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue3()) ;
+//                                			 }
+                        			    
+                                    			//2.记录表查询是否有券
+                                    			AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
+                                    			userCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
+                                    			userCouponDo.setUserId(afUserDo.getRid());
+                                    			userCouponDo.setCouponId(boluomeCouponId);
+                                    			int  userCoupon =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
+                                    			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
+                                    			logger.info("sentNewUserBoluomeCouponForDineDash resourceInfo = {}"+JSONObject.toJSONString(resourceInfo)+" afUserDo = {}"+JSONObject.toJSONString(afUserDo));
+                                    			//无券则发券，并推送极光
+                                    			if(userCoupon < 1){
+                                    			    if (resourceInfo != null) {
+                                    				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+                                    				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+                                    				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+                                    				logger.info("sentNewUserBoluomeCouponForDineDash afUserDo = {}"+JSONObject.toJSONString(afUserDo)+"resultString = {}"+ resultString);
+                                    				JSONObject resultJson = JSONObject.parseObject(resultString);
+                                    				String code = resultJson.getString("code");
+                                    		        	//发券成功，推送极光 
+                                    				if ("0".equals(code)) {
+                                    				    //保存记录
+                                    				    AfBoluomeUserCouponDo boluomeUserCoupon = new AfBoluomeUserCouponDo();
+                                    				    boluomeUserCoupon.setChannel(H5GgActivity.REGISTER.getCode());
+                                    				    boluomeUserCoupon.setCouponId(resourceInfo.getRid());
+                                    				    boluomeUserCoupon.setStatus(1);
+                                    				    boluomeUserCoupon.setUserId(afUserDo.getRid());
+                                    				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
+                                    				    //推送极光
+                                        				    logger.info("sentNewUserBoluomeCouponForDineDash boluomeUserCoupon saveRecord = "+ JSONObject.toJSONString(boluomeUserCoupon));
+                                        				  //  if(i==0){
+                                        				      jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
+                                        				//  }
+                                    				}
+                                    			    }
+                                    			}
+                        			}
+                        		     }
+                		      }
+                	         }
+//                	    }    
+			}
+	    	}
 	    return 0;					    
 }
+	
+	
+	 private int sentBoluomeCouponGroup(AfUserDo afUserDo) {
+	           //如果用户存在该类型券，则不赠送
+	                AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
+			userCouponDo.setChannel(H5GgActivity.REGISTER_GP.getCode());
+			userCouponDo.setUserId(afUserDo.getRid());
+			userCouponDo.setCouponId(null);
+			int  userCouponN =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
+			if(userCouponN > 1){
+			    logger.info("sentBoluomeCouponGroup userCouponN = "+ userCouponN+"afUserDo = "+JSONObject.toJSONString(afUserDo));
+			    return 0;
+			}
+	     
+		    int result = 0;
+		    //获取优惠券组
+		    String tag = "_NEW_USER_BOLUOME_COUPON_";
+		    AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
+			if(couponCategory != null){
+			    	String coupons = couponCategory.getCoupons();
+				JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+				for (int i = 0; i < couponsArray.size(); i++) {
+					String couponId = (String) couponsArray.getString(i);
+					AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
+	            			logger.info("sentBoluomeCouponGroup resourceInfo = {},afUserDo = {}",  JSONObject.toJSONString(resourceInfo),JSONObject.toJSONString(afUserDo));
+	            			if(resourceInfo !=null){
+	            			AfBoluomeUserCouponDo userCoupon = new AfBoluomeUserCouponDo();
+	            			userCoupon.setChannel(H5GgActivity.REGISTER_GP.getCode());
+	            			userCoupon.setUserId(afUserDo.getRid());
+	            			userCoupon.setCouponId(Long.parseLong(couponId));
+	            			int  userCouponNum =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCoupon);
+//	            			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
+//	            			logger.info("sentNewUserBoluomeCouponForDineDash resourceInfo = {},afUserDo = {}",  JSONObject.toJSONString(resourceInfo),JSONObject.toJSONString(afUserDo));
+	            			//无券则发券，并推送极光
+	            			if(userCouponNum <1){
+	            			   
+	            				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+	            				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+	            				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+	            				logger.info("sentBoluomeCouponGroup afUserDo = {}"+ JSONObject.toJSONString(afUserDo)+" resultString = {}"+ resultString);
+	            				JSONObject resultJson = JSONObject.parseObject(resultString);
+	            				String code = resultJson.getString("code");
+	            		        	//发券成功，推送极光 
+	            				if ("0".equals(code)) {
+	            				    //保存记录
+	            				    AfBoluomeUserCouponDo boluomeUserCoupon = new AfBoluomeUserCouponDo();
+	            				    boluomeUserCoupon.setChannel(H5GgActivity.REGISTER_GP.getCode());
+	            				    boluomeUserCoupon.setCouponId(resourceInfo.getRid());
+	            				    boluomeUserCoupon.setStatus(1);
+	            				    boluomeUserCoupon.setUserId(afUserDo.getRid());
+	            				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
+	            				}
+	            			 }
+	            		}
+			}
+		}	    			    
+	       
+		    return result;
+		    // TODO Auto-generated method stub
+		    
+		}
+	
 	
 	 private String getCouponYesNoStatus(AfResourceDo resourceInfo, AfUserDo UserDo) {
 
