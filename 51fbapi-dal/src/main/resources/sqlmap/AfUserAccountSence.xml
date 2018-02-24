@@ -136,10 +136,10 @@
         WHERE
         user_id = #{userId} AND scene = #{scene}
     </update>
-    
+
     <update id ="updateTrainInitUsedAmount">
     	UPDATE af_user_account_sence s
-		JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
+		LEFT JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
 		FROM af_borrow_bill as a
 		INNER JOIN af_borrow as b ON a.borrow_id=b.id
 		INNER JOIN af_order as c ON b.order_id=c.id
@@ -156,7 +156,7 @@
     </update>
     <update id ="updateOnlineInitUsedAmountByBills">
     	UPDATE af_user_account_sence s
-		JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
+		LEFT JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
 		FROM af_borrow_bill as a
 		INNER JOIN af_borrow as b ON a.borrow_id=b.id
 		INNER JOIN af_order as c ON b.order_id=c.id
@@ -164,13 +164,13 @@
 		AND c.order_type <![CDATA[<>]]> 'TRADE' AND a.`user_id` = #{userId}
 		GROUP BY a.`user_id`) t
 		on s.user_id = t.user_id
-		set s.used_amount = s.used_amount + IFNULL(t.principle_amount,0),
+		set s.used_amount = IFNULL(t.principle_amount,0),
 		s.gmt_modified = NOW()
 		where s.scene = 'ONLINE' AND s.`user_id` = #{userId};
     </update>
 	<update id ="updateOnlineInitUsedAmountByOrderAp">
     	UPDATE af_user_account_sence s
-		JOIN (SELECT c.`user_id`, SUM(c.actual_amount) actual_amount
+		LEFT JOIN (SELECT c.`user_id`, SUM(c.actual_amount) actual_amount
 		from af_order c
 		WHERE c.order_type = 'SELFSUPPORT' AND pay_type = 'AP'
 		AND (`STATUS`='PAID' or `STATUS`='DELIVERED') and c.gmt_create >= '2018-01-05' and c.user_id = #{userId}
@@ -182,7 +182,7 @@
     </update>
     <update id ="updateOnlineInitUsedAmountByOrderCp">
     	UPDATE af_user_account_sence s
-		JOIN (SELECT c.`user_id`, SUM(c.borrow_amount) borrow_amount
+		LEFT JOIN (SELECT c.`user_id`, SUM(c.borrow_amount) borrow_amount
 		from af_order c
 		WHERE c.order_type = 'SELFSUPPORT' AND pay_type = 'CP'
 		AND (`STATUS`='PAID' or `STATUS`='DELIVERED') and c.gmt_create >= '2018-01-05' and c.user_id = #{userId}
