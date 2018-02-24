@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.util;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
-
 import com.itextpdf.tool.xml.XMLWorkerFontProvider;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import org.springframework.util.StringUtils;
@@ -11,20 +10,15 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.ArrayList;
 
 /**
  * @author yangfeng
  * @date 2017/12/24
  * @descriptions iText生成pdf的工具类，依赖iText
  */
-public final class PdfUtil {
+public final class HtmlToPdfUtil {
 
     private static final String FONT = "STSong-Light";
     private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -151,6 +145,11 @@ public final class PdfUtil {
         }
     }
 
+    public static String getCurrentOperatingSystem(){
+        String os = System.getProperty("os.name").toLowerCase();
+        System.out.println("---------当前操作系统是-----------" + os);
+        return os;
+    }
     /**
      * html内容转pdf(支持CSS)
      * @param content
@@ -163,7 +162,11 @@ public final class PdfUtil {
         ITextRenderer render = new ITextRenderer();
         ITextFontResolver fontResolver = render.getFontResolver();
         try {
-            fontResolver.addFont("C:/Windows/Fonts/SIMSUN.TTC", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            if("linux".equals(getCurrentOperatingSystem())){
+                fontResolver.addFont("/usr/share/fonts/chiness/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            }else{
+                fontResolver.addFont("c:/Windows/Fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }
             // 解析html生成pdf
             render.setDocumentFromString(content);
             //解决图片相对路径的问题

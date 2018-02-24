@@ -152,11 +152,11 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
         AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
         map.put("lender", lenderDo.getValue());// 出借人
         map.put("mobile", afUserDo.getMobile());// 联系电话
-        GetSeal(map, afUserDo, accountDo);//获取印章
+        getSeal(map, afUserDo, accountDo);//获取印章
         return accountDo;
     }
 
-    private void GetSeal(Map map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+    private void getSeal(Map map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
         try {
             AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
@@ -571,7 +571,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             String overdueRate = (String) map.get("overdueRate");
             map.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
             long time = new Date().getTime();
-//            map.put("templatePath",src+"renewal"+".pdf");
             map.put("protocolCashType","4");
             map.put("templatePath", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-01-30/18/platform.pdf");
             map.put("PDFPath", src + accountDo.getUserName() + "platform" + time + 1 + ".pdf");
@@ -580,8 +579,8 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             map.put("thirdPath", src + accountDo.getUserName() + "platform" + time + 4 + ".pdf");
             map.put("fileName", accountDo.getUserName() + "platform" + time + 4);
             map.put("signType","Key");
-            map.put("secondPartyKey","first");
-            map.put("firstPartyKey","second");
+            map.put("secondPartyKey","first");//阿拉丁签章关键字
+            map.put("firstPartyKey","second");//用户签章关键字
             map.put("sealWidth","60");
             map.put("posType","1");
 
@@ -589,7 +588,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
         }catch (Exception e){
-            logger.error("platformServiceProtocol error 平台服务协议生成失败 =>{}", e);
+            logger.error("platformServiceProtocol error 平台服务协议生成失败 =>{}", e.getMessage());
         }
     }
 
@@ -621,13 +620,13 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             FileDigestSignResult fileDigestSignResult = afESdkService.firstPartySign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
-                logger.error("甲方盖章证书生成失败 => {}",fileDigestSignResult.getMsg());
+                logger.error("借款人盖章证书生成失败 => {}",fileDigestSignResult.getMsg()+",borrowNo = "+map.get("borrowNo"));
                 return result;
             }
             stream = fileDigestSignResult.getStream();
             map.put("esignIdFirst", fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
-            logger.error("甲方盖章证书生成失败 => {}", e);
+            logger.error("甲方盖章证书生成失败 => {}", e.getMessage()+",borrowNo = "+map.get("borrowNo"));
             result = false;
             return result;
         }finally {
@@ -643,13 +642,13 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 FileDigestSignResult fileDigestSignResult = afESdkService.secondPartySign(map,stream);//阿拉丁盖章
                 if (fileDigestSignResult.getErrCode() != 0) {
                     result = false;
-                    logger.error("丙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg());
+                    logger.error("丙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg()+",borrowNo = "+map.get("borrowNo"));
                     return result;
                 }
                 stream = fileDigestSignResult.getStream();
                 map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
             } catch (Exception e) {
-                logger.error("丙方盖章证书生成失败 => {}", e);
+                logger.error("丙方盖章证书生成失败 => {}", e.getMessage()+",borrowNo = "+map.get("borrowNo"));
                 result = false;
                 return result;
             }finally {
@@ -664,7 +663,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 FileDigestSignResult fileDigestSignResult = afESdkService.thirdStreamSign(map,stream);//钱包盖章
                 if (fileDigestSignResult.isErrShow()) {
                     result = false;
-                    logger.error("e都市钱包盖章证书生成失败 => {}",fileDigestSignResult);
+                    logger.error("e都市钱包盖章证书生成失败 => {}",fileDigestSignResult+",borrowNo = "+map.get("borrowNo"));
                     return result;
                 }
                 stream = fileDigestSignResult.getStream();
@@ -676,7 +675,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 outputStream.flush();
                 outputStream.close();
             } catch (Exception e) {
-                logger.error("e都市钱包盖章证书生成失败 => {}", e);
+                logger.error("e都市钱包盖章证书生成失败 => {}", e.getMessage()+",borrowNo = "+map.get("borrowNo"));
                 return false ;
             }finally {
                 if (!result){
@@ -742,7 +741,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
                 return true;
             }
         } catch (Exception e) {
-            logger.error("证书上传oss失败 => {}", e.getMessage());
+            logger.error("证书上传oss失败 => {}", e.getMessage()+",borrowNo = "+map.get("borrowNo"));
             return false;
         } finally {
             if (null != input) {
