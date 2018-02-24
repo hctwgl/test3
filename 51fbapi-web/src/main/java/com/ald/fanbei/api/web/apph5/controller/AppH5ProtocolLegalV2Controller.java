@@ -477,7 +477,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 
 		logger.info(JSON.toJSONString(model));
-		return "/fanbei-web/app/protocolLegalCashLoanV2";
+		return "/fanbei-web/app/protocolLegalCashLoanV2WithoutSeal";
 	}
 
 	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
