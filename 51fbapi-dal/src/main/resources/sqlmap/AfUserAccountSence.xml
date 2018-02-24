@@ -161,7 +161,7 @@
 		INNER JOIN af_borrow as b ON a.borrow_id=b.id
 		INNER JOIN af_order as c ON b.order_id=c.id
 		WHERE a.is_delete=0 AND a.STATUS IN ( 'N','D')
-		AND c.order_type <> 'TRADE' AND a.`user_id` = #{userId}
+		AND c.order_type <![CDATA[<>]]> 'TRADE' AND a.`user_id` = #{userId}
 		GROUP BY a.`user_id`) t
 		on s.user_id = t.user_id
 		set s.used_amount = s.used_amount + IFNULL(t.principle_amount,0),
