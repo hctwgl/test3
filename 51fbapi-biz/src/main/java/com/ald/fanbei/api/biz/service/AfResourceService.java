@@ -1,14 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -241,10 +239,10 @@ public interface AfResourceService {
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
 	
 	/**
-	 * 获取借钱相关的所有配置信息
+	 * 获取合规借钱相关的所有配置信息
 	 * @return
 	 */
-	Map<String, Object> getBorrowCfgInfo();
+	BorrowLegalCfgBean getBorrowLegalCfgInfo();
 
 	/**
 	 *

@@ -690,51 +690,56 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
 	}
 	
-	public Map<String, Object> getBorrowCfgInfo() {
+	public BorrowLegalCfgBean getBorrowLegalCfgInfo() {
 		List<AfResourceDo> borrowHomeConfigList = this.newSelectBorrowHomeConfigByAllTypes();
-		Map<String, Object> data = new HashMap<String, Object>();
-
+		BorrowLegalCfgBean cfgBean = new BorrowLegalCfgBean();
+		
 		for (AfResourceDo afResourceDo : borrowHomeConfigList) {
+			String secType = afResourceDo.getSecType();
+			
+			String v = afResourceDo.getValue();
+			String v1 = afResourceDo.getValue1();
+			String typeDesc = afResourceDo.getTypeDesc();
 			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
-				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
-
-					data.put("maxAmount", afResourceDo.getValue());
-					data.put("minAmount", afResourceDo.getValue1());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
-					data.put("bankDouble", afResourceDo.getValue());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.BorrowCashPoundage.getCode())) {
-					data.put("poundage", afResourceDo.getValue());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
-					data.put("overduePoundage", afResourceDo.getValue());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
-					data.put("bankRate", afResourceDo.getValue());
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
-					data.put("supuerSwitch", afResourceDo.getValue());
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.borrowCashLenderForCash.getCode())) {
-					data.put("lender", afResourceDo.getValue());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.borrowCashTotalAmount.getCode())) {
-					data.put("amountPerDay", afResourceDo.getValue());
-				} else if (StringUtils.equals(afResourceDo.getSecType(),
-						AfResourceSecType.borrowCashShowNum.getCode())) {
-					data.put("nums", afResourceDo.getValue());
-				}else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
-					data.put("borrowCashDay", afResourceDo.getTypeDesc());
+				if (StringUtils.equals(secType, AfResourceSecType.BorrowCashRange.getCode())) {
+					cfgBean.maxAmount = new BigDecimal(v);
+					cfgBean.minAmount = new BigDecimal(v1);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+					cfgBean.bankDouble = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashPoundage.getCode())) {
+					cfgBean.poundage = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+					cfgBean.overduePoundage = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BaseBankRate.getCode())) {
+					cfgBean.bankRate = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
+					cfgBean.supuerSwitch = v;
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashLenderForCash.getCode())) {
+					cfgBean.lender = v;
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashTotalAmount.getCode())) {
+					cfgBean.amountPerDay = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
+					cfgBean.showNums = Integer.valueOf(v);
+				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+					cfgBean.borrowCashDay = typeDesc;
 				}
 			}
 		}
 
-		return data;
+		return cfgBean;
+	}
+	public static class BorrowLegalCfgBean {
+		public BigDecimal maxAmount;
+		public BigDecimal minAmount;
+		public BigDecimal bankDouble;
+		public BigDecimal poundage;
+		public BigDecimal overduePoundage;
+		public BigDecimal bankRate;
+		public String supuerSwitch;
+		public String lender;
+		public BigDecimal amountPerDay;
+		public Integer showNums;
+		public String borrowCashDay;
 	}
 
 	public List<Object> extractBannerCfgInfo(List<AfResourceDo> bannerResclist) {
