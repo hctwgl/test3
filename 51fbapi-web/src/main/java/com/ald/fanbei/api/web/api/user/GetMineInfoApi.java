@@ -120,8 +120,11 @@ public class GetMineInfoApi implements ApiHandle {
 		//增加运营位
 		
 		// 快速导航信息
+		String appModel = ""; //app型号
+		appModel = resp.getId();
+		
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
-						afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()));
+						afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()),appModel);
 		
 		// 快速导航
 		if (!navigationInfo.isEmpty()) {
@@ -191,7 +194,7 @@ private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerRescli
 	}
 
 	
-	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist) {
+	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist,String appModel) {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		List<Object> navigationList = new ArrayList<Object>();
 		int navCount = navResclist.size();
@@ -216,9 +219,24 @@ private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerRescli
 			dataMap.put("imageUrl", afResourceDo.getValue());
 			dataMap.put("titleName", afResourceDo.getName());
 			dataMap.put("type", secType);
-			dataMap.put("content", afResourceDo.getValue2());
+			//dataMap.put("content", afResourceDo.getValue2());
 			dataMap.put("sort", afResourceDo.getSort());
 			dataMap.put("color", afResourceDo.getValue3());
+			//
+			String content = "";
+			String model =  appModel.substring(0, 1);
+			if(model.equalsIgnoreCase("a")){
+			    content = afResourceDo.getPic1();
+			}
+			if(model.equalsIgnoreCase("i")){
+			    content = afResourceDo.getPic2();
+			}
+			if(afResourceDo.getSecType().equals("NAVIGATION_NATIVE")){
+			    dataMap.put("content", content);
+			}else{
+			    dataMap.put("content", afResourceDo.getValue2());
+			}
+			
 			navigationList.add(dataMap);
 		}
 		navigationInfo.put("navigationList", navigationList);
