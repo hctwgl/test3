@@ -147,7 +147,7 @@ public class StartCashierApi implements ApiHandle {
         }        
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
             checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
