@@ -26,7 +26,7 @@
     where type_id = #{typeId,jdbcType=BIGINT}
     AND type = #{type}
     and is_delete = 0
-    ORDER id desc
+    ORDER by id desc
     limit 1
   </select>
   <insert id="insert" parameterType="AfContractPdfDo" keyProperty="id" useGeneratedKeys="true">
