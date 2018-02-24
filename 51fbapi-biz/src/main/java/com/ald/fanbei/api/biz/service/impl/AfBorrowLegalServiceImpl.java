@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -15,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -26,8 +26,6 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -78,34 +76,30 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	}
 	
 	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
+		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
+		
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = true;
 		
-		this.dealResource(bo, userAccount); 	// 处理 额度 信息
-		this.dealBorrow(bo, userAccount);  		// 处理 借款/续期 信息
+		bo.minQuota = cfgBean.minAmount;
+		bo.borrowCashDay = cfgBean.borrowCashDay;
 		
-		this.dealFinal(bo, userAccount);		// 汇总处理
+		this.dealBorrow(bo, userAccount);  		// 处理 借款/续期 信息
+		AfBorrowCashRejectType rejectType = this.rejectCheck(bo, cfgBean, userAccount);
+		bo.rejectCode = rejectType.name();
+		
+		BigDecimal maxCfgAmount = cfgBean.maxAmount;
+		BigDecimal maxAmount = BigDecimal.ZERO;
+		if(!AfBorrowCashRejectType.PASS.equals(rejectType)) {
+			maxAmount = maxCfgAmount;
+		} else if(userAccount != null) {
+			BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
+			maxAmount = maxCfgAmount.compareTo(usableAmount) < 0 ? maxCfgAmount : usableAmount;
+		}
+		bo.maxQuota = maxAmount;
 
 		return bo;
-	}
-	
-	private void dealResource(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
-		//获取 最大/最小 借款额
-		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
-		
-		if(userAccount != null) {
-			BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
-			maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		}
-		
-		bo.maxQuota = this.calculateMaxAmount(maxAmount);
-		
-		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
-		
-		Map<String, Object> rate = afResourceService.getBorrowCfgInfo();
-		bo.borrowCashDay = rate.get("borrowCashDay").toString();
 	}
 	
 	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
@@ -139,20 +133,16 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 			bo.isBorrowOverdue = false;
 		}
 	}
-	
-	private void dealFinal(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
+	private AfBorrowCashRejectType rejectCheck(BorrowLegalHomeInfoBo bo, BorrowLegalCfgBean cfgBean, AfUserAccountDo userAccount) {
 		// 借款总开关
-		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
-		if (YesNoStatus.NO.getCode().equals(oldBorrowCfg.get("supuerSwitch").toString()) ) {
-			bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
-			return;
+		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
+			return AfBorrowCashRejectType.SWITCH_OFF;
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
 		//检查是否认证过，是否通过强风控
 		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
-			bo.rejectCode = AfBorrowCashRejectType.NO_AUTHZ.name();
-			return;
+			return AfBorrowCashRejectType.NO_AUTHZ;
 		}
 		
 		// 检查上笔贷款
@@ -163,34 +153,34 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
 				Date desTime = DateUtil.addDays(bo.borrowGmtApply, rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) { // 风控拒绝日期内
-					bo.rejectCode = AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
-					return;
+					return AfBorrowCashRejectType.NO_PASS_WEAK_RISK;
 				}
 			}
 		}
 		
 		//检查额度
 		if(bo.minQuota.compareTo(userAccount.getAuAmount()) > 0) {
-			bo.rejectCode = AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
-			return;
+			return AfBorrowCashRejectType.QUOTA_TOO_SMALL;
 		}
 		
-		if ( YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) 
-					&& YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus()) ) {
-			throw new FanbeiException(FanbeiExceptionCode.ZM_STATUS_EXPIRED);
-		}
+		return AfBorrowCashRejectType.PASS;
 	}
 	
 	private BorrowLegalHomeInfoBo processUnlogin(){
+		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
+		
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = false;
-
-		dealResource(bo, null);
 		
-		// 借款总开关
-		Map<String, Object> oldBorrowCfg = afResourceService.getBorrowCfgInfo();
-		if (YesNoStatus.NO.getCode().equals(oldBorrowCfg.get("supuerSwitch").toString()) ) {
+		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
+		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
+		
+		bo.maxQuota = this.calculateMaxAmount(maxAmount);
+		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
+		bo.borrowCashDay = cfgBean.borrowCashDay;
+		
+		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
 			bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
 		}
 		

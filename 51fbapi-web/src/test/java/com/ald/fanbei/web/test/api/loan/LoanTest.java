@@ -20,8 +20,8 @@ public class LoanTest  extends BaseTest{
 	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//cardId:3111464412
 //	String userName = "15669066271";	//cardId:3111464125
-//	String userName = "13958004662";	//胡朝永
-	String userName = "13460011555";	//张飞凯
+	String userName = "13958004662";	//胡朝永
+//	String userName = "13460011555";	//张飞凯
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -34,7 +34,7 @@ public class LoanTest  extends BaseTest{
 	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
-		testH5(url, null, null, false);
+		testH5(url, null, userName, true);
 	}
 	
 //	@Test
