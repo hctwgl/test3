@@ -509,7 +509,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     //还培训额度
                     if(trainAmount.compareTo(BigDecimal.ZERO) == 1) {
                         //减少培训使用额度
+                	AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), account.getUserId());                	
                         afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.TRAIN.getCode(),account.getUserId(),trainAmount.multiply(new BigDecimal(-1)));
+                        
+                        if(afUserAccountSenceDo.getUsedAmount().subtract(trainAmount).compareTo(BigDecimal.ZERO)<0)
+                        {//重新初始化额度
+                            afUserAccountSenceDao.updateTrainInitUsedAmount(account.getUserId());
+                        }
                     }
                     //线上账单金额（总金额-培训金额）
                     BigDecimal onlineAmount = backAmount.subtract(trainAmount);
@@ -522,6 +528,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                             afInterimAuDo.setInterimAmount(new BigDecimal(0));
                             afInterimAuDo.setInterimUsed(new BigDecimal(0));
                         }
+
+                	AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), account.getUserId());
                         //判断临时额度是否使用
                         if (afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1) {
                             //还款金额是否大于使用的临时额度
@@ -536,6 +544,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                                 afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
                                 //减少线上使用额度
                                 afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(), repayment.getUserId(), onlineAmount.subtract(backInterim).multiply(new BigDecimal(-1)));
+                                if(afUserAccountSenceDo.getUsedAmount().subtract(onlineAmount).compareTo(BigDecimal.ZERO)<0)
+                                {//重新初始化额度
+                                    afUserAccountSenceDao.updateOnlineInitUsedAmountByBills(account.getUserId());
+                                    afUserAccountSenceDao.updateOnlineInitUsedAmountByOrderAp(account.getUserId());
+                                    afUserAccountSenceDao.updateOnlineInitUsedAmountByOrderCp(account.getUserId());
+                                }
                             }
                             //增加临时额度使用记录
                             AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
@@ -548,6 +562,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                         } else {
                             //减少线上使用额度
                             afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),repayment.getUserId(), onlineAmount.multiply(new BigDecimal(-1)));
+                            if(afUserAccountSenceDo.getUsedAmount().subtract(onlineAmount).compareTo(BigDecimal.ZERO)<0)
+                            {//重新初始化额度
+                                afUserAccountSenceDao.updateOnlineInitUsedAmountByBills(account.getUserId());
+                                afUserAccountSenceDao.updateOnlineInitUsedAmountByOrderAp(account.getUserId());
+                                afUserAccountSenceDao.updateOnlineInitUsedAmountByOrderCp(account.getUserId());                                
+                            }
                         }
                     }
 //					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
