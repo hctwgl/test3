@@ -633,16 +633,10 @@ public class CollectionController {
         if (afContractPdfDo == null) {
             if ("V2".equals(version)){//v2版本
                 try {
-                    String url = afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((type-1), borrowNo);
+                    afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((type-1), borrowNo);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                /*if (type == 1) {//借款协议
-                    afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
-                } else if (type == 2) {//分期协议
-                    AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
-                    afLegalContractPdfCreateService.protocolLegalInstalment(afBorrowDo.getUserId(), afBorrowDo.getAmount(), afBorrowDo.getRid());
-                }*/
             }else if ("V1".equals(version)){//v1版本
                 if (type == 1) {
                     afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
