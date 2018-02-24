@@ -585,11 +585,12 @@ public class CollectionController {
         logger.info("getContractProtocolPdf id=" + borrowNo + ",timestamp=" + timestamp + ",sign1=" + sign + ",type=" + type);
         CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
         Long id = 0l;
-        String version = "";
+        String version;
         AfBorrowDo afBorrowDo = null;
         AfBorrowCashDo afBorrowCashDo = null;
         if (type == 1) {//现金借款协议
             afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+            logger.info("getContractProtocolPdf afBorrowCashDo =>{}",afBorrowCashDo);
             if (afBorrowCashDo == null) {
                 logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
@@ -608,6 +609,7 @@ public class CollectionController {
             id = afBorrowCashDo.getRid();
         } else if (type == 2) {//商品分期协议
             afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+            logger.info("getContractProtocolPdf afBorrowDo =>{}",afBorrowDo);
             if (afBorrowDo == null) {
                 logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
@@ -630,6 +632,7 @@ public class CollectionController {
             return updteBo;
         }
         AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
+        logger.info("getContractProtocolPdf afContractPdfDo start =>{}",afContractPdfDo+", version = >{}"+version);
         if (afContractPdfDo == null) {
             if ("V2".equals(version)){//v2版本
                 try {
@@ -652,6 +655,7 @@ public class CollectionController {
                 }
             }
             afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
+            logger.info("getContractProtocolPdf afContractPdfDo end =>{}",afContractPdfDo);
             if (afContractPdfDo == null) {
                 logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}", id);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_CONTRACT_PDF_CREATE_ERROR.getCode());
