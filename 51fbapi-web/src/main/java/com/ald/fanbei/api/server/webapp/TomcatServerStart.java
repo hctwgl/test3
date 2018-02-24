@@ -3,7 +3,9 @@ package com.ald.fanbei.api.server.webapp;
 import javax.servlet.ServletException;
 
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.Context;
 
 public class TomcatServerStart {
 
@@ -26,10 +28,11 @@ public class TomcatServerStart {
 		String tmpDir = System.getProperty("java.io.tmpdir");
 		String autoConfigPath = tmpDir + "/jettty_fanbei_api/WEB-INF/classes";
 
+		Embedded embed = new Embedded();
+		Context context = embed.createContext(this.context, webappPath);
 		Tomcat tomcat = new Tomcat();
-		tomcat.addWebapp(context, webappPath);
-		tomcat.initWebappDefaults(autoConfigPath);
 		tomcat.setPort(port);
+		tomcat.getHost().addChild(context);
 		tomcat.getHost().setAutoDeploy(autoDeploy);
 		tomcat.start();
 		tomcat.getServer().await();
