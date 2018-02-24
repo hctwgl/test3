@@ -67,4 +67,8 @@ public interface AfUserAuthService {
 
 	boolean allBasicAuthPassed(Long userId);
 	boolean allBasicAuthPassed(AfUserAuthDo authInfo);
+
+	boolean allSupplementAuthPassed(Long userId);
+
+	boolean allSupplementAuthPassed(AfUserAuthDo authInfo);
 }

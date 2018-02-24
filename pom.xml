@@ -15,6 +15,7 @@
 		<springext-plugin-version>1.0</springext-plugin-version>
 		<jackson-version>1.9.9</jackson-version>
 		<jetty-version>9.2.21.v20170120</jetty-version>
+		<tomcat-version>7.0.82</tomcat-version>
 		<autoconfig.plugin.version>1.0.10</autoconfig.plugin.version>
 		<project.build.sourceEncoding>
 			${java.encoding}
@@ -351,6 +352,27 @@
 			<groupId>org.javatuples</groupId>
 			<artifactId>javatuples</artifactId>
 			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-el</artifactId>
+			<version>${tomcat-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>${tomcat-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<version>${tomcat-version}</version>
 		</dependency>
 
 	</dependencies>

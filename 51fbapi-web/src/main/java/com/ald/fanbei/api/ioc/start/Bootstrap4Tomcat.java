@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.ald.fanbei.api.server.webapp.JettyServerStart;
+import javax.servlet.ServletException;
+
+import org.apache.catalina.LifecycleException;
+
+import com.ald.fanbei.api.server.webapp.TomcatServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**
@@ -12,7 +16,7 @@ import com.google.common.io.Files;
  * @author rongbo
  *
  */
-public class Bootstrap {
+public class Bootstrap4Tomcat {
 	
 	public static String ENV_TYPE = "test"; // test,pre_env,online
 	
@@ -22,10 +26,10 @@ public class Bootstrap {
 		String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		ROOT_PATH = rootPath.replace("target/classes/", "");
 	}
-	public static void main(String[] args) {
+	public static void main(String[] args) throws LifecycleException, ServletException {
 	
 		String webPath = ROOT_PATH + "src/main/webapp";
-		String bannerPath = Bootstrap.class.getClassLoader().getResource("banner.txt").getPath();
+		String bannerPath = Bootstrap4Tomcat.class.getClassLoader().getResource("banner.txt").getPath();
 
 		try {
 			List<String> lines = Files.readLines(new File(bannerPath), Charsets.UTF_8);
@@ -35,7 +39,7 @@ public class Bootstrap {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new JettyServerStart(webPath, 8089, "/", 2, true).start();
+		new TomcatServerStart(8089, "/",webPath,  true).start();
 
 	}
 }
