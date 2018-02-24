@@ -68,10 +68,8 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 	
 	public boolean isV2BorrowCash(Long borrowId) {
 		Long orderId = afBorrowLegalOrderDao.tuchByBorrowId(borrowId);
-		logger.info("isV2BorrowCash orderId=>{}",orderId);
 		if(orderId != null) {
 			Long orderCashId = afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId);
-			logger.info("isV2BorrowCash orderCashId=>{}",orderCashId);
 			if(orderCashId == null) return true;
 		}
 		return false;

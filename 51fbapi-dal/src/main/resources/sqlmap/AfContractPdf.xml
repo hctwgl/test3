@@ -26,6 +26,8 @@
     where type_id = #{typeId,jdbcType=BIGINT}
     AND type = #{type}
     and is_delete = 0
+    ORDER id desc
+    limit 1
   </select>
   <insert id="insert" parameterType="AfContractPdfDo" keyProperty="id" useGeneratedKeys="true">
     insert into af_contract_pdf (id, type, type_id,
