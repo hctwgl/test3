@@ -18,6 +18,8 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -179,5 +181,20 @@ public String zhiBalanceGetVerifyCodeApi(HttpServletRequest request, HttpServlet
     return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
 
 }
+    @Override
+    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+        // TODO Auto-generated method stub
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
 
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+    }
 }
