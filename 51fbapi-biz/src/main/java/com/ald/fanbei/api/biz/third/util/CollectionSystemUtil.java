@@ -266,7 +266,7 @@ public class CollectionSystemUtil extends AbstractThird {
 						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS);
 						return notifyRespBo;
 					}
-					
+
 					String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
 					Long borrowId = afBorrowCashDo.getRid();
 
@@ -298,6 +298,7 @@ public class CollectionSystemUtil extends AbstractThird {
 					notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
 				}
 			} else {
+				logger.info("offlineRepaymentNotify sign is invalid",FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
 				notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
 			}
 		} catch(FanbeiException e) {

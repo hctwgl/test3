@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -52,6 +54,7 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.timevale.tgtext.text.af;
@@ -101,6 +104,9 @@ public class BoluomeController extends AbstractThird {
     private AfBoluomeJipiaoFlightDao afBoluomeJipiaoFlightDao;
     @Autowired
     private AfBoluomeJipiaoPassengerDao afBoluomeJipiaoPassengerDao;
+    
+    @Autowired
+    private AfUserAccountSenceService afUserAccountSenceService;
 
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -265,10 +271,11 @@ public class BoluomeController extends AbstractThird {
 		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
 		orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
 	    }
-	    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
-	    if (userAccountInfo != null) {
-		orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-		orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+	    //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
+	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	    if (afUserAccountSenceDo != null) {
+		orderInfo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		orderInfo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
