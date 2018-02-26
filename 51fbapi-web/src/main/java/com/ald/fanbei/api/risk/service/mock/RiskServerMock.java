@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.risk.service.mock;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap;
+import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
 import com.github.tomakehurst.wiremock.standalone.WireMockServerRunner;
 /**
  * 风控restful接口模拟工具
@@ -26,7 +26,7 @@ public class RiskServerMock {
 		 
 		 */
 		String[] extArgs = new String[]{"--port","80",
-				"--root-dir",Bootstrap.ROOT_PATH};
+				"--root-dir",Bootstrap4Jetty.ROOT_PATH};
 		new WireMockServerRunner().run(extArgs);
 		
 		

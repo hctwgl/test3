@@ -1,10 +1,10 @@
-package com.ald.fanbei.api.jetty.webapp;
+package com.ald.fanbei.api.server.webapp;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap;
+import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
 /**
  * 加载properties
  * @author rongbo
@@ -31,7 +31,7 @@ public class AntxPropsLoader {
 	}
 
 	public void load() {
-		String antxPath = Bootstrap.ROOT_PATH + "src/conf/antx_" + Bootstrap.ENV_TYPE + ".properties";
+		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/antx_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
 		load(antxPath);
 	}
 

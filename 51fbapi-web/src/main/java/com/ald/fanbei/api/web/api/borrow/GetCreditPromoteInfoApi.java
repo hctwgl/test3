@@ -78,7 +78,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		Map<String, Object> locationModel = new HashMap<String, Object>();
 		Map<String, Object> contactorModel = new HashMap<String, Object>();
 		AfResourceDo afResourceDo =afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
-//		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
 		

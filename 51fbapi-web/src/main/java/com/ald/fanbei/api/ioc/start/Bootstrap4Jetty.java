@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.ald.fanbei.api.jetty.webapp.JettyServerStart;
+import com.ald.fanbei.api.server.webapp.JettyServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**
@@ -12,7 +12,7 @@ import com.google.common.io.Files;
  * @author rongbo
  *
  */
-public class Bootstrap {
+public class Bootstrap4Jetty {
 	
 	public static String ENV_TYPE = "test"; // test,pre_env,online
 	
@@ -25,7 +25,7 @@ public class Bootstrap {
 	public static void main(String[] args) {
 	
 		String webPath = ROOT_PATH + "src/main/webapp";
-		String bannerPath = Bootstrap.class.getClassLoader().getResource("banner.txt").getPath();
+		String bannerPath = Bootstrap4Jetty.class.getClassLoader().getResource("banner.txt").getPath();
 
 		try {
 			List<String> lines = Files.readLines(new File(bannerPath), Charsets.UTF_8);
