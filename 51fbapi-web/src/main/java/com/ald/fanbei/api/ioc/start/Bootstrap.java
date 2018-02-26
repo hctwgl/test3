@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.ald.fanbei.api.server.webapp.JettyServerStart;
+import com.ald.fanbei.api.jetty.webapp.JettyServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.fanbei.api.jetty.webapp;
 
 import java.io.File;
 import java.io.IOException;
