@@ -30,4 +30,5 @@ public class LoanHomeInfoBo {
 	public Date periodsLastGmtPlanRepay;
 	public String periodsStatus;
 	
+	public BigDecimal periodsUnChargeAmount;
 }

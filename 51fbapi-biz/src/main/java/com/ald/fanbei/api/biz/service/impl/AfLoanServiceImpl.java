@@ -481,6 +481,13 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
     	bo.periodsOverdueAmount = periodsOverdueAmount;
     	bo.periodsLastGmtPlanRepay = lastGmtPlanRepay;
     	bo.periodsStatus = periodsStatus;
+    	
+    	BigDecimal unChargeAmount = BigDecimal.ZERO;
+    	List<AfLoanPeriodsDo> unps = afLoanPeriodsDao.listUnChargeRepayPeriods(lastLoanDo.getRid());
+		for(AfLoanPeriodsDo p : unps) {
+			unChargeAmount = unChargeAmount.add(p.getAmount());
+    	}
+    	bo.periodsUnChargeAmount = unChargeAmount;
 		
 	}
 	/**
