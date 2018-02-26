@@ -32,7 +32,7 @@ public class TomcatServerStart {
 	private boolean autoDeploy = false;
 	private StandardContext ctx;
 	
-	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target", "test" };
+	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target", "test" ,"tomcat"};
 
 
 	PlaceHolderParser placeHolderParser = new PlaceHolderParser();
