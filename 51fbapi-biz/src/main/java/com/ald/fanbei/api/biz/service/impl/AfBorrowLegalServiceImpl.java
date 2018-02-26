@@ -37,7 +37,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 
 /**
- * 参考 {@link GetBorrowCashHomeInfoApi}
+ * 参考 {@link getLegalBorrowCashHomeInfoV2Api}
  * @author ZJF
  * @version 1.0.0 初始化
  * @date 2017-12-10 10:14:21
@@ -85,8 +85,9 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		bo.minQuota = cfgBean.minAmount;
 		bo.borrowCashDay = cfgBean.borrowCashDay;
 		
-		this.dealBorrow(bo, userAccount);  		// 处理 借款/续期 信息
-		AfBorrowCashRejectType rejectType = this.rejectCheck(bo, cfgBean, userAccount);
+		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastByUserId(userAccount.getUserId());
+		this.dealBorrow(bo, userAccount, cashDo);  		// 处理 借款/续期 信息
+		AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
 		bo.rejectCode = rejectType.name();
 		
 		BigDecimal maxCfgAmount = cfgBean.maxAmount;
@@ -102,16 +103,13 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		return bo;
 	}
 	
-	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount) {
-		Long userId = userAccount.getUserId();
-		
-		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastByUserId(userId);
-		if(cashDo == null) {
+	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
+		if(lastBorrowCash == null) {
 			bo.hasBorrow = false;
 			return;
 		}
 		
-		String status = cashDo.getStatus();
+		String status = lastBorrowCash.getStatus();
 		if( AfBorrowCashStatus.finsh.getCode().equals(status) 
 				|| AfBorrowCashStatus.transedfail.getCode().equals(status)
 				|| AfBorrowCashStatus.closed.getCode().equals(status)) {
@@ -120,20 +118,20 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 		
 		bo.hasBorrow = true;
-		bo.borrowId = cashDo.getRid();
+		bo.borrowId = lastBorrowCash.getRid();
 		bo.borrowStatus = status;
-		bo.borrowAmount = cashDo.getAmount();
-		bo.borrowArrivalAmount = cashDo.getArrivalAmount();
-		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(cashDo);
-		bo.borrowGmtApply = cashDo.getGmtCreate();
-		bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
-		if(cashDo.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
+		bo.borrowAmount = lastBorrowCash.getAmount();
+		bo.borrowArrivalAmount = lastBorrowCash.getArrivalAmount();
+		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(lastBorrowCash);
+		bo.borrowGmtApply = lastBorrowCash.getGmtCreate();
+		bo.borrowGmtPlanRepayment = lastBorrowCash.getGmtPlanRepayment();
+		if(lastBorrowCash.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
 			bo.isBorrowOverdue = true;
 		}else {
 			bo.isBorrowOverdue = false;
 		}
 	}
-	private AfBorrowCashRejectType rejectCheck(BorrowLegalHomeInfoBo bo, BorrowLegalCfgBean cfgBean, AfUserAccountDo userAccount) {
+	private AfBorrowCashRejectType rejectCheck(BorrowLegalCfgBean cfgBean, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
 		// 借款总开关
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
 			return AfBorrowCashRejectType.SWITCH_OFF;
@@ -146,12 +144,12 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 		
 		// 检查上笔贷款
-		if ( AfBorrowCashStatus.closed.getCode().equals(bo.borrowStatus) 
-					&& AfBorrowCashReviewStatus.refuse.getCode().equals(bo.borrowStatus) ) {
+		if ( AfBorrowCashStatus.closed.getCode().equals(lastBorrowCash.getStatus()) 
+					&& AfBorrowCashReviewStatus.refuse.getCode().equals(lastBorrowCash.getReviewStatus()) ) {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-				Date desTime = DateUtil.addDays(bo.borrowGmtApply, rejectTimePeriod);
+				Date desTime = DateUtil.addDays(lastBorrowCash.getGmtCreate(), rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) { // 风控拒绝日期内
 					return AfBorrowCashRejectType.NO_PASS_WEAK_RISK;
 				}
@@ -159,7 +157,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 		
 		//检查额度
-		if(bo.minQuota.compareTo(userAccount.getAuAmount()) > 0) {
+		if(cfgBean.minAmount.compareTo(userAccount.getAuAmount()) > 0) {
 			return AfBorrowCashRejectType.QUOTA_TOO_SMALL;
 		}
 		
