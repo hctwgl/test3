@@ -158,7 +158,8 @@
         seal.edspay_user_card_id,seal.user_name
         FROM af_contract_pdf_edspay_seal edspay
         LEFT JOIN af_user_seal seal on edspay.user_seal_id = seal.id
-        WHERE is_delete = 0 AND pdf_id=#{pdfId ,jdbcType=BIGINT}
+        WHERE seal.is_delete = 0 AND pdf_id=#{pdfId ,jdbcType=BIGINT}
+        and edspay.is_delete = 0
         LIMIT 0,1
     </select>
 

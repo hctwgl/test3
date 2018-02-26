@@ -672,11 +672,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         orderDo.setRebateAmount(rebateAmount);
         orderDo.setMobile(mobile);
         orderDo.setBankId(bankId);
-        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        if (userAccountInfo != null) {
-            orderDo.setAuAmount(userAccountInfo.getAuAmount());
-            orderDo.setUsedAmount(userAccountInfo.getUsedAmount());
+        //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	if (afUserAccountSenceDo != null) {
+            orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+            orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
         }
+	
         return orderDo;
     }
 
@@ -721,10 +723,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         orderDo.setGoodsPriceId(goodsPriceId);
         orderDo.setGoodsPriceName(goodsPriceName);
 
-        AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(userId);
-        if (accountDo != null) {
-            orderDo.setAuAmount(accountDo.getAuAmount());
-            orderDo.setUsedAmount(accountDo.getUsedAmount());
+        //AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	if (afUserAccountSenceDo != null) {
+            orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+            orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
         }
         return orderDo;
     }
@@ -838,6 +841,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public int callbackCompleteOrder(final AfOrderDo afOrder) {
         logger.info("callbackCompleteOrder begin , afOrder = {}" + afOrder);
+        final String key = Constants.GG_SURPRISE_LOCK + ":" + afOrder.getUserId() + ":" + afOrder.getRid();
+        long c = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 60, TimeUnit.SECONDS);
+        if (c > 1) {
+            return 0;
+        }
         return transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus status) {
@@ -852,15 +861,65 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     afUserAccountDao.updateOriginalUserAccount(accountInfo);
                     afUserAccountLogDao.addUserAccountLog(accountLog);
                     orderDao.updateOrder(afOrder);
+                    try{
+                	doboluomeActivityRebate(afOrder,userId,key);
+                    } catch (Exception e) {
+        		// TODO Auto-generated catch block
+        		// e.printStackTrace(); 不影响主业务
+        		 logger.info("doboluomeActivityRebate error:", e);
+        	    }
+                    redisTemplate.delete(key);
                     return 1;
                 } catch (Exception e) {
                     status.setRollbackOnly();
+                    redisTemplate.delete(key);
                     logger.info("callbackCompleteOrder error:", e);
                     return 0;
                 }
             }
         });
     }
+   private void doboluomeActivityRebate(AfOrderDo afOrder,Long userId,String key){
+    
+    //----------------------------------------------mqp add a switch--------------------------------------------------
+    AfResourceDo afResourceDo = new AfResourceDo();
+    afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
+    if (afResourceDo != null) {
+	 String swtich = "";
+	 String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	//线上为开启状态
+	 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+	     swtich = afResourceDo.getValue();
+	 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
+	     swtich = afResourceDo.getValue1();
+	 }
+        //String swtich = afResourceDo.getValue();
+
+        if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
+            // qiao+2017-11-14 15:30:27:the second time to light the activity
+            logger.info("doboluomeActivityRebate afBoluomeRebateService.doboluomeActivityRebate params orderId = {} , userId = {}",
+                    afOrder.getRid(), userId);
+            // send red packet
+            try {
+		afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
+	    } catch (Exception e) {
+		// TODO Auto-generated catch block
+		 e.printStackTrace(); 
+		 logger.info("doboluomeActivityRebate addRedPacket error:", e);
+	    }
+
+            // qiao+2017-11-14 15:30:27:the second time to light the activity
+            logger.info("doboluomeActivityRebate afBoluomeRebateService.sendCoupon  doboluomeActivityRebateparams orderId = {} , userId = {}",
+                    afOrder.getRid(), userId);
+            // send coupon
+            boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+        }
+    }
+
+    //----------------------------------------------mqp end add a switch--------------------------------------------------
+    logger.info("doboluomeActivityRebate complete!");
+    redisTemplate.delete(key);
+   }
 
     @Resource
     RedisTemplate redisTemplate;
@@ -2198,7 +2257,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String virtualCode = StringUtils.EMPTY;
+        //String virtualCode = StringUtils.EMPTY;
         if (orderInfo == null) {
             return resultMap;
         }
@@ -2214,7 +2273,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 resultMap.put(Constants.VIRTUAL_CHECK_NAME,shopDo.getName());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-            return null;
+            return resultMap;
         } else {
             AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
             AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
