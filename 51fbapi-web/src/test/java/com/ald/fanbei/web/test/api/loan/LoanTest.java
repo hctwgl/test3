@@ -16,12 +16,13 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-//	String urlBase = "https://btestapp.51fanbei.com";
-	String urlBase = "http://localhost:8080";
-//	String userName = "13638668564";	//cardId:3111464412
-//	String userName = "15669066271";	//cardId:3111464125
-	String userName = "13958004662";	//胡朝永
-//	String userName = "13460011555";	//张飞凯
+	String urlBase = "https://btestapp.51fanbei.com";
+//	String urlBase = "http://localhost:8080";
+//	String userName = "13638668564";	//田建成 cardId:3111464412 支付密码123456
+//	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
+//	String userName = "13958004662";	//胡朝永 支付密码123456
+//	String userName = "13460011555";	//张飞凯 支付密码123456
+	String userName = "15293971826";	//秦继强 支付密码888888
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -31,7 +32,7 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, userName, true);
@@ -55,18 +56,18 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
 		params.put("amount", 1000+"");
-		params.put("periods", 2+"");
+		params.put("periods", 3+"");
 		
 		params.put("remark", "白领贷借款");
 		params.put("loanRemark", "装修");
 		params.put("repayRemark", "工资");
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
+		params.put("payPwd", DigestUtils.md5Hex("888888"));
 		params.put("latitude", "20.35654");
 		params.put("longitude", "21.65645");
 		params.put("province", "浙江省");
