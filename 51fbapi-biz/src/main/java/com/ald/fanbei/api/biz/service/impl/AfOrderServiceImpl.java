@@ -2257,7 +2257,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String virtualCode = StringUtils.EMPTY;
+        //String virtualCode = StringUtils.EMPTY;
         if (orderInfo == null) {
             return resultMap;
         }
@@ -2273,7 +2273,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 resultMap.put(Constants.VIRTUAL_CHECK_NAME,shopDo.getName());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-            return null;
+            return resultMap;
         } else {
             AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
             AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
