@@ -517,6 +517,31 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 		return false;
 	}
+	
+	
+	@Override
+	public boolean allSupplementAuthPassed(Long userId) {
+		AfUserAuthDo authInfo = afUserAuthDao.getUserAuthInfoByUserId(userId);
+		return allSupplementAuthPassed(authInfo);
+	}
+	@Override
+	public boolean allSupplementAuthPassed(AfUserAuthDo authInfo) {
+		String alipayStatus = authInfo.getAlipayStatus();
+		String creditStatus = authInfo.getCreditStatus();
+		String fundStatus = authInfo.getFundStatus();
+		String jinpoStatus = authInfo.getJinpoStatus();
+		String zhengxinStatus = authInfo.getZhengxinStatus();
+		if(StringUtils.equals("Y", alipayStatus)
+				&& StringUtils.equals("Y", creditStatus)
+				&& StringUtils.equals("Y", fundStatus)
+				&& StringUtils.equals("Y", jinpoStatus)
+				&& StringUtils.equals("Y", zhengxinStatus)) {
+			return true;
+		}
+		return false;
+	}
+	
+	
 
 	private Map<String, Object> getAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus,AfResourceDo authDay,AfResourceDo userAuthDay,String scene,String auth_type,Date authDate){
 		Map<String, Object> data = new HashMap<String, Object>();

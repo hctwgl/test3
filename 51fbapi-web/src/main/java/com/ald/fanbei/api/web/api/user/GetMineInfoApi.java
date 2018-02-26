@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,9 @@ import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-
-
-
 import com.ald.fanbei.api.biz.bo.GetBrandCouponCountRequestBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -28,10 +27,12 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.RandomUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -64,6 +65,8 @@ public class GetMineInfoApi implements ApiHandle {
 	
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfSigninService afSigninService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -114,9 +117,132 @@ public class GetMineInfoApi implements ApiHandle {
 			String phone = randomPhone();
 			data.put("customerPhone", phone);
 		} 
+		//增加运营位
+		
+		// 快速导航信息
+		String appModel = ""; //app型号
+		appModel = resp.getId();
+		
+		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
+						afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()),appModel);
+		
+		// 快速导航
+		if (!navigationInfo.isEmpty()) {
+				data.put("navigationInfo", navigationInfo);
+		}
+		List<Object> bannerList = addBannerList(requestDataVo);
+		data.put("bannerList", bannerList);
+		//获取签到状态
+		
+		   AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+		   // data.put("isSignin", "N");
+		   
+		    if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
+		       data.put("isSignin", "N");
+
+			}else{
+
+				Date seriesTime = afSigninDo.getGmtSeries();
+				if(DateUtil.isSameDay(new Date(), seriesTime)){
+		        	data.put("isSignin", "Y");
+
+				}else{
+		        	 data.put("isSignin", "N");
+				}
+			}
+		
 		resp.setResponseData(data);
 		return resp;
 	}
+	private List<Object> addBannerList(RequestDataVo requestDataVo){
+	 //String resourceType =  ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
+	 String resourceType =  Constants.PERSONAL_CENTER_BANNER;
+	 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	 logger.info("getDrainageBannerListApi and type = {}", type);
+	 List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
+	//线上为开启状态
+	 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+	 bannerList1 = afResourceService
+			.getResourceHomeListByTypeOrderBy(resourceType);
+	 }
+	 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+	//预发不区分状态
+	 bannerList1 =  afResourceService
+			.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+	 }
+	logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
+	List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
+	//resp.addResponseData("bannerList", bannerList);
+	
+	return bannerList;
+}
+private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+	List<Object> bannerList = new ArrayList<Object>();
+	
+	for (AfResourceDo afResourceDo : bannerResclist) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("imageUrl", afResourceDo.getValue());
+	data.put("titleName", afResourceDo.getName());
+	data.put("type", afResourceDo.getValue1());
+	data.put("content", afResourceDo.getValue2());
+	data.put("sort", afResourceDo.getSort());
+	
+	bannerList.add(data);
+	
+	}
+	return bannerList;
+	}
+
+	
+	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist,String appModel) {
+		Map<String, Object> navigationInfo = new HashMap<String, Object>();
+		List<Object> navigationList = new ArrayList<Object>();
+		int navCount = navResclist.size();
+		for (int i = 0; i < navCount; i++) {
+			// 如果配置大于4个，小于8个，则只显示4个
+		      
+			if (navCount >= 4 && navCount < 8) {
+				if (i >= 4) {
+					break;
+				}
+			} else if (navCount >= 8) {
+				// 如果配置大于等于8个，则只显示8个
+				if (i >= 8) {
+					break;
+				}
+			}else if(navCount < 4 ){
+			    break;
+			}
+			AfResourceDo afResourceDo = navResclist.get(i);
+			String secType = afResourceDo.getSecType();
+			Map<String, Object> dataMap = new HashMap<String, Object>();
+			dataMap.put("imageUrl", afResourceDo.getValue());
+			dataMap.put("titleName", afResourceDo.getName());
+			dataMap.put("type", secType);
+			//dataMap.put("content", afResourceDo.getValue2());
+			dataMap.put("sort", afResourceDo.getSort());
+			dataMap.put("color", afResourceDo.getValue3());
+			//
+			String content = "";
+			String model =  appModel.substring(0, 1);
+			if(model.equalsIgnoreCase("a")){
+			    content = afResourceDo.getPic1();
+			}
+			if(model.equalsIgnoreCase("i")){
+			    content = afResourceDo.getPic2();
+			}
+			if(afResourceDo.getSecType().equals("NAVIGATION_NATIVE")){
+			    dataMap.put("content", content);
+			}else{
+			    dataMap.put("content", afResourceDo.getValue2());
+			}
+			
+			navigationList.add(dataMap);
+		}
+		navigationInfo.put("navigationList", navigationList);
+		return navigationInfo;
+	}
+
 	
 	/**
 	 * 随机生成一个客服电话号码

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.jetty.webapp;
+package com.ald.fanbei.api.server.webapp;
 
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.WebAppClassLoader;

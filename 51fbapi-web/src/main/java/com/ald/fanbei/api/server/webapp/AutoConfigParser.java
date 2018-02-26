@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.jetty.webapp;
+package com.ald.fanbei.api.server.webapp;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap;
+import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
 import com.google.common.collect.Lists;
 /**
  * 解析autoconfig配置文件
@@ -65,7 +65,7 @@ public class AutoConfigParser {
 	}
 	
 	AutoConfig parse() {
-		String rootPath = Bootstrap.ROOT_PATH;
+		String rootPath = Bootstrap4Jetty.ROOT_PATH;
 		return parse(rootPath + autoConfigPath);
 	}
 	

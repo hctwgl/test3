@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.jetty.webapp;
+package com.ald.fanbei.api.server.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap;
+import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**
@@ -29,7 +29,7 @@ public class PlaceHolderParser {
 		List<String> scriptList = autoConfig.getScriptList();
 		for (String scriptPath : scriptList) {
 			try {
-				String readPath = Bootstrap.ROOT_PATH + "src/main/resources/"
+				String readPath = Bootstrap4Jetty.ROOT_PATH + "src/main/resources/"
 						+ scriptPath.replace("WEB-INF/classes/", "");
 				String tmpDir = System.getProperty("java.io.tmpdir");
 				String writePath = tmpDir + "/jettty_fanbei_api/" + scriptPath;

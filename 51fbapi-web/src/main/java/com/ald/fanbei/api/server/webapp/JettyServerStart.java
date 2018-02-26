@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.jetty.webapp;
+package com.ald.fanbei.api.server.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap;
+import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
 
 /**
  * Jetty嵌入式启动类
@@ -44,7 +44,7 @@ public class JettyServerStart {
 	private String[] _dftConfigurationClasses = { "org.eclipse.jetty.webapp.WebInfConfiguration",
 			"org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
 			"org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-			"com.ald.fanbei.api.jetty.webapp.FanbeiConfiguration" };
+			"com.ald.fanbei.api.server.webapp.FanbeiConfiguration" };
 
 	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target", "test" };
 
@@ -132,7 +132,7 @@ public class JettyServerStart {
 
 	private void startNioFileWatcher() throws Exception {
 		List<File> scanList = new ArrayList<File>();
-		getAllDirectory(new File(Bootstrap.ROOT_PATH).getParentFile(), scanList);
+		getAllDirectory(new File(Bootstrap4Jetty.ROOT_PATH).getParentFile(), scanList);
 		FileSystem fileSystem = FileSystems.getDefault();
 		WatchService watcher = fileSystem.newWatchService();
 		for (File dir : scanList) {
@@ -180,7 +180,7 @@ public class JettyServerStart {
 		List<File> scanList = new ArrayList<File>();
 		scanList.add(new File(webappPath, "WEB-INF"));
 		scanList.add(new File(webappPath));
-		scanList.add(new File(Bootstrap.ROOT_PATH).getParentFile());
+		scanList.add(new File(Bootstrap4Jetty.ROOT_PATH).getParentFile());
 		// getAllDirectory(new File(Bootstrap.ROOT_PATH).getParentFile(),
 		// scanList);
 
