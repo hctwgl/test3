@@ -43,4 +43,6 @@ public interface AfUserAuthStatusService {
      * 检测指定场景下用户是否通过信用认证
      */
     boolean isPass(String scene, Long userId);
+
+	String getBldOpenStatus(Long userId);
 }

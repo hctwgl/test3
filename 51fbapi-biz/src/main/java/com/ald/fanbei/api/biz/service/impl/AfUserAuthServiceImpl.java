@@ -503,13 +503,13 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	@Override
 	public boolean allBasicAuthPassed(AfUserAuthDo authInfo) {
 		String bankcardStatus = authInfo.getBankcardStatus();
-		String contactorStatus = authInfo.getContactorStatus();
+		String teldirStatus = authInfo.getTeldirStatus();
 		String mobileStatus = authInfo.getMobileStatus();
 		String zmStatus = authInfo.getZmStatus();
 		String realnameStatus = authInfo.getRealnameStatus();
 		
 		if(StringUtils.equals("Y", bankcardStatus)
-				&& StringUtils.equals("Y", contactorStatus)
+				&& StringUtils.equals("Y", teldirStatus)
 				&& StringUtils.equals("Y", mobileStatus)
 				&& StringUtils.equals("Y", zmStatus)
 				&& StringUtils.equals("Y", realnameStatus)) {

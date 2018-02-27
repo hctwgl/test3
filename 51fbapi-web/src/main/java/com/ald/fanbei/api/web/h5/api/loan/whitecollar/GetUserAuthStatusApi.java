@@ -47,7 +47,6 @@ public class GetUserAuthStatusApi implements H5Handle {
 		
 		String fundStatus = userAuthInfo.getFundStatus();
 		String jinpoStatus = userAuthInfo.getJinpoStatus();
-		String alipayStatus = userAuthInfo.getAlipayStatus();
 		String onlinebankStatus = userAuthInfo.getOnlinebankStatus();
 		
 		if(StringUtils.isBlank(fundStatus)) {
@@ -57,16 +56,12 @@ public class GetUserAuthStatusApi implements H5Handle {
 			jinpoStatus = "A";
 		}
 	
-		if(StringUtils.isBlank(alipayStatus)) {
-			alipayStatus = "A";
-		}
 		if(StringUtils.isBlank(onlinebankStatus)) {
 			onlinebankStatus = "A";
 		}
 		
 		data.put("fundStatus", fundStatus);
 		data.put("jinpoStatus", jinpoStatus);
-		data.put("alipayStatus", alipayStatus);
 		
 		//网银认证
 		data.put("onlinebankStatus", onlinebankStatus);
@@ -88,10 +83,6 @@ public class GetUserAuthStatusApi implements H5Handle {
 		// 网银认证
 		data.put("onlinebankAuthParam", onbkRiskOrderNo + "," + userId);
 		
-		String alipRiskOrderNo = riskUtil.getOrderNo("alip", idNumber.substring(idNumber.length() - 4, idNumber.length()));
-
-		data.put("alipayAuthParam", alipRiskOrderNo + "," + userId);
-
 		resp.setResponseData(data);
 		return resp;
 	}
