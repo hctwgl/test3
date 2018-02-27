@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfRecycleDo;
+import com.ald.fanbei.api.dal.domain.AfRecycleRatioDo;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
+import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 
 /**
  * 
@@ -14,6 +16,10 @@ public interface AfRecycleService {
 	Integer addRecycleOrder(AfRecycleQuery afRecycleQuery);
 
 	AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery);
+
+	AfRecycleRatioDo getRecycleRatio(AfRecycleRatioQuery afRecycleRatioQuery);//获取回收业务系统系数
+
+
 
 
 }

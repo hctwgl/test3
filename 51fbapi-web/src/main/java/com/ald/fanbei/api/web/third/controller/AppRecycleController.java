@@ -1,6 +1,7 @@
-package com.ald.fanbei.api.web.apph5.controller;
+package com.ald.fanbei.api.web.third.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.AppRecycleUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -9,7 +10,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
-import com.ald.fanbei.api.web.apph5.controller.util.AppRecycleControllerUtil;
+import com.ald.fanbei.api.web.util.AppRecycleControllerUtil;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 
 /**
  * @Description: 有得卖三方 回收业务
@@ -40,6 +39,8 @@ public class AppRecycleController extends BaseController{
 	private BizCacheUtil bizCacheUtil;
 	@Autowired
 	private AfUserService afUserService;
+	@Autowired
+	private AfUserAccountService afUserAccountService;
 
 	/**
 	 * 创建订单 有得卖 三方 推送过来的订单数据(发券)
@@ -52,7 +53,7 @@ public class AppRecycleController extends BaseController{
 		String key = "";
 		try {
 			AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
-			if(AppRecycleControllerUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())){
+			if(AppRecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())){
 				logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
 				String refOrderId = afRecycleQuery.getRefOrderId();
 				Long uid = afRecycleQuery.getUid();
@@ -61,7 +62,7 @@ public class AppRecycleController extends BaseController{
 				if (isNotLock) {
 					AfRecycleDo afRecycleDo = afRecycleService.getRecycleOrder(afRecycleQuery);
 					if(null == afRecycleDo){//订单不存在，新增一条订单
-						afRecycleService.addRecycleOrder(afRecycleQuery);
+						afRecycleService.addRecycleOrder(afRecycleQuery);//新增一条订单
 					}else{
 						result = H5CommonResponse.getNewInstance(true, "订单已存在", null, "").toString();
 					}

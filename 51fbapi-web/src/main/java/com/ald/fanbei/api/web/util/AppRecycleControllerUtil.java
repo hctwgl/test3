@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.apph5.controller.util;
+package com.ald.fanbei.api.web.util;
 
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
@@ -6,6 +6,10 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 有得卖三方 辅助类
@@ -13,8 +17,6 @@ import java.math.BigDecimal;
  * @date 2018年2月26日 下午4:14:31
  */
 public class AppRecycleControllerUtil {
-
-    public static final String PARTNER_ID = "1136587444";//与有得卖合作id，对应我们平台的appid
 
     /**
      * 数据封装
@@ -35,4 +37,6 @@ public class AppRecycleControllerUtil {
         afRecycleQuery.setStatus(status);
         return afRecycleQuery;
     }
+
+
 }
