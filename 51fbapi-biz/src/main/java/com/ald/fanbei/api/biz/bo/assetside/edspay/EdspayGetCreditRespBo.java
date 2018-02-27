@@ -23,6 +23,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private String bankNo;//银行卡号
 	private String acctName;//借款人户名（可选）
 	private BigDecimal money;//借款金额
+	private BigDecimal arriveMoney;//实际到账金额
 	private BigDecimal apr;//借款年化利率
 	private Integer timeLimit;//借款期限（单位：天）
 	private Long loanStartTime;//借款开始时间戳（单位：秒）
@@ -312,6 +313,14 @@ public class EdspayGetCreditRespBo implements Serializable {
 
 	public void setRepaymentPlans(List<RepaymentPlan> repaymentPlans) {
 		this.repaymentPlans = repaymentPlans;
+	}
+
+	public BigDecimal getArriveMoney() {
+		return arriveMoney;
+	}
+
+	public void setArriveMoney(BigDecimal arriveMoney) {
+		this.arriveMoney = arriveMoney;
 	}
 	
 	
