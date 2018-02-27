@@ -2,21 +2,16 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.biz.util.ProtocolUtil;
-import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.H5Handle;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.GetWhiteLoanProtocolParam;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +24,16 @@ import java.util.Map;
  */
 @Component("getWhiteLoanProtocolApi")
 @Validator("getWhiteLoanProtocolParam")
-public class GetWhiteLoanProtocolApi extends GetBorrowCashBase implements ApiHandle {
+public class GetWhiteLoanProtocolApi implements H5Handle {
 
-
-    @Resource
-    ProtocolUtil protocolUtil;
-    @Resource
-    NumberWordFormat numberWordFormat;
     @Resource
     AfResourceService afResourceService;
 
     @Override
-    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+    public H5HandleResponse process(Context context) {
+        H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         // 获取客户端请求参数
-        GetWhiteLoanProtocolParam param = (GetWhiteLoanProtocolParam) requestDataVo.getParamObj();
+        GetWhiteLoanProtocolParam param = (GetWhiteLoanProtocolParam) context.getParamEntity();
         String userName = context.getUserName();
         Map<String, Object> data = new HashMap<>();
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("WHITE_AGREEMENT");

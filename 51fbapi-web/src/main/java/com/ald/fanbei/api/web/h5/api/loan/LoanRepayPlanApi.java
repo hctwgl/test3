@@ -114,8 +114,10 @@ public class LoanRepayPlanApi implements H5Handle {
 					}
 					
 					allRestAmount = allRestAmount.add(perPeriodAmount);
-					if(!afLoanRepaymentService.canRepay(loanPeriodsDo)) { 
+					if(!afLoanRepaymentService.canRepay(loanPeriodsDo)) {
 						allActualAmount = allActualAmount.add(loanPeriodsDo.getAmount()); //未出账的期 只用还本金
+					}else {
+						allActualAmount = allActualAmount.add(perPeriodAmount);
 					}
 				}else if(status.equals(AfLoanPeriodStatus.REPAYING.name())){	// 还款中
 					loanPeriodsVo.setStatus("D");

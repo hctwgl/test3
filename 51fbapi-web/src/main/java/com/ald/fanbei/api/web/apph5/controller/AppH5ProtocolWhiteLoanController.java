@@ -291,7 +291,6 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 
 
 	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
-
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 		model.put("lender", lenderDo.getValue());// 出借人
 	}
