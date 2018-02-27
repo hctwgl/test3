@@ -3,7 +3,7 @@ package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.biz.util.ProtocolUtil;
+import com.ald.fanbei.api.biz.util.WhiteLoanProtocolUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -12,14 +12,11 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.ApplyLegalBorrowCashParam;
 import com.ald.fanbei.api.web.validator.bean.GetCashLoanProtocolParam;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +36,7 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
     @Resource
     AfResourceService afResourceService;
     @Resource
-    ProtocolUtil protocolUtil;
+    WhiteLoanProtocolUtil whiteLoanProtocolUtil;
     @Resource
     NumberWordFormat numberWordFormat;
 
@@ -49,19 +46,18 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
         // 获取客户端请求参数
         GetCashLoanProtocolParam param = (GetCashLoanProtocolParam) requestDataVo.getParamObj();
         Map<String, Object> data = new HashMap<>();
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("userName",context.getUserName());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("userName", context.getUserName());
         String type = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
-        map.put("type",type);
-        map.put("borrowId","");
-        map.put("poundage",param.getPoundage());
-        map.put("borrowAmount",param.getBorrowAmount());
-        List<AfResourceDo> cashLoanList = protocolUtil.getProtocolList("cashLoan",map);
-        data.put("cashLoanList",cashLoanList);
+        map.put("type", type);
+        map.put("borrowId", "");
+        map.put("poundage", param.getPoundage());
+        map.put("borrowAmount", param.getBorrowAmount());
+        List<AfResourceDo> cashLoanList = whiteLoanProtocolUtil.getProtocolList("whilteLoan", map);
+        data.put("cashLoanList", cashLoanList);
         resp.setResponseData(data);
         return resp;
     }
-
 
 
 }
