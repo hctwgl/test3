@@ -903,7 +903,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
         AfUserSealDo afUserSealDo = new AfUserSealDo();
         AfUserSealDo afUserSealDo1 = new AfUserSealDo();
-        if ("edspay".equals(afUserDo.getMajiabaoName()) || afUserDo.getRid() == null) {
+        if ("edspay".equals(afUserDo.getMajiabaoName()) || afUserDo.getRid() == null) {//e都市钱包用户
             afUserSealDo = selectUserSealByCardId(accountDo.getIdNumber());
         } else {
             afUserSealDo = selectUserSealByUserId(afUserDo.getRid());

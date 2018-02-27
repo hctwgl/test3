@@ -552,7 +552,7 @@
 				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
 				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
-				
+
 			</map>
 		</constructor-arg>
 	</bean>
@@ -567,11 +567,11 @@
 				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
 				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
 				<entry key="/h5/loan/getLoanHomeInfo" value-ref="getLoanHomeInfoApi" />
-				
+
 				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
 				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />
 				<entry key="/h5/loan/getLoanRepayments" value-ref="getLoanRepaymentsApi" />
-				
+				<entry key="/h5/loan/getWhiteLoanProtocol" value-ref="getWhiteLoanProtocolApi" />
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
