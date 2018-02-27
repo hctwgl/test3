@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfRecycleDao">
+	
+	<sql id="commSqlField">
+		id,is_delete,gmt_create,gmt_modified,ref_order_id,pay_type,`status`,is_disabled
+	</sql>
+
+	<!-- 添加订单-->
+	<insert id="addRecycleOrder" parameterType="AfRecycleQuery" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_order_recycle
+			(
+				gmt_create,
+				gmt_modified,
+				ref_order_id,
+				pay_type,
+				status,
+				is_disabled
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{refOrderId},
+				#{apyType},
+				#{status},
+				0
+			)
+	</insert>
+
+	<!-- 查找单个订单-->
+	<select id="getRecycleOrder" parameterType="AfRecycleQuery" resultType="AfRecycleDo">
+		SELECT
+			<include refid="commSqlField"/>
+		FROM
+			af_order_recycle
+		WHERE
+			is_delete=0
+		AND
+			ref_oreder_id = #{refOrderId}
+	</select>
+
+</mapper>
