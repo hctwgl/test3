@@ -246,7 +246,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv);
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
-                        dealRepaymentFail(payTradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment);
+                	String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+                        dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);                        
+                        throw new FanbeiException(errorMsg); 
                     } else {
                         dealRepaymentFail(payTradeNo, "", false, "", repayment);
                     }
@@ -323,8 +325,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
                                 bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
                         if (!respBo.isSuccess()) {
-                            dealRepaymentFail(payTradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment);
-                            throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                            String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+                            dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);
+                            throw new FanbeiException(errorMsg);
                         }
                         map.put("resp", respBo);
                     } else if (cardId == -2) {// 余额支付
