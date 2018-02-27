@@ -122,8 +122,8 @@ public class GetMineInfoApi implements ApiHandle {
 		String userName = "";
 		String realName = "";
 		String idNumber = "";
-		BigDecimal jfbAmount = new BigDecimal(0.00);
-		BigDecimal rebateAmount = new BigDecimal(0.00);
+		BigDecimal jfbAmount = new BigDecimal("0.00");
+		BigDecimal rebateAmount = new BigDecimal("0.00");
 		String mobile = "";
 		String isPay = "";
 		String vipLevel = "";
@@ -145,7 +145,7 @@ public class GetMineInfoApi implements ApiHandle {
         		  }
 		 
 		}
-		
+		data.put("plantformCouponCount", 0);
 		if(afUserDo !=null){
 		            mobile = afUserDo.getMobile();
         		if (appVersion < 340) {
