@@ -14,8 +14,8 @@ public class AppRecycleUtil {
 
     public static final String PARTNER_ID = "1136587444";//与有得卖合作id，对应我们平台的appid
 
-    public static final String YDM_CALLBACK_URL = "https://";//有得卖订单确认接口
-    public static final String PRIVATE_KEY = "";//有得卖签名私钥
+    public static final String YDM_CALLBACK_URL = "http:// 51fanbei.youdemai.com/api/fanbei/sendverify";//有得卖订单确认接口
+    public static final String PRIVATE_KEY = "FANBEI_YDM_@#$#%$&";//有得卖签名私钥
 
     /**
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串

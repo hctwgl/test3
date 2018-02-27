@@ -39,8 +39,6 @@ public class AppRecycleController extends BaseController{
 	private BizCacheUtil bizCacheUtil;
 	@Autowired
 	private AfUserService afUserService;
-	@Autowired
-	private AfUserAccountService afUserAccountService;
 
 	/**
 	 * 创建订单 有得卖 三方 推送过来的订单数据(发券)

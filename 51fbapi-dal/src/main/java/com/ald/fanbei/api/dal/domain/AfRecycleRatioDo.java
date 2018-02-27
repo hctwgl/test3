@@ -4,7 +4,6 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
-
 import java.math.BigDecimal;
 
 /**
