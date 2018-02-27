@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.dal.dao.AfUserAuthStatusDao;
@@ -90,4 +91,13 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     	}
     	return false;
     }
+
+	@Override
+	public String getBldOpenStatus(Long userId) {
+		AfUserAuthStatusDo authStatus = this.getAfUserAuthStatusByUserIdAndScene(userId, SceneType.BLD_LOAN.getCode());
+		if(authStatus != null) {
+			return authStatus.getStatus();
+		}
+		return "N";
+	}
 }
