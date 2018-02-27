@@ -36,8 +36,8 @@ public class RepalceMainCardApi implements ApiHandle {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
-                    afUserBankcardService.updateMainBankCard(param.getUserId());
-                    afUserBankcardService.updateViceBankCard(param.getBackcard(),param.getUserId());
+                   int count =  afUserBankcardService.updateMainBankCard(param.getUserId());
+                   int count1 = afUserBankcardService.updateViceBankCard(param.getBackcard(),param.getUserId());
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
