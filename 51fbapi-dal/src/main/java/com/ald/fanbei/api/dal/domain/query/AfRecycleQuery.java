@@ -14,6 +14,16 @@ import java.math.BigDecimal;
 public class AfRecycleQuery extends Page<AfRecycleDo>{
 
 	private static final long serialVersionUID = -722303985401230132L;
+	
+	private Integer rid;
+
+	public Integer getRid() {
+		return rid;
+	}
+
+	public void setRid(Integer rid) {
+		this.rid = rid;
+	}
 
 	private Long uid;//用户id
 

@@ -29,7 +29,7 @@
 		useGeneratedKeys="true">
 		INSERT INTO
 		af_user_account
-		(
+		<!-- (
 		user_id,
 		user_name
 		)
@@ -37,7 +37,30 @@
 		(
 		#{userId},
 		#{userName}
-		)
+		) -->
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="userName != null">        
+	            user_name,
+	        </if>
+	        <if test="rebateAmount != null">        
+	            rebate_amount,
+	        </if>	        
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="user_id != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="rebateAmount != null" >
+		       #{rebateAmount,jdbcType=DECIMAL},
+		    </if>		    
+        </trim>
 	</insert>
 
 	<update id="updateUserAccount" parameterType="AfUserAccountDo">

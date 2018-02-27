@@ -5,6 +5,7 @@ package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  *
@@ -15,44 +16,74 @@ import java.math.BigDecimal;
 public class AfRecycleRatioDo extends AbstractSerial {
 
 	private static final long serialVersionUID = 1L;
-	private String refOrderId;//有得卖对应的订单号
+	private Integer id;//自增id
+	
+	private Integer isDelete;//'是否删除 1：是 0：否'
+	
+	private Date gmtCreate;
+	
+	private Date gmtModified;
+	
+	private Integer type;//类型 1：返现系数 2：提现翻倍系数
+	
+	private BigDecimal ratio;//比例
+	
+	private Integer isDesabled;//是否失效 1：是 0：否	
 
-	private Integer payType;//支付方式
-
-	private BigDecimal settlePrice;//结算价格
-
-	private Integer status;//订单状态 1：待确认 2：待上门 3：待检测 6：待发货 7：待收货 8：待支付 66：已完成 98：终止退回 99：已终止
-
-
-	public String getRefOrderId() {
-		return refOrderId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setRefOrderId(String refOrderId) {
-		this.refOrderId = refOrderId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public Integer getPayType() {
-		return payType;
+	public Integer getIsDelete() {
+		return isDelete;
 	}
 
-	public void setPayType(Integer payType) {
-		this.payType = payType;
+	public void setIsDelete(Integer isDelete) {
+		this.isDelete = isDelete;
 	}
 
-	public BigDecimal getSettlePrice() {
-		return settlePrice;
+	public Date getGmtCreate() {
+		return gmtCreate;
 	}
 
-	public void setSettlePrice(BigDecimal settlePrice) {
-		this.settlePrice = settlePrice;
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
 	}
 
-	public Integer getStatus() {
-		return status;
+	public Date getGmtModified() {
+		return gmtModified;
 	}
 
-	public void setStatus(Integer status) {
-		this.status = status;
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
 	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public BigDecimal getRatio() {
+		return ratio;
+	}
+
+	public void setRatio(BigDecimal ratio) {
+		this.ratio = ratio;
+	}
+
+	public Integer getIsDesabled() {
+		return isDesabled;
+	}
+
+	public void setIsDesabled(Integer isDesabled) {
+		this.isDesabled = isDesabled;
+	}
+	 
 }
