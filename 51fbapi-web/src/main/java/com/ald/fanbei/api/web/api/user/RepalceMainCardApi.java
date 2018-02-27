@@ -2,17 +2,14 @@ package com.ald.fanbei.api.web.api.user;
 
 
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.impl.ApplyLegalBorrowCashServiceImpl;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.GetConfirmBorrowLegalInfoParam;
-import com.ald.fanbei.api.web.validator.bean.RepalceMainCardParam;
+import com.ald.fanbei.api.web.validator.bean.ReplaceMainCardParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -22,8 +19,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-@Component("repalceMainCardApi")
-@Validator("repalceMainCardParam")
+@Component("replaceMainCardApi")
+@Validator("replaceMainCardParam")
 public class RepalceMainCardApi implements ApiHandle {
 
     @Resource
@@ -34,7 +31,7 @@ public class RepalceMainCardApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        final RepalceMainCardParam param =  (RepalceMainCardParam)requestDataVo.getParamObj();
+        final ReplaceMainCardParam param =  (ReplaceMainCardParam)requestDataVo.getParamObj();
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
