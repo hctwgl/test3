@@ -138,7 +138,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
 		//检查是否认证过，是否通过强风控
-		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
+		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus()) || 
+				StringUtils.equals(RiskStatus.A.getCode(), afUserAuthDo.getRiskStatus())) {
 			return AfBorrowCashRejectType.NO_AUTHZ;
 		}
 		
