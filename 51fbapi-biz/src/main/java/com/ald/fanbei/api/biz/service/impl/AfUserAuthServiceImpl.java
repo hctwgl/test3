@@ -141,6 +141,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
 				AfResourceSecType.borrowRiskMostAmount.getCode());
+		data.put("highestAmount", afResource.getValue());
 		int min = Integer.parseInt(afResourceDo.getValue1());// 最小分数
 		if (sorce < min) {
 			creditModel.put("creditLevel", "信用较差");

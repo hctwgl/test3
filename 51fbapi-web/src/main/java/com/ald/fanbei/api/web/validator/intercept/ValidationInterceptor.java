@@ -204,8 +204,10 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 				Class<?> fieldType = field.getType();
 				try {
 					Converter converter = convertUtils.lookup(fieldType);
-					Object fieldVal = converter.convert(fieldType, reqParam);
-					field.set(validatorBean, fieldVal);
+					if(!StringUtils.isEmpty(reqParam.toString())){
+						Object fieldVal = converter.convert(fieldType, reqParam);
+						field.set(validatorBean, fieldVal);
+					}
 				} catch (IllegalArgumentException e) {
 					logger.error("illegal argument error, error info=>{}", e.getMessage());
 				} catch (IllegalAccessException e) {
