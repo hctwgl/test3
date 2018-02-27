@@ -71,15 +71,33 @@ public class GetMineInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-
+	try{
 		Integer appVersion = context.getAppVersion();
 		Long userId = context.getUserId();
 		logger.info("userId=" + userId);
-
+		Map<String, Object> data = new HashMap<String, Object>();
+		//增加运营位
+		
+		// 快速导航信息
+		String appModel = ""; //app型号
+		appModel = resp.getId();
+				
+		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
+		afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()),appModel);
+				
+				// 快速导航
+		if (!navigationInfo.isEmpty()) {
+						data.put("navigationInfo", navigationInfo);
+		}
+		List<Object> bannerList = addBannerList(requestDataVo);
+		data.put("bannerList", bannerList);
+		resp.setResponseData(data);
+		
 		AfUserDo afUserDo = afUserService.getUserById(userId);
+		
 		if (afUserDo == null) {
-			throw new FanbeiException("afUserDo  is invalid", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-
+			//throw new FanbeiException("afUserDo  is invalid", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			return resp;
 		}
 		
 		// 可用红包数量
@@ -88,7 +106,7 @@ public class GetMineInfoApi implements ApiHandle {
 		AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		
-		Map<String, Object> data = new HashMap<String, Object>();
+
 		data.put("avata", userAccountInfo.getAvatar());
 		data.put("nick", userAccountInfo.getNick());
 		data.put("userName", userAccountInfo.getUserName());
@@ -117,21 +135,7 @@ public class GetMineInfoApi implements ApiHandle {
 			String phone = randomPhone();
 			data.put("customerPhone", phone);
 		} 
-		//增加运营位
 		
-		// 快速导航信息
-		String appModel = ""; //app型号
-		appModel = resp.getId();
-		
-		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
-						afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()),appModel);
-		
-		// 快速导航
-		if (!navigationInfo.isEmpty()) {
-				data.put("navigationInfo", navigationInfo);
-		}
-		List<Object> bannerList = addBannerList(requestDataVo);
-		data.put("bannerList", bannerList);
 		//获取签到状态
 		
 		   AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
@@ -151,9 +155,12 @@ public class GetMineInfoApi implements ApiHandle {
 				}
 			}
 		
-		resp.setResponseData(data);
-		return resp;
+	  resp.setResponseData(data);
+	}catch(Exception e){
+	    logger.info("user/getMineInfo error e = "+e);
 	}
+	return resp;
+ }
 	private List<Object> addBannerList(RequestDataVo requestDataVo){
 	 //String resourceType =  ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
 	 String resourceType =  Constants.PERSONAL_CENTER_BANNER;

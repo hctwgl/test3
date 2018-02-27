@@ -20,9 +20,10 @@ public class LoanTest  extends BaseTest{
 	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464412 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
-	String userName = "13958004662";	//胡朝永 支付密码123456
+//	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
+	String userName = "13370127054";	//王卿 支付密码123456
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -51,8 +52,8 @@ public class LoanTest  extends BaseTest{
 		String url = urlBase + "/h5/loan/confirmLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 50000+"");
-		params.put("periods", 1+"");
+		params.put("amount", 1000+"");
+		params.put("periods", 3+"");
 		testH5(url, params, userName, true);
 	}
 	
@@ -94,7 +95,23 @@ public class LoanTest  extends BaseTest{
 		
 		testH5(url, null, userName ,true);
 	}
-	
+
+	@Test
+	public void getWhiteLoanProtocol() {
+		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
+		Map<String,String> params = new HashMap<>();
+		params.put("loanId", 53+"");//1038.66
+		params.put("totalServiceFee", "30.27");
+		params.put("loanRemark", "0");
+		params.put("repayRemark", "0");
+		params.put("interestRate", "0");
+		params.put("serviceRate", "0");
+		params.put("overdueRate", "0");
+		params.put("amount", "1000");
+		params.put("nper", "3");
+		testH5(url, params, userName, true);
+	}
+
 //	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";

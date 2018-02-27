@@ -109,6 +109,8 @@ public class FanbeiH5Controller extends H5BaseController {
         
         wrapRequest(request,dataMaps);
         builder.dataMap(dataMaps);
+        
+        logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
        
         String clientIp = CommonUtil.getIpAddr(request);
         builder.clientIp(clientIp);

@@ -13,21 +13,16 @@ public class GetWhiteLoanProtocolParam {
 	@DecimalMin("0")
 	public BigDecimal amount;
 
-	@NotNull
 	public String loanRemark;
 
-	@NotNull
 	public String repayRemark;
 
-	@NotNull
 	@DecimalMin("0")
 	public BigDecimal interestRate;
 
-	@NotNull
 	@DecimalMin("0")
 	public BigDecimal serviceRate;
 
-	@NotNull
 	@DecimalMin("0")
 	public BigDecimal overdueRate;
 	

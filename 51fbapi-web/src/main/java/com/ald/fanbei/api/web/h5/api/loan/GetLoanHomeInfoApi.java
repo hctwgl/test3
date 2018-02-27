@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -39,6 +40,8 @@ public class GetLoanHomeInfoApi implements H5Handle {
 	private AfUserAuthService afUserAuthService;
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
+	@Resource
+	private AfUserAuthStatusService afUserAuthStatusService;
 	
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -51,6 +54,7 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			AfUserAccountDo accInfo = userAccountService.getUserAccountByUserId(userId);
 			AfUserBankcardDo userBankcard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			
+			resp.addResponseData("bldStatus", afUserAuthStatusService.getBldOpenStatus(userId));
 			resp.addResponseData("isLogin", true);
 			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
 			resp.addResponseData("authStatus", afUserAuthService.allBasicAuthPassed(authInfo));
