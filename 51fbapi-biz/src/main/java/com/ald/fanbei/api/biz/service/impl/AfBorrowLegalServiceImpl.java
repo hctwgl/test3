@@ -17,7 +17,6 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -170,12 +169,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = false;
-		
-		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
-		
-		bo.maxQuota = this.calculateMaxAmount(maxAmount);
-		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
+		bo.maxQuota = this.calculateMaxAmount(cfgBean.maxAmount);
+		bo.minQuota = cfgBean.minAmount;
 		bo.borrowCashDay = cfgBean.borrowCashDay;
 		
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
