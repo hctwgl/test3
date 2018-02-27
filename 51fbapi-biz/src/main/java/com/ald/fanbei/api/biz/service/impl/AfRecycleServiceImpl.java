@@ -5,6 +5,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdRecycleEnum;
 import com.ald.fanbei.api.biz.service.AfRecycleService;
+import com.ald.fanbei.api.biz.service.AfRecycleTradeService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.AppRecycleUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -12,10 +14,14 @@ import com.ald.fanbei.api.dal.dao.AfRecycleDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.domain.AfRecycleDo;
 import com.ald.fanbei.api.dal.domain.AfRecycleRatioDo;
+import com.ald.fanbei.api.dal.domain.AfRecycleTradeDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -23,7 +29,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +49,10 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	private AfRecycleDao afRecycleDao;
 	@Autowired
 	private AfUserAccountDao afUserAccountDao;
+	@Autowired
+	private AfUserService afUserService;
+	@Autowired
+	private AfRecycleTradeService afRecycleTradeService;
 
 
 	/**
@@ -62,14 +74,47 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 				if(null != jsonObject && StringUtils.equals("1",jsonObject.getString("code"))){//返回成功
 					//给用户账号添加订单金额
 					AfRecycleRatioDo afRecycleRatioDo = afRecycleDao.getRecycleRatio(new AfRecycleRatioQuery(ThirdRecycleEnum.RETURN_MONEY.getType()));
-					BigDecimal amount = afUserAccountDao.getAuAmountByUserId(afRecycleQuery.getUid());//查找用户账号信息
+					Long userId = afRecycleQuery.getUid();
+					BigDecimal settlePrice = afRecycleQuery.getSettlePrice();
+					BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
 					if(null == amount){//用户账号信息不存在,则需要添加一条账号信息
-
+						//根据用户Id查找用户名
+						AfUserDo afUserDo = afUserService.getUserById(userId);
+						//给用户的返现金额
+						BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);						
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setUserName(afUserDo.getUserName());
+						afUserAccountDo.setRebateAmount(rebateAmount);
+						afUserAccountDao.addUserAccount(afUserAccountDo);
+						//有得卖账户减钱操作
+						recycleTradeSave(afRecycleQuery, afRecycleRatioDo,settlePrice, rebateAmount);
 					}else{//直接往账号上添加金额 金额 = 订单金额 *（1 + 返现比例）
-
+						BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setRebateAmount(rebateAmount);
+						afUserAccountDao.updateUserAccount(afUserAccountDo);
+						//有得卖账户减钱操作
+						recycleTradeSave(afRecycleQuery, afRecycleRatioDo,settlePrice, rebateAmount);
 					}
 				}
 				return result;
+			}
+
+			private void recycleTradeSave(final AfRecycleQuery afRecycleQuery,
+					AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice,
+					BigDecimal rebateAmount) {
+				AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeService.getLastRecord();
+				AfRecycleTradeDo newAfRecycleTradeDo = new AfRecycleTradeDo();
+				newAfRecycleTradeDo.setGmtCreate(new Date());
+				newAfRecycleTradeDo.setGmtModified(new Date());
+				newAfRecycleTradeDo.setRatio(afRecycleRatioDo.getRatio());
+				newAfRecycleTradeDo.setRefId(afRecycleQuery.getRid());
+				newAfRecycleTradeDo.setRemainAmount(afRecycleTradeDo.getRemainAmount().subtract(settlePrice));
+				newAfRecycleTradeDo.setReturnAmount(rebateAmount);
+				newAfRecycleTradeDo.setTradeAmount(settlePrice.add(rebateAmount));
+				newAfRecycleTradeDo.setType(1);
+				afRecycleTradeService.saveRecord(newAfRecycleTradeDo);
 			}
 		});
 		return 1;

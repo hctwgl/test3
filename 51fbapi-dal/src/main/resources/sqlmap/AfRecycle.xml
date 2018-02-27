@@ -8,6 +8,9 @@
 
 	<!-- 添加订单-->
 	<insert id="addRecycleOrder" parameterType="AfRecycleQuery" keyProperty="id" useGeneratedKeys="true" >
+		<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
 		INSERT INTO
 			af_order_recycle
 			(
@@ -25,7 +28,7 @@
 				#{refOrderId},
 				#{apyType},
 				#{status},
-				0
+				1
 			)
 	</insert>
 
@@ -44,11 +47,13 @@
 	<!-- 查找系统系数-->
 	<select id="getRecycleRatio" parameterType="AfRecycleRatioQuery" resultType="AfRecycleRatioDo">
 		SELECT
-			ratio
+			*
 		FROM
 			af_recycle_ratio
 		WHERE
 			is_delete = 0
+		AND
+			is_disabled = 0
 		AND
 			`type` = #{type}
 		ORDER BY id DESC
