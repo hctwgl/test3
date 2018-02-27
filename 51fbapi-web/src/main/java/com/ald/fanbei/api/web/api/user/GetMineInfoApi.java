@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,45 +92,86 @@ public class GetMineInfoApi implements ApiHandle {
 		}
 		List<Object> bannerList = addBannerList(requestDataVo);
 		data.put("bannerList", bannerList);
-		resp.setResponseData(data);
+		/*resp.setResponseData(data);*/
 		
-		AfUserDo afUserDo = afUserService.getUserById(userId);
 		
-		if (afUserDo == null) {
-			//throw new FanbeiException("afUserDo  is invalid", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			return resp;
-		}
 		
+//		if (afUserDo == null) {
+//			//throw new FanbeiException("afUserDo  is invalid", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+//			return resp;
+//		}
+		data.put("isLogin", "N"); 
+		int coupleCount = 0;
+		AfUserAccountDto userAccountInfo = null  ;
+		AfUserAuthDo afUserAuthDo = null ;
+		AfUserDo afUserDo   = null; 
+		AfSigninDo afSigninDo  = null;
+		if(userId !=null && userId >0 ){
+		         afUserDo = afUserService.getUserById(userId);
 		// 可用红包数量
-		int coupleCount = afUserCouponService.getUserCouponByUserNouse(userId);
-		// 账户关联信息
-		AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        		 coupleCount = afUserCouponService.getUserCouponByUserNouse(userId);
+        		// 账户关联信息
+        		 userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
+        		 afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        		 afSigninDo = afSigninService.selectSigninByUserId(userId);
+        		 data.put("isLogin", "Y"); 
+		}
 		
-
-		data.put("avata", userAccountInfo.getAvatar());
-		data.put("nick", userAccountInfo.getNick());
-		data.put("userName", userAccountInfo.getUserName());
-		data.put("realName", userAccountInfo.getRealName());
-		data.put("idNumber", Base64.encodeString(userAccountInfo.getIdNumber()));
-		data.put("jfbAmount", userAccountInfo.getJfbAmount());
-		data.put("mobile", afUserDo.getMobile());
-		String isPay = YesNoStatus.NO.getCode();
-		if (!StringUtil.isBlank(userAccountInfo.getPassword())) {
-			isPay = YesNoStatus.YES.getCode();
+		String avata = "";
+		String nick = "";
+		String userName = "";
+		String realName = "";
+		String idNumber = "";
+		BigDecimal jfbAmount = new BigDecimal(0.00);
+		BigDecimal rebateAmount = new BigDecimal(0.00);
+		String mobile = "";
+		String isPay = "";
+		String vipLevel = "";
+		String faceStatus = "";
+		String bankcardStatus = "";
+		String recommendCode = "";
+		if(userAccountInfo != null){
+        		 avata = userAccountInfo.getAvatar();
+        		 nick = userAccountInfo.getNick();
+        		 userName = userAccountInfo.getUserName();
+        		 realName = userAccountInfo.getRealName();
+        		 idNumber = Base64.encodeString(userAccountInfo.getIdNumber());
+        		 jfbAmount = userAccountInfo.getJfbAmount();
+        		 rebateAmount = userAccountInfo.getRebateAmount();
+        		 recommendCode = userAccountInfo.getRecommendCode();
+        		 isPay = YesNoStatus.NO.getCode();
+        			if (!StringUtil.isBlank(userAccountInfo.getPassword())) {
+        				isPay = YesNoStatus.YES.getCode();
+        		  }
+		 
 		}
+		
+		if(afUserDo !=null){
+		            mobile = afUserDo.getMobile();
+        		if (appVersion < 340) {
+        			data.put("couponCount", coupleCount);
+        		} else {
+        			dealWithVersionGT340(data, requestDataVo, context, coupleCount);
+        		}
+		}
+		if(afUserAuthDo != null){
+		    faceStatus = afUserAuthDo.getFacesStatus();
+		    bankcardStatus = afUserAuthDo.getBankcardStatus();
+		}
+		data.put("avata", avata);
+		data.put("nick",nick);
+		data.put("userName", userName);
+		data.put("realName", realName);
+		data.put("idNumber", idNumber);
+		data.put("jfbAmount", jfbAmount);
 		data.put("isPayPwd", isPay);
-		data.put("vipLevel", userAccountInfo.getVipLevel());
-		data.put("rebateAmount", userAccountInfo.getRebateAmount());
-		if (appVersion < 340) {
-			data.put("couponCount", coupleCount);
-		} else {
-			dealWithVersionGT340(data, requestDataVo, context, coupleCount);
-		}
-		data.put("faceStatus", afUserAuthDo.getFacesStatus());
-		data.put("bankcardStatus", afUserAuthDo.getBankcardStatus());
-
-		data.put("recommendCode", userAccountInfo.getRecommendCode());
+		data.put("vipLevel", vipLevel);
+		data.put("rebateAmount", rebateAmount);
+		data.put("couponCount", coupleCount);
+		data.put("mobile", mobile);
+		data.put("faceStatus", faceStatus);
+		data.put("bankcardStatus", bankcardStatus);
+		data.put("recommendCode", recommendCode);
 		if (appVersion  >= 345) {
 			//随机生成客服电话
 			String phone = randomPhone();
@@ -138,7 +180,7 @@ public class GetMineInfoApi implements ApiHandle {
 		
 		//获取签到状态
 		
-		   AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+		 
 		   // data.put("isSignin", "N");
 		   
 		    if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
