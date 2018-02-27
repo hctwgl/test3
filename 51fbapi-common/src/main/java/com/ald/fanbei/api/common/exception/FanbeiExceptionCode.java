@@ -263,6 +263,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_FORBIDDEN_ERROR("RISK_FORBIDDEN_ERROR",1923,"get captil error","抱歉，无法续期"),
     RISK_RAISE_AMOUNT_ERROR("RISK_RAISE_AMOUNT_ERROR",1924,"risk raise amount error","提额异常"),
     RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
+    UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),

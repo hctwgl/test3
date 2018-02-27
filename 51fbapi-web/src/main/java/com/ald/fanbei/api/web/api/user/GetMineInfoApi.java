@@ -85,7 +85,12 @@ public class GetMineInfoApi implements ApiHandle {
 				
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 		afResourceService.getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode()),appModel);
-				
+		String siginUrl = "";
+		AfResourceDo afResourceDo  = afResourceService.getConfigByTypesAndSecType("PERSONAL_CENTER", "SIGIN_URL");
+		if(afResourceDo != null){
+		    siginUrl = afResourceDo.getValue();
+		}
+		
 				// 快速导航
 		if (!navigationInfo.isEmpty()) {
 						data.put("navigationInfo", navigationInfo);
@@ -100,6 +105,7 @@ public class GetMineInfoApi implements ApiHandle {
 //			//throw new FanbeiException("afUserDo  is invalid", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 //			return resp;
 //		}
+		data.put("siginUrl", siginUrl); 
 		data.put("isLogin", "N"); 
 		int coupleCount = 0;
 		AfUserAccountDto userAccountInfo = null  ;
