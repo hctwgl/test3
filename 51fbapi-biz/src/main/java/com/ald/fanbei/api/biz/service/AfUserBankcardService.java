@@ -81,4 +81,8 @@ public interface AfUserBankcardService {
 	String getAfUserBankcardList(long userId);
 
 	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
+
+	int updateMainBankCard(Long userId);
+
+	int updateViceBankCard(String cardNumber,Long userId);
 }

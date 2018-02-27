@@ -115,7 +115,7 @@ public class FanbeiController extends BaseController {
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
-            "/user/accountAppealCheckSms","/user/accountAppealDo"
+            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/repalceMainCard"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

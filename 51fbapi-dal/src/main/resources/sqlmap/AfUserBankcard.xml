@@ -246,4 +246,20 @@
 		AND
 		status="B"
 	</select>
+
+	<update id="updateMainBankCard">
+		UPDATE af_user_bankcard
+		SET
+			gmt_modified = NOW(),is_main = 'N'
+		where is_delete = 0 and user_id = #{userId} and status = 'B'
+		and is_main = 'Y'
+	</update>
+
+	<update id="updateViceBankCard">
+		UPDATE af_user_bankcard
+		SET
+			gmt_modified = NOW(),is_main = 'Y'
+		where is_delete = 0 and card_number = #{card_number} and status = 'B' and user_id = #{userId}
+		and is_main = 'N'
+	</update>
 </mapper>

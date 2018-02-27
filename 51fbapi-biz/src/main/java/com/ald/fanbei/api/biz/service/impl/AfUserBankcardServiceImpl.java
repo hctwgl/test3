@@ -81,4 +81,13 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 		return afUserBankcardDao.getUserBankcardByIdAndStatus(cardId);
 	}
 
+	@Override
+	public int updateMainBankCard(Long userId){
+		return afUserBankcardDao.updateMainBankCard(userId);
+	}
+
+	@Override
+	public int updateViceBankCard(String cardNumber,Long userId){
+		return afUserBankcardDao.updateViceBankCard(cardNumber,userId);
+	}
 }

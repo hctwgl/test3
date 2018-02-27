@@ -229,7 +229,7 @@
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
 				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
-
+				<entry key="/user/repalceMainCard" value-ref="repalceMainCardApi" />
 				
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
@@ -537,6 +537,8 @@
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
+
+
 
 			</map>
 		</constructor-arg>
