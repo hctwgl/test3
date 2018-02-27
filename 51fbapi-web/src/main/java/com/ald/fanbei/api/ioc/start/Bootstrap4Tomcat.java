@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
-import org.apache.catalina.LifecycleException;
-
 import com.ald.fanbei.api.server.webapp.TomcatServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
