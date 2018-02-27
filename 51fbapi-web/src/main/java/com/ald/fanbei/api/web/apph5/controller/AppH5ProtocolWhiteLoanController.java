@@ -108,7 +108,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		model.put("interest", BigDecimal.valueOf(Double.parseDouble(consumeDo.getValue3())));
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
-			GetSeal(model, afUserDo, accountDo);
+			getSeal(model, afUserDo, accountDo);
 			lender(model, null);
 			Date date = afBorrowDo.getGmtCreate();
 			getEdspayInfo(model, borrowId, (byte) 2);
@@ -198,9 +198,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		List<AfLoanPeriodsDo> afLoanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanId);
 		if(null != afLoanPeriodsDoList && afLoanPeriodsDoList.size()>0){
             List<Object> array = new ArrayList<Object>();
-            for(int i=1;i<afLoanDo.getPeriods();i++){
+            for(int i=1;i <= afLoanDo.getPeriods();i++){
                 Map<String,Object> map = new HashMap<String,Object>();
-                AfLoanPeriodsDo afLoanPeriodsDo = afLoanPeriodsDoList.get(i);
+                AfLoanPeriodsDo afLoanPeriodsDo = afLoanPeriodsDoList.get(i-1);
                 if(i == nper){
                     c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
                     int periodsMonth = c.get(Calendar.MONTH)+1;
@@ -220,7 +220,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 		model.put("repayRemark",repayRemark);//还款方式
 		model.put("loanRemark",loanRemark);//借钱用途
 		model.put("totalPeriods",afLoanDo);//总借钱信息
-		GetSeal(model, afUserDo, accountDo);
+		getSeal(model, afUserDo, accountDo);
 		getEdspayInfo(model, loanId, (byte) 2);
 	}
 
@@ -297,7 +297,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 
 
 
-	private void GetSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+	private void getSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
 			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
@@ -371,7 +371,11 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
 			int year = c.get(Calendar.YEAR);
 			String time = year + "年" + month + "月" + day + "日";
 			model.put("time", time);// 签署日期
-			GetSeal(model, afUserDo, accountDo);
+			model.put("totalServiceFee",afLoanDo.getTotalServiceFee());//手续费
+			model.put("overdueRate",afLoanDo.getOverdueRate());//逾期费率
+			model.put("serviceRate",afLoanDo.getServiceRate());//手续费率
+			model.put("interestRate",afLoanDo.getInterestRate());//借钱利率
+			getSeal(model, afUserDo, accountDo);
 		}
 
 	}
