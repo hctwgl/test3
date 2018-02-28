@@ -272,6 +272,7 @@ public class LookAllQuotaApi implements ApiHandle {
 	    onlineMap.put("jumpUrl", "");
 	    trainMap.put("scene", "TRAIN");
 	    trainMap.put("showAmount", "");
+	    rentMap.put("scene", "RENT");
 	    mapList.add(cashMap);
 	    mapList.add(onlineMap);
 	    mapList.add(trainMap);
