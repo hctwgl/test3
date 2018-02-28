@@ -62,6 +62,8 @@ public class UserWithholdController extends BaseController {
     AfWithholdLogService afWithholdLogService;
     @Resource
     AfUserWithholdService afUserWithholdService;
+    @Resource
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
     /**
      * 借款代扣
      *
@@ -76,10 +78,13 @@ public class UserWithholdController extends BaseController {
         //最低代扣金额
         BigDecimal lowCashPrice = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("lowCashPrice")),BigDecimal.ZERO);
         BigDecimal amountRate = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("amountRate")),BigDecimal.ZERO);
+        int isAmount = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("isAmount")),1);
         String borrowStatus = ObjectUtils.toString(request.getParameter("borrowStatus"), null);
 
         BigDecimal repaymentAmount = BigDecimal.ZERO;
+
         Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("borrowId")), 0l);
+
         if (userId == null || borrowId == 0) {
             logger.info("withhold for borrowcash fail for params is null,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
@@ -116,6 +121,15 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
             return returnjson;
         }*/
+        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+        if(afUserWithholdDo==null){
+            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
+            logger.info("withhold for borrowcash fail for afUserWithholdDo is null,userId:"+userId + ",borrowId:"+borrowId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","afUserWithholdDo is null");
+            return returnjson;
+        }
         AfUserAccountDo userDto = afUserAccountService
                 .getUserAccountByUserId(userId);
         if (userDto == null) {
@@ -127,55 +141,59 @@ public class UserWithholdController extends BaseController {
         }
 
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-        if (afBorrowCashDo != null) {
-            BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),
-                    afBorrowCashDo.getSumOverdue(),
-                    afBorrowCashDo.getOverdueAmount(),
-                    afBorrowCashDo.getRateAmount(),
-                    afBorrowCashDo.getSumRate());
-
-            BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
-                    afBorrowCashDo.getRepayAmount());
-            repaymentAmount = temAmount;
-            if(StringUtils.isNotBlank(borrowStatus)){
-                if("overdue".equals(borrowStatus)){
-                    amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
-                    repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
-                    logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
-                    if(repaymentAmount.compareTo(temAmount)>0){
-                        repaymentAmount = temAmount;
+        try{
+            if (afBorrowCashDo != null) {
+                BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),
+                        afBorrowCashDo.getSumOverdue(),
+                        afBorrowCashDo.getOverdueAmount(),
+                        afBorrowCashDo.getRateAmount(),
+                        afBorrowCashDo.getSumRate());
+                //判断是否搭售二期，加入手续费
+                if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)){
+                    allAmount = BigDecimalUtil.add(allAmount,afBorrowCashDo.getPoundage(),afBorrowCashDo.getSumRenewalPoundage());
+                }
+                BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
+                        afBorrowCashDo.getRepayAmount());
+                repaymentAmount = temAmount;
+                if(StringUtils.isNotBlank(borrowStatus)){
+                    if("overdue".equals(borrowStatus)){
+                        if(isAmount==1){
+                            //amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
+                            repaymentAmount = BigDecimalUtil.subtract(repaymentAmount,afBorrowCashDo.getOverdueAmount());
+                        }
+                        logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
+                        if(repaymentAmount.compareTo(temAmount)>0){
+                            repaymentAmount = temAmount;
                         /*logger.info("withhold for borrowcashOverdue fail for repaymentAmount>temAmount,userId:"+userId + ",borrowId:"+borrowId);
                         JSONObject returnjson = new JSONObject();
                         returnjson.put("success",false);
                         returnjson.put("msg","afBorrowCashDo repaymentAmount>temAmount");
                         return returnjson;*/
+                        }
                     }
                 }
-            }
-            //如果订单已结清或者需还金额为0
-            if(!"TRANSED".equals(afBorrowCashDo.getStatus())||repaymentAmount.compareTo(BigDecimal.ZERO)<=0){
+                //如果订单已结清或者需还金额为0
+                if(!"TRANSED".equals(afBorrowCashDo.getStatus())||repaymentAmount.compareTo(BigDecimal.ZERO)<=0){
+                    //当前无账单
+                    logger.info("withhold for borrowcash fail for afBorrowCashDo is not TRANSED or repaymentAmount is 0,userId:"+userId + ",borrowId:"+borrowId);
+                    JSONObject returnjson = new JSONObject();
+                    returnjson.put("success",false);
+                    returnjson.put("msg","afBorrowCashDo is not TRANSED");
+                    return returnjson;
+                }
+            }else{
                 //当前无账单
-                logger.info("withhold for borrowcash fail for afBorrowCashDo is not TRANSED or repaymentAmount is 0,userId:"+userId + ",borrowId:"+borrowId);
+                logger.info("withhold for borrowcash fail for afBorrowCashDo is null,userId:"+userId + ",borrowId:"+borrowId);
                 JSONObject returnjson = new JSONObject();
                 returnjson.put("success",false);
-                returnjson.put("msg","afBorrowCashDo is not TRANSED");
+                returnjson.put("msg","afBorrowCashDo is null");
                 return returnjson;
             }
-        }else{
-            //当前无账单
-            logger.info("withhold for borrowcash fail for afBorrowCashDo is null,userId:"+userId + ",borrowId:"+borrowId);
+        }catch (Exception e){
+            logger.error("withhold for borrowcash error" + e);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
-            returnjson.put("msg","afBorrowCashDo is null");
-            return returnjson;
-        }
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
-        if(afUserWithholdDo==null){
-            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
-            logger.info("withhold for borrowcash fail for afUserWithholdDo is null,userId:"+userId + ",borrowId:"+borrowId);
-            JSONObject returnjson = new JSONObject();
-            returnjson.put("success",false);
-            returnjson.put("msg","afUserWithholdDo is null");
+            returnjson.put("msg","afBorrowCashDo error");
             return returnjson;
         }
         //将该笔订单锁住(除此之外还需要将原先用户还款的数据锁住)
@@ -194,6 +212,8 @@ public class UserWithholdController extends BaseController {
         if(useBalance==1){
             //账户余额
             BigDecimal userAccount = userDto.getRebateAmount();
+            //不再使用余额
+            userAccount = BigDecimal.ZERO;
             // 余额处理
             if (userAccount.compareTo(BigDecimal.ZERO) > 0
                     && repaymentAmount.compareTo(userAccount) > 0) {
@@ -272,6 +292,7 @@ public class UserWithholdController extends BaseController {
                 if(cardId!=null&&cardId!=0l){
                     AfUserBankcardDo card = afUserBankcardService.getUserBankcardByIdAndStatus(cardId);
                     if (null == card) {
+                        logger.info("withhold for borrowcash fail for card is null,userId:"+userId + ",borrowId:"+borrowId);
                         continue;
                     }
                     try{
@@ -334,7 +355,7 @@ public class UserWithholdController extends BaseController {
     }
 
     /**
-     * 借款代扣
+     * 分期代扣
      *
      * @return
      * @throws Exception
@@ -353,7 +374,15 @@ public class UserWithholdController extends BaseController {
             return returnjson;
         }
         logger.info("withhold for borrowbill userId:"+userId+",lowBillPrice:"+lowBillPrice);
-
+        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+        if(afUserWithholdDo==null){
+            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
+            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","afUserWithholdDo is null");
+            return returnjson;
+        }
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (afUserAccountDo == null) {
             logger.info("withhold for borrowbill fail for USER_ACCOUNT_NOT_EXIST_ERROR,userId:"+userId);
@@ -384,15 +413,7 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
             return returnjson;
         }
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
-        if(afUserWithholdDo==null){
-            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
-            logger.info("withhold for borrowbill fail for afUserWithholdDo is null,userId:"+userId + ",billIds:"+billIds);
-            JSONObject returnjson = new JSONObject();
-            returnjson.put("success",false);
-            returnjson.put("msg","afUserWithholdDo is null");
-            return returnjson;
-        }
+
         JSONObject returnjson = new JSONObject();
         Long refId = 0l;
         try{
@@ -426,6 +447,8 @@ public class UserWithholdController extends BaseController {
             if(useBalance==1){
                 //账户余额
                 BigDecimal userAccount = afUserAccountDo.getRebateAmount();
+                //不再使用余额
+                userAccount = BigDecimal.ZERO;
                 // 余额处理
                 if (userAccount.compareTo(BigDecimal.ZERO) > 0
                         && repaymentAmount.compareTo(userAccount) > 0) {

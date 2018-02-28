@@ -471,25 +471,25 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         
 	}
 	
-	private void dealLoanStatus(LoanRepayDealBo LoanRepayDealBo) {
-		int nper = LoanRepayDealBo.loanPeriodsDoList.size();
-		AfLoanPeriodsDo loanPeriodsDo = LoanRepayDealBo.loanPeriodsDoList.get(nper-1);
-		if(loanPeriodsDo.getNper() == LoanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus())) {
+	private void dealLoanStatus(LoanRepayDealBo loanRepayDealBo) {
+		int nper = loanRepayDealBo.loanPeriodsDoList.size();
+		AfLoanPeriodsDo loanPeriodsDo = loanRepayDealBo.loanPeriodsDoList.get(nper-1);
+		if(loanPeriodsDo.getNper() == loanRepayDealBo.loanDo.getPeriods() && AfLoanPeriodStatus.FINISHED.name().equals(loanPeriodsDo.getStatus())) {
 			// 最后一期结清， 修改loan状态FINISHED
 			AfLoanDo loanDo = new AfLoanDo();
-			loanDo.setRid(LoanRepayDealBo.loanDo.getRid());
+			loanDo.setRid(loanRepayDealBo.loanDo.getRid());
 			loanDo.setStatus(AfLoanStatus.FINISHED.name());
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
 
-			AfUserAccountSenceDo senceDo = (AfUserAccountSenceDo) afUserAccountSenceDao.getByUserId(loanDo.getUserId());//额度释放
+			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene("BLD_LOAN",loanPeriodsDo.getUserId());//额度释放
 			if (senceDo ==  null){
 				throw new FanbeiException(FanbeiExceptionCode.UESR_ACCOUNT_SENCE_ERROR);
 			}
 			AfUserAccountSenceDo accountSenceDo = new AfUserAccountSenceDo();
 			accountSenceDo.setRid(senceDo.getRid());
-			accountSenceDo.setUsedAmount(senceDo.getUsedAmount().subtract(loanDo.getAmount()));
+			accountSenceDo.setUsedAmount(senceDo.getUsedAmount().subtract(loanRepayDealBo.loanDo.getAmount()));
 			accountSenceDo.setGmtModified(new Date());
 			afUserAccountSenceDao.updateById(accountSenceDo);
 		}

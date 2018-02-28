@@ -41,7 +41,7 @@
     <div class="protocol fenqiServiceProtocol">
         <h2>借款协议</h2>
         <p>
-            <i class="fr">协议编号：$!{loanNo}</i>
+            <i>协议编号：$!{loanNo}</i><br>
             <br> 甲方（借款人）： $!{realName}
             <br> 身份证号：$!{idNumber}
             <br> 手机号码： $!{mobile}
@@ -69,15 +69,15 @@
             <ul>
                 <li>
                     <i>借款本金</i>
-                    <i>#if($!{totalPeriods.amount})$!{totalPeriods.amount}#end</i>
+                    <i>#if($!{totalPeriods.amount})$!{totalPeriods.amount}元#end</i>
                 </li>
                 <li>
                     <i>大写金额</i>
-                    <i>人民币$!{amountCapital}元</i>
+                    <i>人民币$!{amountCapital}</i>
                 </li>
                 <li>
                     <i>借款利率（年化）</i>
-                    <i>#if($!{totalPeriods.interestRate})$!{totalPeriods.interestRate}%#end</i>
+                    <i>#if($!{totalPeriods.interestRate}){{changeRate($!{totalPeriods.interestRate})}}%#end</i>
                 </li>
                 <li>
                     <i>借款期限</i>

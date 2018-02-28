@@ -50,6 +50,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     @Resource
     AfContractPdfDao afContractPdfDao;
     @Resource
+    AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
+    @Resource
     EviDoc eviDoc;
     @Resource
     private EsignPublicInit esignPublicInit;
@@ -71,7 +73,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
                 } else if ("3".equals(protocolCashType)) {//续借协议
                     protocolRenewal(requestDataVo, resp);
                 }*/
-                contractPdfThreadPool.protocolCashLoanPdf(531l, BigDecimal.valueOf(500), 97l);
+                afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal(0, "jq2018020516234401769");
+//                contractPdfThreadPool.PlatformServiceProtocolPdf(3338754l, "SEVEN", BigDecimal.valueOf(33.6),13989455696l);
             } catch (Exception e) {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             }

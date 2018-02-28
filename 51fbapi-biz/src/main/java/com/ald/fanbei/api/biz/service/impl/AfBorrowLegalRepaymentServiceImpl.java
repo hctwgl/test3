@@ -702,7 +702,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                         repayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),	
                         repayDealBo.sumOverdueAmount,
                 		repayDealBo.sumRepaidAmount,
-                		repayDealBo.sumInterest);
+                		repayDealBo.sumInterest,false);
                 logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
             } catch (Exception e) {
                 logger.error("向催收平台同步还款信息失败", e);

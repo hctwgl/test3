@@ -9,7 +9,11 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.chain.Chain;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.intercept.Interceptor;
-
+/**
+ * 拦截器链
+ * @author rongbo
+ *
+ */
 public class InterceptorChain  implements Chain{
 	
 	List<Interceptor> interceptors ;
