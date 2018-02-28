@@ -110,7 +110,7 @@
                 <!-- TODO: 遍历相应条目数 -->
                 #foreach($item in $!{nperArray})
                     <tr>
-                        <td>1</td>
+                        <td>$!{item.periods}</td>
                         <td>$dateUtil.formatDate($!{item.gmtPlanRepay},"yyyy-MM-dd")</td>
                         <td>$!{item.loanAmount}</td>
                         <td>$!{item.fee}</td>
