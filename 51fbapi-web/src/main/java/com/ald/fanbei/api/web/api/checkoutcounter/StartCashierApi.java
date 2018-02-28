@@ -533,6 +533,10 @@ public class StartCashierApi implements ApiHandle {
 		cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
 		cashierTypeVo.setUseableAmount(leftAmount);
 		cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
+		
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
+		if (afResourceDo != null)
+		    cashierTypeVo.setCategoryName(afResourceDo.getValue());
 	    }
 	} else {
 	    cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
