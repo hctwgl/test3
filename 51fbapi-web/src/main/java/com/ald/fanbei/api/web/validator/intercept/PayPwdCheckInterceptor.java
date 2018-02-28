@@ -60,13 +60,16 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-			
+			String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
+			//TODO: add the wrong times and update the time.
+			//TODO:if the times is less than specific (such as 5) times then return the times 
+			//TODO:is less than specific (such as 5) times return the times and time make a specific exception code to remind the front side 
 			
 			
 			
 			throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
-        //----------------------mqp clear password times -------------
+        //----------------------mqp clear password times (if the pwd is right )-------------
 		  if (userId != null) {
 	        	 String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
 	             Integer times = (Integer)bizCacheUtil.getObject(key);
@@ -75,7 +78,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	             	bizCacheUtil.delCache(key);
 	     		}
 			}
-        //----------------------mqp clear password times -------------
+        //----------------------mqp clear password times ------------------------------------
 	}
 
 }
