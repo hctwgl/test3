@@ -35,9 +35,9 @@ public class RiskControllerTest extends RiskBaseTest{
 		String code = "0000";
 		String msg = "success";
 		Map<String,Object> dataMap = Maps.newHashMap();
-		dataMap.put("orderNo", "12342134");
-		dataMap.put("consumerNo", "18637962789");
-		dataMap.put("authItem", "fund");
+		dataMap.put("orderNo", "01soci64501519798154909");
+		dataMap.put("consumerNo", "73772");
+		dataMap.put("authItem", "insurance");
 		dataMap.put("result", "10");
 		submitRequest(uri, code, msg, dataMap);
 	}
