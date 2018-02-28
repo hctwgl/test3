@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -27,5 +28,7 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 	Long tuchByBorrowId(Long borrowId);
 
 	void updateSmartAddressScore (@Param("smartAddressScore") int smartAddressScore,@Param("borrowId") long borrowId,@Param("orderNo") String orderno);
+
+	AfBorrowLegalOrderDo getBorrowLegalOrderByBorrowId(Long borrowId);
 
 }

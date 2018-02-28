@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
+import com.ald.fanbei.api.dal.dao.AfRetryTemplDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 
@@ -24,12 +25,18 @@ import java.util.List;
  
 @Service("afRetryTemplService")
 public class AfRetryTemplServiceImpl extends ParentServiceImpl<AfRetryTemplDo, Long> implements AfRetryTemplService {
-	
+	@Resource
+	AfRetryTemplDao afRetryTemplDao;
     private static final Logger logger = LoggerFactory.getLogger(AfRetryTemplServiceImpl.class);
 
 	@Override
 	public BaseDao<AfRetryTemplDo, Long> getDao() {
 		return null;
+	}
+
+	@Override
+	public int deleteByBusidAndEventType(String borrowNo, String eventType) {
+		return afRetryTemplDao.deleteByBusidAndEventType(borrowNo,eventType);
 	}
 
    

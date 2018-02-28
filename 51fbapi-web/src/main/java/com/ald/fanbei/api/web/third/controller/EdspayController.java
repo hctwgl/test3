@@ -38,6 +38,7 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
+	
 	@RequestMapping(value = { "/giveBackCreditInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public AssetSideRespBo giveBackCreditInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
@@ -92,6 +93,28 @@ public class EdspayController {
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getPlatUserInfo(sendTime, data, sign,appId);
 		logger.info("EdspayController getPlatUserInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
+		return notifyRespBo;
+	}
+	
+	/**
+	 * 钱包回传实时推送债权的打款情况接口
+	 * @param requestData
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/giveBackPayResult" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public AssetSideRespBo giveBackPayResult(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
+		logger.info("EdspayController giveBackPayResult,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+		
+		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.giveBackPayResult(sendTime, data, sign,appId);
+		logger.info("EdspayController giveBackPayResult,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 }
