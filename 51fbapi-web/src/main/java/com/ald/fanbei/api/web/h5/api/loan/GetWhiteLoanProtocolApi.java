@@ -43,7 +43,7 @@ public class GetWhiteLoanProtocolApi implements H5Handle {
                         "&totalServiceFee=" + param.totalServiceFee + "&loanId=" + param.loanId + "&overdueRate=" + param.overdueRate + "&serviceRate=" + param.serviceRate +
                         "&interestRate=" + param.interestRate);
             } else if ("WHITE_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//白领贷借钱协议
-                afResourceDo.setValue("/fanbei-web/app/whiteLoanProtocol?userName=" + userName +
+                afResourceDo.setValue("/fanbei-web/h5/whiteLoanProtocol?userName=" + userName +
                         "&amount=" + param.amount + "&nper=" + param.nper + "&loanId=" + param.loanId + "&loanRemark=" + param.loanRemark +
                         "&repayRemark=" + param.repayRemark);
             }
