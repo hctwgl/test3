@@ -56,7 +56,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 贷款前确认
 	 */
-//	@Test
+	@Test
 	public void confirmLoan() {
 		String url = urlBase + "/h5/loan/confirmLoan";
 		Map<String,String> params = new HashMap<>();
