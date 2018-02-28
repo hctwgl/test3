@@ -58,6 +58,7 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 		delegateRaiseStatus.setAuthType(raiseStatus.getAuthType());
 		delegateRaiseStatus.setPrdType(raiseStatus.getPrdType());
 		delegateRaiseStatus.setUserId(raiseStatus.getUserId());
+		delegateRaiseStatus.setRaiseStatus(raiseStatus.getRaiseStatus());
 		AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByCommonCondition(delegateRaiseStatus);
 		if (existRaiseStatusDo != null) {
 			afAuthRaiseStatusDao.updateById(raiseStatus);
