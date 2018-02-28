@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -22,9 +21,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("forceUpdateInterceptor")
 public class ForceUpdateInterceptor implements Interceptor {
 
-	@Resource
-	AfUserAccountService afUserAccountService;
-	
 	@Resource
 	AfResourceService afResourceService;
 	
