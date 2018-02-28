@@ -33,16 +33,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		String payPwd = ObjectUtils.toString(reqData.getParams().get("payPwd"), "").toString();
 		if (StringUtils.isNotBlank(payPwd)) {
 			Long userId = context.getUserId();
-			if(userId == null) {
-				throw new FanbeiException("请登录后再支付！", true);
-			}
-			
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
-			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-				
-				throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-			}
+			checkPayPwd(userId, payPwd);
 		}
 	}
 
@@ -51,14 +42,18 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		String payPwd = ObjectUtils.toString(context.getData("payPwd"));
 		if (StringUtils.isNotBlank(payPwd)) {
 			Long userId = context.getUserId();
-			if(userId == null) {
-				throw new FanbeiException("请登录后再支付！", true);
-			}
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
-			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-				throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-			}
+			checkPayPwd(userId, payPwd);
+		}
+	}
+	
+	private void  checkPayPwd(Long userId, String payPwd) {
+		if(userId == null) {
+			throw new FanbeiException("请登录后再支付！", true);
+		}
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
+		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+			throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
 	}
 
