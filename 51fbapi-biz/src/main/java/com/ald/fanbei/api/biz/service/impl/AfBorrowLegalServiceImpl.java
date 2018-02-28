@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -137,9 +136,16 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
-		//检查是否认证过，是否通过强风控
-		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus()) || 
-				StringUtils.equals(RiskStatus.A.getCode(), afUserAuthDo.getRiskStatus())) {
+		if(afUserAuthDo == null) {
+			return AfBorrowCashRejectType.NO_AUTHZ;
+		}
+		
+		String authStatus = afUserAuthDo.getRiskStatus();
+		if(RiskStatus.A.getCode().equals(authStatus)) {
+			return AfBorrowCashRejectType.NO_AUTHZ;
+		}
+		
+		if (RiskStatus.NO.getCode().equals(authStatus)) {
 			return AfBorrowCashRejectType.NO_PASS_STRO_RISK;
 		}
 		

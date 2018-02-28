@@ -16,14 +16,14 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-//	String urlBase = "https://btestapp.51fanbei.com";
-	String urlBase = "http://localhost:8080";
+	String urlBase = "https://btestapp.51fanbei.com";
+//	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464412 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
-	String userName = "13958004662";	//胡朝永 支付密码123456
+//	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
-//	String userName = "13370127054";	//王卿 支付密码123456
+	String userName = "13370127054";	//王卿 支付密码123456
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -33,12 +33,18 @@ public class LoanTest  extends BaseTest{
 		super.init(userName);
 	}
 	
+	/**
+	 * 获取借钱首页详情
+	 */
 	@Test
 	public void getHomeInfo() {
 		String url = urlBase + "/h5/loan/getLoanHomeInfo";
 		testH5(url, null, userName, true);
 	}
 	
+	/**
+	 * 获取所有借钱记录，包含白领贷和小额贷记录
+	 */
 //	@Test
 	public void getAllBorrowList() {
 		String url = urlBase + "/borrowCash/getAllBorrowList";
@@ -47,6 +53,9 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
+	/**
+	 * 贷款前确认
+	 */
 //	@Test
 	public void confirmLoan() {
 		String url = urlBase + "/h5/loan/confirmLoan";
@@ -57,6 +66,9 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
+	/**
+	 * 发起贷款申请
+	 */
 //	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
@@ -82,6 +94,9 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
+	/**
+	 * 贷款申请成功后，模拟 UPS 回调 返呗API
+	 */
 //	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
@@ -96,6 +111,9 @@ public class LoanTest  extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 
+	/**
+	 * 获取白领贷协议
+	 */
 	@Test
 	public void getWhiteLoanProtocol() {
 		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
@@ -112,6 +130,9 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
+	/**
+	 * 按期还款
+	 */
 //	@Test
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
@@ -129,6 +150,9 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
+	/**
+	 * 提前结清还款
+	 */
 //	@Test
 	public void allRepayDo() {
 		String url = urlBase + "/loan/loanAllRepayDo";
@@ -145,6 +169,9 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
+	/**
+	 * 获取贷款详情
+	 */
 //	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
@@ -154,6 +181,9 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
+	/**
+	 * 获取贷款还款计划
+	 */
 //	@Test
 	public void loanRepayPlan() {
 		String url = urlBase + "/h5/loan/loanRepayPlan";
