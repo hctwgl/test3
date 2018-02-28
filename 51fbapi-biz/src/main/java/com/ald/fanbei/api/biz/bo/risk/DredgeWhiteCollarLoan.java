@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.bo.risk;
 
-import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
+import java.util.Map;
+
+import org.dbunit.util.Base64;
+
+import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ContactRelationType;
 import com.ald.fanbei.api.common.util.RSAUtil;
@@ -11,10 +15,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import java.util.Map;
-
-import org.dbunit.util.Base64;
-
 /**
  * 
  * @类描述：用户认证是调用强风控信息
@@ -22,17 +22,16 @@ import org.dbunit.util.Base64;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 
-public class DredgeWhiteCollarLoan extends RiskRegisterStrongReqBo {
+public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 	private static final long serialVersionUID = 1L;
-	Map<String,Object> extUserInfo;
+	
 	
 	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene);
-		this.extUserInfo = extUserInfo;
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
