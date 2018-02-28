@@ -1526,8 +1526,8 @@ public class RiskUtil extends AbstractThird {
 						LoanType.BLD_LOAN.getCode(), whiteCollarAmount);
 				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
 						"LOAN_TOTAL", totalAmount);
-				afUserAccountSenceService.updateById(bldAccountSenceDo);
-				afUserAccountSenceService.updateById(totalAccountSenceDo);
+				afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
+				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
 				// 处理已认证，未提额的补充认证
 				processAuthedNotRaiseAuth(consumerNo);

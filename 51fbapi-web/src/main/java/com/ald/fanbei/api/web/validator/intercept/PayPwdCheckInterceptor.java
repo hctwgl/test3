@@ -40,6 +40,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 			String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+				
 				throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
