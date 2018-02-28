@@ -12,6 +12,7 @@ public enum AfLoanStatus {
 	APPLY("申请/未审核", "APPLY"),
 	TRANSFERING("打款中", "TRANSEDING"),
 	TRANSFERRED("已经打款/待还款", "TRANSED"),
+	REPAYING("还款中", "REPAYING"),
 	FINISHED("已结清", "FINSH"),
 	CLOSED("关闭", "CLOSED");
 	

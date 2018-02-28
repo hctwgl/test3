@@ -23,12 +23,12 @@ public class LoanHomeInfoBo {
 	public BigDecimal loanArrivalAmount;
 	public Date loanGmtApply;
 	public boolean isOverdue;
+	public BigDecimal repayingAmount;
 	
 	public String periodIds;
 	public BigDecimal periodsRestAmount;
 	public BigDecimal periodsOverdueAmount;
 	public Date periodsLastGmtPlanRepay;
 	public String periodsStatus;
-	
 	public BigDecimal periodsUnChargeAmount;
 }
