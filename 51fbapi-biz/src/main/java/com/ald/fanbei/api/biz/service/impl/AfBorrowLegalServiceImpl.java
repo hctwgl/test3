@@ -27,9 +27,11 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -62,6 +64,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
 	private AfBorrowCashDao afBorrowCashDao;
+	
+	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
 	
 	@Override
 	public BorrowLegalHomeInfoBo getHomeInfo(Long userId){
@@ -114,10 +118,15 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 			bo.hasBorrow = false;
 			return;
 		}
+		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(lastBorrowCash.getRid());
+		if(repayment != null) {
+			status = AfBorrowCashStatus.repaying.getCode();
+			bo.repayingAmount = repayment.getRepaymentAmount();
+		}
+		bo.borrowStatus = status;
 		
 		bo.hasBorrow = true;
 		bo.borrowId = lastBorrowCash.getRid();
-		bo.borrowStatus = status;
 		bo.borrowAmount = lastBorrowCash.getAmount();
 		bo.borrowArrivalAmount = lastBorrowCash.getArrivalAmount();
 		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(lastBorrowCash);
@@ -223,6 +232,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public BigDecimal borrowAmount;
 		public BigDecimal borrowArrivalAmount;
 		public BigDecimal borrowRestAmount;
+		public BigDecimal repayingAmount;
 		public Date borrowGmtApply;
 		public Date borrowGmtPlanRepayment;
 		public boolean isBorrowOverdue;
