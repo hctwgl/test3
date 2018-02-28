@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
@@ -89,5 +90,23 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			afUserAccountSenceDao.updateById(accountSenceDo);
 		}
 		
+	}
+
+	@Override
+	public BigDecimal getTotalAmount(Long userId) {
+		AfUserAccountSenceDo sceneDo = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+		if(sceneDo != null) {
+			return sceneDo.getAuAmount();
+		}
+		return BigDecimal.ZERO;
+	}
+
+	@Override
+	public BigDecimal getBldUsedAmount(Long userId) {
+		AfUserAccountSenceDo sceneDo = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userId);
+		if(sceneDo != null) {
+			return sceneDo.getUsedAmount();
+		}
+		return BigDecimal.ZERO;
 	}
 }

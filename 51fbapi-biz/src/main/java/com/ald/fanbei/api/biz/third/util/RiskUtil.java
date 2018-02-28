@@ -1407,6 +1407,12 @@ public class RiskUtil extends AbstractThird {
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
 			if (StringUtils.equals("10", result)) {
 				if (SceneType.CASH.getCode().equals(scene)) {
+					// 小额贷强风控认证成功，更新总额度
+					String totalAmount = obj.getString("totalAmount");
+					AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
+							"LOAN_TOTAL", totalAmount);
+					afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+					
 					if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())
 							&& !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode())
 							|| orderNo.contains("sdrz")) {
