@@ -87,4 +87,6 @@ public interface AfUserService {
 	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
 
 	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
+	
+	Long convertUserNameToUserId(String userName);
 }

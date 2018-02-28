@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -56,8 +57,20 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+			
+			
+			
+			
 			throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
+        //----------------------mqp clear password times -------------
+        String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userName;
+        Integer times = (Integer)bizCacheUtil.getObject(key);
+        if (times != null) {
+        	
+        	bizCacheUtil.delCache(key);
+		}
+        //----------------------mqp clear password times -------------
 	}
 
 }
