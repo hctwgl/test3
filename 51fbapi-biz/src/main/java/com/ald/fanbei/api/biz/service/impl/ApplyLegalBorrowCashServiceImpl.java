@@ -336,6 +336,15 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		this.checkBorrowFinish(accountDo.getUserId());
 		this.checkRiskRefused(accountDo.getUserId());
 		this.checkCardNotEmpty(bankCard);
+		this.checkBorrowType(param,rateInfoDo);
+	}
+
+	private void checkBorrowType(ApplyLegalBorrowCashBo param, AfResourceDo rateInfoDo) {
+		String type = param.getType();
+		String borrowDays = rateInfoDo.getTypeDesc();
+		if(StringUtils.isNotBlank(borrowDays) && !borrowDays.contains(type)) {
+			throw new FanbeiException("借钱天数有误，请返回借钱首页重试",true);
+		}
 	}
 
 	@Override

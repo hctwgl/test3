@@ -65,7 +65,7 @@
 <script type="text/javascript" src="/dist/js/clipboard.min.js"></script>
 <script type="text/javascript" src="/dist/js/app/newinvite.js?version=$version"></script>*#
 <script type="text/javascript">
-    window.location.href='https://atesth5.51fanbei.com/h5/newInvite/newInvite.html?type=newInviteInit&javaurl=yapp.51fanbei.com&port=443&httptype=https';
+    window.location.href='https://h5.51fanbei.com/h5/newInvite/newInvite.html?type=newInviteInit&javaurl=app.51fanbei.com&port=443&httptype=https';
 </script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -65,6 +66,8 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	ApplyLegalBorrowCashService applyLegalBorrowCashService;
+	@Resource
+	SmartAddressEngine smartAddressEngine;
 
 	// [end]
 	@Override
@@ -141,6 +144,12 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 							verifyBo.getResult(), afBorrowLegalOrderDo, mainCard, afBorrowCashDo);
 					// 增加借款埋点信息
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
+					//百度智能地址
+					try {
+						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
+					}catch (Exception e){
+						logger.info("smart address {}",e);
+					}
 				} else {
 					// 风控拒绝，更新借款状态
 					AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();

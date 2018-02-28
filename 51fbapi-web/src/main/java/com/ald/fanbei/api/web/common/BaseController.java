@@ -430,6 +430,7 @@ public abstract class BaseController {
 	 */
 	protected FanbeiWebContext doWebCheck(HttpServletRequest request, boolean needToken) {
 		FanbeiWebContext webContext = new FanbeiWebContext();
+		logger.info(String.format("doWebCheck Referer = {%s}", request.getHeader("Referer")));
 		String appInfo = getAppInfo(request.getHeader("Referer"));
 		// 如果是测试环境
 		logger.info(String.format("doWebCheck appInfo = {%s}", appInfo));

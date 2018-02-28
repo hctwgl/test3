@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component(value = "rebate_SELFSUPPORT")
 public class SelfSupportRebateService extends BaseRebateService {
@@ -36,7 +38,9 @@ public class SelfSupportRebateService extends BaseRebateService {
 
     @Override
     public boolean rebate(AfOrderDo orderInfo) {
-        //自营商品在确认收货时，直接返利
+       
+	 
+	//自营商品在确认收货时，直接返利
         //成单时,自营商品会自动返利金额写入 Order表中。而且必须使用成单时的金额，方式商品表中的有变动
         BigDecimal rebateAmount = orderInfo.getRebateAmount();
         orderInfo.setStatus(OrderStatus.REBATED.getCode());
