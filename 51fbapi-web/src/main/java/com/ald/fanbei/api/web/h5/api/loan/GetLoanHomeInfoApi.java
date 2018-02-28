@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.loan;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
@@ -43,6 +46,9 @@ public class GetLoanHomeInfoApi implements H5Handle {
 	@Resource
 	private AfUserAuthStatusService afUserAuthStatusService;
 	
+	@Resource
+	private AfUserAccountSenceService afUserAccountSenceService;
+	
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
@@ -55,6 +61,12 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			AfUserBankcardDo userBankcard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			
 			resp.addResponseData("bldStatus", afUserAuthStatusService.getBldOpenStatus(userId));
+			BigDecimal totalAmount = afUserAccountSenceService.getTotalAmount(userId);
+			BigDecimal xjdUsedAmount = accInfo.getUsedAmount();
+			BigDecimal bldUsedAmount = afUserAccountSenceService.getBldUsedAmount(userId);
+			resp.addResponseData("totalAmount",totalAmount);
+			resp.addResponseData("useableAmount", totalAmount.subtract(xjdUsedAmount).subtract(bldUsedAmount));
+			
 			resp.addResponseData("isLogin", true);
 			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
 			resp.addResponseData("authStatus", afUserAuthService.allBasicAuthPassed(authInfo));
