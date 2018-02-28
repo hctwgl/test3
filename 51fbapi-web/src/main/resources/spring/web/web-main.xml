@@ -627,6 +627,7 @@
 			<list>
 				<ref bean="validationInterceptor"/>
 				<ref bean="payPwdCheckInterceptor"/>
+				<ref bean="forceUpdateInterceptor"/>
 			</list>
 		</property>
 	</bean>
