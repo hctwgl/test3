@@ -42,6 +42,7 @@ public class ConfirmLoanApi implements H5Handle {
 		List<Object> periodDos = afLoanPeriodsService.resolvePeriods(amount, context.getUserId(), periods, null, prdType);
 		periodDos.remove(0);
 		AfUserBankcardDo cardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		cardDo.setCardNumber(afUserBankcardService.hideCardNumber(cardDo.getCardNumber()));
 		
 		resp.addResponseData("periodsInfo", periodDos);
 		resp.addResponseData("cardInfo", cardDo);
