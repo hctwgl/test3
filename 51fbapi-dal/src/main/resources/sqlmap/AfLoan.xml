@@ -592,7 +592,7 @@
         ORDER BY gmt_create DESC
     </select>
 
-    <select id="selectById">
+    <select id="selectById" resultType="AfLoanDo">
         SELECT
         <include refid="queryFields" />
         FROM af_loan

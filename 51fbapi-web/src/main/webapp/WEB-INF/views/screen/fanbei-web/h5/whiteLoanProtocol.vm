@@ -41,7 +41,7 @@
     <div class="protocol fenqiServiceProtocol">
         <h2>借款协议</h2>
         <p>
-            <i class="fr">协议编号：TODO【系统填写】</i>
+            <i class="fr">协议编号：$!{loanNo}</i>
             <br> 甲方（借款人）： $!{realName}
             <br> 身份证号：$!{idNumber}
             <br> 手机号码： $!{mobile}
@@ -69,7 +69,7 @@
             <ul>
                 <li>
                     <i>借款本金</i>
-                    <i>#if($!{amountLower})$!{amountLower}元#end</i>
+                    <i>#if($!{totalPeriods.amount})$!{totalPeriods.amount}#end</i>
                 </li>
                 <li>
                     <i>大写金额</i>
@@ -77,11 +77,11 @@
                 </li>
                 <li>
                     <i>借款利率（年化）</i>
-                    <i>#if($!{yearRate})$!{yearRate}%#end</i>
+                    <i>#if($!{totalPeriods.interestRate})$!{totalPeriods.interestRate}%#end</i>
                 </li>
                 <li>
                     <i>借款期限</i>
-                    <i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i>
+                    <i>#if($!{totalPeriods.gmtCreate})$dateUtil.formatDate($!{totalPeriods.gmtCreate},"yyyy-MM-dd") 至 $!{gmtEnd}#end</i>
                 </li>
                 <li>
                     <i>还款方式</i>
@@ -90,11 +90,11 @@
                 <li>
                     <i>还款日</i>
                     <!-- TODO 更改日期 -->
-                    <i>每月#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end日</i>
+                    <i>每月$!{days}日</i>
                 </li>
                 <li>
                     <i>借款用途</i>
-                    <i>TODO【系统填写】个人消费</i>
+                    <i>$!{totalPeriods.loanRemark}</i>
                 </li>
             </ul>
             <br>
@@ -108,18 +108,14 @@
                     <td>利息及手续费</td>
                 </tr>
                 <!-- TODO: 遍历相应条目数 -->
-                <tr>
-                    <td>1</td>
-                    <td>TODO【系统填写】年【系统填写】月【系统填写】日</td>
-                    <td>TODO【系统填写】</td>
-                    <td>TODO【系统填写】</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>TODO</td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                #foreach($item in $!{nperArray})
+                    <tr>
+                        <td>1</td>
+                        <td>$dateUtil.formatDate($!{item.gmtPlanRepay},"yyyy-MM-dd")</td>
+                        <td>$!{item.loanAmount}</td>
+                        <td>$!{item.fee}</td>
+                    </tr>
+                #end
             </table>
             <span>三、借款发放及还款方式</span>
             <br> 3.1借款发放
@@ -268,7 +264,7 @@
             <img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end
             <br> 丁方：浙江楚橡信息科技股份有限公司 #if($!{thirdSeal})
             <img style="max-width: 2.5rem" src="$!{thirdSeal}">#end
-            <br> 签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")
+            <br> 签署时间：$dateUtil.formatDate($!{totalPeriods.gmtCreate},"yyyy-MM-dd")
             <br> 签署地点：杭州市滨江区
             <br>
             <br>
