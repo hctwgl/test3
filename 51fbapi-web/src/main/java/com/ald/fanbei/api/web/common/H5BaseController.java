@@ -85,6 +85,7 @@ public abstract class H5BaseController {
 			baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
 			retMsg = JSON.toJSONString(baseResponse);
 		}
+		logger.info("response msg=>{}",retMsg);
 		return retMsg;
 	}
 
