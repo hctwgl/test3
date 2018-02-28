@@ -439,10 +439,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.hasLoan = false;
 			return;
 		}
+		AfLoanRepaymentDo processLoanRepayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
+		if(processLoanRepayment != null) {
+			status = AfLoanStatus.REPAYING.name();
+			bo.repayingAmount = processLoanRepayment.getRepayAmount();
+		}
+		bo.loanStatus = status;
 		
 		bo.hasLoan = true;
 		bo.loanId = lastLoanDo.getRid();
-		bo.loanStatus = status;
 		bo.loanAmount = lastLoanDo.getAmount();
 		bo.loanArrivalAmount = lastLoanDo.getArrivalAmount();
 		bo.loanGmtApply = lastLoanDo.getGmtCreate();
@@ -470,8 +475,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
     	}
     	
     	// 查询是否有处理中的还款
-    	AfLoanRepaymentDo repayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
-    	if(repayment != null) {
+    	if(processLoanRepayment != null) {
     		periodsStatus = AfLoanPeriodStatus.REPAYING.name();
     	}
     	

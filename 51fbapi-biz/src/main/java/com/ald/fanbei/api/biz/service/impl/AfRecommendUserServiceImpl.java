@@ -211,6 +211,29 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				} catch (Exception e) {
 					logger.error("{update userBorrowError} userId=" + userId);
 				}
+				try {
+					//若被邀请者在活动时间之前注册的，即使或者之后完成任务，也不给邀请者发放奖励
+				  if (afRecommendUserDo != null) {
+				    String  activityTime = null;
+				    Date acTime = new Date();
+				    AfResourceDo activityStart = new AfResourceDo();
+					   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+					   activityStart = list.get(0);
+					    if(activityStart !=null){
+						 activityTime = activityStart.getValue();
+						 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						 acTime = sdf.parse(activityTime);
+					
+					    }
+					    
+				     if(afRecommendUserDo.getGmt_create().before(acTime)){
+					 return 1;
+				       }
+				  }
+				} catch (Exception e) {
+					logger.error("{update userBorrowError for activityTime} userId=" + userId);
+				}
+				
 				/*//给该用户送优惠券（还款券）
 				String tag = "_FIRST_LOAN_";
 				String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
@@ -317,9 +340,31 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         			return 1;
         	        }
 			
+        	        
 			AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserByIdAndType(userId,1);
 			if (afRecommendUserDo != null) {
-
+			    	//若被邀请者在活动时间之前注册的，即使或者之后完成任务，也不给邀请者发放奖励
+			    try{
+			    String  activityTime = null;
+			    Date acTime = new Date();
+			    AfResourceDo activityStart = new AfResourceDo();
+				   List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_START_TIME");
+				   activityStart = list.get(0);
+				    if(activityStart !=null){
+					 activityTime = activityStart.getValue();
+					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					 acTime = sdf.parse(activityTime);
+				
+				    }
+				    
+			     if(afRecommendUserDo.getGmt_create().before(acTime)){
+				 return 1;
+			     }
+			
+			   }catch(Exception e){
+			    logger.error("updateRecommendCash error for activity time"+e);
+		         }
+			         
 
 				/********临时逻辑：被邀请人未满20周岁时不给邀请人发放奖励***************/
 				AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);

@@ -59,7 +59,9 @@ public class PayOrderApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		
+		if (context.getAppVersion() < 390) {
+			throw new FanbeiException("您使用的app版本过低,请升级", true);
+		}
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"),null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"),null);

@@ -151,7 +151,7 @@
 
 	<!-- KAFKA -->
 	<!-- MONGODB -->
-	<mongo:mongo-client id="mongoClient"  host="${mongo.host}" port="${mongo.port}" credentials="${mongo.credentials}">
+	<mongo:mongo-client id="mongoClient"  replica-set="${mongo.host}" credentials="${mongo.credentials}">
 		<mongo:client-options
 				connections-per-host="8"
 				threads-allowed-to-block-for-connection-multiplier="4"

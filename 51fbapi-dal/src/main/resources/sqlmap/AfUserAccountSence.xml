@@ -137,6 +137,62 @@
         user_id = #{userId} AND scene = #{scene}
     </update>
 
+    <update id ="updateTrainInitUsedAmount">
+    	UPDATE af_user_account_sence s
+		LEFT JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
+		FROM af_borrow_bill as a
+		INNER JOIN af_borrow as b ON a.borrow_id=b.id
+		INNER JOIN af_order as c ON b.order_id=c.id
+		INNER JOIN af_trade_order as d ON c.id=d.order_id
+		INNER JOIN af_trade_business_info as e ON d.business_id=e.business_id
+		INNER JOIN af_business_type as f ON e.type=f.id
+		WHERE a.is_delete=0 AND a.STATUS IN ( 'N','D')
+		AND c.order_type = 'TRADE' AND f.`code` = 'TRAIN' AND a.`user_id` = #{userId}
+		GROUP BY a.`user_id`) t
+		on s.user_id = t.user_id and s.scene = 'TRAIN'
+		set s.used_amount = IFNULL(t.principle_amount,0),
+		s.gmt_modified = NOW()
+		where s.scene = 'TRAIN' AND s.`user_id` = #{userId};
+    </update>
+    <update id ="updateOnlineInitUsedAmountByBills">
+    	UPDATE af_user_account_sence s
+		LEFT JOIN (SELECT a.`user_id`, SUM(a.principle_amount) principle_amount
+		FROM af_borrow_bill as a
+		INNER JOIN af_borrow as b ON a.borrow_id=b.id
+		INNER JOIN af_order as c ON b.order_id=c.id
+		WHERE a.is_delete=0 AND a.STATUS IN ( 'N','D')
+		AND c.order_type <![CDATA[<>]]> 'TRADE' AND a.`user_id` = #{userId}
+		GROUP BY a.`user_id`) t
+		on s.user_id = t.user_id
+		set s.used_amount = IFNULL(t.principle_amount,0),
+		s.gmt_modified = NOW()
+		where s.scene = 'ONLINE' AND s.`user_id` = #{userId};
+    </update>
+	<update id ="updateOnlineInitUsedAmountByOrderAp">
+    	UPDATE af_user_account_sence s
+		LEFT JOIN (SELECT c.`user_id`, SUM(c.actual_amount) actual_amount
+		from af_order c
+		WHERE c.order_type = 'SELFSUPPORT' AND pay_type = 'AP'
+		AND (`STATUS`='PAID' or `STATUS`='DELIVERED') and c.gmt_create >= '2018-01-05' and c.user_id = #{userId}
+		GROUP BY c.`user_id`) t
+		on s.user_id = t.user_id
+		set s.used_amount = s.used_amount + IFNULL(t.actual_amount,0),
+		s.gmt_modified = NOW()
+		where s.scene = 'ONLINE' AND s.`user_id` = #{userId};
+    </update>
+    <update id ="updateOnlineInitUsedAmountByOrderCp">
+    	UPDATE af_user_account_sence s
+		LEFT JOIN (SELECT c.`user_id`, SUM(c.borrow_amount) borrow_amount
+		from af_order c
+		WHERE c.order_type = 'SELFSUPPORT' AND pay_type = 'CP'
+		AND (`STATUS`='PAID' or `STATUS`='DELIVERED') and c.gmt_create >= '2018-01-05' and c.user_id = #{userId}
+		GROUP BY c.`user_id`) t
+		on s.user_id = t.user_id
+		set s.used_amount = s.used_amount + IFNULL(t.borrow_amount,0),
+		s.gmt_modified = NOW()
+		where s.scene = 'ONLINE' AND s.`user_id` = #{userId};
+    </update>
+
 	<select id="getByUserIdAndScene" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
         SELECT
         <include refid="queryFields" />

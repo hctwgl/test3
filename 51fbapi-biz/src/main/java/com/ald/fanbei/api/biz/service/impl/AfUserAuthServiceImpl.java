@@ -462,7 +462,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 						data.put("riskRetrialRemind", afResourceDo.getValue3() + "，明天可以重新提交审核");
 						data.put("title2", afResourceDo.getValue3() + "，明天可以重新提交审核");
 					} else {
-						data.put("riskRetrialRemind", afResource.getValue4() + "，明天可以重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，明天可以重新提交审核");
 						data.put("title2", afResourceDo.getValue4() + "，明天可以重新提交审核");
 					}
 				} else {

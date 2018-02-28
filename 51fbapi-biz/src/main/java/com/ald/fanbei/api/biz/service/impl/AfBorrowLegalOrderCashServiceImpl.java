@@ -113,9 +113,9 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 		}
 		
 		BigDecimal restAmount = calculateLegalRestAmount(cashDo, orderCashDo);
-		// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+		// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+200元 时，返回错误
 		if (NumberUtil.objToBigDecimalDivideOnehundredDefault(offlineRepayAmount, BigDecimal.ZERO)
-				.compareTo(restAmount.add(BigDecimal.valueOf(10))) > 0) {
+				.compareTo(restAmount.add(BigDecimal.valueOf(200))) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 	}

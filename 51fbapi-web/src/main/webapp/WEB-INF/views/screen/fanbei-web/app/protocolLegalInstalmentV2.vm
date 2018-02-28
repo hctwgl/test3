@@ -179,7 +179,7 @@
         <tr>
             #foreach($item in $!{edspaySealDoList})
                 <td>$!{item.userName}</td><td>$!{item.edspayUserCardId}</td>
-                <td>#if($!{item.edspayUserCardId})$!{item.amount}#end</td>
+                <td>#if($!{item.edspayUserCardId})$!{item.investorAmount}#end</td>
             #end
         </tr>
     </table>
