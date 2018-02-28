@@ -592,4 +592,14 @@
 		</property>
 	</bean>
 	
+	<!-- 拦截器链 -->
+	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
+		<property name="interceptors">
+			<list>
+				<ref bean="validationInterceptor"/>
+				<ref bean="payPwdCheckInterceptor"/>
+				<ref bean="forceUpdateInterceptor"/>
+			</list>
+		</property>
+	</bean>
 </beans>

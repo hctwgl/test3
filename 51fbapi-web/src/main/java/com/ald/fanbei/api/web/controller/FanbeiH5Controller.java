@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,9 +22,11 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
@@ -47,6 +53,9 @@ public class FanbeiH5Controller extends H5BaseController {
 	@Resource
 	AfUserService afUserService;
 	
+	@Resource
+	InterceptorChain interceptorChain;
+	
     @RequestMapping(value ="/h5/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String h5Request(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -69,7 +78,14 @@ public class FanbeiH5Controller extends H5BaseController {
 		
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
-        String appInfo = request.getParameter("_appInfo");
+        String appInfo =  request.getParameter("_appInfo");
+        if(StringUtils.isEmpty(appInfo)) {
+        	// 从请求头获取_appInfo
+        	String referer = request.getHeader("Referer");
+        	if(StringUtils.isNotBlank(referer)) {
+        		appInfo = getAppInfo(referer);
+        	}
+        }
         if(StringUtils.isNotEmpty(appInfo)) {
         	JSONObject _appInfo = JSONObject.parseObject(appInfo);
             String userName = _appInfo.getString("userName");
@@ -91,11 +107,48 @@ public class FanbeiH5Controller extends H5BaseController {
         
         wrapRequest(request,dataMaps);
         builder.dataMap(dataMaps);
+        
+        logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
        
+        String clientIp = CommonUtil.getIpAddr(request);
+        builder.clientIp(clientIp);
         Context context = builder.build();
 		return context;
 	}
 
+	private String getAppInfo(String referer) {
+		
+		String appInfo = StringUtils.EMPTY;
+		try {
+			Map<String, List<String>> params = Maps.newHashMap();
+			String[] urlParts = referer.split("\\?");
+			if (urlParts.length > 1) {
+				String query = urlParts[1];
+				for (String param : query.split("&")) {
+					String[] pair = param.split("=");
+					String key = URLDecoder.decode(pair[0], "UTF-8");
+					String value = "";
+					if (pair.length > 1) {
+						value = URLDecoder.decode(pair[1], "UTF-8");
+					}
+
+					List<String> values = params.get(key);
+					if (values == null) {
+						values = new ArrayList<String>();
+						params.put(key, values);
+					}
+					values.add(value);
+				}
+			}
+			List<String> _appInfo = params.get("_appInfo");
+			if (_appInfo != null && _appInfo.size() > 0) {
+				appInfo = _appInfo.get(0);
+			}
+			return appInfo;
+		} catch (UnsupportedEncodingException ex) {
+			throw new AssertionError(ex);
+		}
+	}
 
 	private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
 		
@@ -112,11 +165,12 @@ public class FanbeiH5Controller extends H5BaseController {
 
 	@Override
 	public BaseResponse doProcess(Context context) {
-        H5Handle methodHandel = h5HandleFactory.getHandle(context.getMethod());
-      
+		interceptorChain.execute(context);
+        H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
+        
         H5HandleResponse handelResult;
         try {
-            handelResult = methodHandel.process(context);
+            handelResult = methodHandle.process(context);
             int resultCode = handelResult.getResult().getCode();
             if(resultCode != 1000){
                 logger.info(context.getId() + " err,Code=" + resultCode);
@@ -130,6 +184,9 @@ public class FanbeiH5Controller extends H5BaseController {
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
 	}
+
+
+	
 
 
 }
