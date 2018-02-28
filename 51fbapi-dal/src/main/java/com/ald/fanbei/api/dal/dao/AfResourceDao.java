@@ -195,4 +195,6 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	AfResourceDo getConfigByTypesAndValue(@Param("type") String type, @Param("value")String value);
+
+	int editResource(AfResourceDo assetPushResource);
 }

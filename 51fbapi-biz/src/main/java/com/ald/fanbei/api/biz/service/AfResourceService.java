@@ -238,4 +238,6 @@ public interface AfResourceService {
 	AfResourceDo getWechatConfig();
 
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
+
+	int editResource(AfResourceDo assetPushResource);
 }

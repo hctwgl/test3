@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
  */
 public interface AfAssetSideInfoService extends ParentService<AfAssetSideInfoDo, Long>{
 
+	AfAssetSideInfoDo getByFlag(String assetSideFlag);
+	
 }

@@ -520,5 +520,56 @@
 		is_delete = 0 AND type = #{type} AND  value= #{value}
 		LIMIT 1
 	</select>
+	
+	<update id="editResource" parameterType="AfResourceDo">
+		UPDATE af_resource SET gmt_modified = NOW()
+			<if test="modifier != null">
+    			,modifier=#{modifier}
+			</if>
+			<if test="dataType != null">
+    			,data_type=#{dataType}
+			</if>
+			<if test="type != null">
+    			,type=#{type}
+			</if>
+			<if test="typeDesc != null">
+    			,type_desc=#{typeDesc}
+			</if>
+			<if test="name != null">
+    			,name=#{name}
+			</if>
+			<if test="value != null">
+    			,value=#{value}
+			</if>
+			<if test="description != null">
+    			,description=#{description}
+			</if>
+			<if test="secType != null">
+    			,sec_type=#{secType}
+			</if>
+			<if test="value1 != null">
+    			,value_1=#{value1}
+			</if>
+			<if test="value2 != null">
+    			,value_2=#{value2}
+			</if>
+			<if test="value3 != null">
+    			,value_3=#{value3}
+			</if>
+			<if test="value4 != null">
+    			,value_4=#{value4}
+			</if>
+			<if test="sort != null">
+    			,sort=#{sort}
+			</if>
+			<if test="pic1 != null">
+    			,pic1=#{pic1}
+			</if>
+			<if test="pic2 != null">
+    			,pic2=#{pic2}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
 
 </mapper>

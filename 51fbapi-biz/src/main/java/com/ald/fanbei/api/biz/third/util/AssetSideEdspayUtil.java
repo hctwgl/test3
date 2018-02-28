@@ -4,13 +4,16 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.AssetResponseMessage;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayCreditDetailInfo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditDayLimit;
@@ -25,11 +28,13 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
@@ -37,6 +42,7 @@ import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -375,4 +381,65 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return bankInfoList.get(0);
 	}
 
+	/**
+	 * 债权实时推送接口
+	 * @param borrowCashInfo
+	 * @param assetSideFlag
+	 * @param assetSideFanbeiFlag
+	 * @return
+	 */
+	public boolean borrowCashCurPush(EdspayGetCreditRespBo borrowCashInfo,String assetSideFlag, String assetSideFanbeiFlag) {
+		//发送的资产包信息
+		try {
+			String borrowerJson = "";
+			if (StringUtil.isBlank(assetSideFlag)) {
+				logger.error("borrowCashCurPush fail:assetSideFlag is null");
+				return false;
+			}
+			if (borrowCashInfo == null) {
+				borrowerJson = JSON.toJSONString("");
+			}else{
+				borrowerJson = JSON.toJSONString(borrowCashInfo);
+			}
+			Map<String,String> map = new HashMap<String,String>();
+			//时间戳
+			long sendTime = DateUtil.getCurrSecondTimeStamp();
+			//获取对应资产方配置信息
+			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(assetSideFlag);
+			//传输的data数据
+			String data = AesUtil.encryptToBase64(borrowerJson, assideResourceInfo.getValue2());
+			//签名
+			String sign = DigestUtil.MD5(borrowerJson);
+			map.put("data", data);
+			map.put("sendTime", sendTime+"");
+			map.put("sign", sign);
+			map.put("appId", assetSideFanbeiFlag);
+			//发送前数据打印
+			logger.info("borrowCashCurPush originBorrowerJson"+borrowerJson+",data="+data+",sendTime="+sendTime+",sign="+sign+",appId="+assetSideFanbeiFlag);
+			String jsonParam = JSON.toJSONString(map);
+			//推送数据给钱包
+			String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/curDebtPush", jsonParam);
+			AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
+			if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
+				//推送成功
+				logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
+				if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
+					//钱包满额,更新配置表
+					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+					assetPushResource.setValue3(YesNoStatus.YES.getCode());
+					afResourceService.editResource(assetPushResource);
+				}
+				return true;
+			}else {
+				//钱包处理错误
+				FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
+				logger.error("borrowCashCurPush resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+				return false;
+			}
+		} catch (Exception e) {
+			//推送失败或超时
+			logger.error("borrowCashCurPush exception"+e);
+		}
+		return false;
+	}
 }

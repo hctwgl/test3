@@ -688,4 +688,9 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
 	}
 
+	@Override
+	public int editResource(AfResourceDo assetPushResource) {
+		return afResourceDao.editResource(assetPushResource);
+	}
+
 }

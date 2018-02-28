@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 
 /**
@@ -229,5 +230,7 @@ public interface AfBorrowCashDao {
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
 
 	int getCashBorrowByUserIdAndActivity(@Param("userId") Long userId,@Param("activityTime") String activityTime);
+
+	AfBorrowCashDto getBorrowCashInfoById(@Param("borrowCashId")Long borrowCashId);
 
 }
