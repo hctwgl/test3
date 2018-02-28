@@ -69,15 +69,15 @@
             <ul>
                 <li>
                     <i>借款本金</i>
-                    <i>#if($!{totalPeriods.amount})$!{totalPeriods.amount}#end</i>
+                    <i>#if($!{totalPeriods.amount})$!{totalPeriods.amount}元#end</i>
                 </li>
                 <li>
                     <i>大写金额</i>
-                    <i>人民币$!{amountCapital}元</i>
+                    <i>人民币$!{amountCapital}</i>
                 </li>
                 <li>
                     <i>借款利率（年化）</i>
-                    <i>#if($!{totalPeriods.interestRate})$!{totalPeriods.interestRate}%#end</i>
+                    <i>#if($!{totalPeriods.interestRate}){{changeRate($!{totalPeriods.interestRate})}}%#end</i>
                 </li>
                 <li>
                     <i>借款期限</i>
