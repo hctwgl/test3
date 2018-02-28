@@ -49,6 +49,7 @@ public class ResetPwdApi implements ApiHandle {
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
+	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -97,12 +98,16 @@ public class ResetPwdApi implements ApiHandle {
         afUserService.updateUser(userDo);
         
         //----------------------mqp clear password times -------------
-        String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userName;
-        Integer times = (Integer)bizCacheUtil.getObject(key);
-        if (times != null) {
-        	
-        	bizCacheUtil.delCache(key);
+        Long userId = afUserService.convertUserNameToUserId(userName);
+        if (userId != null) {
+        	 String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
+             Integer times = (Integer)bizCacheUtil.getObject(key);
+             if (times != null) {
+             	
+             	bizCacheUtil.delCache(key);
+     		}
 		}
+       
         //----------------------mqp clear password times -------------
         
         // 添加风控可信
