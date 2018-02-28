@@ -89,7 +89,7 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo);
 		
 		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getCode());
+		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
 		afUserAuthStatusDo.setUserId(userId);
 		if (!riskResp.isSuccess()) {
 			// 认证失败
