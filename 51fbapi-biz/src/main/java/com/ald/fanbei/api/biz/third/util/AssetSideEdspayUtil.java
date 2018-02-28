@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushStrategy;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.AssetResponseMessage;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackCreditReqBo;
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -41,6 +43,7 @@ import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -61,6 +64,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfAssetPackageDao afAssetPackageDao;
 	@Resource
 	AfAssetPackageDetailService afAssetPackageDetailService;
+	@Resource
+	AfRetryTemplService afRetryTemplService;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -417,27 +422,58 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			//发送前数据打印
 			logger.info("borrowCashCurPush originBorrowerJson"+borrowerJson+",data="+data+",sendTime="+sendTime+",sign="+sign+",appId="+assetSideFanbeiFlag);
 			String jsonParam = JSON.toJSONString(map);
-			//推送数据给钱包
-			String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/curDebtPush", jsonParam);
-			AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
-			if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
-				//推送成功
-				logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
-				if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
-					//钱包满额,更新配置表
-					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-					assetPushResource.setValue3(YesNoStatus.YES.getCode());
-					afResourceService.editResource(assetPushResource);
+			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+			try {
+				//推送数据给钱包
+				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/curDebtPush", jsonParam);
+				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
+				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
+					//推送成功
+					logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
+					if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
+						//钱包满额,更新配置表
+						assetPushResource.setValue3(YesNoStatus.YES.getCode());
+						afResourceService.editResource(assetPushResource);
+					}
+					return true;
+				}else {
+					//钱包处理错误,进入重推表
+					FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
+					logger.error("borrowCashCurPush resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+					AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
+					afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
+					afRetryTemplDo.setEventType("pushEdspayRetry");
+					Date now =new Date();
+					afRetryTemplDo.setGmtCreate(now);
+					AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
+					Integer rePushInterval = strategy.getRePushInterval();
+					Date gmtNext = DateUtil.addMins(now, rePushInterval);
+					afRetryTemplDo.setGmtNext(gmtNext);
+					afRetryTemplDo.setTimes(0);
+					afRetryTemplDo.setState("N");
+					afRetryTemplDo.setGmtModify(now);
+					afRetryTemplDo.setContent(borrowerJson);
+					afRetryTemplService.saveRecord(afRetryTemplDo);
+					return false;
 				}
-				return true;
-			}else {
-				//钱包处理错误
-				FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
-				logger.error("borrowCashCurPush resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
-				return false;
+			} catch (Exception e) {
+				//推送失败或超时，进入重推表
+				AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
+				afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
+				afRetryTemplDo.setEventType("pushEdspayRetry");
+				Date now =new Date();
+				afRetryTemplDo.setGmtCreate(now);
+				AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
+				Integer rePushInterval = strategy.getRePushInterval();
+				Date gmtNext = DateUtil.addMins(now, rePushInterval);
+				afRetryTemplDo.setGmtNext(gmtNext);
+				afRetryTemplDo.setTimes(0);
+				afRetryTemplDo.setState("N");
+				afRetryTemplDo.setGmtModify(now);
+				afRetryTemplDo.setContent(borrowerJson);
+				afRetryTemplService.saveRecord(afRetryTemplDo);
 			}
 		} catch (Exception e) {
-			//推送失败或超时
 			logger.error("borrowCashCurPush exception"+e);
 		}
 		return false;

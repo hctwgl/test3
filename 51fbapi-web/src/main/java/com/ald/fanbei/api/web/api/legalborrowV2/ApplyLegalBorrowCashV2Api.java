@@ -9,10 +9,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.admin.common.enums.AfResourceSecType;
-import com.ald.fanbei.admin.common.enums.ResourceSecType;
-import com.ald.fanbei.admin.common.enums.ResourceType;
-import com.ald.fanbei.admin.web.common.CommonResponse;
 import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
 
@@ -256,17 +252,6 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						
 						//债权实时推送
 						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
-						
-						if (!result) {
-							logger.info("sendBorrowInfoByInterface fail");
-							return CommonResponse.getNewInstance(false, "接口发送资产包借款信息失败").toString();
-						}else{
-							afAssetPackageDo.setStatus("sended");
-							afAssetPackageService.updateById(afAssetPackageDo);
-							logger.info("sendBorrowInfoByInterface success");
-							return CommonResponse.getNewInstance(true, "接口发送资产包借款信息成功","/assetPackage/listAssetPackage.htm",null).toString();
-						}
-						
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
