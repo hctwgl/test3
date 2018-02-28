@@ -27,6 +27,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
@@ -56,7 +57,7 @@ public class FanbeiH5Controller extends H5BaseController {
 	AfUserService afUserService;
 	
 	@Resource
-	ValidationInterceptor validationInterceptor;
+	InterceptorChain interceptorChain;
 	
     @RequestMapping(value ="/h5/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -109,6 +110,8 @@ public class FanbeiH5Controller extends H5BaseController {
         
         wrapRequest(request,dataMaps);
         builder.dataMap(dataMaps);
+        
+        logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
        
         String clientIp = CommonUtil.getIpAddr(request);
         builder.clientIp(clientIp);
@@ -165,7 +168,7 @@ public class FanbeiH5Controller extends H5BaseController {
 
 	@Override
 	public BaseResponse doProcess(Context context) {
-		validationInterceptor.intercept(context);
+		interceptorChain.execute(context);
         H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
         
         H5HandleResponse handelResult;

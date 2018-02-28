@@ -141,6 +141,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(),
 				AfResourceSecType.borrowRiskMostAmount.getCode());
+		data.put("highestAmount", afResource.getValue());
 		int min = Integer.parseInt(afResourceDo.getValue1());// 最小分数
 		if (sorce < min) {
 			creditModel.put("creditLevel", "信用较差");
@@ -461,7 +462,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 						data.put("riskRetrialRemind", afResourceDo.getValue3() + "，明天可以重新提交审核");
 						data.put("title2", afResourceDo.getValue3() + "，明天可以重新提交审核");
 					} else {
-						data.put("riskRetrialRemind", afResource.getValue4() + "，明天可以重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，明天可以重新提交审核");
 						data.put("title2", afResourceDo.getValue4() + "，明天可以重新提交审核");
 					}
 				} else {

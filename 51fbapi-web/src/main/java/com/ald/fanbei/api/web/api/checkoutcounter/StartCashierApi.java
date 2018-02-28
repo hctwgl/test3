@@ -23,6 +23,7 @@ import com.ald.fanbei.api.web.vo.CashierVo;
 import com.ald.fanbei.api.web.vo.ConfirmOrderVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -147,7 +149,7 @@ public class StartCashierApi implements ApiHandle {
         }        
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
             checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
@@ -490,43 +492,53 @@ public class StartCashierApi implements ApiHandle {
         //专项额度控制
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         //获取可使用额度+临时额度
-        AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());
-        BigDecimal leftAmount= afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
-        if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
-            cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
-            cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
+        AfUserAccountSenceDo userAccountInfo = null;
+        if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType()))
+            userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(),orderInfo.getUserId());
+        else {	
+            userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId());    
+	}
+	if (userAccountInfo != null) {
+	    BigDecimal leftAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+	    if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
+		cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
+		cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
 
-            if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                cashierTypeVo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
-                cashierTypeVo.setUseableAmount(BigDecimal.ZERO);
-                cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-                cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
-            } else {
-                cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
-                if (leftAmount.compareTo(orderInfo.getActualAmount()) >= 0) {
-                    cashierTypeVo.setUseableAmount(leftAmount);
-                    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
-                    cashierTypeVo.setStatus(YesNoStatus.YES.getCode());
-                } else {
-                    cashierTypeVo.setUseableAmount(leftAmount);
-                    cashierTypeVo.setPayAmount(leftAmount);
-                    cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
-                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-                }
-                if (leftAmount.compareTo(usabledMinAmount) <= 0) {
-                    cashierTypeVo.setReasonType(CashierReasonType.NEEDUP_VIRTUAL.getCode());
-                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-                }
-            }
-            
-            cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT)==null?new BigDecimal(virtualMap.get(Constants.VIRTUAL_AMOUNT).toString())
-     	       : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
-            
-        } else {
-            cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
-            cashierTypeVo.setUseableAmount(leftAmount);
-            cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
-        }
+		if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
+		    cashierTypeVo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
+		    cashierTypeVo.setUseableAmount(BigDecimal.ZERO);
+		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+		    cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
+		} else {
+		    cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
+		    if (leftAmount.compareTo(orderInfo.getActualAmount()) >= 0) {
+			cashierTypeVo.setUseableAmount(leftAmount);
+			cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
+			cashierTypeVo.setStatus(YesNoStatus.YES.getCode());
+		    } else {
+			cashierTypeVo.setUseableAmount(leftAmount);
+			cashierTypeVo.setPayAmount(leftAmount);
+			cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
+			cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+		    }
+		    if (leftAmount.compareTo(usabledMinAmount) <= 0) {
+			cashierTypeVo.setReasonType(CashierReasonType.NEEDUP_VIRTUAL.getCode());
+			cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+		    }
+		}
+
+		cashierTypeVo.setTotalVirtualAmount(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) == null ? new BigDecimal(virtualMap.get(Constants.VIRTUAL_AMOUNT).toString()) : new BigDecimal(virtualMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString()));
+
+	    } else {
+		cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
+		cashierTypeVo.setUseableAmount(leftAmount);
+		cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
+	    }
+	} else {
+	    cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
+	    cashierTypeVo.setUseableAmount(BigDecimal.ZERO);
+	    cashierTypeVo.setPayAmount(BigDecimal.ZERO);
+	}
         
         return virtualMap;
     }

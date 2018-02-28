@@ -44,8 +44,8 @@ import com.ald.fanbei.api.common.enums.AfLoanReviewStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -68,7 +68,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
 
@@ -439,10 +439,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			bo.hasLoan = false;
 			return;
 		}
+		AfLoanRepaymentDo processLoanRepayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
+		if(processLoanRepayment != null) {
+			status = AfLoanStatus.REPAYING.name();
+			bo.repayingAmount = processLoanRepayment.getRepayAmount();
+		}
+		bo.loanStatus = status;
 		
 		bo.hasLoan = true;
 		bo.loanId = lastLoanDo.getRid();
-		bo.loanStatus = status;
 		bo.loanAmount = lastLoanDo.getAmount();
 		bo.loanArrivalAmount = lastLoanDo.getArrivalAmount();
 		bo.loanGmtApply = lastLoanDo.getGmtCreate();
@@ -470,8 +475,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
     	}
     	
     	// 查询是否有处理中的还款
-    	AfLoanRepaymentDo repayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
-    	if(repayment != null) {
+    	if(processLoanRepayment != null) {
     		periodsStatus = AfLoanPeriodStatus.REPAYING.name();
     	}
     	
@@ -524,13 +528,17 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			return AfLoanRejectType.SWITCH_OFF;
 		}
 		
-		if(accScene == null || !afUserAuthStatusService.isPass(prdDo.getPrdType(), userId)) {
+		AfUserAuthStatusDo au = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, prdDo.getPrdType());
+		if(au == null) {
 			return AfLoanRejectType.NO_AUTHZ;
 		}
 		
-		//检查强风控
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		if(afUserAuthDo == null || RiskStatus.NO.getCode().equals(afUserAuthDo.getRiskStatus())) { 
+		String authStatus = au.getStatus();
+		if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
+			return AfLoanRejectType.NO_AUTHZ;
+		}
+		
+		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		

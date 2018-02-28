@@ -28,6 +28,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ald.fanbei.api.biz.auth.executor.AuthCallbackManager;
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
+import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
@@ -114,7 +115,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -265,7 +265,7 @@ public class RiskUtil extends AbstractThird {
 	private static String getUrl() {
 		if (url == null) {
 			// url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-			url = "http://ctestarc.51fanbei.com";
+			url = "http://btestarc.51fanbei.com";
 			return url;
 		}
 		return url;
@@ -273,7 +273,8 @@ public class RiskUtil extends AbstractThird {
 
 	private static String getNotifyHost() {
 		if (notifyHost == null) {
-			notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			//notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+			notifyHost = "https://btestapp.51fanbei.com";
 			return notifyHost;
 		}
 		return notifyHost;
@@ -567,7 +568,7 @@ public class RiskUtil extends AbstractThird {
 			String cardNum, String riskOrderNo, String bqsBlackBox, String riskScene, String directory,
 			Map<String, Object> extUserInfo) {
 
-		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createDredgeWhiteCollarLoanBo(consumerNo, event, riskOrderNo,
+		DredgeWhiteCollarLoanReqBo reqBo = RiskAuthFactory.createDredgeWhiteCollarLoanBo(consumerNo, event, riskOrderNo,
 				afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY,
 				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -843,7 +844,7 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 			// 强风控未通过，则不经额度处理
-			if (!RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+			if (afUserAuthDo==null || !RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
 				au_amount = BigDecimal.ZERO;
 			}
 
@@ -853,7 +854,7 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal onlineAmount = new BigDecimal(limitAmount);
-			if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
+			if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
 				onlineAmount = BigDecimal.ZERO;
 			}
 
@@ -863,7 +864,7 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
 				limitAmount = "0";
 			BigDecimal offlineAmount = new BigDecimal(limitAmount);
-			if (!UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
+			if (afUserAuthStatusTrain == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
 				offlineAmount = BigDecimal.ZERO;
 			}
 
@@ -1525,8 +1526,8 @@ public class RiskUtil extends AbstractThird {
 						LoanType.BLD_LOAN.getCode(), whiteCollarAmount);
 				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
 						"LOAN_TOTAL", totalAmount);
-				afUserAccountSenceService.updateById(bldAccountSenceDo);
-				afUserAccountSenceService.updateById(totalAccountSenceDo);
+				afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
+				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
 				// 处理已认证，未提额的补充认证
 				processAuthedNotRaiseAuth(consumerNo);
@@ -3164,15 +3165,17 @@ public class RiskUtil extends AbstractThird {
 	 */
 	public BigDecimal getRiskOriRate(Long userId, JSONObject param, String borrowType) {
 
-		BigDecimal oriRate = null;
+		BigDecimal oriRate = BigDecimal.valueOf(0.001);
 		try {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(), param, borrowType);
 			String poundage = riskResp.getPoundageRate();
+			if(StringUtils.isBlank(poundage)) {
+				poundage = "0.001";
+			}
 			oriRate = new BigDecimal(poundage);
 		} catch (Exception e) {
 			logger.info(userId + "从风控获取分层用户额度失败：" + e);
 		}
-		// 计算原始利率
 		return oriRate;
 	}
 
@@ -3278,7 +3281,8 @@ public class RiskUtil extends AbstractThird {
 		if (!"100".equals(riskResp.getString("code"))) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
 		}
-		if (Double.parseDouble(riskResp.getJSONObject("data").getString("money")) == 0) {
+		double money = Double.parseDouble(riskResp.getJSONObject("data").getString("money"));
+		if (money == 0||  money== amount1.doubleValue()) {
 			// riskResp.getJSONObject("data").put("money",amount1+"");
 			throw new FanbeiException(FanbeiExceptionCode.RISK_FORBIDDEN_ERROR);
 		}

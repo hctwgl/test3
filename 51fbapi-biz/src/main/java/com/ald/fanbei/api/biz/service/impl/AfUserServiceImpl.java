@@ -46,6 +46,7 @@ import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类描述：
@@ -162,14 +163,14 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 			        if(recommendId !=0){
 			        	//新增推荐记录表
 			                         //如果是一元活动，开关开启才绑定
-			             		
+			             		logger.info("add user source  = "+source  +"and user = "+JSONObject.toJSONString(afUserDo));
 						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
 						afRecommendUserDo.setUser_id(afUserDo.getRid());
 						afRecommendUserDo.setParentId(recommendId);
 						afRecommendUserDo.setSource(source);
-						if(!"oneYuan".equals("source")){
+						if(!"oneYuan".equals(source)){
 						        afRecommendUserDao.addRecommendUser(afRecommendUserDo);
-						}else if("oneYuan".equals("source")){
+						}else if("oneYuan".equals(source)){
 						    try{
 							AfResourceDo   biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
 							 String swtich = "";

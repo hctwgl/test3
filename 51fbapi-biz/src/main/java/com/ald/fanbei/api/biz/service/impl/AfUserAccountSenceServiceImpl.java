@@ -79,4 +79,15 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		authAccountSceneDo.setAuAmount(new BigDecimal(amount));
 		return authAccountSceneDo;
 	}
+
+	@Override
+	public void saveOrUpdateAccountSence(AfUserAccountSenceDo accountSenceDo) {
+		AfUserAccountSenceDo accountSence = afUserAccountSenceDao.getByUserIdAndScene(accountSenceDo.getScene(), accountSenceDo.getUserId());
+		if(accountSence == null) {
+			afUserAccountSenceDao.saveRecord(accountSenceDo);
+		} else {
+			afUserAccountSenceDao.updateById(accountSenceDo);
+		}
+		
+	}
 }

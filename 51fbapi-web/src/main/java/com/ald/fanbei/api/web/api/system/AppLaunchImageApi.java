@@ -82,13 +82,13 @@ public class AppLaunchImageApi implements ApiHandle{
 			logger.error("appLaunchImageApi activeOperate error",e);
 		}
 		//头条激活处理
-		ToutiaoAdOpen(requestDataVo,context);
-		try {
+		//ToutiaoAdOpen(requestDataVo,context);
+	/*	try {
 			//畅效广告平台回调处理
 			ChangXiaoAdOpen(requestDataVo, context);
 		}catch (Exception e) {
 			logger.error("ChangXiaoAdOpen Operate error",e);
-		}
+		}*/
 		
 		return response;
 	}
@@ -143,13 +143,13 @@ public class AppLaunchImageApi implements ApiHandle{
 						callbackUrl+="&event_type=0";
 					}
 					String result= HttpUtil.doGet(callbackUrl,20);
-					if(result.indexOf("success")>-1){
+					/*if(result.indexOf("success")>-1){
 						Long rid = tdo.getRid();
 						Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
 						String userNameToutiao = context.getUserName()==null?"":context.getUserName();
 						afUserToutiaoService.uptUserOpen(rid,userIdToutiao,userNameToutiao);
 					}
-					logger.error("toutiaoopen:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
+					logger.error("toutiaoopen:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);*/
 				}
 			}
 		}catch (Exception e){

@@ -80,6 +80,11 @@ public interface AfRepaymentBorrowCashDao {
 	AfRepaymentBorrowCashDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowCashId") Long borrowCashId);
 	
 	/**
+	 * 根据BorrowCashId 获取处理中的还款记录
+	 */
+	AfRepaymentBorrowCashDo getProcessingRepaymentByBorrowId(@Param("borrowCashId") Long borrowCashId);
+	
+	/**
 	 * 已还款金额
 	 * @param borrowId
 	 * @return

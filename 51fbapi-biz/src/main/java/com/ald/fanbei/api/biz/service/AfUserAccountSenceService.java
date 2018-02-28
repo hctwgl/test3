@@ -32,4 +32,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
     BigDecimal getAuAmountByScene(String scene, Long userId);
     
     AfUserAccountSenceDo buildAccountScene(Long userId, String loanType, String amount);
+
+	void saveOrUpdateAccountSence(AfUserAccountSenceDo bldAccountSenceDo);
 }

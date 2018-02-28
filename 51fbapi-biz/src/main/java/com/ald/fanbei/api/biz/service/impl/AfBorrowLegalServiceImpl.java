@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -29,9 +27,11 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -64,6 +64,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
 	private AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
 	
 	@Override
 	public BorrowLegalHomeInfoBo getHomeInfo(Long userId){
@@ -116,10 +118,15 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 			bo.hasBorrow = false;
 			return;
 		}
+		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(lastBorrowCash.getRid());
+		if(repayment != null) {
+			status = AfBorrowCashStatus.repaying.getCode();
+			bo.repayingAmount = repayment.getRepaymentAmount();
+		}
+		bo.borrowStatus = status;
 		
 		bo.hasBorrow = true;
 		bo.borrowId = lastBorrowCash.getRid();
-		bo.borrowStatus = status;
 		bo.borrowAmount = lastBorrowCash.getAmount();
 		bo.borrowArrivalAmount = lastBorrowCash.getArrivalAmount();
 		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(lastBorrowCash);
@@ -138,9 +145,17 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		}
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
-		//检查是否认证过，是否通过强风控
-		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
+		if(afUserAuthDo == null) {
 			return AfBorrowCashRejectType.NO_AUTHZ;
+		}
+		
+		String authStatus = afUserAuthDo.getRiskStatus();
+		if(RiskStatus.A.getCode().equals(authStatus)) {
+			return AfBorrowCashRejectType.NO_AUTHZ;
+		}
+		
+		if (RiskStatus.NO.getCode().equals(authStatus)) {
+			return AfBorrowCashRejectType.NO_PASS_STRO_RISK;
 		}
 		
 		// 检查上笔贷款
@@ -170,12 +185,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = false;
-		
-		AfResourceDo legalBorrowCfg = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
-		BigDecimal maxAmount = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue1() : "");
-		
-		bo.maxQuota = this.calculateMaxAmount(maxAmount);
-		bo.minQuota = new BigDecimal(legalBorrowCfg != null ? legalBorrowCfg.getValue4() : "");
+		bo.maxQuota = this.calculateMaxAmount(cfgBean.maxAmount);
+		bo.minQuota = cfgBean.minAmount;
 		bo.borrowCashDay = cfgBean.borrowCashDay;
 		
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
@@ -221,6 +232,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public BigDecimal borrowAmount;
 		public BigDecimal borrowArrivalAmount;
 		public BigDecimal borrowRestAmount;
+		public BigDecimal repayingAmount;
 		public Date borrowGmtApply;
 		public Date borrowGmtPlanRepayment;
 		public boolean isBorrowOverdue;

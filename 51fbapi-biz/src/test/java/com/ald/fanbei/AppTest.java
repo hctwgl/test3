@@ -40,6 +40,11 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.domain.AfBoluomeDianyingDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeHuocheDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeJipiaoDo;
+import com.ald.fanbei.api.dal.domain.dto.BoluomeAirplaneDto;
+import com.alibaba.fastjson.JSON;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
@@ -71,9 +76,15 @@ public class AppTest extends TestCase {
 //	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "ISO-8859-1"));
 //	    System.out.println(URLDecoder.decode("QQ号", "utf-8"));
 //	    System.out.println(URLDecoder.decode("QQ号", "ascii"));
-	    
-//System.out.println(URLDecoder.decode("%2f%2f%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5%EF%BC%9A%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5:%E8%B4%A6%E5%8F%B7%E9%94%99%E8%AF%AF%2c%E6%97%A0%E6%B3%95%E5%85%85%E5%80%BC%EF%BC%81", "utf-8"));
-	    System.out.println(URLDecoder.decode("%2f%2f%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5%EF%BC%9A%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5:%E8%B4%A6%E5%8F%B7%E9%94%99%E8%AF%AF%2c%E6%97%A0%E6%B3%95%E5%85%85%E5%80%BC%EF%BC%81", "ISO-8859-1"));
+	   String airplane = "{\"canCancel\":0,\"changeRule\":{\"changeFee\":[{\"fee\":\"￥486/人\",\"time\":\"起飞前24小时之前\"},{\"fee\":\"￥-1/人\",\"time\":\"起飞前24小时之后\"}],\"discription\":\"同舱更改条件：航班起飞前24小时之前,改期手续费为486元;航班起飞前24小时之后,不可改期<br />退票条件：航班起飞前24小时之前,退票手续费为648元;航班起飞前24小时之后,只退机建和燃油\",\"refundFee\":[{\"fee\":\"￥648/人\",\"time\":\"起飞前24小时之前\"},{\"fee\":\"只退机建和燃油\",\"time\":\"起飞前24小时之后\"}],\"signText\":\"不可签转\"},\"channel\":\"qunar\",\"clientSite\":\"xep.trade.qunar.com\",\"completedAt\":1515858635967,\"contactor\":{\"name\":\"崔文龙\",\"phone\":\"13683452040\"},\"count\":2,\"displayStatus\":\"已完成\",\"flights\":[{\"arrivalAirport\":\"遥墙机场\",\"arrivalAirportCode\":\"TNA\",\"arrivalCity\":\"济南\",\"arrivalDate\":\"2018-02-06\",\"arrivalTerminal\":\"\",\"arrivalTime\":\"12:40\",\"cabinType\":\"经济舱\",\"carrierName\":\"云南祥鹏航空公司\",\"correct\":\"87%\",\"departureAirport\":\"双流机场\",\"departureAirportCode\":\"CTU\",\"departureCity\":\"成都\",\"departureDate\":\"2018-02-06\",\"departureTerminal\":\"T2\",\"departureTime\":\"10:20\",\"duration\":\"2小时20分钟\",\"flightNum\":\"8L9763\",\"flightTypeFullName\":\"波音737(中)\",\"isMeal\":false,\"isStop\":false,\"stopCity\":null}],\"id\":\"ala203261407055990\",\"name\":\"成都 至 济南\",\"orderPrice\":1720,\"orderType\":\"jipiao\",\"partnerId\":21420379,\"partnerOrderNo\":\"xep180113234921890\",\"passengers\":[{\"airportFee\":50,\"birthday\":\"1953-10-10\",\"credentialCode\":\"372828195310101658\",\"credentialType\":\"身份证\",\"facePrice\":810,\"fuelTax\":0,\"id\":\"1515858091901\",\"isChange\":true,\"isRefund\":true,\"isSeparateBill\":false,\"name\":\"崔学迎\",\"passengerType\":\"ADU\"},{\"airportFee\":50,\"birthday\":\"1957-02-10\",\"credentialCode\":\"370323195702101621\",\"credentialType\":\"身份证\",\"facePrice\":810,\"fuelTax\":0,\"id\":\"1515858229123\",\"isChange\":true,\"isRefund\":true,\"isSeparateBill\":false,\"name\":\"唐乃兰\",\"passengerType\":\"ADU\"}],\"paymentSerialList\":[\"ala213261407040040\"],\"price\":1720,\"productTag\":\"SPL1\",\"status\":4,\"userId\":\"6265804\",\"userPhone\":\"13683452040\"}";
+	   AfBoluomeJipiaoDo boluomeAirplaneDto = JSON.parseObject(airplane, AfBoluomeJipiaoDo.class);
+	   System.out.println(boluomeAirplaneDto.toString());
+	   
+	   String train = "{\"canCancel\":0,\"channel\":\"tieyou\",\"contactName\":\"崔文龙\",\"contactPhone\":\"13880774421\",\"count\":2,\"date\":\"2018-02-10\",\"displayStatus\":\"已退款\",\"endTime\":\"10:02\",\"from\":\"成都\",\"id\":\"ala203279444129912\",\"name\":\"Z50 成都 - 北京西\",\"orderPrice\":939,\"orderType\":\"huoche\",\"partnerId\":\"\",\"passenger\":[\"1515859474308\",\"1515859563281\"],\"passengers\":[{\"birthday\":\"1988-06-19\",\"cardType\":\"身份证\",\"credentialCode\":\"370323198806191610\",\"id\":\"1515859474308\",\"name\":\"崔文龙\",\"parentName\":\"\",\"passengerType\":\"成人票\"},{\"birthday\":\"1989-03-09\",\"cardType\":\"身份证\",\"credentialCode\":\"110222198903093529\",\"id\":\"1515859563281\",\"name\":\"张建\",\"parentName\":\"\",\"passengerType\":\"成人票\"}],\"paymentSerialList\":[\"ala213279444129913\"],\"price\":939,\"refundedAt\":1516009620715,\"refundedPrice\":939,\"seatName\":\"硬卧\",\"startTime\":\"11:42\",\"status\":7,\"to\":\"北京西\",\"trainNumber\":\"Z50\",\"trains\":[{\"arriveCity\":\"北京西\",\"arriveTime\":\"10:02\",\"departureCity\":\"成都\",\"departureDate\":\"2018-02-10\",\"departureTime\":\"11:42\",\"duration\":1340,\"seatName\":\"硬卧\",\"ticketPrice\":464.5,\"trainNumber\":\"Z50\"}],\"type\":\"NORMAL\",\"useTime\":1340,\"userId\":\"6265804\",\"userPhone\":\"13683452040\",\"withoutDiscountedPrice\":5}";
+	   AfBoluomeHuocheDo boluomeHuocheDo = JSON.parseObject(train,AfBoluomeHuocheDo.class);
+	   System.out.println(boluomeHuocheDo);
+	   //System.out.println(URLDecoder.decode("%2f%2f%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5%EF%BC%9A%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5:%E8%B4%A6%E5%8F%B7%E9%94%99%E8%AF%AF%2c%E6%97%A0%E6%B3%95%E5%85%85%E5%80%BC%EF%BC%81", "utf-8"));
+	  //  System.out.println(URLDecoder.decode("%2f%2f%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5%EF%BC%9A%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5:%E8%B4%A6%E5%8F%B7%E9%94%99%E8%AF%AF%2c%E6%97%A0%E6%B3%95%E5%85%85%E5%80%BC%EF%BC%81", "ISO-8859-1"));
 	    //System.out.println(URLEncoder.encode("//充值失败：充值失败:账号错误,无法充值！", "UTF-8"));
 //	    OrderEntity orderEntity = new OrderEntity();
 //	    orderEntity.setAcctType("网易通行证账号");

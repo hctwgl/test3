@@ -21,6 +21,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -45,7 +46,7 @@ public class FanbeiController extends BaseController {
 	AfResourceService afResourceService;
 	
 	@Resource
-	ValidationInterceptor validationInterceptor;
+	InterceptorChain interceptorChain;
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
@@ -263,7 +264,7 @@ public class FanbeiController extends BaseController {
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         // 数据校验拦截器
-        validationInterceptor.intercept(requestDataVo, context, httpServletRequest);
+        interceptorChain.execute(requestDataVo, context, httpServletRequest);
         
         ApiHandleResponse handelResult;
         try {
