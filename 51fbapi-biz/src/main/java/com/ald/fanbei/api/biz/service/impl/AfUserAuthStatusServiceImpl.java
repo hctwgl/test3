@@ -94,7 +94,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
 
 	@Override
 	public String getBldOpenStatus(Long userId) {
-		AfUserAuthStatusDo authStatus = this.getAfUserAuthStatusByUserIdAndScene(userId, SceneType.BLD_LOAN.getCode());
+		AfUserAuthStatusDo authStatus = this.getAfUserAuthStatusByUserIdAndScene(userId, SceneType.BLD_LOAN.getName());
 		if(authStatus != null) {
 			return authStatus.getStatus();
 		}
