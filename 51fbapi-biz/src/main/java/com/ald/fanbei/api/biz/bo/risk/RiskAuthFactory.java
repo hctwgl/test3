@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.bo.risk;
 
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
 import com.ald.fanbei.api.biz.bo.RiskRegisterStrongReqBo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -92,7 +93,7 @@ public class RiskAuthFactory {
 	 * @param extUserInfo 
 	 * @return
 	 */
-	public static RiskRegisterStrongReqBo createDredgeWhiteCollarLoanBo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
+	public static DredgeWhiteCollarLoanReqBo createDredgeWhiteCollarLoanBo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
 													   String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
 		
 		return new DredgeWhiteCollarLoan(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo);

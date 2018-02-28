@@ -28,6 +28,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ald.fanbei.api.biz.auth.executor.AuthCallbackManager;
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
+import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListDetailBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListReqBo;
 import com.ald.fanbei.api.biz.bo.RiskAddressListRespBo;
@@ -114,7 +115,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -568,7 +568,7 @@ public class RiskUtil extends AbstractThird {
 			String cardNum, String riskOrderNo, String bqsBlackBox, String riskScene, String directory,
 			Map<String, Object> extUserInfo) {
 
-		RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createDredgeWhiteCollarLoanBo(consumerNo, event, riskOrderNo,
+		DredgeWhiteCollarLoanReqBo reqBo = RiskAuthFactory.createDredgeWhiteCollarLoanBo(consumerNo, event, riskOrderNo,
 				afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY,
 				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
