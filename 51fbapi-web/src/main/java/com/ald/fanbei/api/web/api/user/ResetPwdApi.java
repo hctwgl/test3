@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
@@ -44,6 +45,9 @@ public class ResetPwdApi implements ApiHandle {
 
 	@Resource
 	RiskUtil riskUtil;
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -91,6 +95,16 @@ public class ResetPwdApi implements ApiHandle {
         userDo.setFailCount(0);
         userDo.setUserName(userName);
         afUserService.updateUser(userDo);
+        
+        //----------------------mqp clear password times -------------
+        String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userName;
+        Integer times = (Integer)bizCacheUtil.getObject(key);
+        if (times != null) {
+        	
+        	bizCacheUtil.delCache(key);
+		}
+        //----------------------mqp clear password times -------------
+        
         // 添加风控可信
         if (context.getAppVersion() >= 381) {
         	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

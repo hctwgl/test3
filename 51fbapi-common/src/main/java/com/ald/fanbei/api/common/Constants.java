@@ -302,6 +302,11 @@ public class Constants {
 	public static final String RESERVATION_IPHONEX_COUPON_STATUS = "coupon_status_";
 	public static final String RESERVATION_IPHONEX_COUPON_ID = "coupon_id";
 	public static final String RESERVATION_IPHONEX_SUM_COUNT = "sum_coupon_count_";
+	
+	//wrong paypwd times and the previous wrong time.
+	public static final String CACHKEY_WRONG_INPUT_PAYPWD_TIMES = "wrong_input_paypwd_times";
+	public static final String CACHKEY_THE_LAST_WRONG_PAYPWD_TIME = "the_last_wrong_paypwd_time";
+	
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
