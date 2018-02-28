@@ -64,7 +64,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
 	private AfBorrowCashDao afBorrowCashDao;
-	
+	@Resource
 	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
 	
 	@Override

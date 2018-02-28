@@ -475,8 +475,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
     	}
     	
     	// 查询是否有处理中的还款
-    	AfLoanRepaymentDo repayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
-    	if(repayment != null) {
+    	if(processLoanRepayment != null) {
     		periodsStatus = AfLoanPeriodStatus.REPAYING.name();
     	}
     	
