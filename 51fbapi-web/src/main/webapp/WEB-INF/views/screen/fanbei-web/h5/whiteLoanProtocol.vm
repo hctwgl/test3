@@ -41,7 +41,7 @@
     <div class="protocol fenqiServiceProtocol">
         <h2>借款协议</h2>
         <p>
-            <i class="fr">协议编号：$!{loanNo}</i>
+            <i>协议编号：$!{loanNo}</i><br>
             <br> 甲方（借款人）： $!{realName}
             <br> 身份证号：$!{idNumber}
             <br> 手机号码： $!{mobile}
