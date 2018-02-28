@@ -150,7 +150,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 					// 提额成功
 					if (respBo != null && respBo.isSuccess()) {
 						// 获取提额结果
-						String raiseStatus = respBo.getData().getResults()[0].getResult();
+						String raiseStatus = respBo.getData().getBldResults()[0].getResult();
 						if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
 							String bldAmount = respBo.getData().getBldAmount();
 							String totalAmount = respBo.getData().getTotalAmount();
