@@ -108,10 +108,10 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	private Map<String, Object> getExtUserInfo(DredgeWhiteCollarLoanParam param) {
 		Map<String,Object> extUserInfo = Maps.newHashMap();
 		extUserInfo.put("companyName", param.getCompany());
-		extUserInfo.put("jobPosition", param.getCompany());
-		extUserInfo.put("companyContact", param.getCompany());
-		extUserInfo.put("income", param.getCompany());
-		extUserInfo.put("marriage", param.getCompany());
+		extUserInfo.put("jobPosition", param.getStation());
+		extUserInfo.put("companyContact", param.getPhone());
+		extUserInfo.put("income", param.getIncome());
+		extUserInfo.put("marriage", param.getMaritalStatus());
 		return extUserInfo;
 	}
 
