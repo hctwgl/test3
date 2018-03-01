@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -24,11 +25,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRescourceLogService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -68,7 +64,9 @@ public class AppH5SysController extends BaseController {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
-	AfUserAccountService afUserAccountService;	
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
 	@Resource
@@ -138,7 +136,22 @@ public class AppH5SysController extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 	}
+	@RequestMapping(value = { "zhimaNewUrl" }, method = RequestMethod.GET)
+	public void zhimaNewUrl(HttpServletRequest request, ModelMap model) throws IOException {
 
+		Long userId = Long.parseLong(request.getParameter("userId"));
+		AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(!afUserAuthDo.getZmStatus().equals("Y")){
+			afUserAuthDo.setZmScore(99);
+			afUserAuthDo.setZmStatus("Y");
+			afUserAuthDo.setGmtZm(new Date());
+			afUserAuthDo.setIvsScore(99);
+			afUserAuthDo.setIvsStatus("Y");
+			afUserAuthDo.setGmtIvs(new Date());
+			afUserAuthService.updateUserAuth(afUserAuthDo);
+		}
+
+	}
 	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
 	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 

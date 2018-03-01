@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.AesUtil;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -103,8 +104,14 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		zmModel.put("zmScore", authDo.getZmScore());
 		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode())
 				&& StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
-			String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
-			zmModel.put("zmxyAuthUrl", authParamUrl);
+            String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
+            AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
+
+            if(zhimaNewUrl==null){
+                zmModel.put("zmxyAuthUrl", authParamUrl);
+            }else{
+                zmModel.put("zmxyAuthUrl", zhimaNewUrl.getValue()+"?userId="+ AesUtil.encryptToBase64(userDto.getUserId().toString(),"123"));
+            }
 		}
 
 
