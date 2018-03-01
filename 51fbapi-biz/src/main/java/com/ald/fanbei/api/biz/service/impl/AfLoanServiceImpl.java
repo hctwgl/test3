@@ -529,7 +529,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		AfUserAuthStatusDo au = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, prdDo.getPrdType());
-		if(au == null) {
+		if(accScene == null || au == null) {
 			return AfLoanRejectType.NO_AUTHZ;
 		}
 		
@@ -539,10 +539,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
-			return AfLoanRejectType.NO_PASS_STRO_RISK;
-		}
-		
-		if(accScene == null) {
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
