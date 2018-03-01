@@ -1519,12 +1519,13 @@ public class RiskUtil extends AbstractThird {
 			String result = obj.getString("result");
 			String scene = obj.getString("scene");
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+			
+			AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+			afUserAuthStatusDo.setGmtCreate(new Date());
+			afUserAuthStatusDo.setGmtModified(new Date());
+			afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
+			afUserAuthStatusDo.setUserId(consumerNo);
 			if (StringUtils.equals("10", result)) {
-				AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-				afUserAuthStatusDo.setGmtCreate(new Date());
-				afUserAuthStatusDo.setGmtModified(new Date());
-				afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
-				afUserAuthStatusDo.setUserId(consumerNo);
 				afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
 				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 				// 更新白领贷额度和总额度
@@ -1541,6 +1542,9 @@ public class RiskUtil extends AbstractThird {
 				jpushService.strongRiskSuccess(userAccountDo.getUserName());
 				smsUtil.sendRiskSuccess(userAccountDo.getUserName());
 			} else if (StringUtils.equals("30", result)) {
+				afUserAuthStatusDo.setStatus(UserAuthSceneStatus.FAILED.getCode());
+				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+				
 				jpushService.strongRiskFail(userAccountDo.getUserName());
 				smsUtil.sendRiskFail(userAccountDo.getUserName());
 			}
