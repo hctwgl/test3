@@ -303,7 +303,7 @@ public class LookAllQuotaApi implements ApiHandle {
     }
 
     public List<String> getAuthDesc(String value, String status) {
-	List<String> listString = new ArrayList();
+	List<String> listString = new ArrayList<String>();
 	JSONArray jsonArray = JSON.parseArray(value);
 	boolean judge = true;
 	for (int i = 0; i < jsonArray.size(); i++) {
