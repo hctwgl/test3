@@ -542,10 +542,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
-		if(accScene == null) {
-			return AfLoanRejectType.NO_PASS_STRO_RISK;
-		}
-		
 		// 检查上笔贷款
 		if (lastLoanDo != null 
 				&& AfLoanStatus.CLOSED.name().equals(lastLoanDo.getStatus()) 
