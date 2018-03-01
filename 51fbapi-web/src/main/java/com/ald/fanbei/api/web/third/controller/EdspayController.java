@@ -121,7 +121,7 @@ public class EdspayController {
 	}
 	
 	/**
-	 * 返呗后天查询钱包打款结果后的调用api处理接口
+	 * 返呗主动查询钱包打款结果后的调用api处理接口
 	 * @param request
 	 * @param response
 	 * @return
@@ -137,4 +137,22 @@ public class EdspayController {
         logger.info("queryEdspayApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
         return "success";
     }
+	
+	/**
+	 * 租房审核通过生成账单后调用api推送钱包接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/tenementPushEdspay"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String tenementPushEdspay(HttpServletRequest request, HttpServletResponse response) {
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign = ObjectUtils.toString(request.getParameter("sign"));
+		logger.info("tenementPushEdspay begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
+		String result = assetSideEdspayUtil.tenementPushEdspay(timestamp, data, sign);
+		logger.info("tenementPushEdspay end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
+		return "success";
+	}
 }

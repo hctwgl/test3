@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGiveBackPayResultReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
+import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
@@ -40,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -112,6 +114,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfBorrowService afBorrowService;
 	@Resource
 	AfBorrowPushService afBorrowPushService;
+	@Resource
+	RiskUtil riskUtil;
+	@Resource
+	AfAssetSideInfoService afAssetSideInfoService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -500,43 +508,34 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					//钱包处理错误,进入重推表
 					FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
 					logger.error("borrowCashCurPush resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
-					AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
-					afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
-					afRetryTemplDo.setEventType("pushEdspayRetry");
-					Date now =new Date();
-					afRetryTemplDo.setGmtCreate(now);
-					AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
-					Integer rePushInterval = strategy.getRePushInterval();
-					Date gmtNext = DateUtil.addMins(now, rePushInterval);
-					afRetryTemplDo.setGmtNext(gmtNext);
-					afRetryTemplDo.setTimes(0);
-					afRetryTemplDo.setState("N");
-					afRetryTemplDo.setGmtModify(now);
-					afRetryTemplDo.setContent(borrowerJson);
-					afRetryTemplService.saveRecord(afRetryTemplDo);
+					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
 					return false;
 				}
 			} catch (Exception e) {
-				//推送失败或超时，进入重推表
-				AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
-				afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
-				afRetryTemplDo.setEventType("pushEdspayRetry");
-				Date now =new Date();
-				afRetryTemplDo.setGmtCreate(now);
-				AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
-				Integer rePushInterval = strategy.getRePushInterval();
-				Date gmtNext = DateUtil.addMins(now, rePushInterval);
-				afRetryTemplDo.setGmtNext(gmtNext);
-				afRetryTemplDo.setTimes(0);
-				afRetryTemplDo.setState("N");
-				afRetryTemplDo.setGmtModify(now);
-				afRetryTemplDo.setContent(borrowerJson);
-				afRetryTemplService.saveRecord(afRetryTemplDo);
+				recordRePush(borrowCashInfo, borrowerJson, assetPushResource);
 			}
 		} catch (Exception e) {
 			logger.error("borrowCashCurPush exception"+e);
 		}
 		return false;
+	}
+
+	private void recordRePush(EdspayGetCreditRespBo borrowCashInfo,
+			String borrowerJson, AfResourceDo assetPushResource) {
+		AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
+		afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
+		afRetryTemplDo.setEventType("pushEdspayRetry");
+		Date now =new Date();
+		afRetryTemplDo.setGmtCreate(now);
+		AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
+		Integer rePushInterval = strategy.getRePushInterval();
+		Date gmtNext = DateUtil.addMins(now, rePushInterval);
+		afRetryTemplDo.setGmtNext(gmtNext);
+		afRetryTemplDo.setTimes(0);
+		afRetryTemplDo.setState("N");
+		afRetryTemplDo.setGmtModify(now);
+		afRetryTemplDo.setContent(borrowerJson);
+		afRetryTemplService.saveRecord(afRetryTemplDo);
 	}
 
 	public AssetSideRespBo giveBackPayResult(String sendTime, String data,String sign, String appId){
@@ -739,6 +738,26 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowCashService.borrowSuccessForNew(borrowCashDo);
 			}
 			
+		}
+		return "success";
+	}
+
+	public String tenementPushEdspay(String timestamp, String data, String sign) {
+		QueryEdspayApiHandleReqBo reqBo = new QueryEdspayApiHandleReqBo();
+		reqBo.setData(data);
+		reqBo.setSign(DigestUtil.MD5(data));
+		logThird(sign, "tenementPushEdspay", reqBo);
+		if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String borrowId=obj.getString("borrowId");
+			AfBorrowDo borrowDo = afBorrowService.getBorrowById(Long.valueOf(borrowId));
+			EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(borrowDo);
+			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+			//债权实时推送
+			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+			if (result) {
+				logger.info("borrowCashCurPush suceess,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+			}
 		}
 		return "success";
 	}
