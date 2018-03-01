@@ -555,7 +555,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
-		if(accScene.getScene().equals(LoanType.BLD_LOAN.getName())) {
+		if(accScene.getScene().equals(LoanType.BLD_LOAN.getCode())) {
 			if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
 				AfUserAuthDo afAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
 				if(afAuthInfo != null && UserAuthSceneStatus.YES.getCode().equals(afAuthInfo.getBasicStatus())) {
