@@ -3,6 +3,7 @@ $(function(){
     let domain = window.location.hostname;
     let aa;
     let bb;
+    let _saber;
     if(domain=='app.51fanbei.com'){
         (function () {
             _saber = {
