@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.alibaba.fastjson.JSON;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
@@ -1311,6 +1313,28 @@ public class DateUtil {
 		}else{
 			return new Date(timeSecondTimpstamp*1000);
 		}
+	}
+	/**
+	 * 
+	* @Title: getTimeDiff
+	* @author qiao
+	* @date 2018年3月1日 下午2:00:51
+	* @Description: 获得两个日期的时间差，精确到秒
+	* @param d1
+	* @param d2
+	* @return    
+	* @return Long   
+	* @throws
+	 */
+	public static Long getTimeDiff(Date d1,Date d2){
+		Long result = 0L ;
+		if (d1 != null && d2 != null) {
+			Long l1 = d1.getTime();
+			Long l2 = d2.getTime();
+			
+			result = (l1-l2)/1000;
+		}
+		return result;
 	}
 	
 }
