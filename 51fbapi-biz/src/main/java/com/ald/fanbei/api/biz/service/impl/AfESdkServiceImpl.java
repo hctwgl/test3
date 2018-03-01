@@ -118,14 +118,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("accountId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 170;
-//		int posY = 480;
         int posType = 1;
         int width = 70;
         boolean isQrcodeSign = false;
@@ -136,16 +128,9 @@ public class AfESdkServiceImpl implements AfESdkService {
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
-        /*SignPDFFileBean fileBean = new SignPDFFileBean();
-		fileBean.setSrcPdfFile(srcFile);
-		fileBean.setDstPdfFile(dstFile);
-		fileBean.setFileName(fileName);*/
         SignPDFStreamBean streamBean = new SignPDFStreamBean();
         streamBean.setStream(stream);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, streamBean, pos, signType);
@@ -176,28 +161,16 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("accountId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 170;
-//		int posY = 480;
         int posType = 1;
         int width = 70;
         boolean isQrcodeSign = false;
         String key = map.get("personKey");
-//		key = "（借款人）：";
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk userSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
         SignPDFFileBean fileBean = new SignPDFFileBean();
@@ -232,13 +205,6 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = map.get("accountId");
-		/*
-		 * int posX = Integer.valueOf(map.get("posX")); int posY =
-		 * Integer.valueOf(map.get("posY")); int posType =
-		 * Integer.valueOf(map.get("posType")); float width =
-		 * Float.valueOf(map.get("sealWidth")); boolean isQrcodeSign =
-		 * Boolean.valueOf(map.get("isQrcodeSign"));
-		 */
         int posX = 170;
         int posY = 540;
         int posType = 0;
@@ -289,12 +255,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("secondAccoundId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
         int posX = 420;
         int posY = 685;
         int posType = 0;
@@ -344,12 +304,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("accountId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
         int posX = 170;
         int posY = 685;
         int posType = 0;
@@ -398,18 +352,14 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("accountId");
-//         int posX = Integer.valueOf(map.get("firstPartyPosX"));
-//         int posY = Integer.valueOf(map.get("firstPartyPosY"));
          int posType = Integer.valueOf(map.get("posType"));
          float width = Float.valueOf(map.get("sealWidth"));
         String key = map.get("firstPartyKey");
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk firstPartySign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "5";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//        pos.setPosX(posX);
-//        pos.setPosY(posY);
         pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setWidth(width);
@@ -443,18 +393,14 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = map.get("secondAccoundId");
-//         int posX = Integer.valueOf(map.get("secondPartyPosX"));
-//         int posY = Integer.valueOf(map.get("secondPartyPosY"));
          int posType = Integer.valueOf(map.get("posType"));
          float width = Float.valueOf(map.get("sealWidth"));
         String key = map.get("secondPartyKey");
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk secondPartySign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
 		pos.setPosPage(posPage);
         pos.setKey(key);
@@ -463,13 +409,11 @@ public class AfESdkServiceImpl implements AfESdkService {
             SignPDFStreamBean signPDFStreamBean = new SignPDFStreamBean();
             signPDFStreamBean.setStream(secondStream);
             r = selfSign.localSignPdf(signPDFStreamBean, pos, 0, signType);
-//            r = selfSign.localSignPdf(accountId, sealData, signPDFStreamBean, pos, signType);
         } else {
             SignPDFFileBean fileBean = new SignPDFFileBean();
             fileBean.setSrcPdfFile(srcFile);
             fileBean.setDstPdfFile(dstFile);
             fileBean.setFileName(fileName);
-//            r = selfSign.localSignPdf(accountId, sealData, fileBean, pos, signType);
             r = selfSign.localSignPdf(fileBean, pos, 0, signType);
         }
         // 使用用户印章签名
@@ -505,28 +449,16 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("secondAccoundId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 260;
-//		int posY = 390;
         int posType = 1;
         int width = 80;
         boolean isQrcodeSign = false;
         String key = map.get("key");
-//		key = "证号码";
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk secondSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
         SignPDFFileBean fileBean = new SignPDFFileBean();
@@ -563,28 +495,16 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("secondAccoundId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 260;
-//		int posY = 390;
         int posType = 1;
         int width = 30;
         boolean isQrcodeSign = false;
         String key = map.get("key");
-//		key = "证号码";
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk secondStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
         FileDigestSignResult r = new FileDigestSignResult();
@@ -628,14 +548,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("thirdAccoundId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 145;
-//		int posY = 325;
         int posType = 1;
         int width = 70;
 
@@ -647,10 +559,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
         SignPDFFileBean fileBean = new SignPDFFileBean();
@@ -686,14 +595,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = map.get("thirdAccoundId");
-        // accountId = "57FD6990CE904C84A212A6D81E16213A";
-        // int posX = Integer.valueOf(map.get("posX"));
-        // int posY = Integer.valueOf(map.get("posY"));
-        // int posType = Integer.valueOf(map.get("posType"));
-        // float width = Float.valueOf(map.get("sealWidth"));
-        // boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-//		int posX = 145;
-//		int posY = 325;
+
         int posType = 1;
         int width = 70;
 
@@ -705,16 +607,9 @@ public class AfESdkServiceImpl implements AfESdkService {
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
-		/*SignPDFFileBean fileBean = new SignPDFFileBean();
-		fileBean.setSrcPdfFile(srcFile);
-		fileBean.setDstPdfFile(dstFile);
-		fileBean.setFileName(fileName);*/
         SignPDFStreamBean signPDFStreamBean = new SignPDFStreamBean();
         signPDFStreamBean.setStream(stream);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, signPDFStreamBean, pos, signType);
@@ -745,15 +640,6 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = map.get("accountId");
-		/*
-		 * int posX = Integer.valueOf(map.get("posX")); int posY =
-		 * Integer.valueOf(map.get("posY")); int posType =
-		 * Integer.valueOf(map.get("posType")); float width =
-		 * Float.valueOf(map.get("sealWidth")); boolean isQrcodeSign =
-		 * Boolean.valueOf(map.get("isQrcodeSign"));
-		 */
-//		int posX = 185;
-//		int posY = 380;
         int posType = 1;
         int width = 70;
         boolean isQrcodeSign = false;
@@ -765,10 +651,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
         SignPDFFileBean fileBean = new SignPDFFileBean();
@@ -802,36 +685,20 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = map.get("accountId");
-		/*
-		 * int posX = Integer.valueOf(map.get("posX")); int posY =
-		 * Integer.valueOf(map.get("posY")); int posType =
-		 * Integer.valueOf(map.get("posType")); float width =
-		 * Float.valueOf(map.get("sealWidth")); boolean isQrcodeSign =
-		 * Boolean.valueOf(map.get("isQrcodeSign"));
-		 */
-//		int posX = 185;
-//		int posY = 380;
         int posType = 1;
         int width = 70;
         boolean isQrcodeSign = false;
         String key = map.get("key");
         key = "商务股份有限公司";
         String posPage = map.get("posPage");
-        logger.debug("sign account id: " + accountId);
+        logger.debug("sdk selfStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         fileName = "反呗合同";
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
-//		pos.setPosX(posX);
-//		pos.setPosY(posY);
         pos.setWidth(width);
-//		pos.setPosPage(posPage);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
-		/*SignPDFFileBean fileBean = new SignPDFFileBean();
-		fileBean.setDstPdfFile(dstFile);
-		fileBean.setSrcPdfFile(srcFile);
-		fileBean.setFileName(fileName);*/
         SignPDFStreamBean streamBean = new SignPDFStreamBean();
         streamBean.setStream(stream);
         FileDigestSignResult r = selfSign.localSignPdf(streamBean, pos, sealId, signType);
