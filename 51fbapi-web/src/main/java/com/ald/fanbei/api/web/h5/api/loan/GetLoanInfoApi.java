@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.afu.LoanStatusCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -127,7 +128,11 @@ public class GetLoanInfoApi implements H5Handle {
 			}else {
 				loanVo.setOverdueStatus("N");	// 逾期状态
 				loanVo.setCurrentPeriodAmount(BigDecimal.ZERO);	// 本月待还金额
-				loanVo.setStatus(loanDo.getStatus());		// 当月已还清，下月的还款时间还没开始
+				if(loanDo.getStatus().equals(AfLoanStatus.APPLY.name())){
+					loanVo.setStatus(loanDo.getStatus());		// 申请/未审核
+				}else{
+					loanVo.setStatus("CURR_COMPLETED");		// 当月已还清，下月的还款时间还没开始
+				}
 			}
 			
 			AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsService.getOneByLoanId(loanId);

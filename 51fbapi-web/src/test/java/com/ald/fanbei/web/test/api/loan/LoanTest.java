@@ -174,11 +174,11 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取贷款详情
 	 */
-//	@Test
+	@Test
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 22+"");
+		params.put("loanId", 53+"");
 		
 		testH5(url, params, userName, true);
 	}
