@@ -60,6 +60,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 	
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
+		logger.info("start insurance auth callback execute");
 		String consumerNo = authCallbackBo.getConsumerNo();
 		Long userId = Long.parseLong(consumerNo);
 
@@ -92,7 +93,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 						afUserAccountService.updateUserAccount(afUserAccountDo);
 						// 更新总额度
 						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
 								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
 						// 提额成功，记录提额状态
@@ -122,7 +123,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 						afUserAccountService.updateUserAccount(afUserAccountDo);
 						// 更新总额度
 						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
 								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
 						// 提额成功，记录提额状态
@@ -154,8 +155,8 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 									bldAmount);
 							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 
-							afUserAccountSenceService.updateById(bldAccountSenceDo);
-							afUserAccountSenceService.updateById(totalAccountSenceDo);
+							afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
+							afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
 									LoanType.BLD_LOAN.getCode(), "Y",new BigDecimal(bldAmount),new Date());
 							// 提额成功，记录提额状态

@@ -63,6 +63,7 @@ public class FundAuthCallbackExecutor implements Executor {
 
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
+		logger.info("start fund auth callback execute");
 		String consumerNo = authCallbackBo.getConsumerNo();
 		Long userId = Long.parseLong(consumerNo);
 
@@ -95,7 +96,7 @@ public class FundAuthCallbackExecutor implements Executor {
 						afUserAccountService.updateUserAccount(afUserAccountDo);
 						// 更新总额度
 						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.FUND.getCode(),
 								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
@@ -162,8 +163,8 @@ public class FundAuthCallbackExecutor implements Executor {
 							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL",
 									totalAmount);
 
-							afUserAccountSenceService.updateById(bldAccountSenceDo);
-							afUserAccountSenceService.updateById(totalAccountSenceDo);
+							afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
+							afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 							AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.FUND.getCode(),
 									LoanType.BLD_LOAN.getCode(), "Y",new BigDecimal(bldAmount),new Date());
 							// 提额成功，记录提额状态

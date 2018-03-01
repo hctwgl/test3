@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
@@ -50,10 +52,12 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 	
 	@Resource
 	AfAuthRaiseStatusService afAuthRaiseStatusService;
+	
+	Logger logger = LoggerFactory.getLogger(CardEmailAuthCallbackExecutor.class);
 
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
-
+		logger.info("start card mail auth callback execute");
 		String consumerNo = authCallbackBo.getConsumerNo();
 		Long userId = Long.parseLong(consumerNo);
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
@@ -79,7 +83,7 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 					afUserAccountService.updateUserAccount(afUserAccountDo);
 					// 更新总额度
 					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
-					afUserAccountSenceService.updateById(totalAccountSenceDo);
+					afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.CARDEMAIL.getCode(),
 							LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
 					// 提额成功，记录提额状态

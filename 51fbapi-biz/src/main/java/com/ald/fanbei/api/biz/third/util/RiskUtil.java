@@ -3444,6 +3444,7 @@ public class RiskUtil extends AbstractThird {
 		logger.info(createLinkString(reqBo));
 		logThird(signInfo, "supplement auth notify", reqBo);
 		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			logger.info("supplement auth checksign success");
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String authItem = obj.getString("authItem");
