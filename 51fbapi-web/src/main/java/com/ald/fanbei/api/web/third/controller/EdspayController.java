@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -117,4 +119,22 @@ public class EdspayController {
 		logger.info("EdspayController giveBackPayResult,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
+	
+	/**
+	 * 返呗后天查询钱包打款结果后的调用api处理接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/queryEdspayApiHandle"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String queryEdspayApiHandle(HttpServletRequest request, HttpServletResponse response) {
+        String data = ObjectUtils.toString(request.getParameter("data"));
+        String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+        String sign = ObjectUtils.toString(request.getParameter("sign"));
+        logger.info("queryEdspayApiHandle begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
+        String result = assetSideEdspayUtil.queryEdspayApiHandle(timestamp, data, sign);
+        logger.info("queryEdspayApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
+        return "success";
+    }
 }

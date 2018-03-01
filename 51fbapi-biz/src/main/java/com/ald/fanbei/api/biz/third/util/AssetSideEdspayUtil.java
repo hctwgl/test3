@@ -12,6 +12,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.QueryEdspayApiHandleReqBo;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushStrategy;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushSwitchConf;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
@@ -45,10 +48,13 @@ import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
@@ -57,6 +63,7 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -628,5 +635,38 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			logger.error("borrowCashCurPush exception"+e);
 		}
 		return notifyRespBo;
+	}
+
+	public String queryEdspayApiHandle(String timestamp, String data,String sign) {
+		QueryEdspayApiHandleReqBo reqBo = new QueryEdspayApiHandleReqBo();
+		reqBo.setData(data);
+		reqBo.setSign(DigestUtil.MD5(data));
+		logThird(sign, "queryEdspayApiHandle", reqBo);
+		if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String respResult=obj.getString("query_result");
+			String orderNo=obj.getString("orderNo");
+			AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
+			//打款成功的处理
+			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
+			borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
+			// FIXME 查询是否有订单，查询订单状态
+			final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
+					.getLastBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+
+			if (legalOrderDo != null) {
+				legalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
+				afBorrowLegalOrderService.updateById(legalOrderDo);
+			}
+			// 查询借款信息是否存在
+			AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
+					.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
+			if (legalOrderCashDo != null) {
+				legalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());
+				afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
+			}
+			afBorrowCashService.borrowSuccessForNew(borrowCashDo);
+		}
+		return "success";
 	}
 }
