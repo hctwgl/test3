@@ -130,6 +130,9 @@
         <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
     #end
 </div>
+<script type="text/javascript">
+    var _saber={};
+</script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/md5.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>

@@ -1,4 +1,3 @@
-var _saber;
 $(function(){
     var tokenVal=formatDate()+Math.random().toString(36).substr(2);
     var domain = window.location.hostname;
