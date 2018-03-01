@@ -264,14 +264,14 @@ public class ZhimaUtil extends AbstractThird {
 
         } catch (ZhimaApiException e) {
             logger.error(StringUtil.appendStrs("authorize error;|", idNumber, "|", realName), e);
-            throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
+            //throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
         }
 
 //		result.put("param", paramsMap.get("param"));
 //		result.put("sign", paramsMap.get("sign"));
 //		result.put("appId", paramsMap.get("app_id"));
 
-//		return result;
+		return "";
     }
 
 
