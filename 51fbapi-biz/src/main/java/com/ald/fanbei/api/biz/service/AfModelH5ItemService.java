@@ -73,6 +73,7 @@ public interface AfModelH5ItemService {
 	List<AfModelH5ItemDo> getModelH5ItemCategoryByModelTag(String tag);
 
 	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(long parseLong, String string);
+	List<AfModelH5ItemDo> getModelH5ItemCategoryByModelTagAndType(String tag, String type);
 
 	
 }
