@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -21,6 +22,7 @@ import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -544,6 +546,13 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 logger.error("借款信息不存在 => {}",orderNo);
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
             }
+            AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+            afContractPdfDo.setType((byte) 1);
+            afContractPdfDo.setTypeId(afBorrowCashDo.getRid());
+            AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+            if (pdf != null){
+                return pdf.getContractPdfUrl();
+            }
             return getPdfInfo(protocolUrl, map,afBorrowCashDo.getUserId(),afBorrowCashDo.getRid(),"cashLoan","1",investorList);
         }else if (debtType == 1){//分期
             AfBorrowDo afBorrowDo = afBorrowDao.getBorrowInfoByBorrowNo(orderNo);
@@ -554,6 +563,13 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                     throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
                 }
                 return getPdfInfo(protocolUrl, map,afBorrowLegalOrderCashDo.getUserId(),afBorrowLegalOrderCashDo.getRid(),"instalment","2",investorList);
+            }
+            AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+            afContractPdfDo.setType((byte) 2);
+            afContractPdfDo.setTypeId(afBorrowDo.getRid());
+            AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+            if (pdf != null){
+                return pdf.getContractPdfUrl();
             }
             return getPdfInfo(protocolUrl, map,afBorrowDo.getUserId(),afBorrowDo.getRid(),"instalment","2",investorList);
         }
@@ -911,12 +927,24 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
                     afContractPdfDo.setTypeId((Long) map.get("renewalId"));
                 }
-                afContractPdfDao.insert(afContractPdfDo);
-                List<AfContractPdfEdspaySealDo> edspaySealDoList = (List<AfContractPdfEdspaySealDo>) map.get("edspaySealDoList");
-                for (AfContractPdfEdspaySealDo edspaySealDo:edspaySealDoList) {
-                    edspaySealDo.setPdfId(afContractPdfDo.getId());
+                AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+                if (pdf != null){
+                    List<AfContractPdfEdspaySealDto> seal = afContractPdfEdspaySealDao.getByPDFId(pdf.getId());
+                    if (seal == null || seal.size() == 0){
+                        List<AfContractPdfEdspaySealDo> edspaySealDoList = (List<AfContractPdfEdspaySealDo>) map.get("edspaySealDoList");
+                        for (AfContractPdfEdspaySealDo edspaySealDo:edspaySealDoList) {
+                            edspaySealDo.setPdfId(afContractPdfDo.getId());
+                        }
+                        afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
+                    }
+                }else {
+                    afContractPdfDao.insert(afContractPdfDo);
+                    List<AfContractPdfEdspaySealDo> edspaySealDoList = (List<AfContractPdfEdspaySealDo>) map.get("edspaySealDoList");
+                    for (AfContractPdfEdspaySealDo edspaySealDo:edspaySealDoList) {
+                        edspaySealDo.setPdfId(afContractPdfDo.getId());
+                    }
+                    afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
                 }
-                afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
                 return ossUploadResult.getUrl();
             }
         } catch (Exception e) {
