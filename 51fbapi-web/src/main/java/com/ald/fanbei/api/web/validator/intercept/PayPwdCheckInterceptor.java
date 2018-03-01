@@ -9,6 +9,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -17,6 +18,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -33,6 +35,8 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
@@ -74,23 +78,45 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
 				//the previous time
 				String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
-				
+				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("PAY_PASSWORD_IDENTIFY", "INPUT_TIMES_AND_FROZEN_TIME");
+				if (resourceDo == null ) {
+					//PAYPWD_ERROR_SETTING_EMPTY
+					throw new FanbeiException(FanbeiExceptionCode.PAYPWD_ERROR_SETTING_EMPTY);
+				}
+				String strSpecificTimes = resourceDo.getValue();
+				String strSpecificTime = resourceDo.getValue1();
+				if (StringUtils.isBlank(strSpecificTime) && StringUtils.isBlank(strSpecificTimes)) {
+					throw new FanbeiException(FanbeiExceptionCode.PAYPWD_ERROR_SETTING_EMPTY);
+				}
+				Integer specificTimes = Integer.parseInt(resourceDo.getValue());
+				Integer specificTime = Integer.parseInt(resourceDo.getValue1());
 				
 				//TODO: add the wrong times and update the time.
 				Integer times = 0;
 				times = (Integer)bizCacheUtil.getObject(key);
 				if (times != null) {
-					if (times >= 5) {
+					if (times >= specificTimes) {
 						//TODO:is more than specific (such as 5) times return the times and time make a specific exception code to remind the front side 
+						Date date = (Date)bizCacheUtil.getObject(key1);
+						
+						//TODO:is more than specific (such as 5) times but it has past the frozen time
+						times = 1;
+						bizCacheUtil.saveObject(key, times);
 					}
 	             	times = times +1;
 	             	//TODO:if the times is less than specific (such as 5) times then return the times 
+	      	
 	             	
 	             	
 	     		}else{
+	     			//if the times is less than specific (such as 5) times then return the times 
 	     			times = 1;
 	     			bizCacheUtil.saveObject(key, times);
-	     			//TODO:if the times is less than specific (such as 5) times then return the times 
+	     			times = specificTimes - 1;
+	     			FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES;
+	     			String mString = exceptionCode.getErrorMsg().replace("x", times+"");
+	     			exceptionCode.setDesc(mString);
+	     			throw new FanbeiException(exceptionCode);
 	     			
 	     		}
 				
@@ -112,5 +138,5 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			}
         //----------------------mqp clear password times ------------------------------------
 	}
-
+	
 }
