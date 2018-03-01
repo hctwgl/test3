@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,7 +42,10 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		}
 		if (StringUtils.isNotBlank(payPwd)) {
 			Long userId = context.getUserId();
-			checkPayPwd(userId, payPwd);
+			
+			//need version check
+			Integer version = context.getAppVersion();
+			checkPayPwd(userId, payPwd,version);
 		}
 	}
 
@@ -49,32 +54,59 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		String payPwd = ObjectUtils.toString(context.getData("payPwd"));
 		if (StringUtils.isNotBlank(payPwd)) {
 			Long userId = context.getUserId();
-			checkPayPwd(userId, payPwd);
+			
+			//need version check
+			Integer version = context.getAppVersion();
+			checkPayPwd(userId, payPwd,version);
 		}
 	}
 	
-	private void  checkPayPwd(Long userId, String payPwd) {
+	private void  checkPayPwd(Long userId, String payPwd,Integer version) {
 		if(userId == null) {
 			throw new FanbeiException("请登录后再支付！", true);
 		}
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
-			String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
-			//TODO: add the wrong times and update the time.
-			//TODO:if the times is less than specific (such as 5) times then return the times 
-			//TODO:is less than specific (such as 5) times return the times and time make a specific exception code to remind the front side 
 			
-			
-			
-			throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			if (version >= 408) {
+				//the times 
+				String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
+				//the previous time
+				String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
+				
+				
+				//TODO: add the wrong times and update the time.
+				Integer times = 0;
+				times = (Integer)bizCacheUtil.getObject(key);
+				if (times != null) {
+					if (times >= 5) {
+						//TODO:is more than specific (such as 5) times return the times and time make a specific exception code to remind the front side 
+					}
+	             	times = times +1;
+	             	//TODO:if the times is less than specific (such as 5) times then return the times 
+	             	
+	             	
+	     		}else{
+	     			times = 1;
+	     			bizCacheUtil.saveObject(key, times);
+	     			//TODO:if the times is less than specific (such as 5) times then return the times 
+	     			
+	     		}
+				
+				
+				
+				
+				
+				
+				throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			}
 		}
         //----------------------mqp clear password times (if the pwd is right )-------------
 		  if (userId != null) {
 	        	 String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
 	             Integer times = (Integer)bizCacheUtil.getObject(key);
 	             if (times != null) {
-	             	
 	             	bizCacheUtil.delCache(key);
 	     		}
 			}
