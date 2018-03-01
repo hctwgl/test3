@@ -7,31 +7,44 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
+import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
 
 
 @Component("completedAgencyBuyOrderApi")
@@ -50,8 +63,17 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
 	@Resource
 	AfUserAccountDao afUserAccountDao;
+	@Resource
+	RiskUtil riskUtil;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfAssetSideInfoService afAssetSideInfoService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 	@Autowired
 	KafkaSync kafkaSync;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -91,6 +113,19 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				
 //				addBorrowBill(orderInfo);
 				addBorrowBill_1(orderInfo);
+				//实时推送自营分期的债权给钱包
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())){
+					AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+					EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+					//债权实时推送
+					boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("borrowCashCurPush suceess,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+					}
+				}
 				return resp;
 			}else{
 				if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
@@ -102,6 +137,19 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					if(afOrderService.updateOrder(afOrderDo) > 0){
 //						addBorrowBill(orderInfo);
 						addBorrowBill_1(orderInfo);
+						//实时推送代买分期的债权给钱包
+						AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+						AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+						if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getAgencyBuy())){
+							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+							EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+							AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+							//债权实时推送
+							boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+							if (result) {
+								logger.info("borrowCashCurPush suceess,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+							}
+						}
 						return resp;
 					}else{
 						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);

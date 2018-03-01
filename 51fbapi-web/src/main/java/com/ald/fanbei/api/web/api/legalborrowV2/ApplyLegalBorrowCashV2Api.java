@@ -256,6 +256,9 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						
 						//债权实时推送
 						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+						if (result) {
+							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
+						}
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
