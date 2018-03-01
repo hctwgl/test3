@@ -144,10 +144,10 @@ public class AppH5SysController extends BaseController {
 		logger.info("auto init zhima:"+userId);
 		AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(!afUserAuthDo.getZmStatus().equals("Y")){
-			afUserAuthDo.setZmScore(99);
+			afUserAuthDo.setZmScore(0);
 			afUserAuthDo.setZmStatus("Y");
 			afUserAuthDo.setGmtZm(new Date());
-			afUserAuthDo.setIvsScore(99);
+			afUserAuthDo.setIvsScore(0);
 			afUserAuthDo.setIvsStatus("Y");
 			afUserAuthDo.setGmtIvs(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
