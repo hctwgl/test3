@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
@@ -16,10 +17,12 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -61,6 +64,9 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
+	
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -91,6 +97,8 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
 		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
 		afUserAuthStatusDo.setUserId(userId);
+		AfUserAccountSenceDo bldSenceDo = afUserAccountSenceService.buildAccountScene(userId, LoanType.BLD_LOAN.getName(), "0");
+		
 		if (!riskResp.isSuccess()) {
 			// 认证失败
 			afUserAuthStatusDo.setStatus("C");
@@ -100,6 +108,7 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		}
 		// 新增或修改认证记录
 		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+		afUserAccountSenceService.saveOrUpdateAccountSence(bldSenceDo);
 		resp.setResponseData(data);
 		return resp;
 	}
