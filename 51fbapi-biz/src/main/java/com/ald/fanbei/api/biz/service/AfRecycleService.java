@@ -19,7 +19,4 @@ public interface AfRecycleService {
 
 	AfRecycleRatioDo getRecycleRatio(AfRecycleRatioQuery afRecycleRatioQuery);//获取回收业务系统系数
 
-
-
-
 }

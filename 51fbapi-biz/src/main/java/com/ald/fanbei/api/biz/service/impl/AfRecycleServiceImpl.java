@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdRecycleEnum;
@@ -11,12 +8,9 @@ import com.ald.fanbei.api.biz.third.util.AppRecycleUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.dal.dao.AfRecycleDao;
+import com.ald.fanbei.api.dal.dao.AfRecycleViewDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.domain.AfRecycleDo;
-import com.ald.fanbei.api.dal.domain.AfRecycleRatioDo;
-import com.ald.fanbei.api.dal.domain.AfRecycleTradeDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 import com.alibaba.druid.util.StringUtils;
@@ -27,9 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.annotation.Resource;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,6 +38,8 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	private TransactionTemplate transactionTemplate;
 	@Autowired
 	private AfRecycleDao afRecycleDao;
+	@Autowired
+	private AfRecycleViewDao afRecycleViewDao;
 	@Autowired
 	private AfUserAccountDao afUserAccountDao;
 	@Autowired
@@ -129,4 +122,5 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	public AfRecycleRatioDo getRecycleRatio(AfRecycleRatioQuery afRecycleRatioQuery) {
 		return afRecycleDao.getRecycleRatio(afRecycleRatioQuery);
 	}
+
 }

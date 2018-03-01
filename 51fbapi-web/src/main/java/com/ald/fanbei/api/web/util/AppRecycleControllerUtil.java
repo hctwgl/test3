@@ -6,10 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: 有得卖三方 辅助类
@@ -37,6 +33,7 @@ public class AppRecycleControllerUtil {
         afRecycleQuery.setStatus(status);
         return afRecycleQuery;
     }
+
 
 
 }
