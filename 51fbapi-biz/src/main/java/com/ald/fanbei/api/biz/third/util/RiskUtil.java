@@ -3443,7 +3443,10 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logger.info(createLinkString(reqBo));
 		logThird(signInfo, "supplement auth notify", reqBo);
-		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+		
+		logger.info("risk sign=>{}",signInfo);
+		logger.info("fanbei sign=>{}",reqBo.getSignInfo());
+		//if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
 			logger.info("supplement auth checksign success");
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
@@ -3452,7 +3455,7 @@ public class RiskUtil extends AbstractThird {
 			String result = obj.getString("result");
 			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
 			authCallbackManager.execute(callbackBo);
-		}
+		//}
 		return 0;
 	}
 
