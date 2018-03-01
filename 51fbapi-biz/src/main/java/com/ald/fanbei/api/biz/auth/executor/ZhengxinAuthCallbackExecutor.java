@@ -65,6 +65,7 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 			afAuthRaiseStatusService.initZhengxinRaiseStatus(userId, AuthType.ZHENGXIN.getCode());
 			
 			afUserAuthDo.setZhengxinStatus("Y");
+			afUserAuthDo.setGmtZhengxin(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
 			
 			RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId),

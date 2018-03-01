@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -24,12 +27,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -37,12 +34,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
-import com.ald.fanbei.api.common.enums.AfLoanStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -74,23 +65,21 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     @Resource
     private GeneratorClusterNo generatorClusterNo;
     @Resource
+	private AfLoanPeriodsService afLoanPeriodsService;
+    @Resource
     private AfUserAccountDao afUserAccountDao;
     @Resource
     private TransactionTemplate transactionTemplate;
     @Resource
     private AfUserAccountLogDao afUserAccountLogDao;
     @Resource
-    private AfUserCouponDao afUserCouponDao;
+	AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
     @Resource
-    private JpushService pushService;
+    private AfUserCouponDao afUserCouponDao;
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 	@Resource
 	private AfUserAccountSenceDao afUserAccountSenceDao;
-    @Resource
-    private AfResourceService afResourceService;
-    @Resource
-    private AfUserBankcardService afUserBankcardService;
     @Resource
     private AfUserService afUserService;
     @Resource
@@ -99,8 +88,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private RiskUtil riskUtil;
     @Resource
     private SmsUtil smsUtil;
-    @Resource
-    private CollectionSystemUtil collectionSystemUtil;
+	@Resource
+	private JpushService pushService;
     @Resource
     private AfYibaoOrderDao afYibaoOrderDao;
     @Resource
@@ -115,8 +104,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private AfLoanPeriodsDao afLoanPeriodsDao;
     @Resource
     private AfLoanDao afLoanDao;
-    @Resource
-    private AfLoanProductDao afLoanProductDao;
 
 	@Override
 	public void repay(LoanRepayBo bo) {
@@ -301,6 +288,41 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         if(loanRepaymentDo != null) {
         	changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
+		if(isNeedMsgNotice){
+			//用户信息及当日还款失败次数校验
+			int errorTimes = 0;
+			AfUserDo afUserDo = afUserService.getUserById(loanRepaymentDo.getUserId());
+			//如果是代扣，不校验次数
+			String payType = loanRepaymentDo.getName();
+			//模版数据map处理
+			Map<String,String> replaceMapData = new HashMap<String, String>();
+			replaceMapData.put("errorMsg", errorMsg);
+			//还款失败短信通知
+			boolean isCashOverdue = false;
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				AfLoanPeriodsDo afLoanPeriodsDo = afLoanPeriodsService.getOneByLoanId(loanRepaymentDo.getLoanId());
+				//判断是否逾期，逾期不发短信
+				try{
+					if (StringUtils.equals("Y",afLoanPeriodsDo.getOverdueStatus())) {
+						isCashOverdue = true;
+					}
+				}catch(Exception ex){
+					logger.info("dealRepaymentFalse isCashOverdue error", ex);
+				}
+				if(isCashOverdue){
+					logger.info("loanCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
+				}else{
+					smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+				}
+			}else{
+				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+				String title = "本次还款支付失败";
+				String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
+				content = content.replace("&errorMsg",errorMsg);
+				pushService.pushUtil(title,content,afUserDo.getMobile());
+			}
+		}
         
 	}
     
@@ -358,7 +380,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             });
 
             if (resultValue == 1L) {
-//            	nofityRisk(LoanRepayDealBo);
+//           	nofityRisk(LoanRepayDealBo);
+				notifyUserBySms(LoanRepayDealBo);
             }
     		
     	}finally {
@@ -483,7 +506,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
 
-			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene("BLD_LOAN",loanPeriodsDo.getUserId());//额度释放
+			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene(loanPeriodsDo.getPrdType(),loanPeriodsDo.getUserId());//额度释放
 			if (senceDo ==  null){
 				throw new FanbeiException(FanbeiExceptionCode.UESR_ACCOUNT_SENCE_ERROR);
 			}
@@ -744,8 +767,56 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 	}
-	
 
+
+	private void notifyUserBySms(LoanRepayDealBo repayDealBo) {
+		logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
+		try {
+			AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
+			sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount));
+		} catch (Exception e) {
+			logger.error("Sms notify user error, userId:" + repayDealBo.userId + ",nowRepayAmount:" + repayDealBo.curSumRepayAmount + ",notRepayMoney" + repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount), e);
+		}
+	}
+
+	/**
+	 * 代扣现金贷还款成功短信发送
+	 * @param mobile
+	 * @param nowRepayAmount
+	 */
+	private boolean sendRepaymentBorrowCashWithHold(String mobile,BigDecimal nowRepayAmount){
+		//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("nowRepayAmountStr", nowRepayAmount+"");
+		return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_SUCCESS.getCode());
+	}
+
+
+	/**
+	 * 用户手动现金贷还款成功短信发送
+	 * @param mobile
+	 * @param repayMoney
+	 */
+	private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
+		//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("repayMoney", repayMoney+"");
+		replaceMapData.put("remainAmount", notRepayMoney+"");
+		if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
+			String title = "恭喜您，借款已还清！";
+			String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
+			content = content.replace("&repayMoney",repayMoney.toString());
+			pushService.pushUtil(title,content,mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+		} else {
+			String title = "部分还款成功！";
+			String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
+			content = content.replace("&repayMoney",repayMoney.toString());
+			content = content.replace("&remainAmount",notRepayMoney.toString());
+			pushService.pushUtil(title,content,mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
+		}
+	}
 	
     private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
     	String cardNo = LoanRepayDealBo.curCardNo;
@@ -1016,7 +1087,34 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		return loanPeriodsIds;
 	}
-	
+
+	public static class RepayDealBo {
+		BigDecimal curRepayAmoutStub; 	//当前还款额变化句柄
+		BigDecimal curRebateAmount; 	//当前还款使用的账户余额
+		BigDecimal curSumRebateAmount = BigDecimal.ZERO;//当前还款使用的账户余额总额
+		Long curUserCouponId;			//当前还款使用的还款优惠卷id
+		BigDecimal curSumRepayAmount = BigDecimal.ZERO;	//当前还款总额
+		String curCardNo;				//当前还款卡号
+		String curCardName;				//当前还款卡别名
+		String curName;					//当前还款名称，用来识别自动代付还款
+		String curTradeNo;
+		String curOutTradeNo;
+
+		BigDecimal sumRepaidAmount = BigDecimal.ZERO;	//对应借款的还款总额
+		BigDecimal sumAmount = BigDecimal.ZERO;			//对应借款总额（包含所有费用）
+		BigDecimal sumBorrowAmount = BigDecimal.ZERO;	//对应借款总额（不包含其他费用）
+		BigDecimal sumInterest = BigDecimal.ZERO;		//对应借款的利息总额
+		BigDecimal sumPoundage = BigDecimal.ZERO;		//对应借款的手续费总额
+		BigDecimal sumOverdueAmount = BigDecimal.ZERO;	//对应借款的逾期费总额
+		BigDecimal sumIncome = BigDecimal.ZERO;			//对应借款我司产生的总收入
+
+		AfBorrowCashDo cashDo;							//借款
+		long overdueDay = 0;							//对应借款的逾期天数
+		String borrowNo;								//借款流水号
+		String refId = "";								//还款的id串
+		Long userId ;									//目标用户id
+	}
+
 	@Override
 	public List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId) {
 		return afLoanRepaymentDao.listDtoByLoanId(loanId);

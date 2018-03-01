@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.common.enums.AfLoanReviewStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
@@ -68,6 +70,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
@@ -182,6 +185,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			loanDo.setTradeNoOut(upsResult.getOrderNo());
 			if (!upsResult.isSuccess()) {
 				dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
+				//审核通过，ups打款失败
+				String title = "本次还款支付失败";
+				String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
+				String bankNumber = bankCard.getCardNumber();
+				String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
+				content = content.replace("&cardLastNo",lastBankCode);
+				content = content.replace("&bankName",bankCard.getBankName());
+				jpushService.pushUtil(title,bo.userName,content);
+				smsUtil.sendBorrowPayMoneyFail(bo.userName);
 				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
 			}
 			loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
@@ -192,7 +204,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			try {
 				String bankNumber = bankCard.getCardNumber();
 				String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
-				smsUtil.sendSmsToDhst(userAccount.getUserName(), String.format(Documents.LOAN_SUCC_SMS_MSG, lastBankCode));
+				smsUtil.sendloanCashCode(userAccount.getUserName(), lastBankCode);
 				jpushService.pushUtil(Documents.LOAN_SUCC_TITLE, String.format(Documents.LOAN_SUCC_MSG, lastBankCode), userAccount.getUserName());
 			}catch (Exception e) {
 				logger.error("DoLoan success, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
@@ -313,7 +325,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.REFUSE.name());
 			tarLoanDo.setReviewDetails(verifyBo.getMsg());
 			afLoanDao.updateById(tarLoanDo);
-			
+			//审核失败
+			jpushService.dealBorrowCashApplyFail(bo.userName, new Date());
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_RISK_REFUSE);
 		}
 		
@@ -522,7 +535,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 * @param loanCfg
 	 * @return
 	 */
-	private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, AfLoanProductDo prdDo, AfLoanDo lastLoanDo) {
+		private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, AfLoanProductDo prdDo, AfLoanDo lastLoanDo) {
 		//贷款总开关
 		if(YesNoStatus.NO.getCode().equals(prdDo.getSwitch())) {
 			return AfLoanRejectType.SWITCH_OFF;
@@ -532,15 +545,28 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		if(accScene == null || au == null) {
 			return AfLoanRejectType.NO_AUTHZ;
 		}
-		
 		String authStatus = au.getStatus();
-		if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
-			return AfLoanRejectType.NO_AUTHZ;
+		
+		if(UserAuthSceneStatus.CHECKING.getCode().equals(authStatus)) {
+			return AfLoanRejectType.AUTHING;
 		}
 		
 		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
+		
+		if(accScene.getScene().equals(LoanType.BLD_LOAN.getCode())) {
+			if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
+				AfUserAuthDo afAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				if(afAuthInfo != null && UserAuthSceneStatus.YES.getCode().equals(afAuthInfo.getBasicStatus())) {
+					return AfLoanRejectType.GO_BLD_AUTH;
+				} else {
+					return AfLoanRejectType.NO_AUTHZ;
+				}
+			}
+		}
+		
+	
 		
 		// 检查上笔贷款
 		if (lastLoanDo != null 
@@ -563,7 +589,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		return AfLoanRejectType.PASS;
 	}
-	
+
 	/**
 	 * 同一时刻每个用户只允许发生一笔借款操作
 	 */

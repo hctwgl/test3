@@ -156,4 +156,15 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByPrdTypeAndAuthType" resultType="com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_auth_raise_status
+        where prd_type= #{prdType}
+        AND auth_type= #{authType}
+        AND is_delete = 0
+        LIMIT 1
+    </select>
+    
+    
 </mapper>
