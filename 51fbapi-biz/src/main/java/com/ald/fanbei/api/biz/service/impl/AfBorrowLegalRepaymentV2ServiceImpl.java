@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -154,7 +155,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
      * @param restAmount 
      */
 	@Override
-	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
+	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo,
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin) {
 		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
@@ -180,7 +181,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		generateRepayRecords(bo);
 
 		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
-		
+		CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
 	}
 	
 	/**
