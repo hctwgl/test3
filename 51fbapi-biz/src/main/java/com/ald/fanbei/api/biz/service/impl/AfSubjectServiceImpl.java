@@ -68,9 +68,9 @@ public class AfSubjectServiceImpl implements AfSubjectService{
 	}
 
 	@Override
-	public AfSubjectDo getSubjectInfoByTagAndType(String tag,String type) {
+	public AfSubjectDo getSubjectInfoByTag(String tag) {
 	    // TODO Auto-generated method stub
-	    	return afSubjectDao.getSubjectInfoByTagAndType(tag,type);
+	    	return afSubjectDao.getSubjectInfoByTag(tag);
 	}
 
 }

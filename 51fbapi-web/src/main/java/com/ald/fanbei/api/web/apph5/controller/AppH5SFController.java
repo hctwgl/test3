@@ -496,8 +496,8 @@ public class AppH5SFController extends BaseController {
 			if (itemList  == null) {
 			
 			//根据tag
-			String type = "PARTACTIVITY_H5_TEMPLATE";
-			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTagAndType(tag,type);
+			//String type = "PARTACTIVITY_H5_TEMPLATE";
+			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTag(tag);
 			
 		
 			for(AfModelH5ItemDo afModelH5ItemDo:afModelH5ItemList){
