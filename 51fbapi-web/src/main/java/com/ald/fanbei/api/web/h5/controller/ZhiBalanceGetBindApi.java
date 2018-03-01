@@ -110,7 +110,7 @@ public class ZhiBalanceGetBindApi extends H5Controller {
             //账号已被别人绑定
             AfUserProfileDo userprofileOther = afUserProfileService.getUserProfileByCommonCondition(userProfileDo);
             if (userprofileOther != null){
-                if (user.getRid() == userprofileOther.getUserId()){
+                if (user.getRid().longValue() == userprofileOther.getUserId().longValue()){
                     code = "104";
                     resultStr = "您已绑定该账号，无需重新绑定";
                 }else{
