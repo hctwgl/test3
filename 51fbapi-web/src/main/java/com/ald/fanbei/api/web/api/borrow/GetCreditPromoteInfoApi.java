@@ -99,12 +99,15 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}
 		
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
-		authDo.setZmScore(99);
-		authDo.setZmStatus("Y");
-		authDo.setGmtZm(new Date());
-		authDo.setIvsScore(99);
-		authDo.setIvsStatus("Y");
-		authDo.setGmtIvs(new Date());
+		if(!authDo.getZmStatus().equals("Y")){
+			authDo.setZmScore(99);
+			authDo.setZmStatus("Y");
+			authDo.setGmtZm(new Date());
+			authDo.setIvsScore(99);
+			authDo.setIvsStatus("Y");
+			authDo.setGmtIvs(new Date());
+			afUserAuthService.updateUserAuth(authDo);
+		}
 		afUserAuthService.updateUserAuth(authDo);
 		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId(),appVersion));
 		zmModel.put("zmStatus", authDo.getZmStatus());
