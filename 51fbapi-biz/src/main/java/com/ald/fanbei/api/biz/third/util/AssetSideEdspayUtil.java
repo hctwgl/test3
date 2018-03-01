@@ -477,6 +477,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			logger.info("borrowCashCurPush originBorrowerJson"+borrowerJson+",data="+data+",sendTime="+sendTime+",sign="+sign+",appId="+assetSideFanbeiFlag);
 			String jsonParam = JSON.toJSONString(map);
 			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
 				//推送数据给钱包
 				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/curDebtPush", jsonParam);
@@ -508,11 +509,45 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					//钱包处理错误,进入重推表
 					FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
 					logger.error("borrowCashCurPush resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
-					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+					if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
+						//重推开关开启
+						recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+					}else{
+						//重推开关关闭，分现金贷和分期分别处理
+						if (borrowCashInfo.getDebtType()==0) {
+							//现金贷
+							AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowCashInfo.getOrderNo());
+							AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+							AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
+							if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
+								//重推失败不调ups
+								//更新借款状态
+								AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+								delegateBorrowCashDo.setRid(borrowCashDo.getRid());
+								delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+								delegateBorrowCashDo.setRemark("重推失败关闭");
+								// 更新订单状态为关闭
+								afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
+								afBorrowLegalOrderDo.setClosedDetail("重推失败关闭");
+								afBorrowLegalOrderDo.setGmtClosed(new Date());
+								applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+							}else{
+								//调ups打款
+								applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
+										"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
+							}
+						}
+						
+					}
 					return false;
 				}
 			} catch (Exception e) {
-				recordRePush(borrowCashInfo, borrowerJson, assetPushResource);
+				
+				if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
+					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+				}else{
+					
+				}
 			}
 		} catch (Exception e) {
 			logger.error("borrowCashCurPush exception"+e);
