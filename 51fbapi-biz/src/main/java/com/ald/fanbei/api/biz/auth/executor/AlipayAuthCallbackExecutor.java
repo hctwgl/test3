@@ -62,7 +62,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
-
+		logger.info("start alipay auth callback execute");
 		String consumerNo = authCallbackBo.getConsumerNo();
 		Long userId = Long.parseLong(consumerNo);
 

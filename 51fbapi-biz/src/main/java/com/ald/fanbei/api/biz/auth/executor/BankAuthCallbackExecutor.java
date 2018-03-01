@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
@@ -50,10 +52,12 @@ public class BankAuthCallbackExecutor implements Executor {
 
 	@Resource
 	AfAuthRaiseStatusService afAuthRaiseStatusService;
+	
+	Logger logger = LoggerFactory.getLogger(BankAuthCallbackExecutor.class);
 
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
-
+		logger.info("start bank auth callback execute");
 		String consumerNo = authCallbackBo.getConsumerNo();
 		Long userId = Long.parseLong(consumerNo);
 		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
@@ -84,8 +88,8 @@ public class BankAuthCallbackExecutor implements Executor {
 								bldAmount);
 						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
 
-						afUserAccountSenceService.updateById(bldAccountSenceDo);
-						afUserAccountSenceService.updateById(totalAccountSenceDo);
+						afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 						
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.BANK.getCode(),
 								LoanType.BLD_LOAN.getCode(), "Y",BigDecimal.ZERO,new Date());

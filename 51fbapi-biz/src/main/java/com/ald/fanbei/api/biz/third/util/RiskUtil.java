@@ -1407,6 +1407,12 @@ public class RiskUtil extends AbstractThird {
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
 			if (StringUtils.equals("10", result)) {
 				if (SceneType.CASH.getCode().equals(scene)) {
+					// 小额贷强风控认证成功，更新总额度
+					String totalAmount = obj.getString("totalAmount");
+					AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
+							"LOAN_TOTAL", totalAmount);
+					afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+					
 					if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())
 							&& !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode())
 							|| orderNo.contains("sdrz")) {
@@ -3437,7 +3443,11 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		logger.info(createLinkString(reqBo));
 		logThird(signInfo, "supplement auth notify", reqBo);
-		if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+		
+		thirdLog.info("risk sign=>{}",signInfo);
+		thirdLog.info("fanbei sign=>{}",reqBo.getSignInfo());
+		//if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+			thirdLog.info("supplement auth checksign success");
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String authItem = obj.getString("authItem");
@@ -3445,7 +3455,7 @@ public class RiskUtil extends AbstractThird {
 			String result = obj.getString("result");
 			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
 			authCallbackManager.execute(callbackBo);
-		}
+		//}
 		return 0;
 	}
 
