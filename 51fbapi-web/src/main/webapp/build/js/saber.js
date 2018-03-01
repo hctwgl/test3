@@ -1,9 +1,9 @@
 $(function(){
     let tokenVal=formatDate()+Math.random().toString(36).substr(2);
     let domain = window.location.hostname;
+    let _saber;
     let aa;
     let bb;
-    let _saber;
     if(domain=='app.51fanbei.com'){
         (function () {
             _saber = {
