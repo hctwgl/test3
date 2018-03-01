@@ -84,7 +84,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     private static final String src = "/home/aladin/project/app_contract";
 
-    private AfUserAccountDo getUserInfo(long userId, Map map,List<EdspayInvestorInfoBo> investorList) {
+    private AfUserAccountDo getUserInfo(long userId, Map<String,Object> map,List<EdspayInvestorInfoBo> investorList) {
         AfUserDo afUserDo = afUserService.getUserById(userId);
         if (afUserDo == null) {
             logger.error("user not exist => {}" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -125,7 +125,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return accountDo;
     }
 
-    private void GetSeal(Map map, AfUserDo afUserDo, AfUserAccountDo accountDo,List<EdspayInvestorInfoBo> investorList) {
+    private void GetSeal(Map<String,Object> map, AfUserDo afUserDo, AfUserAccountDo accountDo,List<EdspayInvestorInfoBo> investorList) {
         try {
             AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
@@ -478,7 +478,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Override
     public void platformServiceProtocol(Long borrowId, String type, BigDecimal poundage, Long userId) {
         try {
-            Map map = new HashMap();
+            Map<String,Object> map = new HashMap();
             AfUserDo afUserDo = afUserService.getUserById(userId);
             if (afUserDo == null) {
                 logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -538,7 +538,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     @Override
     public String getProtocalLegalByType(Integer debtType, String orderNo,String protocolUrl,String borrowerName,List<EdspayInvestorInfoBo> investorList) throws IOException {
-        Map<String,String> map = new HashMap();
+        Map<String,Object> map = new HashMap();
         map.put("personKey",borrowerName);//借款人印章定位关键字
         if (debtType == 0){//借款
             AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
@@ -599,11 +599,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
-    private String getPdfInfo(String protocolUrl, Map<String,String> map, Long userId,Long id,String type,String protocolCashType,List<EdspayInvestorInfoBo> investorList) throws IOException {
+    private String getPdfInfo(String protocolUrl, Map<String,Object> map, Long userId,Long id,String type,String protocolCashType,List<EdspayInvestorInfoBo> investorList) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId,map,investorList);
         long time = new Date().getTime();
         map.put("PDFPath", protocolUrl);
-        map.put("borrowId", id.toString());
+        map.put("borrowId", id);
         map.put("protocolCashType", protocolCashType);
         map.put("userPath", src + accountDo.getUserName() + type + time + 1 + ".pdf");
         map.put("selfPath", src + accountDo.getUserName() + type + time + 2 + ".pdf");
@@ -612,7 +612,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return getLegalContractPdf(map);
     }
 
-    private boolean PdfCreateByStream(Map map) throws IOException {
+    private boolean PdfCreateByStream(Map<String,Object> map) throws IOException {
         OutputStream fos = null;
         ByteArrayOutputStream bos = null;
         boolean result = true;
@@ -778,7 +778,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
 
-    private String getLegalContractPdf(Map map) throws IOException {
+    private String getLegalContractPdf(Map<String,Object> map) throws IOException {
         OutputStream fos = null;
         ByteArrayOutputStream bos = null;
         boolean result = true;
@@ -918,15 +918,15 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 if ("1".equals(protocolCashType)) {//借款协议
                     afContractPdfDo.setType((byte) 1);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("borrowId"));
+                    afContractPdfDo.setTypeId((Long)map.get("borrowId"));
                 } else if ("2".equals(protocolCashType)) {//分期服务协议
                     afContractPdfDo.setType((byte) 2);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("borrowId"));
+                    afContractPdfDo.setTypeId((Long)map.get("borrowId"));
                 } else if ("3".equals(protocolCashType)) {//续借协议
                     afContractPdfDo.setType((byte) 3);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("renewalId"));
+                    afContractPdfDo.setTypeId((Long)map.get("borrowId"));
                 }
                 AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
                 if (pdf != null){
