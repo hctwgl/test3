@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -139,7 +140,8 @@ public class AppH5SysController extends BaseController {
 	@RequestMapping(value = { "zhimaNewUrl" }, method = RequestMethod.GET)
 	public void zhimaNewUrl(HttpServletRequest request, ModelMap model) throws IOException {
 
-		Long userId = Long.parseLong(request.getParameter("userId"));
+		Long userId = Long.parseLong(AesUtil.decrypt(request.getParameter("userId"),"123") );
+		logger.info("auto init zhima:"+userId);
 		AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(!afUserAuthDo.getZmStatus().equals("Y")){
 			afUserAuthDo.setZmScore(99);
