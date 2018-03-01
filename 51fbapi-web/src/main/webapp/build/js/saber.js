@@ -1,9 +1,9 @@
+var _saber;
 $(function(){
-    let tokenVal=formatDate()+Math.random().toString(36).substr(2);
-    let domain = window.location.hostname;
-    let _saber;
-    let aa;
-    let bb;
+    var tokenVal=formatDate()+Math.random().toString(36).substr(2);
+    var domain = window.location.hostname;
+    var aa;
+    var bb;
     if(domain=='app.51fanbei.com'){
         (function () {
             _saber = {
@@ -30,15 +30,15 @@ $(function(){
 
     // 防止风控被拒
     function formatDate() {
-        let date = new Date();
-        let y = date.getFullYear();
-        let m = date.getMonth() + 1;
+        var date = new Date();
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
         m = m < 10 ? ('0' + m) : m;
-        let d = date.getDate();
+        var d = date.getDate();
         d = d < 10 ? ('0' + d) : d;
-        let h = date.getHours();
-        let minute = date.getMinutes();
-        let second = date.getSeconds();
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
         return y +  m +  d +h +minute+second;
     }
 });
