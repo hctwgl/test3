@@ -530,6 +530,14 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		String authStatus = au.getStatus();
 		
+		if(UserAuthSceneStatus.CHECKING.getCode().equals(authStatus)) {
+			return AfLoanRejectType.AUTHING;
+		}
+		
+		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
+			return AfLoanRejectType.NO_PASS_STRO_RISK;
+		}
+		
 		if(accScene.getScene().equals(LoanType.BLD_LOAN.getName())) {
 			if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
 				AfUserAuthDo afAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -541,13 +549,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			}
 		}
 		
-		if(UserAuthSceneStatus.CHECKING.getCode().equals(authStatus)) {
-			return AfLoanRejectType.AUTHING;
-		}
-		
-		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
-			return AfLoanRejectType.NO_PASS_STRO_RISK;
-		}
+	
 		
 		// 检查上笔贷款
 		if (lastLoanDo != null 
