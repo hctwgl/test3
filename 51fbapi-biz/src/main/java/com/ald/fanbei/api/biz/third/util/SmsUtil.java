@@ -680,6 +680,22 @@ public class SmsUtil extends AbstractThird {
 
 
     /**
+     * 借款成功发送短信提醒用户(白领贷)
+     *
+     * @param mobile
+     * @param content
+     */
+    public boolean sendloanCashCode(String mobile, String bank) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_LOAN_AUDIT.getCode());
+        if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+            String content = resourceDo.getValue().replace("&bankCardNo", bank);
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        }
+        return false;
+    }
+
+    /**
      * 发送商圈支付成功短信
      *
      * @param mobile
@@ -893,6 +909,7 @@ public class SmsUtil extends AbstractThird {
             return this.sendSmsToDhst(mobile, content);
         }
     }
+
     public   String rules(String mobile){
         String switchRule = (String)bizCacheUtil.getObject("sms_switch");
         if(switchRule == null){
@@ -915,6 +932,9 @@ public class SmsUtil extends AbstractThird {
         return "DH";
     }
 }
+
+
+
 
 class SmsResult {
     private boolean isSucc;
