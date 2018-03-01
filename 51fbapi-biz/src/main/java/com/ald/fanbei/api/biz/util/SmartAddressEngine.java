@@ -22,9 +22,9 @@ public class SmartAddressEngine {
     public static int getScore(String address){
         try {
             logger.info("百度地址评分："+address);
-            String result = HttpUtil.doGet("http://api.map.baidu.com/geocoder?address="+ address +"&output=json&key=6eea93095ae93db2c77be9ac910ff311",3000);
+            String result = HttpUtil.doGet("http://api.map.baidu.com/geocoder/v2/?address="+address+"&output=json&ak=6eea93095ae93db2c77be9ac910ff311",3000);
             JSONObject json=JSONObject.parseObject(result) ;
-            if(json.getString("status").equals("OK")){
+            if(json.getString("status").equals("0")){
                 logger.info("---------address:"+address+"---------score:"+json.getJSONObject("result").getInteger("confidence"));
                 return json.getJSONObject("result").getInteger("confidence");
             }
@@ -34,13 +34,13 @@ public class SmartAddressEngine {
         return 0;
     }
     public  void setScoreAsyn(final String address,final long borrowid,final String orderno){
-//        pool.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//               int score = SmartAddressEngine.getScore(address);
-//                afBorrowLegalOrderService.updateSmartAddressScore(score,borrowid,orderno);
-//            }
-//        });
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+               int score = SmartAddressEngine.getScore(address);
+                afBorrowLegalOrderService.updateSmartAddressScore(score,borrowid,orderno);
+            }
+        });
     }
 
 }
