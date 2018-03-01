@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 
 /**
@@ -122,4 +123,6 @@ public interface AfBorrowDao {
 	Integer countNperRepaymentByBorrowId(@Param("id") long id);
 
 	HashMap getUserSummaryForCapital(@Param("userId")Long userId);
+
+	AfBorrowDto getBorrowInfoById(@Param("borrowId") Long borrowId);
 }
