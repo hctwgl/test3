@@ -483,7 +483,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
 
-			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene("BLD_LOAN",loanPeriodsDo.getUserId());//额度释放
+			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene(loanPeriodsDo.getPrdType(),loanPeriodsDo.getUserId());//额度释放
 			if (senceDo ==  null){
 				throw new FanbeiException(FanbeiExceptionCode.UESR_ACCOUNT_SENCE_ERROR);
 			}
