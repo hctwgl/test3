@@ -24,6 +24,7 @@ public class AfBorrowCashDto extends AfBorrowCashDo{
 	private String cardId;//借款人身份证号
 	private String mobile;//借款人手机号码
 	private String bankNo;//银行卡号
+	private String cardName;//银行卡所属行
 	private BigDecimal money;//用户实际到账金额
 	private String type;//借款类型
 	private Date loanStartTime;//借款开始时间戳（单位：秒）
@@ -117,5 +118,12 @@ public class AfBorrowCashDto extends AfBorrowCashDo{
 	public void setRefundRemark(String refundRemark) {
 		this.refundRemark = refundRemark;
 	}
-	
+
+	public String getCardName() {
+		return cardName;
+	}
+
+	public void setCardName(String cardName) {
+		this.cardName = cardName;
+	}
 }

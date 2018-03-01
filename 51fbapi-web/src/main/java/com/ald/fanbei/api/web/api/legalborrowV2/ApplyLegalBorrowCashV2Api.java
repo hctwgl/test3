@@ -207,7 +207,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						borrowCashInfo.setCardId(afBorrowCashDto.getCardId());
 						borrowCashInfo.setMobile(afBorrowCashDto.getMobile());
 						borrowCashInfo.setBankNo(afBorrowCashDto.getBankNo());
-						borrowCashInfo.setAcctName(fanbeiBorrowBankInfoBo.getAcctName());
+						borrowCashInfo.setAcctName("");
 						borrowCashInfo.setMoney(afBorrowCashDto.getMoney());
 						borrowCashInfo.setApr(borrowRate);
 						borrowCashInfo.setTimeLimit(timeLimit);
@@ -218,11 +218,15 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 							borrowCashInfo.setPurpose("个人消费");
 						}
 						borrowCashInfo.setRepaymentStatus(0);
-						borrowCashInfo.setRepayName(fanbeiBorrowBankInfoBo.getRepayName());
-						borrowCashInfo.setRepayAcct(fanbeiBorrowBankInfoBo.getRepayAcct());
-						borrowCashInfo.setRepayAcctBankNo(fanbeiBorrowBankInfoBo.getRepayAcctBankNo());
-						borrowCashInfo.setRepayAcctType(fanbeiBorrowBankInfoBo.getRepayAcctType());
-						borrowCashInfo.setIsRepayAcctOtherBank(fanbeiBorrowBankInfoBo.getIsRepayAcctOtherBank());
+						borrowCashInfo.setRepayName(afBorrowCashDto.getName());
+						borrowCashInfo.setRepayAcct(afBorrowCashDto.getBankNo());
+						borrowCashInfo.setRepayAcctBankNo("");
+						borrowCashInfo.setRepayAcctType(0);
+						if (StringUtil.equals(afBorrowCashDto.getCardName(),"浙商银行")) {
+							borrowCashInfo.setIsRepayAcctOtherBank(0);
+						}else{
+							borrowCashInfo.setIsRepayAcctOtherBank(1);
+						}
 						//获取资产方的分润利率
 						AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
 						borrowCashInfo.setManageFee(afAssetSideInfoDo.getAnnualRate());

@@ -917,6 +917,8 @@ public class RiskUtil extends AbstractThird {
 				afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
 						orderInfo.getOrderType());
+				//商圈和boluome的账单生成之后推送给钱包
+				
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
 				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 			} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
