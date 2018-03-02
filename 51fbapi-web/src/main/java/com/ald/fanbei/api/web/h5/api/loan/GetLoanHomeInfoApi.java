@@ -22,6 +22,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.yeepay.g3.utils.common.StringUtils;
 
 /**
  * 获取借钱首页信息
@@ -69,7 +70,13 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			
 			resp.addResponseData("isLogin", true);
 			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
-			resp.addResponseData("authStatus", afUserAuthService.allBasicAuthPassed(authInfo));
+			
+			String basicStatus = authInfo.getBasicStatus();
+			if(StringUtils.equals(basicStatus, "A") || StringUtils.isBlank(basicStatus)) {
+				resp.addResponseData("authStatus", false);
+			} else {
+				resp.addResponseData("authStatus", true);
+			}
 			
 			resp.addResponseData("isBindCard", userBankcard != null);
 			resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getRealnameStatus()));

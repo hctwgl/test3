@@ -25,6 +25,7 @@ import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
@@ -73,6 +74,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 			afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.ALIPAY.getCode());
 			// 认证通过，更新支付宝认证状态
 			afUserAuthDo.setAlipayStatus("Y");
+			afUserAuthDo.setGmtAlipay(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
 			// 认证成功,向风控发起提额申请
 			AfUserAuthDo afUserAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -93,7 +95,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 						afUserAccountDo.setAuAmount(new BigDecimal(amount));
 						afUserAccountService.updateUserAccount(afUserAccountDo);
 						// 更新总额度
-						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 						afUserAccountSenceService.updateById(totalAccountSenceDo);
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
 								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
@@ -123,7 +125,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 						afUserAccountDo.setAuAmount(new BigDecimal(amount));
 						afUserAccountService.updateUserAccount(afUserAccountDo);
 						// 更新总额度
-						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 						afUserAccountSenceService.updateById(totalAccountSenceDo);
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(),
 								LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
@@ -156,7 +158,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 							String totalAmount = respBo.getData().getTotalAmount();
 							AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
 									bldAmount);
-							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+							AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 
 							afUserAccountSenceService.updateById(bldAccountSenceDo);
 							afUserAccountSenceService.updateById(totalAccountSenceDo);
