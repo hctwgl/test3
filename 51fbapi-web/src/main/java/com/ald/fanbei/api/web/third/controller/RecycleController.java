@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.web.third.controller;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.AppRecycleUtil;
+import com.ald.fanbei.api.biz.third.util.RecycleUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.domain.*;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 
 /**
  * @author weiqingeng
@@ -30,6 +31,8 @@ public class RecycleController {
     private AfRecycleService afRecycleService;
     @Autowired
     private AfRecycleViewService afRecycleViewService;
+    @Autowired
+    private  AfUserAccountService afUserAccountService;
     @Autowired
     private BizCacheUtil bizCacheUtil;
 
@@ -46,7 +49,7 @@ public class RecycleController {
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
-            if (AppRecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
+            if (RecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
                 logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
                 String refOrderId = afRecycleQuery.getRefOrderId();
                 Long uid = afRecycleQuery.getUid();
@@ -77,6 +80,7 @@ public class RecycleController {
     /**
      * 增加页面访问记录   访问类型 1：回收 2：返现
      * @return
+     * @author weiqingeng
      */
     @RequestMapping(value = "/addPageView", method = RequestMethod.POST)
     @ResponseBody
@@ -104,6 +108,39 @@ public class RecycleController {
             return H5CommonResponse.getNewInstance(false, "增加页面访问记录失败", null, "").toString();
         } finally {
             bizCacheUtil.delCache(key);
+        }
+        return result;
+    }
+
+
+    /**
+     * 兑换 余额兑换成 满减卷
+     *  amount 兑换的金额
+     * @return
+     * @author weiqingeng
+     */
+    @RequestMapping(value = "/exchange", method = RequestMethod.POST)
+    @ResponseBody
+    public String exchange(@RequestParam("uid") Long uid, @RequestParam("amount") Integer amount) {
+        String result = "";
+        try {
+            if(null == uid || null == amount){
+                return H5CommonResponse.getNewInstance(false, "参数错误", null, "").toString();
+            }
+            if(amount < 50){
+                return H5CommonResponse.getNewInstance(false, "兑换金额不能小于50", null, "").toString();
+            }
+            AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(uid);
+            if(null == afUserAccountDo || (null != afUserAccountDo && afUserAccountDo.getRebateAmount().intValue() < 50)){
+                return H5CommonResponse.getNewInstance(false, "账户余额不足50元,无法兑换", null, "").toString();
+            }
+            if(amount.compareTo(afUserAccountDo.getRebateAmount().intValue()) > 0){
+                return H5CommonResponse.getNewInstance(false, "账户余额小于兑换金额", null, "").toString();
+            }
+            afRecycleService.addExchange(uid, amount, afUserAccountDo.getRebateAmount());
+        } catch (Exception e) {
+            logger.error("/fanbei/ydm/exchange, error = {}", e.getStackTrace());
+            return H5CommonResponse.getNewInstance(false, "兑换失败", null, "").toString();
         }
         return result;
     }

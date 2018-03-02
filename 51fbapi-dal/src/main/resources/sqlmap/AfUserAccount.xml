@@ -281,6 +281,12 @@
 		,rebate_amount = rebate_amount + #{rebateAmount}
 		where user_id = #{userId}
 	</update>
+
+	<!-- 减少返现金额(翻倍兑换) -->
+	<update id="reduceRebateAmount" parameterType="AfUserAccountDo">
+		UPDATE af_user_account SET gmt_modified = NOW(),rebate_amount = rebate_amount - #{rebateAmount}
+		where user_id = #{userId}
+	</update>
 	
 	<update id="updateBorrowCashActivity" >
 		UPDATE  

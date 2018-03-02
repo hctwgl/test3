@@ -44,10 +44,10 @@
 			ref_oreder_id = #{refOrderId}
 	</select>
 
-	<!-- 查找系统系数-->
-	<select id="getRecycleRatio" parameterType="AfRecycleRatioQuery" resultType="AfRecycleRatioDo">
+	<!-- 获取返现系统配置的系数-->
+	<select id="getRecycleReturnRatio" parameterType="java.lang.Integer" resultType="AfRecycleRatioDo">
 		SELECT
-			*
+			ratio
 		FROM
 			af_recycle_ratio
 		WHERE
@@ -55,9 +55,24 @@
 		AND
 			is_disabled = 0
 		AND
-			`type` = #{type}
+			`type` = 1
 		ORDER BY id DESC
 		LIMIT 1
+	</select>
+
+	<!-- 获取翻倍兑换系统配置的系数-->
+	<select id="getRecycleExchangeRatio" parameterType="java.lang.Integer" resultType="AfRecycleRatioDo">
+		SELECT
+			ratio,probability
+		FROM
+			af_recycle_ratio
+		WHERE
+			is_delete = 0
+		AND
+			is_disabled = 0
+		AND
+			`type` = 2
+			ORDER BY probability DESC
 	</select>
 
 </mapper>

@@ -5,6 +5,8 @@ import com.ald.fanbei.api.dal.domain.AfRecycleRatioDo;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @类描述： 有得卖  回收业务
@@ -17,6 +19,6 @@ public interface AfRecycleService {
 
 	AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery);
 
-	AfRecycleRatioDo getRecycleRatio(AfRecycleRatioQuery afRecycleRatioQuery);//获取回收业务系统系数
+	Integer addExchange(Long uid, Integer exchangeAmount, BigDecimal remainAmount);//添加兑换记录
 
 }
