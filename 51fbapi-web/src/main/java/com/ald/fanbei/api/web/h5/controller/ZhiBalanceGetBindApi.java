@@ -122,12 +122,12 @@ public class ZhiBalanceGetBindApi extends H5Controller {
                 throw new FanbeiException(FanbeiExceptionCode.ZHI_BALANCE_EXITS_ERROR);
             }
             //验证码错误
-           /* AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(account, SmsType.ZHI_BIND.getCode());
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(account, SmsType.ZHI_BIND.getCode());
             if(smsDo == null || !verifycode.equals(smsDo.getVerifyCode())){
                 code = "103";
                 resultStr = "验证码有误";
                 throw new FanbeiException(FanbeiExceptionCode.ZHI_BALANCE_CODE_INVALID_ERROR);
-            }*/
+            }
             //删除已有绑定账号
             userProfileDo.setUserId(user.getRid());
             userProfileDo.setAccount(null);
