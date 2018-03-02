@@ -52,7 +52,7 @@ public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 		
 		setUserInfo(JSON.toJSONString(userInfo));
 
-		setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
+		//setDirectory(JSON.toJSONString(StringUtil.filterEmoji(directory)));
 
 		if (!StringUtil.isBlank(afUserAuthDo.getContactorName())) {
 			JSONObject linkManInfo = new JSONObject();
