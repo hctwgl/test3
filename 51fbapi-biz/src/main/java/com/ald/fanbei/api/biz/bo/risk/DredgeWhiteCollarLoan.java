@@ -26,12 +26,12 @@ public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 	private static final long serialVersionUID = 1L;
 	
 	
-	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo);
+	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo,String selectedType) {
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo, selectedType);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo,String selectedType) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -75,6 +75,7 @@ public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 		riskInfo.put("scene", riskScene);
 		riskInfo.put("notifyUrl", notifyHost + notifyUrl);
 		riskInfo.put("reqExt", "");
+		riskInfo.put("selectedType", selectedType);
 		setRiskInfo(JSON.toJSONString(riskInfo));
 
 		JSONObject eventInfo = new JSONObject();

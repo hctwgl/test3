@@ -566,11 +566,11 @@ public class RiskUtil extends AbstractThird {
 	public RiskRespBo dredgeWhiteCollarLoan(String consumerNo, String event, AfUserDo afUserDo,
 			AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox,
 			String cardNum, String riskOrderNo, String bqsBlackBox, String riskScene, String directory,
-			Map<String, Object> extUserInfo) {
+			Map<String, Object> extUserInfo,String selectedType) {
 
 		DredgeWhiteCollarLoanReqBo reqBo = RiskAuthFactory.createDredgeWhiteCollarLoanBo(consumerNo, event, riskOrderNo,
 				afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY,
-				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo);
+				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo,selectedType);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);

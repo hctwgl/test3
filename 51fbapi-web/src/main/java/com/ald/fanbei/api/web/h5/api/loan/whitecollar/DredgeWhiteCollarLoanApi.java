@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
@@ -85,6 +86,9 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		// 验证所选认证是否通过
+		checkAuthStatus(afUserAuthDo,param);
+		
 		Object directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 		String riskOrderNo = riskUtil.getOrderNo("loan", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 		
@@ -92,7 +96,7 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		
 		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
 				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
-				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo);
+				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType());
 		
 		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
 		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
@@ -114,6 +118,28 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	}
 
 	
+	private void checkAuthStatus(AfUserAuthDo afUserAuthDo, DredgeWhiteCollarLoanParam param) {
+		String selectedType = param.getSelectedType();
+		if(StringUtils.equals(selectedType, "fund")) {
+			String fundStatus = afUserAuthDo.getFundStatus();
+			if(!StringUtils.equals("Y", fundStatus)) {
+				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
+			}
+		} else if(StringUtils.equals(selectedType, "socialsecurity")){
+			String jinponStatus = afUserAuthDo.getJinpoStatus();
+			if(!StringUtils.equals("Y", jinponStatus)) {
+				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
+			}
+		} else if(StringUtils.equals(selectedType, "ebank")) {
+			String onlinebankStatus = afUserAuthDo.getOnlinebankStatus();
+			if(!StringUtils.equals("Y", onlinebankStatus)) {
+				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
+			}
+		}
+		
+	}
+
+
 	private Map<String, Object> getExtUserInfo(DredgeWhiteCollarLoanParam param) {
 		Map<String,Object> extUserInfo = Maps.newHashMap();
 		extUserInfo.put("companyName", param.getCompany());

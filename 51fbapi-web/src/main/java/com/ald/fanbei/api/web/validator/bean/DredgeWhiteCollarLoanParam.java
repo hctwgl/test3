@@ -34,6 +34,18 @@ public class DredgeWhiteCollarLoanParam {
 	
 	@NotNull
 	private String bqsBlackBox;
+	
+	@NotNull
+	@Pattern(regexp="(fund|socialsecurity|ebank)")
+	private String selectedType;
+	
+	public String getSelectedType() {
+		return selectedType;
+	}
+
+	public void setSelectedType(String selectedType) {
+		this.selectedType = selectedType;
+	}
 
 	public String getBlackBox() {
 		return blackBox;

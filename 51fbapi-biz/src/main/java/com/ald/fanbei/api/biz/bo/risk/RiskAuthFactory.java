@@ -94,9 +94,9 @@ public class RiskAuthFactory {
 	 * @return
 	 */
 	public static DredgeWhiteCollarLoanReqBo createDredgeWhiteCollarLoanBo(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
-													   String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo) {
+													   String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo,String selectedType) {
 		
-		return new DredgeWhiteCollarLoan(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo);
+		return new DredgeWhiteCollarLoan(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo,selectedType);
 		
 	}
 }
