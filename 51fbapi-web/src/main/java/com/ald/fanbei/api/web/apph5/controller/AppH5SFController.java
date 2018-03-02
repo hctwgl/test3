@@ -234,7 +234,6 @@ public class AppH5SFController extends BaseController {
 			}
 
 			// get dateList start from the config of specific activity
-			//List<Date> dateListe = afActivityService.getDateListByName(tag);
 			List<SecondKillDateVo> dateList = afActivityService.getDateVoListByName(tag);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd号 HH:mm");
 			

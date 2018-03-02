@@ -120,6 +120,7 @@
 	
 	<select id="getDateVoListByName" parameterType="java.lang.String" resultType="com.ald.fanbei.api.web.vo.SecondKillDateVo">
 		SELECT
+		id as meeting_id,
 		gmt_start as start_time,
 		case when (gmt_start&gt;CURRENT_TIMESTAMP()) then '0' when (gmt_end&lt;CURRENT_TIMESTAMP()) then '2' else '1' end
 		as status
