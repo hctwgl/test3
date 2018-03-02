@@ -126,6 +126,18 @@ public class AppH5SFController extends BaseController {
 		return userId;
 	}
 	
+	/**
+	 * 
+	* @Title: getDateList
+	* @author qiao
+	* @date 2018年3月2日 上午9:53:10
+	* @Description: 每天一场秒杀的获取时间。
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
 	@RequestMapping(value = "/getDateList", method = RequestMethod.POST)
 	public String getDateList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
@@ -191,6 +203,88 @@ public class AppH5SFController extends BaseController {
 		}
 		return result;
 	}
+	
+	/**
+	 * 
+	* @Title: getDateList
+	* @author qiao
+	* @date 2018年3月2日 上午9:53:10
+	* @Description: 每天一场秒杀多场的活动日期获取
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/getDateListV1", method = RequestMethod.POST)
+	public String getDateListV1(HttpServletRequest request, HttpServletResponse response) {
+		String result = "";
+		try {
+
+			// get tag from activityId then get goods from different tag
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			if (activityId == null) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
+
+			// find the name from activityId
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			if (StringUtil.isBlank(tag)) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
+
+			// get dateList start from the config of specific activity
+			List<Date> dateListe = afActivityService.getDateListByName(tag);
+			List<SecondKillDateVo> dateList = new ArrayList<SecondKillDateVo>();
+			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd号 HH:mm");
+			
+			if(CollectionUtil.isNotEmpty(dateListe)){
+				for(Date date:dateListe){
+					String dateStr = sdf.format(date);
+					SecondKillDateVo vo = new SecondKillDateVo();
+					vo.setStartDate(dateStr);
+					vo.setStartTime(date);
+					
+					date = DateUtil.formatDateToYYYYMMdd(date);
+					
+					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
+					
+					
+					if (DateUtil.afterDay(date, temNow)) {
+						vo.setStatus(0);
+					}else if (DateUtil.beforeDay(date, temNow)){
+						vo.setStatus(2);
+					}else {
+						
+						vo.setStatus(1);
+					}
+					
+					dateList.add(vo);
+					
+					
+				}
+			}
+
+			java.util.Map<String, Object> data = new HashMap<>();
+
+			data.put("dateList", dateList);
+			data.put("serviceDate", new Date());
+
+			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+
+		} catch (
+
+		Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+		}
+		return result;
+	}
+	
+
+	
+	
 	/**
 	 * 
 	 * @Title: initHomePage @author qiao @date 2018年1月5日
