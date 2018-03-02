@@ -283,12 +283,12 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 					openId = accountDo.getOpenId();
 				}
 				AfUserBankcardDo bank = afUserBankcardService.getUserMainBankcardByUserId(afUserDo.getRid());
-				if (bank == null){
+				if (bank != null){
 					cardNumber = bank.getCardNumber();
 				}
 				baiQiShiUtils.getLoginResult(blackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
 			}catch (Exception e){
-				logger.error("baiQiShiUtils getLoginResult error => {}",e.getMessage());
+				logger.error("baiQiShiUtils getLoginResult error => {}",e);
 			}
 		}
 		if (context.getAppVersion() >= 381) {
