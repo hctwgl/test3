@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.dal.dao.AfActivityDao;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 
 /**
  * @类描述：
@@ -64,6 +65,12 @@ public class AfActivityServiceImpl  implements AfActivityService {
 	public List<Date> getDateListByName(String tag) {
 		
 		return afActivityDao.getDateListByName(tag);
+	}
+
+	@Override
+	public List<SecondKillDateVo> getDateVoListByName(String tag) {
+		
+		return afActivityDao.getDateVoListByName(tag);
 	}
 	
 	

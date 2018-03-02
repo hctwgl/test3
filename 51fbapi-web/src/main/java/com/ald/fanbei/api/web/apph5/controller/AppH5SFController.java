@@ -56,13 +56,13 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponTigerMachineDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
-import com.ald.fanbei.api.web.vo.SecondKillDateVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -234,32 +234,15 @@ public class AppH5SFController extends BaseController {
 			}
 
 			// get dateList start from the config of specific activity
-			List<Date> dateListe = afActivityService.getDateListByName(tag);
-			List<SecondKillDateVo> dateList = new ArrayList<SecondKillDateVo>();
+			//List<Date> dateListe = afActivityService.getDateListByName(tag);
+			List<SecondKillDateVo> dateList = afActivityService.getDateVoListByName(tag);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd号 HH:mm");
 			
-			if(CollectionUtil.isNotEmpty(dateListe)){
-				for(Date date:dateListe){
-					String dateStr = sdf.format(date);
-					SecondKillDateVo vo = new SecondKillDateVo();
-					vo.setStartDate(dateStr);
-					vo.setStartTime(date);
-					
-					date = DateUtil.formatDateToYYYYMMdd(date);
-					
-					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
-					
-					
-					if (DateUtil.afterDay(date, temNow)) {
-						vo.setStatus(0);
-					}else if (DateUtil.beforeDay(date, temNow)){
-						vo.setStatus(2);
-					}else {
-						
-						vo.setStatus(1);
+			if(CollectionUtil.isNotEmpty(dateList)){
+				for(SecondKillDateVo date:dateList){
+					if(date.getStartTime() != null){
+						date.setStartDate(sdf.format(date.getStartTime()));
 					}
-					
-					dateList.add(vo);
 					
 					
 				}
