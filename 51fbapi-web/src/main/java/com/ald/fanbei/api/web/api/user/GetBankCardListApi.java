@@ -99,7 +99,7 @@ public class GetBankCardListApi implements ApiHandle {
 	while(list.iterator().hasNext()){
 	    AfBankUserBankDto afBankUserBankDto = list.iterator().next();
 	    if("N".equals(afBankUserBankDto.getIsValid())){
-		//移除维护状态的银行卡，循环结束后重新添加到结合的尾部
+		//移除维护状态的银行卡，循环结束后重新添加到集合的尾部		
 		list.remove(afBankUserBankDto);
 		listMaintain.add(afBankUserBankDto);
 	    }
