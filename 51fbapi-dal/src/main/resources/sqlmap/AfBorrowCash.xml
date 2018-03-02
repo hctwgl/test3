@@ -550,7 +550,7 @@
 		</if>
 	</select>
 	
-	<select id="getBorrowCashInfoById" resultType="java.lang.Long">
+	<select id="getBorrowCashInfoById" parameterType="java.lang.Long" resultType="AfBorrowCashDto">
 		SELECT
 			abc.borrow_no orderNo,
 			abc.user_id userId,

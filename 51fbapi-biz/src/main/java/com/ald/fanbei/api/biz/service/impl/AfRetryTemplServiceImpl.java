@@ -31,7 +31,7 @@ public class AfRetryTemplServiceImpl extends ParentServiceImpl<AfRetryTemplDo, L
 
 	@Override
 	public BaseDao<AfRetryTemplDo, Long> getDao() {
-		return null;
+		return afRetryTemplDao;
 	}
 
 	@Override

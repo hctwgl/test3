@@ -225,8 +225,6 @@ public interface AfBorrowCashDao {
 
 	int getCashBorrowSuccessByUserId(@Param("userId") Long userId,@Param("activityTime") String activityTime);
 
-
-	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
 
 	int getCashBorrowByUserIdAndActivity(@Param("userId") Long userId,@Param("activityTime") String activityTime);
