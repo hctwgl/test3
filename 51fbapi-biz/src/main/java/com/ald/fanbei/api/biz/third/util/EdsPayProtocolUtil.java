@@ -128,10 +128,8 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
                 return notifyRespBo;
             }
-            lock(orderNo);
             //具体操作
             String url = afLegalContractPdfCreateServiceV2.getProtocalLegalByType(debtType, orderNo, protocolUrl, borrowerName, list);
-            unLock(orderNo);
             if (url == null || "".equals(url)) {
                 logger.error("eProtocolUtil giveBackPdfInfo url exist error records,appId=" + appId + ",data=" + data +",orderNo = "+ orderNo +",debtType =" + debtType +",protocolUrl =" + protocolUrl +",borrowerName = "+borrowerName+",sendTime=" + timestamp);
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
