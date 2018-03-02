@@ -791,7 +791,7 @@ public class AppH5DoubleEggsController extends BaseController {
 
 					//String time = "10";
 					//Integer.parseInt(time);
-					int preTime = 20;
+					int preTime = 10;
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
