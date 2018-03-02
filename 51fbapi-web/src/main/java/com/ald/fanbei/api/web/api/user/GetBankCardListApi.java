@@ -79,7 +79,7 @@ public class GetBankCardListApi implements ApiHandle {
 		// 获取银行状态（ups写入redis数据）
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
 		Object bankStatusValue = bizCacheUtil.getObject(bankStatusKey);
-		if (bankStatusValue!=null && StringUtils.isNotBlank(bankStatusValue.toString())) {
+		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    item.setBankStatus(bankStatus);
 
@@ -92,27 +92,26 @@ public class GetBankCardListApi implements ApiHandle {
 		    item.setBankStatus(new UpsBankStatusDto());
 		}
 	    }
+
+	    // 集合重新排序可用状态在前不可用状态在后
+	    List<AfBankUserBankDto> listMaintain = new ArrayList<AfBankUserBankDto>();
+	    Iterator<AfBankUserBankDto> iterator = list.iterator();
+	    while (iterator.hasNext()) {
+		AfBankUserBankDto afBankUserBankDto = iterator.next();
+		if ("N".equals(afBankUserBankDto.getIsValid())) {
+		    // 移除维护状态的银行卡，循环结束后重新添加到集合的尾部
+		    list.remove(afBankUserBankDto);
+		    listMaintain.add(afBankUserBankDto);
+		}
+	    }
+	    if (listMaintain.size() > 0) {
+		// 重新添加维护状态的银行卡到集合的尾部
+		for (AfBankUserBankDto item : listMaintain) {
+		    list.add(item);
+		}
+	    }
 	}
 
-	//集合重新排序可用状态在前不可用状态在后
-	List<AfBankUserBankDto> listMaintain= new ArrayList<AfBankUserBankDto>();
-	while(list.iterator().hasNext()){
-	    AfBankUserBankDto afBankUserBankDto = list.iterator().next();
-	    if("N".equals(afBankUserBankDto.getIsValid())){
-		//移除维护状态的银行卡，循环结束后重新添加到集合的尾部		
-		list.remove(afBankUserBankDto);
-		listMaintain.add(afBankUserBankDto);
-	    }
-	}
-	if(listMaintain.size()>0)
-	{
-	    //重新添加维护状态的银行卡到集合的尾部
-	    for(AfBankUserBankDto item :listMaintain)
-	    {
-		list.add(item);
-	    }
-	}
-	
 	AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
 	AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
