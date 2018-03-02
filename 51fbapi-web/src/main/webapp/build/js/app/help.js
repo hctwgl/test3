@@ -122,7 +122,11 @@ let vm = new Vue({
                 success: function (data) {
                     data = eval('(' + data + ')');
                     if (data.success) {
-                        self.content = data.data.hint;
+                        if (data.data.flag=='0') {
+                            self.barShow = false;
+                        } else {
+                            self.content = data.data.hint;
+                        }
                     } else {
                         self.barShow = false;
                     }
