@@ -79,7 +79,7 @@ public class GetBankCardListApi implements ApiHandle {
 		// 获取银行状态（ups写入redis数据）
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
 		Object bankStatusValue = bizCacheUtil.getObject(bankStatusKey);
-		if (bankStatusValue!=null & StringUtils.isNotBlank(bankStatusValue.toString())) {
+		if (bankStatusValue!=null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    item.setBankStatus(bankStatus);
 
