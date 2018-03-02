@@ -1530,9 +1530,9 @@ public class RiskUtil extends AbstractThird {
 				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 				// 更新白领贷额度和总额度
 				AfUserAccountSenceDo bldAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
-						LoanType.BLD_LOAN.getCode(), whiteCollarAmount);
+						SceneType.BLD_LOAN.getName(), whiteCollarAmount);
 				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
-						"LOAN_TOTAL", totalAmount);
+						SceneType.LOAN_TOTAL.getName(), totalAmount);
 				afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
 				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
