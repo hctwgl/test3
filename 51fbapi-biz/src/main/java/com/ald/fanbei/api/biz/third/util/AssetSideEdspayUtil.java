@@ -520,24 +520,44 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
 							AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
 							if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
-								//重推失败不调ups
+								//推送失败不调ups
 								//更新借款状态
 								AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 								delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 								delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-								delegateBorrowCashDo.setRemark("重推失败关闭");
+								delegateBorrowCashDo.setRemark("推送失败关闭");
 								// 更新订单状态为关闭
 								afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
-								afBorrowLegalOrderDo.setClosedDetail("重推失败关闭");
+								afBorrowLegalOrderDo.setClosedDetail("推送失败关闭");
 								afBorrowLegalOrderDo.setGmtClosed(new Date());
 								applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+								//维护拓展表
+								AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
+								Date now = new Date();
+								afBorrowCashPushDo.setGmtCreate(now);
+								afBorrowCashPushDo.setGmtModified(now);
+								afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
+								afBorrowCashPushDo.setAssetSideFlag("51fanbei");
+								afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+								afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 							}else{
 								//调ups打款
 								applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
 										"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
 							}
+						}else{
+							//分期
+							//维护拓展表
+							AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowCashInfo.getOrderNo());
+							AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+							Date now = new Date();
+							borrowPushDo.setGmtCreate(now);
+							borrowPushDo.setGmtModified(now);
+							borrowPushDo.setBorrowId(borrowDo.getRid());
+							borrowPushDo.setAssetSideFlag("51fanbei");
+							borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+							afBorrowPushService.saveRecord(borrowPushDo);
 						}
-						
 					}
 					return false;
 				}
@@ -708,7 +728,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
 					}
 					afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
-					//记录现金贷拓展表标识为钱包打款
 				}
 			}
 			if (PayResultReqBo.getDebtType()==1) {
@@ -754,6 +773,15 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
 			if (borrowCashDo!=null) {
 				//现金贷
+				//维护拓展表
+				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
+				Date now = new Date();
+				afBorrowCashPushDo.setGmtCreate(now);
+				afBorrowCashPushDo.setGmtModified(now);
+				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
+				afBorrowCashPushDo.setAssetSideFlag("edspay");
+				afBorrowCashPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
+				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 				borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 				// FIXME 查询是否有订单，查询订单状态
 				final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
@@ -771,8 +799,18 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
 				}
 				afBorrowCashService.borrowSuccessForNew(borrowCashDo);
+			}else{
+				//分期
+				AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(orderNo);
+				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+				Date now = new Date();
+				borrowPushDo.setGmtCreate(now);
+				borrowPushDo.setGmtModified(now);
+				borrowPushDo.setBorrowId(borrowDo.getRid());
+				borrowPushDo.setAssetSideFlag("edspay");
+				borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
+				afBorrowPushService.saveRecord(borrowPushDo);
 			}
-			
 		}
 		return "success";
 	}
@@ -827,10 +865,10 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 					delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 					delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-					delegateBorrowCashDo.setRemark("推送钱包失败关闭");
+					delegateBorrowCashDo.setRemark("推送钱包最大失败次数关闭");
 					// 更新订单状态为关闭
 					afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
-					afBorrowLegalOrderDo.setClosedDetail("推送钱包失败关闭");
+					afBorrowLegalOrderDo.setClosedDetail("推送钱包最大失败次数关闭");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 				}else{
