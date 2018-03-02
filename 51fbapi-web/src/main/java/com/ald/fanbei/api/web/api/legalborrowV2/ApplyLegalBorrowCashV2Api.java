@@ -176,9 +176,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
-						//获取开户行信息
 						EdspayGetCreditRespBo borrowCashInfo =new EdspayGetCreditRespBo();
-						FanbeiBorrowBankInfoBo fanbeiBorrowBankInfoBo = getAssetSideBankInfo(getAssetSideBankInfo());
 						borrowCashInfo.setDebtType(0);
 						borrowCashInfo.setOrderNo(afBorrowCashDto.getOrderNo());
 						//获取借款利率配置
@@ -228,7 +226,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 							borrowCashInfo.setIsRepayAcctOtherBank(1);
 						}
 						//获取资产方的分润利率
-						AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+						AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 						borrowCashInfo.setManageFee(afAssetSideInfoDo.getAnnualRate());
 						if (StringUtil.isNotBlank(afBorrowCashDto.getRefundRemark())) {
 							borrowCashInfo.setRepaymentSource(afBorrowCashDto.getRefundRemark());

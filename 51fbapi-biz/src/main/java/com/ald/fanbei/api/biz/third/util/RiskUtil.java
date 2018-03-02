@@ -939,11 +939,11 @@ public class RiskUtil extends AbstractThird {
 						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))) {
 					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
 					EdspayGetCreditRespBo pushEdsPayBorrowInfo = pushEdsPayBorrowInfo(borrow);
-					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 					//债权实时推送
 					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (resp) {
-						logger.info("borrowCashCurPush suceess,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
 					}
 				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
@@ -983,7 +983,7 @@ public class RiskUtil extends AbstractThird {
 		//借款人平台逾期信息
 		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(borrow.getUserId());
 		//获取资产方的分润利率
-		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag("edspay");
+		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 		AfBorrowDto borrowDto = afBorrowService.getBorrowInfoById(borrow.getRid());
 		//消费分期的还款计划
 		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
