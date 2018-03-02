@@ -538,6 +538,8 @@
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
 
+				<entry key="/user/exchange" value-ref="exchangeApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>
