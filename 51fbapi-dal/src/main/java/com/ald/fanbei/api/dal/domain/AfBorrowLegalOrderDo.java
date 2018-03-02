@@ -100,6 +100,8 @@ public class AfBorrowLegalOrderDo extends AbstractSerial {
 	
 	private String deliveryPhone;
 
+	private int smartAddressScore;
+
 	/**
 	 * 获取主键Id
 	 *
@@ -425,7 +427,12 @@ public class AfBorrowLegalOrderDo extends AbstractSerial {
 	public void setDeliveryPhone(String deliveryPhone) {
 		this.deliveryPhone = deliveryPhone;
 	}
-	
-	
 
+	public int getSmartAddressScore() {
+		return smartAddressScore;
+	}
+
+	public void setSmartAddressScore(int smartAddressScore) {
+		this.smartAddressScore = smartAddressScore;
+	}
 }

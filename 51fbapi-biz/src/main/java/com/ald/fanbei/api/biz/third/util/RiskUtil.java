@@ -3073,7 +3073,8 @@ public class RiskUtil extends AbstractThird {
 		if (!"100".equals(riskResp.getString("code"))) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
 		}
-		if (Double.parseDouble(riskResp.getJSONObject("data").getString("money")) == 0) {
+		double money = Double.parseDouble(riskResp.getJSONObject("data").getString("money"));
+		if (money == 0||  money== amount1.doubleValue()) {
 			// riskResp.getJSONObject("data").put("money",amount1+"");
 			throw new FanbeiException(FanbeiExceptionCode.RISK_FORBIDDEN_ERROR);
 		}

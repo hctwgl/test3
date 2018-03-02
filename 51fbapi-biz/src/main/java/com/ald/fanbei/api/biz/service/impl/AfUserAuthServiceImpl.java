@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -161,7 +162,13 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	zmModel.put("zmScore", authDo.getZmScore());
 	if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
 	    String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
-	    zmModel.put("zmxyAuthUrl", authParamUrl);
+		AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
+
+		if(zhimaNewUrl==null){
+			zmModel.put("zmxyAuthUrl", authParamUrl);
+		}else{
+			zmModel.put("zmxyAuthUrl", zhimaNewUrl.getValue()+"?userId="+ AesUtil.encryptToBase64(authDo.getUserId().toString(),"123"));
+		}
 	}
 
 	locationModel.put("locationStatus", authDo.getLocationStatus());
@@ -420,7 +427,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			data.put("riskRetrialRemind", afResourceDo.getValue3() + "，明天可以重新提交审核");
 			data.put("title2", afResourceDo.getValue3() + "，明天可以重新提交审核");
 		    } else {
-			data.put("riskRetrialRemind", afResource.getValue4() + "，明天可以重新提交审核");
+			data.put("riskRetrialRemind", afResourceDo.getValue4() + "，明天可以重新提交审核");
 			data.put("title2", afResourceDo.getValue4() + "，明天可以重新提交审核");
 		    }
 		} else {

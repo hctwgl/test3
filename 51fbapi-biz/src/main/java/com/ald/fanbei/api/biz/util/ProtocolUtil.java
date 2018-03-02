@@ -42,31 +42,31 @@ public class ProtocolUtil {
         }
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if (afResourceDo.getValue1().contains(type)) {
-                if ("RENEWAL_CONTRACT".equals(afResourceDo.getSecType())) {
+                if ("RENEWAL_CONTRACT".equals(afResourceDo.getSecType())) {//续借协议
                     afResourceDo.setValue("/fanbei-web/app/protocolLegalRenewalV2?userName=" +userName+
                     "&type="+dayType+"&borrowId="+borrowId+"&renewalId="+renewalId+"&renewalDay="+renewalDay+
                     "&renewalAmount="+renewalAmount);
                 }
-                else if ("INSTALMENT_CONTRACT".equals(afResourceDo.getSecType())){
+                else if ("INSTALMENT_CONTRACT".equals(afResourceDo.getSecType())){//分期协议
                     afResourceDo.setValue("/fanbei-web/app/protocolLegalInstalmentV2?userName=" +userName+
                             "&type="+dayType+"&borrowId="+borrowId+"&nper="+nper+"&amount="+borrowAmount+
                             "&poundage="+poundage);
                 }
-                else if ("LOAN_CONTRACT".equals(afResourceDo.getSecType())){
+                else if ("LOAN_CONTRACT".equals(afResourceDo.getSecType())){//借款协议
                     afResourceDo.setValue("/fanbei-web/app/protocolLegalCashLoanV2?userName=" +userName+
                             "&type="+dayType+"&borrowId="+borrowId+"&borrowAmount="+borrowAmount);
                 }
-                else if ("PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){
+                else if ("PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){//平台服务协议
                     afResourceDo.setValue("/fanbei-web/app/platformServiceProtocol?userName=" +userName+
                             "&type="+dayType+"&borrowId="+borrowId+"&poundage="+poundage);
                 }
-                else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){
+                else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){//数字证书
                     afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" +userName);
                 }
-                else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())){
+                else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())){//风险提示协议
                     afResourceDo.setValue("/app/sys/riskWarning");
                 }
-                else if ("BUYING_RELATED_AGREEMENTS".equals(afResourceDo.getSecType())){
+                else if ("BUYING_RELATED_AGREEMENTS".equals(afResourceDo.getSecType())){//代买协议
                     afResourceDo.setValue("/fanbei-web/app/protocolAgentBuyService?userName=" +userName);
                 }
                 resourceDoList.add(afResourceDo);

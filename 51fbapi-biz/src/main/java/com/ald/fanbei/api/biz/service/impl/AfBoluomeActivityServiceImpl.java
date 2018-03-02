@@ -739,14 +739,14 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                         		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {}"+ JSONObject.toJSONString(resourceDo)+"afUserDo = {}"+JSONObject.toJSONString(afUserDo));
                         		     if(resourceDo!= null){
                         			long  boluomeCouponId = 0L;
-                        			for(int i=0;i<3;i++){
-                                			 if(i==0){
+//                        			for(int i=0;i<3;i++){
+//                                			 if(i==0){
                                 			     boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;
-                                			 }else if(i==1){
-                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue2()) ;
-                                			 }else if(i==2){
-                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue3()) ;
-                                			 }
+//                                			 }else if(i==1){
+//                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue2()) ;
+//                                			 }else if(i==2){
+//                                			     boluomeCouponId = Long.parseLong(resourceDo.getValue3()) ;
+//                                			 }
                         			    
                                     			//2.记录表查询是否有券
                                     			AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
@@ -776,9 +776,9 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                                     				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
                                     				    //推送极光
                                         				    logger.info("sentNewUserBoluomeCouponForDineDash boluomeUserCoupon saveRecord = "+ JSONObject.toJSONString(boluomeUserCoupon));
-                                        				    if(i==0){
+                                        				  //  if(i==0){
                                         				      jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
-                                        				  }
+                                        				//  }
                                     				}
                                     			    }
                                     			}
@@ -786,7 +786,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
                         		     }
                 		      }
                 	         }
-                	    }    
+//                	    }    
 			}
 	    	}
 	    return 0;					    

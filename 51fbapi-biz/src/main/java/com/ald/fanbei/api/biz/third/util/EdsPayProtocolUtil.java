@@ -6,6 +6,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackSealReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.AfESdkService;
 import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateServiceV2;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -42,7 +43,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
     @Resource
     AfAssetPackageDao afAssetPackageDao;
     @Resource
-    AfLegalContractPdfCreateService afLegalContractPdfCreateService;
+    AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
     @Resource
     AfUserSealDao afUserSealDao;
     @Resource
@@ -143,7 +144,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 return notifyRespBo;
             }
             //具体操作
-            String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType, orderNo, protocolUrl, borrowerName, list);
+            String url = afLegalContractPdfCreateServiceV2.getProtocalLegalByType(debtType, orderNo, protocolUrl, borrowerName, list);
 //			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
             if (url == null || "".equals(url)) {
                 logger.error("eProtocolUtil giveBackPdfInfo url exist error records,appId=" + appId + ",sendTime=" + timestamp);
