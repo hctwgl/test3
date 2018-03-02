@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 public enum PushEdspayResult {
 	
 
+	PUSHFAIL("pushfail", "推送钱包失败"), 
 	REVIEWFAIL("reviewFail", "浙商审核失败"), 
 	PAYFAIL("payFail", "浙商打款失败"), 
 	PAYSUCCESS("paySuccess", "浙商打款成功");

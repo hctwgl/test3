@@ -155,4 +155,22 @@ public class EdspayController {
 		logger.info("tenementPushEdspay end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
 		return "success";
 	}
+	
+	/**
+	 * admin重推达上限调用api处理接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/repushMaxApiHandle"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String repushMaxApiHandle(HttpServletRequest request, HttpServletResponse response) {
+        String data = ObjectUtils.toString(request.getParameter("data"));
+        String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+        String sign = ObjectUtils.toString(request.getParameter("sign"));
+        logger.info("repushMaxApiHandle begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
+        String result = assetSideEdspayUtil.repushMaxApiHandle(timestamp, data, sign);
+        logger.info("repushMaxApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
+        return "success";
+    }
 }

@@ -796,4 +796,62 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return "success";
 	}
+
+	public String repushMaxApiHandle(String timestamp, String data, String sign) {
+		QueryEdspayApiHandleReqBo reqBo = new QueryEdspayApiHandleReqBo();
+		reqBo.setData(data);
+		reqBo.setSign(DigestUtil.MD5(data));
+		logThird(sign, "repushMaxApiHandle", reqBo);
+		if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
+			JSONObject obj = JSON.parseObject(data);
+			String orderNo=obj.getString("orderNo");
+			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
+			if (borrowCashDo!=null) {
+				//现金贷
+				//维护拓展表
+				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
+				Date now = new Date();
+				afBorrowCashPushDo.setGmtCreate(now);
+				afBorrowCashPushDo.setGmtModified(now);
+				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
+				afBorrowCashPushDo.setAssetSideFlag("51fanbei");
+				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
+				AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+				AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
+				if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
+					//借款关闭
+					//更新借款状态
+					AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+					delegateBorrowCashDo.setRid(borrowCashDo.getRid());
+					delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+					delegateBorrowCashDo.setRemark("推送钱包失败关闭");
+					// 更新订单状态为关闭
+					afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
+					afBorrowLegalOrderDo.setClosedDetail("推送钱包失败关闭");
+					afBorrowLegalOrderDo.setGmtClosed(new Date());
+					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+				}else{
+					//调ups打款
+					applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
+							"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
+				}
+			}else{
+				//分期
+				//维护拓展表
+				AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(orderNo);
+				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+				Date now = new Date();
+				borrowPushDo.setGmtCreate(now);
+				borrowPushDo.setGmtModified(now);
+				borrowPushDo.setBorrowId(borrowDo.getRid());
+				borrowPushDo.setAssetSideFlag("51fanbei");
+				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowPushService.saveRecord(borrowPushDo);
+			}
+		}
+		return "success";
+	}
 }
