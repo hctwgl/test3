@@ -172,31 +172,37 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			loanDo.setAuAmount(bo.auAmount);
 			this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 			
-			// 弱风控
-			this.weakRiskCheck(bo, loanDo);
-			
 			AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-			// 调用UPS打款
-			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
-					userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
-					bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-					UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
-			loanDo.setTradeNoOut(upsResult.getOrderNo());
-			if (!upsResult.isSuccess()) {
-				dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
-				//审核通过，ups打款失败
-				String title = "本次还款支付失败";
-				String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
-				String bankNumber = bankCard.getCardNumber();
-				String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
-				content = content.replace("&cardLastNo",lastBankCode);
-				content = content.replace("&bankName",bankCard.getBankName());
-				jpushService.pushUtil(title,bo.userName,content);
-				smsUtil.sendBorrowPayMoneyFail(bo.userName);
-				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+			try {
+				// 弱风控
+				this.weakRiskCheck(bo, loanDo);
+				
+				// 调用UPS打款
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
+						userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
+						bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+						UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+				loanDo.setTradeNoOut(upsResult.getOrderNo());
+				if (!upsResult.isSuccess()) {
+					dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
+					//审核通过，ups打款失败
+					String title = "本次还款支付失败";
+					String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
+					String bankNumber = bankCard.getCardNumber();
+					String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
+					content = content.replace("&cardLastNo",lastBankCode);
+					content = content.replace("&bankName",bankCard.getBankName());
+					jpushService.pushUtil(title,bo.userName,content);
+					smsUtil.sendBorrowPayMoneyFail(bo.userName);
+					throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+				}
+				loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+				afLoanDao.updateById(loanDo);
+			}catch(Exception e) {
+				loanDo.setStatus(AfLoanStatus.CLOSED.name());
+				afLoanDao.updateById(loanDo);
+				throw e;
 			}
-			loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
-			afLoanDao.updateById(loanDo);
 			
 			
 			//贷款成功 通知用户
