@@ -836,7 +836,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowCashPushDo.setGmtCreate(now);
 				afBorrowCashPushDo.setGmtModified(now);
 				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
-				afBorrowCashPushDo.setAssetSideFlag("51fanbei");
+				afBorrowCashPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
 				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
 				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 				AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
@@ -869,7 +869,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				borrowPushDo.setGmtCreate(now);
 				borrowPushDo.setGmtModified(now);
 				borrowPushDo.setBorrowId(borrowDo.getRid());
-				borrowPushDo.setAssetSideFlag("51fanbei");
+				borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
 				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
 				afBorrowPushService.saveRecord(borrowPushDo);
 			}
