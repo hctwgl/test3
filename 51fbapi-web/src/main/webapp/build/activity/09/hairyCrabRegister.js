@@ -65,7 +65,7 @@ var vm=new Vue({
     methods:{
         getImgCode(){  // 获取图形验证码
             var mobileNum = $("#tel").val();
-            if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+            if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                 $.ajax({
                     url: "/app/user/getImgCode",
                     type: "POST",
@@ -117,7 +117,7 @@ var vm=new Vue({
             var mobileNum = $("#tel").val();
             var verifyImgCode=$("#imgVftCode").val();
 
-            if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+            if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                 $("#codeBtn").attr("disabled",true);
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
@@ -163,7 +163,7 @@ var vm=new Vue({
 
             var isState = $("#register_codeBtn").attr("isState");
 
-            if(/^1(3|4|5|7|8)\d{9}$/i.test(telNum) && telNum != "" ){ // 判断电话开头
+            if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(telNum) && telNum != "" ){ // 判断电话开头
                 if ( VerifiCode != "" ) { // 验证码不能为空
                     if ( pwdReg && 6 <= pwdLength && pwdLength <= 18 ) { // 密码6-18位
                         if ($("#inputCheck").is(":checked")) { // 判断当前是否选中
