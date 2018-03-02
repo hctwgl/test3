@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -46,6 +48,7 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
@@ -358,7 +361,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
             });
 
             if (resultValue == 1L) {
-//            	nofityRisk(LoanRepayDealBo);
+            	nofityRisk(LoanRepayDealBo);
             }
     		
     	}finally {
@@ -787,12 +790,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         }
         /**------------------------------------fmai风控提额end--------------------------------------------------*/
 
-        /*//会对逾期的借款还款，向催收平台同步还款信息
-        if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanDo.getGmtPlanRepayment()) ){
+        //会对逾期的借款还款，向催收平台同步还款信息
+        if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
             try {
                 CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
                 		LoanRepayDealBo.curTradeNo,
-                		LoanRepayDealBo.borrowNo,
+                		LoanRepayDealBo.loanNo,
                 		LoanRepayDealBo.curCardNo,
                 		LoanRepayDealBo.curCardName,
                         DateUtil.formatDateTime(new Date()),
@@ -802,14 +805,14 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                         LoanRepayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),	
                         LoanRepayDealBo.sumOverdueAmount,
                 		LoanRepayDealBo.sumRepaidAmount,
-                		LoanRepayDealBo.sumInterest);
+                		LoanRepayDealBo.sumInterest,false);
                 logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
             } catch (Exception e) {
                 logger.error("向催收平台同步还款信息失败", e);
             }
         }else{
 			logger.info("collection consumerRepayment not push,borrowCashId="+LoanRepayDealBo.loanDo.getRid());
-		}*/
+		}
     }
 	
 	
