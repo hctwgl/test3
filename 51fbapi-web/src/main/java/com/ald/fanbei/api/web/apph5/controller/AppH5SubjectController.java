@@ -24,6 +24,7 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
@@ -41,6 +42,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
@@ -98,6 +100,8 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfModelH5Service afModelH5Service;
 	
 	
 	
@@ -668,9 +672,9 @@ public class AppH5SubjectController  extends BaseController{
 			//根据tag获取modelId
 			Long modelId = 0L;
 			String type = "PARTACTIVITY_H5_TEMPLATE";
-			AfSubjectDo afSubjectDo = afSubjectService.getSubjectInfoByTagAndType(tag,type);
-			if(afSubjectDo != null){
-			    modelId = afSubjectDo.getId();
+			AfModelH5Do afModelH5Do = afModelH5Service.getByTagAndType(type,tag);
+			if(afModelH5Do != null){
+			    modelId = afModelH5Do.getRid();
 			}
 			
 			// 根据modelId 取优惠券信息
