@@ -124,14 +124,14 @@
                 state = #{state,jdbcType=VARCHAR},                
             </if>
             <if test="gmtModify != null and gmtModify != '' ">        
-                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}                
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},                
             </if>
             <if test="content != null and content != ''">
-           		 content = #{content,jdbcType=VARCHAR}
+           		content = #{content,jdbcType=VARCHAR},
     		</if>
             
         </set>    
-        WHERE  id = #{id ,jdbcType=BIGINT}
+         WHERE  id = #{id ,jdbcType=BIGINT}
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfRetryTemplDo">
