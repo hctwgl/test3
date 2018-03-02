@@ -7,8 +7,9 @@ public enum SceneType {
     CASH("CASH", "20","现金"),
     BLD_LOAN("BLD_LOAN","23","白领贷"),
 	LOAN_TOTAL("LOAN_TOTAL","0","借钱总额度");
-    private String code;
+   
     private String name;
+    private String code;
     private String description;
 
     SceneType(String name,String code,String description) {

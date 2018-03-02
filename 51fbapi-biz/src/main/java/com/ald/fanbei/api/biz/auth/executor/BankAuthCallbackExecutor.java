@@ -24,6 +24,7 @@ import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -87,7 +88,7 @@ public class BankAuthCallbackExecutor implements Executor {
 						String totalAmount = respBo.getData().getTotalAmount();
 						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(),
 								bldAmount);
-						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+						AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 
 						afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
 						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);

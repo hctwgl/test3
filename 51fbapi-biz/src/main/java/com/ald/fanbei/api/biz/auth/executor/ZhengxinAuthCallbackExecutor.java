@@ -24,6 +24,7 @@ import com.ald.fanbei.api.common.enums.RiskAuthStatus;
 import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskScene;
 import com.ald.fanbei.api.common.enums.RiskSceneType;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
@@ -82,7 +83,7 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 					afUserAccountDo.setAuAmount(new BigDecimal(amount));
 					afUserAccountService.updateUserAccount(afUserAccountDo);
 					// 更新总额度
-					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, "LOAN_TOTAL", totalAmount);
+					AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 					afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ZHENGXIN.getCode(),
 							LoanType.CASH.getCode(), "Y",new BigDecimal(amount),new Date());
