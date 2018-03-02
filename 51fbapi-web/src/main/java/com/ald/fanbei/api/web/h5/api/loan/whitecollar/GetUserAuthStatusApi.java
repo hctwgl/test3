@@ -72,16 +72,16 @@ public class GetUserAuthStatusApi implements H5Handle {
 		
 		String fundRiskOrderNo = riskUtil.getOrderNo("fund", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 
-		data.put("fundAuthParam", fundRiskOrderNo + "," + userId);
+		data.put("fundAuthParam", fundRiskOrderNo + "," + userId + ",2");
 
 		String sociRiskOrderNo = riskUtil.getOrderNo("soci", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 
-		data.put("jinpoAuthParam", sociRiskOrderNo + "," + userId);
+		data.put("jinpoAuthParam", sociRiskOrderNo + "," + userId + ",2");
 		
 		String onbkRiskOrderNo = riskUtil.getOrderNo("onbk", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 
 		// 网银认证
-		data.put("onlinebankAuthParam", onbkRiskOrderNo + "," + userId);
+		data.put("onlinebankAuthParam", onbkRiskOrderNo + "," + userId + ",2");
 		
 		resp.setResponseData(data);
 		return resp;
