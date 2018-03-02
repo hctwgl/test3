@@ -224,7 +224,7 @@ public interface AfResourceService {
 	 * @return 利率相关详情
 	 */
 	AfResourceDo getVipUserRate(String userName);
-
+	public AfResourceDo getBrandRate(String brand);
 	AfResourceDo getEcommerceFloorImgRes();
 
 	AfResourceDo getBrandFloorImgRes();

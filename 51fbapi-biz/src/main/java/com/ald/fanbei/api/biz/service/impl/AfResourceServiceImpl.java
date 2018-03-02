@@ -645,7 +645,21 @@ public class AfResourceServiceImpl implements AfResourceService {
         }
         return null;
     }
+    /**
+     * 获取品牌专有利率
+     *
+     * @param brand 用户名
+     * @return 利率相关详情
+     */
+    @Override
+    public AfResourceDo getBrandRate(String brand) {
+        if(StringUtil.isEmpty(brand)){
+            return null;
+        }
+        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME_VIP+brand);
 
+        return resource;
+    }
 	@Override
 	public AfResourceDo getEcommerceFloorImgRes() {
 		return afResourceDao.getEcommerceFloorImgRes();
