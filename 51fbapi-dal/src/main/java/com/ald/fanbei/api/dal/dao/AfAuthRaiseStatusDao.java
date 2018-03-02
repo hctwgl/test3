@@ -14,7 +14,7 @@ import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
  */
 public interface AfAuthRaiseStatusDao extends BaseDao<AfAuthRaiseStatusDo, Long> {
 
-	AfAuthRaiseStatusDo getByPrdTypeAndAuthType(@Param("prdType")String prdType, @Param("authType")String authType);
+	AfAuthRaiseStatusDo getByPrdTypeAndAuthType(@Param("prdType")String prdType, @Param("authType")String authType,@Param("userId") Long userId);
 
     
 

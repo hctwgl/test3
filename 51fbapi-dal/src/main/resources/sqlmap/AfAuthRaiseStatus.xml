@@ -162,6 +162,7 @@
         FROM af_auth_raise_status
         where prd_type= #{prdType}
         AND auth_type= #{authType}
+        AND user_id = #{userId}
         AND is_delete = 0
         LIMIT 1
     </select>

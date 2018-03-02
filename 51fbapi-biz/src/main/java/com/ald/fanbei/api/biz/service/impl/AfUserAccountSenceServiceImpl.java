@@ -87,6 +87,7 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		if(accountSence == null) {
 			afUserAccountSenceDao.saveRecord(accountSenceDo);
 		} else {
+			accountSenceDo.setRid(accountSence.getRid());
 			afUserAccountSenceDao.updateById(accountSenceDo);
 		}
 		

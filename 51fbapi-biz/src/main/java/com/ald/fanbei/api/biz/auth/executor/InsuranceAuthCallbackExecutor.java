@@ -57,7 +57,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 	@Resource
 	RiskUtil riskUtil;
 	
-	private Logger logger = LoggerFactory.getLogger(AlipayAuthCallbackExecutor.class);
+	private Logger logger = LoggerFactory.getLogger(InsuranceAuthCallbackExecutor.class);
 	
 	@Override
 	public void execute(AuthCallbackBo authCallbackBo) {
@@ -132,7 +132,7 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
 					} else {
 						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.INSURANCE.getCode(),
-								LoanType.CASH.getCode(), "F", BigDecimal.ZERO,new Date());
+								LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
 						// 提额成功，记录提额状态
 						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
 					}
