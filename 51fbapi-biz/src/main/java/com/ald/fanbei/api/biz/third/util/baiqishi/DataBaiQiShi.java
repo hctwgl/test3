@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.baiqishi;
+package com.ald.fanbei.api.biz.third.util.baiqishi;
 
 import java.io.Serializable;
 import java.util.Date;

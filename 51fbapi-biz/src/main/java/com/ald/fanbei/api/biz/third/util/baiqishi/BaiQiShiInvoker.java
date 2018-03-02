@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.baiqishi;
+package com.ald.fanbei.api.biz.third.util.baiqishi;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.http.HttpEntity;
@@ -28,7 +28,6 @@ import java.io.InterruptedIOException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Map;
 
 public class BaiQiShiInvoker {

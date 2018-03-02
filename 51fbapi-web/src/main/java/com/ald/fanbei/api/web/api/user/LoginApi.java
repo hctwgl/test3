@@ -9,20 +9,15 @@ import java.util.TimerTask;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -38,11 +33,6 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -75,6 +65,8 @@ public class LoginApi implements ApiHandle {
 	// AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 	// @Resource
 	// JpushService jpushService;
 	@Resource
@@ -87,6 +79,8 @@ public class LoginApi implements ApiHandle {
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
 	AfAbTestDeviceService afAbTestDeviceService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -273,6 +267,23 @@ public class LoginApi implements ApiHandle {
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+			try {
+				AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+				String idNumber = "";
+				String openId = "";
+				String cardNumber = "";
+				if (accountDo != null){
+					idNumber = accountDo.getIdNumber();
+					openId = accountDo.getOpenId();
+				}
+				AfUserBankcardDo bank = afUserBankcardService.getUserMainBankcardByUserId(afUserDo.getRid());
+				if (bank == null){
+					cardNumber = bank.getCardNumber();
+				}
+				baiQiShiUtils.getLoginResult(blackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
+			}catch (Exception e){
+				logger.error("baiQiShiUtils getLoginResult error => {}",e.getMessage());
+			}
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,

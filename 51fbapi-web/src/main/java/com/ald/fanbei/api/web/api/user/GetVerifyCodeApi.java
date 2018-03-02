@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -44,6 +45,8 @@ public class GetVerifyCodeApi implements ApiHandle {
 	TongdunUtil tongdunUtil;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -91,6 +94,11 @@ public class GetVerifyCodeApi implements ApiHandle {
 				// todo 这里面放同盾代码,下面是示例
 				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
 						mobile, "", "", "");
+				try {
+					baiQiShiUtils.getRegistResult(blackBox,"",mobile,"","","","");
+				}catch (Exception e){
+					logger.error("baiQiShiUtils getRegistResult error => {}",e.getMessage());
+				}
 			}
 
 			afUserDo = afUserService.getUserByUserName(mobile);
@@ -122,6 +130,11 @@ public class GetVerifyCodeApi implements ApiHandle {
 				// todo 这里面放同盾代码,下面是示例
 				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
 						mobile, "", "", "");
+				try {
+					baiQiShiUtils.getRegistResult(blackBox,"",mobile,"","","","");
+				}catch (Exception e){
+					logger.error("baiQiShiUtils getRegistResult error => {}",e.getMessage());
+				}
 			}
 			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
 			resp.addResponseData("code",1146);
