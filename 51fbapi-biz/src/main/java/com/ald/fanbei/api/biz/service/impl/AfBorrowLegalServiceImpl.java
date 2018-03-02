@@ -113,7 +113,6 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		
 		String status = lastBorrowCash.getStatus();
 		if( AfBorrowCashStatus.finsh.getCode().equals(status) 
-				|| AfBorrowCashStatus.transedfail.getCode().equals(status)
 				|| AfBorrowCashStatus.closed.getCode().equals(status)) {
 			bo.hasBorrow = false;
 			return;
