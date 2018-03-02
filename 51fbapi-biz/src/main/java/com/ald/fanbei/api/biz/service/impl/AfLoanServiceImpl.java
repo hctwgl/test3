@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -291,7 +290,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
         HashMap summaryData = afBorrowDao.getUserSummary(userId);
         riskDataMap.put("summaryData", summaryData);
         riskDataMap.put("summaryOrderData", new HashMap<>());
-		RiskVerifyRespBo verifyBo = riskUtil.verifyNew(
+		RiskVerifyRespBo verifyBo = riskUtil.weakRisk(
 				userId.toString(),
 				tarLoanDo.getLoanNo(), 
 				tarLoanDo.getPrdType(),

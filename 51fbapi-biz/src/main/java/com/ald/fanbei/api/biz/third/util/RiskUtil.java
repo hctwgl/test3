@@ -629,7 +629,7 @@ public class RiskUtil extends AbstractThird {
 	 *            订单号
 	 * @return
 	 */
-	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, String scene,
+	public RiskVerifyRespBo weakRiskForXd(String consumerNo, String borrowNo, String borrowType, String scene,
 			String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone,
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
@@ -660,6 +660,55 @@ public class RiskUtil extends AbstractThird {
 		if (!"Y".equals(userAuth.getRiskStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
+		
+		return this.weakRisk(consumerNo, borrowNo, borrowType, scene, cardNo, appName, ipAddress, blackBox, orderNo, phone, amount, poundage, time, productName, virtualCode, SecSence, ThirdSence, orderid, cardName, borrow, payType, riskDataMap, bqsBlackBox, orderDo);
+	}
+	
+	/**
+	 * 弱风控审批
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @param borrowNo
+	 *            借款编号
+	 * @param borrowType
+	 *            借款类型
+	 * @param scene
+	 *            场景
+	 * @param cardNo
+	 *            卡号
+	 * @param appName
+	 *            APP名称
+	 * @param ipAddress
+	 *            ip地址
+	 * @param blackBox
+	 * @param orderNo
+	 *            订单编号
+	 * @param phone
+	 *            手机号
+	 * @param amount
+	 *            订单金额
+	 * @param poundage
+	 *            手续费
+	 * @param time
+	 *            时间
+	 * @param productName
+	 *            商品名称
+	 * @param virtualCode
+	 *            商品编号 增加里那个字段
+	 * @param SecSence
+	 *            二级场景
+	 * @param ThirdSence
+	 *            三级场景 三级场景
+	 * @param orderid
+	 *            订单号
+	 * @return
+	 */
+	public RiskVerifyRespBo weakRisk(String consumerNo, String borrowNo, String borrowType, String scene,
+			String cardNo, String appName, String ipAddress, String blackBox, String orderNo, String phone,
+			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
+			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
+			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -773,6 +822,7 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
+	
 
 	/**
 	 * @return
