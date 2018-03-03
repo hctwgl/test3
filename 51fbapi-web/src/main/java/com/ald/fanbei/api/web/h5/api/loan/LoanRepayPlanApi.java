@@ -98,9 +98,9 @@ public class LoanRepayPlanApi implements H5Handle {
 				loanPeriodsVo.setNper(loanPeriodsDo.getNper());		// 期数
 				loanPeriodsVo.setPerAmount(perPeriodAmount);		// 每期还款金额
 				loanPeriodsVo.setRestAmount(restAmount);		// 每期待还金额
-				loanPeriodsVo.setServiceFee(loanPeriodsDo.getServiceFee());		// 手续费
-				loanPeriodsVo.setInterestFee(loanPeriodsDo.getInterestFee());	// 利息
-				loanPeriodsVo.setOverdueAmount(loanPeriodsDo.getOverdueAmount());	// 逾期费
+				loanPeriodsVo.setServiceFee(loanPeriodsDo.getServiceFee().add(loanPeriodsDo.getRepaidServiceFee()));		// 手续费
+				loanPeriodsVo.setInterestFee(loanPeriodsDo.getInterestFee().add(loanPeriodsDo.getRepaidInterestFee()));	// 利息
+				loanPeriodsVo.setOverdueAmount(loanPeriodsDo.getOverdueAmount().add(loanPeriodsDo.getRepaidOverdueAmount()));	// 逾期费
 				loanPeriodsVo.setGmtPlanRepay(loanPeriodsDo.getGmtPlanRepay());		// 最后还款时间
 				
 				// 状态(已还款：Y；已逾期：O；还款中：D；未还款：N)
@@ -125,9 +125,9 @@ public class LoanRepayPlanApi implements H5Handle {
 					loanPeriodsVo.setStatus("D");
 				}else if(status.equals(AfLoanPeriodStatus.FINISHED.name())){	// 已结清
 					loanPeriodsVo.setStatus("Y");
-					loanPeriodsVo.setInterestFee(BigDecimal.ZERO);
-					loanPeriodsVo.setServiceFee(BigDecimal.ZERO);
-					loanPeriodsVo.setRestAmount(BigDecimal.ZERO);
+//					loanPeriodsVo.setInterestFee(BigDecimal.ZERO);
+//					loanPeriodsVo.setServiceFee(BigDecimal.ZERO);
+//					loanPeriodsVo.setRestAmount(BigDecimal.ZERO);
 				}
 				
 				data.add(loanPeriodsVo);
