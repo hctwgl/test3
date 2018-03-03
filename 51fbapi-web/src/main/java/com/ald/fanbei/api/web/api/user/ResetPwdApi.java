@@ -106,6 +106,12 @@ public class ResetPwdApi implements ApiHandle {
              	
              	bizCacheUtil.delCache(key);
      		}
+     		// the previous time
+     		String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
+     		Date previousDate = (Date) bizCacheUtil.getObject(key1);
+     		if (previousDate != null) {
+     			bizCacheUtil.delCache(key);
+     		}
 		}
        
         //----------------------mqp clear password times -------------
