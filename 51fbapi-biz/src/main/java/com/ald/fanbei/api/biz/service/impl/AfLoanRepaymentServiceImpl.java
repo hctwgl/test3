@@ -70,6 +70,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     @Resource
 	private AfLoanPeriodsService afLoanPeriodsService;
     @Resource
+	private AfUserAccountSenceService afUserAccountSenceService;
+    
+    @Resource
     private AfUserAccountDao afUserAccountDao;
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -513,16 +516,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
-
-			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene(loanPeriodsDo.getPrdType(),loanPeriodsDo.getUserId());//额度释放
-			if (senceDo ==  null){
-				throw new FanbeiException(FanbeiExceptionCode.UESR_ACCOUNT_SENCE_ERROR);
-			}
-			AfUserAccountSenceDo accountSenceDo = new AfUserAccountSenceDo();
-			accountSenceDo.setRid(senceDo.getRid());
-			accountSenceDo.setUsedAmount(senceDo.getUsedAmount().subtract(loanRepayDealBo.loanDo.getAmount()));
-			accountSenceDo.setGmtModified(new Date());
-			afUserAccountSenceDao.updateById(accountSenceDo);
+			
+			afUserAccountSenceService.syncLoanUsedAmount(loanPeriodsDo.getUserId(), SceneType.valueOf(loanPeriodsDo.getPrdType()), loanRepayDealBo.loanDo.getAmount().negate());
 		}
 	}
 	
