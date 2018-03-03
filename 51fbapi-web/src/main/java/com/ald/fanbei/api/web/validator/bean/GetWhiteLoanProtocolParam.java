@@ -32,7 +32,6 @@ public class GetWhiteLoanProtocolParam {
 	@Min(value=0)
 	public Long loanId;
 
-	@NotNull
 	@DecimalMin("0")
 	public BigDecimal totalServiceFee;
 }

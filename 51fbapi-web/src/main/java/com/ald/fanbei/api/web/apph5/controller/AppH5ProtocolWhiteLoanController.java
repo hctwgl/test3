@@ -73,6 +73,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
     @Resource
     AfLoanPeriodsService afLoanPeriodsService;
 
+    @Resource
+    AfLoanProductService afLoanProductService;
+
 
     @RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
     public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
@@ -244,7 +247,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             List<Object> array = new ArrayList<Object>();
             for (int i = 1; i <= nper; i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i);
+                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i-1);
                 if (i == nper) {
                     c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
                     int month = c.get(Calendar.MONTH) + 1;
@@ -338,10 +341,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
     public void whiteLoanPlatformServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
         String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
         BigDecimal totalServiceFee = NumberUtil.objToBigDecimalDefault(request.getParameter("totalServiceFee"), new BigDecimal(0));
+        BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
         Long loanId = NumberUtil.objToLongDefault(request.getParameter("loanId"), 0l);
-        BigDecimal overdueRate = NumberUtil.objToBigDecimalDefault(request.getParameter("overdueRate"), new BigDecimal(0));
-        BigDecimal serviceRate = NumberUtil.objToBigDecimalDefault(request.getParameter("serviceRate"), new BigDecimal(0));
-        BigDecimal interestRate = NumberUtil.objToBigDecimalDefault(request.getParameter("interestRate"), new BigDecimal(0));
+        Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -357,10 +359,13 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         model.put("email", afUserDo.getEmail());//电子邮箱
         model.put("mobile", afUserDo.getUserName());// 联系电话
         model.put("realName", accountDo.getRealName());
-        model.put("totalServiceFee", totalServiceFee);//手续费
-        model.put("overdueRate", overdueRate);//逾期费率
-        model.put("serviceRate", serviceRate);//手续费率
-        model.put("interestRate", interestRate);//借钱利率
+        AfLoanRateDo rateDo = afLoanProductService.getByPrdTypeAndNper("BLD_LOAN", String.valueOf(nper));
+        if (rateDo != null){
+            model.put("overdueRate", rateDo.getOverdueRate());//逾期费率
+            model.put("serviceRate", rateDo.getPoundageRate());//手续费率
+            model.put("interestRate", rateDo.getInterestRate());//借钱利率
+        }
+        model.put("totalServiceFee", amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))));//手续费
         if (loanId > 0) {
             AfLoanDo afLoanDo = afLoanService.getById(loanId);
             if (null != afLoanDo) {
