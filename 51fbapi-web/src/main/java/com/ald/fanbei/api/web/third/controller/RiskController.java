@@ -400,4 +400,25 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
+	/**
+	 * 公信宝认证(电商)风控异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/gxb/ecommerce"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String authGxb(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal authGxb begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.authGxbNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
 }
