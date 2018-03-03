@@ -36,4 +36,5 @@ public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 	List<AfLoanDo> listDealingLoansByUserId(@Param("userId") Long userId);
 
 	AfLoanDo selectById(@Param("loanId")Long loanId);
+
 }

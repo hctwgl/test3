@@ -56,5 +56,7 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 	BigDecimal getUserLayDailyRate(Long userId, String prdType);
 
 	AfLoanDo selectById(Long loanId);
-	
+
+	AfLoanDo getByLoanNo(String loanNo);
+
 }
