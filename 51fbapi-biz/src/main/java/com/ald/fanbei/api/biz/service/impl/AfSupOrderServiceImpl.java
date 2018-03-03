@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSupCallbackService;
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -38,11 +39,13 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
@@ -51,6 +54,7 @@ import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
@@ -68,6 +72,9 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long> implements AfSupOrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(AfSupOrderServiceImpl.class);
+    
+    @Autowired
+    private AfUserAccountSenceService afUserAccountSenceService;
 
     @Override
     public BaseDao<AfSupOrderDo, Long> getDao() {
@@ -203,9 +210,12 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    afOrder.setThirdOrderNo(afOrder.getOrderNo());
 		    afOrder.setCount(1);
 		    afOrder.setUserCouponId(couponId);
-		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		    afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		    afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+		    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+		    //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		    if (afUserAccountSenceDo != null) {
+        		    afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
+        		    afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
+		    }
 		    afOrder.setThirdDetailUrl(getOrderDetailsUrl(afOrder.getOrderNo()));
 		    afOrder.setSecType(OrderSecType.SUP_GAME.getCode());
 		    afOrderService.createOrder(afOrder);

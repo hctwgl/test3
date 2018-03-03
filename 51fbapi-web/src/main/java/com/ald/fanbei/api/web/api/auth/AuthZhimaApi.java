@@ -3,6 +3,9 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -24,16 +27,23 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class AuthZhimaApi implements ApiHandle {
 	@Resource
 	AfUserAccountService afUserAccountService;
-
+	@Resource
+	AfResourceService afResourceService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		String idNumber = userAccount.getIdNumber();
 		String realName = userAccount.getRealName();
-		
+
 		String authParamUrl =  ZhimaUtil.authorize(idNumber, realName);
-		resp.addResponseData("authUrl", authParamUrl);
+		AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
+
+		if(zhimaNewUrl==null){
+			resp.addResponseData("authUrl", authParamUrl);
+		}else{
+			resp.addResponseData("authUrl", zhimaNewUrl.getValue()+"?userId="+ AesUtil.encryptToBase64(userAccount.getUserId().toString(),"123"));
+		}
 		
 		return resp;
 	}

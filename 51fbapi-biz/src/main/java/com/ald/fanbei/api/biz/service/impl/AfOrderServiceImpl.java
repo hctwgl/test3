@@ -672,11 +672,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         orderDo.setRebateAmount(rebateAmount);
         orderDo.setMobile(mobile);
         orderDo.setBankId(bankId);
-        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        if (userAccountInfo != null) {
-            orderDo.setAuAmount(userAccountInfo.getAuAmount());
-            orderDo.setUsedAmount(userAccountInfo.getUsedAmount());
+        //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	if (afUserAccountSenceDo != null) {
+            orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+            orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
         }
+	
         return orderDo;
     }
 
@@ -721,10 +723,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         orderDo.setGoodsPriceId(goodsPriceId);
         orderDo.setGoodsPriceName(goodsPriceName);
 
-        AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(userId);
-        if (accountDo != null) {
-            orderDo.setAuAmount(accountDo.getAuAmount());
-            orderDo.setUsedAmount(accountDo.getUsedAmount());
+        //AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	if (afUserAccountSenceDo != null) {
+            orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+            orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
         }
         return orderDo;
     }
@@ -2254,7 +2257,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String virtualCode = StringUtils.EMPTY;
+        //String virtualCode = StringUtils.EMPTY;
         if (orderInfo == null) {
             return resultMap;
         }
@@ -2270,7 +2273,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 resultMap.put(Constants.VIRTUAL_CHECK_NAME,shopDo.getName());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-            return null;
+            return resultMap;
         } else {
             AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
             AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
@@ -2428,13 +2431,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 			//教育培训订单
 			if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
-				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDo.getUserId());
+				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), orderInfo.getUserId());
 				if (afUserAccountSenceDo != null) {
 					useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
 				}
 			}
 		} else {    //线上分期订单
-			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDo.getUserId());
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
 			if (afUserAccountSenceDo != null) {
 				//额度判断
 				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {

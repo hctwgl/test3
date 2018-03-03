@@ -71,6 +71,7 @@ public class AppH5ServiceHintsController extends BaseController {
 		Map<String,Object> data = new HashMap<>();
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE,SEC_TYPE);
 		data.put("hint",afResourceDo.getValue());
+		data.put("flag",afResourceDo.getValue1());
 		resp = H5CommonResponse.getNewInstance(true, "成功","",data);
 		return resp.toString();
 	}
