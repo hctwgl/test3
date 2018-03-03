@@ -88,8 +88,7 @@ public class LoanRepayPlanApi implements H5Handle {
 			
 			for (AfLoanPeriodsDo loanPeriodsDo : loanPeriods) {
 				// 每期待还金额(本金+手续费+利息+逾期费)
-				BigDecimal perPeriodAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),loanPeriodsDo.getServiceFee(),
-						loanPeriodsDo.getInterestFee(),loanPeriodsDo.getOverdueAmount());
+				BigDecimal perPeriodAmount = afLoanRepaymentService.calculateRestAmount(loanPeriodsDo.getRid());
 				
 				AfLoanPeriodsVo loanPeriodsVo = new AfLoanPeriodsVo();
 				loanPeriodsVo.setLoanPeriodsId(loanPeriodsDo.getRid());	// 借款期数id
@@ -103,7 +102,7 @@ public class LoanRepayPlanApi implements H5Handle {
 				
 				// 状态(已还款：Y；已逾期：O；还款中：D；未还款：N)
 				String status = loanPeriodsDo.getStatus();
-				if(status.equals(AfLoanPeriodStatus.AWAIT_REPAY.name())){	// 未还款
+				if(status.equals(AfLoanPeriodStatus.AWAIT_REPAY.name()) || status.equals(AfLoanPeriodStatus.PART_REPAY.name())){	// 未还款
 					if(afLoanRepaymentService.canRepay(loanPeriodsDo)){
 						loanPeriodsVo.setStatus("H");	// 已出账
 					}else{
