@@ -254,4 +254,10 @@ public interface JpushService {
 	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount);
 
 	public void pushUtil(String title,String msgContent,String userName);
+
+	public void ecommerceRiskSuccess(String userName);
+
+	public void ecommerceRiskFail(String userName);
+
+	public void ecommerceRiskFault(String userName);
 }

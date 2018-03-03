@@ -3136,32 +3136,76 @@ public class RiskUtil extends AbstractThird {
 			AfUserAccountDo userAccountDo = afUserAccountService
 					.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 
-			if (StringUtil.equals("10", result)) {
-				auth.setChsiStatus(YesNoStatus.YES.getCode());
-				/*
-				 * 如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，
-				 * 否则不做变更。 如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度
-				 */
-				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0
-						|| userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-					auth.setRiskStatus(RiskStatus.YES.getCode());
-					AfUserAccountDo accountDo = new AfUserAccountDo();
-					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
-					accountDo.setAuAmount(au_amount);
-					afUserAccountService.updateUserAccount(accountDo);
-				}
-				jpushService.chsiRiskSuccess(userAccountDo.getUserName());
-			} else if (StringUtil.equals("20", result)) {// 20是认证未通过 风控返回错误
-				auth.setChsiStatus(YesNoStatus.NO.getCode());
-				jpushService.chsiRiskFail(userAccountDo.getUserName());
-			} else if (StringUtil.equals("21", result)) {// 21是认证失败 魔蝎返回错误
-				auth.setChsiStatus("A");
-				jpushService.chsiRiskFault(userAccountDo.getUserName());
-			}
-			return afUserAuthService.updateUserAuth(auth);
-		}
-		return 0;
-	}
+            if (StringUtil.equals("10", result)) {
+                auth.setChsiStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                    auth.setRiskStatus(RiskStatus.YES.getCode());
+                    AfUserAccountDo accountDo = new AfUserAccountDo();
+                    accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+                    accountDo.setAuAmount(au_amount);
+                    afUserAccountService.updateUserAccount(accountDo);
+                }
+                jpushService.chsiRiskSuccess(userAccountDo.getUserName());
+            } else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
+                auth.setChsiStatus(YesNoStatus.NO.getCode());
+                jpushService.chsiRiskFail(userAccountDo.getUserName());
+            } else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+                auth.setChsiStatus("A");
+                jpushService.chsiRiskFault(userAccountDo.getUserName());
+            }
+            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
+    
+    public int authGxbNotify(String code, String data, String msg, String signInfo) {
+        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+        reqBo.setCode(code);
+        reqBo.setData(data);
+        reqBo.setMsg(msg);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        logThird(signInfo, "authGxbNotify", reqBo);
+        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+            JSONObject obj = JSON.parseObject(data);
+            String consumerNo = obj.getString("consumerNo");
+            String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+            if (StringUtil.equals("50", result)) {
+                return 0;//不做任何更新
+            }
+            String limitAmount = obj.getString("amount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal au_amount = new BigDecimal(limitAmount);
+
+            AfUserAuthDo auth = new AfUserAuthDo();
+            auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+            auth.setGmtFund(new Date(System.currentTimeMillis()));
+            AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+            if (StringUtil.equals("10", result)) {
+                auth.setFundStatus(YesNoStatus.YES.getCode());
+				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                    auth.setRiskStatus(RiskStatus.YES.getCode());
+                    AfUserAccountDo accountDo = new AfUserAccountDo();
+                    accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+                    accountDo.setAuAmount(au_amount);
+                    afUserAccountService.updateUserAccount(accountDo);
+                }
+                jpushService.ecommerceRiskSuccess(userAccountDo.getUserName());
+            } else if (StringUtil.equals("20", result)) {//20是认证未通过 ，风控返回错误
+                auth.setEcommerceStatus(YesNoStatus.NO.getCode());
+                jpushService.ecommerceRiskFail(userAccountDo.getUserName());
+            } else if (StringUtil.equals("21", result)) {//21是认证失败，公信宝返回失败
+                auth.setEcommerceStatus("A");
+                jpushService.ecommerceRiskFault(userAccountDo.getUserName());
+            }
+            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
 
 	public void syncOpenId(Long userId, String openId) {
 		try {
