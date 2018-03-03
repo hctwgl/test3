@@ -298,6 +298,8 @@ public class TestController {
     	Long userId = 18637962178L;
 		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
 		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		System.out.println("appId:"+appId);
+		System.out.println("appSecurity:"+appSecurity);
 		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
 		String authItem="ecommerce";
 		String timestamp=DateUtil.getCurrSecondTimeStamp()+"";
