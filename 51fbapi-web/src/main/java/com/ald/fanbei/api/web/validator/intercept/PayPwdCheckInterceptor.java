@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -23,7 +25,6 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 支付密码校验拦截器
@@ -40,7 +41,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfResourceService afResourceService;
-
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
 		String payPwd = ObjectUtils.toString(reqData.getParams().get("payPwd"), "").toString();
@@ -76,8 +77,20 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		if (userId == null) {
 			throw new FanbeiException("请登录后再支付！", true);
 		}
+		
+		String log = String.format("PayPwdCheckInterceptor.checkPayPwd() the params r d%,d%,d%", userId,payPwd,version);
+		logger.info(log);
+		
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		
+		log = log + String.format("the middle params r :userAccountInfo = s% ", userAccountInfo.toString());
+		logger.info(log);
+		
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
+		
+		log = log + String.format("inputOldPwd =  s%", inputOldPwd);
+		logger.info(log);
+		
 		if (version < 408) {
 			// the old version
 			if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
@@ -93,9 +106,15 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		// the previous time
 		String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
 		
+		log = log + String.format("key =  s%,key1==  s%", key,key1);
+		logger.info(log);
 		
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("PAY_PASSWORD_IDENTIFY",
 				"INPUT_TIMES_AND_FROZEN_TIME");
+		
+		log = log + String.format("resourceDo  s%", resourceDo.toString());
+		logger.info(log);
+		
 		if (resourceDo == null) {
 			// PAYPWD_ERROR_SETTING_EMPTY
 			throw new FanbeiException(FanbeiExceptionCode.PAYPWD_ERROR_SETTING_EMPTY);
@@ -114,6 +133,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		// get the times and the last time
 		Integer times = (Integer) bizCacheUtil.getObject(key);
 		Date previousDate = (Date) bizCacheUtil.getObject(key1);
+		
+		log = log + String.format("times = d% ,previousDate = %tc", resourceDo.toString(),previousDate);
+		logger.info(log);
 
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 
@@ -123,6 +145,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				// if in frozen states
 				
 				Date compareDate = DateUtil.addHoures(new Date(), -specificTime);
+				
+				log = log + String.format("compareDate = %tc", compareDate);
+				logger.info(log);
 
 				if (previousDate == null || (previousDate != null && previousDate.after(compareDate))) {
 
@@ -142,6 +167,10 @@ public class PayPwdCheckInterceptor implements Interceptor {
 						int seconds = DateUtil.getTimeDiff(new Date(), previousDate).intValue();
 						int hours = seconds / (60 * 60);
 						int minutes = seconds / 60 - hours * 60;
+						
+						log = log + String.format("hours = %d, minutes = %d", hours,minutes);
+						logger.info(log);
+						
 						FanbeiExceptionCode exception = getErrorCodeByHoursAndMinute(hours, minutes);
 						throw new FanbeiException(exception);
 
@@ -169,6 +198,10 @@ public class PayPwdCheckInterceptor implements Interceptor {
 					times = 1;
 					times = specificTimes - 1;
 					bizCacheUtil.saveObjectForever(key1, new Date());;
+					
+					log = log + String.format("times = %d", times);
+					logger.info(log);
+					
 					FanbeiExceptionCode exceptionCode = getErrorByKeyAndTimes(key, times);
 					throw new FanbeiException(exceptionCode);
 
@@ -200,6 +233,10 @@ public class PayPwdCheckInterceptor implements Interceptor {
 					bizCacheUtil.saveObjectForever(key, 1);
 					bizCacheUtil.saveObjectForever(key1, new Date());
 					times = specificTimes - 1;
+					
+					log = log + String.format("times = %d", times);
+					logger.info(log);
+					
 					FanbeiExceptionCode exceptionCode = getErrorByKeyAndTimes(key, times);
 					throw new FanbeiException(exceptionCode);
 					
@@ -208,6 +245,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				times = times==null ?0:times;
 				
 				times = times + 1; 
+				
+				log = log + String.format("times = %d", times);
+				logger.info(log);
 				
 				bizCacheUtil.saveObjectForever(key, times);
 				bizCacheUtil.saveObjectForever(key1, new Date());
