@@ -199,6 +199,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				}
 				loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
 				afLoanDao.updateById(loanDo);
+				afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
 			}catch(Exception e) {
 				loanDo.setStatus(AfLoanStatus.CLOSED.name());
 				afLoanDao.updateById(loanDo);
@@ -359,7 +360,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
             try {
             	afLoanDao.updateById(loanDo);
-            	afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
                 return 1L;
             } catch (Exception e) {
                 logger.error("dealLoanSucc update db error", e);
@@ -376,12 +376,22 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		dealLoanFail(loanDo, periodDos, msgOut);
 	}
-	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
+	private void dealLoanFail(final AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
 		Date cur = new Date();
 		loanDo.setStatus(AfLoanStatus.CLOSED.name());
 		loanDo.setRemark("UPS打款失败，"+msg);
 		loanDo.setGmtClose(cur);
-		afLoanDao.updateById(loanDo);
+		loanDo.setGmtModified(cur);
+		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
+            try {
+            	afLoanDao.updateById(loanDo);
+        		afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount().negate());
+                return 1L;
+            } catch (Exception e) {
+                logger.error("dealLoanSucc update db error", e);
+                throw e;
+            }
+		}});
 	}
 	
 	@Override

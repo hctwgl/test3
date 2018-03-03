@@ -27,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.RiskReviewStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -109,6 +111,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 	
 	@Resource
 	AfBorrowDao afBorrowDao;
@@ -436,8 +440,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				} catch (Exception e) {
 					logger.error("updateAuAmountByRid is fail;msg=" + e);
 				}
-				// 减少额度，包括搭售商品借款
-				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+				// 减少额度，包括搭售商品借款 
+				afUserAccountSenceService.syncLoanUsedAmount(userId, SceneType.CASH, afBorrowCashDo.getAmount());
 
 				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				// 增加日志
