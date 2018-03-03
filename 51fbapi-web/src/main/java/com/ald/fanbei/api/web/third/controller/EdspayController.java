@@ -162,7 +162,7 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = {"/repushMaxApiHandle"}, method = RequestMethod.POST)
+	/*@RequestMapping(value = {"/repushMaxApiHandle"}, method = RequestMethod.POST)
     @ResponseBody
     public String repushMaxApiHandle(HttpServletRequest request, HttpServletResponse response) {
         String data = ObjectUtils.toString(request.getParameter("data"));
@@ -172,5 +172,15 @@ public class EdspayController {
         String result = assetSideEdspayUtil.repushMaxApiHandle(timestamp, data, sign);
         logger.info("repushMaxApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
         return "success";
+    }*/
+	
+	@RequestMapping(value = {"/repushMaxApiHandle"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String repushMaxApiHandle(String orderNo) {
+        logger.info("repushMaxApiHandle begin,orderNo=" + orderNo );
+        String result = assetSideEdspayUtil.repushMaxApiHandle(orderNo);
+       // logger.info("repushMaxApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
+        return "success";
     }
+	
 }
