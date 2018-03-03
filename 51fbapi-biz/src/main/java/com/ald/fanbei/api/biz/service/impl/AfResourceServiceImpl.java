@@ -688,4 +688,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
 	}
 
+	@Override
+	public List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType) {
+	    // TODO Auto-generated method stub
+	    return afResourceDao.getConfigsListByTypesAndSecType(type,secType);
+	}
+
 }
