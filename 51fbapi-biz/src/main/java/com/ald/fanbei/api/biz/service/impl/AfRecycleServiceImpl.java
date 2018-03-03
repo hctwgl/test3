@@ -134,10 +134,11 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	 * @return
 	 */
 	@Override
-	public Integer addExchange(final Long uid, final Integer exchangeAmount, final BigDecimal remainAmount) {
-		transactionTemplate.execute(new TransactionCallback<Integer>() {
+	public AfRecycleRatioDo addExchange(final Long uid, final Integer exchangeAmount, final BigDecimal remainAmount) {
+		    final AfRecycleRatioDo afRecycleRatioDo = new AfRecycleRatioDo();
+		    transactionTemplate.execute(new TransactionCallback<Void>() {
 			@Override
-			public Integer doInTransaction(TransactionStatus transactionStatus) {
+			public Void doInTransaction(TransactionStatus transactionStatus) {
 				List<AfRecycleRatioDo> list = afRecycleDao.getRecycleExchangeRatio();
 				BigDecimal ratio = RecycleUtil.getExchangeRatio(list);
 				BigDecimal needExchangeAmount = ratio.multiply(BigDecimal.valueOf(exchangeAmount));//翻倍后的金额
@@ -173,10 +174,13 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 				//将券分配给当前兑换用户
 				AfUserCouponDo userCoupon = new AfUserCouponDo(uid,couponId,CouponStatus.NOUSE.getCode(),CouponSenceRuleType.DOUBLE_EXCHANGE.getCode(),new Date(),DateUtil.getFinalDate());
 				afUserCouponDao.addUserCoupon(userCoupon);// 插入
-				return 1;
+
+				afRecycleRatioDo.setRatio(ratio);
+				afRecycleRatioDo.setAmount(needExchangeAmount);
+				return null;
 			}
 		});
-		return 1;
+		return afRecycleRatioDo;
 	}
 
 

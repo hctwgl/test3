@@ -234,6 +234,9 @@
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
+				<!-- 获取进入提现H5界面的数据 -->
+				<entry key="/user/getReturnCash" value-ref="getReturnCashApi" />
+
 
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
@@ -374,6 +377,8 @@
 				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
 				<entry key="/brand/payOrderV1" value-ref="payOrderV1Api" />
 				<entry key="/drainage/getBannerList" value-ref="getDrainageBannerListApi" />
+				<!-- 有得卖业务回收-->
+				<entry key="/brand/getRecycleUrl" value-ref="getRecycleUrlApi" />
 
 
 				<!--borrowCash -->
@@ -537,8 +542,6 @@
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
-
-				<entry key="/user/exchange" value-ref="exchangeApi" />
 
 			</map>
 		</constructor-arg>

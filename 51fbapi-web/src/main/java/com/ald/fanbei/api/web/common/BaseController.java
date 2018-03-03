@@ -89,7 +89,8 @@ public abstract class BaseController {
 	 * 解析request
 	 *
 	 * @param reqData
-	 * @param httpServletRequest
+	 * @param request
+	 * @param isForQQ
 	 * @return
 	 */
 	protected String processRequest(String reqData, HttpServletRequest request, boolean isForQQ) {
@@ -363,11 +364,11 @@ public abstract class BaseController {
 	/**
 	 * 验证 token
 	 *
-	 * @param userName
-	 *            用户名
-	 * @param time
-	 *            时间戳
-	 * @param params
+	 * @param request
+	 *
+	 * @param h5Context
+	 *
+	 * @param requestDataVo
 	 *            所有请求参数
 	 * @param needToken
 	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要

@@ -115,8 +115,8 @@ public class FanbeiController extends BaseController {
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
-            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/exchange"
-    },method = RequestMethod.POST,produces="application/json;charset=utf-8")
+            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/getReturnCash"},
+            method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -174,7 +174,7 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
     @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
-    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1","/drainage/getBannerList"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1","/drainage/getBannerList","/brand/getRecycleUrl"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

@@ -19,6 +19,6 @@ public interface AfRecycleService {
 
 	AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery);
 
-	Integer addExchange(Long uid, Integer exchangeAmount, BigDecimal remainAmount);//添加兑换记录
+	AfRecycleRatioDo addExchange(Long uid, Integer exchangeAmount, BigDecimal remainAmount);//添加兑换记录
 
 }
