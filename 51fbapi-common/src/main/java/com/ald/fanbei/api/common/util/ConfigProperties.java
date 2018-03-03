@@ -27,7 +27,7 @@ public class ConfigProperties {
 
     public void init() {
         try {
-            config.load(ConfigProperties.class.getClassLoader().getResourceAsStream(configPath));
+            config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(configPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
