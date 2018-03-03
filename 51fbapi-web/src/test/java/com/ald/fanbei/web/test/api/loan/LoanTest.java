@@ -16,14 +16,14 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
-//	String urlBase = "http://localhost:8080";
-//	String userName = "13638668564";	//田建成 cardId:3111464412 支付密码123456
+//	String urlBase = "https://btestapp.51fanbei.com";
+	String urlBase = "http://localhost:8080";
+	String userName = "13638668564";	//田建成 cardId:3111464412 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
-	String userName = "13370127054";	//王卿 支付密码123456
+//	String userName = "13370127054";	//王卿 支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
 	
@@ -71,7 +71,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 发起贷款申请
 	 */
-	@Test
+//	@Test
 	public void applyLoan() {
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
@@ -116,7 +116,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取白领贷协议
 	 */
-	@Test
+//	@Test
 	public void getWhiteLoanProtocol() {
 		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
 		Map<String,String> params = new HashMap<>();
@@ -178,7 +178,7 @@ public class LoanTest  extends BaseTest{
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 53+"");
+		params.put("loanId", 98+"");
 		
 		testH5(url, params, userName, true);
 	}
