@@ -121,7 +121,7 @@ $(function(){
 	// 	var pwdReg = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/;
 	// 	var password = pwdReg.test(register_password);
 	//
-	// 	if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
+	// 	if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
 	//
 	// 		if ( register_verification != "" ) { // 验证码不能为空
 	//
@@ -184,7 +184,7 @@ $(function(){
 
 		var isState = $("#register_codeBtn").attr("isState");
 
-		if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
+		if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
 			if ( register_verification != "" ) { // 验证码不能为空
 				if ( password && 6 <= passwordLength <= 18 ) { // 密码6-18位
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中

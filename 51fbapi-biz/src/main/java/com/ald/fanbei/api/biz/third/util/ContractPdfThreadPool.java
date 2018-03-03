@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
 import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateServiceV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,8 @@ public class ContractPdfThreadPool{
     private AfContractPdfCreateService afContractPdfCreateService;
     @Resource
     private AfLegalContractPdfCreateService afLegalContractPdfCreateService;
+    @Resource
+    private AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
     private int nThreads = Runtime.getRuntime().availableProcessors() ;
     private int maxThreads = Runtime.getRuntime().availableProcessors() * 2;
     private ExecutorService service;// 线程池
@@ -97,7 +100,7 @@ public class ContractPdfThreadPool{
         }
         @Override
         public void run() {
-            afLegalContractPdfCreateService.platformServiceProtocol(borrowId, type, poundage, userId);
+            afLegalContractPdfCreateServiceV2.platformServiceProtocol(borrowId, type, poundage, userId);
         }
     }
 

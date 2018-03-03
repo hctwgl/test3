@@ -12,6 +12,8 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
@@ -22,11 +24,13 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserSealDo;
 import com.alibaba.fastjson.JSON;
 import net.sf.json.JSONArray;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author chengkang 2017年11月29日 16:55:23
@@ -48,6 +52,8 @@ public class EdsPayProtocolUtil extends AbstractThird {
     AfUserSealDao afUserSealDao;
     @Resource
     AfESdkService afESdkService;
+    @Resource
+    RedisTemplate redisTemplate;
 
     public AssetSideRespBo giveBackPdfInfo(String timestamp, String data, String sign, String appId) {
         // 响应数据,默认成功
@@ -102,27 +108,6 @@ public class EdsPayProtocolUtil extends AbstractThird {
             String borrowerName = edspayBackPdfReqBo.getBorrowerName();
             List<EdspayInvestorInfoBo> investorList = edspayBackPdfReqBo.getInvestorList();
             List<EdspayInvestorInfoBo> list = JSONArray.toList(JSONArray.fromObject(investorList), EdspayInvestorInfoBo.class);
-			/*orderNo="jk2018010914473300001";
-			debtType=2;
-			EdspayInvestorInfoBo infoBo = new EdspayInvestorInfoBo();
-			investorName="杨海龙";
-			investorCardId="342522199401124538";
-			investorPhone="18268005632";
-			borrowerName="何文艺";
-			infoBo.setInvestorName(investorName);
-			infoBo.setInvestorCardId(investorCardId);
-			infoBo.setInvestorPhone(investorPhone);
-			investorList = new ArrayList<>();
-			investorList.add(infoBo);
-			EdspayInvestorInfoBo infoBo2 = new EdspayInvestorInfoBo();
-			investorName="郭帅强";
-			investorCardId="330724199211254817";
-			investorPhone="13018933980";
-			infoBo2.setInvestorName(investorName);
-			infoBo2.setInvestorCardId(investorCardId);
-			infoBo2.setInvestorPhone(investorPhone);
-			investorList.add(infoBo2);
-			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000001675551827.pdf";*/
             if (orderNo == null) {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
                 return notifyRespBo;
@@ -145,9 +130,8 @@ public class EdsPayProtocolUtil extends AbstractThird {
             }
             //具体操作
             String url = afLegalContractPdfCreateServiceV2.getProtocalLegalByType(debtType, orderNo, protocolUrl, borrowerName, list);
-//			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
             if (url == null || "".equals(url)) {
-                logger.error("eProtocolUtil giveBackPdfInfo url exist error records,appId=" + appId + ",sendTime=" + timestamp);
+                logger.error("eProtocolUtil giveBackPdfInfo url exist error records,appId=" + appId + ",data=" + data +",orderNo = "+ orderNo +",debtType =" + debtType +",protocolUrl =" + protocolUrl +",borrowerName = "+borrowerName+",sendTime=" + timestamp);
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
                 return notifyRespBo;
             }
@@ -156,12 +140,24 @@ public class EdsPayProtocolUtil extends AbstractThird {
             logger.info("eProtocolUtil giveBackPdfInfo url=" + url + ",appId=" + appId + ",sendTime=" + timestamp);
         } catch (Exception e) {
             //系统异常
-            logger.error("eProtocolUtil giveBackPdfInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
+            logger.error("eProtocolUtil giveBackPdfInfo error,appId=" + appId +",data=" + data +",sendTime=" + timestamp, e);
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
         }
         return notifyRespBo;
     }
 
+    private void lock(String tradeNo) {
+        String key = tradeNo + "get_protocal_legal";
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+        if (count != 1) {
+            throw new FanbeiException(FanbeiExceptionCode.UPS_REPEAT_NOTIFY);
+        }
+    }
+    private void unLock(String tradeNo) {
+        String key = tradeNo + "get_protocal_legal";
+        redisTemplate.delete(key);
+    }
     /**
      * 获取资产方配置信息
      * 如果资产方未启用或者配置未开启，则返回null，否则返回正常配置信息

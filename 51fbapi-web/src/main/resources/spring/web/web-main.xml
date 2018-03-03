@@ -338,6 +338,8 @@
 
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
+				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
+				
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -541,8 +543,6 @@
 				<entry key="/legalborrowV2/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoV2Api" />
 				<entry key="/legalborrowV2/agentBuyHints" value-ref="agentBuyHintsV2Api" />
-
-
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -94,4 +95,5 @@ public interface AfUserService {
 	 * @param userId
 	 */
 	void checkPayPwd(String reqPayPwd, Long userId);
+	AfUserDto getUserInfoByUserId(Long userId);
 }

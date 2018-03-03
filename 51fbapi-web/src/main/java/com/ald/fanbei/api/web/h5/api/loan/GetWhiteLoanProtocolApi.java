@@ -40,8 +40,7 @@ public class GetWhiteLoanProtocolApi implements H5Handle {
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if ("WHITE_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//白领贷平台服务协议
                 afResourceDo.setValue("/fanbei-web/h5/whiteLoanPlatformServiceProtocol?userName=" + userName +
-                        "&totalServiceFee=" + param.totalServiceFee + "&loanId=" + param.loanId + "&overdueRate=" + param.overdueRate + "&serviceRate=" + param.serviceRate +
-                        "&interestRate=" + param.interestRate);
+                        "&nper="+param.nper +  "&loanId=" + param.loanId +"&amount="+param.amount);
             } else if ("WHITE_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//白领贷借钱协议
                 afResourceDo.setValue("/fanbei-web/h5/whiteLoanProtocol?userName=" + userName +
                         "&amount=" + param.amount + "&nper=" + param.nper + "&loanId=" + param.loanId + "&loanRemark=" + param.loanRemark +
