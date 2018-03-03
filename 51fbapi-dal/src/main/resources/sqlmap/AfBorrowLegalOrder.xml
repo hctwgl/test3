@@ -283,7 +283,9 @@
 			<if test="address != null and address != '' ">
 				address = #{address,jdbcType=VARCHAR},
 			</if>
-
+			<if test="logisticsInfo != null">
+				logistics_info=#{logisticsInfo,jdbcType=VARCHAR},
+			</if>
 			<if test="goodsName != null and goodsName != '' ">
 				goods_name = #{goodsName,jdbcType=VARCHAR}
 			</if>
@@ -363,5 +365,9 @@
         ORDER BY id DESC
         LIMIT 1
     </select>
+
+	<update id="updateSmartAddressScore" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo">
+		UPDATE af_borrow_legal_order SET smart_address_score=#{smartAddressScore} , gmt_modified=NOW() WHERE borrow_id= #{borrowId} AND order_no= #{orderNo}
+	</update>
     
 </mapper>

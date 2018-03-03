@@ -1,10 +1,18 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+
+
+
+import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -191,6 +199,7 @@ public interface AfOrderDao {
 	 */
 	AfOrderDo getOrderByOrderNo(String orderNo);
 	/**
+	 * @param activityTime 
 	 * @param userId
 	 * judge the first_order during the second time to light the activity
 	* @Title: findFirstOrder
@@ -200,11 +209,39 @@ public interface AfOrderDao {
 	* @return int
 	* @throws
 	 */
-	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
+	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId,@Param("activityTime") String activityTime);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
 	List<AfOrderDto> selectSumCountByGoodsId(List<AfEncoreGoodsDto> list);
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
+
+
+	
+	//List<AfOrderDo> getShopOrderByUserIdOrActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+	int getAuthShoppingByUserId(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+	HashMap getCountPaidOrderByUserAndOrderType(@Param("userId")Long userId,@Param("orderType") String orderType);
+
+	List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+
+	//int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId);
+
+	int getCountByUserId(@Param("userId")Long userId);
+
+	int getCountFinishBoluomeOrderByUserId(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+	int getCountBoluomeOrderByUserIdByActivityTime(@Param("userId")Long userId,@Param("activityTime") String activityTime);
+
+
+	
+
+	int updateAuAndUsed(@Param("orderId")Long orderId, @Param("auAmount")BigDecimal auAmount, @Param("usedAmount")BigDecimal usedAmount);
+
+	int addSceneAmount(List<AfOrderSceneAmountDo> list);
+
+	List<AfOrderSceneAmountDto> getSceneAmountByOrderId(@Param("orderId")Long orderId);
 
 }

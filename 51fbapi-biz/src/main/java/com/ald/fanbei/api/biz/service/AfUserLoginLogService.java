@@ -32,4 +32,7 @@ public interface AfUserLoginLogService {
 	 * @return
 	 */
 	AfUserLoginLogDo getUserLastLoginInfo(String userName);
+
+
+	long getCountByUserNameAndResultTrue(String userName);
 }

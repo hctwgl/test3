@@ -36,6 +36,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -48,6 +49,7 @@ import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -64,6 +66,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -100,6 +103,9 @@ public class BoluomeUtil extends AbstractThird {
     @Autowired
     private AfOrderService afOrderService;
 
+    @Autowired
+    private AfUserAccountSenceService afUserAccountSenceService;
+    
     private static String pushPayUrl = null;
     private static String pushRefundUrl = null;
     private static String orderSearchUrl = null;
@@ -229,10 +235,11 @@ public class BoluomeUtil extends AbstractThird {
 	    orderInfo.setMobile(StringUtils.EMPTY);
 	    orderInfo.setBankId(0l);
 	    orderInfo.setServiceProvider(channel);
-	    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0L));
-	    if (userAccountInfo != null) {
-		orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-		orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	    //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0L));
+	    if (afUserAccountSenceDo != null) {
+		orderInfo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		orderInfo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 	    }
 	    if (shopInfo.getInterestFreeId() != 0) {
 		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
@@ -429,7 +436,7 @@ public class BoluomeUtil extends AbstractThird {
 	    Map<String, String> buildParams = new HashMap<String, String>();
 	    buildParams.put(BoluomeCore.APP_ID, app_id);
 	    buildParams.put(BoluomeCore.CAMPAIGN_ID, campaign_id);
-	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtils.EMPTY);
+	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis()/1000 + StringUtils.EMPTY);
 
 	    String sign = BoluomeCore.builOrderSign(buildParams);
 	    buildParams.put(BoluomeCore.SIGN, sign);

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -131,6 +132,8 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+	@Resource
+	SmartAddressEngine smartAddressEngine;
     
 	@Override
 	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
@@ -163,7 +166,12 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 				}
 			}
 		});
-		
+		//百度智能地址
+		try {
+			smartAddressEngine.setScoreAsyn(borrowLegalOrder.getAddress(),borrowLegalOrder.getBorrowId(),borrowLegalOrder.getOrderNo());
+		}catch (Exception e){
+			logger.info("smart address {}",e);
+		}
 		if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
@@ -320,7 +328,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 						// 续期本金
 						BigDecimal waitPaidAmount =afRenewalDetailDo.getRenewalAmount();
 						// 查询新利率配置
-			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+			    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL_NEW);
 			    		// 借款利率
 			    		BigDecimal newRate = null;
 			    		// 借款手续费率
@@ -335,10 +343,10 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 			    				JSONObject info = array.getJSONObject(i);
 			    				String borrowTag = info.getString("borrowTag");
 			    				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-			    						rate = info.getDouble("borrowSevenDay");
+			    						rate = info.getDouble("borrowFirstType");
 			    				}
 			    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-			    					serviceRate = info.getDouble("borrowSevenDay");
+			    					serviceRate = info.getDouble("borrowFirstType");
 			    				}
 			    			}
 			    			newRate = BigDecimal.valueOf(rate / 100);
@@ -492,8 +500,8 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	 */
 	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
 
-		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY_NEW);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
 		
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);

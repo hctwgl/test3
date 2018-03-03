@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.SmartAddressEngine;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +22,6 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BeanUtil;
@@ -68,6 +66,8 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	ApplyLegalBorrowCashService applyLegalBorrowCashService;
+	@Resource
+	SmartAddressEngine smartAddressEngine;
 
 	// [end]
 	@Override
@@ -78,7 +78,17 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		Long userId = context.getUserId();
 		// 获取客户端请求参数
 		ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamObj();
+		try{
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+			if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(param.getType())){
+				throw new FanbeiException(afResourceDo.getValue2(),true);
+			}
+		}catch (FanbeiException e){
+			throw e;
 
+		}catch (Exception e){
+			logger.error("enabled_type_borrow error",e);
+		}
 		ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
 
 		BeanUtil.copyProperties(paramBo,param);
@@ -90,7 +100,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 
 		// 获取后台配置借款利率信息
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		// 获取主卡信息
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
@@ -128,13 +138,18 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				// 提交风控审核
 				RiskVerifyRespBo verifyBo = applyLegalBorrowCashService.submitRiskReview(borrowId,appType,ipAddress,paramBo,
 						accountDo,userId,afBorrowCashDo,riskOrderNo);
-				
 				if (verifyBo.isSuccess()) {
 					// 风控审核通过，提交ups进行打款处理
 					applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
 							verifyBo.getResult(), afBorrowLegalOrderDo, mainCard, afBorrowCashDo);
 					// 增加借款埋点信息
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
+					//百度智能地址
+					try {
+						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
+					}catch (Exception e){
+						logger.info("smart address {}",e);
+					}
 				} else {
 					// 风控拒绝，更新借款状态
 					AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();

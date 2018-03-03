@@ -91,19 +91,20 @@ public class InsufficientBalanceApi implements ApiHandle {
 		}
 		//是否是限额类目
 		String isQuotaGoods = "N";
-		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", afOrderDo.getGoodsName());
-		String data = quotaBo.getData();
-		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
-			JSONObject json = JSONObject.parseObject(data);
-			isQuotaGoods = "Y";
-			responseMap.put("goodsTotalAmount", json.getBigDecimal("amount"));
-			String virtualCode = json.getString("virtualCode");
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-			responseMap.put("goodsUseableAmount", goodsUseableAmount);
-			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
-			responseMap.put("categoryName", virtualGoodsCateogy.getName());
-		}
-				
+		//该接口已经不再调用，直接注释出错位置，不再考虑兼容   2018-01-19  gaojb
+//		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", afOrderDo.getGoodsName());
+//		String data = quotaBo.getData();
+//		if (StringUtils.isNotBlank(data)&&!StringUtil.equals(data, "{}")) {
+//			JSONObject json = JSONObject.parseObject(data);
+//			isQuotaGoods = "Y";
+//			responseMap.put("goodsTotalAmount", json.getBigDecimal("amount"));
+//			String virtualCode = json.getString("virtualCode");
+//			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+//			responseMap.put("goodsUseableAmount", goodsUseableAmount);
+//			VirtualGoodsCateogy virtualGoodsCateogy = VirtualGoodsCateogy.findRoleTypeByCode(virtualCode);
+//			responseMap.put("categoryName", virtualGoodsCateogy.getName());
+//		}
+
 		responseMap.put("needPayAmount", needPayAmount);
 		responseMap.put("totalAmount", accountDo.getAuAmount());
 		responseMap.put("useableAmount", BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount()));

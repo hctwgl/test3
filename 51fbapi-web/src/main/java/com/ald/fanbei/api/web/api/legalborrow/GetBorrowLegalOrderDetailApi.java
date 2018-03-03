@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
@@ -50,6 +51,8 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -85,7 +88,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 			}
 			afBorrowLegalOrderDeatilVo.setReturnAmount(returnAmount);
 			afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
-			afBorrowLegalOrderDeatilVo.setType(afBorrowLegalOrderCashDo.getType());
+			afBorrowLegalOrderDeatilVo.setType(String.valueOf(numberWordFormat.borrowTime(afBorrowLegalOrderCashDo.getType())));
 			afBorrowLegalOrderDeatilVo.setPoundageAmount(sumRepaidPoundage.add(poundageAmount));
 			afBorrowLegalOrderDeatilVo.setInterestAmount(sumRepaidInterest.add(interestAmount));
 			afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());

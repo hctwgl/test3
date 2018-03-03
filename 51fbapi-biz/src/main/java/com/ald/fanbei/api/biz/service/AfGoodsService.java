@@ -111,3 +111,4 @@ public interface AfGoodsService {
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 }
+

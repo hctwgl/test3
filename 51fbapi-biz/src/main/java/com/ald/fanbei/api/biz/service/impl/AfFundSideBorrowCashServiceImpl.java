@@ -2,9 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -58,7 +61,8 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
     
     @Resource
     private TransactionTemplate transactionTemplate;
-    
+	@Resource
+	NumberWordFormat numberWordFormat;
 	@Override
 	public BaseDao<AfFundSideBorrowCashDo, Long> getDao() {
 		return afFundSideBorrowCashDao;
@@ -95,7 +99,8 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				BigDecimal usableMoney = accounts.getUsableAmount();
 				
 				//af_fund_side_borrow_cash关联记录插入
-				Integer borrowDays = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(borrowCashDo.getType()).getCode(), 0);
+//				Integer borrowDays = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(borrowCashDo.getType()).getCode(), 0);
+				Integer borrowDays = numberWordFormat.borrowTime(borrowCashDo.getType());
 				BigDecimal planCollectInterest = NumberUtil.getSumInterestsByAmountAndRate(borrowCashDo.getArrivalAmount(), fundSideInfoDo.getAnnualRate(), borrowDays);
 				
 				//af_fund_side_account资金更新
@@ -135,4 +140,6 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 		}
 		return afFundSideInfoDo;
 	}
+
+
 }

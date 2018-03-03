@@ -40,14 +40,14 @@ public class AfUserVirtualAccountServiceImpl extends ParentServiceImpl<AfUserVir
 	}
 
 	@Override
-	public BigDecimal getCurrentMonthUsedAmount(Long userId, String virtualCode) {
-		return afUserVirtualAccountDao.getCurrentMonthUsedAmount(DateUtil.getCurrentYear(), DateUtil.getCurrentMonth(), userId, virtualCode);
+	public BigDecimal getCurrentMonthUsedAmount(Long userId, String virtualCode, Integer virtualRecentDay) {
+		return afUserVirtualAccountDao.getCurrentMonthUsedAmount( userId, virtualCode, virtualRecentDay);
 	}
 
 	@Override
-	public BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount) {
+	public BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount, Integer virtualRecentDay) {
 		//已经使用额度
-		BigDecimal usedAmount = getCurrentMonthUsedAmount(userId, virtualCode);
+		BigDecimal usedAmount = getCurrentMonthUsedAmount(userId, virtualCode,virtualRecentDay);
 		//剩余额度
 		BigDecimal leftAmount = BigDecimalUtil.subtract(virtualTotalAmount, usedAmount);
 		return usedAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : leftAmount;

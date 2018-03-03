@@ -26,6 +26,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.kafka" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.boluome" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
@@ -148,6 +149,7 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/resource/getConfigurableNumDay</value>
 				<value>/legalborrow/getBorrowCashGoodInfo</value>
 				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 				<value>/legalborrow/getCashPageType</value>
@@ -318,6 +320,8 @@
 				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
 				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authFundNew" value-ref="authFundNewApi" />
+				<entry key="/auth/authFundNew/GiveBack" value-ref="authFundNewGiveBackApi" />
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
@@ -329,6 +333,7 @@
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
 				
+				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
@@ -419,6 +424,7 @@
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
 				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
+				<entry key="/resource/getConfigurableNumDay" value-ref="getConfigurableNumDayApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
@@ -567,5 +573,25 @@
 		<task:scheduled ref="healthCheck" method="checkBizCache"
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
+	
+	<!-- jvm缓存服务 -->
+	
+	<bean id="homePageV1CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV1CacheTask">
+		<property name="updateInterval" value="10"/>
+	</bean>
+	
+	<bean id="homePageV2CacheTask" class="com.ald.fanbei.api.web.cache.task.HomePageV2CacheTask">
+		<property name="updateInterval" value="10"/>
+	</bean>
+	
+	<bean id="scheduledCache" class="com.ald.fanbei.api.web.cache.impl.ScheduledCache">
+		<property name="lockInterval" value="5" />
+		<property name="tasks">
+			<list>  
+        		<ref bean="homePageV1CacheTask" />
+        		<ref bean="homePageV2CacheTask" />
+        	</list>
+		</property>
+	</bean>
 	
 </beans>

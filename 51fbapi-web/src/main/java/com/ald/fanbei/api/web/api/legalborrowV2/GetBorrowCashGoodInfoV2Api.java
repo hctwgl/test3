@@ -8,23 +8,27 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -66,6 +70,11 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	NumberWordFormat numberWordFormat;
+	
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoV2Api.class);
 
@@ -75,10 +84,11 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		Map<String, Object> respData = Maps.newHashMap();
 		// 判断用户是否登录
 		Long userId = context.getUserId();
-
+		
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
-		String borrowType = param.getBorrowType();
+		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
+		String tmpBorrowType = borrowType;
 		BigDecimal borrowDay = new BigDecimal(borrowType);
 
 		BigDecimal oriRate = BigDecimal.ZERO;
@@ -90,12 +100,26 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			params.put("appName",appName);
 			params.put("bqsBlackBox",bqsBlackBox);
 			params.put("blackBox",request.getParameter("blackBox"));
-			oriRate = riskUtil.getRiskOriRate(userId,params);
+			try{
+				// FIXME 客户端不发版临时解决方案，后续需要客户端配合改造
+				AfBorrowCashDo borrowCash = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+				if(borrowCash != null) {
+					String status = borrowCash.getStatus();
+					if(StringUtils.equals(status, "TRANSED")) {
+						// 借款未结清，说明是续期查询商品
+						tmpBorrowType = borrowCash.getType();
+					}
+				}
+			} catch(Exception e) {
+				logger.error("get user last borrow info error,msg=>{}", e.getMessage());
+			}
+			
+			oriRate = riskUtil.getRiskOriRate(userId,params,tmpBorrowType);
 		}
 
 		// 查询新利率配置
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+				Constants.BORROW_CASH_INFO_LEGAL_NEW);
 		BigDecimal newRate = null;
 
 		double newServiceRate = 0;
@@ -110,12 +134,16 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		} else {
 			newRate = BigDecimal.valueOf(0.36);
 		}
+		
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		logger.info("newRate = > {}, borrowAmount = > {}",newRate,borrowAmount);
+		logger.info("borrowDay = > {}，oriRate = > {}",borrowDay,oriRate);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(borrowAmount).multiply(borrowDay);
 		if (profitAmount.compareTo(BigDecimal.ZERO) <= 0) {
 			profitAmount = BigDecimal.ZERO;
 		}
+		logger.info("GetBorrowCashGoodInfoV2Api profitAmount =>{}",profitAmount);
 		// 计算服务费和手续费
 		BigDecimal serviceFee = new BigDecimal(newServiceRate / 100).multiply(borrowAmount).multiply(borrowDay)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
@@ -184,6 +212,13 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 	}
 
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		String oneDay = "";
+		String twoDay = "";
+		if(null != afResourceDo){
+			oneDay = afResourceDo.getTypeDesc().split(",")[0];
+			twoDay = afResourceDo.getTypeDesc().split(",")[1];
+		}
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -193,20 +228,20 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					interestRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					interestRate = info.getDouble(tag + "FirstType");
 					totalRate += interestRate;
-				} else {
-					interestRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					interestRate = info.getDouble(tag + "SecondType");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
-					serviceRate = info.getDouble(tag + "SevenDay");
+				if (StringUtils.equals(oneDay, borrowType)) {
+					serviceRate = info.getDouble(tag + "FirstType");
 					totalRate += serviceRate;
-				} else {
-					serviceRate = info.getDouble(tag + "FourteenDay");
+				} else if(StringUtils.equals(twoDay, borrowType)){
+					serviceRate = info.getDouble(tag + "SecondType");
 					totalRate += serviceRate;
 				}
 			}

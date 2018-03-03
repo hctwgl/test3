@@ -30,6 +30,10 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
+	
+	//51公积金token失效时间
+	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
+	
 	// 商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
 	// 自营商品超时支付时间-小时
@@ -201,6 +205,8 @@ public class Constants {
 	public static final String RES_RENEWAL_DAY_LIMIT = "RENEWAL_DAY_LIMIT";
 	// 允许续期的天数
 	public static final String RES_ALLOW_RENEWAL_DAY = "ALLOW_RENEWAL_DAY";
+	// 新版允许续期的天数
+	public static final String RES_ALLOW_RENEWAL_DAY_NEW = "ALLOW_RENEWAL_DAY_NEW";
 	// 续期的距离预计还款日的最小天数差
 	public static final String RES_BETWEEN_DUEDATE = "BETWEEN_DUEDATE";
 	// 未还款金额限制，只有在未还款金额大于这个金额时才能续期
@@ -345,7 +351,11 @@ public class Constants {
 	public static final String IMAGE_CODE_COOKIE_PASSWORD = "IMAGE_VERIFY_CODE_PASSWORD";
 
 	public static final String VIRTUAL_CODE = "virtualCode";
-	public static final String VIRTUAL_AMOUNT = "virtualAmount";
+	public static final String VIRTUAL_AMOUNT = "amount";
+	public static final String VIRTUAL_TOTAL_AMOUNT = "totalAmount";
+	public static final String VIRTUAL_RECENT_DAY = "recentDay";
+	public static final String VIRTUAL_CHECK = "virtualCheck";
+	public static final String VIRTUAL_CHECK_NAME = "virtualCheckName";
 
 	// 商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
@@ -411,7 +421,9 @@ public class Constants {
 	  //逛逛惊喜返礼金
 	  public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
 	  public static final String GG_COUPON_LOCK = "gg_coupon_lock";
-
+	//自营商城返利
+	  public static final String SELFSUPPORT_REBATE = "selfsupport_rebate";
+	  
 	// 双十二秒杀抢券活动
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
 	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
@@ -421,6 +433,7 @@ public class Constants {
 	public static final String BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
 	public static final String BORROW_CASH_OVERDUE_POUNDAGE = "BORROW_CASH_OVERDUE_POUNDAGE";
 	public static final String BORROW_CASH_INFO_LEGAL = "BORROW_CASH_INFO_LEGAL";
+	public static final String BORROW_CASH_INFO_LEGAL_NEW = "BORROW_CASH_INFO_LEGAL_NEW";
 	// 首页滚动条
 	public static final String HOMEPAGE_TOP_SCROLLBAR = "HOMEPAGE_TOP_SCROLLBAR";
 	public static final String BORROW_TOP_SCROLLBAR = "H5_URL";
@@ -452,4 +465,12 @@ public class Constants {
 	  //公信宝认证的密钥
 	  public static final String AUTH_GXB_APPID = "auth.gxb.appid";
 	  public static final String AUTH_GXB_APPSECURITY = "auth.gxb.appsecurity";
+	  //51公积金认证
+	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
+	  public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
+	  public static final String CONFKEY_NEWFUND_SECRET = "fbapi.newfund.secret";
+
+	//快递鸟配置
+	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
+	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
 }

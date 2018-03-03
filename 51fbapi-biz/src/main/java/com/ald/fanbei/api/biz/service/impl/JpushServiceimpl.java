@@ -942,7 +942,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void send15Coupon(String userName) {
 		try {
-			String msgContext = "恭喜您邀请好友成功！15元无门槛外卖券已发放到您的账户，请记得查收并使用！";
+			String msgContext = "恭喜您邀请好友成功！5元无门槛外卖券已发放到您的账户，请记得查收并使用！";
 			String title = "恭喜您邀请好友成功";
 			logger.info("send15Coupon params ：　userName = {} , middle business params : msgContext = {} ,  title = {}",userName,msgContext,title);
 			commonMethod(userName,msgContext,title);
@@ -998,14 +998,19 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	 */
 	@Override
 	public void pushUtil(String title,String msgContent,String userName){
-		String pid =userName + System.currentTimeMillis();
-		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
-		logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
-		Map<String,String> extras = new HashMap<String,String>();
-		extras.put(PID, pid);
-		extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-		extras.put(PUSH_JUMP_TYPE, "1");
-		jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+		try {
+			String pid =userName + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
+			logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
+			Map<String,String> extras = new HashMap<String,String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "1");
+			jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+		}catch (Exception e){
+			logger.info("pushUtil error", e);
+		}
+
 	}
 
 }

@@ -26,9 +26,9 @@ public interface AfViewAssetBorrowCashService {
 
 	BigDecimal getSumAmount(Date gmtCreateStart, Date gmtCreateEnd);
 
-	BigDecimal getSumSevenAmount(Date gmtCreateStart, Date gmtCreateEnd);
+	BigDecimal getSumMinAmount(Date gmtCreateStart, Date gmtCreateEnd,String minBorrowTime);
 
-	BigDecimal getSumFourteenAmount(Date gmtCreateStart, Date gmtCreateEnd);
+	BigDecimal getSumMaxAmount(Date gmtCreateStart, Date gmtCreateEnd,String maxBorrowTime);
 
 	AfViewAssetBorrowCashDo getByQueryCondition(AfViewAssetBorrowCashQuery query);
 

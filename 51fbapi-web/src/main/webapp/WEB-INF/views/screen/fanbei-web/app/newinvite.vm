@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #set($version="201712211843")
+    #set($version="201802021058")
     #set($commonUrl="http://f.51fanbei.com/h5")
     <title>邀请好友拿奖励</title>
-    <link rel="stylesheet" type="text/css" href="/dist/css/app/newinvite.css?version=$version">
+    #*<link rel="stylesheet" type="text/css" href="/dist/css/app/newinvite.css?version=$version">*#
 </head>
 <body>
-<textarea type="text" id="invitecode">23123</textarea>
+#*<textarea type="text" id="invitecode">23123</textarea>
 <div class="_global_mask" style="display: none;"></div>
 <div class="rulewindow" style="display: none;">
     <div class="close"></div>
@@ -16,6 +16,15 @@
     </div>
 </div>
 <div id="newinvite">
+    <!--公告左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>邀请活动将于近日升级！新旧版本奖励不予延续！敬请关注！</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--公告左右移动--end-->
     <div class="top">
         <img src="$commonUrl/app/images/user/invite/topbg.png"/>
         <div class="rule">活动规则</div>
@@ -54,7 +63,9 @@
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="/dist/js/clipboard.min.js"></script>
-<script type="text/javascript" src="/dist/js/app/newinvite.js?version=$version"></script>
-
+<script type="text/javascript" src="/dist/js/app/newinvite.js?version=$version"></script>*#
+<script type="text/javascript">
+    window.location.href='https://h5.51fanbei.com/h5/newInvite/newInvite.html?type=newInviteInit&javaurl=app.51fanbei.com&port=443&httptype=https';
+</script>
 </body>
 </html>

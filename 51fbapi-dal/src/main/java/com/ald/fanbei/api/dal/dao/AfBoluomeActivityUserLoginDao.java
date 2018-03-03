@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public interface AfBoluomeActivityUserLoginDao extends BaseDao<AfBoluomeActivity
 	Long findRefUserId(@Param("userId")Long userId);
 
 	List<AfBoluomeActivityUserLoginDo> getByRefUserIdAndActivityId(@Param("userId") Long userId,@Param("activityId") Long activityId);
+
+	int saveUserLoginInfo(AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin);
 
     
 

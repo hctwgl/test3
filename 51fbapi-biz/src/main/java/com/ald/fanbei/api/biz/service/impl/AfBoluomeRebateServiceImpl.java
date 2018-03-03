@@ -14,12 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -74,6 +76,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+	
 
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
@@ -98,7 +103,11 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				// check if this orderId has already been rebated
 				int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
 				if (isHave == 0) {
-
+				    String activityTime = null;
+				    AfResourceDo startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+				    	   if(startTime != null){
+				    	       activityTime =   startTime.getValue();
+				    	   }
 					String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId, userId);
 					logger.info(log);
 					AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
@@ -106,18 +115,44 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					rebateDo.setOrderId(orderId);
 					rebateDo.setUserId(userId);
 					// check if its the first time for one specific channel
-					int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
+					int orderTimes = afOrderDao.findFirstOrder(orderId, userId,activityTime);
 					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
 					if (orderTimes == 0) {
+    					     int boluomeFinishOrderTimes =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId,null);
+    					     if(boluomeFinishOrderTimes == 1){
+            					     //邀请有礼记录用户订单id
+            					    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(userId);
+            					     if(afRecommendUserDo != null){
+            						 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
+            						     afRecommendUserDo.setFirstBoluomeOrder(orderId);
+            						     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
+            						     log = log + String.format("updateRecommend = %s ", updateRecommend);
+         						     logger.info(log);
+            						  }
+            					      }
+            				       }
+    					     
 						rebateDo.setFirstOrder(1);
 
 						// check if the order times for red packet
-						int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
+						
+					 
+					      //查询此次活动之后的返利次数。
+					       int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId,activityTime);
+					    
+					       //查询活动之前是否下过的菠萝觅订单，有(老用户)，则每次额外加1
+//					       int boluomeFinishOrderBeforActivityTime =  afOrderDao.getCountBoluomeOrderByUserIdByActivityTime(userId,activityTime);
+//					          if(boluomeFinishOrderBeforActivityTime >= 1 ){
+//						       redOrderTimes = redOrderTimes +1 ;
+//						  }
+						
+						//cqw
 						log = log + String.format("redOrderTimes = %s ", redOrderTimes);
 						logger.info(log);
-
+						//本次加1
 						redOrderTimes += 1;
+					
 						// check the red packet amount
 						boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
 
@@ -160,47 +195,46 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 								log = log + String.format("userName = %s , rebateAmount = %s", userName,
 										rebateDo.getRebateAmount());
 								logger.info(log);
-								if (userName != null) {
-									String scence = afBoluomeRebateDao.getScence(orderId);
-									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
-									logger.info(log);
-									
-									//get couponId and couponName from afResource
-									AfResourceDo resourceDo = new AfResourceDo();
-									
-									resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "COUPON_AND_AMOUNT");
-									
-									String couponId = resourceDo.getValue();
-									String twenty = resourceDo.getValue1();
-									String thirty = resourceDo.getValue2();
-									
-									log = log + String.format(" afResource = %s", resourceDo.toString());
-									logger.info(log);
-									
-									//if this user Rebate amount is 20 than send a coupon 
-									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
-										if (StringUtil.isNotBlank(couponId)) {
-											
-											//add coupon to user 
-											Long couponIdL = NumberUtil.objToLong(couponId);
-											
-											log = log + String.format(" before grantCoupon parameters userId = %s ,couponId = %s ", userId.toString(),couponId.toString());
-											logger.info(log);
-											
-											afUserCouponService.grantCoupon(userId, couponIdL, UserCouponSource.GG_ACTIVITY.getName(), orderId.toString());
-											
-											log = log + String.format(" before grantCoupon");
-											logger.info(log);
-										}
-									}
-									
-									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
-								}
+//								if (userName != null) {
+//									String scence = afBoluomeRebateDao.getScence(orderId);
+//									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+//									logger.info(log);
+//									
+//									//get couponId and couponName from afResource
+//									AfResourceDo resourceDo = new AfResourceDo();
+//									
+//									resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "COUPON_AND_AMOUNT");
+//									
+//									String couponId = resourceDo.getValue();
+//									String twenty = resourceDo.getValue1();
+//									String thirty = resourceDo.getValue2();
+//									
+//									log = log + String.format(" afResource = %s", resourceDo.toString());
+//									logger.info(log);
+//									
+//									//if this user Rebate amount is 20 than send a coupon 
+//									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
+//										if (StringUtil.isNotBlank(couponId)) {
+//											
+//											//add coupon to user 
+//											Long couponIdL = NumberUtil.objToLong(couponId);
+//											
+//											log = log + String.format(" before grantCoupon parameters userId = %s ,couponId = %s ", userId.toString(),couponId.toString());
+//											logger.info(log);
+//											
+//											afUserCouponService.grantCoupon(userId, couponIdL, UserCouponSource.GG_ACTIVITY.getName(), orderId.toString());
+//											
+//											log = log + String.format(" before grantCoupon");
+//											logger.info(log);
+//										}
+//									}
+//									
+//									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
+//								}
 							}
 						}
 					}
 				}
-			
 
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
@@ -264,9 +298,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 *         下午12:59:03 @Description: 根据用户查所有返利 @param userId @return @throws
 	 */
 	@Override
-	public List<AfBoluomeRebateDo> getListByUserId(Long userId) {
+	public List<AfBoluomeRebateDo> getListByUserId(Long userId,String startTime) {
 
-		return afBoluomeRebateDao.getListByUserId(userId);
+		return afBoluomeRebateDao.getListByUserId(userId,startTime);
 	}
 
 	/**
@@ -274,10 +308,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 * @Title: getLightShopId @author qiao @date 2017年11月17日
 	 *         下午3:59:24 @Description: @param orderId @return @throws
 	 */
-	@Override
-	public Long getLightShopId(Long orderId) {
-		return afBoluomeRebateDao.getLightShopId(orderId);
-	}
+//	@Override
+//	public Long getLightShopId(Long orderId) {
+//		return afBoluomeRebateDao.getLightShopId(orderId);
+//	}
 
 	/**
 	 * 
@@ -316,8 +350,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	}
 
 	@Override
-	public int getRebateCount(Long shopId, Long userId) {
-		return afBoluomeRebateDao.getRebateCount(shopId, userId);
+	public int getRebateCount(Long shopId, Long userId,String activityTime) {
+		return afBoluomeRebateDao.getRebateCount(shopId, userId,activityTime);
 
 	}
 
@@ -326,5 +360,12 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		// TODO Auto-generated method stub
 		return afBoluomeRebateDao.getMaxUserRebateByStartIdAndEndIdAndUserId(startId, endId, userId);
 	}
+
+	@Override
+	public int getCountByUserIdAndFirstOrder(Long userId, int firstOrder,String oneYuanTime) {
+	    // TODO Auto-generated method stub
+	    	return afBoluomeRebateDao.getCountByUserIdAndFirstOrder(userId,firstOrder,oneYuanTime);
+	}
+
 
 }

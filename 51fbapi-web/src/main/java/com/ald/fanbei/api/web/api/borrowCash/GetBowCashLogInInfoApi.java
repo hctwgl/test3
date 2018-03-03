@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -99,6 +100,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -107,7 +110,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService.newSelectBorrowHomeConfigByAllTypes();
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
 		    //另一个banner
@@ -121,12 +124,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-		String bqsBlackBox = request.getParameter("bqsBlackBox");
 		data.put("ipAddress", CommonUtil.getIpAddr(request));
 		data.put("appName",appName);
-		data.put("bqsBlackBox",bqsBlackBox);
-		data.put("blackBox",request.getParameter("blackBox"));
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		data.put("bqsBlackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("bqsBlackBox"));
+		data.put("blackBox",requestDataVo.getParams()==null?"":requestDataVo.getParams().get("blackBox"));
+		Map<String, Object> rate = getObjectWithResourceDoNewlist(list);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String unfinished = YesNoStatus.NO.getCode();
@@ -169,7 +171,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
 			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
-			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
+			data.put("type", numberWordFormat.borrowTime(afBorrowCashDo.getType()));
 			long currentTime = System.currentTimeMillis();
 			Date now = DateUtil.getEndOfDate(new Date(currentTime));
 

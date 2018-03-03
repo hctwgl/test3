@@ -93,7 +93,7 @@ var _fmOpt;
  */
 let checkphone = () => {
   let phone = $('#user').val()
-  const reg = /^1(3|4|5|7|8)\d{9}$/i
+  const reg = /^1(3|4|5|6|7|8|9)\d{9}$/i
   if (reg.test(phone)) {
     return true
   } else {
@@ -195,7 +195,7 @@ window.onload = () => {
       }, function (captchaObj) {
         document.getElementById('checkbtn').addEventListener('click', function () {
           var mobileNum = $("#user").val();
-          if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
+          if (!(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
             requestMsg('请输入手机号')
           } else {
             $.ajax({
@@ -451,7 +451,8 @@ window.onload = () => {
             smsCode: $('#verify').val(),
             password: String(CryptoJS.MD5($("#pwd").val())),
             recommendCode: recommendCode,
-            token: token
+            token: token,
+            'source':'recommend'
           },
           success: function (returnData) {
             maidianFnNew("registerSuccess", $('#user').val());

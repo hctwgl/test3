@@ -8,10 +8,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -21,11 +26,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRescourceLogService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -65,11 +65,15 @@ public class AppH5SysController extends BaseController {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
-	AfUserAccountService afUserAccountService;	
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAuthService afUserAuthService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
 	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
@@ -133,7 +137,23 @@ public class AppH5SysController extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 	}
+	@RequestMapping(value = { "zhimaNewUrl" }, method = RequestMethod.GET)
+	public void zhimaNewUrl(HttpServletRequest request, ModelMap model) throws IOException {
 
+		Long userId = Long.parseLong(AesUtil.decrypt(request.getParameter("userId"),"123") );
+		logger.info("auto init zhima:"+userId);
+		AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(!afUserAuthDo.getZmStatus().equals("Y")){
+			afUserAuthDo.setZmScore(0);
+			afUserAuthDo.setZmStatus("Y");
+			afUserAuthDo.setGmtZm(new Date());
+			afUserAuthDo.setIvsScore(0);
+			afUserAuthDo.setIvsStatus("Y");
+			afUserAuthDo.setGmtIvs(new Date());
+			afUserAuthService.updateUserAuth(afUserAuthDo);
+		}
+
+	}
 	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
 	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
 
@@ -187,7 +207,8 @@ public class AppH5SysController extends BaseController {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
@@ -251,7 +272,8 @@ public class AppH5SysController extends BaseController {
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
 					model.put("gmtBorrowBegin", arrivalStart);//到账时间，借款起息日
@@ -526,5 +548,7 @@ public class AppH5SysController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 
 }

@@ -374,7 +374,7 @@
 		)
 		</foreach>
 	</insert>
-	
+
 	<update id="updateOrderByOutTradeNo" parameterType="AfOrderDo">
 		update af_order  set gmt_modified=NOW()
 		<if test="userId != null">
@@ -1064,6 +1064,7 @@
 			status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING') 
 		AND 
 			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
+	
 	</select>
 	
 	
@@ -1079,24 +1080,66 @@
 	</select>
 	<select id="findFirstOrder" parameterType="java.lang.Long" resultType = "java.lang.Integer">
 		SELECT
+		      COUNT(1)
+		    FROM
+		    (
+		            SELECT o.user_id,o.id,o.order_type,o.is_delete,o.status,
+		             CASE   o.sec_type 
+		       WHEN  'SUPGAME'  THEN   gg.type
+		       ELSE   o.sec_type END 
+		       sec_type  
+		       FROM af_order  o
+		       LEFT JOIN af_sup_game gg ON  gg.id = o.goods_id 
+		        INNER JOIN af_boluome_rebate br ON br.order_id = o.id
+		        <if test="activityTime != null">
+				   and br.gmt_create <![CDATA[>=]]>  #{activityTime}
+				</if>
+		        WHERE o.`user_id` = #{userId}
+		        AND o.`status` IN ('FINISHED','REBATED')
+		    )ao
+		    INNER JOIN (
+		      SELECT
+		        o.order_type,      
+		       CASE   o.sec_type 
+		       WHEN 'SUPGAME'  THEN   g.type
+		       ELSE  o.sec_type END 
+		       sec_type        
+		      FROM
+		        af_order o
+		        LEFT JOIN af_sup_game g ON  g.id = o.goods_id
+		      WHERE
+		        o.id = #{orderId}
+		    ) t ON t.order_type = ao.order_type
+		    AND t.sec_type = ao.sec_type;
+	</select>
+	
+	<select id="getCountFinishBoluomeOrderByUserId" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
 			count(1)
 		FROM
-			af_order ao
-		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId} 
-		INNER JOIN (
-			SELECT
-				o.order_type,
-				o.sec_type
-			FROM
-				af_order o
-			WHERE
-				o.id = #{orderId}
-		) t ON t.order_type = ao.order_type
-		AND t.sec_type = ao.sec_type
-		AND br.is_delete = 0
-		AND ao.is_delete = 0
-		AND ao.`status` in ('FINISHED','REBATED');
+			af_order 
+			where order_type = 'BOLUOME'
+			AND user_id = #{userId} 
+			AND is_delete = 0
+			 AND status in ('FINISHED','REBATED') 
+			<if test="activityTime != null">
+		      and gmt_create <![CDATA[<]]> #{activityTime}
+		  </if>
 	</select>
+	<select id="getCountBoluomeOrderByUserIdByActivityTime" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_order 
+			where order_type = 'BOLUOME'
+			AND user_id = #{userId} 
+			AND is_delete = 0
+			<if test="activityTime != null">
+		    and gmt_create <![CDATA[<]]> #{activityTime}
+		  </if>
+	</select>
+	
+	
 	
 	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
@@ -1105,6 +1148,9 @@
 		WHERE
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+        AND 
+			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
+	
 	</select>
 
 	<select id="selectSumCountByGoodsId" resultType="AfOrderDto" parameterType="list" >
@@ -1142,4 +1188,86 @@
 		AND
 			user_id=#{userId}
 	</select>
+
+	<select id="getCountPaidOrderByUserAndOrderType" resultType="HashMap">
+		 SELECT 	
+		 COUNT(1) 'count' FROM 
+		 af_order WHERE 
+		 user_id = #{userId}
+		 AND order_type = #{orderType}
+		 and pay_status in('P','R')
+	<!-- 	 AND is_delete = 0 -->
+	</select>
+	<select id="getSelfsupportOrderByUserIdOrActivityTime" resultType="AfOrderDo">
+		 SELECT 	
+		<include refid="queryAllFields"/>
+		 FROM 
+		 af_order WHERE 
+		 user_id = #{userId}
+		 AND order_type ='SELFSUPPORT'
+	<!-- 	 AND is_delete = 0 -->
+		 and status = 'REBATED' 
+		  <if test="activityTime != null">
+		   and gmt_finished &gt; #{activityTime}
+		</if>
+		 ORDER BY gmt_rebated asc,gmt_finished asc
+	</select>
+	
+	<select id="getAuthShoppingByUserId" resultType="java.lang.Integer">
+		 SELECT 	
+		 count(1)
+		 FROM 
+		 af_order WHERE 
+		 user_id = #{userId}
+		 AND order_type ='SELFSUPPORT'
+<!-- 		 AND is_delete = 0 -->
+		 and pay_status = 'P' 
+		 and pay_type in('AP','CP')
+		 <if test="activityTime != null">
+		 and gmt_pay &lt; #{activityTime}
+		</if>
+	</select>
+	
+	<select id="getCountByUserId" resultType="java.lang.Integer">
+		 SELECT 	
+		 count(1)
+		 FROM 
+		 af_order
+		 WHERE  user_id = #{userId}
+		 AND is_delete = 0
+	</select>
+
+	<update id="updateAuAndUsed">
+		UPDATE
+		af_order
+		SET
+		au_amount = #{auAmount},
+		used_amount = #{usedAmount}
+		WHERE
+		id = #{orderId}
+	</update>
+
+	<insert id="addSceneAmount" parameterType="java.util.List">
+		INSERT INTO af_order_scene_amount(order_id , user_id , scene , au_amount , used_amount , gmt_create)
+		VALUES
+		<foreach collection = "list" separator = "," item = "item" index = "index" >
+			(
+			#{item.orderId},
+			#{item.userId},
+			#{item.scene},
+			#{item.auAmount},
+			#{item.usedAmount},
+			NOW()
+			)
+		</foreach>
+	</insert>
+
+	<select id="getSceneAmountByOrderId" parameterType="java.lang.Long" resultType="AfOrderSceneAmountDto">
+		SELECT
+		*
+		FROM af_order_scene_amount
+		WHERE
+		order_id = #{orderId}
+	</select>
+
 </mapper>

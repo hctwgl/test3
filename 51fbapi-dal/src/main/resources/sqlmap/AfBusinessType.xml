@@ -173,5 +173,12 @@ id,gmt_create,gmt_modified,creator,modifier,name,level,parent_id,is_show,sort
         FROM af_business_type
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getCodeById" resultType="java.lang.String">
+        SELECT
+        code
+        FROM af_business_type
+       WHERE id=#{id}
+    </select>
+
 </mapper>

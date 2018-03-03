@@ -23,6 +23,7 @@ public class CashierVo extends AbstractSerial {
     private String  bankCardStatus;
     private String  isValid;//银行卡状态
     private Integer realNameScore;//实名认证分
+    private String scene;//额度场景
     /**
      * 主卡信息
      */
@@ -231,4 +232,11 @@ public class CashierVo extends AbstractSerial {
         this.realNameScore = realNameScore;
     }
 
+    public String getScene() {
+        return scene;
+    }
+
+    public void setScene(String scene) {
+        this.scene = scene;
+    }
 }

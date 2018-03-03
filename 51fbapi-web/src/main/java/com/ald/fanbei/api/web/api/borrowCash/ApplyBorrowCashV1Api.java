@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -9,6 +10,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -107,6 +110,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
     BizCacheUtil bizCacheUtil;
     @Resource
     AfBorrowDao afBorrowDao;
+    @Resource
+    NumberWordFormat numberWordFormat;
+
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -114,7 +120,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-
+        if (context.getAppVersion() < 390) {
+            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        }
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
@@ -138,13 +146,23 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 		String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
 				"couponId"));
 		if (StringUtils.isBlank(amountStr)
-				|| AfBorrowCashType.findRoleTypeByCode(type) == null
+				|| (!numberWordFormat.isNumeric(type))
 				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude)) {
 			return new ApiHandleResponse(requestDataVo.getId(),
 					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+        try{
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否不允许这种类型的借款
+            if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
+                throw new FanbeiException(afResourceDo.getValue2(),true);
+            }
+        }catch (FanbeiException e){
+            throw e;
 
+        }catch (Exception e){
+            logger.error("enabled_type_borrow error",e);
+        }
         // 密码判断
         AfUserAccountDo accountDo = afUserAccountService
                 .getUserAccountByUserId(userId);
@@ -379,7 +397,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                         .currentTimeMillis()));
                 HashMap<String, HashMap> riskDataMap = new HashMap();
 
-                HashMap summaryData = afBorrowDao.getUserSummary(userId);
+                HashMap summaryData = afBorrowService.getUserSummary(userId);
                 riskDataMap.put("summaryData", summaryData);
                 riskDataMap.put("summaryOrderData", new HashMap<>());
                 RiskVerifyRespBo verybo = riskUtil.verifyNew(
@@ -501,8 +519,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     UserAccountLogType.BorrowCash.getCode(),
                     afBorrowCashDo.getRid() + "");
             cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
-                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+            Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+//            Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
+//                    .findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
             Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo
                     .getGmtArrival());
             Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
@@ -613,8 +632,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         afBorrowCashDo.setCity(city);
         afBorrowCashDo.setProvince(province);
         afBorrowCashDo.setCounty(county);
-        afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type)
-                .getName());
+        afBorrowCashDo.setType(type);
         afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
         afBorrowCashDo.setUserId(userId);
         afBorrowCashDo.setRateAmount(rateAmount);
@@ -704,6 +722,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
             logger.error("userBorrowCashApply maidian logger error", e);
         }
     }
+
+
 
     // /**
     // * 处理风控逾期借钱或者借款处理

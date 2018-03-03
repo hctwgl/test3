@@ -79,7 +79,6 @@
         FROM
         af_interim_au
         WHERE user_id=#{userId}
-        and gmt_failuretime &lt; NOW();
     </select>
 
     <update id="updateInterimAmount">

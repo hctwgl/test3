@@ -39,7 +39,7 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @param edspayGetCreditReqBo
 	 * @return
 	 */
-	List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo,BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney);
+	List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo,BigDecimal money,Date startTime,Date endTime,BigDecimal minMoney);
 
 	/**
 	 * 根据资产方对应债权订单号,获取对应用户信息

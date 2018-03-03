@@ -20,6 +20,15 @@ public interface AfUserService {
 	 * @return
 	 */
 	Long addUser(AfUserDo afUserDo);
+	
+
+	/**
+	 * 添加用户(区分邀请来源)
+	 * @param afUserDo
+	 * @return
+	 */
+	Long toAddUser(AfUserDo afUserDo,String source);
+	
 	/**
 	 * 添加快速登录用户
 	 * @param afUserDo

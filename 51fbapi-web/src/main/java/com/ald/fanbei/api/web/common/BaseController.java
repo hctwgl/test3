@@ -1,22 +1,17 @@
 package com.ald.fanbei.api.web.common;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.commons.lang.ObjectUtils;
@@ -51,6 +46,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author 陈金虎 2017年1月16日 下午11:56:17 @类描述：
@@ -84,7 +80,8 @@ public abstract class BaseController {
 
 	@Resource
 	AfShopService afShopService;
-
+	@Autowired
+	KafkaSync kafkaSync;
 	@Resource
 	private AfResourceService afResourceService;
 
@@ -109,8 +106,21 @@ public abstract class BaseController {
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
-			if(contex.getAppVersion()==344){
-				throw new FanbeiException("您使用的app版本过低,请升级",true);
+//			if(contex.getAppVersion()<390){
+//				throw new FanbeiException("您使用的app版本过低,请升级",true);
+//			}
+			//406强升需要数据拦截的借钱相关接口
+			String apiUrl = "/legalborrow/applyLegalBorrowCash,/legalborrowV2/applyLegalBorrowCash," +
+					"/legalborrowV2/confirmLegalRenewalPay,/legalborrow/confirmLegalRenewalPay," +
+					"/borrowCash/applyBorrowCashV1,/borrowCash/confirmRenewalPay,/legalborrow/getLegalBorrowCashHomeInfo," +
+					"/legalborrowV2/getLegalBorrowCashHomeInfo," +
+					"/borrowCash/getBowCashLogInInfo," +
+					"/borrowCash/getBorrowCashHomeInfo,";
+			if(apiUrl.toLowerCase().contains(request.getRequestURI().toString().toLowerCase()) && contex.getAppVersion()<406){
+				String afResourceDo = afResourceService.getAfResourceAppVesionV1();
+				if (afResourceDo != null && afResourceDo.equals("true") && requestDataVo.getId().endsWith("www")) {
+					throw new FanbeiException("version is letter 406", FanbeiExceptionCode.VERSION_ERROR);
+				}
 			}
 			// 判断版本更新 后台控制
 			try {
@@ -151,6 +161,13 @@ public abstract class BaseController {
 			resultStr = JSON.toJSONString(exceptionresponse);
 			logger.error("system exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
 		} finally {
+			try{
+				String userName = (String) requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_USERNAME);
+				kafkaSync.syncEvent(userName,request.getRequestURI().toString(),false);//url同步不用强制刷新
+			}catch (Exception e){
+				logger.error("kafkaSync syncEvent error:",e);
+			}
+
 			try {
 				Calendar calEnd = Calendar.getInstance();
 				if (StringUtils.isNotBlank(reqData)) {
@@ -422,6 +439,7 @@ public abstract class BaseController {
 	 */
 	protected FanbeiWebContext doWebCheck(HttpServletRequest request, boolean needToken) {
 		FanbeiWebContext webContext = new FanbeiWebContext();
+		logger.info(String.format("doWebCheck Referer = {%s}", request.getHeader("Referer")));
 		String appInfo = getAppInfo(request.getHeader("Referer"));
 		// 如果是测试环境
 		logger.info(String.format("doWebCheck appInfo = {%s}", appInfo));

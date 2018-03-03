@@ -39,6 +39,7 @@ var userName=param['userName'];
 var typeFrom=param['typeFrom'];//渠道类型
 var typeFromNum=param['typeFromNum'];//渠道类型数
 var pageName=param['pageName'];//获取文件来源名称
+var recommendCode=param['recommendCode'];//获取邀请码
 $(function () {
     // 密碼叉叉點擊清楚所有文字
     $('.clearValOne').click(function(){
@@ -62,7 +63,7 @@ $(function () {
     // 获取图形验证码
     $(".checkbtn").click(function(){
         var mobileNum = $(".mobile").val();
-        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
             $.ajax({
                 url: "/app/user/getImgCode",
                 type: "POST",
@@ -129,7 +130,7 @@ $(function () {
         var password=$('#password').val();//获取密码
         var verifyImgCode=$("#imgVftCode").val(); // 图形验证码
         if (isState == 0 || !isState) {
-            var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
+            var userck=(/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(mobileNum));
             if (userck ) {
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
@@ -180,7 +181,7 @@ $(function () {
         var registerMobile = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
         var yzcheck=$('#yzcheck').val();//获取验证码
-        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMobile)); //手机号正则验证11位
+        var userck = (/^1[3|4|5|6|7|8|9][0-9]{9}$/.test(registerMobile)); //手机号正则验证11位
         var yztrue=(/^\d{6}$/.test(yzcheck));//6位数字正则验证 验证码
         var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
         var password_md5 = String(CryptoJS.MD5(password));//md5加密
@@ -197,7 +198,8 @@ $(function () {
                     'inviteer':userName,
                     'activityId':'1000',
                     'typeFrom':typeFrom,
-                    'typeFromNum':typeFromNum
+                    'typeFromNum':typeFromNum,
+                    'recommendCode':recommendCode
                 },
                 success: function (returnData) {
                     console.log(0);
@@ -384,8 +386,8 @@ var shareInfo;
 if(pageName=='ggFix'){
     shareInfo = {
         title: "有人@你~你有最高188元惊喜金待领取！",
-        desc: "16元外卖1元购，下单即返30元~",
-        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggFix",
+        desc: "16元外卖1元购，笔笔订单返现金（可提现）~",
+        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName=ggFix'+'&recommendCode='+recommendCode,
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
             requestMsg("分享成功！");
@@ -402,8 +404,8 @@ if(pageName=='ggFix'){
 if(pageName=='ggOverlord'){
     shareInfo = {
         title: "老铁~快来吃霸王餐啦~",
-        desc: "节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>",
-        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggOverlord",
+        desc: "节日剁手不吃土，来51返呗点16元外卖1元购，有福同享，你也快来>>>",
+        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName=ggOverlord'+'&recommendCode='+recommendCode,
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
             requestMsg("分享成功！");

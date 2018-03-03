@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 
 /**
@@ -26,5 +27,12 @@ public interface AfCouponSceneService {
 	 *@return
 	 */
 	List<CouponSceneRuleBo> getRules(String type, String key);
+
+
+
+	List<CouponSceneRuleBo> getRules(CouponScene scene);
+
+
+	List<Long> getCounponIds(CouponScene scene);
 	
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
@@ -35,10 +36,17 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeDianyingDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeHuocheDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeHuochePassengerDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeJiayoukaDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoFlightDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJipiaoPassengerDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeJiudianDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeShoujiDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeWaimaiDao;
@@ -46,8 +54,10 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.tgtext.text.af;
 import com.timevale.tgtext.text.pdf.fi;
 
 /**
@@ -84,6 +94,19 @@ public class BoluomeController extends AbstractThird {
     private AfBoluomeWaimaiDao afBoluomeWaimaiDao;
     @Autowired
     private AfBoluomeShoujiDao afBoluomeShoujiDao;
+    @Autowired
+    private AfBoluomeHuocheDao afBoluomeHuocheDao;
+    @Autowired
+    private AfBoluomeJipiaoDao afBoluomeJipiaoDao;
+    @Autowired
+    private AfBoluomeHuochePassengerDao afBoluomeHuochePassengerDao;
+    @Autowired
+    private AfBoluomeJipiaoFlightDao afBoluomeJipiaoFlightDao;
+    @Autowired
+    private AfBoluomeJipiaoPassengerDao afBoluomeJipiaoPassengerDao;
+    
+    @Autowired
+    private AfUserAccountSenceService afUserAccountSenceService;
 
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -113,7 +136,8 @@ public class BoluomeController extends AbstractThird {
 			    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
 			    // 获取菠萝觅订单详情(线程池)
 			    ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
-			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, afBoluomeWaimaiDao, afBoluomeShoujiDao));
+			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, 
+				    afBoluomeWaimaiDao, afBoluomeShoujiDao, afBoluomeHuocheDao,afBoluomeHuochePassengerDao, afBoluomeJipiaoDao,afBoluomeJipiaoFlightDao,afBoluomeJipiaoPassengerDao));
 			} else {
 			    afOrderService.dealBoluomeOrder(orderInfo);
 			}
@@ -219,9 +243,9 @@ public class BoluomeController extends AbstractThird {
 	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : BigDecimal.ZERO;
 	    orderInfo.setPriceAmount(priceAmount);
 	    if (OrderSecType.WAI_MAI.getCode().equals(orderType)) {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : null);
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : new Date(System.currentTimeMillis() + 10 * 60 * 1000));
 	    } else {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : new Date(System.currentTimeMillis() + 30 * 60 * 1000));
 	    }
 	    orderInfo.setThirdDetailUrl(detailUrl);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
@@ -247,16 +271,17 @@ public class BoluomeController extends AbstractThird {
 		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
 		orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
 	    }
-	    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
-	    if (userAccountInfo != null) {
-		orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-		orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+	    //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
+	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+	    if (afUserAccountSenceDo != null) {
+		orderInfo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		orderInfo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
 	    if (StringUtils.isNotBlank(status)) {
 		String orderStatus = BoluomeUtil.parseOrderType(status).getCode();
-		//只有NEW状态的订单才处理菠萝觅的关闭请求
+		// 只有NEW状态的订单才处理菠萝觅的关闭请求
 		if (OrderStatus.CLOSED.getCode().equals(orderStatus)) {
 		    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
 			orderInfo.setStatus(orderStatus);

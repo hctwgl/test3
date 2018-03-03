@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
+
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 
@@ -17,7 +20,6 @@ public interface AfLegalContractPdfCreateService {
 
     void protocolLegalRenewal(long userId, Long borrowId, Long renewalId, int renewalDay, BigDecimal renewalAmount);
 
-    String getProtocalLegalByType(Integer debtType, String orderNo,String protocolUrl,String investorPhone,
-                                  String investorName,String investorCardId) throws IOException;
+    void platformServiceProtocol(Long borrowId,String type,BigDecimal poundage,Long userId);
 
 }
