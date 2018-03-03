@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.SmsType;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,7 @@ public class GetEmailVerifyCodeApi implements ApiHandle {
 
 		Map<String, Object> params = requestDataVo.getParams();
 		String email = ObjectUtils.toString(params.get("email"), "").toString();
-		smsUtil.sendEmailVerifyCode(email, context.getUserId());
+		smsUtil.sendEmailVerifyCode(email, SmsType.EMAIL_BIND, context.getUserId());
 		return resp;
 	}
 
