@@ -298,8 +298,12 @@ public class TestController {
     	Long userId = 18637962178L;
 		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
 		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
-		System.out.println("appId:"+appId);
-		System.out.println("appSecurity:"+appSecurity);
+		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
+		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
+		logger.info("appId:"+appId);
+		logger.info("appSecurity:"+appSecurity);
+		logger.info("fanbeitest:"+fanbeitest);
+		logger.info("inveloment:"+inveloment);
 		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
 		String authItem="ecommerce";
 		String timestamp=DateUtil.getCurrSecondTimeStamp()+"";
