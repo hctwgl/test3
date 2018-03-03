@@ -561,17 +561,13 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		if(accScene.getScene().equals(LoanType.BLD_LOAN.getCode())) {
-			if(UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
+			if (UserAuthSceneStatus.NO.getCode().equals(authStatus)) {
 				AfUserAuthDo afAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
-				if(afAuthInfo != null && UserAuthSceneStatus.YES.getCode().equals(afAuthInfo.getBasicStatus())) {
+				if(afAuthInfo != null && !StringUtils.equals("A", afAuthInfo.getBasicStatus())) {
 					return AfLoanRejectType.GO_BLD_AUTH;
-				} else {
-					return AfLoanRejectType.NO_AUTHZ;
 				}
 			}
 		}
-		
-	
 		
 		// 检查上笔贷款
 		if (lastLoanDo != null 
