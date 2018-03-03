@@ -87,14 +87,17 @@ public class LoanRepayPlanApi implements H5Handle {
 			BigDecimal allActualAmount = BigDecimal.ZERO;
 			
 			for (AfLoanPeriodsDo loanPeriodsDo : loanPeriods) {
-				// 每期待还金额(本金+手续费+利息+逾期费)
-				BigDecimal perPeriodAmount = afLoanRepaymentService.calculateRestAmount(loanPeriodsDo.getRid());
+				// 每期需还金额(本金+手续费+利息+逾期费)
+				BigDecimal perPeriodAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),loanPeriodsDo.getServiceFee(),loanPeriodsDo.getInterestFee(),loanPeriodsDo.getOverdueAmount(),
+															loanPeriodsDo.getRepaidServiceFee(),loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getRepaidOverdueAmount());
+				// 每期待还金额(本金+手续费+利息+逾期费-已还金额)
+				BigDecimal restAmount = afLoanRepaymentService.calculateRestAmount(loanPeriodsDo.getRid());
 				
 				AfLoanPeriodsVo loanPeriodsVo = new AfLoanPeriodsVo();
 				loanPeriodsVo.setLoanPeriodsId(loanPeriodsDo.getRid());	// 借款期数id
 				loanPeriodsVo.setNper(loanPeriodsDo.getNper());		// 期数
 				loanPeriodsVo.setPerAmount(perPeriodAmount);		// 每期还款金额
-				loanPeriodsVo.setRestAmount(afLoanPeriodsService.calcuRestAmount(loanPeriodsDo));
+				loanPeriodsVo.setRestAmount(restAmount);		// 每期待还金额
 				loanPeriodsVo.setServiceFee(loanPeriodsDo.getServiceFee());		// 手续费
 				loanPeriodsVo.setInterestFee(loanPeriodsDo.getInterestFee());	// 利息
 				loanPeriodsVo.setOverdueAmount(loanPeriodsDo.getOverdueAmount());	// 逾期费
@@ -112,16 +115,19 @@ public class LoanRepayPlanApi implements H5Handle {
 						loanPeriodsVo.setStatus("O");
 					}
 					
-					allRestAmount = allRestAmount.add(perPeriodAmount);
+					allRestAmount = allRestAmount.add(restAmount);
 					if(!afLoanRepaymentService.canRepay(loanPeriodsDo)) {
 						allActualAmount = allActualAmount.add(loanPeriodsDo.getAmount()); //未出账的期 只用还本金
 					}else {
-						allActualAmount = allActualAmount.add(perPeriodAmount);
+						allActualAmount = allActualAmount.add(restAmount);
 					}
 				}else if(status.equals(AfLoanPeriodStatus.REPAYING.name())){	// 还款中
 					loanPeriodsVo.setStatus("D");
 				}else if(status.equals(AfLoanPeriodStatus.FINISHED.name())){	// 已结清
 					loanPeriodsVo.setStatus("Y");
+					loanPeriodsVo.setInterestFee(BigDecimal.ZERO);
+					loanPeriodsVo.setServiceFee(BigDecimal.ZERO);
+					loanPeriodsVo.setRestAmount(BigDecimal.ZERO);
 				}
 				
 				data.add(loanPeriodsVo);
