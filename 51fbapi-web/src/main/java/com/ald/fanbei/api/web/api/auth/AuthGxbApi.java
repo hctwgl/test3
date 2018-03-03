@@ -71,7 +71,9 @@ public class AuthGxbApi implements ApiHandle {
 					JSONObject data = JSON.parseObject(respInfo.getData());
 					String token=data.getString("token");
 					logger.info("getAuthToken resp success, token="+token+",respInfo"+respInfo.getRetMsg());
-				    String returnUrl = "http://ctestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
+					String riskUrl = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+				    //String returnUrl = riskUrl + "/tpp/gxbdata/alipay/notify.htm";
+					String returnUrl = "http://btestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
 				    String urlFull = "https://prod.gxb.io/v2/auth?returnUrl="+returnUrl+"&token="+token;
 				    logger.info("url=" + urlFull+"userId="+userId);
 				    resp.addResponseData("url", urlFull);
