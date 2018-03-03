@@ -359,6 +359,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					interestFreeArray = JSON.parseArray(interestFreeJson);
 				}
 			}
+			AfResourceDo resourceBrand= afResourceService.getBrandRate(goodsDo.getRid());//资源配置中的品牌利率
+			if (resourceBrand != null){
+				resource = resourceBrand;
+			}
 			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
 
@@ -424,6 +428,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
+				}
+				AfResourceDo resourceBrand= afResourceService.getBrandRate(goodsDo.getRid());//资源配置中的品牌利率
+				if (resourceBrand != null){
+					resource = resourceBrand;
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());

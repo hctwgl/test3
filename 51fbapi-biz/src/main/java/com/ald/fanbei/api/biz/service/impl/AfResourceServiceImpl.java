@@ -12,6 +12,8 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ public class AfResourceServiceImpl implements AfResourceService {
     BizCacheUtil bizCacheUtil;
     @Resource
     AfResourceDao afResourceDao;
+    @Resource
+    private AfGoodsService afGoodsService;
     //	@Resource
 //	BizCacheUtil bizCacheUtil;
     private static Map<String, List<AfResourceDo>> localResource = null;
@@ -648,15 +652,19 @@ public class AfResourceServiceImpl implements AfResourceService {
     /**
      * 获取品牌专有利率
      *
-     * @param brand 用户名
+     * @param goodsId 用户名
      * @return 利率相关详情
      */
     @Override
-    public AfResourceDo getBrandRate(String brand) {
-        if(StringUtil.isEmpty(brand)){
+    public AfResourceDo getBrandRate(long goodsId) {
+        if(goodsId<=0l){
             return null;
         }
-        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME_VIP+brand);
+        AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
+        if (goods == null){
+            return null;
+        }
+        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME_VIP+goods.getBrandId());
 
         return resource;
     }

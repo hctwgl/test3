@@ -59,6 +59,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import sun.rmi.runtime.Log;
 
 /**
  * @类描述：
@@ -157,6 +158,10 @@ public class AppGoodsControler extends BaseController {
 				// 获取借款分期配置信息
 				AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 						Constants.RES_BORROW_CONSUME);
+				AfResourceDo resourceBrand= afResourceService.getBrandRate(Long.parseLong(goodsId));//资源配置中的品牌利率
+				if (resourceBrand != null){
+					resource = resourceBrand;
+				}
 				JSONArray array = JSON.parseArray(resource.getValue());
 				// 删除2分期
 				if (array == null) {
@@ -245,6 +250,10 @@ public class AppGoodsControler extends BaseController {
 					// 获取借款分期配置信息
 					AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 							Constants.RES_BORROW_CONSUME);
+					AfResourceDo resourceBrand= afResourceService.getBrandRate(Long.parseLong(goodsId));//资源配置中的品牌利率
+					if (resourceBrand != null){
+						resource = resourceBrand;
+					}
 					JSONArray array = JSON.parseArray(resource.getValue());
 					// 删除2分期
 					if (array == null) {

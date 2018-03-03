@@ -114,7 +114,8 @@ public class GetNperListApi implements ApiHandle {
             }
             //获取借款分期配置信息
             //11.29修改专有利率
-            AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());//资源配置中的利率
+            //AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());//资源配置中的利率
+            AfResourceDo resource= afResourceService.getBrandRate(orderInfo.getGoodsId());//资源配置中的品牌利率
             if(resource==null){
                 resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
             }
