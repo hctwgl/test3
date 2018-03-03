@@ -23,6 +23,8 @@ public interface AfBorrowCashService {
 
 
 	int borrowSuccess(final AfBorrowCashDo afBorrowCashDo);
+	
+	void borrowFail(final Long borrowId, String tradeNoOut, String msgOut);
 
 	/**
 	 * 更新记录

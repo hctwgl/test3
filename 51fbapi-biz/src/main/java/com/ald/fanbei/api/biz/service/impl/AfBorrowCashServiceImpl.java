@@ -5,36 +5,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.kafka.KafkaConstants;
-import com.ald.fanbei.api.biz.kafka.KafkaSync;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
-
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.CouponActivityType;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -88,6 +93,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
     JpushService jpushService;
     @Resource
     AfFundSideBorrowCashService afFundSideBorrowCashService;
+    @Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
     @Autowired
     KafkaSync kafkaSync;
@@ -313,6 +320,32 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
         }
 
         return resultValue;
+    }
+    
+    /**
+     * 借款成功
+     *
+     * @param afBorrowCashDo
+     * @return
+     */
+    public void borrowFail(final Long borrowId, String tradeNoOut, String msgOut) {
+    	final AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getBorrowCashByrid(borrowId);
+    	afBorrowCashDo.setReviewDetails(tradeNoOut);
+    	
+    	Date cur = new Date();
+    	afBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+    	afBorrowCashDo.setRemark("UPS打款失败，"+msgOut);
+    	afBorrowCashDo.setGmtModified(cur);
+    	afBorrowCashDo.setGmtClose(cur);
+    	
+    	transactionTemplate.execute(new TransactionCallback<Integer>() {
+            @Override
+            public Integer doInTransaction(TransactionStatus transactionStatus) {
+            	afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+        		afUserAccountSenceService.syncLoanUsedAmount(afBorrowCashDo.getUserId(), SceneType.CASH, afBorrowCashDo.getAmount().negate());
+                return 1;
+            }
+        });
     }
 
 
