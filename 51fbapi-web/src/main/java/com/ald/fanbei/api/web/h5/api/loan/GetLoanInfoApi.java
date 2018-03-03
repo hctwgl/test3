@@ -128,7 +128,7 @@ public class GetLoanInfoApi implements H5Handle {
 			}else {
 				loanVo.setOverdueStatus("N");	// 逾期状态
 				loanVo.setCurrentPeriodAmount(BigDecimal.ZERO);	// 本月待还金额
-				if(loanDo.getStatus().equals(AfLoanStatus.APPLY.name())){
+				if(loanDo.getStatus().equals(AfLoanStatus.APPLY.name()) || loanDo.getStatus().equals(AfLoanStatus.FINISHED.name())){
 					loanVo.setStatus(loanDo.getStatus());		// 申请/未审核
 				}else{
 					loanVo.setStatus("CURR_COMPLETED");		// 当月已还清，下月的还款时间还没开始
