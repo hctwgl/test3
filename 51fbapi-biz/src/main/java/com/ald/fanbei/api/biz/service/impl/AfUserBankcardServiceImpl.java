@@ -54,7 +54,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 	    for (AfBankUserBankDto item : list) {
 		// 获取银行状态（ups写入redis数据）
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
-		Object bankStatusValue = bizCacheUtil.getObject(bankStatusKey);
+		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
 		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    item.setBankStatus(bankStatus);
