@@ -178,7 +178,7 @@ public class LoanTest  extends BaseTest{
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 113+"");
+		params.put("loanId", 121+"");
 		
 		testH5(url, params, userName, true);
 	}
