@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -92,6 +93,8 @@ public class H5BoluomeActivityController extends BaseController {
     AfSmsRecordService afSmsRecordService;
     @Resource
     TongdunUtil tongdunUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
     @Resource
     AfOrderService afOrderService;
     @Resource
@@ -552,7 +555,11 @@ public class H5BoluomeActivityController extends BaseController {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
-
+		try {
+			baiQiShiUtils.getRegistResult(token,"",mobile,"","","","");
+		}catch (Exception e){
+			logger.error("H5GGShare baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 	    // 更新为已经验证
 	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.util.*;
@@ -91,6 +92,8 @@ public class AppH5UserContorler extends BaseController {
     AfPromotionLogsService afPromotionLogsService;
     @Resource
     TongdunUtil tongdunUtil;
+    @Resource
+    BaiQiShiUtils baiQiShiUtils;
 
     @Resource
     private AfUserAuthService afUserAuthService;
@@ -565,7 +568,11 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-
+            try {
+                baiQiShiUtils.getRegistResult(token,"",mobile,"","","","");
+            }catch (Exception e){
+                logger.error("/app/user/commitChannelRegister getRegistResult error => {}",e.getMessage());
+            }
             // 更新为已经验证
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

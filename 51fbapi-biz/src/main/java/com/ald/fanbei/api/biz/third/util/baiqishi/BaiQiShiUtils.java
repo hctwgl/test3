@@ -26,16 +26,16 @@ public class BaiQiShiUtils {
 
     /**
      * 验证登录
-     *
-     * @param 同盾事件标识
-     * @param blackBox      设备指纹
-     * @param ip            真实ip
-     * @param accountLogin  账户名
-     * @param accountMobile 账户绑定手机号
-     * @param loginState    登录成功状态 1：失败 0：成功
+     * @param blackBox
+     * @param ip
+     * @param mobile
+     * @param name
+     * @param idNumber
+     * @param cardNumber
+     * @param openId
      */
     public void getLoginResult(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
-        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId);
+        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"login");
         JSONObject apiResp = null;
         String apiUrl = "https://api.baiqishi.com/services/decision";
         try {
@@ -59,7 +59,7 @@ public class BaiQiShiUtils {
         }*/
     }
 
-    private Map<String, Object> getCommonParam(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
+    private Map<String, Object> getCommonParam(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId,String eventType) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("mobile", mobile);
         params.put("name", name);
@@ -68,7 +68,7 @@ public class BaiQiShiUtils {
         params.put("zmOpenId", openId);//用户在商户端芝麻信用授权ID
         params.put("appId", "test");
         params.put("tokenKey", blackBox);
-        params.put("eventType", "loan");
+        params.put("eventType", eventType);
         params.put("verifyKey", "e93f7e5ec79548f3b0932cdc086a5ac3");
         params.put("partnerId", "fanbei");
         return params;
@@ -86,7 +86,7 @@ public class BaiQiShiUtils {
      */
     public void getRegistResult(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
 
-        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId);
+        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"register");
         String apiUrl = "https://api.baiqishi.com/services/decision";
         JSONObject apiResp = null;
         try {

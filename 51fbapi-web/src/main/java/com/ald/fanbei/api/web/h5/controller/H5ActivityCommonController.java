@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -90,6 +91,8 @@ public class H5ActivityCommonController extends BaseController {
     AfSmsRecordService afSmsRecordService;
     @Resource
     TongdunUtil tongdunUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
     @Resource
     AfOrderService afOrderService;
     @Resource
@@ -133,6 +136,11 @@ public class H5ActivityCommonController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
 
 	    }
+		try {
+			baiQiShiUtils.getRegistResult(tongduanToken,"",UserDo.getMobile(),"","","","");
+		}catch (Exception e){
+			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 	    // check password
 	    String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
 
@@ -217,7 +225,11 @@ public class H5ActivityCommonController extends BaseController {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 		return resultStr;
 	    }
-
+		try {
+			baiQiShiUtils.getRegistResult(token,"",moblie,"","","","");
+		}catch (Exception e){
+			logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 	    // 更新为已经验证
 	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

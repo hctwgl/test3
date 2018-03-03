@@ -97,7 +97,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 				try {
 					baiQiShiUtils.getRegistResult(blackBox,"",mobile,"","","","");
 				}catch (Exception e){
-					logger.error("baiQiShiUtils getRegistResult error => {}",e.getMessage());
+					logger.error("getVerifyCodeApi baiQiShiUtils getRegistResult error => {}",e.getMessage());
 				}
 			}
 
@@ -133,7 +133,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 				try {
 					baiQiShiUtils.getRegistResult(blackBox,"",mobile,"","","","");
 				}catch (Exception e){
-					logger.error("baiQiShiUtils getRegistResult error => {}",e.getMessage());
+					logger.error("getVerifyCodeApi baiQiShiUtils getRegistResult error => {}",e.getMessage());
 				}
 			}
 			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
