@@ -528,66 +528,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
 
     }
 
-    @Override
-    public void platformServiceProtocol(Long borrowId, String type, BigDecimal poundage, Long userId) {
-        try {
-            Map map = new HashMap();
-            AfUserDo afUserDo = afUserService.getUserById(userId);
-            if (afUserDo == null) {
-                logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            }
-            AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-            if (accountDo == null) {
-                logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            }
-
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
-            getResourceRate(map, type, afResourceDo, "borrow");
-            map.put("email", afUserDo.getEmail());//电子邮箱
-            map.put("mobile", afUserDo.getUserName());// 联系电话
-            map.put("realName", accountDo.getRealName());
-            map.put("poundage", poundage);//手续费
-            if (borrowId > 0) {
-                AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-                if (null != afBorrowCashDo) {
-                    map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
-                }
-                map.put("borrowId", borrowId);
-                Calendar c = Calendar.getInstance();
-                c.setTime(afBorrowCashDo.getGmtCreate());
-                int month = c.get(Calendar.MONTH) + 1;
-                int day = c.get(Calendar.DATE);
-                int year = c.get(Calendar.YEAR);
-                String time = year + "年" + month + "月" + day + "日";
-                map.put("time", time);// 签署日期
-                secondSeal(map, null, afUserDo, accountDo);
-            }
-            String overdueRate = (String) map.get("overdueRate");
-            map.put("overdueRate", BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
-            long time = new Date().getTime();
-            map.put("protocolCashType", "4");
-            map.put("templatePath", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-01-30/18/platform.pdf");
-            map.put("PDFPath", src + accountDo.getUserName() + "platform" + time + 1 + ".pdf");
-            map.put("userPath", src + accountDo.getUserName() + "platform" + time + 2 + ".pdf");
-            map.put("selfPath", src + accountDo.getUserName() + "platform" + time + 3 + ".pdf");
-            map.put("thirdPath", src + accountDo.getUserName() + "platform" + time + 4 + ".pdf");
-            map.put("fileName", accountDo.getUserName() + "platform" + time + 4);
-            map.put("signType", "Key");
-            map.put("secondPartyKey", "first");//阿拉丁签章关键字
-            map.put("firstPartyKey", "second");//用户签章关键字
-            map.put("sealWidth", "60");
-            map.put("posType", "1");
-
-            if (!PdfCreateByStream(map))
-                throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
-            logger.info(JSON.toJSONString(map));
-        } catch (Exception e) {
-            logger.error("platformServiceProtocol error 平台服务协议生成失败 =>{}", e.getMessage());
-        }
-    }
-
     private boolean PdfCreateByStream(Map map) throws IOException {
         OutputStream fos = null;
         ByteArrayOutputStream bos = null;
