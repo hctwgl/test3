@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -288,17 +289,32 @@ public class TestController {
     @RequestMapping("/kafka")
     @ResponseBody
     public String testKafka() throws Exception{
-        logger.error("testKafka------");
-        try{
-            // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
-            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
-            HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+        String appId="gxb099547a1a9ea2e48";
+        String appSecurity="a8b2a9708cb4487cacdb568fadef19cd";
+        String sequenceNo="12345678gxb00001";//用户的id 中间gxb 末尾自增
+        String authItem="ecommerce";
+        String timestamp="1499363705428";
+        String name="任春雷";
+        String phone="15990182307";
+        String idcard="340621198906108755";
+        HashMap map=new HashMap();
+        map.put("appId",appId);
+        map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
+        map.put("sequenceNo",sequenceNo);
+        map.put("authItem",authItem);
+        map.put("timestamp",timestamp);
+        map.put("name",name);
+        map.put("phone",phone);
+        map.put("idcard",idcard);
 
-        }catch (Exception e){
-    logger.error("eee",e);
-        }
 
-        return "测试kafka";
+        String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
+
+
+        //endregion
+        System.out.println(reqResult);
+
+        return reqResult;
     }
     @RequestMapping("/address")
     @ResponseBody
