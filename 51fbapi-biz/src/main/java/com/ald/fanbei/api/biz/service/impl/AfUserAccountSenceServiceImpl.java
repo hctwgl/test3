@@ -6,8 +6,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
@@ -15,7 +13,6 @@ import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
 /**
@@ -119,11 +116,6 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
 	@Override
 	public void checkLoanQuota(Long userId, SceneType scene, BigDecimal amount) {
-		if(SceneType.CASH.equals(scene)) {
-			AfUserAccountDo account = afUserAccountDao.getUserAccountInfoByUserId(userId);
-		}else {
-			AfUserAccountSenceDo sceneDo = afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
-		}
 	}
 
 	@Override
