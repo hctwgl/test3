@@ -61,6 +61,7 @@ public class AuthGxbApi implements ApiHandle {
 	    map.put("phone",phone);
 	    map.put("idcard",idcard);
 	    try {
+	    	logger.info("mapInfo:"+map.toString());
 	    	String respResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
 	    	if (StringUtil.isBlank(respResult)) {
 	    		logger.error("getAuthToken respResult is null");
