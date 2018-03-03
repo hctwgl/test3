@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -96,7 +97,7 @@ public class SetPayPwdApi implements ApiHandle {
 		nAccountDo.setUserId(userId);
 		nAccountDo.setPassword(password);
 		
-        //----------------------mqp clear password times -------------
+        //----------------------mqp clear password times and the last time-------------
         //Long userId = afUserService.convertUserNameToUserId(userName);
         if (userId != null) {
         	 String key = Constants.CACHKEY_WRONG_INPUT_PAYPWD_TIMES + userId;
@@ -105,6 +106,14 @@ public class SetPayPwdApi implements ApiHandle {
              	
              	bizCacheUtil.delCache(key);
      		}
+             
+     		// the previous time
+     		String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
+     		Date previousDate = (Date) bizCacheUtil.getObject(key1);
+     		if (previousDate != null) {
+				bizCacheUtil.delCache(key);
+			}
+             
 		}
        
         //----------------------mqp clear password times -------------
