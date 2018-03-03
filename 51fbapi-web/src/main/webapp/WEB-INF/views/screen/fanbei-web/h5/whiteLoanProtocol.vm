@@ -249,16 +249,12 @@
                     <td>身份证号码</td>
                     <td>出借金额</td>
                 </tr>
-                <tr>
-                    <td>$!{edspayUserName}</td>
-                    <td>$!{edspayUserCardId}</td>
-                    <td>#if($!{edspayUserCardId})$!{amountLower}元#end</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                #foreach($item in $!{edspaySealDoList})
+                    <tr>
+                        <td>$!{item.edspayUserName}</td><td>$!{item.edspayUserCardId}</td>
+                        <td>#if($!{item.investorAmount})$!{item.investorAmount}元#end</td>
+                    </tr>
+                #end
             </table>
             <br> 丙方：浙江阿拉丁电子商务股份有限公司 #if($!{companyUserSeal})
             <img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end
