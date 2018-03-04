@@ -176,6 +176,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
+						List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
 						EdspayGetCreditRespBo borrowCashInfo =new EdspayGetCreditRespBo();
 						borrowCashInfo.setDebtType(0);
 						borrowCashInfo.setOrderNo(afBorrowCashDto.getOrderNo());
@@ -251,9 +252,10 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						repaymentPlan.setRepaymentPeriod(0);
 						repaymentPlans.add(repaymentPlan);
 						borrowCashInfo.setRepaymentPlans(repaymentPlans);
+						borrowCashInfos.add(borrowCashInfo);
 						
 						//债权实时推送
-						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 						if (result) {
 							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
 						}

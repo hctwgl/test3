@@ -119,12 +119,12 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())){
 					//未满额且自营开关开启
 					AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-					EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+					List<EdspayGetCreditRespBo>  pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 					//债权实时推送
-					boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (result) {
-						logger.info("borrowCurPush suceess,debtType=selfsupport,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+						logger.info("borrowCurPush suceess,debtType=selfsupport,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
 					}
 				}
 				return resp;
@@ -144,12 +144,12 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 						AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 						if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getAgencyBuy())){
 							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-							EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+							List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
 							AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 							//债权实时推送
-							boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+							boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 							if (result) {
-								logger.info("borrowCurPush suceess,debtType=agencyBuy,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+								logger.info("borrowCurPush suceess,debtType=agencyBuy,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
 							}
 						}
 						return resp;

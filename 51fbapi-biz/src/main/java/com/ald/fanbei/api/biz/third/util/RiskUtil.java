@@ -938,12 +938,12 @@ public class RiskUtil extends AbstractThird {
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
 						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))) {
 					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
-					EdspayGetCreditRespBo pushEdsPayBorrowInfo = pushEdsPayBorrowInfo(borrow);
+					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 					//债权实时推送
-					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (resp) {
-						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
 					}
 				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
@@ -976,7 +976,8 @@ public class RiskUtil extends AbstractThird {
 		return resultMap;
 	}
 
-	public EdspayGetCreditRespBo pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
+	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
+		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
 		//获取开户行信息
 		FanbeiBorrowBankInfoBo bankInfo = assetSideEdspayUtil.getAssetSideBankInfo(assetSideEdspayUtil.getAssetSideBankInfo());
@@ -1045,7 +1046,8 @@ public class RiskUtil extends AbstractThird {
 		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
 		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
 		creditRespBo.setRepaymentPlans(repaymentPlans);
-		return creditRespBo;
+		creditRespBos.add(creditRespBo);
+		return creditRespBos;
 	}
 
 	/**

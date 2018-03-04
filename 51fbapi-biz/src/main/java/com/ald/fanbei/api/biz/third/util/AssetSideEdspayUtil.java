@@ -448,7 +448,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	 * @param assetSideFanbeiFlag
 	 * @return
 	 */
-	public boolean borrowCashCurPush(EdspayGetCreditRespBo borrowCashInfo,String assetSideFlag, String assetSideFanbeiFlag) {
+	public boolean borrowCashCurPush(List<EdspayGetCreditRespBo> borrowCashInfos,String assetSideFlag, String assetSideFanbeiFlag) {
 		//发送的资产包信息
 		try {
 			String borrowerJson = "";
@@ -456,6 +456,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				logger.error("borrowCashCurPush fail:assetSideFlag is null");
 				return false;
 			}
+			EdspayGetCreditRespBo borrowCashInfo=borrowCashInfos.get(0);
 			if (borrowCashInfo == null) {
 				borrowerJson = JSON.toJSONString("");
 			}else{
@@ -812,12 +813,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String borrowId=obj.getString("borrowId");
 			AfBorrowDo borrowDo = afBorrowService.getBorrowById(Long.valueOf(borrowId));
-			EdspayGetCreditRespBo pushEdsPayBorrowInfo = riskUtil.pushEdsPayBorrowInfo(borrowDo);
+			List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(borrowDo);
 			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 			//债权实时推送
-			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 			if (result) {
-				logger.info("borrowCurPush suceess,debtType=tenement,orderNo="+pushEdsPayBorrowInfo.getOrderNo());
+				logger.info("borrowCurPush suceess,debtType=tenement,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
 			}
 		}
 		return "success";
