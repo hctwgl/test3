@@ -476,12 +476,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			map.put("appId", assetSideFanbeiFlag);
 			//发送前数据打印
 			logger.info("borrowCashCurPush originBorrowerJson"+borrowerJson+",data="+data+",sendTime="+sendTime+",sign="+sign+",appId="+assetSideFanbeiFlag);
-			String jsonParam = JSON.toJSONString(map);
 			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
 				//推送数据给钱包
-				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/curDebtPush", jsonParam);
+				
+				//推送数据给钱包
+				//String respResult = HttpUtil.doHttpPostJsonParam(afResourceDo.getValue1()+"/p2p/fanbei/debtPush", jsonParam);
+				System.out.println(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush");
+				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
+				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 					//推送成功
