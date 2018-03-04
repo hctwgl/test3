@@ -5,11 +5,13 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -19,10 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
+import sun.awt.windows.ThemeReader;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,26 +93,31 @@ public class CuiShouUtils {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        CuiShouUtils.setIsXianXiaHuangKuang(true);
                         CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
                         cuiShouBackMoney.setCode(500);
 
                         cuiShouBackMoney = borrowBackMoney(jsonObject);
+                        JSONObject jsonObject1 = new JSONObject();
                         sycnSuccessAndError(cuiShouBackMoney,0); //同步返回数据
                     }
                 }).start();
                 return new CuiShouBackMoney(200, "成功").toString();//同步反回接收成功
 
             } else if (CuiShouType.BORROW_CASH.getCode().equals(c_type)) {
+                CuiShouUtils.setIsXianXiaHuangKuang(true);
                 CuiShouBackMoney c = borrowCashMoney(jsonObject);
-                JSONObject j = (JSONObject)c.getData();
-                j.put("ref_id",CuiShouUtils.getAfRepaymentBorrowCashDo().getRid());
-                c.setData(j);
+                JSONObject j = (JSONObject) c.getData();
+                if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
+                    j.put("ref_id", CuiShouUtils.getAfRepaymentBorrowCashDo().getRid());
+                    c.setData(j);
+                }
                 return JSON.toJSONString(c);
             } else if (CuiShouType.WITH_BORROW.getCode().equals(c_type)) {
 
 
             }
-            return new CuiShouBackMoney(200, "成功").toString();//同步反回接收成功
+            return JSONObject.toJSONString(new  CuiShouBackMoney(200, "成功")) ;//同步反回接收成功
         } catch (Exception e) {
             thirdLog.error("offlineRepaymentMoney error", e);
             CuiShouBackMoney cuiShouBackMoney = new  CuiShouBackMoney(500, "内部错误");
@@ -255,7 +265,7 @@ public class CuiShouUtils {
             }
         }
         catch (Exception e){
-            thirdLog.info("cuishouhuankuan  getRepayMentDo  error500");
+            thirdLog.error("cuishouhuankuan  getRepayMentDo  error500",e);
             cuiShouBackMoney.setCode(500);
             return cuiShouBackMoney;
         }
@@ -293,6 +303,7 @@ public class CuiShouUtils {
                 AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
                 if (afBorrowCashDo == null) {
                     cuiShouBackMoney.setCode(301);
+                    thirdLog.error("offlineRepaymentNotify error borrowNo ="+ borrowNo);
                     return cuiShouBackMoney;
                 }
 
@@ -312,7 +323,7 @@ public class CuiShouUtils {
                 else {
                     AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(borrowId, tradeNo);
                     if (existItem != null) {
-                        thirdLog.error("offlineRepaymentNotify exist trade_no");
+                        thirdLog.info("offlineRepaymentNotify exist trade_no");
                         cuiShouBackMoney.setCode(302);
                         return cuiShouBackMoney;
                     }
@@ -329,6 +340,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             } else {
                 //notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
+                thirdLog.info("offlineRepaymentNotify REQUEST_PARAM_NOT_EXIST");
                 cuiShouBackMoney.setCode(303);
                 return cuiShouBackMoney;
             }
@@ -346,8 +358,8 @@ public class CuiShouUtils {
      */
     public void sycnSuccessAndError(CuiShouBackMoney cuiShouBackMoney,Integer type){
 //        String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/callback/nperRepay";
-        String url ="http://192.168.117.50:8003/report/repayment";
 
+        String url ="http://192.168.117.50:8003/report/repayment";
         try {
             String mm = JSON.toJSONString(cuiShouBackMoney);
             byte[] pd = DigestUtil.digestString(mm.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
@@ -355,6 +367,7 @@ public class CuiShouUtils {
             HashMap<String, String> mp = new HashMap<String, String>();
             mp.put("sign", sign);
             mp.put("data", mm);
+            mp.put("type",String.valueOf(type));
             //mp.put("timeStamp", String.valueOf(new Date().getTime()));
             thirdLog.info("cuishouhuankuan  postChuiSohiu {sign:" + sign + ",data:" + mm + "}");
             String e1 = "";
@@ -389,10 +402,13 @@ public class CuiShouUtils {
     }
 
     /**
-     * 分期
+     * 分期还款同步
      * @param afRepaymentDo
      */
     public void syncCuiShou(AfRepaymentDo afRepaymentDo){
+        if(CuiShouUtils.getIsXianXiaHuangKuang() !=null && CuiShouUtils.getIsXianXiaHuangKuang()){
+            return;
+        }
         setAfRepaymentDo(afRepaymentDo);
         CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
         cuiShouBackMoney.setCode(200);
@@ -421,6 +437,92 @@ public class CuiShouUtils {
         }
     }
 
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
+    @Resource
+    AfBorrowBillDao afBorrowBillDao;
+    @Resource
+    AfBorrowDao afBorrowDao;
+    /**
+     * 强行平帐
+     * @param data
+     * @param sign
+     * @return
+     */
+    public String finishBorrow(String data,String sign){
+        try {
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return JSON.toJSONString(new  CuiShouBackMoney(201, "验签错误"));
+
+            JSONObject jsonObject = JSONObject.parseObject(data);
+            String type = jsonObject.getString("type");
+            if(type.equals("BORROW")){
+                CuiShouBackMoney cuiShouBackMoney =new CuiShouBackMoney();
+                Long billId = jsonObject.getLong("ref_id");
+                AfBorrowBillDo afBorrowBillDo = afBorrowBillDao.getBorrowBillById(billId);;
+                if(afBorrowBillDo ==null){
+                    cuiShouBackMoney.setCode(304);
+                    return JSONObject.toJSONString(cuiShouBackMoney);  //更新失败
+                }
+                List<Long> bilIds = new ArrayList<Long>();
+                Integer i = afBorrowBillDao.updateBorrowBillStatusByBillIdsAndStatus(bilIds, BorrowBillStatus.YES.getCode());
+
+                if(i ==0){
+                    cuiShouBackMoney.setCode(304);
+                    return JSONObject.toJSONString(cuiShouBackMoney);  //更新失败
+                }
+                Long borrowId = afBorrowBillDo.getBorrowId();
+                List<AfBorrowBillDo> list = afBorrowBillDao.getAllBorrowBillByBorrowId(borrowId);
+                if(!checkHasNoPayBill(list)){
+                    afBorrowDao.updateBorrowStatus(borrowId, BorrowStatus.FINISH.getCode());
+                }
+                List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillDao.getBorrowBillListByStatus(afBorrowBillDo.getUserId(),afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth());
+                if(afBorrowBillDoList == null || afBorrowBillDoList.size() ==0){
+                    afBorrowBillDao.updateTotalBillStatus(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth(),afBorrowBillDo.getUserId(),BorrowBillStatus.YES.getCode());
+                }
+                cuiShouBackMoney.setCode(200);
+                return JSONObject.toJSONString(cuiShouBackMoney);
+            }
+            else if(type.equals("BORROW_CASH")){
+                Long borrowId = jsonObject.getLong("ref_id");
+                AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+                afBorrowCashDo.setRid(borrowId);
+                afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+                CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
+
+                if(i>0){
+                    cuiShouBackMoney.setCode(200);
+                    return JSONObject.toJSONString(cuiShouBackMoney);
+                }
+                cuiShouBackMoney.setCode(304);
+
+                return JSONObject.toJSONString(cuiShouBackMoney);
+
+            }
+
+            thirdLog.info("cuishou finishBorrow type error" + type +",data:"+data);
+            return JSON.toJSONString(new  CuiShouBackMoney(207, "类型错误"));
+        }
+        catch (Exception e){
+            thirdLog.error("cuishou finishBorrow error",e);
+            return JSON.toJSONString(new  CuiShouBackMoney(500, "内部错误"));
+        }
+    }
+
+    private Boolean checkHasNoPayBill(List<AfBorrowBillDo> list){
+        if(list ==null){
+            return false;
+        }
+        for (AfBorrowBillDo afBorrowBillDo:list){
+            if(afBorrowBillDo.getStatus().equals(BorrowBillStatus.NO) || afBorrowBillDo.getStatus().equals(BorrowBillStatus.DEALING)){
+                return  true;
+            }
+        }
+        return false;
+    }
+
 
 
     private  static ThreadLocal <AfRepaymentBorrowCashDo> afRepaymentBorrowCashDoThreadLocal = new ThreadLocal<AfRepaymentBorrowCashDo>();
@@ -441,5 +543,15 @@ public class CuiShouUtils {
 
     private static AfRepaymentDo getAfRepaymentDo(){
         return afRepaymentDoThreadLocal.get();
+    }
+
+    private static ThreadLocal<Boolean> isXianXiaHuangKuang = new ThreadLocal<Boolean>();
+
+    public static void setIsXianXiaHuangKuang(Boolean a){
+        isXianXiaHuangKuang.set(a);
+    }
+
+    public static Boolean getIsXianXiaHuangKuang(){
+        return isXianXiaHuangKuang.get();
     }
 }

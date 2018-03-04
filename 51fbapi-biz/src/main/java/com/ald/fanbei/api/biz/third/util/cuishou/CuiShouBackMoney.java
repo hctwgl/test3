@@ -15,10 +15,12 @@ public class CuiShouBackMoney  extends AbstractSerial{
         errorCodeMap.put(204,"帐单为空");
         errorCodeMap.put(205,"帐单 对不上");
         errorCodeMap.put(206,"处理中");
+        errorCodeMap.put(207,"类型错误");
 
         errorCodeMap.put(301,"借款记录不存在");
         errorCodeMap.put(302,"第三方交易单号已被使用，不要进行重复操作");
         errorCodeMap.put(303,"请求参数缺失");
+        errorCodeMap.put(304,"平帐失败");
 
     }
 
