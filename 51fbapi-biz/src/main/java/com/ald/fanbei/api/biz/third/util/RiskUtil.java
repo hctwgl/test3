@@ -169,7 +169,7 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
 
-	private static String getUrl() {
+	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			return url;

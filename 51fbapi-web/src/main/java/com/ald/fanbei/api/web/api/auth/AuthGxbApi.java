@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthGxbRespBo;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -37,14 +39,18 @@ public class AuthGxbApi implements ApiHandle {
 
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	RiskUtil riskUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		HashMap<String, Object> map=new HashMap<String, Object>();
 		Long userId = context.getUserId();
-		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
-		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		//String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+//		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
 		String authItem="ecommerce";
 		String timestamp=DateUtil.getCurrSecondTimeStamp()+"";
@@ -71,7 +77,7 @@ public class AuthGxbApi implements ApiHandle {
 					JSONObject data = JSON.parseObject(respInfo.getData());
 					String token=data.getString("token");
 					logger.info("getAuthToken resp success, token="+token+",respInfo"+respInfo.getRetMsg());
-				    String returnUrl = "http://ctestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
+				    String returnUrl = riskUtil.getUrl()+"/tpp/gxbdata/alipay/notify.htm";
 				    String urlFull = "https://prod.gxb.io/v2/auth?returnUrl="+returnUrl+"&token="+token;
 				    logger.info("url=" + urlFull+"userId="+userId);
 				    resp.addResponseData("url", urlFull);
