@@ -296,8 +296,10 @@ public class TestController {
     public String testKafka() throws Exception{
     	
     	Long userId = 18637962178L;
-		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
-		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+//		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+//		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
 		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
 		logger.info("appId:"+appId);
@@ -333,7 +335,8 @@ public class TestController {
 					logger.info("getAuthToken resp success, token="+token+",respInfo"+respInfo.getRetMsg());
 					String riskUrl = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 				    //String returnUrl = riskUrl + "/tpp/gxbdata/alipay/notify.htm";
-					String returnUrl = "http://btestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
+					//String returnUrl = "http://btestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
+					String returnUrl = riskUtil.getUrl()+"/tpp/gxbdata/alipay/notify.htm";	
 				    String urlFull = "https://prod.gxb.io/v2/auth?returnUrl="+returnUrl+"&token="+token;
 				    logger.info("url=" + urlFull+"userId="+userId);
 				    return "success";
