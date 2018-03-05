@@ -72,11 +72,12 @@ public class GetUserShareInfoApi implements ApiHandle {
 		}
 		//存在则循环该list,得到不同value下的数据
 	        List<Map<String, Object>> contentList = new ArrayList<Map<String, Object>>();
+	        List<Map<String, Object>> imageList = new ArrayList<Map<String, Object>>();
 		for(AfResourceDo afResource:afResourceList){
 		    String type = afResource.getValue();
-		    if(type.equals("image")){
-			data.put("image", afResource.getValue3());
-		    }
+//		    if(type.equals("image")){
+//			data.put("image", afResource.getValue3());
+//		    }
 		    if(type.equals("userInfo")){
 			String userName = changePhone(afUserDo.getUserName());
 			Map<String, Object> userInfo = new HashMap<String, Object>();
@@ -94,11 +95,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 			data.put("qrCode", qrCode);
 			
 		    }
-		    if(type.equals("avatar")){
-			Map<String, Object> avatar = new HashMap<String, Object>();
-			avatar.put("avatar", afUserDo.getAvatar());
-			putPosition(avatar,afResource);
-			data.put("avatar", avatar);
+		    if(type.equals("imageList")){
+			Map<String, Object> image = new HashMap<String, Object>();
+			image.put("image", afResource.getValue3());
+			putPosition(image,afResource);
+			imageList.add(image);
 		    }
 		    if(type.equals("contentList")){
 			Map<String, Object> contentMap = new HashMap<String, Object>();
@@ -110,12 +111,13 @@ public class GetUserShareInfoApi implements ApiHandle {
 		    }
 		   
 		}
+		     data.put("imageList", imageList);
 		     data.put("contentList", contentList);
 		}catch(Exception e){
 		    logger.error("getUserShareInfoApi error  e = "+ e+" source = "+ source);
 		}
 	       logger.info("getUserShareInfoApi  data = "+ JSON.toJSONString(data) );
-	       
+	       data.put("shareType", "IMAGE");
 	    resp.setResponseData(data);
 	    return resp;
 	}
