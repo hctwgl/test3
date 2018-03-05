@@ -136,7 +136,7 @@
     #if( $!{style}==12 || $!{style}==13|| $!{style}==14)
         <img class="goTop" src="$commonUrl/addRegister06.png">
     #end
-</img>
+</div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/md5.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
