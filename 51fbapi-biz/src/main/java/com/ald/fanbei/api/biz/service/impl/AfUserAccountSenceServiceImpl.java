@@ -137,10 +137,20 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		if(SceneType.CASH.equals(scene)) {
 			auAmount = afUserAccountDao.getUserAccountInfoByUserId(userId).getAuAmount();
 		}else {
-			auAmount = afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId).getAuAmount();
+			
+			AfUserAccountSenceDo senceDo =  afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
+			if(senceDo != null ) {
+				auAmount = senceDo.getAuAmount();
+			}
+			
 		}
-		
-		BigDecimal totalUsableAmount = totalScene.getAuAmount().subtract(totalScene.getUsedAmount());
+		BigDecimal totalAuAmount = BigDecimal.ZERO;
+		BigDecimal totalUsedAmount = BigDecimal.ZERO;
+		if(totalScene != null) {
+			totalAuAmount = totalScene.getAuAmount();
+			totalUsedAmount = totalScene.getUsedAmount();
+		}
+		BigDecimal totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
 		maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
 		maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
 		
