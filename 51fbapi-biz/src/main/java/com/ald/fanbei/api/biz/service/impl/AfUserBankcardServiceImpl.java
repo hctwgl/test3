@@ -50,6 +50,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Override
     public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
 	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
+	int scale = 10000;
 	if (CollectionUtil.isNotEmpty(list)) {
 	    for (AfBankUserBankDto item : list) {
 		// 获取银行状态（ups写入redis数据）
@@ -57,6 +58,9 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
 		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
+		    bankStatus.setDailyLimit(bankStatus.getDailyLimit() * scale);
+		    bankStatus.setLimitDown(bankStatus.getLimitDown() * scale);
+		    bankStatus.setLimitUp(bankStatus.getLimitUp() * scale);
 		    item.setBankStatus(bankStatus);
 
 		    if (bankStatus.getIsMaintain() == 1) {
@@ -87,7 +91,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		}
 	    }
 	}
-	
+
 	return list;
     }
 
