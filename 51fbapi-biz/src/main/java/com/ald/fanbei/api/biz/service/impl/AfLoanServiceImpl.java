@@ -45,6 +45,7 @@ import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.LoanType;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
@@ -198,6 +199,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				}
 				loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
 				afLoanDao.updateById(loanDo);
+				afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
 			}catch(Exception e) {
 				loanDo.setStatus(AfLoanStatus.CLOSED.name());
 				afLoanDao.updateById(loanDo);
@@ -242,8 +244,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		bo.auAmount = accScene.getAuAmount();
 		
 		//检查是否超贷
-		BigDecimal usableAmount = accScene.getAuAmount().subtract(accScene.getUsedAmount());
-		if(bo.reqParam.amount.compareTo(usableAmount) > 0) {
+		BigDecimal auAmount = accScene.getAuAmount();
+		if(bo.reqParam.amount.compareTo(auAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_OVERFLOW);
 		}
 		
@@ -358,7 +360,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
             try {
             	afLoanDao.updateById(loanDo);
-        		afUserAccountSenceDao.updateUsedAmount(loanDo.getPrdType(), loanDo.getUserId(), loanDo.getAmount());
                 return 1L;
             } catch (Exception e) {
                 logger.error("dealLoanSucc update db error", e);
@@ -375,12 +376,22 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		
 		dealLoanFail(loanDo, periodDos, msgOut);
 	}
-	private void dealLoanFail(AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
+	private void dealLoanFail(final AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
 		Date cur = new Date();
 		loanDo.setStatus(AfLoanStatus.CLOSED.name());
 		loanDo.setRemark("UPS打款失败，"+msg);
 		loanDo.setGmtClose(cur);
-		afLoanDao.updateById(loanDo);
+		loanDo.setGmtModified(cur);
+		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
+            try {
+            	afLoanDao.updateById(loanDo);
+        		afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount().negate());
+                return 1L;
+            } catch (Exception e) {
+                logger.error("dealLoanSucc update db error", e);
+                throw e;
+            }
+		}});
 	}
 	
 	@Override
@@ -405,36 +416,30 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 * 处理登陆场景下首页信息
 	 */
 	private List<LoanHomeInfoBo> dealHomeLogin(AfUserAccountDo userAccount, List<AfLoanProductDo> prdDos) {
+		Long userId = userAccount.getUserId();
+		
 		List<LoanHomeInfoBo> infoBos = new ArrayList<>();
 		for(AfLoanProductDo prdDo : prdDos) {
 			LoanHomeInfoBo bo = new LoanHomeInfoBo();
 			
 			String prdType = prdDo.getPrdType();
+			AfUserAccountSenceDo accScene = afUserAccountSenceService.getByUserIdAndScene(prdType, userId);
 			
-			// 处理 配置 信息
-			BigDecimal maxAuota = prdDo.getMaxAmount();
-			AfUserAccountSenceDo accScene = afUserAccountSenceService.getByUserIdAndScene(prdType, userAccount.getUserId());
-			BigDecimal auAmount = BigDecimal.ZERO;
-			BigDecimal usableAmount = BigDecimal.ZERO;
-			if(accScene != null) {
-				auAmount = accScene.getAuAmount();
-				usableAmount = auAmount.subtract(accScene.getUsedAmount());
-			}
-			
-			maxAuota = maxAuota.compareTo(usableAmount) < 0 ? maxAuota : usableAmount;
-			bo.maxQuota = maxAuota;
+			BigDecimal cfgMaxAmount = prdDo.getMaxAmount();
+			BigDecimal auAmount = accScene.getAuAmount();
+			bo.maxQuota = cfgMaxAmount.compareTo(auAmount) > 0 ? auAmount : cfgMaxAmount;
+			bo.maxPermitQuota = afUserAccountSenceService.getLoanMaxPermitQuota(userId, SceneType.BLD_LOAN, cfgMaxAmount);
 			bo.minQuota = prdDo.getMinAmount();
 			
 			bo.loanRates = afLoanProductService.listByPrdType(prdDo.getPrdType());
-			
 			bo.periods = prdDo.getPeriods();
 			bo.prdName = prdDo.getName();
 			bo.prdType = prdType;
 			
-			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userAccount.getUserId(), prdType);
+			AfLoanDo lastLoanDo = afLoanDao.getLastByUserIdAndPrdType(userId, prdType);
 			this.dealHomeLoginLoan(bo, lastLoanDo);// 处理 贷款 信息
 			
-			AfLoanRejectType res = rejectCheck(userAccount.getUserId(), accScene, prdDo, lastLoanDo);
+			AfLoanRejectType res = rejectCheck(userId, accScene, prdDo, lastLoanDo);
 			if(!AfLoanRejectType.PASS.equals(res)) {
 				bo.maxQuota = prdDo.getMaxAmount();
 			}
@@ -540,7 +545,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	 * @param loanCfg
 	 * @return
 	 */
-		private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, AfLoanProductDo prdDo, AfLoanDo lastLoanDo) {
+	private AfLoanRejectType rejectCheck(Long userId, AfUserAccountSenceDo accScene, AfLoanProductDo prdDo, AfLoanDo lastLoanDo) {
 		//贷款总开关
 		if(YesNoStatus.NO.getCode().equals(prdDo.getSwitch())) {
 			return AfLoanRejectType.SWITCH_OFF;

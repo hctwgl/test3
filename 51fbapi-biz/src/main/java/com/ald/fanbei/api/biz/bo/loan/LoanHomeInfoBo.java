@@ -10,6 +10,7 @@ public class LoanHomeInfoBo {
 	public String rejectCode; //拒绝码，通过则为 "PASS"
 	
 	public BigDecimal maxQuota;
+	public BigDecimal maxPermitQuota;
 	public BigDecimal minQuota;
 	public List<AfLoanRateDo> loanRates;
 	public int periods;

@@ -324,8 +324,10 @@ public class PayRoutController {
 					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
 					afSupDo.setRid(result);
 					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
-				}else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
+				} else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
 					afLoanService.dealLoanFail(result, outTradeNo, "");
+				} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)) {
+					afBorrowCashService.borrowFail(result, outTradeNo, "");
 				}
 				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
 					return "SUCCESS";

@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.kdniao.KdniaoTrackQueryAPI;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.AuthGxbRespBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
@@ -83,13 +85,16 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
+
 import redis.clients.jedis.BinaryClient;
 
 
@@ -289,9 +294,63 @@ public class TestController {
     @RequestMapping("/kafka")
     @ResponseBody
     public String testKafka() throws Exception{
-
-        String data1111= ConfigProperties.get(Constants.CONFKEY_UPS_URL);
-        String appId="gxb099547a1a9ea2e48";
+    	
+    	Long userId = 18637962178L;
+//		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+//		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
+		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
+		logger.info("appId:"+appId);
+		logger.info("appSecurity:"+appSecurity);
+		logger.info("fanbeitest:"+fanbeitest);
+		logger.info("inveloment:"+inveloment);
+		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
+		String authItem="ecommerce";
+		String timestamp=DateUtil.getCurrSecondTimeStamp()+"";
+		AfUserDto afUserDto= afUserService.getUserInfoByUserId(userId);
+		String name=afUserDto.getRealName();
+		String phone=afUserDto.getUserName();
+	    String idcard=afUserDto.getIdNumber();
+	    HashMap<String, Object> map=new HashMap<String, Object>();
+	    map.put("appId",appId);
+	    map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
+	    map.put("sequenceNo",sequenceNo);
+	    map.put("authItem",authItem);
+	    map.put("timestamp",timestamp);
+	    map.put("name",name);
+	    map.put("phone",phone);
+	    map.put("idcard",idcard);
+	    try {
+	    	logger.info("mapInfo:"+map.toString());
+	    	String respResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
+	    	if (StringUtil.isBlank(respResult)) {
+	    		logger.error("getAuthToken respResult is null");
+			}else{
+				AuthGxbRespBo respInfo = JSONObject.parseObject(respResult, AuthGxbRespBo.class);
+				if ("1".equals(respInfo.getRetCode())) {
+					JSONObject data = JSON.parseObject(respInfo.getData());
+					String token=data.getString("token");
+					logger.info("getAuthToken resp success, token="+token+",respInfo"+respInfo.getRetMsg());
+					String riskUrl = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+				    //String returnUrl = riskUrl + "/tpp/gxbdata/alipay/notify.htm";
+					//String returnUrl = "http://btestarc.51fanbei.com/tpp/gxbdata/alipay/notify.htm";
+					String returnUrl = riskUtil.getUrl()+"/tpp/gxbdata/alipay/notify.htm";	
+				    String urlFull = "https://prod.gxb.io/v2/auth?returnUrl="+returnUrl+"&token="+token;
+				    logger.info("url=" + urlFull+"userId="+userId);
+				    return "success";
+				}else {
+					//三方处理错误
+					logger.error("getAuthToken resp fail,errorCode="+respInfo.getRetCode()+",errorInfo"+respInfo.getRetMsg());
+				}
+			}
+		} catch (Exception e) {
+			logger.error("error = " + e);
+		}
+    	
+    	
+        /*String appId="gxb099547a1a9ea2e48";
         String appSecurity="a8b2a9708cb4487cacdb568fadef19cd";
         String sequenceNo="12345678gxb00001";//用户的id 中间gxb 末尾自增
         String authItem="ecommerce";
@@ -310,13 +369,14 @@ public class TestController {
         map.put("idcard",idcard);
 
 
-        String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
+        String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));*/
 
 
         //endregion
-        System.out.println(reqResult);
+     /*   System.out.println(reqResult);
 
-        return data1111;
+        return reqResult;*/
+	    return "fail";
     }
     @RequestMapping("/address")
     @ResponseBody

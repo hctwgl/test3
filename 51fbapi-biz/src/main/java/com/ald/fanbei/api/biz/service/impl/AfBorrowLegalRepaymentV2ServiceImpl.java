@@ -37,6 +37,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -82,6 +83,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     AfUserAccountDao afUserAccountDao;
     @Resource
     AfBorrowCashService afBorrowCashService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
     @Resource
     TransactionTemplate transactionTemplate;
     @Resource
@@ -425,9 +428,6 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
      */
     private void dealCouponAndRebate(RepayDealBo repayDealBo) {
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
-    	if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus())) {
-    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.cashDo.getAmount()));
-    	}
     	
     	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
             accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
@@ -649,6 +649,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
         }else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
 			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		}
+		
+		if(AfBorrowCashStatus.finsh.getCode().equals(cashDo.getStatus())) {
+			afUserAccountSenceService.syncLoanUsedAmount(repayDealBo.userId, SceneType.CASH, repayDealBo.cashDo.getAmount().negate());
 		}
 		//判断是否代扣逾期则平账
 		try{

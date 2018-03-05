@@ -262,7 +262,7 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfAuthRaiseStatusService afAuthRaiseStatusService;
 
-	private static String getUrl() {
+	public static String getUrl() {
 		if (url == null) {
 			// url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			url = "http://btestarc.51fanbei.com";

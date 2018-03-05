@@ -12,12 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +23,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -36,12 +36,38 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.AfLoanRepaymentDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -69,6 +95,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private GeneratorClusterNo generatorClusterNo;
     @Resource
 	private AfLoanPeriodsService afLoanPeriodsService;
+    @Resource
+	private AfUserAccountSenceService afUserAccountSenceService;
+    
     @Resource
     private AfUserAccountDao afUserAccountDao;
     @Resource
@@ -513,16 +542,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
-
-			AfUserAccountSenceDo senceDo = afUserAccountSenceDao.getByUserIdAndScene(loanPeriodsDo.getPrdType(),loanPeriodsDo.getUserId());//额度释放
-			if (senceDo ==  null){
-				throw new FanbeiException(FanbeiExceptionCode.UESR_ACCOUNT_SENCE_ERROR);
-			}
-			AfUserAccountSenceDo accountSenceDo = new AfUserAccountSenceDo();
-			accountSenceDo.setRid(senceDo.getRid());
-			accountSenceDo.setUsedAmount(senceDo.getUsedAmount().subtract(loanRepayDealBo.loanDo.getAmount()));
-			accountSenceDo.setGmtModified(new Date());
-			afUserAccountSenceDao.updateById(accountSenceDo);
+			
+			afUserAccountSenceService.syncLoanUsedAmount(loanPeriodsDo.getUserId(), SceneType.valueOf(loanPeriodsDo.getPrdType()), loanRepayDealBo.loanDo.getAmount().negate());
 		}
 	}
 	
@@ -659,7 +680,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
 			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
 		}else {
-			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),repaymentDo.getRepayAmount()));
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		

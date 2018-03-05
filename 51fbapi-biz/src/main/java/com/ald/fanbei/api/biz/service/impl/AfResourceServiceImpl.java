@@ -698,13 +698,8 @@ public class AfResourceServiceImpl implements AfResourceService {
 			String secType = afResourceDo.getSecType();
 			
 			String v = afResourceDo.getValue();
-			String v1 = afResourceDo.getValue1();
-			String typeDesc = afResourceDo.getTypeDesc();
 			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
-				if (StringUtils.equals(secType, AfResourceSecType.BorrowCashRange.getCode())) {
-					cfgBean.maxAmount = new BigDecimal(v);
-					cfgBean.minAmount = new BigDecimal(v1);
-				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+				if (StringUtils.equals(secType, AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
 					cfgBean.bankDouble = new BigDecimal(v);
 				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashPoundage.getCode())) {
 					cfgBean.poundage = new BigDecimal(v);
@@ -721,7 +716,9 @@ public class AfResourceServiceImpl implements AfResourceService {
 				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
 					cfgBean.showNums = Integer.valueOf(v);
 				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
-					cfgBean.borrowCashDay = typeDesc;
+					cfgBean.borrowCashDay = afResourceDo.getTypeDesc();
+					cfgBean.maxAmount = new BigDecimal(afResourceDo.getValue1());
+					cfgBean.minAmount = new BigDecimal(afResourceDo.getValue4());
 				}
 			}
 		}
