@@ -428,7 +428,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			BigDecimal cfgMaxAmount = prdDo.getMaxAmount();
 			BigDecimal auAmount = BigDecimal.ZERO;
 			if(accScene != null) {
-				accScene.getAuAmount();
+				auAmount = accScene.getAuAmount();
 			}	
 			bo.maxQuota = cfgMaxAmount.compareTo(auAmount) > 0 ? auAmount : cfgMaxAmount;
 			bo.maxPermitQuota = afUserAccountSenceService.getLoanMaxPermitQuota(userId, SceneType.BLD_LOAN, cfgMaxAmount);
