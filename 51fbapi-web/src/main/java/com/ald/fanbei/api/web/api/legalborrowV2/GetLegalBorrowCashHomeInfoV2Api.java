@@ -196,7 +196,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		maxAmount = afUserAccountSenceService.getLoanMaxPermitQuota(userId, SceneType.CASH, maxAmount);
+		maxAmount = afUserAccountSenceService.getLoanMaxPermitQuota(userId, SceneType.CASH, new BigDecimal(strMaxAmount));
 		
 		logger.info("max amount:"+maxAmount);
 		logger.info("usableAmount amount:"+usableAmount);

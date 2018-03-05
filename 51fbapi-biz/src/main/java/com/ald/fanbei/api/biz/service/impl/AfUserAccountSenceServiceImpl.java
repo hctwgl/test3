@@ -130,29 +130,29 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
 	@Override
 	public BigDecimal getLoanMaxPermitQuota(Long userId, SceneType scene, BigDecimal cfgAmount) {
-		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
 		BigDecimal maxPermitQuota = BigDecimal.ZERO;
 		BigDecimal auAmount = BigDecimal.ZERO;
 		
 		if(SceneType.CASH.equals(scene)) {
 			auAmount = afUserAccountDao.getUserAccountInfoByUserId(userId).getAuAmount();
 		}else {
-			
 			AfUserAccountSenceDo senceDo =  afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
 			if(senceDo != null ) {
 				auAmount = senceDo.getAuAmount();
 			}
-			
 		}
-		BigDecimal totalAuAmount = BigDecimal.ZERO;
-		BigDecimal totalUsedAmount = BigDecimal.ZERO;
+		
+		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
 		if(totalScene != null) {
-			totalAuAmount = totalScene.getAuAmount();
-			totalUsedAmount = totalScene.getUsedAmount();
+			BigDecimal totalAuAmount = totalScene.getAuAmount();
+			BigDecimal totalUsedAmount = totalScene.getUsedAmount();
+			
+			BigDecimal totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
+			maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
+			maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
+		}else {
+			maxPermitQuota = auAmount.compareTo(cfgAmount) > 0? cfgAmount:auAmount ;
 		}
-		BigDecimal totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
-		maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
-		maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
 		
 		return maxPermitQuota;
 	}

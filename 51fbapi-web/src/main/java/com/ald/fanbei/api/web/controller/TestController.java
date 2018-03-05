@@ -296,8 +296,8 @@ public class TestController {
     public String testKafka() throws Exception{
     	
     	Long userId = 18637962178L;
-//		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
-//		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
 		//String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		//String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
