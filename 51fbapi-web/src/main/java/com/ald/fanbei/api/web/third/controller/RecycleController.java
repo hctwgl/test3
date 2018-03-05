@@ -89,7 +89,7 @@ public class RecycleController {
         } finally {
             bizCacheUtil.delCache(key);
         }
-        returnjson.put("success", false);
+        returnjson.put("success", true);
         returnjson.put("msg", "操作成功");
         return returnjson;
     }
