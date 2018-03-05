@@ -91,7 +91,7 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
         }
         AddSealResult r = SEAL.addTemplateSeal(accountId, template, sColor);
-        logger.info("esdk createSealPersonal:", r);
+        logger.info("esdk createSealPersonal:", r.getMsg()+",accountId = "+accountId);
         return r;
 
     }
