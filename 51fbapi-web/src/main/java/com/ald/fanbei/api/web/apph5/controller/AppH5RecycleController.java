@@ -131,7 +131,7 @@ public class AppH5RecycleController extends BaseController {
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
                         Map<String,Object> map = new HashMap<String,Object>();
                         map.put("recycleUrl",recycleUrl);
-                        resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
+                        resp = H5CommonResponse.getNewInstance(true, "获取数据成功", "", map);
                     } catch (Exception e) {
                         logger.error("exchangeApi,error=", e);
                         throw new FanbeiException(FanbeiExceptionCode.FAILED);
@@ -180,7 +180,7 @@ public class AppH5RecycleController extends BaseController {
             Map<String,Object> map = new HashMap<String,Object>();
             if(null != userAccountInfo){
                 map.put("rebateAmount",userAccountInfo.getRebateAmount());
-                resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
+                resp = H5CommonResponse.getNewInstance(true, "获取数据成功", "", map);
             }else{
                 resp = H5CommonResponse.getNewInstance(false, "获取用户提现金额错误", "", map);
             }
