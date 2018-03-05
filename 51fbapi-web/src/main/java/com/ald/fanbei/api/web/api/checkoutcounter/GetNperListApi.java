@@ -91,7 +91,7 @@ public class GetNperListApi implements ApiHandle {
             String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
 
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, rebateModels, BigDecimal.ONE.intValue(),
-                    nperAmount, resource.getValue1(), resource.getValue2());
+                    nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
             resp.addResponseData("nperList", nperList);
             return resp;
         } else {
@@ -132,7 +132,7 @@ public class GetNperListApi implements ApiHandle {
 
             try{
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
+                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
                 resp.addResponseData("nperList", nperList);
             }catch (Exception e){
                 logger.error("get nperList error:",e);
