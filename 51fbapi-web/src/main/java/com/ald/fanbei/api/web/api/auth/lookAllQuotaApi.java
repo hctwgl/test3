@@ -143,8 +143,8 @@ public class lookAllQuotaApi implements ApiHandle {
             trainMap.put("title",trainTitle);
             trainMap.put("picUrl",picUrl);
             
-            String jumpUrlAuth = jsonObject.getString("jumpUrlAuth");
-            trainMap.put("jumpUrl",jumpUrlAuth+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
+            String jumpUrl = jsonObject.getString("jumpUrlAuth");
+            trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
 
             //现金贷 未通过强风控 状态
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.NO.getCode())){
@@ -177,7 +177,7 @@ public class lookAllQuotaApi implements ApiHandle {
                     onlineMap.put("status","4");
                 }
             }
-            String jumpUrlFirst = jsonObject.getString("jumpUrlFirst");
+            jumpUrl = jsonObject.getString("jumpUrlFirst");
             //线下培训 未通过强风控
             AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"TRAIN");
             if(afUserAuthStatusTrain !=null) {
@@ -196,12 +196,12 @@ public class lookAllQuotaApi implements ApiHandle {
                     trainMap.put("desc",trainDesc);//线上描述
                     trainMap.put("status","4");
                 }
-//                 else if (afUserAuthStatusTrain.getStatus().equals("P") || afUserAuthStatusTrain.getStatus().equals("N")) {                
-//                     trainMap.put("jumpUrl", jumpUrlFirst + "&name=DO_PROMOTE_BASIC" + "&idNumber=" + afUserDo.getIdNumber() + "&realName=" + afUserDo.getRealName());
-//                }
+                 else if (afUserAuthStatusTrain.getStatus().equals("P") || afUserAuthStatusTrain.getStatus().equals("N")) {                
+                     trainMap.put("jumpUrl", jumpUrl + "&name=DO_PROMOTE_BASIC" + "&idNumber=" + afUserDo.getIdNumber() + "&realName=" + afUserDo.getRealName());
+                }
             }
             else{
-                trainMap.put("jumpUrl",jumpUrlFirst+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
             }
             if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
@@ -216,17 +216,18 @@ public class lookAllQuotaApi implements ApiHandle {
 
                 trainMap.put("desc",trainDesc);
                 trainMap.put("status","1");
-                trainMap.put("jumpUrl",jumpUrlFirst+"&name=DO_SCAN_ID"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_SCAN_ID"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
 
             } else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
                     ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     ||StringUtil.equals(userAuth.getFacesStatus(),"N")||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                 //认证一般中途退出了
                 String status="2";
+                trainMap.put("jumpUrl",jumpUrl+"&name=DO_PROMOTE_BASIC"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                 //认证人脸没有认证银行卡 状态为5
                 if(StringUtil.equals(userAuth.getFacesStatus(),"Y")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
                     status="5";
-                    trainMap.put("jumpUrl",jumpUrlFirst+"&name=DO_BIND_CARD"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
+                    trainMap.put("jumpUrl",jumpUrl+"&name=DO_BIND_CARD"+"&idNumber=" + afUserDo.getIdNumber()+"&realName="+afUserDo.getRealName());
                 }
                 listDesc1=getAuthDesc(value3,"two");
                 listDesc2=getAuthDesc(value4,"two");
