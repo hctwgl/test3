@@ -70,6 +70,9 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			if(totalScene != null) {
 				totalAmount = totalScene.getAuAmount();
 				usedAmount = totalScene.getUsedAmount();
+			}else {
+				totalAmount = accInfo.getAuAmount();
+				usedAmount = accInfo.getUsedAmount();
 			}
 			
 			resp.addResponseData("totalAmount",totalAmount);
