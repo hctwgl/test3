@@ -77,19 +77,18 @@
                     <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
                 </li>
                 <li><button id="register_submitBtn"></button></li>
-                #if($!{style}!=12&&$!{style}!=13)
                 <div class="clearfix register_checkbox">
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
                     <label for="input_check"></label>
-
                     <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
                 </div>
+                #if($!{style}!=12&&$!{style}!=13)
                 <p class="logintxt clearfix" style=" margin: 0 auto;font-size: 0.28rem;">
                     <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
                     <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="toMaidian('toLogin')">直接登录</a>
                 </p>
                  #else
-                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="toMaidian('toLogin')"></a>
+                    <a class="tologin" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="toMaidian('toLogin')"></a>
                 #end
             #elseif( $!{style}==16 ||$!{style}==7)
                 <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
