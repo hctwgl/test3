@@ -154,21 +154,26 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 */
 	@Override
 	public void repay(RepayBo bo) {
-		Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+		try {
+			lockRepay(bo.userId);
+			
+			Date now = new Date();
+			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+			if(StringUtil.equals("sysJob",bo.remoteIp)){
+				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			}
+			
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+			bo.tradeNo = tradeNo;
+			bo.name = name;
+			bo.borrowOrderCashId = bo.orderCashDo.getRid();
+		
+			generateRepayRecords(bo);
+		
+			doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
+		} finally {
+			unLockRepay(bo.userId);
 		}
-		
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-		bo.borrowOrderCashId = bo.orderCashDo.getRid();
-		
-		generateRepayRecords(bo);
-		
-		doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
-		
 	}
 	
 	/**
@@ -254,6 +259,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     		
     	}finally {
     		unLock(tradeNo);
+    		
+    		// 解锁还款
+    		unLockRepay(repaymentDo.getUserId());
 		}
     }
 	@Override
@@ -285,6 +293,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		if(orderRepaymentDo != null) {
 			changOrderRepaymentStatus(outTradeNo, AfBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getId());
 		}
+		
+		// 解锁还款
+     	unLockRepay(repaymentDo.getUserId());
         
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
@@ -572,6 +583,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	if(repayDealBo.curUserCouponId != null && repayDealBo.curUserCouponId > 0) {
     		afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用
     	}
+    	
+    	// 解锁还款
+    	unLockRepay(repayDealBo.userId);
     }
     
     private void doAccountLog(RepayDealBo repayDealBo) {
@@ -874,6 +888,23 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	}	
 	private void unLock(String tradeNo) {
 		String key = tradeNo + "_success_legalRepay";
+		redisTemplate.delete(key);
+	}
+	
+	/**
+	 * 锁住还款
+	 */
+	private void lockRepay(Long userId) {
+		String key = userId + "_success_borrowLegalBorrowRepay";
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+        if (count != 1) {
+            throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+        }
+	}	
+	
+	private void unLockRepay(Long userId) {
+		String key = userId + "_success_borrowLegalBorrowRepay";
 		redisTemplate.delete(key);
 	}
 

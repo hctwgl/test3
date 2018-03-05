@@ -313,6 +313,7 @@ public enum FanbeiExceptionCode {
     LOAN_REPAY_REBATE_ERROR("LOAN_REPAY_REBATE_ERROR",2015,"loan repay rebate error","余额还款失败，请检查您的输入或重试"),
     GO_BLD_AUTH("",2016,"","跳转白领贷认证"),
     AUTHING("",2017,"","认证中"),
+    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),

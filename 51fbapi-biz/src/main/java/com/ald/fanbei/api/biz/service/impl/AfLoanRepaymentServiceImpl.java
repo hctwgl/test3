@@ -141,37 +141,44 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 
 	@Override
 	public void repay(LoanRepayBo bo) {
-		if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
-			// 未出账时拦截按期还款
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-		}
-		
-		Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-		}
-		
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-		
-		// 根据 还款金额  更新期数信息
-		if(!bo.isAllRepay) {	// 非提前结清
-			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-			bo.loanPeriodsIds.clear();
-			bo.loanPeriodsDoList.clear();
-			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+		try {
+			lockRepay(bo.userId);
+			
+			if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
+				// 未出账时拦截按期还款
+				throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 			}
+			
+			Date now = new Date();
+			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+			if(StringUtil.equals("sysJob",bo.remoteIp)){
+				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			}
+			
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+			bo.tradeNo = tradeNo;
+			bo.name = name;
+			
+			// 根据 还款金额  更新期数信息
+			if(!bo.isAllRepay) {	// 非提前结清
+				List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+				bo.loanPeriodsIds.clear();
+				bo.loanPeriodsDoList.clear();
+				for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+					bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+					bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+				}
+			}
+
+			// 增加还款记录
+			generateRepayRecords(bo);
+		
+			// 还款操作
+			doRepay(bo, bo.loanRepaymentDo);
+			
+		} finally {
+			unLockRepay(bo.userId);
 		}
-		
-		// 增加还款记录
-		generateRepayRecords(bo);
-		
-		// 还款操作
-		doRepay(bo, bo.loanRepaymentDo);
 		
 	}
 	
@@ -322,6 +329,10 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         if(loanRepaymentDo != null) {
         	changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
+        
+        // 解锁还款
+     	unLockRepay(loanRepaymentDo.getUserId());
+        
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
 			int errorTimes = 0;
@@ -423,6 +434,9 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     		
     	}finally {
     		unLock(tradeNo);
+    		
+    		// 解锁还款
+    		unLockRepay(repaymentDo.getUserId());
 		}
     }
     
@@ -571,13 +585,16 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(LoanRepayDealBo.userId);
     	
     	if(LoanRepayDealBo.curSumRebateAmount != null && LoanRepayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
-            accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(LoanRepayDealBo.curSumRebateAmount));
+        	accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(LoanRepayDealBo.curSumRebateAmount));
+        	afUserAccountDao.updateOriginalUserAccount(accountInfo);
     	}
-    	afUserAccountDao.updateOriginalUserAccount(accountInfo);
     	
     	if(LoanRepayDealBo.curUserCouponId != null && LoanRepayDealBo.curUserCouponId > 0) {
-    		afUserCouponDao.updateUserCouponSatusUsedById(LoanRepayDealBo.curUserCouponId);// 优惠券设置已使用
+            afUserCouponDao.updateUserCouponSatusUsedById(LoanRepayDealBo.curUserCouponId);// 优惠券设置已使用
     	}
+    	
+    	// 解锁还款
+		unLockRepay(LoanRepayDealBo.userId);
     }
     
     /**
@@ -929,6 +946,23 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		redisTemplate.delete(key);
 	}
 	
+	
+	/**
+	 * 锁住还款
+	 */
+	private void lockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+        if (count != 1) {
+            throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+        }
+	}	
+	
+	private void unLockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+		redisTemplate.delete(key);
+	}
 	
 	public static class LoanRepayBo{
 		public Long userId;

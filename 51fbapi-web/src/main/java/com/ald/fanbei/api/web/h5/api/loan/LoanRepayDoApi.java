@@ -174,7 +174,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		// 检查当前 借款 是否已在处理中
 		AfLoanRepaymentDo loanRepaymentDo = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(bo.loanId);
 		if(loanRepaymentDo != null) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 		
 		// 检查 用户 是否多还钱
