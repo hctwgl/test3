@@ -314,8 +314,8 @@ public class TestController {
 		String phone=afUserDto.getUserName();
 	    String idcard=afUserDto.getIdNumber();
 	    HashMap<String, Object> map=new HashMap<String, Object>();
-	  //  map.put("appId",appId);
-	  //  map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
+	    map.put("appId",appId);
+	    map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
 	    map.put("sequenceNo",sequenceNo);
 	    map.put("authItem",authItem);
 	    map.put("timestamp",timestamp);
