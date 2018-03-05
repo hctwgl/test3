@@ -58,7 +58,11 @@ public class AuthFundApi implements ApiHandle {
 		StringBuffer transPara = new StringBuffer();
 		transPara.append(riskOrderNo).append(",").append(userId);
 
+		Integer appVersion = context.getAppVersion();
 		String type = "2";
+		if(appVersion < 407) {
+			type = "1";
+		}
 		transPara.append(",").append(type);
 		resp.addResponseData("transPara", transPara);
 		return resp;
