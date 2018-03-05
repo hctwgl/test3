@@ -613,6 +613,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
 		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
 		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(1);//非实时推送
 		return creditRespBo;
 	}
 	
@@ -690,6 +691,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
 		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
 		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(1);//非实时推送
 		return creditRespBo;
 	}
 	
