@@ -6,7 +6,6 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
-import com.ald.fanbei.api.dal.domain.query.AfRecycleViewQuery;
 import com.ald.fanbei.api.web.util.AppRecycleControllerUtil;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import org.slf4j.Logger;
@@ -14,12 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author weiqingeng
- * @Description: 有得卖三方 回收业务
+ * @Description: 有得卖三方 回收业务(与三方对接)
  * @date 2018年2月26日 下午4:14:31
  */
 @Controller
@@ -29,13 +27,11 @@ public class RecycleController {
     @Autowired
     private AfRecycleService afRecycleService;
     @Autowired
-    private AfRecycleViewService afRecycleViewService;
-    @Autowired
     private BizCacheUtil bizCacheUtil;
 
     /**
      * 创建订单 有得卖 三方 推送过来的订单数据(发券)
-     *
+     * '订单状态 1：待确认 2：待上门 3：待检测 6：待发货 7：待收货 8：待支付 20:确认发券 66：已完成 98：终止退回 99：已终止'
      * @param request
      * @return
      */
@@ -46,6 +42,15 @@ public class RecycleController {
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
+            if(null == afRecycleQuery.getUid()){
+                return H5CommonResponse.getNewInstance(false, "userId不能为空", null, "").toString();
+            }
+            if(null == afRecycleQuery.getSettlePrice()){
+                return H5CommonResponse.getNewInstance(false, "金额不能为空", null, "").toString();
+            }
+            if(null == afRecycleQuery.getStatus()){
+                return H5CommonResponse.getNewInstance(false, "状态不能为空", null, "").toString();
+            }
             if (RecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
                 logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
                 String refOrderId = afRecycleQuery.getRefOrderId();
@@ -73,39 +78,4 @@ public class RecycleController {
         return result;
     }
 
-
-    /**
-     * 增加页面访问记录   访问类型 1：回收 2：返现 3.运营活动位置1 4.运营活动位置2
-     * @return
-     * @author weiqingeng
-     */
-    @RequestMapping(value = "/addPageView", method = RequestMethod.POST)
-    @ResponseBody
-    public String addPageView(@RequestParam("uid") Long uid, @RequestParam("type") Integer type) {
-        String result = "";
-        String key = "";
-        try {
-            if(null == uid || null == type){
-                return H5CommonResponse.getNewInstance(false, "参数错误", null, "").toString();
-            }
-            AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(uid,type);
-            logger.info("/fanbei/ydm/addPageView,params ={}", afRecycleViewQuery.toString());
-            key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + afRecycleViewQuery.getUid();
-            boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
-            if (isNotLock) {
-                AfRecycleViewDo afRecycleDo = afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
-                if (null == afRecycleDo) {//访问不存在，新增一条访问记录
-                    afRecycleViewService.addRecycleView(afRecycleViewQuery);
-                } else {//修改访问记录
-                    afRecycleViewService.updateRecycleView(afRecycleViewQuery);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("/fanbei/ydm/addPageView, error = {}", e.getStackTrace());
-            return H5CommonResponse.getNewInstance(false, "增加页面访问记录失败", null, "").toString();
-        } finally {
-            bizCacheUtil.delCache(key);
-        }
-        return result;
-    }
 }

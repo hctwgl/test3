@@ -23,7 +23,7 @@ public class AppRecycleControllerUtil {
         String partnerId = ObjectUtils.toString(request.getParameter("partnerId"), null);
         String orderId = ObjectUtils.toString(request.getParameter("orderId"), null);
         BigDecimal settlePrice = NumberUtil.objToBigDecimalZeroToDefault(request.getParameter("settlePrice"), null);
-        Long uid = NumberUtil.objToLongDefault(request.getParameter("uid"), null);
+        Long uid = NumberUtil.objToLongDefault(request.getParameter("userId"), null);
         Integer status = NumberUtil.objToIntDefault(request.getParameter("status"),null);
         AfRecycleQuery afRecycleQuery = new AfRecycleQuery();
         afRecycleQuery.setPartnerId(partnerId);

@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdRecycleEnum;
 import com.ald.fanbei.api.biz.service.AfRecycleService;
 import com.ald.fanbei.api.biz.service.AfRecycleTradeService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -14,7 +13,6 @@ import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
-import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 
@@ -42,8 +40,6 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	@Autowired
 	private AfRecycleDao afRecycleDao;
 	@Autowired
-	private AfRecycleViewDao afRecycleViewDao;
-	@Autowired
 	private AfUserAccountDao afUserAccountDao;
 	@Autowired
 	private AfUserService afUserService;
@@ -53,6 +49,8 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	private AfCouponDao afCouponDao;
 	@Autowired
 	private AfRecycleTradeService afRecycleTradeService;
+
+
 
 
 
@@ -69,8 +67,13 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 				Integer result = afRecycleDao.addRecycleOrder(afRecycleQuery);
 				//回调有得卖确认接口
 				Map<String, String> params = new HashMap<String, String>();
+                params.put("orderId",afRecycleQuery.getRefOrderId());
+                params.put("payType",String.valueOf(afRecycleQuery.getPayType()));
+                params.put("settlePrice",String.valueOf(afRecycleQuery.getSettlePrice()));
+                params.put("partnerId",afRecycleQuery.getPartnerId());
 				String sign = SignUtil.sign(RecycleUtil.createLinkString(params), RecycleUtil.PRIVATE_KEY);
-				String postResult = HttpUtil.post(RecycleUtil.YDM_CALLBACK_URL, params);
+                params.put("sign",sign);
+                String postResult = HttpUtil.post(RecycleUtil.CALLBACK_BASE_URL + RecycleUtil.YDM_CALLBACK_URL, params);
 				JSONObject jsonObject = JSONObject.parseObject(postResult);
 				if(null != jsonObject && StringUtils.equals("1",jsonObject.getString("code"))){//返回成功
 					//给用户账号添加回收订单金额

@@ -15,7 +15,12 @@ public class RecycleUtil {
 
     public static final String PARTNER_ID = "1136587444";//与有得卖合作id，对应我们平台的appid
 
-    public static final String YDM_CALLBACK_URL = "http:// 51fanbei.youdemai.com/api/fanbei/sendverify";//有得卖订单确认接口
+    public static final String CALLBACK_BASE_URL = "http://120.27.147.62:8011";//有得卖握手接口  测试
+    //public String CALLBACK__BASE_URL = "http://51fanbei.youdemai.com";//有得卖握手接口  线上
+
+
+    public static final String YDM_CALLBACK_URL = "/api/fanbei/sendverify";//有得卖订单确认接口
+
     public static final String PRIVATE_KEY = "FANBEI_YDM_@#$#%$&";//有得卖签名私钥
     public static final String COUPON_NAME = "翻倍兑换优惠券";//券名称
     public static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(50.00);//最小限制金额
@@ -36,12 +41,11 @@ public class RecycleUtil {
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
             String value = params.get(key);
-            prestr = prestr + value;
-            /*if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
+            if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
                 prestr = prestr + key + "=" + value;
             } else {
                 prestr = prestr + key + "=" + value + "&";
-            }*/
+            }
         }
         return prestr;
     }
