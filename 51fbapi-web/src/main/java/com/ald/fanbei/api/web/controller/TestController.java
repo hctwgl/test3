@@ -298,12 +298,12 @@ public class TestController {
     	Long userId = 18637962178L;
 //		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
 //		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
-		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		//String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		//String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
 		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
-		logger.info("appId:"+appId);
-		logger.info("appSecurity:"+appSecurity);
+		//logger.info("appId:"+appId);
+		//logger.info("appSecurity:"+appSecurity);
 		logger.info("fanbeitest:"+fanbeitest);
 		logger.info("inveloment:"+inveloment);
 		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
@@ -314,8 +314,8 @@ public class TestController {
 		String phone=afUserDto.getUserName();
 	    String idcard=afUserDto.getIdNumber();
 	    HashMap<String, Object> map=new HashMap<String, Object>();
-	    map.put("appId",appId);
-	    map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
+	  //  map.put("appId",appId);
+	  //  map.put("sign", DigestUtils.md5Hex(appId+appSecurity+authItem+timestamp+sequenceNo));
 	    map.put("sequenceNo",sequenceNo);
 	    map.put("authItem",authItem);
 	    map.put("timestamp",timestamp);
