@@ -576,7 +576,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
 		RepaymentPlan repaymentPlan = new RepaymentPlan();
 		repaymentPlan.setRepaymentNo(afViewAssetBorrowCashDo.getBorrowNo());
-		repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afViewAssetBorrowCashDo.getGmtCreate(), timeLimit.intValue())));
+		repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afViewAssetBorrowCashDo.getGmtCreate(), timeLimit.intValue()-1)));
 		repaymentPlan.setRepaymentDays(timeLimit);
 		repaymentPlan.setRepaymentAmount(afViewAssetBorrowCashDo.getAmount());
 		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getAmount(), new BigDecimal(afAssetPackageDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
