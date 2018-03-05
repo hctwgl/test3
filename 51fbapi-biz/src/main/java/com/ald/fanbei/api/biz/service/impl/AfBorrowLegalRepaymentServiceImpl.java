@@ -895,7 +895,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 * 锁住还款
 	 */
 	private void lockRepay(Long userId) {
-		String key = userId + "_success_borrowLegalBorrowRepay";
+		String key = userId + "_success_loanRepay";
         long count = redisTemplate.opsForValue().increment(key, 1);
         redisTemplate.expire(key, 300, TimeUnit.SECONDS);
         if (count != 1) {
@@ -904,7 +904,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	}	
 	
 	private void unLockRepay(Long userId) {
-		String key = userId + "_success_borrowLegalBorrowRepay";
+		String key = userId + "_success_loanRepay";
 		redisTemplate.delete(key);
 	}
 
