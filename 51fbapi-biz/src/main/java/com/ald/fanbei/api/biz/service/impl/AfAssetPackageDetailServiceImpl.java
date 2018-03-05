@@ -447,9 +447,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		query.setType(type);
 		query.setLimitNums(limitNums == 0 ? 1 : limitNums);
 		AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
-		String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
-		Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 		if (pushWhiteResource != null) {
+			String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			//推送白名单开启,白名单的userid不推送，仅用于实时推送
 			query.setUserIds(Arrays.asList(whiteUserIds));
 			/*for (int i = 0; i < debtList.size(); i++) {
@@ -502,9 +502,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		query.setGmtCreateEnd(gmtCreateEnd);
 		query.setLimitNums(limitNums == 0 ? 1 : limitNums);
 		AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
-		String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
-		Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 		if (pushWhiteResource != null) {
+			String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			//推送白名单开启,白名单的userid不推送，仅用于实时推送
 			query.setUserIds(Arrays.asList(whiteUserIds));
 			/*for (int i = 0; i < debtList.size(); i++) {
