@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.loan;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -63,8 +65,15 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			
 			resp.addResponseData("bldStatus", afUserAuthStatusService.getBldOpenStatus(userId));
 			AfUserAccountSenceDo totalScene = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
-			resp.addResponseData("totalAmount",totalScene.getAuAmount());
-			resp.addResponseData("useableAmount", totalScene.getAuAmount().subtract(totalScene.getUsedAmount()));
+			BigDecimal totalAmount = BigDecimal.ZERO;
+			BigDecimal usedAmount = BigDecimal.ZERO;
+			if(totalScene != null) {
+				totalAmount = totalScene.getAuAmount();
+				usedAmount = totalScene.getUsedAmount();
+			}
+			
+			resp.addResponseData("totalAmount",totalAmount);
+			resp.addResponseData("useableAmount", totalAmount.subtract(usedAmount));
 			
 			resp.addResponseData("isLogin", true);
 			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
