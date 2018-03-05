@@ -789,7 +789,7 @@ public class AfESdkServiceImpl implements AfESdkService {
                 addAccountResult.setAccountId(getAccountProfileResult.getAccountInfo().getAccountUid());
             } else if (null == addAccountResult || !"成功".equals(addAccountResult.getMsg())
                     || 0 != addAccountResult.getErrCode()) {
-                logger.error("personAccount create error");
+                logger.error("personAccount create error = > {}",addAccountResult.getMsg() + "name="+afUserDo.getRealName());
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());
