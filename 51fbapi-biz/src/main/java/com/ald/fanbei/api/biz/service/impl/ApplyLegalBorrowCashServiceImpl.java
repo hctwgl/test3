@@ -443,7 +443,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				// 减少额度，包括搭售商品借款 
 				afUserAccountSenceService.syncLoanUsedAmount(userId, SceneType.CASH, afBorrowCashDo.getAmount());
 
-				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				// 增加日志
 				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
 						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
