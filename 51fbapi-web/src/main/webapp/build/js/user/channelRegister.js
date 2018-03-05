@@ -140,7 +140,7 @@ $(function(){
                 document.getElementById('register_codeBtn').addEventListener('click', function () {
                     var mobileNum = $("#register_mobile").val();
                     if (!(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
-                        requestMsg('请输入手机号')
+                        requestMsg('请输入正确的手机号')
                     }else{
                         $.ajax({
                             url:'/app/user/checkMobileRegistered',
