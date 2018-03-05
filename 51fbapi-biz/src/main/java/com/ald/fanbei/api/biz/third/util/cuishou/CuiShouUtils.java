@@ -81,6 +81,7 @@ public class CuiShouUtils {
      */
     public String offlineRepaymentMoney(String sign,final String data) {
         try {
+            thirdLog.info("{data:"+data+",sign:"+sign+"}");
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return new CuiShouBackMoney(201, "验签错误").toString();
