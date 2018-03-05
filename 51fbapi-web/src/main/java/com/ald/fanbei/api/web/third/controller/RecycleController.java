@@ -45,6 +45,7 @@ public class RecycleController {
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
+            logger.info("addOrder请求参数=" + afRecycleQuery.toString());
             if(null == afRecycleQuery.getUid()){
                 returnjson.put("success", false);
                 returnjson.put("msg", "userId不能为空");

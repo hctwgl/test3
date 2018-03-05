@@ -179,8 +179,9 @@
         FROM af_recycle_trade
         <include refid="commonCondition"/>
     </select>
-    
-    <select id="getLastRecord">
+
+    <!-- 获取最后一条交易 -->
+    <select id="getLastRecord" resultType="AfRecycleTradeDo">
     	SELECT
 			<include refid="queryFields"/>
 		FROM

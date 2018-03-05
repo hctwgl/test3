@@ -16,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -50,6 +52,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
     @Autowired
     private AfRecycleTradeService afRecycleTradeService;
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 订单添加事物
@@ -65,6 +68,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 Integer result = afRecycleDao.addRecycleOrder(afRecycleQuery);
                 //回调有得卖确认接口
                 Map<String, String> map = new HashMap<String, String>();
+                map.put("userId", String.valueOf(afRecycleQuery.getUid()));
                 map.put("orderId", afRecycleQuery.getRefOrderId());
                 map.put("payType", String.valueOf(afRecycleQuery.getPayType()));
                 map.put("settlePrice", String.valueOf(afRecycleQuery.getSettlePrice()));
@@ -101,13 +105,13 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     }
                 } else {
                     // code = "ERR06"
+                    logger.error("addRecycleOrder,errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
+
                 }
                 return result;
             }
 
-            private void recycleTradeSave(final AfRecycleQuery afRecycleQuery,
-                                          AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice,
-                                          BigDecimal rebateAmount) {
+            private void recycleTradeSave(final AfRecycleQuery afRecycleQuery, AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice, BigDecimal rebateAmount) {
                 AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeService.getLastRecord();
                 AfRecycleTradeDo newAfRecycleTradeDo = new AfRecycleTradeDo();
                 newAfRecycleTradeDo.setGmtCreate(new Date());
