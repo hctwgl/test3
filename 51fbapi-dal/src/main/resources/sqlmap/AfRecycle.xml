@@ -7,26 +7,21 @@
 	</sql>
 
 	<!-- 添加订单-->
-	<insert id="addRecycleOrder" parameterType="AfRecycleQuery" keyProperty="id" useGeneratedKeys="true" >
-		<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
+	<insert id="addRecycleOrder" parameterType="AfRecycleQuery" keyProperty="rid" useGeneratedKeys="true" >
 		INSERT INTO
 			af_order_recycle
 			(
-				gmt_create,
-				gmt_modified,
 				ref_order_id,
+				uid,
 				pay_type,
 				status,
 				is_disabled
 			)
 		VALUES
 		    (
-				NOW(),
-				NOW(),
 				#{refOrderId},
-				#{apyType},
+				#{uid},
+				#{payType},
 				#{status},
 				1
 			)
@@ -41,7 +36,7 @@
 		WHERE
 			is_delete = 0
 		AND
-			ref_oreder_id = #{refOrderId}
+			ref_order_id = #{refOrderId}
 	</select>
 
 	<!-- 获取返现系统配置的系数-->

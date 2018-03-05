@@ -2,11 +2,14 @@ package com.ald.fanbei.api.common.util;
 
 
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jcajce.provider.asymmetric.rsa.DigestSignatureSpi;
+import sun.misc.BASE64Encoder;
 
 /**
  *@类描述：ras生成签名和验签的工具类
@@ -66,5 +69,29 @@ public class SignUtil {
 			logger.error(e.getMessage(), e);
 		}
 		return flag;
+	}
+
+
+
+
+	/**
+	 *  有得卖的签名方式
+	 * @param str  签名明文字符串
+	 * @param privateKey  私钥
+	 * @return
+	 */
+	public static String signForYdm(String str,String privateKey){
+		String sign = null;
+		try {
+			String param= str + "&key=" + privateKey;
+			//确定计算方法
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			BASE64Encoder base64en = new BASE64Encoder();
+			//加密后的字符串
+			sign = base64en.encode(md5.digest(str.getBytes("utf-8")));
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return sign;
 	}
 }

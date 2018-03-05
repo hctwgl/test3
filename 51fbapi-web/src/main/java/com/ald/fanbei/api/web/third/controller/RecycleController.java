@@ -8,6 +8,8 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.web.util.AppRecycleControllerUtil;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +39,27 @@ public class RecycleController {
      */
     @RequestMapping(value = "/addOrder", method = RequestMethod.POST)
     @ResponseBody
-    public String addOrder(HttpServletRequest request) {
+    public JSONObject addOrder(HttpServletRequest request) {
+        JSONObject returnjson = new JSONObject();
         String result = "";
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
             if(null == afRecycleQuery.getUid()){
-                return H5CommonResponse.getNewInstance(false, "userId不能为空", null, "").toString();
+                returnjson.put("success", false);
+                returnjson.put("msg", "userId不能为空");
             }
             if(null == afRecycleQuery.getSettlePrice()){
-                return H5CommonResponse.getNewInstance(false, "金额不能为空", null, "").toString();
+                returnjson.put("success", false);
+                returnjson.put("msg", "金额不能为空");
             }
             if(null == afRecycleQuery.getStatus()){
-                return H5CommonResponse.getNewInstance(false, "状态不能为空", null, "").toString();
+                returnjson.put("success", false);
+                returnjson.put("msg", "状态不能为空");
+            }
+            if(StringUtils.isBlank(afRecycleQuery.getPartnerId())){
+                returnjson.put("success", false);
+                returnjson.put("msg", "合作商不能为空");
             }
             if (RecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
                 logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
@@ -62,20 +72,23 @@ public class RecycleController {
                     if (null == afRecycleDo) {//订单不存在，新增一条订单
                         afRecycleService.addRecycleOrder(afRecycleQuery);//新增一条订单
                     } else {
-                        result = H5CommonResponse.getNewInstance(true, "订单已存在", null, "").toString();
+                        returnjson.put("success", false);
+                        returnjson.put("msg", "订单已存在");
                     }
                 }
             } else {
                 logger.error("/fanbei/ydm/addOrder, partnerId error,partnerId={}", afRecycleQuery.getPartnerId());
-                return H5CommonResponse.getNewInstance(false, "合作商id错误", null, "").toString();
+                returnjson.put("success", false);
+                returnjson.put("msg", "合作商id错误");
             }
         } catch (Exception e) {
             logger.error("/fanbei/ydm/addOrder, error = {}", e.getStackTrace());
-            return H5CommonResponse.getNewInstance(false, "订单生成失败", null, "").toString();
+            returnjson.put("success", false);
+            returnjson.put("msg", "订单生成失败");
         } finally {
             bizCacheUtil.delCache(key);
         }
-        return result;
+        return returnjson;
     }
 
 }

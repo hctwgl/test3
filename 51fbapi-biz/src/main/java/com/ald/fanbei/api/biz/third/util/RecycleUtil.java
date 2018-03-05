@@ -7,13 +7,13 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * @Description: 有得卖三方 辅助类
+ * @describe: 有得卖三方 辅助类
  * @author weiqingeng
  * @date 2018年2月26日 下午4:14:31
  */
 public class RecycleUtil {
 
-    public static final String PARTNER_ID = "1136587444";//与有得卖合作id，对应我们平台的appid
+    public static final String PARTNER_ID = "10000215";//与有得卖合作id，对应我们平台的appid
 
     public static final String CALLBACK_BASE_URL = "http://120.27.147.62:8011";//有得卖握手接口  测试
     //public String CALLBACK__BASE_URL = "http://51fanbei.youdemai.com";//有得卖握手接口  线上

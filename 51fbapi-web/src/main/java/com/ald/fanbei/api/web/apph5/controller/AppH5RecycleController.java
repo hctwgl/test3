@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.RecycleUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -43,7 +44,6 @@ public class AppH5RecycleController extends BaseController {
     @Autowired
     private AfRecycleViewService afRecycleViewService;
 
-    private String URL = "http://51fanbei.youdemai.com";
 
     /**
      * @说明：兑换
@@ -125,7 +125,7 @@ public class AppH5RecycleController extends BaseController {
                 if (afUser != null) {
                     userId = afUser.getRid();
                     try {
-                        String recycleUrl = URL + "?userId=" + userId;
+                        String recycleUrl = RecycleUtil.CALLBACK_BASE_URL + "?userId=" + userId;
                         //添加页面访问记录
                         AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 1);
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
