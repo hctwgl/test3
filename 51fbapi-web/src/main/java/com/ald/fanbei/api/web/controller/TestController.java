@@ -289,6 +289,8 @@ public class TestController {
     @RequestMapping("/kafka")
     @ResponseBody
     public String testKafka() throws Exception{
+
+        String data1111= ConfigProperties.get(Constants.CONFKEY_UPS_URL);
         String appId="gxb099547a1a9ea2e48";
         String appSecurity="a8b2a9708cb4487cacdb568fadef19cd";
         String sequenceNo="12345678gxb00001";//用户的id 中间gxb 末尾自增
@@ -314,7 +316,7 @@ public class TestController {
         //endregion
         System.out.println(reqResult);
 
-        return reqResult;
+        return data1111;
     }
     @RequestMapping("/address")
     @ResponseBody
