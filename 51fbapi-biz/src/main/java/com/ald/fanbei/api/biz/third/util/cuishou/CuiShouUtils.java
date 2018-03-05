@@ -377,7 +377,7 @@ public class CuiShouUtils {
             mp.put("type",String.valueOf(type));
             //mp.put("timeStamp", String.valueOf(new Date().getTime()));
             thirdLog.info("cuishouhuankuan  postChuiSohiu {sign:" + sign + ",data:" + mm + "}");
-            thirdLog.info("cuishouhuankuan  postChuiSohiu url"+url);
+            thirdLog.info("cuishouhuankuan  postChuiSohiu url:"+url);
             String e1 = "";
             if (url.toLowerCase().startsWith("https")) {
                 thirdLog.info("cuishouhuankuan  postChuiSohiu https");
