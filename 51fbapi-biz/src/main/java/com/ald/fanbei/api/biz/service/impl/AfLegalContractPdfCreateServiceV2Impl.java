@@ -784,7 +784,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         boolean result = true;
         byte[] stream;
         try {
-            logger.info("getLegalContractPdf getLegalContractPdf map =>{}",JSON.toJSONString(map));
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
