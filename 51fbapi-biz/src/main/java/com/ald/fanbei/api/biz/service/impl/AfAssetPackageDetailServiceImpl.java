@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -448,6 +449,16 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		if(debtList==null || debtList.size()==0){
 			return new ArrayList<AfViewAssetBorrowCashDo>();
 		}
+		AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+		String[] whiteUserId = pushWhiteResource.getValue().split(",");
+		if (pushWhiteResource != null) {
+			//推送白名单开启,白名单的userid不推送，仅用于实时推送
+			for (int i = 0; i < debtList.size(); i++) {
+				if (Arrays.asList(whiteUserId).contains(debtList.get(i).getUserId())) {
+					debtList.remove(i);
+				}
+			}
+		}
 		query.setMinBorrowCashId(debtList.get(debtList.size()-1).getBorrowCashId());
 		BigDecimal checkAmount=afViewAssetBorrowCashService.checkAmount(query);
 		if (checkAmount.compareTo(amount) < 0) {
@@ -489,6 +500,16 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		List<AfViewAssetBorrowDo> debtList = afViewAssetBorrowService.getListByQueryCondition(query);
 		if(debtList==null || debtList.size()==0){
 			return new ArrayList<AfViewAssetBorrowDo>();
+		}
+		AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+		String[] whiteUserId = pushWhiteResource.getValue().split(",");
+		if (pushWhiteResource != null) {
+			//推送白名单开启,白名单的userid不推送，仅用于实时推送
+			for (int i = 0; i < debtList.size(); i++) {
+				if (Arrays.asList(whiteUserId).contains(debtList.get(i).getUserId())) {
+					debtList.remove(i);
+				}
+			}
 		}
 		query.setMinBorrowId(debtList.get(debtList.size()-1).getBorrowId());
 		BigDecimal checkAmount=afViewAssetBorrowService.checkAmount(query);
