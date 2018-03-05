@@ -727,7 +727,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                 logger.error("同步逾期订单失败", e);
             }
         }
-        riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+        try {
+            riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+        }
+        catch (Exception e){
+            logger.error("sync cuishou error",e);
+        }
     }
 
     private RiskOverdueBorrowBo parseOverduedBorrowBo(String borrowNo, Integer overdueDay, Integer overduetimes) {

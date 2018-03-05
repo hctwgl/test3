@@ -98,7 +98,10 @@ public class CuiShouUtils {
                         cuiShouBackMoney.setCode(500);
 
                         cuiShouBackMoney = borrowBackMoney(jsonObject);
-                        JSONObject jsonObject1 = new JSONObject();
+                        if(cuiShouBackMoney.getCode().intValue() ==200){
+                            JSONObject jsonObject1 = (JSONObject) cuiShouBackMoney.getData();
+                            jsonObject1.put("ref_id",CuiShouUtils.getAfRepaymentDo().getRid());
+                        }
                         sycnSuccessAndError(cuiShouBackMoney,0); //同步返回数据
                     }
                 }).start();
@@ -231,6 +234,7 @@ public class CuiShouUtils {
             List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(afRepaymentDo.getPayTradeNo());
             if (repaymentlist == null || repaymentlist.size() == 0) {
                 afRepaymentDao.addRepayment(afRepaymentDo);
+                jsonObject.put("ref_id",afRepaymentDo.getRid());
             } else {
                 for (AfRepaymentDo __repayment : repaymentlist) {
                     if (!__repayment.getBillIds().trim().equals(billIds)) {
@@ -242,6 +246,7 @@ public class CuiShouUtils {
                             thirdLog.info("cuiShouUtils  getRepayMentDo  success");
                             setAfRepaymentDo(__repayment);
                             cuiShouBackMoney.setCode(200);
+                            jsonObject.put("ref_id",__repayment.getRid());
                             return cuiShouBackMoney;
                         }
                     }
