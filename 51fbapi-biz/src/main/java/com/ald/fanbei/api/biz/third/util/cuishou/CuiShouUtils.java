@@ -106,7 +106,7 @@ public class CuiShouUtils {
                         sycnSuccessAndError(cuiShouBackMoney,0); //同步返回数据
                     }
                 }).start();
-                return new CuiShouBackMoney(200, "成功").toString();//同步反回接收成功
+                return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
 
             } else if (CuiShouType.BORROW_CASH.getCode().equals(c_type)) {
                 CuiShouUtils.setIsXianXiaHuangKuang(true);
