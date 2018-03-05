@@ -368,6 +368,21 @@ public class TestController {
         map.put("phone",phone);
         map.put("idcard",idcard);
 
+    	Long userId = 18637962178L;
+		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
+		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
+		logger.info("appId:"+appId);
+		logger.info("appSecurity:"+appSecurity);
+		logger.info("fanbeitest:"+fanbeitest);
+		logger.info("inveloment:"+inveloment);
+        logger.error("testKafka------");
+        try{
+            // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
+            kafkaTemplate.send(ConfigProperties.get(KafkaConstants.SYNC_TOPIC) ,KafkaConstants.SYNC_BORROW_CASH,"18637962835");
+            HashMap hashMap= mongoTemplate.findOne(Query.query(Criteria.where("_id").is("18637962835")),HashMap.class,"UserDataSummary");
+
 
         String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));*/
 
