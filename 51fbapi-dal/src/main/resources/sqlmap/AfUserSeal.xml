@@ -105,16 +105,16 @@
         update af_user_seal
         set user_seal = #{userSeal,jdbcType=VARCHAR}
         <if test="userAccountId != null ">
-            and user_account_id = #{userAccountId}
+            , user_account_id = #{userAccountId}
         </if>
         <if test="userType != null ">
-            and user_type = #{userType}
+            , user_type = #{userType}
         </if>
         <if test="userName != null ">
-            and user_name = #{userName}
+            , user_name = #{userName}
         </if>
         <if test="edspayUserCardId != null ">
-            and edspay_user_card_id = #{edspayUserCardId}
+            , edspay_user_card_id = #{edspayUserCardId}
         </if>
         where user_id = #{userId,jdbcType=BIGINT}
     </update>
