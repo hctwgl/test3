@@ -84,7 +84,7 @@ public class CuiShouUtils {
             thirdLog.info("{data:"+data+",sign:"+sign+"}");
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return new CuiShouBackMoney(201, "验签错误").toString();
+            if (!sign1.equals(sign)) return JSONObject.toJSONString( new CuiShouBackMoney(201, "验签错误"));
 
 
             final JSONObject jsonObject = JSONObject.parseObject(data);
@@ -156,7 +156,8 @@ public class CuiShouUtils {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             AfRepaymentDo afRepaymentDo = new AfRepaymentDo();
             afRepaymentDo.setStatus("A");
-            afRepaymentDo.setRepayNo(generatorClusterNo.getRepaymentNo(new Date()));
+            afRepaymentDo.setRepayNo(jsonObject.get("repay_no").toString());
+            //afRepaymentDo.setRepayNo(generatorClusterNo.getRepaymentNo(new Date()));
             afRepaymentDo.setPayTradeNo(jsonObject.get("trade_no").toString());
             afRepaymentDo.setUserId(Long.parseLong(jsonObject.get("consumer_no").toString()));
             try {
