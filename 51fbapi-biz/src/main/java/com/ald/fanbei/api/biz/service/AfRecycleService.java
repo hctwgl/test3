@@ -6,6 +6,7 @@ import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleRatioQuery;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 
@@ -19,6 +20,6 @@ public interface AfRecycleService {
 
 	AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery);
 
-	AfRecycleRatioDo addExchange(Long uid, Integer exchangeAmount, BigDecimal remainAmount);//添加兑换记录
+	Map<String,Object> addExchange(Long uid, Integer exchangeAmount, BigDecimal remainAmount);//添加兑换记录
 
 }

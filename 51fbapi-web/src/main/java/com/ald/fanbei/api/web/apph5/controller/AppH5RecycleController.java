@@ -1,14 +1,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -19,20 +15,14 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -44,18 +34,12 @@ import java.util.*;
 @RequestMapping("/recycle")
 public class AppH5RecycleController extends BaseController {
 
-    @Resource
-    AfUserService afUserService;
-    @Resource
-    AfResourceService afResourceService;
-    @Resource
-    AfUserCouponService afUserCouponService;
-    @Resource
-    AfCouponService afCouponService;
-    @Resource
-    AfUserAccountService afUserAccountService;
-    @Resource
-    AfRecycleService afRecycleService;
+    @Autowired
+    private AfUserService afUserService;
+    @Autowired
+    private AfUserAccountService afUserAccountService;
+    @Autowired
+    private AfRecycleService afRecycleService;
     @Autowired
     private AfRecycleViewService afRecycleViewService;
 
@@ -94,8 +78,15 @@ public class AppH5RecycleController extends BaseController {
                         if (amount.compareTo(afUserAccountDo.getRebateAmount().intValue()) > 0) {
                             throw new FanbeiException("账户余额小于兑换金额", true);
                         }
-                        AfRecycleRatioDo afRecycleRatioDo = afRecycleService.addExchange(userId, amount, afUserAccountDo.getRebateAmount());
-                        resp.setData(afRecycleRatioDo);
+                        // 账户关联信息
+                        AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
+                        if(null != userAccountInfo){
+                            Map<String,Object> map = afRecycleService.addExchange(userId, amount, afUserAccountDo.getRebateAmount());
+                            map.put("rebateAmount",userAccountInfo.getRebateAmount());
+                            resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
+                        }else{
+                            resp = H5CommonResponse.getNewInstance(false, "获取用户提现金额错误", "", null);
+                        }
                     } catch (Exception e) {
                         logger.error("exchangeApi,error=", e);
                         throw new FanbeiException(FanbeiExceptionCode.FAILED);
@@ -135,10 +126,12 @@ public class AppH5RecycleController extends BaseController {
                     userId = afUser.getRid();
                     try {
                         String recycleUrl = URL + "?userId=" + userId;
-                        resp.setData(recycleUrl);
                         //添加页面访问记录
                         AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 1);
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
+                        Map<String,Object> map = new HashMap<String,Object>();
+                        map.put("recycleUrl",recycleUrl);
+                        resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
                     } catch (Exception e) {
                         logger.error("exchangeApi,error=", e);
                         throw new FanbeiException(FanbeiExceptionCode.FAILED);
@@ -179,10 +172,18 @@ public class AppH5RecycleController extends BaseController {
             }
             // 账户关联信息
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
-            resp.setData(userAccountInfo.getRebateAmount());
+
             //添加页面访问记录 '访问类型 1：回收 2：返现 3.运营活动位置1 4.运营活动位置2'
             AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 2);
             afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
+
+            Map<String,Object> map = new HashMap<String,Object>();
+            if(null != userAccountInfo){
+                map.put("rebateAmount",userAccountInfo.getRebateAmount());
+                resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, "获取用户提现金额错误", "", map);
+            }
         } catch (Exception e) {
             resp = H5CommonResponse.getNewInstance(false, "获取信息失败", "", e.getMessage());
             logger.error("获取信息失败" + context, e);

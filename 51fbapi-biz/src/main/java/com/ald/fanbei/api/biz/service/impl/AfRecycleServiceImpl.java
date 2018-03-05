@@ -134,8 +134,8 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 	 * @return
 	 */
 	@Override
-	public AfRecycleRatioDo addExchange(final Long uid, final Integer exchangeAmount, final BigDecimal remainAmount) {
-		    final AfRecycleRatioDo afRecycleRatioDo = new AfRecycleRatioDo();
+	public Map<String,Object> addExchange(final Long uid, final Integer exchangeAmount, final BigDecimal remainAmount) {
+		    final Map<String,Object> map = new HashMap<>();
 		    transactionTemplate.execute(new TransactionCallback<Void>() {
 			@Override
 			public Void doInTransaction(TransactionStatus transactionStatus) {
@@ -175,12 +175,12 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 				AfUserCouponDo userCoupon = new AfUserCouponDo(uid,couponId,CouponStatus.NOUSE.getCode(),CouponSenceRuleType.DOUBLE_EXCHANGE.getCode(),new Date(),DateUtil.getFinalDate());
 				afUserCouponDao.addUserCoupon(userCoupon);// 插入
 
-				afRecycleRatioDo.setRatio(ratio);
-				afRecycleRatioDo.setAmount(needExchangeAmount);
+				map.put("ratio",ratio);
+				map.put("amount",needExchangeAmount.intValue());
 				return null;
 			}
 		});
-		return afRecycleRatioDo;
+		return map;
 	}
 
 

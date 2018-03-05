@@ -29,7 +29,7 @@ public class AfRecycleRatioDo extends AbstractSerial {
 	private BigDecimal ratio;//比例
 	private BigDecimal probability;//概率
 	private Integer isDisabled;//是否失效 1：是 0：否
-	private BigDecimal amount;//兑换后的金额
+	private Integer amount;//兑换后的金额(整数)
 
 
 	 
