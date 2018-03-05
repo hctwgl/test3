@@ -47,10 +47,10 @@ public class AuthGxbApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		HashMap<String, Object> map=new HashMap<String, Object>();
 		Long userId = context.getUserId();
-		//String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
-//		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
-		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+//		String appId = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPID),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+//		String appSecurity = AesUtil.decrypt(ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY),ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 		String sequenceNo=userId+"gxb"+System.currentTimeMillis();
 		String authItem="ecommerce";
 		String timestamp=DateUtil.getCurrSecondTimeStamp()+"";

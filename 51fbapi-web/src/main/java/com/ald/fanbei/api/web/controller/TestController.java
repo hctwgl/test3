@@ -288,6 +288,16 @@ public class TestController {
     @RequestMapping("/kafka")
     @ResponseBody
     public String testKafka() throws Exception{
+
+    	Long userId = 18637962178L;
+		String appId = ConfigProperties.get(Constants.AUTH_GXB_APPID);
+		String appSecurity = ConfigProperties.get(Constants.AUTH_GXB_APPSECURITY);
+		String fanbeitest = ConfigProperties.get("fanbeitest.test.user");
+		String inveloment = ConfigProperties.get("fbadmin.inveloment.type");
+		logger.info("appId:"+appId);
+		logger.info("appSecurity:"+appSecurity);
+		logger.info("fanbeitest:"+fanbeitest);
+		logger.info("inveloment:"+inveloment);
         logger.error("testKafka------");
         try{
             // HashMap hashMap= kafkaSync.getUserSummarySync(13989455976l);
