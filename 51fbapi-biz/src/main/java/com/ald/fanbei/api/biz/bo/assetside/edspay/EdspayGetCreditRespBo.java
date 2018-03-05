@@ -46,6 +46,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private Integer overdueTimes;//平台总逾期次数
 	private BigDecimal overdueAmount;//平台总逾期金额
 	private List<RepaymentPlan> repaymentPlans;//还款计划数组
+	private Integer isCur;//债权推送类型，(0实时推送[Default]，1非实时推送)
 	
 	
 	public EdspayGetCreditRespBo() {
@@ -323,5 +324,12 @@ public class EdspayGetCreditRespBo implements Serializable {
 		this.arriveMoney = arriveMoney;
 	}
 	
+	public Integer getIsCur() {
+		return isCur;
+	}
+
+	public void setIsCur(Integer isCur) {
+		this.isCur = isCur;
+	}
 	
 }

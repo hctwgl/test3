@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -39,7 +40,12 @@ public class GetServiceHintsApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String,Object> data = new HashMap<>();
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE,SEC_TYPE);
-		data.put("hint",afResourceDo.getValue());
+		if(StringUtils.equals("1",afResourceDo.getValue1())){
+			data.put("hint",afResourceDo.getValue());
+		}else {
+			data.put("hint","");
+		}
+
 		resp.setResponseData(data);
 		return resp;
 	}

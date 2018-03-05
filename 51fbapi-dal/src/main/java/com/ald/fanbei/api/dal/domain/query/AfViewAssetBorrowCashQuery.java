@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.domain.query;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 /**
  * 资产债权视图查询
  * @author chengkang
@@ -34,6 +35,11 @@ public class AfViewAssetBorrowCashQuery implements Serializable{
      * 取的条数
      */
     private Integer limitNums;
+    
+    /**
+     * 取的条数
+     */
+    private List<Long> userIds;
 
 
 	public String getType() {
@@ -75,5 +81,14 @@ public class AfViewAssetBorrowCashQuery implements Serializable{
 	public void setMinBorrowCashId(Long minBorrowCashId) {
 		this.minBorrowCashId = minBorrowCashId;
 	}
+
+	public List<Long> getUserIds() {
+		return userIds;
+	}
+
+	public void setUserIds(List<Long> userIds) {
+		this.userIds = userIds;
+	}
     
+	
 }
