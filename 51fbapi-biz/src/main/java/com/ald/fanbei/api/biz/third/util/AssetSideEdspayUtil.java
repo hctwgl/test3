@@ -497,7 +497,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					Date now =new Date();
 					afRetryTemplDo.setGmtCreate(now);
 					AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
-					Integer queryInterval = strategy.getQueryInterval();
+					Integer queryInterval = strategy.getTimeOut();
 					Date gmtNext = DateUtil.addMins(now, queryInterval);
 					afRetryTemplDo.setGmtNext(gmtNext);
 					afRetryTemplDo.setTimes(0);
