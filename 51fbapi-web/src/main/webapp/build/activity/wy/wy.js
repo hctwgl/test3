@@ -22,7 +22,7 @@ function formatDateTime() {
 };
 
 
-// 同盾校验编号的sessionId
+/*// 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
     _fmOpt = {
@@ -39,7 +39,7 @@ var _fmOpt;
     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
-})();
+})();*/
 
 function timeFunction(){ // 60s倒计时
     timerS--;
@@ -80,7 +80,8 @@ $(".submit").click(function(){
                                 pointCode: pointCode,
                                 smsCode: register_verification,
                                 password: password_md5,
-                                token:token
+                                token:token,
+                                bsqToken:token
                             },
                             success: function(returnData){
                                 if (returnData.success) {
@@ -202,6 +203,7 @@ $("#imgVftCodeSbumit").click(function(){
             data: {
                 mobile: mobileNum,
                 token: token,
+                bsqToken:token,
                 channelCode: channelCode,
                 pointCode: pointCode,
                 verifyImgCode:verifyImgCode
