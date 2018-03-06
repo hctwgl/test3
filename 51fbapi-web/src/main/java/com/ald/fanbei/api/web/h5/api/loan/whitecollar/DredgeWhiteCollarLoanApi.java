@@ -96,7 +96,7 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		
 		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
 				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
-				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType());
+				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType(),param.getAddress());
 		
 		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
 		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());

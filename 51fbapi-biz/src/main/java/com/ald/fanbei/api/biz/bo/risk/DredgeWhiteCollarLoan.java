@@ -26,12 +26,12 @@ public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 	private static final long serialVersionUID = 1L;
 	
 	
-	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo,String selectedType) {
-		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo, selectedType);
+	public DredgeWhiteCollarLoan(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene, Map<String, Object> extUserInfo,String selectedType,String address) {
+		super(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, notifyHost,bqsBlackBox,riskScene,extUserInfo, selectedType,address);
 	}
 
 	@Override
-	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo,String selectedType) {
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo,String selectedType,String address) {
 		setConsumerNo(consumerNo);
 		setEvent(event);
 		setOrderNo(riskOrderNo);
@@ -39,7 +39,7 @@ public class DredgeWhiteCollarLoan extends DredgeWhiteCollarLoanReqBo {
 		JSONObject userInfo = new JSONObject();
 		userInfo.put("alipayNo", accountDo.getAlipayAccount());
 		userInfo.put("openId", accountDo.getOpenId());
-		userInfo.put("address", afUserDo.getAddress());
+		userInfo.put("address", address);
 		userInfo.put("channel", CHANNEL);
 		//12-13新增用户相似度字段
 		userInfo.put("similarDegree",afUserAuthDo.getSimilarDegree());
