@@ -156,4 +156,10 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		
 		return maxPermitQuota;
 	}
+	
+	@Override
+	public void raiseQuota(Long userId, SceneType scene, BigDecimal tarAmount, BigDecimal totalAmount) {
+		// TODO 提额
+	}
+	
 }
