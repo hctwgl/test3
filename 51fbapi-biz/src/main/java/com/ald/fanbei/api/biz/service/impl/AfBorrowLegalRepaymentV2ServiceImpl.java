@@ -223,7 +223,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 
             if (resultValue == 1L) {
             	notifyUserBySms(repayDealBo,isBalance);
-            	nofityRisk(repayDealBo,cashDo);
+            	//nofityRisk(repayDealBo,cashDo);
             }
     		
     	}finally {
