@@ -139,11 +139,14 @@
 	        <if test="blackBox != null">
 				black_box,
 	        </if>
-		<if test="bqsBlackBox != null">
-			bqs_black_box,
-		</if>
+			<if test="bqsBlackBox != null">
+				bqs_black_box,
+			</if>
 	        <if test="ip != null">
 	            ip,
+	        </if>
+	        <if test="lc != null and '' != lc">
+	            lc,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -273,6 +276,9 @@
 			</if>
 			<if test="ip != null">
 	            #{ip},
+	        </if>
+			<if test="lc != null and '' != lc">
+	            #{lc},
 	        </if>
 			NOW(),
 			NOW()
