@@ -154,26 +154,24 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 */
 	@Override
 	public void repay(RepayBo bo) {
-		try {
-			lockRepay(bo.userId);
-			
-			Date now = new Date();
-			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-			if(StringUtil.equals("sysJob",bo.remoteIp)){
-				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-			}
-			
-			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-			bo.tradeNo = tradeNo;
-			bo.name = name;
-			bo.borrowOrderCashId = bo.orderCashDo.getRid();
 		
-			generateRepayRecords(bo);
+		lockRepay(bo.userId);
 		
-			doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
-		} finally {
-			unLockRepay(bo.userId);
+		Date now = new Date();
+		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		if(StringUtil.equals("sysJob",bo.remoteIp)){
+			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 		}
+		
+		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		bo.tradeNo = tradeNo;
+		bo.name = name;
+		bo.borrowOrderCashId = bo.orderCashDo.getRid();
+	
+		generateRepayRecords(bo);
+	
+		doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
+		
 	}
 	
 	/**
@@ -895,7 +893,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 * 锁住还款
 	 */
 	private void lockRepay(Long userId) {
-		String key = userId + "_success_borrowLegalBorrowRepay";
+		String key = userId + "_success_loanRepay";
         long count = redisTemplate.opsForValue().increment(key, 1);
         redisTemplate.expire(key, 300, TimeUnit.SECONDS);
         if (count != 1) {
@@ -904,7 +902,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	}	
 	
 	private void unLockRepay(Long userId) {
-		String key = userId + "_success_borrowLegalBorrowRepay";
+		String key = userId + "_success_loanRepay";
 		redisTemplate.delete(key);
 	}
 

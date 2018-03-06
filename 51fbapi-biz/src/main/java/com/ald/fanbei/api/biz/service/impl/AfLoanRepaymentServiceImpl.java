@@ -141,45 +141,41 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 
 	@Override
 	public void repay(LoanRepayBo bo) {
-		try {
-			lockRepay(bo.userId);
-			
-			if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
-				// 未出账时拦截按期还款
-				throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-			}
-			
-			Date now = new Date();
-			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-			if(StringUtil.equals("sysJob",bo.remoteIp)){
-				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-			}
-			
-			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-			bo.tradeNo = tradeNo;
-			bo.name = name;
-			
-			// 根据 还款金额  更新期数信息
-			if(!bo.isAllRepay) {	// 非提前结清
-				List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-				bo.loanPeriodsIds.clear();
-				bo.loanPeriodsDoList.clear();
-				for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-					bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-					bo.loanPeriodsDoList.add(afLoanPeriodsDo);
-				}
-			}
-
-			// 增加还款记录
-			generateRepayRecords(bo);
 		
-			// 还款操作
-			doRepay(bo, bo.loanRepaymentDo);
-			
-		} finally {
-			unLockRepay(bo.userId);
+		lockRepay(bo.userId);
+		
+		if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
+			// 未出账时拦截按期还款
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 		}
 		
+		Date now = new Date();
+		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		if(StringUtil.equals("sysJob",bo.remoteIp)){
+			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+		}
+		
+		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		bo.tradeNo = tradeNo;
+		bo.name = name;
+		
+		// 根据 还款金额  更新期数信息
+		if(!bo.isAllRepay) {	// 非提前结清
+			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			bo.loanPeriodsIds.clear();
+			bo.loanPeriodsDoList.clear();
+			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+			}
+		}
+
+		// 增加还款记录
+		generateRepayRecords(bo);
+	
+		// 还款操作
+		doRepay(bo, bo.loanRepaymentDo);
+			
 	}
 	
 	/**
