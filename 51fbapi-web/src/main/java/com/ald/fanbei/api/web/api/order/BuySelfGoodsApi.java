@@ -161,6 +161,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 
         String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
+        logger.info("add self order 1,lc=" + lc);
+        if(StringUtils.isBlank(lc)){
+            lc = ObjectUtils.toString(request.getAttribute("lc"));
+        }
+        logger.info("add self order 2,lc=" + lc);
 
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
