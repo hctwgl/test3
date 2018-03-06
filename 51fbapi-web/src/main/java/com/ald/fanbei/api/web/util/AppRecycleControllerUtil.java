@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 /**
- * @Description: 有得卖三方 辅助类
+ * @describe: 有得卖三方 辅助类
  * @author weiqingeng
  * @date 2018年2月26日 下午4:14:31
  */

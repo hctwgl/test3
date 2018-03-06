@@ -521,4 +521,15 @@
 		LIMIT 1
 	</select>
 
+	<!-- 获取翻倍兑换的最大阈值 -->
+	<select id="getMaxThresholdOfDoubleExchange" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type}
+		LIMIT 1
+	</select>
+
 </mapper>

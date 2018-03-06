@@ -56,9 +56,15 @@ public enum ResourceType {
 	STAGE_MONEY_LIMIT_D("STAGE_MONEY_LIMIT_D","代买（自建）"),
 	STAGE_MONEY_LIMIT_Z("STAGE_MONEY_LIMIT_Z","自营"),
 	STAGE_MONEY_LIMIT_B("STAGE_MONEY_LIMIT_B","菠萝觅"),
-	STAGE_MONEY_LIMIT_S("STAGE_MONEY_LIMIT_S","商圈");
-	private String code;
+	STAGE_MONEY_LIMIT_S("STAGE_MONEY_LIMIT_S","商圈"),
+	MAX_THRESHOLD_OF_DOUBLE_EXCHANGE("MAX_THRESHOLD_OF_EXCHANGE","翻倍兑换最大阈值"),
 
+
+	;
+
+
+
+	private String code;
 	private String description;
 
 	private static Map<String, ResourceType> codeRoleTypeMap = null;

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.dal.domain.query;
 
-import com.ald.fanbei.api.common.page.Page;
-import com.ald.fanbei.api.dal.domain.AfRecycleDo;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,12 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfRecycleService;
-import com.ald.fanbei.api.biz.service.AfRecycleTradeService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RecycleUtil;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -15,7 +14,6 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,7 @@ import java.util.Map;
 
 /**
  * @author weiqingeng 2018年2月27日上午9:55:29
- * @类描述： 有得卖  回收业务
+ * @discribe： 有得卖  回收业务
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afRecycleService")
@@ -44,21 +42,23 @@ public class AfRecycleServiceImpl implements AfRecycleService {
     @Autowired
     private AfUserAccountDao afUserAccountDao;
     @Autowired
-    private AfUserService afUserService;
+    private AfUserDao afUserDao;
     @Autowired
     private AfUserCouponDao afUserCouponDao;
     @Autowired
     private AfCouponDao afCouponDao;
     @Autowired
-    private AfRecycleTradeService afRecycleTradeService;
+    private AfRecycleTradeDao afRecycleTradeDao;
+    @Autowired
+    private AfResourceDao afResourceDao;
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * 订单添加事物
+     * 有得卖推单，订单添加事物
      *
-     * @param afRecycleQuery
-     * @return
+     * @param afRecycleQuery  实体对象
+     * @return 返回整数
      */
     @Override
     public Integer addRecycleOrder(final AfRecycleQuery afRecycleQuery) {
@@ -67,7 +67,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
             public Integer doInTransaction(TransactionStatus transactionStatus) {
                 Integer result = afRecycleDao.addRecycleOrder(afRecycleQuery);
                 //回调有得卖确认接口
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String,String> map = new HashMap<>();
                 map.put("userId", String.valueOf(afRecycleQuery.getUid()));
                 map.put("orderId", afRecycleQuery.getRefOrderId());
                 map.put("payType", String.valueOf(afRecycleQuery.getPayType()));
@@ -85,7 +85,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
                     if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息
                         //根据用户Id查找用户名
-                        AfUserDo afUserDo = afUserService.getUserById(userId);
+                        AfUserDo afUserDo = afUserDao.getUserById(userId);
                         //给用户的返现金额
                         BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
                         AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
@@ -106,13 +106,12 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 } else {
                     // code = "ERR06"
                     logger.error("addRecycleOrder,errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
-
                 }
                 return result;
             }
 
             private void recycleTradeSave(final AfRecycleQuery afRecycleQuery, AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice, BigDecimal rebateAmount) {
-                AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeService.getLastRecord();
+                AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeDao.getLastRecord();
                 AfRecycleTradeDo newAfRecycleTradeDo = new AfRecycleTradeDo();
                 newAfRecycleTradeDo.setGmtCreate(new Date());
                 newAfRecycleTradeDo.setGmtModified(new Date());
@@ -122,7 +121,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 newAfRecycleTradeDo.setReturnAmount(rebateAmount);
                 newAfRecycleTradeDo.setTradeAmount(settlePrice.add(rebateAmount));
                 newAfRecycleTradeDo.setType(1);
-                afRecycleTradeService.saveRecord(newAfRecycleTradeDo);
+                afRecycleTradeDao.saveRecord(newAfRecycleTradeDo);
             }
         });
         return 1;
@@ -134,12 +133,11 @@ public class AfRecycleServiceImpl implements AfRecycleService {
     }
 
     /**
-     * 翻倍兑换业务
-     *
-     * @param uid
-     * @param exchangeAmount
-     * @param remainAmount
-     * @return
+     *  翻倍兑换业务
+     * @param uid 用户id
+     * @param exchangeAmount 需要兑换的金额
+     * @param remainAmount 有得卖账户剩余总额
+     * @return 兑换后的金额和翻倍数
      */
     @Override
     public Map<String, Object> addExchange(final Long uid, final Integer exchangeAmount, final BigDecimal remainAmount) {
@@ -150,10 +148,18 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 List<AfRecycleRatioDo> list = afRecycleDao.getRecycleExchangeRatio();
                 BigDecimal ratio = RecycleUtil.getExchangeRatio(list);
                 BigDecimal needExchangeAmount = ratio.multiply(BigDecimal.valueOf(exchangeAmount));//翻倍后的金额
+                //判断当前的兑换总额是否超过了系统设置的最高阈值，若操作则直接使用最大阈值
+                AfResourceDo afResourceDo = afResourceDao.getMaxThresholdOfDoubleExchange(ResourceType.MAX_THRESHOLD_OF_DOUBLE_EXCHANGE.getCode());
+                if(null != afResourceDo && org.apache.commons.lang.StringUtils.isNotBlank(afResourceDo.getValue())){
+                    BigDecimal maxThreshold = BigDecimal.valueOf(Integer.valueOf(afResourceDo.getValue().trim()));
+                    if(needExchangeAmount.compareTo(maxThreshold) == 1) {
+                        needExchangeAmount = maxThreshold;
+                    }
+                }
                 AfUserAccountDo afUserAccountDo = new AfUserAccountDo(uid, BigDecimal.valueOf(exchangeAmount));
                 afUserAccountDao.reduceRebateAmount(afUserAccountDo);//用户账号扣除返现金额
                 AfCouponDo afCouponDo = afCouponDao.getCouponByName(RecycleUtil.COUPON_NAME);//查找手否存在指定名称的券信息
-                Long couponId = 0L;
+                Long couponId;
                 if (null != afCouponDo) {
                     couponId = afCouponDo.getRid();
                     afCouponDao.updateCouponquotaAlreadyById(new AfCouponDo(couponId, 1));

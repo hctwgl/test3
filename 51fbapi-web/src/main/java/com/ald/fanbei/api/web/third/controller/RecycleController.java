@@ -7,7 +7,6 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
 import com.ald.fanbei.api.web.util.AppRecycleControllerUtil;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * @describe: 有得卖三方 回收业务(与三方对接)
  * @author weiqingeng
- * @Description: 有得卖三方 回收业务(与三方对接)
  * @date 2018年2月26日 下午4:14:31
  */
 @Controller
