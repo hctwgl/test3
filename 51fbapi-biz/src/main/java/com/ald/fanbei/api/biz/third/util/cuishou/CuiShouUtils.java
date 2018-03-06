@@ -399,6 +399,7 @@ public class CuiShouUtils {
      * @param afRepaymentBorrowCashDo
      */
     public void syncCuiShou(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo){
+        thirdLog.info("backmoney xianjinjie:"+ afRepaymentBorrowCashDo.toString());
         setAfRepaymentBorrowCashDo(afRepaymentBorrowCashDo);
         CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
         cuiShouBackMoney.setCode(200);
@@ -414,6 +415,7 @@ public class CuiShouUtils {
      * @param afRepaymentDo
      */
     public void syncCuiShou(AfRepaymentDo afRepaymentDo){
+        thirdLog.info("backmoney xiaofeifenxqi:"+ afRepaymentDo.toString());
         if(CuiShouUtils.getIsXianXiaHuangKuang() !=null && CuiShouUtils.getIsXianXiaHuangKuang()){
             return;
         }
