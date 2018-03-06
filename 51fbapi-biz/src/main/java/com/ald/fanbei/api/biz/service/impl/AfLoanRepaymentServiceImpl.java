@@ -693,7 +693,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
 			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
 		}else {
-			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		
