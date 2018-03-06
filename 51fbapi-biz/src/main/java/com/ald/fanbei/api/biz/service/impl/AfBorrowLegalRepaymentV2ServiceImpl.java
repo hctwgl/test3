@@ -117,7 +117,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-    
+
+    @Resource
+    CuiShouUtils cuiShouUtils;
+
     @Resource
     RedisTemplate<String, ?> redisTemplate;
     /* copy自 AfRepaymentBorrowCashServiceImpl */
@@ -225,6 +228,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
             if (resultValue == 1L) {
             	notifyUserBySms(repayDealBo,isBalance);
             	nofityRisk(repayDealBo,cashDo);
+            	cuiShouUtils.syncCuiShou(repaymentDo);
             }
     		
     	}finally {
