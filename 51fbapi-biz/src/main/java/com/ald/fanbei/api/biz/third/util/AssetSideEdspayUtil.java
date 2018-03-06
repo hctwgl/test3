@@ -460,7 +460,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			if (borrowCashInfo == null) {
 				borrowerJson = JSON.toJSONString("");
 			}else{
-				borrowerJson = JSON.toJSONString(borrowCashInfo);
+				borrowerJson = JSON.toJSONString(borrowCashInfos);
 			}
 			Map<String,String> map = new HashMap<String,String>();
 			//时间戳
@@ -483,7 +483,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				//推送数据给钱包
 				
 				//推送数据给钱包
-				//String respResult = HttpUtil.doHttpPostJsonParam(afResourceDo.getValue1()+"/p2p/fanbei/debtPush", jsonParam);
 				System.out.println(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush");
 				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
 				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);

@@ -245,13 +245,14 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
 						RepaymentPlan repaymentPlan = new RepaymentPlan();
 						repaymentPlan.setRepaymentNo(afBorrowCashDto.getOrderNo());
-						repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afBorrowCashDto.getLoanStartTime(), timeLimit)));
+						repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afBorrowCashDto.getLoanStartTime(), timeLimit-1)));
 						repaymentPlan.setRepaymentDays(timeLimit.longValue());
 						repaymentPlan.setRepaymentAmount(afBorrowCashDto.getMoney());
 						repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afBorrowCashDto.getMoney(), new BigDecimal(afAssetSideInfoDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
 						repaymentPlan.setRepaymentPeriod(0);
 						repaymentPlans.add(repaymentPlan);
 						borrowCashInfo.setRepaymentPlans(repaymentPlans);
+						borrowCashInfo.setIsCur(0);
 						borrowCashInfos.add(borrowCashInfo);
 						
 						//债权实时推送
