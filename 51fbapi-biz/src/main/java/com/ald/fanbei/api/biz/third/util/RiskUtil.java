@@ -880,13 +880,6 @@ public class RiskUtil extends AbstractThird {
 
 		String reqResult = requestProxy.post(url, reqBo);
 
-		// String content = JSONObject.toJSONString(reqBo);
-		// try {
-		// commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
-		// } catch (Exception e) {
-		// logger.error("field too long，raiseQuota insert commitRecord
-		// fail,consumerNo="+consumerNo);
-		// }
 		logThird(reqResult, "raiseQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -935,31 +928,7 @@ public class RiskUtil extends AbstractThird {
 				Long consumerNum = Long.parseLong(consumerNo);
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
 				updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount);
-				// AfUserAccountDo accountDo = new AfUserAccountDo();
-				// accountDo.setUserId(consumerNum);
-				// accountDo.setAuAmount(au_amount);
-				// afUserAccountService.updateUserAccount(accountDo);
-				// AfUserAccountSenceDo afUserAccountOnlineDo =
-				// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),
-				// consumerNum);
-				// if
-				// (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
-				// == 0 ||
-				// afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-				// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(),
-				// consumerNum, onlineAmount);
-				// }
-				// AfUserAccountSenceDo afUserAccountOfflineDo =
-				// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(),
-				// consumerNum);
-				// if
-				// (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
-				// == 0 ||
-				// afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0)
-				// {
-				// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(),
-				// consumerNum, offlineAmount);
-				// }
+				
 			}
 			
 			return riskResp;

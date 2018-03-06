@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
@@ -158,8 +160,15 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 	}
 	
 	@Override
-	public void raiseQuota(Long userId, SceneType scene, BigDecimal tarAmount, BigDecimal totalAmount) {
+	public void raiseQuota(Long userId, SceneType scene, BigDecimal bldAmount, BigDecimal totalAmount) {
 		// TODO 提额
+		AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, SceneType.BLD_LOAN.getName(),
+				ObjectUtils.toString(bldAmount));
+		AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), 
+				ObjectUtils.toString(totalAmount));
+
+		this.saveOrUpdateAccountSence(bldAccountSenceDo);
+		this.saveOrUpdateAccountSence(totalAccountSenceDo);
 	}
 	
 }
