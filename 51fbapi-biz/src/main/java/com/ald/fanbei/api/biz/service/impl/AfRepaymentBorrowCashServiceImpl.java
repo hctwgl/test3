@@ -665,6 +665,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             } else {
                 logger.info("collection consumerRepayment not push,borrowCashId=" + currAfBorrowCashDo.getRid());
             }
+            cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
         }
 
         return resultValue;
