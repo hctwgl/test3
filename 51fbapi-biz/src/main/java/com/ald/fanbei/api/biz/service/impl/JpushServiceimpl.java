@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.third.util.JpushUtilV2;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,11 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(DATA, "");
 			msgContext = msgContext.replace("{year}", year).replace("{month}", month);
 			jpushUtil.pushNotifyByAlias("账单已还清", msgContext, extras, new String[] { userName });
-		} catch (Exception e) {
+		}
+		catch (FanbeiException e){
+			
+		}
+		catch (Exception e) {
 			logger.info("repayBillSuccess error", e);
 		}
 
