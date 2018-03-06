@@ -23,7 +23,7 @@ public class LoanTest  extends BaseTest{
 //	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
-//	String userName = "13370127054";	//王卿 支付密码123456
+//	String userName = "13370127054";	//王卿 	支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
 //	String userName = "17756648524";	//新账号 支付密码123456
@@ -48,7 +48,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取所有借钱记录，包含白领贷和小额贷记录
 	 */
-//	@Test
+	@Test
 	public void getAllBorrowList() {
 		String url = urlBase + "/borrowCash/getAllBorrowList";
 		Map<String,String> params = new HashMap<>();
@@ -117,7 +117,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取白领贷协议
 	 */
-//	@Test
+	@Test
 	public void getWhiteLoanProtocol() {
 		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
 		Map<String,String> params = new HashMap<>();
@@ -191,12 +191,12 @@ public class LoanTest  extends BaseTest{
 	public void loanRepayPlan() {
 		String url = urlBase + "/h5/loan/loanRepayPlan";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 130+"");
+		params.put("loanId", 189+"");
 		
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void getLoanRepayments() {
 		String url = urlBase + "/h5/loan/getLoanRepayments";
 		Map<String,String> params = new HashMap<>();
@@ -219,7 +219,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		
 	}

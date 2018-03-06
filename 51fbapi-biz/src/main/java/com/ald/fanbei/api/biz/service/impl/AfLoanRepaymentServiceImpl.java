@@ -861,23 +861,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String cardNo = LoanRepayDealBo.curCardNo;
     	cardNo = StringUtils.isNotBlank(cardNo)?cardNo:String.valueOf(System.currentTimeMillis());
     	
-    	try {//涉及运算,放在内部传输数据
-            String riskOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-            JSONArray details = new JSONArray();
-            JSONObject obj = new JSONObject();
-            obj.put("borrowNo", LoanRepayDealBo.loanNo);
-            obj.put("amount", LoanRepayDealBo.sumLoanAmount);
-            obj.put("repayment", LoanRepayDealBo.sumRepaidAmount);
-            obj.put("income", LoanRepayDealBo.sumIncome);
-            obj.put("interest", LoanRepayDealBo.sumInterest);
-            obj.put("overdueAmount", LoanRepayDealBo.sumOverdueAmount);
-            obj.put("overdueDay", LoanRepayDealBo.overdueDay);
-            details.add(obj);
-            riskUtil.transferBorrowInfo(LoanRepayDealBo.userId.toString(), "23", riskOrderNo, details);
-        } catch (Exception e) {
-            logger.error("还款时给风控传输数据出错", e);
-        }
-    	
         /**------------------------------------fmai风控提额begin------------------------------------------------*/
         try {
             if ( AfLoanStatus.FINISHED.name().equals(LoanRepayDealBo.loanDo.getStatus()) ) {
