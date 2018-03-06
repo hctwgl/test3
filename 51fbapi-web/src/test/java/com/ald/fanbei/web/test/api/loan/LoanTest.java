@@ -19,8 +19,8 @@ public class LoanTest  extends BaseTest{
 	String urlBase = "https://btestapp.51fanbei.com";
 //	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
-//	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
-	String userName = "13958004662";	//胡朝永 支付密码123456
+	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
+//	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
 //	String userName = "13370127054";	//王卿 支付密码123456
@@ -77,7 +77,7 @@ public class LoanTest  extends BaseTest{
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 1000+"");
+		params.put("amount", 5000+"");
 		params.put("periods", 3+"");
 		
 		params.put("remark", "白领贷借款");
@@ -100,13 +100,13 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 贷款申请成功后，模拟 UPS 回调 返呗API
 	 */
-//	@Test
+	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
 		String orderNo = "01dpay23425234dfssdfs";
 		String merPriv = UserAccountLogType.LOAN.getCode();
 		String tradeState = "00";
-		String reqExt = "13";
+		String reqExt = "154";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
 		url += reqStr;

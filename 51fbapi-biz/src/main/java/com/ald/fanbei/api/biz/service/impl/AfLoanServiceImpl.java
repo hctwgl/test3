@@ -260,6 +260,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
                 	
                 	loanDo.setCardNo(bankCard.getCardNumber());
                 	loanDo.setCardName(bankCard.getBankName());
+                	loanDo.setIp(reqParam.ip);
                 	loanDo.setAddress(reqParam.address);
                 	loanDo.setProvince(reqParam.province);
                 	loanDo.setCity(reqParam.city);
