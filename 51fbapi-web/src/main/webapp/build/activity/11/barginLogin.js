@@ -15,7 +15,7 @@ function formatDateTime() {
 };
 
 
-/*// 同盾校验编号的sessionId
+// 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
     _fmOpt = {
@@ -35,7 +35,7 @@ var _fmOpt;
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
-})();*/
+})();
 
 
 $(function() {
