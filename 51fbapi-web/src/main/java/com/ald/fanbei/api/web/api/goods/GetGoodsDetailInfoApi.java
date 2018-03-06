@@ -69,10 +69,6 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
     	}
     	//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-		AfResourceDo resourceBrand= afResourceService.getBrandRate(goods.getRid());//资源配置中的品牌利率
-		if (resourceBrand != null){
-			resource = resourceBrand;
-		}
         JSONArray array = JSON.parseArray(resource.getValue());
         //删除2分期
         if (array == null) {
