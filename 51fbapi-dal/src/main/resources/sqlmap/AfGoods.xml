@@ -397,7 +397,7 @@
 		SELECT
 			a.id,a.goods_icon,a.name
 		FROM
-		af_goods a INNER JOIN af_goods_lease b on b.goods_id = a.id
+		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
 		WHERE
 		a.is_delete = 0 AND a.`status` = 'PUBLISH'
 		AND b.is_sale = 'Y'
@@ -407,7 +407,7 @@
 	</select>
 	<select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
 		SELECT
-		lease_param
+		lease_param,lease_amount
 		from af_goods_price
 		WHERE goods_id=#{id}
 	</select>
