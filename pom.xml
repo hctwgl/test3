@@ -425,7 +425,8 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-                        <bootclasspath>${java.home}/lib/rt.jar${path.separator}${java.home}/lib/jce.jar</bootclasspath>
+						<!--使用${path.separator}分隔符(系统级别变量)，替代Windows系统下的“;”分号或者在Linux下是“:”冒号，方便maven打包时自动选择 -->
+						<bootclasspath>${java.home}/lib/rt.jar${path.separator}${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>
