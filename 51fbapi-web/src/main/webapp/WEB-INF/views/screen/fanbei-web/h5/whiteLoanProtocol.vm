@@ -81,7 +81,7 @@
                 </li>
                 <li>
                     <i>借款期限</i>
-                    <i>#if($!{totalPeriods.gmtStart})$!{totalPeriods.gmtStart} 至 $!{gmtEnd}#end</i>
+                    <i>#if($!{gmtStart}) $!{gmtStart} 至 $!{gmtEnd}#end</i>
                 </li>
                 <li>
                     <i>还款方式</i>
