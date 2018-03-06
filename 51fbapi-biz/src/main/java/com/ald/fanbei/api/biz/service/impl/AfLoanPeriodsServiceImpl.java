@@ -108,7 +108,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     		}
     		
     		result.add(AfLoanPeriodsDo.gen(userId, loanNo, prdType, periods, j,
-    				capitalPerPeriod, interestFeePerPeriod, serviceFeePerPeriod, gmtPlanRepay));
+    				capitalPerPeriod, serviceFeePerPeriod, interestFeePerPeriod, gmtPlanRepay));
     	}
 		
 		return result;

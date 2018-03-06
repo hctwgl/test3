@@ -214,6 +214,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd", periodsTime);
                     model.put("days", periodsDay);
+                    map.put("days", day);
+                    map.put("month",month);
+                    map.put("year",year);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
@@ -256,6 +259,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     String time = year + "年" + month + "月" + day + "日";
                     model.put("gmtEnd", time);
                     model.put("days", day);
+                    map.put("days", day);
+                    map.put("month",month);
+                    map.put("year",year);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
