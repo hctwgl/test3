@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
@@ -68,6 +70,9 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	
+	@Resource
+	AfIdNumberService afIdNumberService;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -94,9 +99,16 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		
 		Map<String,Object> extUserInfo = getExtUserInfo(param);
 		
+		// 查询户籍地址
+		AfIdNumberDo idNumberInfo = afIdNumberService.getIdNumberInfoByUserId(userId);
+		String censusRegister = StringUtils.EMPTY;
+		if(idNumberInfo != null) {
+			censusRegister = idNumberInfo.getAddress();
+		}	
+		
 		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
 				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
-				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType());
+				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType(),param.getAddress(),censusRegister);
 		
 		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
 		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
