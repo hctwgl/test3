@@ -1,18 +1,22 @@
 package com.ald.fanbei.api.web.common;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -27,8 +31,8 @@ import java.util.Map;
  * @author hantao
  */
 public class InterestFreeUitl {
-    @Resource
     public static AfResourceService afResourceService;
+
 
     /**
      * 计算分期、免息规则封装结果
@@ -44,6 +48,7 @@ public class InterestFreeUitl {
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if (goodsid != null && goodsid >0l){
+            afResourceService = (AfResourceService)SpringBeanContextUtil.getBean("afResourceService");
             AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
             if(resource1!=null){
                 array = JSON.parseArray(resource1.getValue());
