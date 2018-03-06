@@ -99,7 +99,10 @@ import java.util.Date;
      */
     private String isSale;
 
-
+   /**
+    * 租赁  每期的参数(月租，回收折扣，保费价格)，规格原价
+    */
+   private String leaseParam;
 
 	/**
      * 获取创建时间
@@ -317,4 +320,11 @@ import java.util.Date;
       this.isSale = isSale;
     }
 
+   public String getLeaseParam() {
+      return leaseParam;
+   }
+
+   public void setLeaseParam(String leaseParam) {
+      this.leaseParam = leaseParam;
+   }
 }

@@ -24,8 +24,14 @@
 		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
 		(g.sale_amount-g.rebate_amount) real_amount,g.tags,g.goods_pic1,g.goods_pic2,g.goods_pic3,g.goods_pic4,g.goods_detail,g.remark
 	</sql>
-	
-	<select id="getGoodsById" resultType="AfGoodsDo">
+
+    <resultMap id="leaseResultMap" type="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
+		<id column="id" property="rid" jdbcType="BIGINT" />
+        <collection select="getByGoodsId" property="goodsPrice" column="id" ofType="AfGoodsPriceDo">
+        </collection>
+    </resultMap>
+
+    <select id="getGoodsById" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM
@@ -385,6 +391,24 @@
 		${sort}
 		</if>
 		
-	</select>	
+	</select>
 
+	<select id="getHomeLeaseGoods" resultMap="leaseResultMap">
+		SELECT
+			a.id,a.goods_icon,a.name
+		FROM
+		af_goods a INNER JOIN af_goods_lease b on b.goods_id = a.id
+		WHERE
+		a.is_delete = 0 AND a.`status` = 'PUBLISH'
+		AND b.is_sale = 'Y'
+		AND b.is_delete = 0
+		ORDER BY b.sort
+		LIMIT #{pageIndex},#{pageSize}
+	</select>
+	<select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
+		SELECT
+		lease_param
+		from af_goods_price
+		WHERE goods_id=#{id}
+	</select>
 </mapper>

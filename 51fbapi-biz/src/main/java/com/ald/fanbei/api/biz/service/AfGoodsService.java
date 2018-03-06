@@ -8,6 +8,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 
@@ -110,5 +111,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
+
+	List<LeaseGoods> getHomeLeaseGoods(Long pageIndex,Long pageSize);
 }
 
