@@ -553,6 +553,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
 			
+			loanRepayDealBo.loanDo.setStatus(AfLoanStatus.FINISHED.name());
+			
 			afUserAccountSenceService.syncLoanUsedAmount(loanPeriodsDo.getUserId(), SceneType.valueOf(loanPeriodsDo.getPrdType()), loanRepayDealBo.loanDo.getAmount().negate());
 		}
 	}
