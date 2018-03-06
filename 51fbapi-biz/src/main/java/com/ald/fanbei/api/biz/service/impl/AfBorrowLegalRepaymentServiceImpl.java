@@ -147,6 +147,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 
 	@Autowired
 	private AfBorrowLegalOrderService afBorrowLegalOrderService;
+
+	@Resource
+	CuiShouUtils cuiShouUtils;
 	
 	/**
 	 * 新版还钱函
@@ -208,7 +211,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
 		CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
 	}
-	
+
+
 	/**
 	 * 还款成功后调用
 	 * @param tradeNo 我方交易流水
@@ -252,6 +256,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
             if (resultValue == 1L) {
 				notifyUserBySms(repayDealBo,isBalance);
             	nofityRisk(repayDealBo);
+				cuiShouUtils.syncCuiShou(repaymentDo);
             }
     		
     	}finally {

@@ -399,15 +399,20 @@ public class CuiShouUtils {
      * @param afRepaymentBorrowCashDo
      */
     public void syncCuiShou(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo){
-        thirdLog.info("cuishouhuankuan xianjinjie:"+ afRepaymentBorrowCashDo.toString());
-        setAfRepaymentBorrowCashDo(afRepaymentBorrowCashDo);
-        CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
-        cuiShouBackMoney.setCode(200);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("ref_id",afRepaymentBorrowCashDo.getRid());
-        jsonObject.put("type",CuiShouType.BORROW_CASH.getCode());
-        cuiShouBackMoney.setData(jsonObject);
-        sycnSuccessAndError(cuiShouBackMoney,1);
+        try {
+            thirdLog.info("cuishouhuankuan xianjinjie:" + afRepaymentBorrowCashDo.toString());
+            setAfRepaymentBorrowCashDo(afRepaymentBorrowCashDo);
+            CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
+            cuiShouBackMoney.setCode(200);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ref_id", afRepaymentBorrowCashDo.getRid());
+            jsonObject.put("type", CuiShouType.BORROW_CASH.getCode());
+            cuiShouBackMoney.setData(jsonObject);
+            sycnSuccessAndError(cuiShouBackMoney, 1);
+        }
+        catch (Exception e){
+            thirdLog.error("cuishouhuankuan xianjinjie error:" ,e);
+        }
     }
 
     /**
@@ -415,18 +420,23 @@ public class CuiShouUtils {
      * @param afRepaymentDo
      */
     public void syncCuiShou(AfRepaymentDo afRepaymentDo){
-        thirdLog.info("cuishouhuankuan xiaofeifenxqi:"+ afRepaymentDo.toString());
-        if(CuiShouUtils.getIsXianXiaHuangKuang() !=null && CuiShouUtils.getIsXianXiaHuangKuang()){
-            return;
+        try {
+            thirdLog.info("cuishouhuankuan xiaofeifenxqi:" + afRepaymentDo.toString());
+            if (CuiShouUtils.getIsXianXiaHuangKuang() != null && CuiShouUtils.getIsXianXiaHuangKuang()) {
+                return;
+            }
+            setAfRepaymentDo(afRepaymentDo);
+            CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
+            cuiShouBackMoney.setCode(200);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ref_id", afRepaymentDo.getRid());
+            jsonObject.put("type", CuiShouType.BORROW.getCode());
+            cuiShouBackMoney.setData(jsonObject);
+            sycnSuccessAndError(cuiShouBackMoney, 1);
         }
-        setAfRepaymentDo(afRepaymentDo);
-        CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
-        cuiShouBackMoney.setCode(200);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("ref_id",afRepaymentDo.getRid());
-        jsonObject.put("type",CuiShouType.BORROW.getCode());
-        cuiShouBackMoney.setData(jsonObject);
-        sycnSuccessAndError(cuiShouBackMoney,1);
+        catch (Exception e){
+            thirdLog.error("cuishouhuankuan xiaofeifenxqi error:",e);
+        }
     }
 
     /**

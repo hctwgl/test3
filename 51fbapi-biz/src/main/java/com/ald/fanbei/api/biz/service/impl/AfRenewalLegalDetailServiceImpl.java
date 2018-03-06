@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -314,7 +315,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 
 		return result;
 	}
-
+	@Resource
+	CuiShouUtils cuiShouUtils;
 	@Override
 	public long dealLegalRenewalSucess(final String outTradeNo, final String tradeNo) {
 
@@ -513,6 +515,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				}catch(Exception e){
 					logger.error("向催收平台同步续期信息",e);
 				}
+				cuiShouUtils.syncXuqi(currAfBorrowCashDo);
 			}
 			if (resultValue == 1L){
 				//生成续期凭据
