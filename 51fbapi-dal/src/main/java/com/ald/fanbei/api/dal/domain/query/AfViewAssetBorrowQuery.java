@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.domain.query;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 /**
  * 消费分期债权视图查询
  * @author wujun
@@ -29,6 +30,11 @@ public class AfViewAssetBorrowQuery implements Serializable{
      * 取的条数
      */
     private Integer limitNums;
+    
+    /**
+     * 取的条数
+     */
+    private List<Long> userIds;
 
 	public Date getGmtCreateStart() {
 		return gmtCreateStart;
@@ -60,6 +66,14 @@ public class AfViewAssetBorrowQuery implements Serializable{
 
 	public void setLimitNums(Integer limitNums) {
 		this.limitNums = limitNums;
+	}
+
+	public List<Long> getUserIds() {
+		return userIds;
+	}
+
+	public void setUserIds(List<Long> userIds) {
+		this.userIds = userIds;
 	}
 
 }

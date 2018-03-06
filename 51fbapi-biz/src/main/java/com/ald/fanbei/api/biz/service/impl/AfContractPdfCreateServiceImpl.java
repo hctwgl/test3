@@ -142,7 +142,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             BigDecimal poundageAmount = new BigDecimal(0);
             for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList) {
                 if (null != afBorrowBillDo.getPoundageAmount()) {
-                    poundageAmount.add(afBorrowBillDo.getPoundageAmount());//账单手续费
+                    poundageAmount.add(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));//账单手续费
                 }
             }
             Date repayDay = null;

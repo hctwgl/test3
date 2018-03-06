@@ -93,7 +93,7 @@ $(function(){
         var channelCode = $("#channelCode").val();
         var pointCode = $("#pointCode").val();
 
-        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
             $("#register_codeBtn").attr("disabled",true);
             $.ajax({
                 url: "/app/user/getRegisterSmsCode4Geetest",
@@ -140,7 +140,7 @@ $(function(){
             }, function (captchaObj) {
                 document.getElementById('register_codeBtn').addEventListener('click', function () {
                     var mobileNum = $("#register_mobile").val();
-                    if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+                    if (!(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                         requestMsg('请输入手机号')
                     }else{
                         $.ajax({
@@ -192,7 +192,7 @@ $(function(){
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
         toMaidian('registerBtn');
-        if(style!='8'&&style!='9'&&style!='10'&&style!='11'){ //样式8,9无密码
+        if(style!='8'&&style!='9'&&style!='10'&&style!='11'&&style!='12'&&style!='13'&&style!='14'){ //样式8,9无密码
             // md5加密
             var register_password = $("#register_password").val();
             var password_md5 = String(CryptoJS.MD5(register_password));
@@ -208,10 +208,10 @@ $(function(){
         var channelCode = $("#channelCode").val();
         var pointCode = $("#pointCode").val();
         var isState = $("#register_codeBtn").attr("isState");
-        if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
+        if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
             if ( register_verification != "" ) { // 验证码不能为空
-                if ( style=='8'||style=='9'||style=='10'||style=='11'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
-                    if ($("#input_check").is(":checked")) { // 判断当前是否选中
+                if ( style=='8'||style=='9'||style=='10'||style=='11'||style=='12'||style=='13'||style=='14'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
+                    if ($("#input_check").is(":checked") || (style=='12'||style=='13'||style=='14')) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
                             _taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
                             $.ajax({ // 设置登录密码
@@ -252,6 +252,11 @@ $(function(){
             }else{requestMsg("请输入正确的验证码");}
         } else{requestMsg("请填写正确的手机号");}
     });
+
+    //返回顶部
+    $('.goTop').click(function(){
+        $('body,html').animate({scrollTop:0},300);
+    })
 });
 
 

@@ -70,7 +70,7 @@ $(function(){
 
 	$("#codeBtn").click(function(){ // 获取验证码
 		let phone = $("#phone").val();
-		if (/^1(3|4|5|7|8)\d{9}$/i.test(phone)){
+		if (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(phone)){
 	     	$.ajax({
     			url: "/app/user/getRegisterSmsCode",
     			type: "POST",
@@ -113,7 +113,7 @@ $(function(){
 		let ispassword = pwdReg.test(password);
 
 
-		if(/^1(3|4|5|7|8)\d{9}$/i.test(phone)){ // 判断电话开头
+		if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(phone)){ // 判断电话开头
 			if ( code != "" ) { // 验证码不能为空
 				if ( ispassword && 6 <= passwordLength <= 18 ) { // 密码6-18位
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
