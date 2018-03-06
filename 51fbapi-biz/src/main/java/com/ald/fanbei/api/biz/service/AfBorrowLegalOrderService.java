@@ -34,5 +34,7 @@ public interface AfBorrowLegalOrderService extends ParentService<AfBorrowLegalOr
 	 * @param borrowId
 	 */
 	void checkIllegalVersionInvoke(Integer version, Long borrowId);
+
+	void updateSmartAddressScore (int smartAddressScore,long borrowId,String orderno);
 	
 }

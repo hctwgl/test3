@@ -32,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -83,10 +84,13 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 		try{
 			Date now = new Date();
 			AfCouponSceneDo couponSenceDo = getCouponScene(now, userDo);
+			logger.info("creditAuth couponSenceDo = " + JSON.toJSONString(couponSenceDo));
+			
 			if(couponSenceDo == null){
 				return;
 			}
 			Map<String,List<CouponSceneRuleBo>> rules =  getRules(now,couponSenceDo);
+			logger.info("creditAuth rules = " + JSON.toJSONString(rules));
 			if(rules == null || rules.size() < 0){
 				return ;
 			}
@@ -140,7 +144,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	 */
 	//TODO 增加事物处理
 	protected void addUserCoupon(CouponSceneRuleBo item, Long userId, CouponSenceRuleType ruleType, String sourceRef) {
-		if(item.getCouponId()==null&&item.getResourceId()!=null){
+	    if(item.getCouponId()==null&&item.getResourceId()!=null){
 			AfResourceDo afResourceDo =	afResourceDao.getResourceByResourceId(item.getResourceId());
 			if (afResourceDo == null) {
 				return;
@@ -159,8 +163,9 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			accountLog.setType(ruleType.getCode());
 			afUserAccountLogDao.addUserAccountLog(accountLog);
 			
-		}else if(item.getCouponId()!=null){
+		   }else if(item.getCouponId()!=null){
 			AfCouponDo couponDo = afCouponDao.getCouponById(item.getCouponId());
+			logger.info(StringUtil.appendStrs("sentCoupon start:","userId=",userId,",ruleList=",couponDo));
 			if (couponDo == null) {
 				return;
 			}
@@ -208,10 +213,6 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			afCouponDao.updateCouponquotaAlreadyById(couponDoT);
 			
 		}
-		
-		
-
-		
 	}
 	
 	

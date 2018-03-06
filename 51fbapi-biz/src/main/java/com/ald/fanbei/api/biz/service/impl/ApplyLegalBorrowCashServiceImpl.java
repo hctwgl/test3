@@ -132,7 +132,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
 
-		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param));
+		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param),param.getType());
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";
 		String twoDay = "";
@@ -336,6 +336,15 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		this.checkBorrowFinish(accountDo.getUserId());
 		this.checkRiskRefused(accountDo.getUserId());
 		this.checkCardNotEmpty(bankCard);
+		this.checkBorrowType(param,rateInfoDo);
+	}
+
+	private void checkBorrowType(ApplyLegalBorrowCashBo param, AfResourceDo rateInfoDo) {
+		String type = param.getType();
+		String borrowDays = rateInfoDo.getTypeDesc();
+		if(StringUtils.isNotBlank(borrowDays) && !borrowDays.contains(type)) {
+			throw new FanbeiException("借钱天数有误，请返回借钱首页重试",true);
+		}
 	}
 
 	@Override

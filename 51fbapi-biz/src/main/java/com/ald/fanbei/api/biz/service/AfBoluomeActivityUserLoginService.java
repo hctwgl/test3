@@ -17,4 +17,6 @@ public interface AfBoluomeActivityUserLoginService extends ParentService<AfBoluo
 	Integer getBindingNum (Long activityId , Long refUserId);
 
 	List<AfBoluomeActivityUserLoginDo> getByRefUserIdAndActivityId(Long userId,Long activityId);
+
+	int saveUserLoginInfo(AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin);
 }

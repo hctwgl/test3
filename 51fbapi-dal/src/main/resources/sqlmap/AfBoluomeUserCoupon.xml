@@ -166,14 +166,17 @@
          LIMIT 0,1
     </select> 
     
-     <select id="getByCouponIdAndUserIdAndChannel" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo">
+     <select id="getByCouponIdAndUserIdAndChannel" resultType="java.lang.Integer" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo">
         SELECT
-        <include refid="queryFields" />
+        count(0)
         FROM af_boluome_user_coupon
         where  is_delete = 0
         and  user_id  =  #{userId}
         and  channel =  #{channel}
-        and  coupon_id = #{couponId}
+        <if test="couponId != null and couponId != '' ">     
+          and  coupon_id = #{couponId}
+        </if>
+        
     </select>
 <!--     <select id="checkIfHaveCoupon" resultType = "java.lang.Integer">
 	   	 SELECT COUNT(1) FROM af_boluome_user_coupon WHERE user_id =
@@ -224,6 +227,15 @@
 	   	 order by  id desc 
 	   	 limit 0,1
 	   	  
+    </select>
+     <select id="getTodayNumByUserId"  resultType="java.lang.Integer" parameterType="java.lang.Long">
+	   	 select 
+	   	 count(0)
+	   	 FROM af_boluome_user_coupon
+	   	 where  is_delete = 0
+	   	 and user_id = #{userId}
+	   	 and to_days(gmt_create) = to_days(now())
+	   	 and channel = 'RECOMMEND'
     </select>
     
 </mapper>

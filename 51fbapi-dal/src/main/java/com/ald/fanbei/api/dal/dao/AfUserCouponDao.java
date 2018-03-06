@@ -129,4 +129,6 @@ public interface AfUserCouponDao {
 
 	List<AfUserCouponDto> getActivitySpecialCouponByAmount(@Param("userId")Long userId, @Param("amount")BigDecimal amount,
 			@Param("activityId")Long activityId, @Param("activityType")String activityType);
+
+	Integer getUserCouponByUserIdAndCouponCource(@Param("userId")Long userId,@Param("sourceType")String sourceType);
 }

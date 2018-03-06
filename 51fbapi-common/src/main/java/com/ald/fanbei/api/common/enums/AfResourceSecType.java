@@ -20,10 +20,12 @@ public enum AfResourceSecType {
 		NAVIGATION_BACKGROUND("NAVIGATION_BACKGROUND","快速导航背景"),
 		NAVIGATION_BOLUOME("NAVIGATION_BOLUOME", "菠萝蜜手机充值"),
 		NAVIGATION_CATEGORY("NAVIGATION_CATEGORY", "商品分类"),
+		INTEREST_RATE("INTEREST_RATE","利率（年化）"),
 
 
 		//活动相关
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
+	    ASSET_PUSH_WHITE("ASSET_PUSH_WHITE","债权实时推送白名单"),
     
 	    //借钱模块
 		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),

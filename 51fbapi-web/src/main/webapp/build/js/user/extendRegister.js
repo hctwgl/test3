@@ -29,7 +29,7 @@ $(function(){
 		var isState = $(this).attr("isState");
 		var mobileNum = $("#register_mobile").val();
 		if (isState==0 || !isState){
-			if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){
+			if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)){
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode",
                     type: "POST",
@@ -65,7 +65,7 @@ $(function(){
 
 		var register_password = $("#register_password").val();
         var mobileNum = $("#register_mobile").val();
-        if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)){
+        if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)){
 
             if ($("#input_check").is(":checked")) { // 判断当前是否选中
 

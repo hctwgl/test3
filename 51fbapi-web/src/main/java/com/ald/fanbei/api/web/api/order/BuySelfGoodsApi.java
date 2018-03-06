@@ -3,8 +3,40 @@
  */
 package com.ald.fanbei.api.web.api.order;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
-import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
+import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfShareGoodsService;
+import com.ald.fanbei.api.biz.service.AfShareUserGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -20,7 +52,23 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -40,6 +88,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 import java.util.*;
+
 
 /**
  * @类描述：自营商品下单（oppr11） @author suweili 2017年6月16日下午3:44:12
@@ -89,6 +138,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	@Resource
+
+	AfModelH5ItemService afModelH5ItemService;
+	
+	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
@@ -106,6 +159,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
+
+        String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
+        logger.info("add self order 1,lc=" + lc);
+        if(StringUtils.isBlank(lc)){
+            lc = ObjectUtils.toString(request.getAttribute("lc"));
+        }
+        logger.info("add self order 2,lc=" + lc);
+
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
@@ -267,8 +328,31 @@ public class BuySelfGoodsApi implements ApiHandle {
 								});
 					}
 
-				}
+				
 			}
+			
+			//是否是首单爆款类型
+			List<AfModelH5ItemDo> afModelH5ItemDoList = afModelH5ItemService.getModelH5ItemForFirstSingleByGoodsId(goodsId);
+			if(afModelH5ItemDoList.size()>0){
+			  //判断数量是否是一个
+				if (count != 1) {
+					//报错提示只能买一件商品
+					FanbeiExceptionCode code = FanbeiExceptionCode.ONLY_ONE_GOODS_ACCEPTED;
+					ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), code);
+					return resp1;
+
+				}
+				if(oldUserOrderAmount >0){
+				  //报错提示只能买一件商品
+					FanbeiExceptionCode code = FanbeiExceptionCode.HAVE_BOUGHT_GOODS;
+					ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), code);
+					return resp1;
+
+				}
+//			       for(AfModelH5ItemDo afModelH5ItemDo:afModelH5ItemDoList ){
+//			       }
+			}
+		}
 			//-------------------------------
 			//限时抢购增加逻辑
 			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsId);
@@ -297,6 +381,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setPriceAmount(priceDo.getPriceAmount());
 
 		}
+		afOrder.setLc(lc);
 		afOrder.setUserCouponId(couponId);
 		//下单时所有场景额度使用情况
 		List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();
@@ -398,7 +483,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(couponId);
 		}
-
+//		//首次信用购物,送优惠券
+//		  try{
+//		        afUserCouponService.sentUserCoupon(afOrder);
+//		        }catch(Exception e){
+//		          logger.error("first shopping sentUserCoupon error:"+e+afOrder.toString());
+//		      }
 		resp.setResponseData(data);
 		return resp;
 	}

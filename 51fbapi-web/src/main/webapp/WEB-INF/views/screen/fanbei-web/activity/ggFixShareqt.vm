@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712221345")
+    #set($version="201801261414")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -21,7 +21,7 @@
     <!--首页轮播图-->
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first">
-        <img src="$src/ggFix01.jpg">
+        <img src="$src/ggFix01.png">
         <div class="firstStep">
             <p class="word01"></p>
             <p class="lineBox01"><span class="line01"></span></p>
@@ -47,7 +47,7 @@
         <p class="closeRule" @click="closeClick()">X</p>
     </div>
     <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>
-    <div class="signTitle"><span>注册立领15元无门槛外卖券使用即返30元</span></div>
+    <div class="signTitle"><span>注册即16元外卖1元享<br/>再送1000元新人大礼包</span></div>
     <!--注册--start-->
     <div class="login clearFix" id="register">
         <div class="phone">

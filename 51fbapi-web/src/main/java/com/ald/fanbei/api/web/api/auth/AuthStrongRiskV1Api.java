@@ -216,7 +216,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				}
 			} else {
 				if(afUserAuthStatus!=null) {
-					if (!StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.NO.getCode()) && !StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.PASSING.getCode())) {
+					if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.CHECKING.getCode())) {
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 					}
 				}
@@ -325,8 +325,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	 				// 发放优惠劵工作
 	 				// creditRebateMsg = getCreditAuthMsg(context,
 	 				// creditRebateMsg);
-
-	 				// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+	 			         logger.info("processRishComplete userId = " + userId);
+	 				 couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 	 				// 随机发放奖品
 	 				try {
 	 					Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);

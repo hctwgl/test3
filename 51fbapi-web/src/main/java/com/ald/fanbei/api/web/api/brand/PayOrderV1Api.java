@@ -106,6 +106,9 @@ public class PayOrderV1Api implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
+        if (context.getAppVersion() < 390) {
+            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        }
         Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
@@ -378,6 +381,18 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+
+                    //首次信用购物（自营信用支付）送还款券
+                    if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) ){
+             	   if(payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
+     		       try{
+     		           afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
+     		         }catch(Exception e){
+     		           logger.error("first selesupport shopping sentUserCoupon error:"+e+orderInfo.toString());
+     		       }
+		    
+                    }
+
                     
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");

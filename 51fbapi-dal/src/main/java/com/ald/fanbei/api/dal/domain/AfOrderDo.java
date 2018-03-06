@@ -88,6 +88,8 @@ public class AfOrderDo extends AbstractSerial{
 	private String ip;//ip地址
 	private String bqsBlackBox;//白骑士设备指纹
 
+	private String lc;//订单来源地址
+
 
 	public String getBqsBlackBox() {
 		return bqsBlackBox;
@@ -613,6 +615,14 @@ public class AfOrderDo extends AbstractSerial{
 
 	public void setGpsAddress(String gpsAddress) {
 		this.gpsAddress = gpsAddress;
+	}
+
+	public String getLc() {
+		return lc;
+	}
+
+	public void setLc(String lc) {
+		this.lc = lc;
 	}
 }
 
