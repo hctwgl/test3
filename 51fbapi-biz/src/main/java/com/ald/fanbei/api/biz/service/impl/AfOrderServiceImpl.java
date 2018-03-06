@@ -2431,13 +2431,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 			//教育培训订单
 			if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
-				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDo.getUserId());
+				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), orderInfo.getUserId());
 				if (afUserAccountSenceDo != null) {
 					useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
 				}
 			}
 		} else {    //线上分期订单
-			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDo.getUserId());
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
 			if (afUserAccountSenceDo != null) {
 				//额度判断
 				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
