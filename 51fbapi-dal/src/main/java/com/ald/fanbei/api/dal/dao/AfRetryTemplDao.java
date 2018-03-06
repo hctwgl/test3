@@ -17,6 +17,6 @@ import java.util.List;
  */
 public interface AfRetryTemplDao extends BaseDao<AfRetryTemplDo, Long> {
 
-	int deleteByBusidAndEventType(String borrowNo, String eventType);
+	int deleteByBusidAndEventType(@Param("borrowNo")String borrowNo, @Param("eventType")String eventType);
 
 }

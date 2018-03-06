@@ -129,13 +129,17 @@ public class EdspayController {
 	@RequestMapping(value = {"/queryEdspayApiHandle"}, method = RequestMethod.POST)
     @ResponseBody
     public String queryEdspayApiHandle(HttpServletRequest request, HttpServletResponse response) {
-        String data = ObjectUtils.toString(request.getParameter("data"));
+		System.out.println(111111);
+		System.out.println(request.getParameter("orderNo"));
+       /* String data = ObjectUtils.toString(request.getParameter("data"));
         String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
         String sign = ObjectUtils.toString(request.getParameter("sign"));
         logger.info("queryEdspayApiHandle begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
         String result = assetSideEdspayUtil.queryEdspayApiHandle(timestamp, data, sign);
         logger.info("queryEdspayApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
-        return "success";
+        return "success";*/
+		
+	  return "SUCCESS";
     }
 	
 	/**
@@ -179,9 +183,11 @@ public class EdspayController {
     public String repushMaxApiHandle(String orderNo) {
 		System.out.println("11111111111111111111111111111111111");
         logger.info("repushMaxApiHandle begin,orderNo=" + orderNo );
-        String result = assetSideEdspayUtil.repushMaxApiHandle(orderNo);
-       // logger.info("repushMaxApiHandle end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
-        return "success";
+       /* int result = assetSideEdspayUtil.repushMaxApiHandle(orderNo);
+        if (result == 1) {
+			return "FAIl";
+		}*/
+        return "SUCCESS";
     }
 	
 }

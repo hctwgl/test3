@@ -161,7 +161,7 @@
         UPDATE af_retry_templ
         set is_delete=1
      	WHERE
-			bus_id = #{busId}
+			bus_id = #{borrowNo}
 		AND event_type =#{eventType}
 		AND is_delete=0
     </update>

@@ -481,8 +481,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
 				//推送数据给钱包
-				
-				//推送数据给钱包
 				System.out.println(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush");
 				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
 				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);
@@ -613,12 +611,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
+			/*Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGiveBackPayResultReqBo PayResultReqBo = null;
@@ -823,7 +821,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return "success";
 	}
 
-	public String repushMaxApiHandle(String orderNo) {
+	public int repushMaxApiHandle(String orderNo) {
+		try {
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
 			if (borrowCashDo!=null) {
 				//现金贷
@@ -870,7 +869,11 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
 				afBorrowPushService.saveRecord(borrowPushDo);
 			}
-		return "success";
+		} catch (Exception e) {
+			logger.error("repushMaxApiHandle error"+e);
+			return 1;
+		}
+		return 0;
 	}
 /*	public String repushMaxApiHandle(String timestamp, String data, String sign) {
 		QueryEdspayApiHandleReqBo reqBo = new QueryEdspayApiHandleReqBo();
