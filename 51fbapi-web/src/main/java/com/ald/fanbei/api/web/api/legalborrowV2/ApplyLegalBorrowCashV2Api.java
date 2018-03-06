@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -169,11 +171,23 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						accountDo,userId,afBorrowCashDo,riskOrderNo);
 				if (verifyBo.isSuccess()) {
 					//风控审核通过,根据开关判断是否推送钱包打款
+					Boolean flag=true;
+					//新增白名单逻辑
+					AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+					if (pushWhiteResource != null) {
+						//白名单开启
+						String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
+						Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+						if(!Arrays.asList(whiteUserIds).contains(userId)){
+							//不在白名单不推送
+							flag=false;
+						}
+					}
 					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 					if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
 						&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
-						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())) {
+						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
 						List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
