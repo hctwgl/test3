@@ -252,6 +252,9 @@
 	        <if test="gmtFinish != null">        
 	            gmt_finish,
 	        </if>
+	        <if test="ip != null">        
+                ip,
+            </if>
 	        <if test="latitude != null">        
 	            latitude,
 	        </if>
@@ -378,6 +381,9 @@
 		    <if test="gmtFinish != null" >
 		       #{gmtFinish,jdbcType=TIMESTAMP},
 		    </if>
+		    <if test="ip != null">        
+               #{ip,jdbcType=VARCHAR},
+            </if>
 		    <if test="latitude != null" >
 		       #{latitude,jdbcType=DECIMAL},
 		    </if>

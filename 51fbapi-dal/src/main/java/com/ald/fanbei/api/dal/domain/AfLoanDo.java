@@ -218,6 +218,11 @@ import java.math.BigDecimal;
      * 结清时间
      */
     private Date gmtFinish;
+    
+    /**
+     * 贷款发生时用户IP
+     */
+    private String ip;
 
     /**
      * 纬度
@@ -995,6 +1000,14 @@ import java.math.BigDecimal;
 
 	public void setOverdueRate(BigDecimal overdueRate) {
 		this.overdueRate = overdueRate;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 

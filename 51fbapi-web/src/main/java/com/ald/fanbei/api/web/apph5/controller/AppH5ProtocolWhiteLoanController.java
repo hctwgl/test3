@@ -247,7 +247,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             List<Object> array = new ArrayList<Object>();
             for (int i = 1; i <= nper; i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i-1);
+                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i);
                 if (i == nper) {
                     c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
                     int month = c.get(Calendar.MONTH) + 1;
