@@ -41,12 +41,15 @@ public class InterestFreeUitl {
      * @param value2            手续费上下限预设值
      * @return
      */
-    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,long goodsid) {
+    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
-        if(resource1!=null){
-            array = JSON.parseArray(resource1.getValue());
+        if (goodsid != null && goodsid >0l){
+            AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
+            if(resource1!=null){
+                array = JSON.parseArray(resource1.getValue());
+            }
         }
+
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
