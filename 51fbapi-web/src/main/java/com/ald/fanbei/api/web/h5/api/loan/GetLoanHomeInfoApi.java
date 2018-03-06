@@ -64,6 +64,8 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			AfUserBankcardDo userBankcard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			
 			resp.addResponseData("bldStatus", afUserAuthStatusService.getBldOpenStatus(userId));
+			resp.addResponseData("realName", accInfo.getRealName());
+			
 			AfUserAccountSenceDo totalScene = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
 			BigDecimal totalAmount = BigDecimal.ZERO;
 			BigDecimal usedAmount = BigDecimal.ZERO;

@@ -39,12 +39,23 @@ public class DredgeWhiteCollarLoanParam {
 	@Pattern(regexp="(fund|socialsecurity|ebank)")
 	private String selectedType;
 	
+	
+	private String address;
+	
 	public String getSelectedType() {
 		return selectedType;
 	}
 
 	public void setSelectedType(String selectedType) {
 		this.selectedType = selectedType;
+	}
+	
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public String getBlackBox() {
