@@ -201,10 +201,10 @@ public class H5BoluomeActivityController extends BaseController {
 	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
 	    	
 	    String log = "/H5GGShare/boluomeActivityRegisterLogin";
-		
+	   
 	    
 	    AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
-	    log = log + String.format("mobile:inviteer = %s", mobile+"inviteer:"+inviteer);
+	    log = log + String.format("mobile and inviteer and recommendCode %s", mobile+"inviteer = "+inviteer+"recommendCode = "+recommendCode);
 	    logger.info(log);
 	    if (eUserDo != null) {
 		logger.error("boluomeActivityRegisterLogin user regist account exist",mobile);
@@ -262,7 +262,13 @@ public class H5BoluomeActivityController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    logger.info("boluomeActivityRegisterLogin userDo",JSONObject.toJSONString(userDo),mobile);
+	    if (!StringUtils.isBlank(inviteer)) {
+		AfUserDo user = afUserService.getUserByUserName(inviteer);
+		if(user != null){
+		 userDo.setRecommendId(user.getRid());
+		}
+	    }
+	    logger.info("boluomeActivityRegisterLogin userDo = "+JSONObject.toJSONString(userDo));
 	    String source = "oneYuan";
 	    Long userId = afUserService.toAddUser(userDo,source);
 	    logger.info("boluomeActivityRegisterLogin userId = "+userId+" mobile = "+mobile);

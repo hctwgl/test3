@@ -439,17 +439,7 @@ public class AppH5InvitationActivityController extends BaseController {
      			 context = doWebCheck(request, false);
      			 String userName = context.getUserName();
      			 userId = convertUserNameToUserId(userName);
-     	            }catch (FanbeiException e) {
-     				if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-     						|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-     					Map<String, Object> data = new HashMap<>();
-     					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-     							+ H5OpenNativeType.AppLogin.getCode();
-     					data.put("loginUrl", loginUrl);
-     					logger.error("/fanbei-web/activityAndUserInfo" + context + "login error ");
-     				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-     				}
-     		
+     	            
         }catch  (Exception e) {
             logger.error("activityAndUserInfo error", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
@@ -494,18 +484,7 @@ public class AppH5InvitationActivityController extends BaseController {
        
     
         
-        //用户的邀请码
-        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
-        if(invitationCode.equals("0")){
-            //生成邀请码
-            AfUserDo userDo = new AfUserDo();
-	    Long invteLong = Constants.INVITE_START_VALUE + userId;
-	    String inviteCode = Long.toString(invteLong, 36);
-	    userDo.setRecommendCode(inviteCode);
-	    userDo.setRid(userId);
-	    afUserService.updateUser(userDo);
-	    invitationCode = inviteCode;
-        }
+     
          String acticitySwitch = activitySwitch();
        
         
@@ -524,22 +503,38 @@ public class AppH5InvitationActivityController extends BaseController {
 		    if(activityStart !=null){
 			activityTime = activityStart.getValue();
         }
-         
-       //用户的总共奖励金额
-        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
-        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
-        
+      
         
         map.put("listRule",listRule);
         map.put("listPic",listPic);
         map.put("listTitle",listTitle);
         map.put("listDesc",listDesc);
-        map.put("invitationCode",invitationCode);
-        map.put("welfareTableList",welfareTableList);
         map.put("welfareExampleList",welfareExampleList);
 //      map.put("giftPackageList",giftPackageList);
 //      map.put("preferentialList",preferentialList);
-        map.put("sumPrizeMoney",df.format(sumPrizeMoney));
+        map.put("sumPrizeMoney","0.00");
+        map.put("welfareTableList",welfareTableList);
+        //用户的邀请码
+        String invitationCode = "";
+        if(userId !=null && userId>0){
+            
+            //用户的总共奖励金额
+        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
+        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
+        invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+         map.put("sumPrizeMoney",df.format(sumPrizeMoney));
+        if(invitationCode.equals("0")){
+            //生成邀请码
+            AfUserDo userDo = new AfUserDo();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
+	    String inviteCode = Long.toString(invteLong, 36);
+	    userDo.setRecommendCode(inviteCode);
+	    userDo.setRid(userId);
+	    afUserService.updateUser(userDo);
+	    invitationCode = inviteCode;
+         }
+        }
+        map.put("invitationCode",invitationCode);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
         return ret;
