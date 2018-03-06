@@ -15,6 +15,7 @@ function formatDateTime() {
     return y +  m +  d +h +minute+second;
 };
 
+/*
 // 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
@@ -33,6 +34,7 @@ var _fmOpt;
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
 })();
+*/
 
 
 
@@ -132,7 +134,8 @@ $(function () {
                     data: {
                         mobile: userName,
                         token:token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function (data) {
                         console.log(data)
@@ -177,7 +180,8 @@ $(function () {
                 verifyCode: mesg,
                 token:token,
                 'typeFrom':typeFrom,
-                'typeFromNum':typeFromNum
+                'typeFromNum':typeFromNum,
+                bsqToken:token
             },
             success: function (data) {
                 if(data.url=="ForgetPwd"){

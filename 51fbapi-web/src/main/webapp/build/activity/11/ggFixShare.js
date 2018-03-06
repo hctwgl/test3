@@ -12,7 +12,7 @@ function formatDateTime() {
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;
 };
-// 同盾校验编号的sessionId
+/*// 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
     _fmOpt = {
@@ -29,7 +29,7 @@ var _fmOpt;
     fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
-})();
+})();*/
 //获取页面名称传到登录页
 var currentUrl = window.location.href;
 var param = getUrlParam(currentUrl);
@@ -139,7 +139,8 @@ $(function () {
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
                         token:token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
@@ -195,6 +196,7 @@ $(function () {
                     "smsCode":smsCode,
                     "password":password_md5,
                     token:token,
+                    bsqToken:token,
                     'inviteer':userName,
                     'activityId':'1000',
                     'typeFrom':typeFrom,

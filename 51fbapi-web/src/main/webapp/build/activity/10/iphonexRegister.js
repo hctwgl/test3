@@ -21,7 +21,7 @@ function formatDateTime() {
 };
 
 
-// 同盾校验编号的sessionId
+/*// 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
     _fmOpt = {
@@ -39,6 +39,7 @@ var _fmOpt;
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
 })();
+*/
 
 
 
@@ -123,7 +124,8 @@ var vm=new Vue({
                         token: token,
                         verifyImgCode:verifyImgCode,
                         channelCode:channelCode,
-                        pointCode:pointCode
+                        pointCode:pointCode,
+                        bsqToken:token
                     },
                     success: function(returnData){
                         if (returnData.success) {
@@ -175,7 +177,8 @@ var vm=new Vue({
                                         recommendCode: recommendCode,
                                         token: token,
                                         channelCode:channelCode,
-                                        pointCode:pointCode
+                                        pointCode:pointCode,
+                                        bsqToken:token
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {

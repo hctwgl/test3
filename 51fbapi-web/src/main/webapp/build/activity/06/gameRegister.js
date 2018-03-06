@@ -12,10 +12,10 @@ function formatDateTime() {
     var minute = date.getMinutes();  
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;    
-};  
+};
 
+/*// 同盾校验编号的sessionId
 var _fmOpt;
-// 同盾校验编号的sessionId
  (function() {
     _fmOpt = {
          partner: 'alading',
@@ -31,7 +31,7 @@ var _fmOpt;
      fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
  	// alert(json.msg);
- })();
+ })();*/
 
 // 根据点击显示input文字
 $('.input').on('keydown',function () {
@@ -77,7 +77,8 @@ $(function(){
     			dataType: "JSON",
     			data: {
     				mobile: phone,
-    				token: token
+    				token: token,
+                    bsqToken:token
     			},
     			success: function(returnData){
     				if (returnData.success) {
@@ -126,7 +127,8 @@ $(function(){
 								smsCode: code,
 								password: password_md5,
 								recommendCode: recommendCode,
-								token:token
+								token:token,
+                                bsqToken:token
 							},
 							success: function(returnData){
 								if ( returnData.success ) {

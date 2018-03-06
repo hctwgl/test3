@@ -68,7 +68,7 @@ function formatDateTime() {
 };
 var token = formatDateTime() + Math.random().toString(36).substr(2);
 
-// 同盾校验编号的sessionId
+/*// 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
   _fmOpt = {
@@ -85,7 +85,7 @@ var _fmOpt;
   fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
   // alert(json.msg);
-})();
+})();*/
 
 
 /**
@@ -327,8 +327,9 @@ window.onload = () => {
         type: "POST",
         dataType: "json",
         data: {
-          "mobile": mobileNum, //将手机号码传给后台
-          token: token
+            "mobile": mobileNum, //将手机号码传给后台
+            token: token,
+            bsqToken:token
         },
         success: function (returnData) {
           if (returnData.success) {
@@ -447,12 +448,13 @@ window.onload = () => {
           type: 'POST',
           dataType: 'JSON',
           data: {
-            registerMobile: $('#user').val(),
-            smsCode: $('#verify').val(),
-            password: String(CryptoJS.MD5($("#pwd").val())),
-            recommendCode: recommendCode,
-            token: token,
-            'source':'recommend'
+              registerMobile: $('#user').val(),
+              smsCode: $('#verify').val(),
+              password: String(CryptoJS.MD5($("#pwd").val())),
+              recommendCode: recommendCode,
+              token: token,
+              'source':'recommend',
+              bsqToken:token
           },
           success: function (returnData) {
             maidianFnNew("registerSuccess", $('#user').val());
