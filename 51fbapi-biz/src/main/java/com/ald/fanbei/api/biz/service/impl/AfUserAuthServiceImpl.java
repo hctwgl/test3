@@ -130,6 +130,15 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				userDto.setAuAmount(afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getAuAmount());
 				userDto.setUsedAmount(
 						afUserAccountSence == null ? BigDecimal.ZERO : afUserAccountSence.getUsedAmount());
+			} else {
+				// FIXME
+				AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+				if(loanTotalSenceDo != null) {
+					BigDecimal auAmount = loanTotalSenceDo.getAuAmount();
+					if(BigDecimal.ZERO.compareTo(auAmount) != 0) {
+						userDto.setAuAmount(auAmount);
+					}
+				}
 			}
 		} else {
 			AfUserAccountSenceDo afUserAccountSence = afUserAccountSenceService
