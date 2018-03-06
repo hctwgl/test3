@@ -32,8 +32,8 @@ public abstract class DredgeWhiteCollarLoanReqBo extends HashMap<String, String>
 		this.extUserInfo = extUserInfo;
 	}
 
-	public DredgeWhiteCollarLoanReqBo(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost,String bqsBlackBox,String riskScene,Map<String,Object> extUserInfo,String selectedType,String address){
-		create(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, NotifyHost,bqsBlackBox,riskScene,extUserInfo, selectedType,address);
+	public DredgeWhiteCollarLoanReqBo(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost,String bqsBlackBox,String riskScene,Map<String,Object> extUserInfo,String selectedType,String address,String censusRegister){
+		create(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, NotifyHost,bqsBlackBox,riskScene,extUserInfo, selectedType,address,censusRegister);
 	}
 	
 	public DredgeWhiteCollarLoanReqBo(){};
@@ -119,7 +119,7 @@ public abstract class DredgeWhiteCollarLoanReqBo extends HashMap<String, String>
 		this.put("signInfo", signInfo);
 	}
 
-	protected abstract void create(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo,String selectedType,String address);
+	protected abstract void create(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost,String bqsBlackBox,String riskScene,Map<String, Object> extUserInfo,String selectedType,String address,String censusRegister);
 
 	public String transferRisk() {
 		return JSONObject.toJSONString(this);
