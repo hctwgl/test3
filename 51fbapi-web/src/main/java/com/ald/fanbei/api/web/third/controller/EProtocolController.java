@@ -46,7 +46,6 @@ public class EProtocolController {
 		String sign = StringUtil.null2Str(jsonObj.get("sign"));
 		String appId = StringUtil.null2Str(jsonObj.get("appId"));
 		logger.info("EProtocolController giveBackPdfInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
-		
 		AssetSideRespBo notifyRespBo = edsPayProtocolUtil.giveBackPdfInfo(sendTime, data, sign,appId);
 		logger.info("EProtocolController giveBackPdfInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
