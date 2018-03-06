@@ -111,7 +111,7 @@
                 #foreach($item in $!{nperArray})
                     <tr>
                         <td>$!{item.periods}</td>
-                        <td>$dateUtil.formatDate($!{item.gmtPlanRepay},"yyyy-MM-dd")</td>
+                        <td>$!{item.year}年$!{item.month}月$!{item.days}日</td>
                         <td>$!{item.loanAmount}</td>
                         <td>$!{item.fee}</td>
                     </tr>
@@ -272,7 +272,7 @@
             methods: {
                 changeRate: function (num) { // 利率截取最后两位小数
                     var rate = num;
-                    rate = (rate * 100).toFixed(2);   //截取小数点后4位
+                    rate = (rate * 100).toFixed(2);   //截取小数点后2位
                     // rate = parseFloat(rate);
                     if (rate) {
                         return rate + '%';
