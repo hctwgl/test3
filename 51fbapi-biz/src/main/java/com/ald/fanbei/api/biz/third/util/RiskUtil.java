@@ -2923,6 +2923,12 @@ public class RiskUtil extends AbstractThird {
 		JSONObject obj = JSON.parseObject(data);
 		String consumerNo = obj.getString("consumerNo");
 		logger.info("RiskUtil.createTaskNotify consumerNo={}", consumerNo);
+		// 如果认证状态为Y，则不修改状态
+		Long userId = Long.parseLong(consumerNo);
+		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(authDo != null && StringUtils.equals("Y", authDo.getZhengxinStatus())) {
+			return;
+		}
 		AfUserAuthDo auth = new AfUserAuthDo();
 		auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 		auth.setGmtZhengxin(new Date());
