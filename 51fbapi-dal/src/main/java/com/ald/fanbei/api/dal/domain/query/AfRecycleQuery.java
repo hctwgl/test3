@@ -17,7 +17,7 @@ public class AfRecycleQuery{
 
 	private static final long serialVersionUID = -722303985401230132L;
 	private Integer rid;
-	private Long uid;//用户id
+	private Long userId;//用户id
 	private String refOrderId;//有得卖对应的订单号
 	private Integer payType;//支付方式
 	private BigDecimal settlePrice;//结算价格
@@ -27,7 +27,7 @@ public class AfRecycleQuery{
 	@Override
 	public String toString() {
 		return "AfRecycleQuery{" +
-				"uid=" + uid +
+				"userId=" + userId +
 				", refOrderId='" + refOrderId + '\'' +
 				", payType=" + payType +
 				", settlePrice=" + settlePrice +

@@ -16,7 +16,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +56,7 @@ public class AppH5RecycleController extends BaseController {
         FanbeiWebContext context = new FanbeiWebContext();
         try {
             Integer amount = NumberUtil.objToIntDefault(request.getParameter("amount"), null);
-            Long userId = -1l;
+            Long userId = 0L;
             AfUserDo afUser = null;
             // 和登录有关的
             context = doWebCheck(request, true);
@@ -117,7 +116,7 @@ public class AppH5RecycleController extends BaseController {
         FanbeiWebContext context = new FanbeiWebContext();
         try {
             Integer amount = NumberUtil.objToIntDefault(request.getParameter("amount"), null);
-            Long userId = -1l;
+            Long userId = 0L;
             AfUserDo afUser = null;
             // 和登录有关的
             context = doWebCheck(request, true);
@@ -161,7 +160,7 @@ public class AppH5RecycleController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try {
-            Long userId = -1l;
+            Long userId = 0L;
             AfUserDo afUser = null;
             // 和登录有关的
             context = doWebCheck(request, true);
@@ -204,7 +203,7 @@ public class AppH5RecycleController extends BaseController {
     @RequestMapping(value = "/addPageView", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String addPageView(HttpServletRequest request) {
-        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        H5CommonResponse resp;
         FanbeiWebContext context = new FanbeiWebContext();
         try {
             Long userId = 0L;
@@ -221,13 +220,14 @@ public class AppH5RecycleController extends BaseController {
                 return H5CommonResponse.getNewInstance(false, "参数错误", null, "").toString();
             }
             AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId,type);
-            logger.info("/fanbei/ydm/addPageView,params ={}", afRecycleViewQuery.toString());
+            logger.info("/recycle/addPageView,params ={}", afRecycleViewQuery.toString());
             AfRecycleViewDo afRecycleDo = afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
             if (null == afRecycleDo) {//访问不存在，新增一条访问记录
                 afRecycleViewService.addRecycleView(afRecycleViewQuery);
             } else {//修改访问记录
                 afRecycleViewService.updateRecycleView(afRecycleViewQuery);
             }
+            resp = H5CommonResponse.getNewInstance(true, "操作成功", "", null);
         } catch (Exception e) {
             resp = H5CommonResponse.getNewInstance(false, "增加页面访问记录失败", "", e.getMessage());
             logger.error("增加页面访问记录失败" + context, e);
@@ -246,7 +246,6 @@ public class AppH5RecycleController extends BaseController {
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
         try {
             RequestDataVo reqVo = new RequestDataVo();
-
             JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setId(jsonObj.getString("id"));
             reqVo.setMethod(request.getRequestURI());

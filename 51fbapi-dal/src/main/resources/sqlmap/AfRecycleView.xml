@@ -14,7 +14,7 @@
 				gmt_create,
 				gmt_modified,
 				qty,
-				uid,
+				user_id,
 				`type`
 			)
 		VALUES
@@ -22,7 +22,7 @@
 				NOW(),
 				NOW(),
 				1,
-				#{uid},
+				#{userId},
 				#{type}
 			)
 	</insert>
@@ -35,8 +35,7 @@
         af_recycle_view
         WHERE
         is_delete = 0
-        AND
-        uid = #{uid} AND `type` = #{type}
+        AND user_id = #{userId} AND `type` = #{type}
         LIMIT 1
     </select>
 
@@ -47,9 +46,7 @@
 		SET
 			gmt_modified = now(),qty = qty + 1
 		WHERE
-			uid = #{uid}
-		AND
-			`type` = #{type}
+			user_id = #{userId} AND `type` = #{type}
 	</select>
 
 </mapper>

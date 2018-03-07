@@ -68,7 +68,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 Integer result = afRecycleDao.addRecycleOrder(afRecycleQuery);
                 //回调有得卖确认接口
                 Map<String,String> map = new HashMap<>();
-                map.put("userId", String.valueOf(afRecycleQuery.getUid()));
+                map.put("userId", String.valueOf(afRecycleQuery.getUserId()));
                 map.put("orderId", afRecycleQuery.getRefOrderId());
                 map.put("payType", String.valueOf(afRecycleQuery.getPayType()));
                 map.put("settlePrice", String.valueOf(afRecycleQuery.getSettlePrice()));
@@ -80,7 +80,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
                     //给用户账号添加回收订单金额
                     AfRecycleRatioDo afRecycleRatioDo = afRecycleDao.getRecycleReturnRatio();
-                    Long userId = afRecycleQuery.getUid();
+                    Long userId = afRecycleQuery.getUserId();
                     BigDecimal settlePrice = afRecycleQuery.getSettlePrice();
                     BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
                     if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息

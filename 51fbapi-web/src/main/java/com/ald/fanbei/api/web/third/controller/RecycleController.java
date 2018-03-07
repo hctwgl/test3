@@ -45,7 +45,7 @@ public class RecycleController {
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
             logger.info("addOrder请求参数=" + afRecycleQuery.toString());
-            if(null == afRecycleQuery.getUid()){
+            if(null == afRecycleQuery.getUserId()){
                 returnjson.put("success", false);
                 returnjson.put("msg", "userId不能为空");
             }
@@ -64,7 +64,7 @@ public class RecycleController {
             if (RecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
                 logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
                 String refOrderId = afRecycleQuery.getRefOrderId();
-                Long uid = afRecycleQuery.getUid();
+                Long uid = afRecycleQuery.getUserId();
                 key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + refOrderId + ":" + uid;
                 boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
                 if (isNotLock) {
