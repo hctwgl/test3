@@ -872,7 +872,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
                     overdueCount = 1;
                 }
                 riskUtil.raiseQuota(LoanRepayDealBo.userId.toString(), 
-                			LoanRepayDealBo.loanNo, "23", riskOrderNo, 
+                			LoanRepayDealBo.loanNo, SceneType.BLD_LOAN.getCode(), riskOrderNo, 
                 			LoanRepayDealBo.sumLoanAmount,
                 			LoanRepayDealBo.sumIncome, 
                 			LoanRepayDealBo.overdueDay, overdueCount, LoanRepayDealBo.overdueDay, LoanRepayDealBo.loanDo.getPeriods());

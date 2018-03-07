@@ -836,6 +836,11 @@ public class RiskUtil extends AbstractThird {
 		return result;
 	}
 
+	public static void main(String[] args) {
+		String s = "eyJtYXhPdmVyZHVlRGF5IjowLCJhbW91bnQiOjEwMDAuMDAsImJvcnJvd05vIjoiZGsyMDE4MDMw\nNjIwMjE0OTAwMzE3IiwicmVwYXlDb3VudCI6MSwib3ZlcmR1ZURheXMiOjAsImluY29tZSI6MjMu\nMzMsIm92ZXJkdWVDb3VudCI6MH0=";
+		System.out.println(Base64.decodeToString(s));
+	}
+	
 	/**
 	 * 风控提额
 	 *
@@ -875,13 +880,6 @@ public class RiskUtil extends AbstractThird {
 
 		String reqResult = requestProxy.post(url, reqBo);
 
-		// String content = JSONObject.toJSONString(reqBo);
-		// try {
-		// commitRecordUtil.addRecord("raiseQuota", consumerNo, content, url);
-		// } catch (Exception e) {
-		// logger.error("field too long，raiseQuota insert commitRecord
-		// fail,consumerNo="+consumerNo);
-		// }
 		logThird(reqResult, "raiseQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
@@ -891,62 +889,48 @@ public class RiskUtil extends AbstractThird {
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-			BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
-			// 强风控未通过，则不经额度处理
-			if (afUserAuthDo==null || !RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
-				au_amount = BigDecimal.ZERO;
+			Long userId = Long.parseLong(consumerNo);
+			
+			BigDecimal au_amount = BigDecimal.ZERO;
+			
+			if(SceneType.BLD_LOAN.getCode().equals(scene)) {
+				au_amount = new BigDecimal(dataObj.getString("whiteCollarAmount"));
+				BigDecimal totalamount = new BigDecimal(dataObj.getString("totalAmount"));
+				afUserAccountSenceService.raiseQuota(userId, SceneType.BLD_LOAN, au_amount, totalamount);
+			}else {
+				au_amount = new BigDecimal(dataObj.getString("amount"));
+				AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
+				// 强风控未通过，则不经额度处理
+				if (afUserAuthDo==null || !RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+					au_amount = BigDecimal.ZERO;
+				}
+
+				AfUserAuthStatusDo afUserAuthStatusOnline = afUserAuthStatusService
+						.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.ONLINE.getName());
+				String limitAmount = dataObj.getString("onlineAmount");
+				if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+					limitAmount = "0";
+				BigDecimal onlineAmount = new BigDecimal(limitAmount);
+				if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
+					onlineAmount = BigDecimal.ZERO;
+				}
+
+				AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService
+						.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.TRAIN.getName());
+				limitAmount = dataObj.getString("offlineAmount");
+				if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+					limitAmount = "0";
+				BigDecimal offlineAmount = new BigDecimal(limitAmount);
+				if (afUserAuthStatusTrain == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
+					offlineAmount = BigDecimal.ZERO;
+				}
+
+				Long consumerNum = Long.parseLong(consumerNo);
+				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
+				updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount);
+				
 			}
-
-			AfUserAuthStatusDo afUserAuthStatusOnline = afUserAuthStatusService
-					.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.ONLINE.getName());
-			String limitAmount = dataObj.getString("onlineAmount");
-			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-				limitAmount = "0";
-			BigDecimal onlineAmount = new BigDecimal(limitAmount);
-			if (afUserAuthStatusOnline == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusOnline.getStatus())) {
-				onlineAmount = BigDecimal.ZERO;
-			}
-
-			AfUserAuthStatusDo afUserAuthStatusTrain = afUserAuthStatusService
-					.getAfUserAuthStatusByUserIdAndScene(Long.parseLong(consumerNo), SceneType.TRAIN.getName());
-			limitAmount = dataObj.getString("offlineAmount");
-			if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-				limitAmount = "0";
-			BigDecimal offlineAmount = new BigDecimal(limitAmount);
-			if (afUserAuthStatusTrain == null || !UserAuthSceneStatus.YES.getCode().equals(afUserAuthStatusTrain.getStatus())) {
-				offlineAmount = BigDecimal.ZERO;
-			}
-
-			Long consumerNum = Long.parseLong(consumerNo);
-			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
-			updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount);
-			// AfUserAccountDo accountDo = new AfUserAccountDo();
-			// accountDo.setUserId(consumerNum);
-			// accountDo.setAuAmount(au_amount);
-			// afUserAccountService.updateUserAccount(accountDo);
-			// AfUserAccountSenceDo afUserAccountOnlineDo =
-			// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),
-			// consumerNum);
-			// if
-			// (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
-			// == 0 ||
-			// afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-			// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(),
-			// consumerNum, onlineAmount);
-			// }
-			// AfUserAccountSenceDo afUserAccountOfflineDo =
-			// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(),
-			// consumerNum);
-			// if
-			// (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
-			// == 0 ||
-			// afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0)
-			// {
-			// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(),
-			// consumerNum, offlineAmount);
-			// }
-
+			
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);

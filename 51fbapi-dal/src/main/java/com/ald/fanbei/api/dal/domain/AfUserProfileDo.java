@@ -29,7 +29,7 @@ import java.math.BigDecimal;
     /**
      * 
      */
-    private String gmtModify;
+    private String gmtModified;
 
     /**
      * 用户id
@@ -84,22 +84,12 @@ import java.math.BigDecimal;
       this.gmtCreate = gmtCreate;
     }
 
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public String getGmtModify(){
-      return gmtModify;
+    public String getGmtModified() {
+        return gmtModified;
     }
 
-    /**
-     * 设置
-     * 
-     * @param gmtModify 要设置的
-     */
-    public void setGmtModify(String gmtModify){
-      this.gmtModify = gmtModify;
+    public void setGmtModified(String gmtModified) {
+        this.gmtModified = gmtModified;
     }
 
     /**
