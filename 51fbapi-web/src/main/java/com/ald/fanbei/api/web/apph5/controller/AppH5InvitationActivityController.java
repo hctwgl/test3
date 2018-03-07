@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseExtBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -47,6 +48,7 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -57,6 +59,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
@@ -439,17 +442,7 @@ public class AppH5InvitationActivityController extends BaseController {
      			 context = doWebCheck(request, false);
      			 String userName = context.getUserName();
      			 userId = convertUserNameToUserId(userName);
-     	            }catch (FanbeiException e) {
-     				if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-     						|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-     					Map<String, Object> data = new HashMap<>();
-     					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-     							+ H5OpenNativeType.AppLogin.getCode();
-     					data.put("loginUrl", loginUrl);
-     					logger.error("/fanbei-web/activityAndUserInfo" + context + "login error ");
-     				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-     				}
-     		
+     	            
         }catch  (Exception e) {
             logger.error("activityAndUserInfo error", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
@@ -494,18 +487,7 @@ public class AppH5InvitationActivityController extends BaseController {
        
     
         
-        //用户的邀请码
-        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
-        if(invitationCode.equals("0")){
-            //生成邀请码
-            AfUserDo userDo = new AfUserDo();
-	    Long invteLong = Constants.INVITE_START_VALUE + userId;
-	    String inviteCode = Long.toString(invteLong, 36);
-	    userDo.setRecommendCode(inviteCode);
-	    userDo.setRid(userId);
-	    afUserService.updateUser(userDo);
-	    invitationCode = inviteCode;
-        }
+     
          String acticitySwitch = activitySwitch();
        
         
@@ -524,22 +506,38 @@ public class AppH5InvitationActivityController extends BaseController {
 		    if(activityStart !=null){
 			activityTime = activityStart.getValue();
         }
-         
-       //用户的总共奖励金额
-        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
-        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
-        
+      
         
         map.put("listRule",listRule);
         map.put("listPic",listPic);
         map.put("listTitle",listTitle);
         map.put("listDesc",listDesc);
-        map.put("invitationCode",invitationCode);
-        map.put("welfareTableList",welfareTableList);
         map.put("welfareExampleList",welfareExampleList);
 //      map.put("giftPackageList",giftPackageList);
 //      map.put("preferentialList",preferentialList);
-        map.put("sumPrizeMoney",df.format(sumPrizeMoney));
+        map.put("sumPrizeMoney","0.00");
+        map.put("welfareTableList",welfareTableList);
+        //用户的邀请码
+        String invitationCode = "";
+        if(userId !=null && userId>0){
+            
+            //用户的总共奖励金额
+        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId,activityTime);
+        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
+        invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+         map.put("sumPrizeMoney",df.format(sumPrizeMoney));
+        if(invitationCode.equals("0")){
+            //生成邀请码
+            AfUserDo userDo = new AfUserDo();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
+	    String inviteCode = Long.toString(invteLong, 36);
+	    userDo.setRecommendCode(inviteCode);
+	    userDo.setRid(userId);
+	    afUserService.updateUser(userDo);
+	    invitationCode = inviteCode;
+         }
+        }
+        map.put("invitationCode",invitationCode);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
         return ret;
@@ -1244,12 +1242,18 @@ public class AppH5InvitationActivityController extends BaseController {
              resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
 	     bizCacheUtil.saveObject("recommend:activity:boluome_coupon", resourceDo, Constants.SECOND_OF_TEN_MINITS);
 	 }
-	
+         List<String> bList = new ArrayList<>();
+  
 	if (resourceDo != null) {
-		List<String> bList = new ArrayList<>();
-		bList.add(resourceDo.getValue());
-		bList.add(resourceDo.getValue2());
-		bList.add(resourceDo.getValue3());
+	   bList.add(resourceDo.getValue());
+	}
+	 List<String> rigsetCouponIdList = getBoluomecouponIdListForCategoryTag(CouponCateGoryType._NEW_USER_BOLUOME_COUPON_.getCode());
+         if(rigsetCouponIdList != null && rigsetCouponIdList.size() >0 ){
+             bList.addAll(rigsetCouponIdList);
+         }
+		
+//		bList.add(resourceDo.getValue2());
+//		bList.add(resourceDo.getValue3());
 		if (bList != null && bList.size() > 0) {
 			for (String resouceIdStr : bList) {
 				Long resourceId = Long.parseLong(resouceIdStr);
@@ -1298,10 +1302,28 @@ public class AppH5InvitationActivityController extends BaseController {
 					}
 				}
 			}
-		}
 	}
 	return boluomeCouponList;
     }
+    
+    private List<String> getBoluomecouponIdListForCategoryTag(String tag){
+    List<String> boluomeCouponIdList = new ArrayList<>();
+    AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
+	if(couponCategory != null){
+	    	String coupons = couponCategory.getCoupons();
+		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+		for (int i = 0; i < couponsArray.size(); i++) {
+			String couponId = (String) couponsArray.getString(i);
+			boluomeCouponIdList.add(couponId);
+    		}
+	}
+	return boluomeCouponIdList;
+}	    			    
+
+
+    
+    
+    
     private String activitySwitch(){
 	 String acticitySwitch = "";
 	 AfResourceDo  afResourceDo  =  afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "RECOMMEND_NEWBIE_TASK");

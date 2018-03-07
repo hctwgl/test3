@@ -6,8 +6,8 @@ public enum UserAuthSceneStatus {
     YES("YES", "Y","已认证"),
     NO("NO", "N","未认证"),
     FAILED("FAILED", "C","认证失败"),
-    PASSING("TRAIN", "P","未认证且无过期"),
-    CHECKING("CASH", "A","认证中"),;
+    PASSING("PASSING", "P","未认证且无过期"),
+    CHECKING("CHECKING", "A","认证中"),;
 
     private String name;
     private String code;

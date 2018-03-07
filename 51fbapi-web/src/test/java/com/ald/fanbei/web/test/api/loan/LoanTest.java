@@ -16,8 +16,8 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-//	String urlBase = "https://btestapp.51fanbei.com";
-	String urlBase = "http://localhost:8080";
+	String urlBase = "https://btestapp.51fanbei.com";
+//	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -65,7 +65,7 @@ public class LoanTest  extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
 		params.put("amount", 1000+"");
-		params.put("periods", 3+"");
+		params.put("periods", 1+"");
 		testH5(url, params, userName, true);
 	}
 	
@@ -77,8 +77,8 @@ public class LoanTest  extends BaseTest{
 		String url = urlBase + "/h5/loan/applyLoan";
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 5000+"");
-		params.put("periods", 3+"");
+		params.put("amount", 1000+"");
+		params.put("periods", 1+"");
 		
 		params.put("remark", "白领贷借款");
 		params.put("loanRemark", "装修");
@@ -140,15 +140,15 @@ public class LoanTest  extends BaseTest{
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 10+"");//351.27
+		params.put("repaymentAmount", 1023.33+"");//351.27
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
-		params.put("actualAmount",10+"");
-		params.put("loanId", 170+"");
-		params.put("loanPeriodsIds", "345");
+		params.put("actualAmount",1023.33+"");
+		params.put("loanId", 208+"");
+		params.put("loanPeriodsIds", "406");
 		
 		testApi(url, params, userName, true);
 	}
@@ -160,14 +160,14 @@ public class LoanTest  extends BaseTest{
 	public void allRepayDo() {
 		String url = urlBase + "/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 926.68+"");
+		params.put("repaymentAmount", 675.41+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464419");
-		params.put("actualAmount", 926.68+"");
-		params.put("loanId", 107+"");
+		params.put("cardId", "3111464125");
+		params.put("actualAmount", 675.41+"");
+		params.put("loanId", 207+"");
 		
 		testApi(url, params, userName, true);
 	}
@@ -179,7 +179,7 @@ public class LoanTest  extends BaseTest{
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 166+"");
+		params.put("loanId", 207+"");
 		
 		testH5(url, params, userName, true);
 	}

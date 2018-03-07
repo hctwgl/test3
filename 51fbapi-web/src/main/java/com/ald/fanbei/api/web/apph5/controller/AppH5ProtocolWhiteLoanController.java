@@ -323,7 +323,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                 throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
             }
             map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
-            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
+            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技有限公司");
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
                 map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
             } else {
