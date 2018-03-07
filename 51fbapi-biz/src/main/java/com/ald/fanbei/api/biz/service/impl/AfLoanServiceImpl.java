@@ -570,6 +570,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
+			Date lastAuthDate = au.getGmtModified();
+			if(new Date().after(DateUtil.addDays(lastAuthDate, 10))) {
+				return AfLoanRejectType.NO_AUTHZ;
+			}
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
