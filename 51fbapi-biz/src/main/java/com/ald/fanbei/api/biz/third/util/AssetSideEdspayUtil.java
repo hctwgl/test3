@@ -486,27 +486,33 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
-					//推送成功
-					logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
-					//进入查询表
-					AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
-					afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
-					afRetryTemplDo.setEventType(RetryEventType.QUERY.getCode());
-					Date now =new Date();
-					afRetryTemplDo.setGmtCreate(now);
-					AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
-					Integer queryInterval = strategy.getTimeOut();
-					Date gmtNext = DateUtil.addMins(now, queryInterval);
-					afRetryTemplDo.setGmtNext(gmtNext);
-					afRetryTemplDo.setTimes(0);
-					afRetryTemplDo.setState("N");
-					afRetryTemplDo.setGmtModify(now);
-					afRetryTemplService.saveRecord(afRetryTemplDo);
-					if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
-						//钱包满额,更新配置表
-						assetPushResource.setValue3(YesNoStatus.YES.getCode());
-						afResourceService.editResource(assetPushResource);
+					try {
+						//推送成功
+						logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
+						//进入查询表
+						AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
+						afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
+						afRetryTemplDo.setEventType(RetryEventType.QUERY.getCode());
+						Date now =new Date();
+						afRetryTemplDo.setGmtCreate(now);
+						AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
+						Integer queryInterval = strategy.getTimeOut();
+						Date gmtNext = DateUtil.addMins(now, queryInterval);
+						afRetryTemplDo.setGmtNext(gmtNext);
+						afRetryTemplDo.setTimes(0);
+						afRetryTemplDo.setState("N");
+						afRetryTemplDo.setGmtModify(now);
+						afRetryTemplService.saveRecord(afRetryTemplDo);
+						if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
+							//钱包满额,更新配置表
+							assetPushResource.setValue3(YesNoStatus.YES.getCode());
+							afResourceService.editResource(assetPushResource);
+						}
+						
+					} catch (Exception e) {
+						logger.error("borrowCashCurPush fail:"+e);
 					}
+					
 					return true;
 				}else {
 					//钱包处理错误
