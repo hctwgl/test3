@@ -582,7 +582,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
             }
             AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
-            afContractPdfDo.setType((byte) 1);
+            afContractPdfDo.setType((byte) 5);
             afContractPdfDo.setTypeId(loanDo.getRid());
             AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
             if (pdf != null) {
