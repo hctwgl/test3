@@ -99,13 +99,14 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                         BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
                         AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
                         afUserAccountDo.setRebateAmount(rebateAmount);
+                        afUserAccountDo.setUserId(afRecycleQuery.getUserId());
                         afUserAccountDao.updateUserAccount(afUserAccountDo);
                         //有得卖账户减钱操作
                         recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
                     }
                 } else {
                     // code = "ERR06"
-                    logger.error("addRecycleOrder,errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
+                    logger.error("addRecycleOrder callBack,param=" + map.toString()  + ", errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
                 }
                 return result;
             }
