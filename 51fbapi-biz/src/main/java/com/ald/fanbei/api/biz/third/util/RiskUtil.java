@@ -115,6 +115,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -264,8 +265,7 @@ public class RiskUtil extends AbstractThird {
 
 	public static String getUrl() {
 		if (url == null) {
-			// url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-			url = "http://btestarc.51fanbei.com";
+			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			return url;
 		}
 		return url;
@@ -273,8 +273,7 @@ public class RiskUtil extends AbstractThird {
 
 	private static String getNotifyHost() {
 		if (notifyHost == null) {
-			//notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
-			notifyHost = "https://btestapp.51fanbei.com";
+			notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 			return notifyHost;
 		}
 		return notifyHost;
