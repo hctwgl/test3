@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modify,user_id,account,type 
+        id rid,gmt_create,gmt_modified,user_id,account,type 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -17,8 +17,8 @@
         <if test="gmtCreate != null and gmtCreate != ''">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="gmtModify != null and gmtModify != ''">
-            AND gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        <if test="gmtModified != null and gmtModified != ''">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
         <if test="userId != null and userId != ''">
             AND user_id = #{userId,jdbcType=INTEGER}
@@ -40,7 +40,7 @@
         INSERT INTO af_user_profile
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        gmt_create,
-	        gmt_modify,
+	        gmt_modified,
 	        user_id,
 	        account,
 	         type
@@ -62,8 +62,8 @@
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModify != null and gmtModify != '' ">        
-                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},                
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
@@ -80,7 +80,7 @@
     <update id="updateDeleteUserProfileById" >
         UPDATE af_user_profile
         <set>
-            gmt_modify = NOW(),is_delete = 1
+            gmt_modified = NOW(),is_delete = 1
 
         </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}

@@ -25,7 +25,6 @@ public class Create {
 		String classAuthor = "chenqiwei";
 		String functionName = "用户设备号记录表";
 
-
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
 
