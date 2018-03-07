@@ -173,7 +173,7 @@ public class AfWhiteLoanContractPdfCreateServiceImpl implements AfWhiteLoanContr
             map.put("userSealDoList", userSealDoList);
             map.put("edspaySealDoList", edspaySealDoList);
 
-            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
+            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技有限公司");
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
                 map.put("thirdSeal", companyUserSealDo.getUserSeal());
                 map.put("thirdAccoundId", companyUserSealDo.getUserAccountId());
