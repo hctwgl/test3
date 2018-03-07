@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -223,6 +224,14 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 map.put("borrowStatus","4");
                 map.put("desc", "总额度"+auAmount+"元");
                 if(context.getAppVersion() >= 406){
+                	
+                	// FIXME
+    				AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+    				if(loanTotalSenceDo != null) {
+    					if(BigDecimal.ZERO.compareTo(auAmount) != 0) {
+    						auAmount = loanTotalSenceDo.getAuAmount();
+    					}
+    				}
                     map.put("auAmount", auAmount);
                     map.put("amount", amount);
                 }
