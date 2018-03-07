@@ -71,6 +71,8 @@ public class RecycleController {
                     AfRecycleDo afRecycleDo = afRecycleService.getRecycleOrder(afRecycleQuery);
                     if (null == afRecycleDo) {//订单不存在，新增一条订单
                         afRecycleService.addRecycleOrder(afRecycleQuery);//新增一条订单
+                        returnjson.put("success", true);
+                        returnjson.put("msg", "操作成功");
                     } else {
                         returnjson.put("success", false);
                         returnjson.put("msg", "订单已存在");
@@ -88,8 +90,6 @@ public class RecycleController {
         } finally {
             bizCacheUtil.delCache(key);
         }
-        returnjson.put("success", true);
-        returnjson.put("msg", "操作成功");
         return returnjson;
     }
 

@@ -48,7 +48,7 @@ public class AppH5RecycleController extends BaseController {
     /**
      * @说明：兑换
      */
-    @RequestMapping(value = "/exchange", method = RequestMethod.POST)
+    @RequestMapping(value = "/exchange", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String exchange(HttpServletRequest request) {
         Calendar calStart = Calendar.getInstance();
@@ -108,7 +108,7 @@ public class AppH5RecycleController extends BaseController {
     /**
      * @说明：获取跳转到有得卖H5页面地址
      */
-    @RequestMapping(value = "/getRecycleUrl", method = RequestMethod.POST)
+    @RequestMapping(value = "/getRecycleUrl", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getRecycleUrl(HttpServletRequest request) {
         Calendar calStart = Calendar.getInstance();
@@ -153,7 +153,7 @@ public class AppH5RecycleController extends BaseController {
     /**
      * @说明：获取跳转返现H5页面地址
      */
-    @RequestMapping(value = "/getReturnCash", method = RequestMethod.POST)
+    @RequestMapping(value = "/getReturnCash", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getReturnCash (HttpServletRequest request) {
         Calendar calStart = Calendar.getInstance();
