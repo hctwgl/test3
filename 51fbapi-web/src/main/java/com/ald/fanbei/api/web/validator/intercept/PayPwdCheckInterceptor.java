@@ -78,7 +78,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			throw new FanbeiException("请登录后再支付！", true);
 		}
 		
-		String log = String.format("PayPwdCheckInterceptor.checkPayPwd() the params r d%,d%,d%", userId,payPwd,version);
+		String log = String.format("PayPwdCheckInterceptor.checkPayPwd() the params r d%,s%,d%", userId,payPwd,version);
 		logger.info(log);
 		
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
