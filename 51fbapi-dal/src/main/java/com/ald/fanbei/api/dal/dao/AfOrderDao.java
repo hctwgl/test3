@@ -244,4 +244,10 @@ public interface AfOrderDao {
 
 	List<AfOrderSceneAmountDto> getSceneAmountByOrderId(@Param("orderId")Long orderId);
 
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	String checkLeaseOrder(@Param("userId")Long userId ,@Param("goodsId") Long goodsId);
+
 }

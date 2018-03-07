@@ -388,4 +388,9 @@ public interface AfOrderService {
 
 	int addSceneAmount(List<AfOrderSceneAmountDo> list);
 
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	String checkLeaseOrder(Long userId, Long goodsId);
 }

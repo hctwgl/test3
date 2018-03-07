@@ -59,6 +59,15 @@ public class AppH5LeaseController extends BaseController {
     @Resource
     AfPropertyValueService afPropertyValueService;
 
+    @Resource
+    AfOrderService afOrderService;
+
+    @Resource
+    AfUserService afUserService;
+
+    @Resource
+    AfUserAddressService afUserAddressService;
+
     /**
      *获取租赁首页banner
      */
@@ -149,6 +158,9 @@ public class AppH5LeaseController extends BaseController {
         try{
             Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("goodsId")), 0l);
             AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
+            if(null == goods){
+                throw new FanbeiException("goods not exist error", FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+            }
             data = getGoodsVo(goods);
 
             List<AfLeaseGoodsPriceVo> priceData = new ArrayList<>();
@@ -192,6 +204,84 @@ public class AppH5LeaseController extends BaseController {
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseGoods", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *获取商品是否存在有效订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "checkOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    public String checkOrder(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        Map<String, Object> data = new HashMap<String, Object>();
+        try{
+            data.put("status","");
+            context = doWebCheck(request, true);
+            Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("goodsId")), 0l);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            String status = afOrderService.checkLeaseOrder(afUser.getRid(),goodsId);
+            if(status != null){
+                if(status.equals("NEW")){
+                    //待支付
+                    data.put("status","unpaid");
+                }
+                else {
+                    //进行中
+                    data.put("status","underway");
+                }
+            }
+            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", data);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *获取用户默认收货地址
+     */
+    @ResponseBody
+    @RequestMapping(value = "getDefaultUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    public String getDefaultUserAddress(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(afUser.getRid());
+            if(defauleDo == null){
+                defauleDo = new AfUserAddressDo();
+            }
+            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", defauleDo);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *获取用户冻结购物额度
+     */
+    @ResponseBody
+    @RequestMapping(value = "getUserFreeze", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    public String getUserFreeze(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+
+            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", "");
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
