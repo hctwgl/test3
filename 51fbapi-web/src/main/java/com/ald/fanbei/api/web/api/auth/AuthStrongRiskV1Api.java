@@ -216,7 +216,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				}
 			} else {
 				if(afUserAuthStatus!=null) {
-					if (!StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.NO.getCode()) && !StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.PASSING.getCode())) {
+					if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.CHECKING.getCode())) {
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 					}
 				}

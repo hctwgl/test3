@@ -214,6 +214,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd", periodsTime);
                     model.put("days", periodsDay);
+                    map.put("days", day);
+                    map.put("month",month);
+                    map.put("year",year);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
@@ -247,7 +250,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             List<Object> array = new ArrayList<Object>();
             for (int i = 1; i <= nper; i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i-1);
+                AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i);
                 if (i == nper) {
                     c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
                     int month = c.get(Calendar.MONTH) + 1;
@@ -256,6 +259,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     String time = year + "年" + month + "月" + day + "日";
                     model.put("gmtEnd", time);
                     model.put("days", day);
+                    map.put("days", day);
+                    map.put("month",month);
+                    map.put("year",year);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
@@ -365,7 +371,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("serviceRate", rateDo.getPoundageRate());//手续费率
             model.put("interestRate", rateDo.getInterestRate());//借钱利率
         }
-        model.put("totalServiceFee", amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))));//手续费
+        model.put("totalServiceFee", amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))).divide(new BigDecimal(12),2));//手续费
         if (loanId > 0) {
             AfLoanDo afLoanDo = afLoanService.getById(loanId);
             if (null != afLoanDo) {

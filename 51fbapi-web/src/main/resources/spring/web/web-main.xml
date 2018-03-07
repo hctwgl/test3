@@ -167,7 +167,7 @@
 
 				<value>/order/dmNperEnabled</value>
 				
-				<value>/user/getMineInfo</value>
+				<value>/user/getMineInfoV1</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -190,6 +190,7 @@
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
 				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineInfoV1" value-ref="getMineInfoApiV1" />
 				<entry key="/user/getMineCouponCount" value-ref="getMineCouponCountApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />

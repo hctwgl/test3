@@ -19,11 +19,11 @@ public class LoanTest  extends BaseTest{
 	String urlBase = "https://btestapp.51fanbei.com";
 //	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
-//	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
-	String userName = "13958004662";	//胡朝永 支付密码123456
+	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
+//	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
-//	String userName = "13370127054";	//王卿 支付密码123456
+//	String userName = "13370127054";	//王卿 	支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
 //	String userName = "17756648524";	//新账号 支付密码123456
@@ -48,7 +48,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取所有借钱记录，包含白领贷和小额贷记录
 	 */
-//	@Test
+	@Test
 	public void getAllBorrowList() {
 		String url = urlBase + "/borrowCash/getAllBorrowList";
 		Map<String,String> params = new HashMap<>();
@@ -65,7 +65,7 @@ public class LoanTest  extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
 		params.put("amount", 1000+"");
-		params.put("periods", 3+"");
+		params.put("periods", 1+"");
 		testH5(url, params, userName, true);
 	}
 	
@@ -78,7 +78,7 @@ public class LoanTest  extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("prdType", "BLD_LOAN");
 		params.put("amount", 1000+"");
-		params.put("periods", 3+"");
+		params.put("periods", 1+"");
 		
 		params.put("remark", "白领贷借款");
 		params.put("loanRemark", "装修");
@@ -100,13 +100,13 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 贷款申请成功后，模拟 UPS 回调 返呗API
 	 */
-//	@Test
+	@Test
 	public void delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
 		String orderNo = "01dpay23425234dfssdfs";
 		String merPriv = UserAccountLogType.LOAN.getCode();
 		String tradeState = "00";
-		String reqExt = "13";
+		String reqExt = "154";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
 		url += reqStr;
@@ -117,7 +117,7 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 获取白领贷协议
 	 */
-//	@Test
+	@Test
 	public void getWhiteLoanProtocol() {
 		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
 		Map<String,String> params = new HashMap<>();
@@ -140,15 +140,15 @@ public class LoanTest  extends BaseTest{
 	public void repayDo() {
 		String url = urlBase + "/loan/loanRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 251.27+"");//351.27
+		params.put("repaymentAmount", 1023.33+"");//351.27
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464419");
-		params.put("actualAmount",251.27+"");
-		params.put("loanId", 99+"");
-		params.put("loanPeriodsIds", "220");
+		params.put("cardId", "3111464125");
+		params.put("actualAmount",1023.33+"");
+		params.put("loanId", 208+"");
+		params.put("loanPeriodsIds", "406");
 		
 		testApi(url, params, userName, true);
 	}
@@ -160,14 +160,14 @@ public class LoanTest  extends BaseTest{
 	public void allRepayDo() {
 		String url = urlBase + "/loan/loanAllRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 926.68+"");
+		params.put("repaymentAmount", 675.41+"");
 		params.put("couponId", "0");
 		params.put("rebateAmount", "0");
 		
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464419");
-		params.put("actualAmount", 926.68+"");
-		params.put("loanId", 107+"");
+		params.put("cardId", "3111464125");
+		params.put("actualAmount", 675.41+"");
+		params.put("loanId", 207+"");
 		
 		testApi(url, params, userName, true);
 	}
@@ -179,7 +179,7 @@ public class LoanTest  extends BaseTest{
 	public void getLoanInfo() {
 		String url = urlBase + "/h5/loan/getLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 121+"");
+		params.put("loanId", 207+"");
 		
 		testH5(url, params, userName, true);
 	}
@@ -191,12 +191,12 @@ public class LoanTest  extends BaseTest{
 	public void loanRepayPlan() {
 		String url = urlBase + "/h5/loan/loanRepayPlan";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 130+"");
+		params.put("loanId", 189+"");
 		
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void getLoanRepayments() {
 		String url = urlBase + "/h5/loan/getLoanRepayments";
 		Map<String,String> params = new HashMap<>();
@@ -205,12 +205,12 @@ public class LoanTest  extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018021013355213061";
+		String orderNo = "hq2018030614245200365";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018021013355213061";
+		String tradeNo = "xianFenghq2018030614245200365";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
@@ -219,7 +219,7 @@ public class LoanTest  extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		
 	}

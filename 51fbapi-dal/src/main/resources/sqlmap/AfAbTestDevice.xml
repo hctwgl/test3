@@ -10,16 +10,15 @@
 				gmt_create,
 				gmt_modified,
 				user_id,
-				device_num,
-				loginDate
+				device_num
+				
 			)
 		VALUES
 		    (
 				NOW(),
 				NOW(),
 				#{userId},
-				#{deviceNum},
-				CURDATE()
+				#{deviceNum}
 			)
 	</insert>
 </mapper>
