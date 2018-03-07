@@ -371,7 +371,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("serviceRate", rateDo.getPoundageRate());//手续费率
             model.put("interestRate", rateDo.getInterestRate());//借钱利率
         }
-        model.put("totalServiceFee", amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))).divide(new BigDecimal(12),2));//手续费
+        model.put("totalServiceFee", (amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))).divide(new BigDecimal(12),2)).multiply(BigDecimal.valueOf(nper)));//手续费
         if (loanId > 0) {
             AfLoanDo afLoanDo = afLoanService.getById(loanId);
             if (null != afLoanDo) {

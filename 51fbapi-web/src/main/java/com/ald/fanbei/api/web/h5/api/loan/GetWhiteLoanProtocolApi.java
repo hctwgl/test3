@@ -45,6 +45,11 @@ public class GetWhiteLoanProtocolApi implements H5Handle {
                 afResourceDo.setValue("/fanbei-web/h5/whiteLoanProtocol?userName=" + userName +
                         "&amount=" + param.amount + "&nper=" + param.nper + "&loanId=" + param.loanId + "&loanRemark=" + param.loanRemark +
                         "&repayRemark=" + param.repayRemark);
+            }else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){//数字证书
+                afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" +userName);
+            }
+            else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())){//风险提示协议
+                afResourceDo.setValue("/app/sys/riskWarning");
             }
         }
         data.put("whiteLoanList", afResourceDoList);
