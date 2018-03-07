@@ -796,7 +796,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         boolean result = true;
         byte[] stream;
         try {
-            logger.info("getLegalContractPdf getLegalContractPdf map =>{}", JSON.toJSONString(map));
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
@@ -848,7 +847,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 fileDigestSignResult = afESdkService.secondStreamSign(map, stream);//出借人盖章
                 if (fileDigestSignResult.getErrCode() != 0) {
                     result = false;
-                    logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                    logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg()+",key="+userSealDo.getUserName()+",PDFPath =" + map.get("PDFPath") + ",borrowId = "+ map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
                     return null;
                 }
                 stream = fileDigestSignResult.getStream();
