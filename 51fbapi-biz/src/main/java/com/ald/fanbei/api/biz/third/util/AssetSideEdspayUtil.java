@@ -803,24 +803,21 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return 0;
 	}
 
-	public String tenementPushEdspay(String timestamp, String data, String sign) {
-		QueryEdspayApiHandleReqBo reqBo = new QueryEdspayApiHandleReqBo();
-		reqBo.setData(data);
-		reqBo.setSign(DigestUtil.MD5(data));
-		logThird(sign, "tenementPushEdspay", reqBo);
-		if (StringUtil.equals(sign, reqBo.getSign())) {// 验签成功
-			JSONObject obj = JSON.parseObject(data);
-			String borrowId=obj.getString("borrowId");
+	public int tenementPushEdspay(Long borrowId) {
+		try {
 			AfBorrowDo borrowDo = afBorrowService.getBorrowById(Long.valueOf(borrowId));
 			List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(borrowDo);
 			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 			//债权实时推送
 			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 			if (result) {
-				logger.info("borrowCurPush suceess,debtType=tenement,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+				logger.info("borrowCashCurPush suceess,borrowId="+borrowId);
 			}
+		} catch (Exception e) {
+			logger.error("tenementPushEdspay error"+e);
+			return 1;
 		}
-		return "success";
+		return 0;
 	}
 
 	public int repushMaxApiHandle(String orderNo) {

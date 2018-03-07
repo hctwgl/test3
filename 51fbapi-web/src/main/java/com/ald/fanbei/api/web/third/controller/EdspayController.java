@@ -146,13 +146,12 @@ public class EdspayController {
 	@RequestMapping(value = {"/tenementPushEdspay"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String tenementPushEdspay(HttpServletRequest request, HttpServletResponse response) {
-		String data = ObjectUtils.toString(request.getParameter("data"));
-		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
-		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("tenementPushEdspay begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		String result = assetSideEdspayUtil.tenementPushEdspay(timestamp, data, sign);
-		logger.info("tenementPushEdspay end,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp+"result="+result);
-		return "success";
+		String borrowId = request.getParameter("borrowId");
+		int result = assetSideEdspayUtil.tenementPushEdspay(Long.valueOf(borrowId));
+        if (result == 1) {
+			return "FAIl";
+		}
+        return "SUCCESS";
 	}
 	
 	/**
