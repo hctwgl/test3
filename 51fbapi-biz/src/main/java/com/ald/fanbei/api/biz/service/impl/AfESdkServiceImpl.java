@@ -735,6 +735,11 @@ public class AfESdkServiceImpl implements AfESdkService {
     }
 
     @Override
+    public AfUserSealDo selectByUserName(String name) {
+        return afUserSealDao.selectByUserName(name);
+    }
+
+    @Override
     public AfUserSealDo selectUserSealByCardId(String id) {
         return afUserSealDao.selectByCardId(id);
     }
