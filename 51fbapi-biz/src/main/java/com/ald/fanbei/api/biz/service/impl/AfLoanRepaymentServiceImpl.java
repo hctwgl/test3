@@ -695,7 +695,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
 			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
 		}else {
-			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
+			if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
+				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getRepaidServiceFee(),
+						loanPeriodsDo.getRepaidOverdueAmount(),repayAmount));
+			}else{
+				loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
+			}
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		
