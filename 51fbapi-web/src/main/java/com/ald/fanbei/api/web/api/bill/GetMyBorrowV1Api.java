@@ -196,6 +196,10 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 if(StringUtil.equals(userAuth.getFacesStatus(),"Y")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
                     status="5";
                 }
+                
+                if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                    status="1";
+                }
                 listDesc1=getAuthDesc(value3,"two");
                 listDesc2=getAuthDesc(value4,"two");
                 map.put("showAmount", listDesc1.get(0));
