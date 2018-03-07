@@ -78,17 +78,17 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			throw new FanbeiException("请登录后再支付！", true);
 		}
 		
-		String log = String.format("PayPwdCheckInterceptor.checkPayPwd() the params r d%,s%,d%", userId,payPwd,version);
+		String log = String.format("PayPwdCheckInterceptor.checkPayPwd() the params r %d,%s,%d", userId,payPwd,version);
 		logger.info(log);
 		
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		
-		log = log + String.format("the middle params r :userAccountInfo = s% ", userAccountInfo.toString());
+		log = log + String.format("the middle params r :userAccountInfo = %s ", userAccountInfo.toString());
 		logger.info(log);
 		
 		String inputOldPwd = UserUtil.getPassword(payPwd, userAccountInfo.getSalt());
 		
-		log = log + String.format("inputOldPwd =  s%", inputOldPwd);
+		log = log + String.format("inputOldPwd =  %s", inputOldPwd);
 		logger.info(log);
 		
 		if (version < 408) {
@@ -106,13 +106,13 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		// the previous time
 		String key1 = Constants.CACHKEY_THE_LAST_WRONG_PAYPWD_TIME + userId;
 		
-		log = log + String.format("key =  s%,key1==  s%", key,key1);
+		log = log + String.format("key =  %s,key1==  %s", key,key1);
 		logger.info(log);
 		
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("PAY_PASSWORD_IDENTIFY",
 				"INPUT_TIMES_AND_FROZEN_TIME");
 		
-		log = log + String.format("resourceDo  s%", resourceDo.toString());
+		log = log + String.format("resourceDo  %s", resourceDo.toString());
 		logger.info(log);
 		
 		if (resourceDo == null) {
@@ -134,7 +134,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		Integer times = (Integer) bizCacheUtil.getObject(key);
 		Date previousDate = (Date) bizCacheUtil.getObject(key1);
 		
-		log = log + String.format("times = d% ,previousDate = %tc", resourceDo.toString(),previousDate);
+		log = log + String.format("times = %d ,previousDate = %tc", resourceDo.toString(),previousDate);
 		logger.info(log);
 
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
