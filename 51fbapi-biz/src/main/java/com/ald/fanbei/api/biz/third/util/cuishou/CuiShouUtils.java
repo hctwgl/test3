@@ -109,14 +109,28 @@ public class CuiShouUtils {
                 return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
 
             } else if (CuiShouType.BORROW_CASH.getCode().equals(c_type)) {
-                CuiShouUtils.setIsXianXiaHuangKuang(true);
-                CuiShouBackMoney c = borrowCashMoney(jsonObject);
-                JSONObject j = (JSONObject) c.getData();
-                if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
-                    j.put("ref_id", CuiShouUtils.getAfRepaymentBorrowCashDo().getRid());
-                    c.setData(j);
-                }
-                return JSON.toJSONString(c);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        CuiShouUtils.setIsXianXiaHuangKuang(true);
+                        CuiShouBackMoney c = borrowCashMoney(jsonObject);
+                        JSONObject j = (JSONObject) c.getData();
+                        if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
+                            j.put("ref_id", CuiShouUtils.getAfRepaymentBorrowCashDo().getRid());
+                            c.setData(j);
+                        }
+                        sycnSuccessAndError(c,0); //同步返回数据
+                    }
+                }).start();
+//                CuiShouUtils.setIsXianXiaHuangKuang(true);
+//                CuiShouBackMoney c = borrowCashMoney(jsonObject);
+//                JSONObject j = (JSONObject) c.getData();
+//                if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
+//                    j.put("ref_id", CuiShouUtils.getAfRepaymentBorrowCashDo().getRid());
+//                    c.setData(j);
+//                }
+//                return JSON.toJSONString(c);
+                return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
             } else if (CuiShouType.WITH_BORROW.getCode().equals(c_type)) {
 
 
@@ -401,6 +415,9 @@ public class CuiShouUtils {
     public void syncCuiShou(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo){
         try {
             thirdLog.info("cuishouhuankuan xianjinjie:" + afRepaymentBorrowCashDo.toString());
+            if (CuiShouUtils.getIsXianXiaHuangKuang() != null && CuiShouUtils.getIsXianXiaHuangKuang()) {
+                return;
+            }
             setAfRepaymentBorrowCashDo(afRepaymentBorrowCashDo);
             CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
             cuiShouBackMoney.setCode(200);
