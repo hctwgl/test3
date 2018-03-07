@@ -81,7 +81,7 @@ public class CuiShouUtils {
      */
     public String offlineRepaymentMoney(String sign,final String data) {
         try {
-            thirdLog.info("{data:"+data+",sign:"+sign+"}");
+            thirdLog.info("cuishouhuankuan offlineRepaymentMoney {data:"+data+",sign:"+sign+"}");
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return JSONObject.toJSONString( new CuiShouBackMoney(201, "验签错误"));
@@ -503,6 +503,7 @@ public class CuiShouUtils {
                     return JSONObject.toJSONString(cuiShouBackMoney);  //更新失败
                 }
                 List<Long> bilIds = new ArrayList<Long>();
+                bilIds.add(billId);
                 Integer i = afBorrowBillDao.updateBorrowBillStatusByBillIdsAndStatus(bilIds, BorrowBillStatus.YES.getCode());
 
                 if(i ==0){
