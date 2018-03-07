@@ -40,7 +40,6 @@ public class RecycleController {
     @ResponseBody
     public JSONObject addOrder(HttpServletRequest request) {
         JSONObject returnjson = new JSONObject();
-        String result = "";
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
