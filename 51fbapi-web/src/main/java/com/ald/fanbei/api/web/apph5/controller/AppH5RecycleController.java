@@ -16,14 +16,15 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -82,7 +83,7 @@ public class AppH5RecycleController extends BaseController {
                         AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
                         if(null != userAccountInfo){
                             Map<String,Object> map = afRecycleService.addExchange(userId, amount, afUserAccountDo.getRebateAmount());
-                            map.put("rebateAmount",userAccountInfo.getRebateAmount());
+                            map.put("rebateAmount",userAccountInfo.getRebateAmount().subtract(BigDecimal.valueOf(amount)));//兑换后剩余的翻新金额
                             resp = H5CommonResponse.getNewInstance(true, "兑换成功", "", map);
                         }else{
                             resp = H5CommonResponse.getNewInstance(false, "获取用户提现金额错误", "", null);
@@ -193,6 +194,45 @@ public class AppH5RecycleController extends BaseController {
         }
         return resp.toString();
 
+    }
+
+
+    /**
+     * 增加页面访问记录   访问类型 1：回收 2：返现 3.运营活动位置1 4.运营活动位置2
+     * @return
+     */
+    @RequestMapping(value = "/addPageView", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String addPageView(HttpServletRequest request) {
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        FanbeiWebContext context = new FanbeiWebContext();
+        try {
+            Long userId = 0L;
+            // 和登录有关的
+            context = doWebCheck(request, false);
+            if (context.isLogin()) {
+                AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+                if (afUser != null) {
+                    userId = afUser.getRid();
+                }
+            }
+            Integer type = NumberUtil.objToInteger(request.getParameter("type"));
+            if(null == type){
+                return H5CommonResponse.getNewInstance(false, "参数错误", null, "").toString();
+            }
+            AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId,type);
+            logger.info("/fanbei/ydm/addPageView,params ={}", afRecycleViewQuery.toString());
+            AfRecycleViewDo afRecycleDo = afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
+            if (null == afRecycleDo) {//访问不存在，新增一条访问记录
+                afRecycleViewService.addRecycleView(afRecycleViewQuery);
+            } else {//修改访问记录
+                afRecycleViewService.updateRecycleView(afRecycleViewQuery);
+            }
+        } catch (Exception e) {
+            resp = H5CommonResponse.getNewInstance(false, "增加页面访问记录失败", "", e.getMessage());
+            logger.error("增加页面访问记录失败" + context, e);
+        }
+        return resp.toString();
     }
 
 
