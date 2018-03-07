@@ -125,15 +125,15 @@ public class AppH5RecycleController extends BaseController {
                 if (afUser != null) {
                     userId = afUser.getRid();
                     try {
-                        String recycleUrl = RecycleUtil.CALLBACK_BASE_URL + "?userId=" + userId;
+                        String recycleUrl = RecycleUtil.CALLBACK_BASE_URL + "?uid=" + userId;
                         //添加页面访问记录
                         AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 1);
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
                         Map<String,Object> map = new HashMap<String,Object>();
                         map.put("recycleUrl",recycleUrl);
-                        resp = H5CommonResponse.getNewInstance(true, "获取数据成功", "", map);
+                        resp = H5CommonResponse.getNewInstance(true, "获取数据成功", recycleUrl, map);
                     } catch (Exception e) {
-                        logger.error("exchangeApi,error=", e);
+                        logger.error("getRecycleUrl,error=", e);
                         throw new FanbeiException(FanbeiExceptionCode.FAILED);
                     }
                 }
