@@ -77,6 +77,7 @@ public class SmsUtil extends AbstractThird {
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
+    private static String ZHI_BIND = "【51返呗】验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -444,21 +445,24 @@ public class SmsUtil extends AbstractThird {
      * @param userId 用户id
      * @return
      */
-    public boolean sendMobileBindVerifyCode(String mobile) {
+    public boolean sendMobileBindVerifyCode(String mobile,SmsType smsType,long userid) {
         if (!CommonUtil.isMobile(mobile)) {
             throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
         }
 
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
         if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue2())) {
-            int countBind = afSmsRecordService.countMobileCodeToday(mobile, SmsType.MOBILE_BIND.getCode());
+            int countBind = afSmsRecordService.countMobileCodeToday(mobile, smsType.getCode());
             if (countBind >= Integer.valueOf(resourceDo.getValue2()))
                 throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = BIND_TEMPLATE.replace("&param1", verifyCode);
+        if (SmsType.ZHI_BIND.equals(smsType)){
+            content = ZHI_BIND.replace("&param1", verifyCode);
+        }
         SmsResult smsResult = sendSmsToDhst(mobile, content);
-        this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, 1L, smsResult);
+        this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
         return smsResult.isSucc();
     }
 
@@ -493,17 +497,20 @@ public class SmsUtil extends AbstractThird {
      * @param userId 用户id
      * @return
      */
-    public boolean sendEmailVerifyCode(String email, Long userId) {
+    public boolean sendEmailVerifyCode(String email,SmsType smsType, Long userId) {
 
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = EMAIL_TEMPLATE.replace("&param1", verifyCode);
+        if(SmsType.ZHI_BIND.equals(smsType)){
+            content = ZHI_BIND.replace("&param1", verifyCode);
+        }
         SmsResult emailResult = new SmsResult();
         emailResult.setResultStr("email send");
         try {
             sendEmailToDhst(email, content);
 
             emailResult.setSucc(true);
-            this.addEmailRecord(SmsType.EMAIL_BIND, email, verifyCode, userId, emailResult);
+            this.addEmailRecord(smsType, email, verifyCode, userId, emailResult);
             return emailResult.isSucc();
 
         } catch (Exception e) {
