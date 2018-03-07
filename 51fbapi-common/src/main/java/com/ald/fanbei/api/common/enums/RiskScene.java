@@ -18,6 +18,7 @@ public enum RiskScene {
 	ALIPAY_XJD_UNPASS("94","ALIPAY_XJD_UNPASS","支付宝现金贷(强风控不通过)"),
 	ALIPAY_BLD("95","ALIPAY_BLD","支付宝白领贷"),
 	ZHENGXIN_XJD_PASS("110","ZHENGXIN_XJD_PASS","现金贷(强风控通过)"),
+	ZHENGXIN_XJD_UNPASS("111","ZHENGXIN_XJD_UNPASS","现金贷(强风控不通过)"),
 	BANK_BLD("155","BANK_BLD","网银白领贷"),
 	CARDMAIL_XJD_PASS("60","CARDMAIL_XJD_PASS","信用卡邮箱现金贷(强风控通过)");
 	
