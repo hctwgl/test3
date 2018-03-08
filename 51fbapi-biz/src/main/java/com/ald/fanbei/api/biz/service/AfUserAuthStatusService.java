@@ -40,4 +40,13 @@ public interface AfUserAuthStatusService {
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);    
 
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(Long userId);
+    
+    /**
+     * 更新场景状态
+     * @Param userId
+     * @Param scene
+     * @Param status
+     * @return 
+     * **/
+    int updateAfUserAuthStatusByUserId(Long userId, String scene, String status);
 }
