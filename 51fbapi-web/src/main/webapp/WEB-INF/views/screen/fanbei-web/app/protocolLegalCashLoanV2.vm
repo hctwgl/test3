@@ -290,8 +290,8 @@
 
         <!-- TODO -->
         <span style="margin: 0 1rem">甲方：#if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</span><br>
-        <span>乙方：#if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span><br>
-        <span>丙方：#if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span><br>
+        <span>乙方：#if($!{lenderUserSeal})<img style="max-width: 2.5rem" src="$!{lenderUserSeal}">#end</span><br>
+        <span>丙方：#if($!{companyUserSeal})<img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end</span><br>
         签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")<br>
         </p>
     #end
