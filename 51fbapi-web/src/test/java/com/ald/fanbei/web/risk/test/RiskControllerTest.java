@@ -42,4 +42,24 @@ public class RiskControllerTest extends RiskBaseTest{
 		submitRequest(uri, code, msg, dataMap);
 	}
 	
+	
+	@Test
+	public void testBldCallback() throws ClientProtocolException, IOException {
+
+		String uri = "/third/risk/dredgeWhiteCollarLoan.htm";
+		String code = "0000";
+		String msg = "请求成功";
+		Map<String,Object> dataMap = Maps.newHashMap();
+		dataMap.put("amount", "1000");
+		dataMap.put("consumerNo", "3847534");
+		dataMap.put("offlineAmount", "0");
+		dataMap.put("onlineAmount", "5000");
+		dataMap.put("orderNo", "01loan21281520478986713");
+		dataMap.put("result", "30");
+		dataMap.put("scene", "23");
+		dataMap.put("totalAmount", "1000");
+		dataMap.put("whiteCollarAmount", "0");
+		submitRequest(uri, code, msg, dataMap);
+	}
+	
 }
