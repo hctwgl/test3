@@ -111,7 +111,7 @@
                 #foreach($item in $!{nperArray})
                     <tr>
                         <td>$!{item.periods}</td>
-                        <td>$!{item.year}年$!{item.month}月$!{item.days}日</td>
+                        <td>$!{item.gmtEnd}</td>
                         <td>$!{item.loanAmount}</td>
                         <td>$!{item.fee}</td>
                     </tr>
