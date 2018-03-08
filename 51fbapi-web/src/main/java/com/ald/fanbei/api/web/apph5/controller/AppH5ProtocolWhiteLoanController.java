@@ -258,6 +258,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     model.put("gmtEnd", time);
                     model.put("days", day);
                     map.put("days", day);
+                    map.put("gmtPlanRepay",time);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
