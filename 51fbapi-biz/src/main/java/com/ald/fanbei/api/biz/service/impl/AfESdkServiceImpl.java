@@ -603,7 +603,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "楚橡信息科技股份有限公司";
+        key = "楚橡信息科技有限公司";
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sign account id: " + accountId);
         posPage = "6";
