@@ -94,7 +94,7 @@
                 </li>
                 <li>
                     <i>借款用途</i>
-                    <i>$!{totalPeriods.loanRemark}</i>
+                    <i>$!{loanRemark}</i>
                 </li>
             </ul>
             <br>
