@@ -58,6 +58,7 @@ public class ZhiBalanceGetBindApi extends H5Controller {
             FanbeiWebContext context = new FanbeiWebContext();
             context = doWebCheck(request, true);
             String userName = context.getUserName();
+            logger.info("current user info "+userName);
             if(userName == null || "".equals(userName)) {
                 resultStr = "用户不存在";
                 throw new FanbeiException(resultStr);
@@ -81,11 +82,13 @@ public class ZhiBalanceGetBindApi extends H5Controller {
     public String zhiBalanceBindApi(HttpServletRequest request, HttpServletResponse response){
         String resultStr = "支付宝绑定失败";
         String code = "";
+        logger.info("current request ");
         Map<String,Object> data = new HashMap<>();
         try{
             FanbeiWebContext context = new FanbeiWebContext();
             context = doWebCheck(request, true);
             String userName = context.getUserName();
+            logger.info("zhiBalanceBind current user info "+userName);
             if(userName == null || "".equals(userName)) {
                 resultStr = "用户不存在";
                 code = "100";
@@ -148,11 +151,14 @@ public class ZhiBalanceGetBindApi extends H5Controller {
     @RequestMapping(value = "/zhiBalanceGetVerifyCode", method = RequestMethod.POST)
 public String zhiBalanceGetVerifyCodeApi(HttpServletRequest request, HttpServletResponse response){
         String resultStr = "发送绑定验证码失败";
+
         try {
             String account = ObjectUtils.toString(request.getParameter("account"), null);
             FanbeiWebContext context = new FanbeiWebContext();
+            logger.info("zhiBalanceGetVerifyCode current user account "+account);
             context = doWebCheck(request, true);
             String userName = context.getUserName();
+            logger.info("zhiBalanceGetVerifyCode current user info "+userName);
             if(userName == null || "".equals(userName)) {
                 resultStr = "用户不存在";
                 throw new FanbeiException(resultStr);
