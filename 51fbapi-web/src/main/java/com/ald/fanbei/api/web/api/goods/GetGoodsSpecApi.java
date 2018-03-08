@@ -9,24 +9,16 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsPropertyService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfPropertyValueService;
-import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPropertyDo;
-import com.ald.fanbei.api.dal.domain.AfPropertyValueDo;
-import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -70,6 +62,8 @@ public class GetGoodsSpecApi implements ApiHandle {
 	@Resource
 	AfShareGoodsService afShareGoodsService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -151,10 +145,13 @@ public class GetGoodsSpecApi implements ApiHandle {
 			}
 
 		}
+		//秒杀活动规格
+		List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
 
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
+		data.put("activityGoodsData", activityGoodsDos);
 		resp.setResponseData(data);
 		return resp;
 	}
