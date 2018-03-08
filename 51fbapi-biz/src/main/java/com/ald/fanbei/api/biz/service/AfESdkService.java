@@ -58,6 +58,8 @@ public interface AfESdkService {
 
     AfUserSealDo selectUserSealByUserId(Long id);
 
+    AfUserSealDo selectByUserName(String name);
+
     AfUserSealDo selectUserSealByCardId(String id);
 
     List<AfUserSealDo> selectByUserType(String type);

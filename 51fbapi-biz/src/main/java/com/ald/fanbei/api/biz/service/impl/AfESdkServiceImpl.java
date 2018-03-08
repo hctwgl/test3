@@ -91,7 +91,7 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
         }
         AddSealResult r = SEAL.addTemplateSeal(accountId, template, sColor);
-        logger.info("esdk createSealPersonal:", r);
+        logger.info("esdk createSealPersonal:", r.getMsg()+",accountId = "+accountId);
         return r;
 
     }
@@ -735,6 +735,11 @@ public class AfESdkServiceImpl implements AfESdkService {
     }
 
     @Override
+    public AfUserSealDo selectByUserName(String name) {
+        return afUserSealDao.selectByUserName(name);
+    }
+
+    @Override
     public AfUserSealDo selectUserSealByCardId(String id) {
         return afUserSealDao.selectByCardId(id);
     }
@@ -772,7 +777,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
         AfUserSealDo afUserSealDo = new AfUserSealDo();
         AfUserSealDo afUserSealDo1 = new AfUserSealDo();
-        if ("edspay".equals(afUserDo.getMajiabaoName()) || afUserDo.getRid() == null) {
+        if ("edspay".equals(afUserDo.getMajiabaoName()) || afUserDo.getRid() == null) {//e都市钱包用户
             afUserSealDo = selectUserSealByCardId(accountDo.getIdNumber());
         } else {
             afUserSealDo = selectUserSealByUserId(afUserDo.getRid());
@@ -789,7 +794,7 @@ public class AfESdkServiceImpl implements AfESdkService {
                 addAccountResult.setAccountId(getAccountProfileResult.getAccountInfo().getAccountUid());
             } else if (null == addAccountResult || !"成功".equals(addAccountResult.getMsg())
                     || 0 != addAccountResult.getErrCode()) {
-                logger.error("personAccount create error");
+                logger.error("personAccount create error = > {}",addAccountResult.getMsg() + "name="+afUserDo.getRealName());
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());

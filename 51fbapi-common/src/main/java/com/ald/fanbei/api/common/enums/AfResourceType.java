@@ -19,6 +19,8 @@ public enum AfResourceType {
 	HomeBannerV401iPhoneX("HOME_BANNER_V401_IPHONEX", "轮播图（V401版本-IPHONEX）"),
 	HomeFourImageNomalPositon("HOME_FOUR_IMAGE_NOMAL_POSITION","常驻运营位置"),
 	HomeNavigation("HOME_NAVIGATION", "四个导航"),
+	PERSONAL_CENTER_NAVIGATION("PERSONAL_CENTER_NAVIGATION", "个人中心四个导航"),
+	
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二(1大左2小右)模块"),

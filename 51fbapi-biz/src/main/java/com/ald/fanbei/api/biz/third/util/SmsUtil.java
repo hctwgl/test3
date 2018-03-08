@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,13 +15,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -688,6 +687,22 @@ public class SmsUtil extends AbstractThird {
 
 
     /**
+     * 借款成功发送短信提醒用户(白领贷)
+     *
+     * @param mobile
+     * @param content
+     */
+    public boolean sendloanCashCode(String mobile, String bank) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_LOAN_AUDIT.getCode());
+        if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+            String content = resourceDo.getValue().replace("&bankCardNo", bank);
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        }
+        return false;
+    }
+
+    /**
      * 发送商圈支付成功短信
      *
      * @param mobile
@@ -725,7 +740,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private SmsResult sendSmsToDhst(String mobiles, String content) {
+    public SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
@@ -901,6 +916,7 @@ public class SmsUtil extends AbstractThird {
             return this.sendSmsToDhst(mobile, content);
         }
     }
+
     public   String rules(String mobile){
         String switchRule = (String)bizCacheUtil.getObject("sms_switch");
         if(switchRule == null){
@@ -923,6 +939,9 @@ public class SmsUtil extends AbstractThird {
         return "DH";
     }
 }
+
+
+
 
 class SmsResult {
     private boolean isSucc;

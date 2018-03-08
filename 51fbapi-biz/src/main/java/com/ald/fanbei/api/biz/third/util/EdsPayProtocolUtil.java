@@ -120,7 +120,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
                 return notifyRespBo;
             }
-            if (debtType == null && debtType != 1 && debtType != 0) {
+            if (debtType == null) {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
                 return notifyRespBo;
             }

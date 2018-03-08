@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.common.enums;
 
 
+
 /**  
  * @Title: SpringFestivalActivityEnum.java
  * @Package com.ald.fanbei.api.common.enums
