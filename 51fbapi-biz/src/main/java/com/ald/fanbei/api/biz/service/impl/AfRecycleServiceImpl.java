@@ -170,10 +170,10 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 couponInfo.setModifier("system");
                 couponInfo.setCreator("system");
                 couponInfo.setName(RecycleUtil.COUPON_NAME);//券名称
-                couponInfo.setAmount(needExchangeAmount);
+                couponInfo.setAmount(BigDecimal.valueOf(Math.ceil(needExchangeAmount.doubleValue())));
                 couponInfo.setQuota(-1L);//优惠券发放总数 -1不限
                 couponInfo.setQuotaAlready(1);//已经发放数量
-                couponInfo.setLimitAmount(RecycleUtil.LIMIT_AMOUNT);//最小限制金额,50元
+                couponInfo.setLimitAmount(RecycleUtil.LIMIT_AMOUNT);//使用的最小限制金额,50元
                 couponInfo.setLimitCount(RecycleUtil.LIMIT_COUNT);//每个人限制领取张数
                 couponInfo.setGmtStart(new Date());
                 couponInfo.setGmtEnd(DateUtil.getFinalDate());

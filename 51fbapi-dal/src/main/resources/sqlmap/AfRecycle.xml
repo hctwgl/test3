@@ -14,6 +14,7 @@
 				ref_order_id,
 				user_id,
 				pay_type,
+				settle_price,
 				status
 			)
 		VALUES
@@ -21,6 +22,7 @@
 				#{refOrderId},
 				#{userId},
 				#{payType},
+				#{settlePrice},
 				#{status}
 			)
 	</insert>
