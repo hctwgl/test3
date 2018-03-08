@@ -69,6 +69,7 @@ public class BankAuthCallbackExecutor implements Executor {
 			
 			// 认证成功
 			afUserAuthDo.setOnlinebankStatus("Y");
+			afUserAuthDo.setRiskStatus("Y");
 			afUserAuthDo.setGmtOnlinebank(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
 			// 获取白领贷强风s控状态

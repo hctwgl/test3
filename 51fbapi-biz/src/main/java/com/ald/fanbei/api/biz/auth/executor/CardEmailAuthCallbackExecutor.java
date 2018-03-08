@@ -68,6 +68,7 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 			afAuthRaiseStatusService.initCreditRaiseStatus(userId, AuthType.CARDEMAIL.getCode());
 			
 			afUserAuthDo.setCreditStatus("Y");
+			afUserAuthDo.setRiskStatus("Y");
 			afUserAuthDo.setGmtCredit(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
 			RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId),
