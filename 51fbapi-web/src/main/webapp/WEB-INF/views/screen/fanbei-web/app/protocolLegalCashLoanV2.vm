@@ -56,7 +56,7 @@
               <span>二、借款基本信息</span><br>
     <ul>
         <li><i>借款本金</i><i>#if($!{amountLower})$!{amountLower}元#end</i></li>
-        <li><i>大写金额</i><i>人民币$!{amountCapital}元</i></li>
+        <li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
         <li><i>借款利率（年化）</i><i>#if($!{yearRate})$!{yearRate}%#end</i></li>
         <li><i>借款期限</i><i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>到期还本付息</i></li>
@@ -173,7 +173,7 @@
     <br>
     丙方：浙江阿拉丁电子商务股份有限公司 #if($!{companyUserSeal})<img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end<br>
     丁方：浙江楚橡信息科技股份有限公司 #if($!{thirdSeal})<img style="max-width: 2.5rem" src="$!{thirdSeal}">#end<br>
-    签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")<br>>
+    签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")<br>
     签署地点：杭州市滨江区<br><br>
     </p>
 
@@ -205,12 +205,12 @@
         <ul>
             <!-- TODO：更改信息 -->
             <li><i>借款本金</i><i>#if($!{amountLower})$!{amountLower}元#end</i></li>
-            <li><i>大写金额</i><i>人民币$!{amountCapital}元</i></li>
+            <li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
             <li><i>借款利率（年化）</i><i>#if($!{yearRate})$!{yearRate}%#end</i></li>
             <li><i>借款期限</i><i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
             <li><i>还款日</i><i>#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end</i></li>
             <li><i>借款用途</i><i>个人消费</i></li>
-            <li><i>手续费率（年化）</i><i>$!{poundageRate}</i></li>
+            <li><i>手续费率（年化）</i><i>$!{poundageRate}%</i></li>
         </ul><br>
         <br>
         <span>第二条  借款发放</span><br>

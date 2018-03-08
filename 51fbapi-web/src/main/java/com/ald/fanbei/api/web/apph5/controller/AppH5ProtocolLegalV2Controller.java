@@ -380,14 +380,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		if (borrowId > 0) {
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
-				getEdspayInfo(model, borrowId, (byte) 1);
-				protocolGoodsCashLoan(borrowId,userName,model);
+				getEdspayInfo(model, borrowId, (byte) 1);//获取出借人信息
 				if (afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 					protocolLegalCashLoanV1(request,model);
 					return "/fanbei-web/app/protocolLegalCashLoan";
 				}//合规线下还款V2
 				else if (afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
-
+					protocolGoodsCashLoan(borrowId,userName,model);
 				} else {//老版借钱协议
 					protocolCashLoan(request,model);
 					return "/fanbei-web/app/protocolCashLoan";
@@ -420,6 +419,70 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 		return "/fanbei-web/app/protocolLegalCashLoanV2";
+	}
+
+	@RequestMapping(value = {"protocolLegalGoodsCashLoanV2"},method = RequestMethod.GET)
+	public void protocolLegalGoodsCashLoanV2(HttpServletRequest request, ModelMap model) throws IOException {
+		//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
+		/*if (userName == null || !webContext.isLogin()) {
+			throw new FanbeiException("非法用户");
+		}*/
+		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
+
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if (afUserDo == null) {
+			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		Long userId = afUserDo.getRid();
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (accountDo == null) {
+			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+		getResourceRate(model, type, afResourceDo, "borrow");
+		model.put("idNumber", accountDo.getIdNumber());
+		model.put("realName", accountDo.getRealName());
+		model.put("email", afUserDo.getEmail());//电子邮箱
+		model.put("mobile", afUserDo.getUserName());// 联系电话
+		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
+		AfBorrowCashDo afBorrowCashDo = null;
+
+		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
+		model.put("amountLower", borrowAmount);
+		getResourceRate(model, type, afResourceDo, "borrow");
+		if (borrowId > 0) {
+			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			if (afBorrowCashDo != null) {
+				getEdspayInfo(model, borrowId, (byte) 1);
+				protocolGoodsCashLoan(borrowId,userName,model);
+				model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
+				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
+				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
+					model.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+//					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+					Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
+					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
+					model.put("repaymentDay", repaymentDay);
+					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
+					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
+					model.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment());
+					AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(borrowId);
+					model.put("priceAmount",borrowLegalOrderDo.getPriceAmount());
+					model.put("idIsExist","y");
+					AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName("金泰嘉鼎（深圳）资产管理有限公司");
+					model.put("lenderUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+					getSeal(model, afUserDo, accountDo);
+					lender(model, null);
+				}
+			}
+		}
 	}
 
 	public void protocolGoodsCashLoan(Long borrowId,String userName, ModelMap model) throws IOException {
