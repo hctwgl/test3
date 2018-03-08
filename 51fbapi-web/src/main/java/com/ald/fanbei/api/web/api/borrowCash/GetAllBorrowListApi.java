@@ -92,7 +92,7 @@ public class GetAllBorrowListApi implements ApiHandle  {
 		data.put("status", afBorrowCashDo.getStatus());
 		
 		data.put("prdType", "BORROW_CASH");
-		data.put("prdName", "小额贷");
+		data.put("prdName", "极速贷");
 		return data;
 	}
 	
