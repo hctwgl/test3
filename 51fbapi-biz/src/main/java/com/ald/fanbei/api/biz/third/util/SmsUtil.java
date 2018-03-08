@@ -77,7 +77,7 @@ public class SmsUtil extends AbstractThird {
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
-    private static String ZHI_BIND = "【51返呗】验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
+    private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
