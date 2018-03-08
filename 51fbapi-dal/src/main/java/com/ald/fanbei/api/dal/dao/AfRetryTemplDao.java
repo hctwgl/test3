@@ -19,4 +19,6 @@ public interface AfRetryTemplDao extends BaseDao<AfRetryTemplDo, Long> {
 
 	int deleteByBusidAndEventType(@Param("borrowNo")String borrowNo, @Param("eventType")String eventType);
 
+	AfRetryTemplDo getByBusIdAndEventType(@Param("busId")String busId,@Param("eventType") String eventType);
+
 }

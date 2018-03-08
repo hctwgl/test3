@@ -166,4 +166,15 @@
 		AND is_delete=0
     </update>
     
+   	<select id="getByBusIdAndEventType" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.AfRetryTemplDo">
+	   	SELECT
+		<include refid="queryFields" />
+		FROM af_retry_templ
+		WHERE
+			bus_id = #{busId}
+		AND event_type =#{eventType}
+		AND is_delete=0
+    </select>
+    
+    
 </mapper>

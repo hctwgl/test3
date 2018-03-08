@@ -16,5 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 public interface AfRetryTemplService extends ParentService<AfRetryTemplDo, Long>{
 
 	int deleteByBusidAndEventType(String borrowNo, String eventType);
+	
+	AfRetryTemplDo getByBusIdAndEventType(String busId,String eventType);
 
 }

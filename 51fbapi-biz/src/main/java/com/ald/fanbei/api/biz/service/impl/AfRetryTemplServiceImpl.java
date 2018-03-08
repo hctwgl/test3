@@ -39,5 +39,10 @@ public class AfRetryTemplServiceImpl extends ParentServiceImpl<AfRetryTemplDo, L
 		return afRetryTemplDao.deleteByBusidAndEventType(borrowNo,eventType);
 	}
 
+	@Override
+	public AfRetryTemplDo getByBusIdAndEventType(String busId, String eventType) {
+		return afRetryTemplDao.getByBusIdAndEventType(busId,eventType);
+	}
+
    
 }
