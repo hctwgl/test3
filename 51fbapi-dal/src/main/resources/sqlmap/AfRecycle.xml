@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfRecycleDao">
 	
 	<sql id="commSqlField">
-		id rid,is_delete,gmt_create,gmt_modified,ref_order_id,pay_type,`status`,is_disabled
+		id rid,is_delete,gmt_create,gmt_modified,ref_order_id,pay_type,`status`
 	</sql>
 
 	<!-- 添加订单-->
@@ -14,18 +14,24 @@
 				ref_order_id,
 				user_id,
 				pay_type,
-				status,
-				is_disabled
+				status
 			)
 		VALUES
 		    (
 				#{refOrderId},
 				#{userId},
 				#{payType},
-				#{status},
-				1
+				#{status}
 			)
 	</insert>
+
+	<!-- 更改订单状态 -->
+	<update id="updateRecycleOrder" parameterType="AfRecycleQuery">
+			UPDATE af_order_recycle
+			SET gmt_modified = NOW(),
+			status = #{status}
+			WHERE ref_order_id = #{refOrderId}
+	</update>
 
 	<!-- 查找单个订单-->
 	<select id="getRecycleOrder" parameterType="AfRecycleQuery" resultType="AfRecycleDo">

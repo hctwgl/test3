@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.recycle.AfRecycleOrderType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -82,6 +83,11 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     AfRecycleRatioDo afRecycleRatioDo = afRecycleDao.getRecycleReturnRatio();
                     Long userId = afRecycleQuery.getUserId();
                     BigDecimal settlePrice = afRecycleQuery.getSettlePrice();
+
+                    //修改订单状态为已完成
+                    afRecycleQuery.setStatus(AfRecycleOrderType.FINISH.getCode());
+                    afRecycleDao.updateRecycleOrder(afRecycleQuery);
+
                     BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
                     if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息
                         //根据用户Id查找用户名
@@ -191,7 +197,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 afUserCouponDao.addUserCoupon(userCoupon);// 插入
 
                 map.put("ratio", ratio);
-                map.put("amount", needExchangeAmount.intValue());
+                map.put("amount", Math.ceil(needExchangeAmount.doubleValue()));//向上取整
                 return null;
             }
         });

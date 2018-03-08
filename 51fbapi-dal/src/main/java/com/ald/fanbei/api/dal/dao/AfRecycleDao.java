@@ -18,12 +18,11 @@ public interface AfRecycleDao {
 
 	Integer addRecycleOrder(AfRecycleQuery afRecycleQuery);
 
+	Integer updateRecycleOrder(AfRecycleQuery afRecycleQuery);
+
 	AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery);
 
 	AfRecycleRatioDo getRecycleReturnRatio();//获取返现系统系数
 
 	List<AfRecycleRatioDo> getRecycleExchangeRatio();//获取翻倍兑换系统系数
-
-	Integer addExchange(AfRecycleExchangeQuery afRecycleExchangeQuery);//添加兑换记录
-
 }

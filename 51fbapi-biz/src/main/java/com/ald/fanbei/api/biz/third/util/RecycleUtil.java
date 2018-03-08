@@ -24,7 +24,7 @@ public class RecycleUtil {
     public static final String PRIVATE_KEY = "FANBEI_YDM_@#$#%$&";//有得卖签名私钥
     public static final String COUPON_NAME = "翻倍兑换优惠券";//券名称
     public static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(50.00);//最小限制金额
-    public static final Integer LIMIT_COUNT = 1;//每个人限制领取张数
+    public static final Integer LIMIT_COUNT = Integer.MAX_VALUE;//每个人限制领取张数,不限制
 
 
 
