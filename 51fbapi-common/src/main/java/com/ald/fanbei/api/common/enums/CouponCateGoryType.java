@@ -12,6 +12,7 @@ import java.util.Map;
 public enum CouponCateGoryType {
 
     _FIRST_SINGLE_("_FIRST_SINGLE_","新用户专享首单"),
+    _NEW_USER_BOLUOME_COUPON_("_NEW_USER_BOLUOME_COUPON_","新用户菠萝觅优惠券"),
     _EXCLUSIVE_CREDIT_("_EXCLUSIVE_CREDIT_","新用户信用专享"),
     _FIRST_SHOPPING_("_FIRST_SHOPPING_","新用户信用专享"),
     _FIRST_LOAN_("_FIRST_LOAN_","新用户首次借钱");

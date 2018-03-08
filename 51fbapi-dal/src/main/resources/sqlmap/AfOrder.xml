@@ -139,11 +139,14 @@
 	        <if test="blackBox != null">
 				black_box,
 	        </if>
-		<if test="bqsBlackBox != null">
-			bqs_black_box,
-		</if>
+			<if test="bqsBlackBox != null">
+				bqs_black_box,
+			</if>
 	        <if test="ip != null">
 	            ip,
+	        </if>
+	        <if test="lc != null and '' != lc">
+	            lc,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -273,6 +276,9 @@
 			</if>
 			<if test="ip != null">
 	            #{ip},
+	        </if>
+			<if test="lc != null and '' != lc">
+	            #{lc},
 	        </if>
 			NOW(),
 			NOW()
@@ -1268,10 +1274,6 @@
 		FROM af_order_scene_amount
 		WHERE
 		order_id = #{orderId}
-	</select>
-
-	<select id="checkLeaseOrder" resultType="java.lang.String">
-		SELECT b.`status` FROM af_order_lease a INNER JOIN af_order b ON a.order_id=a.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED'
 	</select>
 
 </mapper>

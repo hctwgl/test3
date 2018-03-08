@@ -531,8 +531,6 @@
 				<entry key="/legalborrowV2/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoV2Api" />
 				<entry key="/legalborrowV2/agentBuyHints" value-ref="agentBuyHintsV2Api" />
-
-
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
