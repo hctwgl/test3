@@ -184,7 +184,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         if (loanId > 0) {//借了钱的借钱协议
             getModelLoanId(model, nper, loanId, afUserDo, accountDo, repayRemark, loanRemark);
         } else {//借钱前的借钱协议
-            getModelNoLoanId(model, amount, nper, loanRemark, repayRemark, userId);
+            getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
         }
         logger.info(JSON.toJSONString(model));
     }
@@ -213,12 +213,10 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     int periodsYear = c.get(Calendar.YEAR);
                     String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd", periodsTime);
+                    map.put("gmtPlanRepay",periodsTime);
                     model.put("days", periodsDay);
                     map.put("days", day);
-                    map.put("month",month);
-                    map.put("year",year);
                 }
-                map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
                 map.put("periods", i);
                 map.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
@@ -227,7 +225,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("nperArray", array);
         }
         model.put("repayRemark", repayRemark);//还款方式
-        model.put("loanRemark", loanRemark);//借钱用途
+        model.put("loanRemark", afLoanDo.getLoanRemark());//借钱用途
         model.put("totalPeriods", afLoanDo);//总借钱信息
         getSeal(model, afUserDo, accountDo);
         getEdspayInfo(model, loanId, (byte) 2);
@@ -260,8 +258,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     model.put("gmtEnd", time);
                     model.put("days", day);
                     map.put("days", day);
-                    map.put("month",month);
-                    map.put("year",year);
+                    map.put("gmtPlanRepay",time);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
