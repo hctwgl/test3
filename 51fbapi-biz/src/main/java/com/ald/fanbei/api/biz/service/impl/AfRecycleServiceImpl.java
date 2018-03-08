@@ -165,33 +165,26 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 }
                 AfUserAccountDo afUserAccountDo = new AfUserAccountDo(uid, BigDecimal.valueOf(exchangeAmount));
                 afUserAccountDao.reduceRebateAmount(afUserAccountDo);//用户账号扣除返现金额
-                AfCouponDo afCouponDo = afCouponDao.getCouponByName(RecycleUtil.COUPON_NAME);//查找手否存在指定名称的券信息
-                Long couponId;
-                if (null != afCouponDo) {
-                    couponId = afCouponDo.getRid();
-                    afCouponDao.updateCouponquotaAlreadyById(new AfCouponDo(couponId, 1));
-                } else {
-                    //增加券信息
-                    AfCouponDo couponInfo = new AfCouponDo();
-                    couponInfo.setModifier("system");
-                    couponInfo.setCreator("system");
-                    couponInfo.setName(RecycleUtil.COUPON_NAME);//券名称
-                    couponInfo.setAmount(needExchangeAmount);
-                    couponInfo.setQuota(-1L);//优惠券发放总数 -1不限
-                    couponInfo.setQuotaAlready(1);//已经发放数量
-                    couponInfo.setLimitAmount(RecycleUtil.LIMIT_AMOUNT);//最小限制金额,50元
-                    couponInfo.setLimitCount(RecycleUtil.LIMIT_COUNT);//每个人限制领取张数
-                    couponInfo.setGmtStart(new Date());
-                    couponInfo.setGmtEnd(DateUtil.getFinalDate());
-                    couponInfo.setType(CouponType.FULLVOUCHER.getCode());//满减券
-                    couponInfo.setUseRule("");//使用须知
-                    couponInfo.setStatus("O");//优惠券状态【O：开启,C:关闭 】
-                    couponInfo.setIsGlobal(0);// '是否为全场通用券,0表示全场券,1表示活动券'
-                    couponInfo.setShopUrl("");
-                    couponInfo.setExpiryType("R");
-                    afCouponDao.addCoupon(couponInfo);
-                    couponId = couponInfo.getRid();
-                }
+                //增加券信息
+                AfCouponDo couponInfo = new AfCouponDo();
+                couponInfo.setModifier("system");
+                couponInfo.setCreator("system");
+                couponInfo.setName(RecycleUtil.COUPON_NAME);//券名称
+                couponInfo.setAmount(needExchangeAmount);
+                couponInfo.setQuota(-1L);//优惠券发放总数 -1不限
+                couponInfo.setQuotaAlready(1);//已经发放数量
+                couponInfo.setLimitAmount(RecycleUtil.LIMIT_AMOUNT);//最小限制金额,50元
+                couponInfo.setLimitCount(RecycleUtil.LIMIT_COUNT);//每个人限制领取张数
+                couponInfo.setGmtStart(new Date());
+                couponInfo.setGmtEnd(DateUtil.getFinalDate());
+                couponInfo.setType(CouponType.FULLVOUCHER.getCode());//满减券
+                couponInfo.setUseRule("");//使用须知
+                couponInfo.setStatus("O");//优惠券状态【O：开启,C:关闭 】
+                couponInfo.setIsGlobal(0);// '是否为全场通用券,0表示全场券,1表示活动券'
+                couponInfo.setShopUrl("");
+                couponInfo.setExpiryType("R");
+                afCouponDao.addCoupon(couponInfo);
+                Long couponId = couponInfo.getRid();
                 //将券分配给当前兑换用户
                 AfUserCouponDo userCoupon = new AfUserCouponDo(uid, couponId, CouponStatus.NOUSE.getCode(), CouponSenceRuleType.DOUBLE_EXCHANGE.getCode(), new Date(), DateUtil.getFinalDate());
                 afUserCouponDao.addUserCoupon(userCoupon);// 插入
