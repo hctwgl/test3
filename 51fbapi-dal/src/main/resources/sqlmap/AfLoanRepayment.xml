@@ -310,7 +310,7 @@
 		AND
 		loan_id = #{loanId}
 		AND
-		status = 'PROCESSING'
+		status IN ('PROCESSING','APPLY')
 		ORDER BY gmt_create DESC
         LIMIT 1
 	</select>
