@@ -121,7 +121,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfAssetSideInfoService afAssetSideInfoService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
-	@Resource
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
