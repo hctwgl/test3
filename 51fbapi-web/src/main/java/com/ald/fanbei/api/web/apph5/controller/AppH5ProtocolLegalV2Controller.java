@@ -420,6 +420,18 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		return "/fanbei-web/app/protocolLegalCashLoanV2";
 	}
 
+	public void protocolGoodsCashLoan(Long borrowId,String userName, ModelMap model) throws IOException {
+		AfBorrowCashDo afBorrowCashDo = null;
+		if (borrowId > 0) {
+			AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(borrowId);
+			model.put("priceAmount",borrowLegalOrderDo.getPriceAmount());
+			model.put("idIsExist","y");
+			AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
+			model.put("personUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+		}
+
+	}
+
 	@RequestMapping(value = {"protocolLegalCashLoanV2WithoutSeal"}, method = RequestMethod.GET)
 	public String protocolLegalCashLoanV2WithoutSeal(HttpServletRequest request, ModelMap model) throws IOException {
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
