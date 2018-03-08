@@ -86,6 +86,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		Integer appVersion = context.getAppVersion();
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0);
 		Long userId = context.getUserId();
+		logger.info("111111");
 		VersionCheckUitl.setVersion(context.getAppVersion());
 		//用户订单检查
 		AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
@@ -134,7 +135,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				//防止重复推送
 				AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
 				List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
-				if (afRetryTemplDos == null ||afRetryTemplDos.size()==0) {
+				if (afRetryTemplDos == null ||afRetryTemplDos.size() == 0) {
 					//没推送过
 					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
