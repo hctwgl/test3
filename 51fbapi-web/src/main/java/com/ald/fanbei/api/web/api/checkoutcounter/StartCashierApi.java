@@ -219,6 +219,12 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setWx(canWX(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setBank(canBankpay(userDto, authDo, orderInfo, checkoutCounter));
         cashierVo.setAli(canAlipay(userDto, authDo, orderInfo, checkoutCounter));
+        
+        //查询银行卡信息
+        if(YesNoStatus.YES.getCode().equals(cashierVo.getBank().getStatus()))
+        {
+            cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId));
+        }
 
         resp.setResponseData(cashierVo);
         return resp;
@@ -533,6 +539,10 @@ public class StartCashierApi implements ApiHandle {
 		cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
 		cashierTypeVo.setUseableAmount(leftAmount);
 		cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
+		
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
+		if (afResourceDo != null)
+		    cashierTypeVo.setCategoryName(afResourceDo.getValue());
 	    }
 	} else {
 	    cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());

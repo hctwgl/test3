@@ -338,7 +338,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
-					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+				    dealRepaymentFail(bo.tradeNo, "", true, errorMsg);
+				    throw new FanbeiException(errorMsg);
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}

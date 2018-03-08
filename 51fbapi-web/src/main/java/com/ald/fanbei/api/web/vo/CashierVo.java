@@ -2,10 +2,12 @@ package com.ald.fanbei.api.web.vo;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class CashierVo extends AbstractSerial {
     private BigDecimal amount;
@@ -24,6 +26,8 @@ public class CashierVo extends AbstractSerial {
     private String  isValid;//银行卡状态
     private Integer realNameScore;//实名认证分
     private String scene;//额度场景
+    
+    List<AfBankUserBankDto> bankCardList;
     /**
      * 主卡信息
      */
@@ -239,4 +243,18 @@ public class CashierVo extends AbstractSerial {
     public void setScene(String scene) {
         this.scene = scene;
     }
+
+    public List<AfBankUserBankDto> getBankCardList() {
+        return bankCardList;
+    }
+
+    public void setBankCardList(List<AfBankUserBankDto> bankCardList) {
+        this.bankCardList = bankCardList;
+    }
+
+    @Override
+    public String toString() {
+	return "CashierVo [amount=" + amount + ", rebatedAmount=" + rebatedAmount + ", orderId=" + orderId + ", orderType=" + orderType + ", countDown=" + countDown + ", currentTime=" + currentTime + ", gmtPayEnd=" + gmtPayEnd + ", realName=" + realName + ", idNumber=" + idNumber + ", isSupplyCertify=" + isSupplyCertify + ", faceStatus=" + faceStatus + ", riskStatus=" + riskStatus + ", bankCardStatus=" + bankCardStatus + ", isValid=" + isValid + ", realNameScore=" + realNameScore + ", scene=" + scene + ", bankCardList=" + bankCardList + ", mainBankCard=" + mainBankCard + ", ap=" + ap + ", credit=" + credit + ", cp=" + cp + ", wx=" + wx + ", bank=" + bank + ", ali=" + ali + "]";
+    }
+    
 }

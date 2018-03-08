@@ -194,4 +194,14 @@ public class AfUserAccountDo extends AbstractSerial {
 	public void setBorrowCashAmount(BigDecimal borrowCashAmount) {
 		this.borrowCashAmount = borrowCashAmount;
 	}
+	@Override
+	public String toString() {
+		return "AfUserAccountDo [rid=" + rid + ", userId=" + userId + ", userName=" + userName + ", realName="
+				+ realName + ", auAmount=" + auAmount + ", usedAmount=" + usedAmount + ", freezeAmount=" + freezeAmount
+				+ ", score=" + score + ", alipayAccount=" + alipayAccount + ", rebateAmount=" + rebateAmount
+				+ ", idNumber=" + idNumber + ", jfbAmount=" + jfbAmount + ", password=" + password + ", salt=" + salt
+				+ ", ucAmount=" + ucAmount + ", failCount=" + failCount + ", bindCard=" + bindCard + ", creditScore="
+				+ creditScore + ", openId=" + openId + ", borrowCashAmount=" + borrowCashAmount + "]";
+	}
+	
 }
