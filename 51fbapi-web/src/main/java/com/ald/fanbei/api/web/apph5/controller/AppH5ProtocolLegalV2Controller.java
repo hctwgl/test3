@@ -381,6 +381,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
 				getEdspayInfo(model, borrowId, (byte) 1);
+				protocolGoodsCashLoan(borrowId,userName,model);
 				if (afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 					protocolLegalCashLoanV1(request,model);
 					return "/fanbei-web/app/protocolLegalCashLoan";
@@ -412,12 +413,21 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			} else {
 				getResourceRate(model, type, afResourceDo, "borrow");
 			}
+
 		} else {
 			getResourceRate(model, type, afResourceDo, "borrow");
 		}
 
 		logger.info(JSON.toJSONString(model));
 		return "/fanbei-web/app/protocolLegalCashLoanV2";
+	}
+
+	public void protocolGoodsCashLoan(Long borrowId,String userName, ModelMap model) throws IOException {
+			AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(borrowId);
+			model.put("priceAmount",borrowLegalOrderDo.getPriceAmount());
+			model.put("idIsExist","y");
+			AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName("金泰嘉鼎（深圳）资产管理有限公司");
+			model.put("lenderUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 	}
 
 	@RequestMapping(value = {"protocolLegalCashLoanV2WithoutSeal"}, method = RequestMethod.GET)
