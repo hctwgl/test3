@@ -182,9 +182,9 @@ public String zhiBalanceGetVerifyCodeApi(HttpServletRequest request, HttpServlet
         }catch (Exception e){
             resultStr = "发送绑定验证码失败";
             logger.info("支付宝绑定失败"+e);
-
+            throw e;
         }
-    return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
+   // return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
 
 }
     @Override

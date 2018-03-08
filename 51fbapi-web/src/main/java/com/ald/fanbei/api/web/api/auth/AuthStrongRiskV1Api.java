@@ -197,7 +197,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
 		}
 
-		try {
+		//try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
 			if (StringUtils.equals(afUserAuthDo.getZmStatus(), YesNoStatus.NO.getCode())) {// 请先完成芝麻信用授权
@@ -308,9 +308,9 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				}
 				return resp;
 			}
-		} finally {
-			bizCacheUtil.delCache(lockKey);
-		}
+//		} finally {
+//			bizCacheUtil.delCache(lockKey);
+//		}
 
 	}
 
