@@ -206,17 +206,17 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             for (int i = 1; i <= afLoanDo.getPeriods(); i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 AfLoanPeriodsDo afLoanPeriodsDo = afLoanPeriodsDoList.get(i - 1);
+                c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
+                int periodsMonth = c.get(Calendar.MONTH) + 1;
+                int periodsDay = c.get(Calendar.DATE);
+                int periodsYear = c.get(Calendar.YEAR);
+                String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                 if (i == nper) {
-                    c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
-                    int periodsMonth = c.get(Calendar.MONTH) + 1;
-                    int periodsDay = c.get(Calendar.DATE);
-                    int periodsYear = c.get(Calendar.YEAR);
-                    String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd", periodsTime);
-                    map.put("gmtPlanRepay",periodsTime);
                     model.put("days", periodsDay);
-                    map.put("days", day);
                 }
+                map.put("days", day);
+                map.put("gmtPlanRepay",periodsTime);
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
                 map.put("periods", i);
                 map.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
@@ -249,17 +249,17 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             for (int i = 1; i <= nper; i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 AfLoanPeriodsDo afLoanPeriodsDo = (AfLoanPeriodsDo) resultList.get(i);
+                c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
+                int month = c.get(Calendar.MONTH) + 1;
+                int day = c.get(Calendar.DATE);
+                int year = c.get(Calendar.YEAR);
+                String time = year + "年" + month + "月" + day + "日";
                 if (i == nper) {
-                    c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
-                    int month = c.get(Calendar.MONTH) + 1;
-                    int day = c.get(Calendar.DATE);
-                    int year = c.get(Calendar.YEAR);
-                    String time = year + "年" + month + "月" + day + "日";
                     model.put("gmtEnd", time);
                     model.put("days", day);
-                    map.put("days", day);
-                    map.put("gmtPlanRepay",time);
                 }
+                map.put("days", day);
+                map.put("gmtPlanRepay",time);
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
                 map.put("periods", i);
                 map.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
