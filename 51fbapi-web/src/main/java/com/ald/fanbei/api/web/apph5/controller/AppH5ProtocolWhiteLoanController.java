@@ -184,7 +184,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         if (loanId > 0) {//借了钱的借钱协议
             getModelLoanId(model, nper, loanId, afUserDo, accountDo, repayRemark, loanRemark);
         } else {//借钱前的借钱协议
-            getModelNoLoanId(model, amount, nper, loanRemark, repayRemark, userId);
+            getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
         }
         logger.info(JSON.toJSONString(model));
     }
@@ -227,7 +227,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("nperArray", array);
         }
         model.put("repayRemark", repayRemark);//还款方式
-        model.put("loanRemark", loanRemark);//借钱用途
+        model.put("loanRemark", afLoanDo.getLoanRemark());//借钱用途
         model.put("totalPeriods", afLoanDo);//总借钱信息
         getSeal(model, afUserDo, accountDo);
         getEdspayInfo(model, loanId, (byte) 2);
