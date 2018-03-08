@@ -260,7 +260,6 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     map.put("days", day);
                     map.put("gmtPlanRepay",time);
                 }
-                map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
                 map.put("periods", i);
                 map.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
