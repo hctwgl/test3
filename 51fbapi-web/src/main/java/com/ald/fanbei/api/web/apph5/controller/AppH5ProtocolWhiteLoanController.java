@@ -184,7 +184,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         if (loanId > 0) {//借了钱的借钱协议
             getModelLoanId(model, nper, loanId, afUserDo, accountDo, repayRemark, loanRemark);
         } else {//借钱前的借钱协议
-            getModelNoLoanId(model, amount, nper, loanRemark, repayRemark, userId);
+            getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
         }
         logger.info(JSON.toJSONString(model));
     }
@@ -213,12 +213,10 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     int periodsYear = c.get(Calendar.YEAR);
                     String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
                     model.put("gmtEnd", periodsTime);
+                    map.put("gmtPlanRepay",periodsTime);
                     model.put("days", periodsDay);
                     map.put("days", day);
-                    map.put("month",month);
-                    map.put("year",year);
                 }
-                map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
                 map.put("periods", i);
                 map.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
@@ -227,7 +225,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("nperArray", array);
         }
         model.put("repayRemark", repayRemark);//还款方式
-        model.put("loanRemark", loanRemark);//借钱用途
+        model.put("loanRemark", afLoanDo.getLoanRemark());//借钱用途
         model.put("totalPeriods", afLoanDo);//总借钱信息
         getSeal(model, afUserDo, accountDo);
         getEdspayInfo(model, loanId, (byte) 2);
@@ -260,8 +258,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     model.put("gmtEnd", time);
                     model.put("days", day);
                     map.put("days", day);
-                    map.put("month",month);
-                    map.put("year",year);
+                    map.put("gmtPlanRepay",time);
                 }
                 map.put("gmtPlanRepay", afLoanPeriodsDo.getGmtPlanRepay());
                 map.put("loanAmount", afLoanPeriodsDo.getAmount());
@@ -323,7 +320,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                 throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
             }
             map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
-            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
+            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技有限公司");
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
                 map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
             } else {
@@ -371,7 +368,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
             model.put("serviceRate", rateDo.getPoundageRate());//手续费率
             model.put("interestRate", rateDo.getInterestRate());//借钱利率
         }
-        model.put("totalServiceFee", amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))).divide(new BigDecimal(12),2));//手续费
+        model.put("totalServiceFee", (amount.multiply(BigDecimal.valueOf(Double.parseDouble(rateDo.getPoundageRate()))).divide(new BigDecimal(12),2)).multiply(BigDecimal.valueOf(nper)));//手续费
         if (loanId > 0) {
             AfLoanDo afLoanDo = afLoanService.getById(loanId);
             if (null != afLoanDo) {

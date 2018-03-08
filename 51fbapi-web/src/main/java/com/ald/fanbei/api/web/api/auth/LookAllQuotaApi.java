@@ -289,7 +289,7 @@ public class LookAllQuotaApi implements ApiHandle {
 	    mapList.add(cashMap);
 	    mapList.add(onlineMap);
 	    mapList.add(trainMap);
-	    mapList.add(rentMap);
+	    //mapList.add(rentMap);
 	    Map<String, Object> data = new HashMap<>();
 	    data.put("data", mapList);
 	    // resp.setResponseData(mapList);

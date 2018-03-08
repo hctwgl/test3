@@ -12,11 +12,9 @@ import java.util.List;
  * @author guoshuaiqiang 2017年10月27日下午2:26:04
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public interface AfLegalContractPdfCreateServiceV2 {
+public interface AfWhiteLoanContractPdfCreateService {
 
-    void protocolLegalRenewal(long userId, Long borrowId, Long renewalId, int renewalDay, BigDecimal renewalAmount);
-
-    void platformServiceProtocol(Long borrowId, String type, BigDecimal poundage, Long userId);
+    void whiteLoanPlatformServiceProtocol(Long loanId, Long userId);
 
     String getProtocalLegalByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
 

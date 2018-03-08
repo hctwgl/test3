@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -136,6 +137,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private TransactionTemplate transactionTemplate;
 	@Resource
 	private RedisTemplate<String, ?> redisTemplate;
+	@Resource
+	ContractPdfThreadPool contractPdfThreadPool;
 	
 	@Override
 	public List<LoanHomeInfoBo> getHomeInfo(Long userId){
@@ -367,6 +370,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
                 throw e;
             }
 		}});
+		contractPdfThreadPool.whiteLoanPlatformServiceProtocol(loanDo.getRid(),loanDo.getUserId());// 生成平台服务协议凭据纸质帐单
 	}
 	
 	@Override
@@ -566,6 +570,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		}
 		
 		if(UserAuthSceneStatus.FAILED.getCode().equals(authStatus)) {
+			Date lastAuthDate = au.getGmtModified();
+			if(new Date().after(DateUtil.addDays(lastAuthDate, 10))) {
+				return AfLoanRejectType.GO_BLD_AUTH;
+			}
 			return AfLoanRejectType.NO_PASS_STRO_RISK;
 		}
 		
