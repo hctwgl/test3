@@ -21,4 +21,6 @@ public interface AfRetryTemplDao extends BaseDao<AfRetryTemplDo, Long> {
 
 	AfRetryTemplDo getByBusIdAndEventType(@Param("busId")String busId,@Param("eventType") String eventType);
 
+	List<AfRetryTemplDo> getByBusId(@Param("busId")String busId);
+
 }

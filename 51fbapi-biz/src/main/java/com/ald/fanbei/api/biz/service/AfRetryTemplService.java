@@ -19,4 +19,6 @@ public interface AfRetryTemplService extends ParentService<AfRetryTemplDo, Long>
 	
 	AfRetryTemplDo getByBusIdAndEventType(String busId,String eventType);
 
+	List<AfRetryTemplDo> getByBusId(String busId);
+
 }

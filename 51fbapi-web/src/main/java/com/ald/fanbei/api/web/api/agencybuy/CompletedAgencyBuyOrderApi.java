@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
@@ -73,6 +74,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	AfAssetSideInfoService afAssetSideInfoService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfRetryTemplService afRetryTemplService;
 	@Autowired
 	KafkaSync kafkaSync;
 	
@@ -128,18 +131,22 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 //				addBorrowBill(orderInfo);
 				addBorrowBill_1(orderInfo);
 				//实时推送自营分期的债权给钱包
-				
-				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
-				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())&&flag){
-					//未满额且自营开关开启
-					AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-					List<EdspayGetCreditRespBo>  pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
-					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
-					//债权实时推送
-					boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
-					if (result) {
-						logger.info("borrowCurPush suceess,debtType=selfsupport,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+				//防止重复推送
+				AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+				List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
+				if (afRetryTemplDos == null ||afRetryTemplDos.size()==0) {
+					//没推送过
+					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+					if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())&&flag){
+						//未满额且自营开关开启
+						List<EdspayGetCreditRespBo>  pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+						AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+						//债权实时推送
+						boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+						if (result) {
+							logger.info("borrowCurPush suceess,debtType=selfsupport,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+						}
 					}
 				}
 				return resp;
@@ -155,16 +162,19 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 //						addBorrowBill(orderInfo);
 						addBorrowBill_1(orderInfo);
 						//实时推送代买分期的债权给钱包
-						AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-						AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
-						if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getAgencyBuy())&&flag){
-							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-							List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
-							AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
-							//债权实时推送
-							boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
-							if (result) {
-								logger.info("borrowCurPush suceess,debtType=agencyBuy,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+						AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
+						if (afRetryTemplDos == null ||afRetryTemplDos.size()==0) {
+							AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+							AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+							if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getAgencyBuy())&&flag){
+								List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
+								AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+								//债权实时推送
+								boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+								if (result) {
+									logger.info("borrowCurPush suceess,debtType=agencyBuy,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+								}
 							}
 						}
 						return resp;

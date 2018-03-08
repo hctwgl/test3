@@ -176,5 +176,13 @@
 		AND is_delete=0
     </select>
     
+   	<select id="getByBusId" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.AfRetryTemplDo">
+	   	SELECT
+		<include refid="queryFields" />
+		FROM af_retry_templ
+		WHERE
+			bus_id = #{busId}
+    </select>
+    
     
 </mapper>

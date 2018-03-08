@@ -44,5 +44,10 @@ public class AfRetryTemplServiceImpl extends ParentServiceImpl<AfRetryTemplDo, L
 		return afRetryTemplDao.getByBusIdAndEventType(busId,eventType);
 	}
 
+	@Override
+	public List<AfRetryTemplDo> getByBusId(String busId) {
+		return afRetryTemplDao.getByBusId(busId);
+	}
+
    
 }
