@@ -21,7 +21,6 @@ public class LoanRepayDoParam {
 	@DecimalMin("0")
 	public BigDecimal rebateAmount = BigDecimal.ZERO;
 	
-	@NotNull
 	public String payPwd;
 	
 	@NotNull
