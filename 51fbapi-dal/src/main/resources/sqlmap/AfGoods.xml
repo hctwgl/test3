@@ -320,6 +320,18 @@
 			category_id = #{categoryId}
 		LIMIT 50
 	</select>
+
+	<select id="getGoodsByItem" resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_model_h5_item a,af_goods b
+		where `item_value2` = #{categoryId}
+		and a.item_value = b.id
+		and a.is_delete = 0
+		and b.is_delete = 0 and b.status='PUBLISH'
+	</select>
+
+
 	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">			
 		select 
 				g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
@@ -385,6 +397,10 @@
 		${sort}
 		</if>
 		
-	</select>	
+	</select>
+
+	<select id="">
+
+	</select>
 
 </mapper>
