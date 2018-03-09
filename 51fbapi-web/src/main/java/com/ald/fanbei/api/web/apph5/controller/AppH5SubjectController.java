@@ -36,10 +36,12 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
@@ -634,6 +636,39 @@ public class AppH5SubjectController  extends BaseController{
 		}finally{
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+		}
+		return resp.toString();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 分会场接口
+		FanbeiWebContext context = new FanbeiWebContext();
+		
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+		try {
+			
+			context = doWebCheck(request, false);
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			
+			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
+			
+			if(activityId == null) {
+				resp = H5CommonResponse.getNewInstance(false, "活动id不能为空！");
+				return resp.toString();
+			}
+			
+			//find the name from activityId
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			if (StringUtil.isBlank(tag)) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
+
+		}catch(FanbeiException e){
+		}catch(Exception e){
+		
 		}
 		return resp.toString();
 	}
