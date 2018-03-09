@@ -303,7 +303,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			activityInfoList = getHomeActivityList(resource, array);
 			bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 		}
-
 		// 更多商品
 		Map<String, Object> moreGoodsInfo = (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		if(moreGoodsInfo == null) {
@@ -378,8 +377,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					interestFreeArray = JSON.parseArray(interestFreeJson);
 				}
 			}
+
 			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 			if (nperList != null) {
 				goodsInfo.put("goodsType", "1");
@@ -445,7 +445,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
 					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);

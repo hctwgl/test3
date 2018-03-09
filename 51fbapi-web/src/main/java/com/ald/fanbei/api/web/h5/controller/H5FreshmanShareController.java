@@ -103,7 +103,7 @@ public class H5FreshmanShareController extends H5Controller{
 			
 			for (AfFreshmanGoodsVo goodsInfo : resultList) {
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
-                         new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2());
+                         new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2(),goodsInfo.getGoodsId());
                 if (nperList != null) {
                     Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
                     goodsInfo.setNperMap(nperMap);
