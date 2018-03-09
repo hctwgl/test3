@@ -69,6 +69,10 @@ public class GetUserShareInfoApi implements ApiHandle {
 		
 		//查询配置信息，如果不存在，返回 默认类型URL;
 		AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
+		
+		//获取list,随机得到一个配置？
+		
+		
 		if(afResource == null){
 			resp.setResponseData(data);
 		        logger.info("getUserShareInfoApi afResourceList is null source = " + source);
@@ -85,7 +89,9 @@ public class GetUserShareInfoApi implements ApiHandle {
 		        return resp;
 		   }
 		 }
-	
+	//value1:需要更换的个性配置，value2,个性配置是否展示 key:value（隐藏手机号，展示头像）
+		 
+		 
 		//获取json,并增加属性。
 		 JSONObject jsonStr = JSONObject.parseObject(afResource.getValue3());
 		 JSONArray userInfo= jsonStr.getJSONArray("userInfo");
@@ -96,6 +102,24 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
 		     jsonStr.put("userInfo", jOUser);
 		 }
+		 //是否更换头像
+		 
+		 //
+		 List<JSONObject> listRule = JSONObject.parseArray("[]", JSONObject.class);
+		 jsonStr.put("hideElement", listRule);
+		 if(afResource.getValue2() != null  && StringUtils.isNotEmpty(afResource.getValue2())){
+		    try{
+		    
+		     listRule =  JSONObject.parseArray(afResource.getValue2(), JSONObject.class);
+		       jsonStr.put("hideElement", listRule);
+		    }catch(Exception e){
+			 logger.error("getUserShareInfoApi value2 error  e = "+ e);
+		    }
+		     
+		 }
+		 
+		 
+		
 		 jsonStr.put("shareType", "IMAGE");
 		 json = JSONObject.parseObject(jsonStr.toString());	
 		
