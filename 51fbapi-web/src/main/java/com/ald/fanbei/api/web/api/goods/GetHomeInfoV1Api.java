@@ -303,7 +303,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			activityInfoList = getHomeActivityList(resource, array);
 			bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 		}
-
+		activityInfoList = getHomeActivityList(resource, array);
 		// 更多商品
 		Map<String, Object> moreGoodsInfo = (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		if(moreGoodsInfo == null) {
