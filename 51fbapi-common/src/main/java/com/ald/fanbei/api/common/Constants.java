@@ -475,4 +475,6 @@ public class Constants {
 	//快递鸟配置
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
+	
+	public static final String ORDER_PAY_ORDER_ID = "order_pay_orderId:";
 }

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.domain.*;
@@ -100,7 +101,9 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
     @Resource
     AfUserCouponTigerMachineService afUserCouponTigerMachineService;
-    
+
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -110,6 +113,15 @@ public class PayOrderV1Api implements ApiHandle {
             throw new FanbeiException("您使用的app版本过低,请升级", true);
         }
         Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
+        
+        //15秒内防止订单支付请求重复提交
+        String lockKey = Constants.ORDER_PAY_ORDER_ID + orderId;
+	if (bizCacheUtil.getObject(lockKey) == null) {
+	    bizCacheUtil.saveObject(lockKey, lockKey, 15);
+	} else {
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	}        
+        
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
