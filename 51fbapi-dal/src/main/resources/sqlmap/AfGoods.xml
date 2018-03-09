@@ -7,6 +7,12 @@
 		(sale_amount-rebate_amount) real_amount,tags,goods_pic1,goods_pic2,goods_pic3,goods_pic4,goods_detail,remark,stock_count,primary_category_id
 	</sql>
 
+	<sql id="queryItemFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.creator,b.modifier,b.name,b.goods_icon,b.thumbnail_icon,b.goods_url,b.open_id,b.num_id,b.price_amount,
+		b.sale_amount,b.category_id,b.sale_count,b.gmt_start,b.gmt_end,b.status,b.source,b.rebate_amount,b.rebate_rate,b.shop_name,
+		(b.sale_amount-b.rebate_amount) real_amount,b.tags,b.goods_pic1,b.goods_pic2,b.goods_pic3,b.goods_pic4,b.goods_detail,b.remark,b.stock_count,b.primary_category_id
+	</sql>
+
 	<sql id="queryAllFields">
 		a.id rid,a.gmt_create,a.gmt_modified,a.creator,a.modifier,a.name,a.goods_icon,a.thumbnail_icon,a.goods_url,a.open_id,a.num_id,a.price_amount,
 		a.sale_amount,a.category_id,a.sale_count,a.gmt_start,a.gmt_end,a.status,a.source,a.rebate_amount,a.rebate_rate,a.shop_name,
@@ -323,7 +329,7 @@
 
 	<select id="getGoodsByItem" resultType="AfGoodsDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryItemFields"/>
 		FROM af_model_h5_item a,af_goods b
 		where `item_value2` = #{categoryId}
 		and a.item_type = 'GOODS_ID'
