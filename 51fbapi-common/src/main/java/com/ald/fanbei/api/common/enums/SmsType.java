@@ -24,7 +24,8 @@ public enum SmsType {
     QUICK_REGIST("QR", "快捷注册"),
     QUICK_SET_PWD("QSP", "设置快捷登录密码"),
     QUICK_SET("S", "设置快捷登录密码"),
-    COMMON("C","通用");
+    COMMON("C","通用"),
+    ZHI_BIND("X","线下转账支付宝绑定");
 
     private String code;
 

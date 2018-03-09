@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.AesUtil;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -78,7 +79,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		Map<String, Object> locationModel = new HashMap<String, Object>();
 		Map<String, Object> contactorModel = new HashMap<String, Object>();
 		AfResourceDo afResourceDo =afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
-//		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
 		
@@ -98,13 +98,29 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}
 		
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
+		if(!authDo.getZmStatus().equals("Y")){
+			authDo.setZmScore(0);
+			authDo.setZmStatus("Y");
+			authDo.setGmtZm(new Date());
+			authDo.setIvsScore(0);
+			authDo.setIvsStatus("Y");
+			authDo.setGmtIvs(new Date());
+			afUserAuthService.updateUserAuth(authDo);
+		}
+		afUserAuthService.updateUserAuth(authDo);
 		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId(),appVersion));
 		zmModel.put("zmStatus", authDo.getZmStatus());
 		zmModel.put("zmScore", authDo.getZmScore());
 		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode())
 				&& StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
-			String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
-			zmModel.put("zmxyAuthUrl", authParamUrl);
+            String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
+            AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
+
+            if(zhimaNewUrl==null){
+                zmModel.put("zmxyAuthUrl", authParamUrl);
+            }else{
+                zmModel.put("zmxyAuthUrl", zhimaNewUrl.getValue()+"?userId="+ AesUtil.encryptToBase64(userDto.getUserId().toString(),"123"));
+            }
 		}
 
 
@@ -124,13 +140,19 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}else{
 			data.put("gmtMobileExist", YesNoStatus.NO.getCode());
 		}
-		
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
 		data.put("contactorModel", contactorModel);
 		data.put("realNameStatus", authDo.getRealnameStatus());
 		data.put("bankCardStatus", authDo.getBankcardStatus());
+		data.put("onlinebankStatus", authDo.getOnlinebankStatus());
+		//添加是否已发起过网银认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtOnlinebank() != null) {
+			data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtOnlinebankExist", YesNoStatus.NO.getCode());
+		}
 		// 3.6.7是否显示运营图片
 //		if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())){
 //			data.put("isShowImage", "N");

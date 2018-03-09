@@ -9,13 +9,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -57,11 +55,12 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
-	
 	@Resource
 	private AfBorrowBillDao afBorrowBillDao;
 	@Resource
 	private AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	private AfResourceService afResourceService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -129,8 +128,14 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		vo.setZmStatus(authDo.getZmStatus());
 		vo.setGmtZm(authDo.getGmtZm());
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
-			String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
-			vo.setZmxyAuthUrl(authParamUrl);
+            String authParamUrl =  ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
+            AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
+
+            if(zhimaNewUrl==null){
+                vo.setZmxyAuthUrl(authParamUrl);
+            }else{
+                vo.setZmxyAuthUrl(zhimaNewUrl.getValue()+"?userId="+ AesUtil.encryptToBase64(authDo.getUserId().toString(),"123"));
+            }
 		}
 		if(repaymentAmount.compareTo(BigDecimal.ZERO)==0){
 			vo.setStatus(BorrowBillStatus.YES.getCode());

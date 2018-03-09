@@ -148,8 +148,7 @@ public class StartCashierApi implements ApiHandle {
             cashierVo.getAp().setTotalVirtualAmount(BigDecimal.ZERO);
         }        
 
-/*        //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+/*        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
             checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
@@ -159,9 +158,8 @@ public class StartCashierApi implements ApiHandle {
                 checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
             else
                 checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
-        }
-        //--------------------------mqp second kill fixed goods limit Ap only -------------------        
-*/
+        }*/
+
         String scene = UserAccountSceneType.ONLINE.getCode();
         //判断认证的场景
         if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
