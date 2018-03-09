@@ -665,6 +665,10 @@ public class AppH5SubjectController  extends BaseController{
 			if (StringUtil.isBlank(tag)) {
 				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
 			}
+			
+			//find modeId by tag .
+			
+			
 
 		}catch(FanbeiException e){
 		}catch(Exception e){
