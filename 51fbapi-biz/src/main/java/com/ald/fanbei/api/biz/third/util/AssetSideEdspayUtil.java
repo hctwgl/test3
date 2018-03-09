@@ -484,6 +484,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				System.out.println(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush");
 				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
 				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);
+				logger.info("borrowCashCurPush jsonParam:"+JSONObject.toJSONString(map)+"respResult:"+respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 					try {

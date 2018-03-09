@@ -463,6 +463,9 @@ public class Constants {
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 	  
+	  public static final String CACHEKEY_COMPLETEORDER_LOCK = "cachekey_completeorder_lock";
+	  public static final String CACHEKEY_COMPLETEORDER_LOCK_VALUE = "cachekey_completeorder_lock_value";
+	  
 	  //51公积金认证
 	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
 	  public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
