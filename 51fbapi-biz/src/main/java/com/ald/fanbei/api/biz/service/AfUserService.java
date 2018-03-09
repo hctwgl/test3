@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -88,5 +89,12 @@ public interface AfUserService {
 
 	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
 	
-	Long convertUserNameToUserId(String userName);
+	/**
+	 * 检查请求的支付密码是否正确
+	 * @param reqPayPwd
+	 * @param userId
+	 */
+	void checkPayPwd(String reqPayPwd, Long userId);
+	AfUserDto getUserInfoByUserId(Long userId);
+		Long convertUserNameToUserId(String userName);
 }

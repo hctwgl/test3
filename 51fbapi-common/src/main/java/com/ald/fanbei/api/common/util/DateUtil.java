@@ -740,11 +740,11 @@ public class DateUtil {
     /**
      * 返回标准格式的当前时间
      * 
-     * @return [yyyy-MM-dd k:mm:ss]
+     * @return [yyyy-MM-dd HH:mm:ss]
      */
 
     public static String getNow() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd H:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_SHORT);
         Date nowc = new Date();
         String pid = formatter.format(nowc);
         return pid;
@@ -1214,6 +1214,30 @@ public class DateUtil {
     	Calendar calender = Calendar.getInstance();
     	return calender.get(Calendar.MONTH) + 1;
     }
+    
+    /**
+     * 获取指定日期下月内天数序号
+     * @param date
+     * @return
+     */
+    public static int getTodayNoInMonth(Date date) {
+    	Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_MONTH);
+    }
+    
+    /**
+     * 设置日期下月内天数序号
+     * @param date
+     * @return
+     */
+    public static Date setDayNoInMonth(Date date, int dayNo) {
+    	Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DAY_OF_MONTH, dayNo);
+        return cal.getTime();
+    }
+    
 
     /**
      * 一天的结束时间，【注：只精确到毫秒】

@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
 /**
  * @date 2017-9-7 17:35:31
  * @author qiaopan
@@ -19,33 +20,30 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *
  */
 @Component("deleteHistoryApi")
-public class deleteHistoryApi implements ApiHandle {
+public class DeleteHistoryApi implements ApiHandle {
 
 	@Resource
 	AfUserSearchService afUserSearchService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		try{
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		
-		Long userId = context.getUserId();
-		if ( userId == null) {
-			throw new FanbeiException("without login error", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-		}
-		afUserSearchService.deleteHistory(userId);
-		return resp;
-		}catch (FanbeiException e) {
+		try {
+			ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+
+			Long userId = context.getUserId();
+			if (userId == null) {
+				throw new FanbeiException("without login error", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+			}
+			afUserSearchService.deleteHistory(userId);
+			return resp;
+		} catch (FanbeiException e) {
 			logger.error(e.getMessage().toString());
-			throw new FanbeiException(e.getMessage(),e.getErrorCode());
-		}
-		
-		catch (Exception e) {
+			throw new FanbeiException(e.getMessage(), e.getErrorCode());
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			throw e;
 		}
-		
-		
+
 	}
 
 }

@@ -17,8 +17,6 @@ public enum ActivityType {
     private String code;
     private String name;
     
-  
-
     ActivityType(String code, String name) {
         this.code = code;
         this.name = name;
@@ -39,6 +37,5 @@ public enum ActivityType {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 
 }

@@ -114,4 +114,6 @@ public interface AfUserAccountDao {
     int updateUserAccountByUserId(@Param("userId")Long userId,@Param("money")int money);
 
 	AfUserAccountDo findByIdNo(@Param("idNo")String idNo);
+	
+	int plusUsedAmount(@Param("userId")Long userId, @Param("amount") BigDecimal amount);
 }

@@ -55,7 +55,6 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
-	
 	@Resource
 	private AfBorrowBillDao afBorrowBillDao;
 	@Resource

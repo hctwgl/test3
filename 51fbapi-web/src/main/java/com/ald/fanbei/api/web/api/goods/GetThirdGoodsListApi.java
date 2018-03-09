@@ -122,7 +122,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 			removeSecondNper(array);
 
 			for (AfSearchGoodsVo goodsInfo : result) {
-			    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(), goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+			    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(), goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2(),0l);
 			    if (nperList != null) {
 				Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
 				goodsInfo.setNperMap(nperMap);

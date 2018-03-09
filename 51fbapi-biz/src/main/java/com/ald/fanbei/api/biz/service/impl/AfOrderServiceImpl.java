@@ -1171,7 +1171,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             _vcode = "99";
                         }
                         logger.info("verify userId" + userId);
-                        RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+                        RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName,
                                 orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
@@ -1221,7 +1221,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
                         codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
                         // 通过弱风控后才进行后续操作
-                        RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+                        RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount,
                                 BigDecimal.ZERO, borrowTime,

@@ -111,6 +111,21 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 		limit 1
 	</select>
 	
+	
+	<select id="getIdNumberInfoByUserId" resultType="AfIdNumberDo">
+		SELECT 
+			<include refid="queryAllFields" /> 
+		FROM 
+			af_id_number 
+		WHERE 
+			user_id = #{userId}
+		AND
+			is_delete = 0
+		limit 1
+	</select>
+	
+	
+	
 	<select id="findUserNameByIdNo" resultType="java.lang.String">
 		SELECT 
 			name 

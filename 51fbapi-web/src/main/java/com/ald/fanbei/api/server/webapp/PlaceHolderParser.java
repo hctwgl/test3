@@ -32,7 +32,7 @@ public class PlaceHolderParser {
 				String readPath = Bootstrap4Jetty.ROOT_PATH + "src/main/resources/"
 						+ scriptPath.replace("WEB-INF/classes/", "");
 				String tmpDir = System.getProperty("java.io.tmpdir");
-				String writePath = tmpDir + "/jettty_fanbei_api/" + scriptPath;
+				String writePath = tmpDir + "jettty_fanbei_api/" + scriptPath;
 				File writeFile = new File(writePath);
 				File parentPath = writeFile.getParentFile();
 				if (!parentPath.exists()) {

@@ -1,15 +1,15 @@
 package com.ald.fanbei.api.common.enums;
 
-import java.util.Map;
-
 public enum SceneType {
 
     ONLINE("ONLINE", "21","线上分期"),
     TRAIN("TRAIN", "22","线下培训"),
-    CASH("CASH", "20","现金");
-
-    private String code;
+    CASH("CASH", "20","现金"),
+    BLD_LOAN("BLD_LOAN","23","白领贷"),
+	LOAN_TOTAL("LOAN_TOTAL","0","借钱总额度");
+   
     private String name;
+    private String code;
     private String description;
 
     SceneType(String name,String code,String description) {

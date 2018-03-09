@@ -48,6 +48,9 @@ public class FanbeiController extends BaseController {
 	@Resource
 	InterceptorChain interceptorChain;
 
+	@Resource
+	InterceptorChain interceptorChain;
+	
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
 	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2",
@@ -108,7 +111,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/quickRegisterPwd","/user/login","/user/quickLoginOrRegister","/user/resetPwd","/user/setQuickFirstPwd","/user/getUserInfo",
-    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
+    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineInfoV1","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
@@ -157,7 +160,7 @@ public class FanbeiController extends BaseController {
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authFundNew","/auth/authFundNew/GiveBack","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
-			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota","/auth/authGxb"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

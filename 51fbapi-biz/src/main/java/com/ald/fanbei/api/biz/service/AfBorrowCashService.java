@@ -23,6 +23,8 @@ public interface AfBorrowCashService {
 
 
 	int borrowSuccess(final AfBorrowCashDo afBorrowCashDo);
+	
+	void borrowFail(final Long borrowId, String tradeNoOut, String msgOut);
 
 	/**
 	 * 更新记录
@@ -211,8 +213,12 @@ public interface AfBorrowCashService {
 
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
-
-
 	int getCashBorrowByUserIdAndActivity(Long userId, String activityTime);
-
+	/**
+	 * 计算剩余应还的金额
+	 * @param cashDo
+	 * @param orderCashDo
+	 * @return
+	 */
+	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo);
 }
