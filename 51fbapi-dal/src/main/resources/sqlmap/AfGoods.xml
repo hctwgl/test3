@@ -326,6 +326,8 @@
 			<include refid="queryFields"/>
 		FROM af_model_h5_item a,af_goods b
 		where `item_value2` = #{categoryId}
+		and a.item_type = 'GOODS_ID'
+		and a.type = 'GOODSLIST'
 		and a.item_value = b.id
 		and a.is_delete = 0
 		and b.is_delete = 0 and b.status='PUBLISH'
