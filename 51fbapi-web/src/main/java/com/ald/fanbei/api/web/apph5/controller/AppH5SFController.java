@@ -625,7 +625,7 @@ public class AppH5SFController extends BaseController {
 							}
 						}
 						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),0l);
 						if(nperList!= null){
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
