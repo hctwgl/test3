@@ -86,6 +86,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
                          baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
                     }
+                    logger.info("/fanbei/ydm/addRecycleOrder,baseUrl="+ baseUrl);
                     String postResult = HttpUtil.post(baseUrl + RecycleUtil.YDM_CALLBACK_URL, map);//向有得卖进行握手
                     JSONObject jsonObject = JSONObject.parseObject(postResult);
                     if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
@@ -100,7 +101,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
 
                         BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
                         BigDecimal remainAmount;
-                        BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
+                        BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice).setScale(2,2);//取2位小数
                         if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息
                             //根据用户Id查找用户名
                             AfUserDo afUserDo = afUserDao.getUserById(userId);
@@ -149,8 +150,8 @@ public class AfRecycleServiceImpl implements AfRecycleService {
         newAfRecycleTradeDo.setRatio(afRecycleRatioDo.getRatio());
         newAfRecycleTradeDo.setRefId(afRecycleQuery.getRid());
         newAfRecycleTradeDo.setRemainAmount(afRecycleTradeDo.getRemainAmount().subtract(settlePrice));
-        newAfRecycleTradeDo.setReturnAmount(rebateAmount);
-        newAfRecycleTradeDo.setTradeAmount(settlePrice.add(rebateAmount));
+        newAfRecycleTradeDo.setReturnAmount(rebateAmount.subtract(settlePrice));
+        newAfRecycleTradeDo.setTradeAmount(settlePrice);
         newAfRecycleTradeDo.setType(1);
         afRecycleTradeDao.saveRecord(newAfRecycleTradeDo);
         return newAfRecycleTradeDo.getRemainAmount();
@@ -178,7 +179,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     AfResourceDo mobileResourceDo = afResourceDao.getConfigByType(RecycleUtil.RECYCLE_AMOUNT_MIN_THRESHOLD_MOBILE_KEY);//查找需要账户预警通知的手机号
                     if(null != mobileResourceDo && StringUtils.isNotBlank(mobileResourceDo.getValue())){
                         String[] mobiles = mobileResourceDo.getValue().split(",");
-                        if(null == mobiles && mobiles.length > 0){
+                        if(null != mobiles && mobiles.length > 0){
                             for(int i = 0; i < mobiles.length; i ++){
                                 smsUtil.sendRecycleWarn(mobiles[i],remainAmount);
                             }

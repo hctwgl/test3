@@ -104,7 +104,7 @@ public class SmsUtil extends AbstractThird {
      * @param rebateAmount 返现总额
      */
     public void sendRecycleRebate(String mobile,BigDecimal orderAmount, BigDecimal rebateAmount) {
-        sendSmsToDhst(mobile, String.format(RECYCLE_REBATE_SUCCESS,orderAmount.add(rebateAmount),orderAmount,rebateAmount));
+        sendSmsToDhst(mobile, String.format(RECYCLE_REBATE_SUCCESS,rebateAmount,orderAmount.setScale(2,2),rebateAmount.subtract(orderAmount)));
     }
 
     /**
@@ -675,7 +675,6 @@ public class SmsUtil extends AbstractThird {
      * 注册成功,发送注册成功短信
      *
      * @param mobile
-     * @param content
      */
     public void sendRegisterSuccessSms(String mobile) {
         if (!CommonUtil.isMobile(mobile)) {

@@ -130,6 +130,7 @@ public class AppH5RecycleController extends BaseController {
                         //添加页面访问记录
                         AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 1);
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
+                        logger.info("/recycle/getRecycleUrl,recycleUrl=" + recycleUrl);
                         Map<String,Object> map = new HashMap<String,Object>();
                         map.put("recycleUrl",recycleUrl);
                         resp = H5CommonResponse.getNewInstance(true, "获取数据成功", recycleUrl, map);
