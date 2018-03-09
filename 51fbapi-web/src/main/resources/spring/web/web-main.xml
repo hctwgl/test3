@@ -229,7 +229,7 @@
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
 				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
-
+				<entry key="/user/getUserShareInfo" value-ref="getUserShareInfoApi"/>
 				
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
