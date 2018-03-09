@@ -59,6 +59,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import sun.rmi.runtime.Log;
 
 /**
  * @类描述：
@@ -157,6 +158,7 @@ public class AppGoodsControler extends BaseController {
 				// 获取借款分期配置信息
 				AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 						Constants.RES_BORROW_CONSUME);
+
 				JSONArray array = JSON.parseArray(resource.getValue());
 				// 删除2分期
 				if (array == null) {
@@ -166,7 +168,7 @@ public class AppGoodsControler extends BaseController {
 				//removeSecondNper(array);
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
-						resource.getValue2());
+						resource.getValue2(),Long.parseLong(goodsId));
 				if (nperList != null) {
 					goodsInfoMap.put("goodsType", "1");
 					Map nperMap = nperList.get(nperList.size() - 1);
@@ -255,7 +257,7 @@ public class AppGoodsControler extends BaseController {
 
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 							BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
-							resource.getValue2());
+							resource.getValue2(),Long.parseLong(goodsId));
 					if (nperList != null) {
 						goodsInfoMap.put("goodsType", "1");
 						Map nperMap = nperList.get(nperList.size() - 1);

@@ -155,7 +155,7 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         	calculateAmount = useableAmount;
         }
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-        		calculateAmount, resource.getValue1(), resource.getValue2());
+        		calculateAmount, resource.getValue1(), resource.getValue2(),0l);
 
         resp.addResponseData("instalmentAmount", amount);
         resp.addResponseData("useableAmount", useableAmount);
