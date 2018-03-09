@@ -1,16 +1,16 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -58,6 +58,12 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	@Resource
 	private AfInterestFreeRulesService afInterestFreeRulesService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
+
+	@Resource
+	BizCacheUtil bizCacheUtil;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -98,6 +104,32 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			Map nperMap = nperList.get(nperList.size() - 1);
 			vo.setNperMap(nperMap);
 		}
+		//秒杀、促销活动商品信息
+		AfSeckillActivityDto afSeckillActivityDto = afSeckillActivityService.getActivityByGoodsId(goodsId);
+		if(afSeckillActivityDto!=null){
+			Long activityId = afSeckillActivityDto.getRid();
+			Date gmtStart = afSeckillActivityDto.getGmtStart();
+			Date gmtEnd = afSeckillActivityDto.getGmtEnd();
+			vo.setActivityId(activityId);
+			vo.setActivityType(afSeckillActivityDto.getType());
+			vo.setActivityName(afSeckillActivityDto.getName());
+			vo.setGmtStart(gmtStart);
+			vo.setGmtEnd(gmtEnd);
+			vo.setGmtPstart(afSeckillActivityDto.getGmtPStart());
+			vo.setLimitCount(afSeckillActivityDto.getLimitCount());
+			/*List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
+			for (int i=0;i<activityGoodsDos.size();i++){
+				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = activityGoodsDos.get(i);
+				Long actPriceId = afSeckillActivityGoodsDo.getPriceId();
+				int limitCount = afSeckillActivityGoodsDo.getLimitCount();
+				String lockKey = Constants.CACHEKEY_SECKILL_PRICE + activityId + "+" + actPriceId;
+				if(bizCacheUtil.getObject(lockKey)==null){
+					bizCacheUtil.saveObject(lockKey,limitCount, DateUtil.getNumberOfMinuteBetween(new Date(),gmtEnd)*60);
+				}
+			}*/
+
+		}
+
 		resp.setResponseData(vo);
 		return resp;
 	}
