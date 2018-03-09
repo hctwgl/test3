@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -25,6 +25,8 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -47,10 +49,12 @@ public class GetUserShareInfoApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String source = ObjectUtils.toString(requestDataVo.getParams().get("source"));
 		Map<String, Object> data = new HashMap<String, Object>();
+		JSONObject json = new JSONObject();
 		
-	       try{
+	    try{
 		String shareType = "URL";
 		data.put("shareType", shareType);
+		json.put("shareType", shareType);
 		Long userId = context.getUserId();
 		AfUserDo afUserDo =  afUserService.getUserById(userId) ;
 		
@@ -64,84 +68,45 @@ public class GetUserShareInfoApi implements ApiHandle {
 		}
 		
 		//查询配置信息，如果不存在，返回 默认类型URL;
-		List<AfResourceDo>   afResourceList =   afResourceService.getConfigsListByTypesAndSecType(Constants.USER_SHARE_INFO, source);
-		if(afResourceList == null || afResourceList.size() < 1){
+		AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
+		if(afResource == null){
 			resp.setResponseData(data);
 		        logger.info("getUserShareInfoApi afResourceList is null source = " + source);
 		        return resp;
 		}
-		//存在则循环该list,得到不同value下的数据
-	        List<Map<String, Object>> contentList = new ArrayList<Map<String, Object>>();
-	        List<Map<String, Object>> imageList = new ArrayList<Map<String, Object>>();
-		for(AfResourceDo afResource:afResourceList){
-		    String type = afResource.getValue();
-//		    if(type.equals("image")){
-//			data.put("image", afResource.getValue3());
-//		    }
-		    if(type.equals("userInfo")){
-			String userName = changePhone(afUserDo.getUserName());
-			Map<String, Object> userInfo = new HashMap<String, Object>();
-			userInfo.put("mobile", userName);
-			userInfo.put("size", afResource.getValue4());
-			userInfo.put("colour", afResource.getValue1());
-			putPosition(userInfo,afResource);
-			data.put("userInfo", userInfo);
-			
-		    }
-		    if(type.equals("qrCode")){
-			Map<String, Object> qrCode = new HashMap<String, Object>();
-			qrCode.put("url", afResource.getValue3());
-			putPosition(qrCode,afResource);
-			data.put("qrCode", qrCode);
-			
-		    }
-		    if(type.equals("imageList")){
-			Map<String, Object> image = new HashMap<String, Object>();
-			image.put("image", afResource.getValue3());
-			putPosition(image,afResource);
-			imageList.add(image);
-		    }
-		    if(type.equals("contentList")){
-			Map<String, Object> contentMap = new HashMap<String, Object>();
-			contentMap.put("content", afResource.getValue3());
-			contentMap.put("size", afResource.getValue4());
-			contentMap.put("colour", afResource.getValue1());
-			putPosition(contentMap,afResource);
-			contentList.add(contentMap);
-		    }
-		   
-		}
-		     data.put("imageList", imageList);
-		     data.put("contentList", contentList);
+		//预发线上区分
+		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		 logger.info("getUserShareInfoApi and type = {}"+ type);
+		//线上
+		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		   if(afResource.getValue4().equals("C")){
+		       resp.setResponseData(data);
+		        logger.info("getUserShareInfoApi afResource value4 is close");
+		        return resp;
+		   }
+		 }
+	
+		//获取json,并增加属性。
+		 JSONObject jsonStr = JSONObject.parseObject(afResource.getValue3());
+		 JSONArray userInfo= jsonStr.getJSONArray("userInfo");
+		 if(userInfo != null){
+		     JSONObject jOUser = userInfo.getJSONObject(0); 
+		     String mobile = "";
+		     mobile = changePhone(afUserDo.getUserName());
+		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
+		     jsonStr.put("userInfo", jOUser);
+		 }
+		 jsonStr.put("shareType", "IMAGE");
+		 json = JSONObject.parseObject(jsonStr.toString());	
+		
 		}catch(Exception e){
 		    logger.error("getUserShareInfoApi error  e = "+ e+" source = "+ source);
 		}
-	       logger.info("getUserShareInfoApi  data = "+ JSON.toJSONString(data) );
-	       data.put("shareType", "IMAGE");
-	    resp.setResponseData(data);
+	          logger.info("getUserShareInfoApi  data = "+ JSON.toJSONString(json) );
+	    resp.setResponseData(json);
 	    return resp;
 	}
 	
-	private void putPosition(Map<String, Object> info, AfResourceDo afResource) {
-	    // TODO Auto-generated method stub
-	    String positionX = "";
-	    String positionY = "";
-	    try{
-        	    String positions =  afResource.getValue2();
-        	    String position[] = positions.split(",");  
-        	    if(position.length == 2){
-                	    positionX  = position[0];
-                	    positionY  = position[1];
-        	    }
-        	    
-        	    info.put("positionX", position[0] );
-        	    info.put("positionY", position[1]);
-	    }catch(Exception e){
-		logger.error("putPosition error  e = "+ e);
-	    }
-	    info.put("positionX", positionX);
-	    info.put("positionY",positionY);
-	}
 
 	private String changePhone(String userName) {
 		String newUserName = "";
