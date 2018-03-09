@@ -237,6 +237,8 @@ $(function(){
                                             // },500)
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+                                        //转化代码
+                                        _taq.push({convert_id:"92097724391", event_type:"form"});
                                     } else {
                                         maidianFnNew("registerFail", channelCode, pointCode, returnData.msg);
                                         requestMsg(returnData.msg);
