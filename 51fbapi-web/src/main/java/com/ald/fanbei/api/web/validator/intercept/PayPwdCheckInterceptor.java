@@ -228,7 +228,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				
 				//judge if the last_time is yesterday if yes then times=1 ,and last_tims = now .
 				//previousDate
-				if(DateUtil.addDays(new Date(), -1).getDate() == previousDate.getDate()){
+				if(previousDate != null && DateUtil.addDays(new Date(), -1).getDate() == previousDate.getDate()){
 					
 					bizCacheUtil.saveObjectForever(key, 1);
 					bizCacheUtil.saveObjectForever(key1, new Date());
