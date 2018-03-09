@@ -190,8 +190,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				     		if (previousDate != null) {
 								bizCacheUtil.delCache(key);
 							}
+				     		return;
 						}
-						return;
+						
 					}
 
 					// or not .
@@ -220,8 +221,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			     		if (previousDate != null) {
 							bizCacheUtil.delCache(key);
 						}
+			     		return;
 					}
-					return;
+					
 				}
 				
 				// or not .
