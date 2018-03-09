@@ -4,9 +4,11 @@ package com.ald.fanbei.api.biz.util;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -42,12 +44,16 @@ public class ProtocolUtil {
     private AfBorrowLegalGoodsService afBorrowLegalGoodsService;
     @Resource
     private AfGoodsService afGoodsService;
+    @Resource
+    private RiskUtil riskUtil;
 
     public List<AfResourceDo> getProtocolList(String type, Map map) {
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("AGREEMENT");
         List<AfResourceDo> resourceDoList = new ArrayList<>();
         String userName = ObjectUtils.toString(map.get("userName"), "").toString();
         String dayType = ObjectUtils.toString(map.get("type"), "").toString();
+        String appName = ObjectUtils.toString(map.get("appName"), "").toString();
+        String ipAddress = ObjectUtils.toString(map.get("ipAddress"), "").toString();
         Long borrowId = NumberUtil.objToLongDefault(map.get("borrowId"), 0l);
         Long renewalId = NumberUtil.objToLongDefault(map.get("renewalId"), 0l);
         int renewalDay = NumberUtil.objToIntDefault(map.get("renewalDay"), 0);
@@ -58,7 +64,7 @@ public class ProtocolUtil {
         if (afResourceDoList.size() == 0) {
             return resourceDoList;
         }
-        BigDecimal goodsAmount = getGoodsAmount(borrowAmount,dayType);//续借金额
+        BigDecimal goodsAmount = getGoodsAmount(borrowAmount,dayType,1l,appName,ipAddress);//续借金额
         BigDecimal arriveAmount = borrowAmount.subtract(goodsAmount);//到账金额
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if (afResourceDo.getValue1().contains(type)) {
@@ -136,7 +142,7 @@ public class ProtocolUtil {
         return rateInfo;
     }
 
-    private BigDecimal getGoodsAmount(BigDecimal borrowAmount, String borrowType) {
+    private BigDecimal getGoodsAmount(BigDecimal borrowAmount, String borrowType,Long userId,String appName,String ipAddress) {
 
         BigDecimal oriRate = BigDecimal.ZERO;
         BigDecimal borrowDay = new BigDecimal(borrowType);
@@ -144,7 +150,10 @@ public class ProtocolUtil {
         AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
                 Constants.BORROW_CASH_INFO_LEGAL_NEW);
         BigDecimal newRate = null;
-
+        JSONObject params = new JSONObject();
+        params.put("ipAddress", ipAddress);
+        params.put("appName",appName);
+        oriRate = riskUtil.getRiskOriRate(userId,params,borrowType);
         double newServiceRate = 0;
         double newInterestRate = 0;
         if (rateInfoDo != null) {
