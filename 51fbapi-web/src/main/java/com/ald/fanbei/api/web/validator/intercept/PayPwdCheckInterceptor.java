@@ -272,14 +272,14 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	private FanbeiExceptionCode getErrorByKeyAndTimes(String key, Integer times) {
 		bizCacheUtil.saveObjectForever(key, times);
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getErrorMsg().replace("x", times + "");
+		String mString = exceptionCode.getDesc().replace("x", times + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}
 
 	private FanbeiExceptionCode getErrorCodeByHoursAndMinute(Integer hours, Integer minutes) {
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getErrorMsg().replace("x", hours + "").replace("y", minutes + "");
+		String mString = exceptionCode.getDesc().replace("x", hours + "").replace("y", minutes + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}
