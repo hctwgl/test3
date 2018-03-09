@@ -27,8 +27,6 @@ public class RecycleController {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private AfRecycleService afRecycleService;
-    @Autowired
-    private BizCacheUtil bizCacheUtil;
 
     /**
      * 创建订单 有得卖 三方 推送过来的订单数据(发券)
@@ -43,7 +41,7 @@ public class RecycleController {
         String key = "";
         try {
             AfRecycleQuery afRecycleQuery = AppRecycleControllerUtil.buildParam(request);
-            logger.info("addOrder请求参数=" + afRecycleQuery.toString());
+            logger.info("/fanbei/ydm/addOrder请求参数=" + afRecycleQuery.toString());
             if(null == afRecycleQuery.getUserId()){
                 returnjson.put("success", false);
                 returnjson.put("msg", "userId不能为空");
@@ -60,22 +58,16 @@ public class RecycleController {
                 returnjson.put("success", false);
                 returnjson.put("msg", "合作商不能为空");
             }
+            logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
             if (RecycleUtil.PARTNER_ID.equals(afRecycleQuery.getPartnerId())) {
-                logger.info("/fanbei/ydm/addOrder,params ={}", afRecycleQuery.toString());
-                String refOrderId = afRecycleQuery.getRefOrderId();
-                Long uid = afRecycleQuery.getUserId();
-                key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + refOrderId + ":" + uid;
-                boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
-                if (isNotLock) {
-                    AfRecycleDo afRecycleDo = afRecycleService.getRecycleOrder(afRecycleQuery);
-                    if (null == afRecycleDo) {//订单不存在，新增一条订单
-                        afRecycleService.addRecycleOrder(afRecycleQuery);//新增一条订单
-                        returnjson.put("success", true);
-                        returnjson.put("msg", "操作成功");
-                    } else {
-                        returnjson.put("success", false);
-                        returnjson.put("msg", "订单已存在");
-                    }
+                AfRecycleDo afRecycleDo = afRecycleService.getRecycleOrder(afRecycleQuery);
+                if (null == afRecycleDo) {//订单不存在，新增一条订单
+                    afRecycleService.addRecycleOrder(afRecycleQuery);//新增一条订单
+                    returnjson.put("success", true);
+                    returnjson.put("msg", "操作成功");
+                } else {
+                    returnjson.put("success", false);
+                    returnjson.put("msg", "订单已存在");
                 }
             } else {
                 logger.error("/fanbei/ydm/addOrder, partnerId error,partnerId={}", afRecycleQuery.getPartnerId());
@@ -86,8 +78,6 @@ public class RecycleController {
             logger.error("/fanbei/ydm/addOrder, error = {}", e.getStackTrace());
             returnjson.put("success", false);
             returnjson.put("msg", "订单生成失败");
-        } finally {
-            bizCacheUtil.delCache(key);
         }
         return returnjson;
     }

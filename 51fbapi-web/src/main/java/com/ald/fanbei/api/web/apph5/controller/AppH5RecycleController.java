@@ -2,11 +2,14 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RecycleUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleViewQuery;
@@ -51,7 +54,6 @@ public class AppH5RecycleController extends BaseController {
     @RequestMapping(value = "/exchange", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String exchange(HttpServletRequest request) {
-        Calendar calStart = Calendar.getInstance();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try {
@@ -69,14 +71,14 @@ public class AppH5RecycleController extends BaseController {
                             throw new FanbeiException("参数错误", true);
                         }
                         if (amount < 50) {
-                            throw new FanbeiException("兑换金额不能小于50", true);
+                            throw new FanbeiException("兑换金额不能小于50元", true);
                         }
                         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
                         if (null == afUserAccountDo || (null != afUserAccountDo && afUserAccountDo.getRebateAmount().intValue() < 50)) {
-                            throw new FanbeiException("账户余额不足50元,无法兑换", true);
+                            throw new FanbeiException("您的可用金额不足", true);
                         }
                         if (amount.compareTo(afUserAccountDo.getRebateAmount().intValue()) > 0) {
-                            throw new FanbeiException("账户余额小于兑换金额", true);
+                            throw new FanbeiException("您的可用金额不足", true);
                         }
                         // 账户关联信息
                         AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
@@ -94,11 +96,8 @@ public class AppH5RecycleController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            resp = H5CommonResponse.getNewInstance(false, "兑换失败", "", e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg(), "", e.getMessage());
             logger.error("兑换失败" + context, e);
-        } finally {
-            Calendar calEnd = Calendar.getInstance();
-            doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(), context.getUserName());
         }
         return resp.toString();
 
@@ -111,11 +110,9 @@ public class AppH5RecycleController extends BaseController {
     @RequestMapping(value = "/getRecycleUrl", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getRecycleUrl(HttpServletRequest request) {
-        Calendar calStart = Calendar.getInstance();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try {
-            Integer amount = NumberUtil.objToIntDefault(request.getParameter("amount"), null);
             Long userId = 0L;
             AfUserDo afUser = null;
             // 和登录有关的
@@ -125,7 +122,11 @@ public class AppH5RecycleController extends BaseController {
                 if (afUser != null) {
                     userId = afUser.getRid();
                     try {
-                        String recycleUrl = RecycleUtil.CALLBACK_BASE_URL + "?uid=" + userId;
+                        String baseUrl = RecycleUtil.CALLBACK__BASE_URL_ONLINE;
+                        if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
+                            baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
+                        }
+                        String recycleUrl = baseUrl + "?uid=" + userId;
                         //添加页面访问记录
                         AfRecycleViewQuery afRecycleViewQuery = new AfRecycleViewQuery(userId, 1);
                         afRecycleViewService.getRecycleViewByUid(afRecycleViewQuery);
@@ -139,11 +140,8 @@ public class AppH5RecycleController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            resp = H5CommonResponse.getNewInstance(false, "获取地址失败", "", e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg(), "", e.getMessage());
             logger.error("获取地址失败" + context, e);
-        } finally {
-            Calendar calEnd = Calendar.getInstance();
-            doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(), context.getUserName());
         }
         return resp.toString();
 
@@ -156,7 +154,6 @@ public class AppH5RecycleController extends BaseController {
     @RequestMapping(value = "/getReturnCash", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getReturnCash (HttpServletRequest request) {
-        Calendar calStart = Calendar.getInstance();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try {
@@ -185,11 +182,8 @@ public class AppH5RecycleController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, "获取用户提现金额错误", "", map);
             }
         } catch (Exception e) {
-            resp = H5CommonResponse.getNewInstance(false, "获取信息失败", "", e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg(), "", e.getMessage());
             logger.error("获取信息失败" + context, e);
-        } finally {
-            Calendar calEnd = Calendar.getInstance();
-            doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(), context.getUserName());
         }
         return resp.toString();
 
@@ -229,7 +223,7 @@ public class AppH5RecycleController extends BaseController {
             }
             resp = H5CommonResponse.getNewInstance(true, "操作成功", "", null);
         } catch (Exception e) {
-            resp = H5CommonResponse.getNewInstance(false, "增加页面访问记录失败", "", e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg(), "", e.getMessage());
             logger.error("增加页面访问记录失败" + context, e);
         }
         return resp.toString();

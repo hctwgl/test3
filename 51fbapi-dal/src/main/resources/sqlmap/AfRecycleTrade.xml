@@ -46,12 +46,8 @@
         </if>
     </sql>
 
-    
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfRecycleTradeDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+    <!-- 添加交易记录 -->
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfRecycleTradeDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO af_recycle_trade
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
@@ -61,7 +57,7 @@
 	            gmt_modified,
 	        </if>
 	        <if test="type != null">        
-	            type,
+	            `type`,
 	        </if>
 	        <if test="remainAmount != null">        
 	            remain_amount,

@@ -2,19 +2,20 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfRecycleService;
 import com.ald.fanbei.api.biz.third.util.RecycleUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.recycle.AfRecycleOrderType;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfRecycleQuery;
-import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,10 @@ public class AfRecycleServiceImpl implements AfRecycleService {
     private AfRecycleTradeDao afRecycleTradeDao;
     @Autowired
     private AfResourceDao afResourceDao;
+    @Autowired
+    private SmsUtil smsUtil;
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -66,73 +71,132 @@ public class AfRecycleServiceImpl implements AfRecycleService {
         transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus transactionStatus) {
-                Integer result = afRecycleDao.addRecycleOrder(afRecycleQuery);
-                //回调有得卖确认接口
-                Map<String,String> map = new HashMap<>();
-                map.put("userId", String.valueOf(afRecycleQuery.getUserId()));
-                map.put("orderId", afRecycleQuery.getRefOrderId());
-                map.put("payType", String.valueOf(afRecycleQuery.getPayType()));
-                map.put("settlePrice", String.valueOf(afRecycleQuery.getSettlePrice()));
-                map.put("partnerId", afRecycleQuery.getPartnerId());
-                String sign = SignUtil.signForYdm(RecycleUtil.createLinkString(map), RecycleUtil.PRIVATE_KEY);
-                map.put("sign", sign);
-                String postResult = HttpUtil.post(RecycleUtil.CALLBACK_BASE_URL + RecycleUtil.YDM_CALLBACK_URL, map);
-                JSONObject jsonObject = JSONObject.parseObject(postResult);
-                if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
-                    //给用户账号添加回收订单金额
-                    AfRecycleRatioDo afRecycleRatioDo = afRecycleDao.getRecycleReturnRatio();
-                    Long userId = afRecycleQuery.getUserId();
-                    BigDecimal settlePrice = afRecycleQuery.getSettlePrice();
-
-                    //修改订单状态为已完成
-                    afRecycleQuery.setStatus(AfRecycleOrderType.FINISH.getCode());
-                    afRecycleDao.updateRecycleOrder(afRecycleQuery);
-
-                    BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
-                    if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息
-                        //根据用户Id查找用户名
-                        AfUserDo afUserDo = afUserDao.getUserById(userId);
-                        //给用户的返现金额
-                        BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
-                        AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-                        afUserAccountDo.setUserId(userId);
-                        afUserAccountDo.setUserName(afUserDo.getUserName());
-                        afUserAccountDo.setRebateAmount(rebateAmount);
-                        afUserAccountDao.addUserAccount(afUserAccountDo);
-                        //有得卖账户减钱操作
-                        recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
-                    } else {//直接往账号上添加金额 金额 = 订单金额 *（1 + 返现比例）
-                        BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
-                        AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-                        afUserAccountDo.setRebateAmount(rebateAmount);
-                        afUserAccountDo.setUserId(afRecycleQuery.getUserId());
-                        afUserAccountDao.updateUserAccount(afUserAccountDo);
-                        //有得卖账户减钱操作
-                        recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
+                if(null != afRecycleQuery && AfRecycleOrderType.CONFIRM_PAY.getCode().equals(afRecycleQuery.getStatus())) {
+                    afRecycleDao.addRecycleOrder(afRecycleQuery);//添加订单记录
+                    //回调有得卖确认接口
+                    Map<String, String> map = new HashMap<>();
+                    map.put("userId", String.valueOf(afRecycleQuery.getUserId()));
+                    map.put("orderId", afRecycleQuery.getRefOrderId());
+                    map.put("payType", String.valueOf(afRecycleQuery.getPayType()));
+                    map.put("settlePrice", String.valueOf(afRecycleQuery.getSettlePrice()));
+                    map.put("partnerId", afRecycleQuery.getPartnerId());
+                    String sign = SignUtil.signForYdm(RecycleUtil.createLinkString(map), RecycleUtil.PRIVATE_KEY);
+                    map.put("sign", sign);
+                    String baseUrl = RecycleUtil.CALLBACK__BASE_URL_ONLINE;
+                    if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
+                         baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
                     }
-                } else {
-                    // code = "ERR06"
-                    logger.error("addRecycleOrder callBack,param=" + map.toString()  + ", errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
+                    String postResult = HttpUtil.post(baseUrl + RecycleUtil.YDM_CALLBACK_URL, map);//向有得卖进行握手
+                    JSONObject jsonObject = JSONObject.parseObject(postResult);
+                    if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
+                        //给用户账号添加回收订单金额
+                        AfRecycleRatioDo afRecycleRatioDo = afRecycleDao.getRecycleReturnRatio();
+                        Long userId = afRecycleQuery.getUserId();
+                        BigDecimal settlePrice = afRecycleQuery.getSettlePrice();
+
+                        //修改订单状态为已完成
+                        afRecycleQuery.setStatus(AfRecycleOrderType.FINISH.getCode());
+                        afRecycleDao.updateRecycleOrder(afRecycleQuery);
+
+                        BigDecimal amount = afUserAccountDao.getAuAmountByUserId(userId);//查找用户账号信息
+                        BigDecimal remainAmount;
+                        BigDecimal rebateAmount = BigDecimal.ONE.add(afRecycleRatioDo.getRatio()).multiply(settlePrice);
+                        if (null == amount) {//用户账号信息不存在,则需要添加一条账号信息
+                            //根据用户Id查找用户名
+                            AfUserDo afUserDo = afUserDao.getUserById(userId);
+                            //给用户的返现金额
+                            AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                            afUserAccountDo.setUserId(userId);
+                            afUserAccountDo.setUserName(afUserDo.getUserName());
+                            afUserAccountDo.setRebateAmount(rebateAmount);
+                            afUserAccountDao.addUserAccount(afUserAccountDo);
+                            //有得卖账户减钱操作
+                            remainAmount = recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
+                        } else {//用户账号信息存在,直接往账号上添加金额 金额 = 订单金额 *（1 + 返现比例）
+                            AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                            afUserAccountDo.setRebateAmount(rebateAmount);
+                            afUserAccountDo.setUserId(afRecycleQuery.getUserId());
+                            afUserAccountDao.updateUserAccount(afUserAccountDo);
+                            //有得卖账户减钱操作
+                            remainAmount = recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
+                        }
+                        doSmsNotice(afRecycleQuery.getUserId(),remainAmount,settlePrice,rebateAmount);//是否需要短信通知
+                    } else {
+                        logger.error("addRecycleOrder callBack,param=" + map.toString()  + ", errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
+                    }
                 }
-                return result;
+                return 1;
             }
 
-            private void recycleTradeSave(final AfRecycleQuery afRecycleQuery, AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice, BigDecimal rebateAmount) {
-                AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeDao.getLastRecord();
-                AfRecycleTradeDo newAfRecycleTradeDo = new AfRecycleTradeDo();
-                newAfRecycleTradeDo.setGmtCreate(new Date());
-                newAfRecycleTradeDo.setGmtModified(new Date());
-                newAfRecycleTradeDo.setRatio(afRecycleRatioDo.getRatio());
-                newAfRecycleTradeDo.setRefId(afRecycleQuery.getRid());
-                newAfRecycleTradeDo.setRemainAmount(afRecycleTradeDo.getRemainAmount().subtract(settlePrice));
-                newAfRecycleTradeDo.setReturnAmount(rebateAmount);
-                newAfRecycleTradeDo.setTradeAmount(settlePrice.add(rebateAmount));
-                newAfRecycleTradeDo.setType(1);
-                afRecycleTradeDao.saveRecord(newAfRecycleTradeDo);
-            }
         });
         return 1;
     }
+
+
+    /**
+     *  添加交易记录并且从供应商账号扣除订单金额
+     * @param afRecycleQuery
+     * @param afRecycleRatioDo
+     * @param settlePrice
+     * @param rebateAmount
+     * @return 供应商账号余额
+     */
+    private BigDecimal recycleTradeSave(final AfRecycleQuery afRecycleQuery, AfRecycleRatioDo afRecycleRatioDo, BigDecimal settlePrice, BigDecimal rebateAmount) {
+        AfRecycleTradeDo afRecycleTradeDo = afRecycleTradeDao.getLastRecord();
+        AfRecycleTradeDo newAfRecycleTradeDo = new AfRecycleTradeDo();
+        newAfRecycleTradeDo.setGmtCreate(new Date());
+        newAfRecycleTradeDo.setGmtModified(new Date());
+        newAfRecycleTradeDo.setRatio(afRecycleRatioDo.getRatio());
+        newAfRecycleTradeDo.setRefId(afRecycleQuery.getRid());
+        newAfRecycleTradeDo.setRemainAmount(afRecycleTradeDo.getRemainAmount().subtract(settlePrice));
+        newAfRecycleTradeDo.setReturnAmount(rebateAmount);
+        newAfRecycleTradeDo.setTradeAmount(settlePrice.add(rebateAmount));
+        newAfRecycleTradeDo.setType(1);
+        afRecycleTradeDao.saveRecord(newAfRecycleTradeDo);
+        return newAfRecycleTradeDo.getRemainAmount();
+    }
+
+    /**
+     * 是否需要短信通知
+     * @param userId 用户id
+     * @param remainAmount 有得卖账号余额
+     * @param settlePrice 订单总额
+     * @param rebateAmount 返现总额
+     */
+    private void doSmsNotice(Long userId,BigDecimal remainAmount,BigDecimal settlePrice, BigDecimal rebateAmount){
+        try {
+            Object needNotice = bizCacheUtil.getObject(RecycleUtil.RECYCLE_AMOUNT_WARN);//查找redis中是否有过报警通知的记录
+            if(null == needNotice || (null != needNotice && "Y".equals(needNotice))){
+                BigDecimal minThreshold = RecycleUtil.RECYCLE_AMOUNT_MIN_THRESHOLD;
+                AfResourceDo afResourceDo = afResourceDao.getConfigByType(RecycleUtil.RECYCLE_AMOUNT_MIN_THRESHOLD_KEY);
+                if(null != afResourceDo && StringUtils.isNotBlank(afResourceDo.getValue())){//未配置最小报警阈值
+                    minThreshold = BigDecimal.valueOf(Integer.valueOf(afResourceDo.getValue().trim()));
+                }
+                //通知运营人员
+                if(remainAmount.compareTo(minThreshold) == -1){
+                    bizCacheUtil.saveObject(RecycleUtil.RECYCLE_AMOUNT_WARN,"N",-1);
+                    AfResourceDo mobileResourceDo = afResourceDao.getConfigByType(RecycleUtil.RECYCLE_AMOUNT_MIN_THRESHOLD_MOBILE_KEY);//查找需要账户预警通知的手机号
+                    if(null != mobileResourceDo && StringUtils.isNotBlank(mobileResourceDo.getValue())){
+                        String[] mobiles = mobileResourceDo.getValue().split(",");
+                        if(null == mobiles && mobiles.length > 0){
+                            for(int i = 0; i < mobiles.length; i ++){
+                                smsUtil.sendRecycleWarn(mobiles[i],remainAmount);
+                            }
+                        }
+                    }
+                }
+            }
+            //通知当前用户
+            AfUserDo afUserDo = afUserDao.getUserById(userId);
+            if(null != afUserDo && StringUtils.isNotBlank(afUserDo.getMobile())){
+                smsUtil.sendRecycleRebate(afUserDo.getMobile(),settlePrice,rebateAmount);
+            }
+        } catch (Exception e) {
+            logger.error("recycle doSmsNotice,error=" + e);
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public AfRecycleDo getRecycleOrder(AfRecycleQuery afRecycleQuery) {
@@ -156,7 +220,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 BigDecimal ratio = RecycleUtil.getExchangeRatio(list);
                 BigDecimal needExchangeAmount = ratio.multiply(BigDecimal.valueOf(exchangeAmount));//翻倍后的金额
                 //判断当前的兑换总额是否超过了系统设置的最高阈值，若操作则直接使用最大阈值
-                AfResourceDo afResourceDo = afResourceDao.getMaxThresholdOfDoubleExchange(ResourceType.MAX_THRESHOLD_OF_DOUBLE_EXCHANGE.getCode());
+                AfResourceDo afResourceDo = afResourceDao.getConfigByType(ResourceType.MAX_THRESHOLD_OF_DOUBLE_EXCHANGE.getCode());
                 if(null != afResourceDo && org.apache.commons.lang.StringUtils.isNotBlank(afResourceDo.getValue())){
                     BigDecimal maxThreshold = BigDecimal.valueOf(Integer.valueOf(afResourceDo.getValue().trim()));
                     if(needExchangeAmount.compareTo(maxThreshold) == 1) {
@@ -196,6 +260,5 @@ public class AfRecycleServiceImpl implements AfRecycleService {
         });
         return map;
     }
-
 
 }

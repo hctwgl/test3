@@ -16,11 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -83,8 +85,7 @@ public class BizCacheUtil extends AbstractThird {
 			redisTemplate.execute(new RedisCallback<Object>() {
 				@Override
 				public Object doInRedis(RedisConnection connection) throws DataAccessException {
-					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serialize(seriObj));
-					connection.expire(redisTemplate.getStringSerializer().serialize(key), expire);
+					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serialize(seriObj), Expiration.seconds(expire), null);
 					return null;
 				}
 			});
@@ -212,10 +213,11 @@ public class BizCacheUtil extends AbstractThird {
 				@Override
 				public Object doInRedis(RedisConnection connection) throws DataAccessException {
 					byte[] getResult = connection.get(redisTemplate.getStringSerializer().serialize(key));
-					if (getResult == null || getResult.length == 0) {
+					if (getResult == null || (null!= getResult && getResult.length == 0)) {
 						return null;
 					}
-					return SerializeUtil.unserialize(getResult);
+					Object value = SerializeUtil.unserialize(getResult);
+					return value;
 				}
 			});
 		} catch (Exception e) {
@@ -505,7 +507,7 @@ public class BizCacheUtil extends AbstractThird {
 	
 	/**
 	 * Hash 操作
-	 * @param timeout 单位s
+	 * @param value 单位s
 	 */
 	public void hset(String key, String hkey, String value) {
 		hashOps.put(key, hkey, value);

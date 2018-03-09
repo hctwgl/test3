@@ -193,5 +193,5 @@ public interface AfResourceDao {
 	 */
 	AfResourceDo getConfigByTypesAndValue(@Param("type") String type, @Param("value")String value);
 
-	AfResourceDo getMaxThresholdOfDoubleExchange(@Param("type") String type);//获取翻倍兑换的最大阈值
+	AfResourceDo getConfigByType(@Param("type") String type);//根据类型获取单个配置信息
 }

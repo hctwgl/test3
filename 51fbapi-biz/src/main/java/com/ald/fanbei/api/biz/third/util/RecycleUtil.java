@@ -15,8 +15,8 @@ public class RecycleUtil {
 
     public static final String PARTNER_ID = "10000215";//与有得卖合作id，对应我们平台的appid
 
-    public static final String CALLBACK_BASE_URL = "http://120.27.147.62:8011";//有得卖握手接口  测试
-    //public String CALLBACK__BASE_URL = "http://51fanbei.youdemai.com";//有得卖握手接口  线上
+    public static final String CALLBACK_BASE_URL_TEST = "http://120.27.147.62:8011";//有得卖握手接口  测试
+    public static final String CALLBACK__BASE_URL_ONLINE = "http://51fanbei.youdemai.com";//有得卖握手接口  线上
 
 
     public static final String YDM_CALLBACK_URL = "/api/fanbei/sendverify";//有得卖订单确认接口
@@ -25,6 +25,11 @@ public class RecycleUtil {
     public static final String COUPON_NAME = "翻倍兑换优惠券";//券名称
     public static final BigDecimal LIMIT_AMOUNT = BigDecimal.valueOf(0.00);//最小限制金额，无门槛
     public static final Integer LIMIT_COUNT = Integer.MAX_VALUE;//每个人限制领取张数,不限制
+    public static final String RECYCLE_AMOUNT_WARN = "recycle_amount_warn";//有得卖账号余额不足key
+    public static final BigDecimal RECYCLE_AMOUNT_MIN_THRESHOLD = BigDecimal.valueOf(100000);//有得卖账号最小预警余额，10万
+
+    public static final String RECYCLE_AMOUNT_MIN_THRESHOLD_KEY = "RECYCLE_MIN_AMOUNT_THRESHOLD";//有得卖账号最小余额报警key，af_resource设置的type
+    public static final String RECYCLE_AMOUNT_MIN_THRESHOLD_MOBILE_KEY = "RECYCLE_MIN_AMOUNT_THRESHOLD_MOBILE";//有得卖账号最小余额报警的手机key，af_resource设置的type
 
 
 
