@@ -7,6 +7,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
+import com.ald.fanbei.api.web.common.ApiHandle;
 import com.alibaba.fastjson.JSON;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
@@ -42,6 +45,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 
+    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
+
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
 	return afUserBankcardDao.getUserMainBankcardByUserId(userId);
@@ -56,6 +61,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		// 获取银行状态（ups写入redis数据）
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
 		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
+
+		logger.info("getUserBankcardByUserId key:"+bankStatusKey+",value" + bankStatusValue.toString());
 		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    bankStatus.setDailyLimit(bankStatus.getDailyLimit() * scale);
