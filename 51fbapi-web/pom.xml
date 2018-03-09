@@ -20,34 +20,25 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-		 	<groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.11</version>
-		    <type>pom</type>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-test</artifactId>
-		    <version>4.2.1.RELEASE</version>
-		</dependency>
-	<!-- 	<dependency>
-			<groupId>third.taobao.sdk</groupId>
-			<artifactId>taobao-sdk</artifactId>
-			<version>20170204</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.2.1.RELEASE</version>
 		</dependency>
 
 		<dependency>
-		  <groupId>third.taobao.sdk</groupId>
-		  <artifactId>taobao-sdk-source</artifactId>
-		  <version>20170204</version>
-		  <classifier>source</classifier>
-		</dependency> -->
-		<!-- <dependency>
-		  <groupId>tt</groupId>
-		  <artifactId>taobao</artifactId>
-		  <version>20170207</version>
-		</dependency> -->
-		
+			<groupId>org.mock-server</groupId>
+			<artifactId>mockserver-netty</artifactId>
+			<version>3.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+
 	</dependencies>
 	<build>
 		<finalName>ROOT</finalName>
@@ -69,16 +60,16 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<plugin>  
-	            <groupId>org.apache.maven.plugins</groupId>  
-	            <artifactId>maven-war-plugin</artifactId>  
-	            <version>2.3</version>  
-	            <configuration>  
-	                <failOnMissingWebXml>false</failOnMissingWebXml>  
-	            </configuration>  
-	        </plugin>  
-			
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

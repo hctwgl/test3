@@ -52,6 +52,21 @@ public interface AfBorrowCashDao {
 	List<AfBorrowCashDo> getBorrowCashListByUserId(@Param("userId") Long userId, @Param("start") Integer start);
 
 	/**
+	 * 获取已经完成的借钱记录
+	 * @param userId
+	 * @param start
+	 * @return
+	 */
+	List<AfBorrowCashDo> listDoneCashsByUserId(@Param("userId") Long userId, @Param("start") Integer start);
+	
+	/**
+	 * 获取处理中的借款
+	 * @param userId
+	 * @return
+	 */
+	AfBorrowCashDo getDealingCashByUserId(@Param("userId") Long userId);
+	
+	/**
 	 * 根据rid获取借款信息
 	 * 
 	 * @param rid
@@ -227,7 +242,6 @@ public interface AfBorrowCashDao {
 
 	
 	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
-
 	int getCashBorrowByUserIdAndActivity(@Param("userId") Long userId,@Param("activityTime") String activityTime);
-
+	AfBorrowCashDo fetchLastByUserId(@Param("userId")Long userId);
 }

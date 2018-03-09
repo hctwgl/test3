@@ -219,5 +219,16 @@
 		SELECT recommend_code from af_user
 		where is_delete = 0 and id =#{userId}
 	</select>
+	
+	<select id="getUserInfoByUserId" parameterType="java.lang.Long" resultType="AfUserDto">
+		SELECT
+			au.`real_name`,
+			au.`user_name`,
+			auaa.`id_number`
+		FROM
+			af_user au
+		LEFT JOIN `af_user_account` auaa ON au.`id` = auaa.`user_id`
+		WHERE au.id=#{userId} and au.is_delete = 0
+	</select>
 
 </mapper>

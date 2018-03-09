@@ -1,26 +1,28 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
@@ -686,6 +688,89 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
 	public AfResourceDo getConfigByTypesAndValue(String type, String value) {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
+	}
+	
+	public BorrowLegalCfgBean getBorrowLegalCfgInfo() {
+		List<AfResourceDo> borrowHomeConfigList = this.newSelectBorrowHomeConfigByAllTypes();
+		BorrowLegalCfgBean cfgBean = new BorrowLegalCfgBean();
+		
+		for (AfResourceDo afResourceDo : borrowHomeConfigList) {
+			String secType = afResourceDo.getSecType();
+			
+			String v = afResourceDo.getValue();
+			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
+				if (StringUtils.equals(secType, AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+					cfgBean.bankDouble = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashPoundage.getCode())) {
+					cfgBean.poundage = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+					cfgBean.overduePoundage = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.BaseBankRate.getCode())) {
+					cfgBean.bankRate = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
+					cfgBean.supuerSwitch = v;
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashLenderForCash.getCode())) {
+					cfgBean.lender = v;
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashTotalAmount.getCode())) {
+					cfgBean.amountPerDay = new BigDecimal(v);
+				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
+					cfgBean.showNums = Integer.valueOf(v);
+				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+					cfgBean.borrowCashDay = afResourceDo.getTypeDesc();
+					cfgBean.maxAmount = new BigDecimal(afResourceDo.getValue1());
+					cfgBean.minAmount = new BigDecimal(afResourceDo.getValue4());
+				}
+			}
+		}
+
+		return cfgBean;
+	}
+	public static class BorrowLegalCfgBean {
+		public BigDecimal maxAmount;
+		public BigDecimal minAmount;
+		public BigDecimal bankDouble;
+		public BigDecimal poundage;
+		public BigDecimal overduePoundage;
+		public BigDecimal bankRate;
+		public String supuerSwitch;
+		public String lender;
+		public BigDecimal amountPerDay;
+		public Integer showNums;
+		public String borrowCashDay;
+	}
+
+	public List<Object> extractBannerCfgInfo(List<AfResourceDo> bannerResclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		for (AfResourceDo afResourceDo : bannerResclist) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			data.put("type", afResourceDo.getValue1());
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+
+			bannerList.add(data);
+		}
+		return bannerList;
+	}
+
+	@Override
+	public List<Object> getLoanHomeListByType(){
+        String type = "BORROW_CASH_BANNER_DOWN";
+        String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        List<Object> list = new ArrayList<Object>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderBy(type));
+        }else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type));
+        }
+        return list;
+    }
+
+	@Override
+	public List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType) {
+		
+		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
 	}
 
 }

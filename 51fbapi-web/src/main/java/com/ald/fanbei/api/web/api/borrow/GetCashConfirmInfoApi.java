@@ -64,6 +64,7 @@ public class GetCashConfirmInfoApi implements ApiHandle{
 		resp.setResponseData(data);
 		return resp;
 	}
+	
 	private Map<String, Object> getCashInfo(AfResourceDo resource,AfUserBankcardDo card,AfUserAccountDo userDto,FanbeiContext context){
 		Map<String, Object> data = new HashMap<String, Object>();
 		BigDecimal usableAmount = userDto.getAuAmount().divide(new BigDecimal(Constants.DEFAULT_CASH_DEVIDE),2,BigDecimal.ROUND_HALF_UP).subtract(userDto.getUcAmount());

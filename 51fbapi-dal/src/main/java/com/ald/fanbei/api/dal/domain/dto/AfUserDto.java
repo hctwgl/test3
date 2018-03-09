@@ -13,6 +13,7 @@ public class AfUserDto extends AfUserDo {
 	private static final long serialVersionUID = -7305207059853020128L;
 	
 	private String alipayAccount;//支付宝账号
+	private String idNumber;//身份证号
 
 	public String getAlipayAccount() {
 		return alipayAccount;
@@ -21,6 +22,13 @@ public class AfUserDto extends AfUserDo {
 	public void setAlipayAccount(String alipayAccount) {
 		this.alipayAccount = alipayAccount;
 	}
-	
 
+	public String getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+	
 }
