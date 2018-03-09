@@ -443,10 +443,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 		}
 		return userId;
-	}
 
-		}
-		return userId;
 	}
 
 }

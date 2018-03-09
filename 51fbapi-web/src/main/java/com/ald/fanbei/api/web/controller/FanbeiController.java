@@ -48,8 +48,6 @@ public class FanbeiController extends BaseController {
 	@Resource
 	InterceptorChain interceptorChain;
 
-	@Resource
-	InterceptorChain interceptorChain;
 	
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
