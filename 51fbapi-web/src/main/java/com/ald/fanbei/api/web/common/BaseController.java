@@ -447,7 +447,7 @@ public abstract class BaseController {
 		if (Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE))
 				&& StringUtil.isBlank(appInfo)) {
 			String testUser = getTestUser(request.getHeader("Referer"));
-			if (testUser != null && !"".equals(testUser)) {
+			if (testUser != null && ! "".equals(testUser)) {
 				if ("no".equals(testUser)) {
 					return webContext;
 				} else {
@@ -616,16 +616,10 @@ public abstract class BaseController {
 	/**
 	 * 验证签名
 	 *
-	 * @param appVersion
-	 *            app版本
-	 * @param userName
-	 *            用户名
-	 * @param sign
-	 *            签名
-	 * @param time
-	 *            时间戳
-	 * @param params
-	 *            所有请求参数
+	 * @param webContext
+	 *            上下文
+	 * @param requestDataVo
+	 *           请求体
 	 * @param needToken
 	 *            是否需要needToken，不依赖登录的请求不需要，依赖登录的请求需要
 	 */
