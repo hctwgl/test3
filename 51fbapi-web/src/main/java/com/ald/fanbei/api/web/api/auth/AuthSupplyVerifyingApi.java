@@ -70,9 +70,11 @@ public class AuthSupplyVerifyingApi implements ApiHandle {
 			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getChsiStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getChsiStatus())) {
 				authDo.setGmtZhengxin(new Date());
 			}
+		}else if (StringUtil.equals("ONLINEBANK", authType)) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getOnlinebankStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getOnlinebankStatus())) {
+				authDo.setGmtOnlinebank(new Date());
+			}
 		}
-		
-		
 
 		if (afUserAuthService.updateUserAuth(authDo) > 0) {
 			return resp;

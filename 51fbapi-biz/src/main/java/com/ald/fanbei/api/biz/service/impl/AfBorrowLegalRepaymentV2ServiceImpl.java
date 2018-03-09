@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -38,6 +38,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -83,6 +84,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     AfUserAccountDao afUserAccountDao;
     @Resource
     AfBorrowCashService afBorrowCashService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
     @Resource
     TransactionTemplate transactionTemplate;
     @Resource
@@ -136,6 +139,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	 */
 	@Override
 	public void repay(RepayBo bo) {
+		
+		lockRepay(bo.userId);
+		
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
@@ -233,6 +239,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     		
     	}finally {
     		unLock(tradeNo);
+    		
+    		// 解锁还款
+    		unLockRepay(repaymentDo.getUserId());
 		}
     }
 	@Override
@@ -259,6 +268,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
         if(repaymentDo != null) {
 			changBorrowRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
 		}
+        
+        // 解锁还款
+     	unLockRepay(repaymentDo.getUserId());
         
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
@@ -430,9 +442,6 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
      */
     private void dealCouponAndRebate(RepayDealBo repayDealBo) {
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
-    	if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus())) {
-    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.cashDo.getAmount()));
-    	}
     	
     	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
             accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
@@ -442,6 +451,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     	if(repayDealBo.curUserCouponId != null && repayDealBo.curUserCouponId > 0) {
     		afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用
     	}
+    	
+    	// 解锁还款
+		unLockRepay(repayDealBo.userId);
     }
     
     private void doAccountLog(RepayDealBo repayDealBo) {
@@ -655,6 +667,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}
+		
+		if(AfBorrowCashStatus.finsh.getCode().equals(cashDo.getStatus())) {
+			afUserAccountSenceService.syncLoanUsedAmount(repayDealBo.userId, SceneType.CASH, repayDealBo.cashDo.getAmount().negate());
+		}
 		//判断是否代扣逾期则平账
 		try{
 			Boolean isCashOverdueOld = false;
@@ -712,6 +728,22 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		redisTemplate.delete(key);
 	}
 	
+	/**
+	 * 锁住还款
+	 */
+	private void lockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+        if (count != 1) {
+            throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+        }
+	}	
+	
+	private void unLockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+		redisTemplate.delete(key);
+	}
 	
 	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
 			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 

@@ -121,6 +121,12 @@
         <if test="minBorrowCashId !=null and minBorrowCashId != ''">
             AND borrow_cash_id <![CDATA[ > ]]> #{minBorrowCashId}
         </if>
+         <if test="userIds !=null and userIds != ''">
+        	AND user_id not in 
+            <foreach collection="userIds" open="(" close=")" separator="," index="index">
+                #{userIds[${index}]}
+            </foreach>
+        </if>
             order by borrow_cash_id asc
        <if test="limitNums !=null and limitNums != ''">
            limit #{limitNums}
@@ -175,6 +181,12 @@
         <if test="minBorrowCashId !=null and minBorrowCashId != ''">
             AND borrow_cash_id <![CDATA[ > ]]> #{minBorrowCashId}
         </if>
+         <if test="userIds !=null and userIds != ''">
+        	AND user_id not in 
+            <foreach collection="userIds" open="(" close=")" separator="," index="index">
+                #{userIds[${index}]}
+            </foreach>
+        </if>
             order by borrow_cash_id asc
        <if test="limitNums !=null and limitNums != ''">
            limit 1
@@ -199,6 +211,12 @@
         </if>
         <if test="minBorrowCashId !=null and minBorrowCashId != ''">
             AND borrow_cash_id <![CDATA[ <= ]]> #{minBorrowCashId}
+        </if>
+         <if test="userIds !=null and userIds != ''">
+        	AND user_id not in 
+            <foreach collection="userIds" open="(" close=")" separator="," index="index">
+                #{userIds[${index}]}
+            </foreach>
         </if>
     </select>
     

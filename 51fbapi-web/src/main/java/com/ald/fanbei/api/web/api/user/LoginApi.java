@@ -15,7 +15,7 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -38,7 +38,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
@@ -86,7 +86,7 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
-	AfAbTestDeviceService afAbTestDeviceService;
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -304,12 +304,12 @@ public class LoginApi implements ApiHandle {
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
 			if (StringUtils.isNotEmpty(deviceId)) {
-				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
 				abTestDeviceDo.setUserId(userId);
-				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				abTestDeviceDo.setDeviceNum(deviceId);
 				// 通过唯一组合索引控制数据不重复
-				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
 			}
 		}  catch (Exception e) {
 			// ignore error.

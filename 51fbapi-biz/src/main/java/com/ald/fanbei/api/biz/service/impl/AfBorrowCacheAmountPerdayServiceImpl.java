@@ -3,11 +3,14 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCacheAmountPerdayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 
@@ -36,6 +39,20 @@ public class AfBorrowCacheAmountPerdayServiceImpl implements AfBorrowCacheAmount
 		AfBorrowCacheAmountPerdayDo borrowCacheAmountPerdayDo = new AfBorrowCacheAmountPerdayDo();
 		borrowCacheAmountPerdayDo.setDay(day);
 		return afBorrowCacheAmountPerdayDao.getSigninByDay(borrowCacheAmountPerdayDo);
+	}
+	
+	@Override
+	public void record() {
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		AfBorrowCacheAmountPerdayDo currentAmount = this.getSigninByDay(currentDay);
+		if (currentAmount == null) {
+			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
+			temp.setAmount(new BigDecimal(0));
+			temp.setDay(currentDay);
+			temp.setNums(0l);
+			addBorrowCacheAmountPerday(temp);
+			currentAmount = temp;
+		}
 	}
 
 }

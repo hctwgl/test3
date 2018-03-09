@@ -432,6 +432,8 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		
 	}
 
+	
+	
 	@Override
 	public void fundRiskSuccess(String userName) {
 		try {
@@ -867,6 +869,57 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("zhengxinRiskFault error", e);
 		}	
 		
+	}
+	
+	@Override
+	public void ecommerceRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过电商认证！马上去下一步认证吧。可以获得更高额度哦！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("ecommerceRisk Success,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "232");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("电商认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("ecommerceRisk error", e);
+		}		
+	}
+
+	@Override
+	public void ecommerceRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次电商认证未通过";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("ecommerceRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "233");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("电商认证未通过", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("ecommerceRiskFail error", e);
+		}		
+	}
+
+	@Override
+	public void ecommerceRiskFault(String userName) {
+		try {
+			String msgContext = "您好，您本次电商认证失败，稍后请重新进行认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("ecommerceRisk fail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "234");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("电商认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("ecommerceRiskFault error", e);
+		}		
 	}
 	@Override
 	public void boluomeActivityMsg(String userName,String type,String secType) {

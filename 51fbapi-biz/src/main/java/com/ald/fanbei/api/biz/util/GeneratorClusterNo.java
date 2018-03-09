@@ -97,6 +97,20 @@ public class GeneratorClusterNo {
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate, "jk")));
 		return orderSb.toString();
 	}
+	
+	/**
+	 * 获取贷款编号
+	 * 
+	 * @param currDate
+	 * @return
+	 */
+	public String getLoanNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("dk");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate, "dk")));
+		return orderSb.toString();
+	}
+
 
 	/**
 	 * 获取现金借款编号
