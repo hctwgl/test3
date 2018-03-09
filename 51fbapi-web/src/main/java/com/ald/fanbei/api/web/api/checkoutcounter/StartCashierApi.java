@@ -23,6 +23,7 @@ import com.ald.fanbei.api.web.vo.CashierVo;
 import com.ald.fanbei.api.web.vo.ConfirmOrderVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
@@ -323,7 +324,10 @@ public class StartCashierApi implements ApiHandle {
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
+        	CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
+        	cashierTypeVo.setUseableAmount(userabledAmount);
+        	
+        	return cashierTypeVo;
             }
 
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
