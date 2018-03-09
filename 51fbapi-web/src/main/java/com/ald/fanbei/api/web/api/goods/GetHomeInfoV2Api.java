@@ -358,7 +358,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
 		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
 			Map<String, Object> categoryInfoMap = Maps.newHashMap();
-			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryId",modelH5ItemDo.getRid());
 			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
 			categoryInfoList.add(categoryInfoMap);
 		}
@@ -383,7 +383,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			List<AfGoodsDo> goodsDoList = null;
 			if (null != categoryInfoList.get(0)) {
 				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
-				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
 			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
 			for (AfGoodsDo goodsDo : goodsDoList) {
