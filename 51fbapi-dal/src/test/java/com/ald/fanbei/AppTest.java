@@ -1,6 +1,8 @@
 package com.ald.fanbei;
 
 import com.ald.fanbei.AppTest;
+import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
+import com.alibaba.fastjson.JSON;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -20,6 +22,10 @@ public class AppTest
     public AppTest( String testName )
     {
         super( testName );
+        
+        String upsValue = "{\"dailyLimit\":5,\"isMaintain\":0,\"limitDown\":0,\"limitUp\":0.5,\"maintainEndtime\":\"\",\"maintainStarttime\":\"\"}";
+	UpsBankStatusDto bankStatus = JSON.parseObject(upsValue.toString(), UpsBankStatusDto.class);
+	System.out.print(bankStatus.toString());
     }
 
     /**
