@@ -37,7 +37,8 @@
 	
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
-
+	<context:component-scan base-package="com.ald.fanbei.api.biz.auth.executor" />
+	
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"
@@ -161,9 +162,12 @@
 				<value>/legalborrowV2/getCashPageType</value>
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
+				<value>/resource/getFlowFlayerResourceConfig</value>
 
 
 				<value>/order/dmNperEnabled</value>
+				
+				<value>/user/getMineInfoV1</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -186,6 +190,7 @@
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
 				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineInfoV1" value-ref="getMineInfoApiV1" />
 				<entry key="/user/getMineCouponCount" value-ref="getMineCouponCountApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
@@ -302,6 +307,9 @@
 				<entry key="/auth/authMobile" value-ref="authMobileApi" />
 				<entry key="/auth/authContactor" value-ref="authContactorApi" />
 				<entry key="/auth/authChsi" value-ref="authChsiApi" />
+				<!--新增网银-->
+				<entry key="/auth/authOnlinebank" value-ref="authOnlinebankApi" />
+
 				<entry key="/auth/authZhengxin" value-ref="authZhengxinApi" />
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
 				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
@@ -331,6 +339,8 @@
 
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
+				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
+				
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -403,6 +413,8 @@
 				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
 				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
+				<entry key="/borrowCash/getAllBorrowList" value-ref="getAllBorrowListApi" />
+				
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
@@ -421,6 +433,7 @@
 				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
+				<entry key="/resource/getFlowFlayerResourceConfig" value-ref="getFlowFlayerResourceConfigApi" />
 				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
 				<entry key="/resource/getConfigurableNumDay" value-ref="getConfigurableNumDayApi" />
 
@@ -531,22 +544,39 @@
 				<entry key="/legalborrowV2/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoV2Api" />
 				<entry key="/legalborrowV2/agentBuyHints" value-ref="agentBuyHintsV2Api" />
-
-
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
+				
+				<!-- 贷款相关接口 -->
+				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
+				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
+				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
 
 			</map>
 		</constructor-arg>
 	</bean>
 	
-	<!-- App内部H5接口 -->
+	
+
+	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-				<entry key="/h5/legalborrowV2/getLegalOrderLogistics" value-ref="h5GetLegalOrderLogisticsApi" />
+				<!-- 贷款相关接口 -->
+				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
+				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
+				<entry key="/h5/loan/getLoanHomeInfo" value-ref="getLoanHomeInfoApi" />
+
+				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
+				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />
+				<entry key="/h5/loan/getLoanRepayments" value-ref="getLoanRepaymentsApi" />
+				<entry key="/h5/loan/getWhiteLoanProtocol" value-ref="getWhiteLoanProtocolApi" />
+				<!-- 白领贷业务接口 -->
+				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
+				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
+				
 			</map>
 		</constructor-arg>
 	</bean>
@@ -589,6 +619,18 @@
         		<ref bean="homePageV1CacheTask" />
         		<ref bean="homePageV2CacheTask" />
         	</list>
+		</property>
+	</bean>
+	
+	<!-- 拦截器链 -->
+	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
+		<property name="interceptors">
+			<list>
+				<ref bean="validationInterceptor"/>
+				<ref bean="payPwdConvertorInterceptor"/>
+				<ref bean="payPwdCheckInterceptor"/>
+				<ref bean="forceUpdateInterceptor"/>
+			</list>
 		</property>
 	</bean>
 	

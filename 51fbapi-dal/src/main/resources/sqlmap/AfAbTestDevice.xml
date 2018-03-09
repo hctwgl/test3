@@ -11,6 +11,7 @@
 				gmt_modified,
 				user_id,
 				device_num
+				
 			)
 		VALUES
 		    (

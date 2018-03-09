@@ -20,6 +20,5 @@ public interface AfLegalContractPdfCreateService {
 
     void protocolLegalRenewal(long userId, Long borrowId, Long renewalId, int renewalDay, BigDecimal renewalAmount);
 
-    void platformServiceProtocol(Long borrowId,String type,BigDecimal poundage,Long userId);
 
 }

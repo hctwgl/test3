@@ -65,4 +65,10 @@ public interface AfUserAuthService {
 
 	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene);
 
-	}
+	boolean allBasicAuthPassed(Long userId);
+	boolean allBasicAuthPassed(AfUserAuthDo authInfo);
+
+	boolean allSupplementAuthPassed(Long userId);
+
+	boolean allSupplementAuthPassed(AfUserAuthDo authInfo);
+}

@@ -6,8 +6,7 @@ import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -238,4 +237,20 @@ public interface AfResourceService {
 	AfResourceDo getWechatConfig();
 
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
+	
+	/**
+	 * 获取合规借钱相关的所有配置信息
+	 * @return
+	 */
+	BorrowLegalCfgBean getBorrowLegalCfgInfo();
+
+	/**
+	 *
+	 * @param type (banner的类型)
+	 * @param envType (区分预发和线上)
+	 * @return
+	 */
+	List<Object> getLoanHomeListByType();
+
+	List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType);
 }
