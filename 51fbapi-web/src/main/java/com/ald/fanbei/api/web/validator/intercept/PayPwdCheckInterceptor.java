@@ -134,7 +134,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		Integer times = (Integer) bizCacheUtil.getObject(key);
 		Date previousDate = (Date) bizCacheUtil.getObject(key1);
 		
-		log = log + String.format("times = %d ,previousDate = %tc", resourceDo.toString(),previousDate);
+		log = log + String.format("times = %s ,previousDate = %tc", resourceDo.toString(),previousDate);
 		logger.info(log);
 
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
