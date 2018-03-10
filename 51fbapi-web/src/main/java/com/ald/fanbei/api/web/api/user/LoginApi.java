@@ -280,7 +280,7 @@ public class LoginApi implements ApiHandle {
 				if (bank == null){
 					cardNumber = bank.getCardNumber();
 				}
-				baiQiShiUtils.getLoginResult(blackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
+				baiQiShiUtils.getLoginResult(requestDataVo.getId(),blackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
 			}catch (Exception e){
 				logger.error("baiQiShiUtils getLoginResult error => {}",e.getMessage());
 			}

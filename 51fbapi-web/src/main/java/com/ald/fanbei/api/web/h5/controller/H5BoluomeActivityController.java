@@ -518,6 +518,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	    String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 	    String registerSource = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
 	    
 	    if (registerSource == null || "".equals(registerSource)) {
@@ -562,7 +563,7 @@ public class H5BoluomeActivityController extends BaseController {
 		return resultStr;
 	    }
 		try {
-			baiQiShiUtils.getRegistResult(token,"",mobile,"","","","");
+			baiQiShiUtils.getRegistResult("h5",bsqToken,"",mobile,"","","","");
 		}catch (Exception e){
 			logger.error("H5GGShare baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

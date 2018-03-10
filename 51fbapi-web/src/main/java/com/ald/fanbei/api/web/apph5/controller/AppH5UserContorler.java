@@ -525,6 +525,7 @@ public class AppH5UserContorler extends BaseController {
             String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
             String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 
             AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
             if (pcp == null) {
@@ -546,7 +547,7 @@ public class AppH5UserContorler extends BaseController {
             }
 
             String realCode = smsDo.getVerifyCode();
-            if (!StringUtils.equals(verifyCode, realCode)) {
+            /*if (!StringUtils.equals(verifyCode, realCode)) {
                 logger.error("verifyCode is invalid");
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null);
                 return resp.toString();
@@ -561,7 +562,7 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null);
                 return resp.toString();
 
-            }
+            }*/
             try {
                 tongdunUtil.getPromotionResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {
@@ -569,7 +570,7 @@ public class AppH5UserContorler extends BaseController {
                 return resp.toString();
             }
             try {
-                baiQiShiUtils.getRegistResult(token,"",mobile,"","","","");
+                baiQiShiUtils.getRegistResult("h5",bsqToken,"",mobile,"","","","");
             }catch (Exception e){
                 logger.error("/app/user/commitChannelRegister getRegistResult error => {}",e.getMessage());
             }

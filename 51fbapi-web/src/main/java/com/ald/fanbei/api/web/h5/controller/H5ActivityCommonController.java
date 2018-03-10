@@ -137,7 +137,7 @@ public class H5ActivityCommonController extends BaseController {
 
 	    }
 		try {
-			baiQiShiUtils.getRegistResult(tongduanToken,"",UserDo.getMobile(),"","","","");
+			baiQiShiUtils.getRegistResult("h5",tongduanToken,"",UserDo.getMobile(),"","","","");
 		}catch (Exception e){
 			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}
@@ -189,6 +189,7 @@ public class H5ActivityCommonController extends BaseController {
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	    String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 
 	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
 	    if (eUserDo != null) {
@@ -226,7 +227,7 @@ public class H5ActivityCommonController extends BaseController {
 		return resultStr;
 	    }
 		try {
-			baiQiShiUtils.getRegistResult(token,"",moblie,"","","","");
+			baiQiShiUtils.getRegistResult("h5",bsqToken,"",moblie,"","","","");
 		}catch (Exception e){
 			logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

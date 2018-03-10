@@ -7,6 +7,7 @@ package com.ald.fanbei.api.biz.third.util.baiqishi;
 
 
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -34,8 +35,14 @@ public class BaiQiShiUtils {
      * @param cardNumber
      * @param openId
      */
-    public void getLoginResult(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
-        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"login");
+    public void getLoginResult(String requsetId,String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
+        String platform;
+        if ("h5".equals(requsetId)){
+            platform = "h5";
+        }else {
+            platform = requsetId.startsWith("i") ? "ios" : "android";
+        }
+        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"login",platform);
         JSONObject apiResp = null;
         String apiUrl = "https://api.baiqishi.com/services/decision";
         try {
@@ -59,7 +66,7 @@ public class BaiQiShiUtils {
         }*/
     }
 
-    private Map<String, Object> getCommonParam(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId,String eventType) {
+    private Map<String, Object> getCommonParam(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId,String eventType,String platform) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("mobile", mobile);
         params.put("name", name);
@@ -69,6 +76,7 @@ public class BaiQiShiUtils {
         params.put("appId", "test");
         params.put("tokenKey", blackBox);
         params.put("eventType", eventType);
+        params.put("platform", platform);
         params.put("verifyKey", "e93f7e5ec79548f3b0932cdc086a5ac3");
         params.put("partnerId", "fanbei");
         return params;
@@ -84,9 +92,14 @@ public class BaiQiShiUtils {
      * @param cardNumber
      * @param openId
      */
-    public void getRegistResult(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
-
-        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"register");
+    public void getRegistResult(String requsetId,String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId) {
+        String platform;
+        if ("h5".equals(requsetId)){
+            platform = "h5";
+        }else {
+            platform = requsetId.startsWith("i") ? "ios" : "android";
+        }
+        Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"register",platform);
         String apiUrl = "https://api.baiqishi.com/services/decision";
         JSONObject apiResp = null;
         try {
