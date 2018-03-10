@@ -52,6 +52,8 @@ public class GetUserShareInfoApi implements ApiHandle {
 		JSONObject json = new JSONObject();
 		
 	    try{
+		String isHidden = "N";
+		String changeImage = "N";
 		String shareType = "URL";
 		data.put("shareType", shareType);
 		json.put("shareType", shareType);
@@ -102,23 +104,82 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
 		     jsonStr.put("userInfo", jOUser);
 		 }
-		 //是否更换头像
+		 //更换的个性配置
+		 ///////////////////////////////////////////////////////////
+		 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
+			    try{
+				List<JSONObject>   list =  JSONObject.parseArray(afResource.getValue1(), JSONObject.class);
+			     if(list != null){
+				JSONObject jsonObject = list.get(0);
+				String image  = "";
+				image = jsonObject.getString("changeConfigure");
+				if("avatar".equals(image)){
+				   doChangeImage(userId);
+				    changeImage = "Y";
+				}
+			     }
+			    }catch(Exception e){
+				 logger.error("getUserShareInfoApi value1 error  e = "+ e);
+			    }
+			     
+			 }
+		 if("N".equals(changeImage)){
+		     //将用户头像放入imageList 
+		     List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
+		     afUserDo.getAvatar();
+		     //获取该list(type = 'avatar')
+		     JSONArray ja= new JSONArray();
+		     for(JSONObject jso:list){
+			 if(jso.getString("type")!= null && "avatar".equals(jso.getString("type"))){
+			    //对该list加入头像，
+				 if(userInfo != null){
+				     String image = "";
+				     image = afUserDo.getAvatar();
+				     if(StringUtil.isBlank(image)){
+					 //获取默认头像配置
+					 AfResourceDo afResourceDo  = afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, Constants.DEFAULT_AVATAR);
+					if(afResourceDo != null){
+						 image = afResourceDo.getValue();
+					}
+				     }
+				     jso.put("image", image);//JSONObject对象中添加键值对  
+				     jso.remove("type");
+				    // jsonStr.put("imageList", jso);
+				     ja.add(jso);
+				 }
+				
+			 }else{
+			     ja.add(jso);  
+			 }
+			 
+		     }
+		     jsonStr.put("imageList", ja);
+		     
+		 }
 		 
 		 //
 		 List<JSONObject> listRule = JSONObject.parseArray("[]", JSONObject.class);
 		 jsonStr.put("hideElement", listRule);
 		 if(afResource.getValue2() != null  && StringUtils.isNotEmpty(afResource.getValue2())){
 		    try{
-		    
+		     isHidden = "Y";
 		     listRule =  JSONObject.parseArray(afResource.getValue2(), JSONObject.class);
-		       jsonStr.put("hideElement", listRule);
+		     
+		     for(JSONObject jso:listRule){
+			 if(jso.getString("entityName")== null || "".equals(jso.getString("entityName"))){
+			     isHidden = "N";
+			     break;
+			 }
+		     }
+		     if("Y".equals(isHidden)){
+			  jsonStr.put("hideElement", listRule); 
+		     }
+		     
 		    }catch(Exception e){
 			 logger.error("getUserShareInfoApi value2 error  e = "+ e);
 		    }
 		     
 		 }
-		 
-		 
 		
 		 jsonStr.put("shareType", "IMAGE");
 		 json = JSONObject.parseObject(jsonStr.toString());	
@@ -131,6 +192,15 @@ public class GetUserShareInfoApi implements ApiHandle {
 	    return resp;
 	}
 	
+
+	private int doChangeImage(Long userId) {
+	    //获取数据库用户上传的最后一张图片。放入json 
+	    
+	    
+	    
+	    return 0;
+	}
+
 
 	private String changePhone(String userName) {
 		String newUserName = "";
