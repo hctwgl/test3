@@ -8,6 +8,7 @@ package com.ald.fanbei.api.biz.third.util.baiqishi;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,7 @@ public class BaiQiShiUtils {
             platform = requsetId.startsWith("i") ? "ios" : "android";
         }
         Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"login",platform);
+        logger.info("baiQiShiUtils getLoginResult params ,"+JSON.toJSONString(params) + ",requsetId ="+requsetId + ",blackBox="+blackBox+",mobile ="+mobile+",name ="+name);
         JSONObject apiResp = null;
         String apiUrl = "https://api.baiqishi.com/services/decision";
         try {
@@ -101,6 +103,7 @@ public class BaiQiShiUtils {
             platform = requsetId.startsWith("i") ? "ios" : "android";
         }
         Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"register",platform);
+        logger.info("baiQiShiUtils getRegistResult params ,"+JSON.toJSONString(params) + ",requsetId ="+requsetId + ",blackBox="+blackBox+",mobile ="+mobile+",name ="+name);
         String apiUrl = "https://api.baiqishi.com/services/decision";
         JSONObject apiResp = null;
         try {
