@@ -106,7 +106,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     JSONObject jOUser = userInfo.getJSONObject(0); 
 		     String mobile = "";
 		     mobile = changePhone(afUserDo.getUserName());
-		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
+		     jOUser.put("content", mobile);//JSONObject对象中添加键值对  
 		    // JSONArray user= jOUser.getJSONArray("userInfo");
 		     JSONArray user= new JSONArray();
 		     user.add(jOUser);
