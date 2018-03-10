@@ -106,6 +106,7 @@ public class H5ActivityCommonController extends BaseController {
 	String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 	String password = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 	AfUserDo UserDo =  new AfUserDo();
         String referer = request.getHeader("referer");  
     //    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
@@ -137,7 +138,7 @@ public class H5ActivityCommonController extends BaseController {
 
 	    }
 		try {
-			baiQiShiUtils.getRegistResult("h5",tongduanToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),"","","","");
+			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),"","","","");
 		}catch (Exception e){
 			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

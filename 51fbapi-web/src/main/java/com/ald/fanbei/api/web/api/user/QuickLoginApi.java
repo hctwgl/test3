@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -77,6 +78,8 @@ public class QuickLoginApi implements ApiHandle {
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 
 
 	@Override
@@ -262,6 +265,8 @@ public class QuickLoginApi implements ApiHandle {
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+
+			baiQiShiUtils.getLoginResult(requestDataVo.getId(),bqsBlackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),null,null,null);
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
