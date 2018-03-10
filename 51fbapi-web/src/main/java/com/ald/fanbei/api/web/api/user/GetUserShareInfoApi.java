@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 
 
 /**
@@ -71,6 +73,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		
 		//查询配置信息，如果不存在，返回 默认类型URL;
 		AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
+		List<AfResourceDo>   resourceList =   afResourceService.getConfigsByTypesAndSecType(Constants.USER_SHARE_INFO_CONFIGURE, source);
 		
 		//获取list,随机得到一个配置？
 		
@@ -104,6 +107,42 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
 		     jsonStr.put("userInfo", jOUser);
 		 }
+		 try{
+        		 if(resourceList != null && resourceList.size() >0){
+        		     for(AfResourceDo afResourceDo :resourceList){
+        			 //添加配置，若是content且是是需要随机配置，否则
+        			 
+        			 String changeJson = afResourceDo.getValue();
+        			 //所有的jsonStr的key是否有等于changeJson，有则添加JSONArray
+        			 Iterator<String> sIterator = jsonStr.keySet().iterator();
+        			 while (sIterator.hasNext()) {
+        			     // 获得key
+        			     String key = sIterator.next();
+        			     if(key.equals(changeJson)){
+        				 //
+        				 if(!"RANDOM".equals(afResourceDo.getValue1())){
+        				     //添加所有
+        				     String addValue = afResourceDo.getValue2();
+        				     JSONArray info= jsonStr.getJSONArray(key);
+        				     JSONObject jso = JSONObject.parseObject(addValue);
+        				     List<JSONObject>   list =  JSONObject.parseArray(jso.getJSONArray("configure").toString(), JSONObject.class); 
+        				    // JSONArray jsa= jso.getJSONArray("configure");
+        				     if(list != null && list.size() >0){
+        				     for(JSONObject jo :list){
+        					 info.add(jo);
+        				     }
+        				    }
+        				 }else{
+        				     //随机添加一条
+        				 }
+        			     }
+        			 }
+        		     }
+        		 }
+		 }catch(Exception e){
+		     logger.error("getUserShareInfoApi add configure error  e = "+ e);
+		 }
+		 
 		 //更换的个性配置
 		 ///////////////////////////////////////////////////////////
 		 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
