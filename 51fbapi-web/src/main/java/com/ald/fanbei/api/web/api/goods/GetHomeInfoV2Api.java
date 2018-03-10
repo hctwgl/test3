@@ -385,7 +385,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
 				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
-			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				goodsInfo.put("goodName", goodsDo.getName());
