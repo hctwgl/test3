@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -118,29 +119,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
-import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
-import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
@@ -2794,5 +2772,39 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public String checkLeaseOrder(Long userId, Long goodsId) {
         return orderDao.checkLeaseOrder(userId,goodsId);
+    }
+
+    @Override
+    public BigDecimal getLeaseFreeze(Integer score, BigDecimal goodsPrice) {
+        AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("LEASE_FREEZE");
+        JSONArray leaseFreezeArray = JSON.parseArray(resourceDo.getValue2());
+        Integer freezeScore = 0;
+        Integer freeze = 100;
+        for (int i=0;i<leaseFreezeArray.size();i++){
+            JSONObject obj = leaseFreezeArray.getJSONObject(i);
+            //判断分数
+            if(score >= obj.getInteger("score") || freezeScore == obj.getInteger("score")){
+                BigDecimal minPrice = obj.getBigDecimal("minPrice");
+                BigDecimal maxPrice = obj.getBigDecimal("maxPrice");
+                boolean isAccord = true;
+                //判断价格
+                if(minPrice.compareTo(new BigDecimal(0)) != 0 && goodsPrice.compareTo(minPrice) <= 0){
+                    isAccord = false;
+                }
+                if(maxPrice.compareTo(new BigDecimal(0)) != 0 && goodsPrice.compareTo(maxPrice) == 1){
+                    isAccord = false;
+                }
+                if(isAccord){
+                    freeze = obj.getInteger("freeze");
+                    freezeScore = obj.getInteger("score");
+                }
+            }
+        }
+        return goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100));
+    }
+
+    @Override
+    public int addOrderLease(AfOrderLeaseDo afOrderLeaseDo) {
+        return orderDao.addOrderLease(afOrderLeaseDo);
     }
 }

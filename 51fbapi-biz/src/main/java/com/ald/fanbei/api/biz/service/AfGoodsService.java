@@ -113,5 +113,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 
 	List<LeaseGoods> getHomeLeaseGoods(Long pageIndex,Long pageSize);
+
+	LeaseGoods getLeaseGoodsByGoodsId(Long goodsId);
 }
 

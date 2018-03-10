@@ -395,7 +395,7 @@
 
 	<select id="getHomeLeaseGoods" resultMap="leaseResultMap">
 		SELECT
-			a.id,a.goods_icon,a.name
+			a.id rid,a.goods_icon,a.name
 		FROM
 		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
 		WHERE
@@ -405,6 +405,19 @@
 		ORDER BY b.sort
 		LIMIT #{pageIndex},#{pageSize}
 	</select>
+
+	<select id="getLeaseGoodsByGoodsId" resultType="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
+		SELECT
+		<include refid="queryAllFields"/>,b.is_sale,b.buyout
+		FROM
+		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
+		WHERE
+		a.is_delete = 0 AND a.`status` = 'PUBLISH'
+		AND b.is_sale = 'Y'
+		AND b.is_delete = 0
+		AND b.goods_id=#{goodsId}
+	</select>
+
 	<select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
 		SELECT
 		lease_param,lease_amount

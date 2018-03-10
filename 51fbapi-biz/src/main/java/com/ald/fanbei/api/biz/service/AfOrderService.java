@@ -393,4 +393,16 @@ public interface AfOrderService {
 	 * @return
 	 */
 	String checkLeaseOrder(Long userId, Long goodsId);
+
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	BigDecimal getLeaseFreeze(Integer score, BigDecimal goodsPrice);
+
+	/**
+	 * 添加租赁订单
+	 * @return
+	 */
+	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
 }

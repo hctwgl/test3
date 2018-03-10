@@ -170,4 +170,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getHomeLeaseGoods(pageIndex,pageSize);
 	}
 
+	@Override
+	public LeaseGoods getLeaseGoodsByGoodsId(Long goodsId) {
+		return afGoodsDao.getLeaseGoodsByGoodsId(goodsId);
+	}
+
 }

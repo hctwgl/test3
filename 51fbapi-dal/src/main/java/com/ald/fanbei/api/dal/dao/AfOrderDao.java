@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
@@ -249,5 +250,11 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	String checkLeaseOrder(@Param("userId")Long userId ,@Param("goodsId") Long goodsId);
+
+	/**
+	 * 添加租赁订单
+	 * @return
+	 */
+	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
 
 }

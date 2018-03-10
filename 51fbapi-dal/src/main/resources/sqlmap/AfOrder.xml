@@ -1280,4 +1280,19 @@
 		SELECT b.`status` FROM af_order_lease a INNER JOIN af_order b ON a.order_id=a.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED'
 	</select>
 
+	<insert id="addOrderLease" parameterType="AfOrderLeaseDo">
+		INSERT INTO af_order_lease(is_delete , gmt_create , gmt_modified , user_id , order_id , monthly_rent, lease_status,rebate_status,user_name,verify_status,buyout,richie_amount,recover_rate)
+		VALUES
+			(0,NOW(),NOW(),
+			#{userId},
+			#{orderId},
+			#{monthlyRent},'','N'
+			#{userName},
+			'A',
+			#{buyout},
+			#{richieAmount},
+			#{recoverRate}
+			)
+	</insert>
+
 </mapper>
