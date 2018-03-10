@@ -62,9 +62,9 @@ public class GetUserShareInfoApi implements ApiHandle {
 		Long userId = context.getUserId();
 		AfUserDo afUserDo =  afUserService.getUserById(userId) ;
 		
-		if (userId == null || afUserDo == null) {
-			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
-		}
+//		if (userId == null || afUserDo == null) {
+//			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
+//		}
 	
 		if (StringUtils.isBlank(source)) {
 			logger.error("getUserShareInfo source can't be empty");
@@ -98,14 +98,19 @@ public class GetUserShareInfoApi implements ApiHandle {
 		 
 		 
 		//获取json,并增加属性。
+	
 		 JSONObject jsonStr = JSONObject.parseObject(afResource.getValue3());
 		 JSONArray userInfo= jsonStr.getJSONArray("userInfo");
+		 if(afUserDo != null){
 		 if(userInfo != null){
 		     JSONObject jOUser = userInfo.getJSONObject(0); 
 		     String mobile = "";
 		     mobile = changePhone(afUserDo.getUserName());
 		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
 		     jsonStr.put("userInfo", jOUser);
+		 }
+		 }else{
+		     jsonStr.remove("userInfo");
 		 }
 		 try{
         		 if(resourceList != null && resourceList.size() >0){
@@ -119,23 +124,24 @@ public class GetUserShareInfoApi implements ApiHandle {
         			     // 获得key
         			     String key = sIterator.next();
         			     if(key.equals(changeJson)){
-        				 //
-        				 if(!"RANDOM".equals(afResourceDo.getValue1())){
+        				 String addValue = afResourceDo.getValue2();
+    				         JSONArray info= jsonStr.getJSONArray(key);
+    				         JSONObject jso = JSONObject.parseObject(addValue);
+    				         List<JSONObject>   list =  JSONObject.parseArray(jso.getJSONArray("configure").toString(), JSONObject.class); 
+    				         if(list != null && list.size() >0){
+    				         if(!"RANDOM".equals(afResourceDo.getValue1())){
         				     //添加所有
-        				     String addValue = afResourceDo.getValue2();
-        				     JSONArray info= jsonStr.getJSONArray(key);
-        				     JSONObject jso = JSONObject.parseObject(addValue);
-        				     List<JSONObject>   list =  JSONObject.parseArray(jso.getJSONArray("configure").toString(), JSONObject.class); 
-        				    // JSONArray jsa= jso.getJSONArray("configure");
-        				     if(list != null && list.size() >0){
         				     for(JSONObject jo :list){
         					 info.add(jo);
         				     }
-        				    }
         				 }else{
         				     //随机添加一条
+        				     int randomLenght = list.size();
+        				     int num=(int)(Math.random() * randomLenght); 
+        				     info.add(list.get(num));
         				 }
-        			     }
+        			      }
+        			    }
         			 }
         		     }
         		 }
@@ -153,8 +159,8 @@ public class GetUserShareInfoApi implements ApiHandle {
 				String image  = "";
 				image = jsonObject.getString("changeConfigure");
 				if("avatar".equals(image)){
-				   doChangeImage(userId);
-				    changeImage = "Y";
+				        doChangeImage(userId);
+				         changeImage = "Y";
 				}
 			     }
 			    }catch(Exception e){
@@ -162,6 +168,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 			    }
 			     
 			 }
+		 if(afUserDo != null){
 		 if("N".equals(changeImage)){
 		     //将用户头像放入imageList 
 		     List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
@@ -183,7 +190,6 @@ public class GetUserShareInfoApi implements ApiHandle {
 				     }
 				     jso.put("image", image);//JSONObject对象中添加键值对  
 				     jso.remove("type");
-				    // jsonStr.put("imageList", jso);
 				     ja.add(jso);
 				 }
 				
@@ -195,7 +201,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     jsonStr.put("imageList", ja);
 		     
 		 }
-		 
+		}
 		 //
 		 List<JSONObject> listRule = JSONObject.parseArray("[]", JSONObject.class);
 		 jsonStr.put("hideElement", listRule);
