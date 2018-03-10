@@ -572,4 +572,14 @@
 	</update>
 	
 
+	<select id="getFlowFlayerResourceConfig" resultType="AfResourceDo">
+		SELECT
+			a.*
+		FROM
+			af_resource a
+		INNER JOIN af_resource b on b.id = a.value_4 AND b.value_4 = 'O'
+		WHERE
+			a.type = #{type}
+		AND a.sec_type = #{secType};
+	</select>
 </mapper>

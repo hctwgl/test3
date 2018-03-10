@@ -22,8 +22,8 @@ public class Create {
 		String tables = "af_borrow_cash_push,af_borrow_push";
 
 		// 配置作者及Domain说明
-		String classAuthor = "xieqiang";
-		String functionName = "用户关联账号";
+		String classAuthor = "chenqiwei";
+		String functionName = "用户设备号记录表";
 
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";

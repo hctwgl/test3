@@ -73,6 +73,7 @@ public class LoginAbTestController extends AbTestController {
 			}
 		} catch (Exception e) {
 			logger.error("getHomeInfoFront error => {}", e.getMessage());
+			
 		}
 		requestDataVo.setParams(params);
 	}

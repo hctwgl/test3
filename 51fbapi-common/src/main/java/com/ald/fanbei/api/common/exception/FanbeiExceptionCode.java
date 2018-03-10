@@ -7,7 +7,7 @@ package com.ald.fanbei.api.common.exception;
  */
 public enum FanbeiExceptionCode {
 
-SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
+	SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
     RESUBMIT_ERROR("RESUBMIT_ERROR",11615,"RESUBMIT_ERROR","请勿重复确认收货"),
@@ -135,9 +135,11 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
     CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
 
+	USER_AUTH_INFO_NOT_EXIST("USER_AUTH_INFO_NOT_EXIST",1322,"user auth info not exist","用户认证信息不存在"),
     AUTH_FUND_GETTOKEN_ERROR("AUTH_FUND_GETTOKEN_ERROR",1322,"auth fund gettoken error","51公积金认证获取令牌失败！"),
     AUTH_FUND_GETORDERSN_ERROR("AUTH_FUND_GETORDERSN_ERROR",1322,"auth fund getordersn error","51公积金认证获取订单号失败！"),
     AUTH_FUND_SUBMIT_ERROR("AUTH_FUND_SUBMIT_ERROR",1323,"auth fund submit error","公积金提交认证失败，请稍后重试"),
+
 
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -260,7 +262,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_SYNC_CONTACTS_ERROR("RISK_MODIFY_CONTACTS_ERROR", 1922, "risk_modify contacts error", "风控同步通讯录失败"),
     RISK_RAISE_CAPTIL_ERROR("RISK_RAISE_CAPTIL_ERROR",1923,"get captil error","风控应还本金获取失败"),
     RISK_FORBIDDEN_ERROR("RISK_FORBIDDEN_ERROR",1923,"get captil error","抱歉，无法续期"),
-
+    RISK_RAISE_AMOUNT_ERROR("RISK_RAISE_AMOUNT_ERROR",1924,"risk raise amount error","提额异常"),
+    RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
+    UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
@@ -290,9 +294,28 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     STRONG_RISK_STATUS_ERROR("STRONG_RISK_STATUS_ERROR",2010,"strong risk apply status error","您的风控审核正在提交"),
     ADD_BORROW_CASH_INFO_FAIL("ADD_BORROW_CASH_INFO_FAIL",2011,"add borrow cash info fail","生成借款信息失败"),
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
+    BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2016,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
 
-    BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2012,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
-
+    /* 2100-2200 贷款相关！！！！！！！ */
+    LOAN_NO_AUTHZ("",2101,"", "您还未认证"),
+    LOAN_QUOTA_TOO_SMALL("",2102,"", "可用额度小于最小借款额"),
+    LOAN_NO_PASS_STRO_RISK("",2103,"", "未通过强风控审核"),
+    LOAN_NO_PASS_WEAK_RISK("",2104,"", "未通过弱风控审核"),
+    LOAN_SWITCH_OFF("",2105,"", "贷款开关关闭"),
+    LOAN_RISK_REFUSE("",2106,"", "贷款风控拒绝"),
+    LOAN_UPS_DRIECT_FAIL("",2107,"","请求打款实时失败"),
+    LOAN_UPS_CALLBACK_FAIL("",2108,"","请求打款失败"),
+    LOAN_REPEAT_APPLY("",2109,"","已有处理中的贷款申请，不可重复申请"),
+    LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
+    LOAN_OVERFLOW("",2111,"","贷款额违法"),
+    LOAN_PERIOD_NOT_EXIST_ERROR("LOAN_PERIOD_NOT_EXIST_ERROR",2012,"loan period not exist error","分期借款信息不存在"),
+    LOAN_REPAY_AMOUNT_ERROR("LOAN_REPAY_AMOUNT_ERROR",2013,"loan repay amount error","还款金额有误请重新检查"),
+    LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
+    LOAN_REPAY_REBATE_ERROR("LOAN_REPAY_REBATE_ERROR",2015,"loan repay rebate error","余额还款失败，请检查您的输入或重试"),
+    GO_BLD_AUTH("",2016,"","跳转白领贷认证"),
+    AUTHING("",2017,"","认证中"),
+    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
+    LOAN_NOT_EXIST_ERROR("LOAN__NOT_EXIST_ERROR",2020,"loan  not exist error","借款信息不存在"),
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),
@@ -375,13 +398,19 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ZHI_BALANCE_CODE_INVALID_ERROR("ZHI_BALANCE_CODE_INVALID_ERROR",8002,"zhi code invalid error","验证码有误"),
 
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
+	//公信宝认证
+    AUTH_GXB_GETTOKEN_ERROR("AUTH_GXB_GETTOKEN_ERROR",7008,"auth gxb gettoken error","认证公信宝获取token失败"),
+	
+
+	//用户现金流不存在
 
     //调用风控失败
     CALL_RISK_FAIL("FAIL_RISK_FAIL",7008,"call risk fail","调用风控失败!"),
     //有过期数据
+    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
-    ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能");
 
+    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过");
 
 
     /**
@@ -392,7 +421,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     /**
      * 错误编号
      */
-    private int    errorCode;
+    private int  errorCode;
 
     /**
      * 错误信息

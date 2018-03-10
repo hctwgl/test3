@@ -197,4 +197,6 @@ public interface AfResourceDao {
 	AfResourceDo getConfigByTypesAndValue(@Param("type") String type, @Param("value")String value);
 
 	int editResource(AfResourceDo assetPushResource);
+	
+	List<AfResourceDo> getFlowFlayerResourceConfig(@Param("type")String resourceType, @Param("secType")String secType);
 }

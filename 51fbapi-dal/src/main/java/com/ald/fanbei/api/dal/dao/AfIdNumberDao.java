@@ -31,4 +31,6 @@ public interface AfIdNumberDao {
 		Long findByIDNoAndName(@Param("name")String name, @Param("idNo")String idNo);
 		
 		String findUserNameByIdNo(@Param("idNo")String idNo);
+		
+		AfIdNumberDo getIdNumberInfoByUserId(@Param("userId")Long userId);
 }

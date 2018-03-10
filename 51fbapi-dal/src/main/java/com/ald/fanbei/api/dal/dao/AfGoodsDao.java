@@ -104,4 +104,6 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> listGoodsListBySubjectId(@Param("subjectId")Long subjectId);
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
+
+	List<AfGoodsDo> getGoodsByItem(@Param("categoryId") Long categoryId);
 }

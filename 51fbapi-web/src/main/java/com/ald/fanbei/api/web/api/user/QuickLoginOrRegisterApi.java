@@ -80,7 +80,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	@Resource
 	AfPromotionChannelPointService afPromotionChannelPointService;
 	@Resource
-	AfAbTestDeviceService afAbTestDeviceService;
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
 
@@ -295,12 +295,12 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
 			if (StringUtils.isNotEmpty(deviceId)) {
-				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+				//String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
 				abTestDeviceDo.setUserId(userId);
-				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				abTestDeviceDo.setDeviceNum(deviceId);
 				// 通过唯一组合索引控制数据不重复
-				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
 			}
 		} catch (Exception e) {
 			// ignore error.

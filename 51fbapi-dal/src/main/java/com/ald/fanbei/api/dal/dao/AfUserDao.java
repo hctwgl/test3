@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -77,4 +78,6 @@ public interface AfUserDao {
 	 * @return
 	 */
 	String getUserRecommendCode(@Param("userId")long userId);
+
+	AfUserDto getUserInfoByUserId(Long userId);
 }

@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -32,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
@@ -41,7 +40,17 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.RiskReviewStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -107,6 +116,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 	
 	@Resource
 	AfBorrowDao afBorrowDao;
@@ -437,10 +448,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				} catch (Exception e) {
 					logger.error("updateAuAmountByRid is fail;msg=" + e);
 				}
-				// 减少额度，包括搭售商品借款
-				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+				// 减少额度，包括搭售商品借款 
+				afUserAccountSenceService.syncLoanUsedAmount(userId, SceneType.CASH, afBorrowCashDo.getAmount());
 
-				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				// 增加日志
 				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
 						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
@@ -545,7 +555,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
         HashMap summaryData = afBorrowDao.getUserSummary(userId);
         riskDataMap.put("summaryData", summaryData);
         riskDataMap.put("summaryOrderData", new HashMap<>());
-		RiskVerifyRespBo verifyBo = riskUtil.verifyNew(
+		RiskVerifyRespBo verifyBo = riskUtil.weakRiskForXd(
 				ObjectUtils.toString(userId),
 				afBorrowCashDo.getBorrowNo(), 
 				param.getType(), "50", 

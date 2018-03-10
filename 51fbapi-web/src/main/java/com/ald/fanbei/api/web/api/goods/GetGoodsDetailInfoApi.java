@@ -92,7 +92,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			}
 		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				saleAmount, resource.getValue1(), resource.getValue2());
+				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
 		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
 		if(nperList!= null){
 			Map nperMap = nperList.get(nperList.size() - 1);

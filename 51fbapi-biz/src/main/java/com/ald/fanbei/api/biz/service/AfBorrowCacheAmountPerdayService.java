@@ -31,4 +31,7 @@ public interface AfBorrowCacheAmountPerdayService {
 	 * @return
 	 */
 	AfBorrowCacheAmountPerdayDo getSigninByDay(Integer day);
+	
+	
+	void record();
 }
