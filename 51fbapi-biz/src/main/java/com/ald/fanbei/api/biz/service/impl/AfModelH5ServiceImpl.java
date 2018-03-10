@@ -37,11 +37,4 @@ public class AfModelH5ServiceImpl implements AfModelH5Service {
 		return afModelH5Dao.selectMordelH5ById(rid);
 	}
 
-
-	@Override
-	public AfModelH5Do getByTagAndType(String type, String tag) {
-	    // TODO Auto-generated method stub
-	    return afModelH5Dao.getByTagAndType(type,tag);
-	}
-
 }

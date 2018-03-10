@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 
 /**
@@ -27,5 +25,4 @@ public interface AfModelH5Dao {
 	    int updateModelH5(AfModelH5Do afModelH5Do);
 	    
 	    AfModelH5Do selectMordelH5ById(Long rid);
-	    AfModelH5Do getByTagAndType(@Param("type")String type,@Param("tag") String tag);
 }

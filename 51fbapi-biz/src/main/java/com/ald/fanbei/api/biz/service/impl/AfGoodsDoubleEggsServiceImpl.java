@@ -82,11 +82,5 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 			return afGoodsDoubleEggsDao.shouldOnlyAp(goodsId) > 0 ? true :false;
 		}
 
-		@Override
-		public List<GoodsForDate> getGoodsListByActivityId(Long activityId) {
-			
-			return afGoodsDoubleEggsDao.getGoodsListByActivityId(activityId);
-		}
-
 
 }
