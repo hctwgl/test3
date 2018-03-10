@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -63,6 +64,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	// AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 	// @Resource
 	// JpushService jpushService;
 	@Resource
@@ -83,6 +86,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -268,6 +273,23 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+			try {
+				AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+				String idNumber = "";
+				String openId = "";
+				String cardNumber = "";
+				if (accountDo != null){
+					idNumber = accountDo.getIdNumber();
+					openId = accountDo.getOpenId();
+				}
+				AfUserBankcardDo bank = afUserBankcardService.getUserMainBankcardByUserId(afUserDo.getRid());
+				if (bank != null){
+					cardNumber = bank.getCardNumber();
+				}
+				baiQiShiUtils.getLoginResult(requestDataVo.getId(),blackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
+			}catch (Exception e){
+				logger.error("baiQiShiUtils getLoginResult error => {}",e);
+			}
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,

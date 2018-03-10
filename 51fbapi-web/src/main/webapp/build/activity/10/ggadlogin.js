@@ -93,7 +93,8 @@ $(function () {
                     activityId: activityId,
                     token:token,
                     'typeFrom':typeFrom,
-                    'typeFromNum':typeFromNum
+                    'typeFromNum':typeFromNum,
+                    bsqToken:token
                 },
                 success: function (data) {
                     // alert(urlName);

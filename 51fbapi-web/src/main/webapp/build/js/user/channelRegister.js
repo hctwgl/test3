@@ -103,7 +103,8 @@ $(function(){
                     mobile: mobileNum,
                     token: token,
                     channelCode: channelCode,
-                    pointCode: pointCode
+                    pointCode: pointCode,
+                    bsqToken:token
                 },
                 success: function(returnData){
                     if (returnData.success) {
@@ -223,7 +224,8 @@ $(function(){
                                     password: password_md5,
                                     channelCode: channelCode,
                                     pointCode: pointCode,
-                                    token:token
+                                    token:token,
+                                    bsqToken:token
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {

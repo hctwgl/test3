@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -90,6 +91,8 @@ public class H5ActivityCommonController extends BaseController {
     AfSmsRecordService afSmsRecordService;
     @Resource
     TongdunUtil tongdunUtil;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
     @Resource
     AfOrderService afOrderService;
     @Resource
@@ -133,6 +136,11 @@ public class H5ActivityCommonController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
 
 	    }
+		try {
+			baiQiShiUtils.getRegistResult("h5",tongduanToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),"","","","");
+		}catch (Exception e){
+			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 	    // check password
 	    String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
 
@@ -181,6 +189,7 @@ public class H5ActivityCommonController extends BaseController {
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	    String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 
 	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
 	    if (eUserDo != null) {
@@ -217,7 +226,11 @@ public class H5ActivityCommonController extends BaseController {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 		return resultStr;
 	    }
-
+		try {
+			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),moblie,"","","","");
+		}catch (Exception e){
+			logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 	    // 更新为已经验证
 	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

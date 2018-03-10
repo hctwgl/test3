@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017103102")
+    #set($version="20180306")
     #set($src="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -54,8 +54,12 @@
         <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
     </div>
 </body>
+<script type="text/javascript">
+    var _saber={};
+</script>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
+<script type="text/javascript" src="/dist/js/saber.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/11/barginRegister.js?version=$version"></script>
 <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </html>
