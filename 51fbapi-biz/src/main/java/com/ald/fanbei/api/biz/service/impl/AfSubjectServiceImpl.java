@@ -67,10 +67,4 @@ public class AfSubjectServiceImpl implements AfSubjectService{
 	    	return afSubjectDao.listByParentIdAndLevel(queryAfSubject);
 	}
 
-	@Override
-	public AfSubjectDo getSubjectInfoByTag(String tag) {
-	    // TODO Auto-generated method stub
-	    	return afSubjectDao.getSubjectInfoByTag(tag);
-	}
-
 }

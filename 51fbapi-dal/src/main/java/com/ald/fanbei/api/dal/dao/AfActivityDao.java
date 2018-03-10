@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
-import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 
 /**
  * @类描述：
@@ -30,7 +29,5 @@ public interface AfActivityDao {
 	AfActivityDo getHomeMoreActivity();
 
 	List<Date> getDateListByName(@Param("tag")String tag);
-
-	List<SecondKillDateVo> getDateVoListByName(@Param("tag")String tag);
 
 }

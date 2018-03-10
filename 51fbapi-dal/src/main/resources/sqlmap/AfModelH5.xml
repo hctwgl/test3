@@ -57,13 +57,4 @@ id rid,gmt_create,gmt_modified,creator,modifier,name,type,url,icon,max_commissio
 		<include refid="queryAllFields"/>
 	FROM af_model_h5 WHERE is_delete =0 AND id = #{rid}
 	</select>
-	<select id="getByTagAndType" resultType="AfModelH5Do">
-	SELECT
-		<include refid="queryAllFields"/>
-	FROM af_model_h5 WHERE is_delete =0 
-	AND type = #{type}
-	and tag = #{tag}
-	limit 1
-	</select>
-	
 </mapper>

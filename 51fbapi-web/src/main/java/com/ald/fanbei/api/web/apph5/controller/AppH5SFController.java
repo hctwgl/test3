@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,11 +11,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfActivityService;
@@ -24,21 +20,14 @@ import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.CouponActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -49,23 +38,20 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponTigerMachineDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
+import com.ald.fanbei.api.web.vo.SecondKillDateVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.hyphenation.SimplePatternParser;
 
 /**
  * @Title: AppH5SFController.java
@@ -97,16 +83,7 @@ public class AppH5SFController extends BaseController {
 	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
 	@Resource
 	AfActivityService afActivityService;
-	@Resource
-	BizCacheUtil bizCacheUtil;
-	@Resource
-	AfGoodsService afGoodsService;
-	@Resource
-	AfSchemeGoodsService afSchemeGoodsService;
-	@Resource
-	AfInterestFreeRulesService afInterestFreeRulesService;
-	@Resource
-	AfModelH5ItemService afModelH5ItemService;
+
 	String opennative = "/fanbei-web/opennative?name=";
 
 	/**
@@ -126,18 +103,6 @@ public class AppH5SFController extends BaseController {
 		return userId;
 	}
 	
-	/**
-	 * 
-	* @Title: getDateList
-	* @author qiao
-	* @date 2018年3月2日 上午9:53:10
-	* @Description: 每天一场秒杀的获取时间。
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
-	 */
 	@RequestMapping(value = "/getDateList", method = RequestMethod.POST)
 	public String getDateList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
@@ -203,70 +168,6 @@ public class AppH5SFController extends BaseController {
 		}
 		return result;
 	}
-	
-	/**
-	 * 
-	* @Title: getDateList
-	* @author qiao
-	* @date 2018年3月2日 上午9:53:10
-	* @Description: 每天一场秒杀多场的活动日期获取
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
-	 */
-	@RequestMapping(value = "/getDateListV1", method = RequestMethod.POST)
-	public String getDateListV1(HttpServletRequest request, HttpServletResponse response) {
-		String result = "";
-		try {
-
-			// get tag from activityId then get goods from different tag
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-			if (activityId == null) {
-				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
-			}
-
-			// find the name from activityId
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
-			if (StringUtil.isBlank(tag)) {
-				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
-			}
-
-			// get dateList start from the config of specific activity
-			List<SecondKillDateVo> dateList = afActivityService.getDateVoListByName(tag);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd号 HH:mm");
-			
-			if(CollectionUtil.isNotEmpty(dateList)){
-				for(SecondKillDateVo date:dateList){
-					if(date.getStartTime() != null){
-						date.setStartDate(sdf.format(date.getStartTime()));
-					}
-					
-					
-				}
-			}
-
-			java.util.Map<String, Object> data = new HashMap<>();
-
-			data.put("dateList", dateList);
-			data.put("serviceDate", new Date());
-
-			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-
-		} catch (
-
-		Exception exception) {
-			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
-			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
-		}
-		return result;
-	}
-	
-
-	
-	
 	/**
 	 * 
 	 * @Title: initHomePage @author qiao @date 2018年1月5日
@@ -542,126 +443,6 @@ public class AppH5SFController extends BaseController {
 		}
 		return result;
 	}
-	
-	/**
-	 * 
-	* @Title:  carefullyChosen
-	* @Description: 
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/carefullyChosen", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-	public String carefullyChosen(HttpServletRequest request, HttpServletResponse response) {
-		
-		String result = "";
-		try {
-			doWebCheck(request, false);
-			String cacheKey =  "carefullyChosen:goods";  
-			List<Map<String,Object>> itemList = bizCacheUtil.getObjectList(cacheKey);
-			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-			String tag = ObjectUtils.toString(request.getParameter("tag"), null);
-			if(tag == null || "".equals(tag)) {
-			    result = H5CommonResponse.getNewInstance(false, "tag不能为空！").toString();
-				return result;
-			}
-			
-			if (itemList  == null) {
-			
-			//根据tag
-			//String type = "PARTACTIVITY_H5_TEMPLATE";
-			List<AfModelH5ItemDo>  afModelH5ItemList = afModelH5ItemService.getModelH5ItemCategoryByModelTag(tag);
-			
-		
-			for(AfModelH5ItemDo afModelH5ItemDo:afModelH5ItemList){
-			    String itemName = afModelH5ItemDo.getItemValue();
-			    Map<String, Object> data = new HashMap<String, Object>();
-			    List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			    List<AfGoodsDo> afGoodsList = afGoodsService.getGoodsByModelId( Long.valueOf(afModelH5ItemDo.getRid()));
-			  
-			    
-			    if(afGoodsList.size()>0){
-				//获取借款分期配置信息
-			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-			        JSONArray array = JSON.parseArray(resource.getValue());
-			        //删除2分期
-			        if (array == null) {
-			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-			        }
-			       // removeSecondNper(array);
-				
-				for(AfGoodsDo goodsDo : afGoodsList) {
-				        
-				        
-		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		    			goodsInfo.put("goodName",goodsDo.getName());
-		    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-		    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-		    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-		    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-		    			goodsInfo.put("goodsId", goodsDo.getRid());
-		    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-		    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-		    			goodsInfo.put("source", goodsDo.getSource());
-		    			goodsInfo.put("goodsType", "0");
-		    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
-		    			// 如果是分期免息商品，则计算分期
-		    			Long goodsId = goodsDo.getRid();
-						AfSchemeGoodsDo  schemeGoodsDo = null;
-						try {
-							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-						} catch(Exception e){
-							logger.error(e.toString());
-						}
-						JSONArray interestFreeArray = null;
-						if(schemeGoodsDo != null){
-							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-							String interestFreeJson = interestFreeRulesDo.getRuleJson();
-							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-								interestFreeArray = JSON.parseArray(interestFreeJson);
-							}
-						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),0l);
-						if(nperList!= null){
-							goodsInfo.put("goodsType", "1");
-							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-							String isFree = (String)nperMap.get("isFree");
-							if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-								nperMap.put("freeAmount", nperMap.get("amount"));
-							}
-							goodsInfo.put("nperMap", nperMap);
-						}
-						
-						goodsList.add(goodsInfo);
-		    		}				
-			 }
-			         data.put("goodsList", goodsList);
-				 data.put("itemName",itemName);
-				 list.add(data);
-				 itemList = list;
-				bizCacheUtil.saveObjectListExpire(cacheKey, itemList,  Constants.SECOND_OF_TEN_MINITS);
-				 
-			       
-			 }
-		    }
-			 
-			result = H5CommonResponse.getNewInstance(true, "获取商品成功", "", itemList).toString();
-			} catch (Exception exception) {
-				result = H5CommonResponse.getNewInstance(false, "获取商品失败", "", exception.getMessage()).toString();
-				logger.error("获取商品失败  e = {} , resultStr = {}", exception, result);
-				doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
-			}
-			return result;
-	}
-	
-	
-	
-	
-	
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
