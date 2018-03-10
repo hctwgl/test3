@@ -31,7 +31,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
 		String payPwd = ObjectUtils.toString(reqData.getParams().get("payPwd"), "").toString();
-		if (StringUtils.isNotBlank(payPwd)) {
+		if (StringUtils.isNotBlank(payPwd) && !StringUtils.equals("null", payPwd)) {
 			Long userId = context.getUserId();
 			checkPayPwd(userId, payPwd);
 		}
