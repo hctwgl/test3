@@ -119,12 +119,16 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				}
 			}
 		}else{
+			boolean lock =false;
 			try {
-				lock(userId+"");
+				//bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+userId);
+				lock = bizCacheUtil.getLock(Constants.CACHEKEY_COMPLETEORDER_LOCK+orderId, Constants.CACHEKEY_COMPLETEORDER_LOCK_VALUE);
+				//lock(userId+"");
 			/*	boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_COMPLETEORDER_LOCK + userId, Constants.CACHEKEY_COMPLETEORDER_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);;
 				System.out.println("*********************************************************");
 				System.out.println(isLock);
 				if (isLock) {*/
+				if (lock) {
 					Boolean flag=true;
 					//新增白名单逻辑
 					AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
@@ -193,6 +197,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 										}
 									}
 								}
+								bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+userId);
 								return resp;
 							}else{
 								logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
@@ -201,18 +206,23 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 							logger.info("completedAgencyBuyOrder fail,order status not support.orderId="+orderId);
 						}
 					}
+				}else{
+					logger.error("getlock fail");
+					//return resp;
+					return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.RESUBMIT_ERROR);
+				}
 			} catch (Exception e) {
 				logger.error("completedAgencyBuyOrder fail",e);
 			}finally{
-				//bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-				unLock(userId+"");
+				if (lock) {
+					bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+orderId);
+				}
+//				unLock(userId+"");
 			}
 	
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 	}
-
-
 
 	private void addBorrowBill_1(AfOrderDo afOrderDo){
 		if(VersionCheckUitl.getVersion()>=VersionCheckUitl.VersionZhangDanSecond) {
@@ -266,12 +276,15 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 //		}
 	}
 	
+	
+	
 	/**
 	   * 锁住目标流水号的还款，防止重复回调
 	   */
 	  private void lock(String tradeNo) {
 	    String key = tradeNo + "_completeOrder";
 	        long count = redisTemplate.opsForValue().increment(key, 1);
+	        System.out.println("count:"+count);
 	        redisTemplate.expire(key, 60, TimeUnit.SECONDS);
 	        if (count != 1) {
 	            throw new FanbeiException(FanbeiExceptionCode.COMPLETE_ORDER);
