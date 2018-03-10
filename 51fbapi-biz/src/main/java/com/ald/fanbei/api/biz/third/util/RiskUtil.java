@@ -1558,7 +1558,6 @@ public class RiskUtil extends AbstractThird {
 			afUserAuthStatusDo.setGmtModified(new Date());
 			afUserAuthStatusDo.setScene(SceneType.findSceneTypeByCode(scene).getName());
 			afUserAuthStatusDo.setUserId(consumerNo);
-			result = "20";
 			if (StringUtils.equals("10", result)) {
 				afUserAuthStatusDo.setStatus(UserAuthSceneStatus.YES.getCode());
 				afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
@@ -1581,9 +1580,9 @@ public class RiskUtil extends AbstractThird {
 				
 				jpushService.strongRiskFail(userAccountDo.getUserName());
 				smsUtil.sendRiskFail(userAccountDo.getUserName());
-			} else if (StringUtils.equals("20", result)) {//人审
+			} /*else if (StringUtils.equals("20", result)) {//人审
 				smsUtil.sendRiskNeedAudit(userAccountDo.getUserName());
-			}
+			}*/
 		}
 		return 0;
 	}
