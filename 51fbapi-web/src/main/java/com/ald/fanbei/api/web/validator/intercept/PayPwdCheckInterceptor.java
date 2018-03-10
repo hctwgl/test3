@@ -137,7 +137,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		log = log + String.format("times = %d ,previousDate = %tc", times,previousDate);
 		logger.info(log);
 
-		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+		//if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 
 			// times > specific times
 			if (times != null && times >= specificTimes) {
@@ -270,7 +270,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 
 			}
 
-		}
+		//}
 	}
 
 	private FanbeiExceptionCode getErrorByKeyAndTimes(String key, Integer times) {
