@@ -121,13 +121,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		}else{
 			boolean lock =false;
 			try {
-				//bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+userId);
 				lock = bizCacheUtil.getLock(Constants.CACHEKEY_COMPLETEORDER_LOCK+orderId, Constants.CACHEKEY_COMPLETEORDER_LOCK_VALUE);
-				//lock(userId+"");
-			/*	boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_COMPLETEORDER_LOCK + userId, Constants.CACHEKEY_COMPLETEORDER_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);;
-				System.out.println("*********************************************************");
-				System.out.println(isLock);
-				if (isLock) {*/
 				if (lock) {
 					Boolean flag=true;
 					//新增白名单逻辑
@@ -150,10 +144,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 						//实时推送自营分期的债权给钱包
 						//防止重复推送
 						AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
-						System.out.println("################################################################");
-						System.out.println(afBorrowDo.toString());
 						List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
-						System.out.println(afRetryTemplDos.toString());
 						if (afRetryTemplDos == null ||afRetryTemplDos.size() == 0) {
 							//没推送过
 							AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
@@ -197,7 +188,6 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 										}
 									}
 								}
-								bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+userId);
 								return resp;
 							}else{
 								logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
@@ -208,7 +198,6 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					}
 				}else{
 					logger.error("getlock fail");
-					//return resp;
 					return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.RESUBMIT_ERROR);
 				}
 			} catch (Exception e) {
@@ -217,7 +206,6 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				if (lock) {
 					bizCacheUtil.delCache(Constants.CACHEKEY_COMPLETEORDER_LOCK+orderId);
 				}
-//				unLock(userId+"");
 			}
 	
 		}

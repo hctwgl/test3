@@ -655,7 +655,7 @@ public class BizCacheUtil extends AbstractThird {
 					return true;
 				}
 				if (i == times - 1) {
-					this.delCache(key);
+					return false;
 				}
 			}
 		} catch (Exception e) {

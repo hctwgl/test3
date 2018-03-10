@@ -173,7 +173,7 @@
 		WHERE
 			bus_id = #{busId}
 		AND event_type =#{eventType}
-		AND is_delete=0
+		AND (is_delete=0 or (is_delete=1 and state='M'))
     </select>
     
    	<select id="getByBusId" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.AfRetryTemplDo">
