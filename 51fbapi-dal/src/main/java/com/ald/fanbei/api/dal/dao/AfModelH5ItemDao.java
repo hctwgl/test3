@@ -54,5 +54,7 @@ public interface AfModelH5ItemDao {
 
 	List<AfModelH5ItemDo> getModelH5ItemListByModelIdAndModelTypeSortById(@Param("modelId")long modelId, @Param("type")String type);
 
+	List<AfModelH5ItemDo> getModelH5ItemCategoryByModelTagAndType(String tag, String type);
+
 	
 }

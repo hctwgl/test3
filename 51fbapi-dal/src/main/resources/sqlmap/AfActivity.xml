@@ -117,5 +117,24 @@
 		AND `status` = 2
 		AND `name` = #{tag};
 	</select>
+	
+	<select id="getDateVoListByName" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo">
+		SELECT
+		id as meeting_id,
+		gmt_start as start_time,
+		case when (gmt_start&gt;CURRENT_TIMESTAMP()) then '0' when (gmt_end&lt;CURRENT_TIMESTAMP()) then '2' else '1' end
+		as status
+		FROM
+		  af_activity
+		WHERE
+		  is_delete = 0
+		AND `status` = 2
+		AND `name` = #{tag}
+		AND gmt_start &gt; CURDATE()
+		AND gmt_start &lt; DATE_ADD(
+		  CURDATE(),
+		  INTERVAL 1 DAY
+		) ORDER BY gmt_start LIMIT 0,5 ;
+	</select>
 
 </mapper>
