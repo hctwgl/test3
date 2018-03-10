@@ -563,7 +563,7 @@ public class H5BoluomeActivityController extends BaseController {
 		return resultStr;
 	    }
 		try {
-			baiQiShiUtils.getRegistResult("h5",bsqToken,"",mobile,"","","","");
+			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
 		}catch (Exception e){
 			logger.error("H5GGShare baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

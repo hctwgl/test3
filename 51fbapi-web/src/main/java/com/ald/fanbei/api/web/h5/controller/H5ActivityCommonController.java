@@ -137,7 +137,7 @@ public class H5ActivityCommonController extends BaseController {
 
 	    }
 		try {
-			baiQiShiUtils.getRegistResult("h5",tongduanToken,"",UserDo.getMobile(),"","","","");
+			baiQiShiUtils.getRegistResult("h5",tongduanToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),"","","","");
 		}catch (Exception e){
 			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}
@@ -227,7 +227,7 @@ public class H5ActivityCommonController extends BaseController {
 		return resultStr;
 	    }
 		try {
-			baiQiShiUtils.getRegistResult("h5",bsqToken,"",moblie,"","","","");
+			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),moblie,"","","","");
 		}catch (Exception e){
 			logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

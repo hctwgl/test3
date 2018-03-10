@@ -74,6 +74,7 @@ public class BaiQiShiUtils {
         params.put("bankCardNo", cardNumber);//	银行卡卡号
         params.put("zmOpenId", openId);//用户在商户端芝麻信用授权ID
         params.put("appId", "test");
+        params.put("ip", ip);
         params.put("tokenKey", blackBox);
         params.put("eventType", eventType);
         params.put("platform", platform);

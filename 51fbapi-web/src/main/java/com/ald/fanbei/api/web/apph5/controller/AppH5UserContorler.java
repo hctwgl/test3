@@ -570,7 +570,7 @@ public class AppH5UserContorler extends BaseController {
                 return resp.toString();
             }
             try {
-                baiQiShiUtils.getRegistResult("h5",bsqToken,"",mobile,"","","","");
+                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
             }catch (Exception e){
                 logger.error("/app/user/commitChannelRegister getRegistResult error => {}",e.getMessage());
             }
