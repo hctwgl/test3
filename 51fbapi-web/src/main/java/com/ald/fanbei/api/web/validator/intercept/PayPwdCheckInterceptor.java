@@ -164,7 +164,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 
 					} else {
 						// get the time diff
-						int seconds = DateUtil.getTimeDiff(new Date(), previousDate).intValue();
+						int seconds = DateUtil.getTimeDiff(previousDate, compareDate).intValue();
 						int hours = seconds / (60 * 60);
 						int minutes = seconds / 60 - hours * 60;
 						
@@ -197,6 +197,8 @@ public class PayPwdCheckInterceptor implements Interceptor {
 
 					// or not .
 					times = 1;
+					bizCacheUtil.saveObjectForever(key, times);
+					
 					times = specificTimes - 1;
 					bizCacheUtil.saveObjectForever(key1, new Date());;
 					
@@ -254,7 +256,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				bizCacheUtil.saveObjectForever(key, times);
 				bizCacheUtil.saveObjectForever(key1, new Date());
 				
-				if (times == specificTime) {
+				if (times == specificTimes) {
 					//this time is the fifth time
 					
 					FanbeiExceptionCode exceptionCode = getErrorCodeByHoursAndMinute(specificTime, 0);
@@ -272,16 +274,15 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	}
 
 	private FanbeiExceptionCode getErrorByKeyAndTimes(String key, Integer times) {
-		bizCacheUtil.saveObjectForever(key, times);
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getDesc().replace("x", times + "");
+		String mString = "支付密码错误，您还有x次机会！".replace("x", times + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}
 
 	private FanbeiExceptionCode getErrorCodeByHoursAndMinute(Integer hours, Integer minutes) {
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getDesc().replace("x", hours + "").replace("y", minutes + "");
+		String mString = "您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！".replace("x", hours + "").replace("y", minutes + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}

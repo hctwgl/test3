@@ -1152,17 +1152,17 @@ public class DateUtil {
         return s.getTime() >= e.getTime();
     }
     
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
       String data=  Base64.decodeToString("eyJhbW91bnQiOjIwMC4wMCwiYm9ycm93Tm8iOiJqcTIwMTgwMTA0MTYwMTM4MDEzMDMiLCJpbmNv\nbWUiOjE4LjIwLCJvdmVyZHVlQ291bnQiOjAsIm92ZXJkdWVEYXlzIjowfQ==");
-        /*
+        
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
          * System.out.println(DateUtils.getEndOfMonth(DateUtils.currentDate())); System.out.println("now:" +
          * DateUtils.now());
-         */
-        /*
+         
+        
          * Calendar cal1 = GregorianCalendar.getInstance(); cal1.add(Calendar.MINUTE, 2);
          * System.out.println(getNumberOfMinuteBetween(new Date(), cal1.getTime()));
-         */
+         
         // System.out.println("previous monday:" +
         // DateUtils.getPreviousMonday());
         // System.out.println("current monday:" + DateUtils.getCurrentMonday());
@@ -1195,7 +1195,7 @@ public class DateUtil {
 			e.printStackTrace();
 		}
     	
-    }
+    }*/
     
     public static Date stringToDate(String date) throws ParseException{
     	if(StringUtils.isBlank(date)){
@@ -1360,5 +1360,5 @@ public class DateUtil {
 		}
 		return result;
 	}
-	
+
 }
