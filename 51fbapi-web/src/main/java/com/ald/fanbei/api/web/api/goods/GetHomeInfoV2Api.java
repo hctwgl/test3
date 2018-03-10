@@ -164,6 +164,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+					logger.info("getHomeInfoV2 cfp categoryGoodsInfo = " + categoryGoodsInfo);
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
 
 				}
@@ -255,6 +256,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		if (!financialEntranceInfo.isEmpty()) {
 			data.put("financialEntranceInfo", financialEntranceInfo);
 		}
+		logger.info("getHomeInfoV2 cfp data = " + data);
 		resp.setResponseData(data);
 		return resp;
 	}
