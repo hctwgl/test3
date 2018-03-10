@@ -187,10 +187,10 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
 				}
 				
-//				if (categoryGoodsInfo == null) {
+				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
-//				}
+				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
 				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD.getCode();
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
