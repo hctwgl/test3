@@ -118,7 +118,7 @@
 		AND `name` = #{tag};
 	</select>
 	
-	<select id="getDateVoListByName" parameterType="java.lang.String" resultType="com.ald.fanbei.api.web.vo.SecondKillDateVo">
+	<select id="getDateVoListByName" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo">
 		SELECT
 		id as meeting_id,
 		gmt_start as start_time,
