@@ -134,13 +134,13 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		Integer times = (Integer) bizCacheUtil.getObject(key);
 		Date previousDate = (Date) bizCacheUtil.getObject(key1);
 		
-		log = log + String.format("times = %s ,previousDate = %tc", resourceDo.toString(),previousDate);
+		log = log + String.format("times = %d ,previousDate = %tc", times,previousDate);
 		logger.info(log);
 
 		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 
 			// times > specific times
-			if (times != null && times >= specificTime) {
+			if (times != null && times >= specificTimes) {
 
 				// if in frozen states
 				
@@ -190,8 +190,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				     		if (previousDate != null) {
 								bizCacheUtil.delCache(key);
 							}
+				     		return;
 						}
-						return;
+						
 					}
 
 					// or not .
@@ -220,8 +221,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			     		if (previousDate != null) {
 							bizCacheUtil.delCache(key);
 						}
+			     		return;
 					}
-					return;
+					
 				}
 				
 				// or not .

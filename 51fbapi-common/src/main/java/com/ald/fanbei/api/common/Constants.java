@@ -487,7 +487,12 @@ public class Constants {
 
 	//resource 类型
 	public static final String USER_SHARE_INFO = "USER_SHARE_INFO";
-		//轮播图
+	
+	public static final String USER_SHARE_INFO_CONFIGURE = "USER_SHARE_INFO_CONFIGURE";
+	//resource 类型
+	public static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
+	
+	//轮播图
 	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
 
 

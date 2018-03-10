@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 
+
 /**
  * 
  * @类描述：
@@ -52,6 +54,8 @@ public class GetUserShareInfoApi implements ApiHandle {
 		JSONObject json = new JSONObject();
 		
 	    try{
+		String isHidden = "N";
+		String changeImage = "N";
 		String shareType = "URL";
 		data.put("shareType", shareType);
 		json.put("shareType", shareType);
@@ -69,6 +73,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 		
 		//查询配置信息，如果不存在，返回 默认类型URL;
 		AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
+		List<AfResourceDo>   resourceList =   afResourceService.getConfigsByTypesAndSecType(Constants.USER_SHARE_INFO_CONFIGURE, source);
+		
+		//获取list,随机得到一个配置？
+		
+		
 		if(afResource == null){
 			resp.setResponseData(data);
 		        logger.info("getUserShareInfoApi afResourceList is null source = " + source);
@@ -85,7 +94,9 @@ public class GetUserShareInfoApi implements ApiHandle {
 		        return resp;
 		   }
 		 }
-	
+	//value1:需要更换的个性配置，value2,个性配置是否展示 key:value（隐藏手机号，展示头像）
+		 
+		 
 		//获取json,并增加属性。
 		 JSONObject jsonStr = JSONObject.parseObject(afResource.getValue3());
 		 JSONArray userInfo= jsonStr.getJSONArray("userInfo");
@@ -96,6 +107,119 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     jOUser.put("mobile", mobile);//JSONObject对象中添加键值对  
 		     jsonStr.put("userInfo", jOUser);
 		 }
+		 try{
+        		 if(resourceList != null && resourceList.size() >0){
+        		     for(AfResourceDo afResourceDo :resourceList){
+        			 //添加配置，若是content且是是需要随机配置，否则
+        			 
+        			 String changeJson = afResourceDo.getValue();
+        			 //所有的jsonStr的key是否有等于changeJson，有则添加JSONArray
+        			 Iterator<String> sIterator = jsonStr.keySet().iterator();
+        			 while (sIterator.hasNext()) {
+        			     // 获得key
+        			     String key = sIterator.next();
+        			     if(key.equals(changeJson)){
+        				 //
+        				 if(!"RANDOM".equals(afResourceDo.getValue1())){
+        				     //添加所有
+        				     String addValue = afResourceDo.getValue2();
+        				     JSONArray info= jsonStr.getJSONArray(key);
+        				     JSONObject jso = JSONObject.parseObject(addValue);
+        				     List<JSONObject>   list =  JSONObject.parseArray(jso.getJSONArray("configure").toString(), JSONObject.class); 
+        				    // JSONArray jsa= jso.getJSONArray("configure");
+        				     if(list != null && list.size() >0){
+        				     for(JSONObject jo :list){
+        					 info.add(jo);
+        				     }
+        				    }
+        				 }else{
+        				     //随机添加一条
+        				 }
+        			     }
+        			 }
+        		     }
+        		 }
+		 }catch(Exception e){
+		     logger.error("getUserShareInfoApi add configure error  e = "+ e);
+		 }
+		 
+		 //更换的个性配置
+		 ///////////////////////////////////////////////////////////
+		 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
+			    try{
+				List<JSONObject>   list =  JSONObject.parseArray(afResource.getValue1(), JSONObject.class);
+			     if(list != null){
+				JSONObject jsonObject = list.get(0);
+				String image  = "";
+				image = jsonObject.getString("changeConfigure");
+				if("avatar".equals(image)){
+				   doChangeImage(userId);
+				    changeImage = "Y";
+				}
+			     }
+			    }catch(Exception e){
+				 logger.error("getUserShareInfoApi value1 error  e = "+ e);
+			    }
+			     
+			 }
+		 if("N".equals(changeImage)){
+		     //将用户头像放入imageList 
+		     List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
+		     afUserDo.getAvatar();
+		     //获取该list(type = 'avatar')
+		     JSONArray ja= new JSONArray();
+		     for(JSONObject jso:list){
+			 if(jso.getString("type")!= null && "avatar".equals(jso.getString("type"))){
+			    //对该list加入头像，
+				 if(userInfo != null){
+				     String image = "";
+				     image = afUserDo.getAvatar();
+				     if(StringUtil.isBlank(image)){
+					 //获取默认头像配置
+					 AfResourceDo afResourceDo  = afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, Constants.DEFAULT_AVATAR);
+					if(afResourceDo != null){
+						 image = afResourceDo.getValue();
+					}
+				     }
+				     jso.put("image", image);//JSONObject对象中添加键值对  
+				     jso.remove("type");
+				    // jsonStr.put("imageList", jso);
+				     ja.add(jso);
+				 }
+				
+			 }else{
+			     ja.add(jso);  
+			 }
+			 
+		     }
+		     jsonStr.put("imageList", ja);
+		     
+		 }
+		 
+		 //
+		 List<JSONObject> listRule = JSONObject.parseArray("[]", JSONObject.class);
+		 jsonStr.put("hideElement", listRule);
+		 if(afResource.getValue2() != null  && StringUtils.isNotEmpty(afResource.getValue2())){
+		    try{
+		     isHidden = "Y";
+		     listRule =  JSONObject.parseArray(afResource.getValue2(), JSONObject.class);
+		     
+		     for(JSONObject jso:listRule){
+			 if(jso.getString("entityName")== null || "".equals(jso.getString("entityName"))){
+			     isHidden = "N";
+			     break;
+			 }
+		     }
+		     if("Y".equals(isHidden)){
+			  jsonStr.put("hideElement", listRule); 
+		     }
+		     
+		    }catch(Exception e){
+			 logger.error("getUserShareInfoApi value2 error  e = "+ e);
+		    }
+		     
+		 }
+		
 		 jsonStr.put("shareType", "IMAGE");
 		 json = JSONObject.parseObject(jsonStr.toString());	
 		
@@ -107,6 +231,15 @@ public class GetUserShareInfoApi implements ApiHandle {
 	    return resp;
 	}
 	
+
+	private int doChangeImage(Long userId) {
+	    //获取数据库用户上传的最后一张图片。放入json 
+	    
+	    
+	    
+	    return 0;
+	}
+
 
 	private String changePhone(String userName) {
 		String newUserName = "";
