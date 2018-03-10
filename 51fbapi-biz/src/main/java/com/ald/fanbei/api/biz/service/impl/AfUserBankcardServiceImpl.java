@@ -86,7 +86,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		AfBankUserBankDto afBankUserBankDto = iterator.next();
 		if ("N".equals(afBankUserBankDto.getIsValid())) {
 		    // 移除维护状态的银行卡，循环结束后重新添加到集合的尾部
-		    list.remove(afBankUserBankDto);
+		    iterator.remove();
 		    listMaintain.add(afBankUserBankDto);
 		}
 	    }
