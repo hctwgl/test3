@@ -297,7 +297,7 @@ public class LoginApi implements ApiHandle {
 				}
 				baiQiShiUtils.getLoginResult(requestDataVo.getId(),bqsBlackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
 			}catch (Exception e){
-				logger.error("baiQiShiUtils getLoginResult error => {}",e.getMessage());
+				logger.error("loginApi baiQiShiUtils getLoginResult error => {}",e.getMessage());
 			}
 		}
 		if (context.getAppVersion() >= 381) {

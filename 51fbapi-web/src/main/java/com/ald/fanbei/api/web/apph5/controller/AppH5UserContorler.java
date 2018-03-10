@@ -192,6 +192,7 @@ public class AppH5UserContorler extends BaseController {
         try {
             String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
             String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
             String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
@@ -225,6 +226,12 @@ public class AppH5UserContorler extends BaseController {
             } catch (Exception e) {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
+            }
+
+            try {
+                baiQiShiUtils.getRegistResult("web",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
+            }catch (Exception e){
+                logger.error("AppH5UserContorler baiQiShiUtils getRegistResult error => {}",e.getMessage());
             }
 
 
@@ -332,6 +339,7 @@ public class AppH5UserContorler extends BaseController {
             String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
             String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String source = ObjectUtils.toString(request.getParameter("source"), "").toString();
 
             logger.info("commitRegister appInfo"+JSONObject.toJSONString(request.getHeader("Referer"))+"mobile = "+mobile);
@@ -373,6 +381,12 @@ public class AppH5UserContorler extends BaseController {
             } catch (Exception e) {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
+            }
+
+            try {
+                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
+            }catch (Exception e){
+                logger.error("/app/user/commitRegister getRegistResult error => {}",e.getMessage());
             }
 
             // 更新为已经验证

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -53,13 +54,6 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeOneYuanRegisterDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -117,6 +111,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 	String password = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 //	String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
 //      String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
 
@@ -153,11 +148,17 @@ public class H5BoluomeActivityController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "Login", "").toString();
 	    }
 	    try {
-		tongdunUtil.getPromotionLoginResult(tongduanToken, null, null, CommonUtil.getIpAddr(request), userName, userName, "");
+			tongdunUtil.getPromotionLoginResult(tongduanToken, null, null, CommonUtil.getIpAddr(request), userName, userName, "");
 	    } catch (Exception e) {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
-
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
 	    }
+
+		try {
+			baiQiShiUtils.getLoginResult("h5",bsqToken, CommonUtil.getIpAddr(request), userName,UserDo.getRealName(),"","","");
+		}catch (Exception e){
+			logger.error("boluomeActivityLogin baiQiShiUtils getLoginResult error => {}",e.getMessage());
+		}
+
 	    // check password
 	    String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
 
@@ -202,7 +203,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
 	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
-	    	
+		String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
 	    String log = "/H5GGShare/boluomeActivityRegisterLogin";
 	   
 	    
@@ -246,6 +247,12 @@ public class H5BoluomeActivityController extends BaseController {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
+
+		try {
+			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,eUserDo.getRealName(),"","","");
+		}catch (Exception e){
+			logger.error("H5GGShare baiQiShiUtils getRegistResult error => {}",e.getMessage());
+		}
 
 	    // 更新为已经验证
 	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
