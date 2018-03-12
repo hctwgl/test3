@@ -112,15 +112,7 @@ public class PayOrderV1Api implements ApiHandle {
         if (context.getAppVersion() < 390) {
             throw new FanbeiException("您使用的app版本过低,请升级", true);
         }
-        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
-        
-        //15秒内防止订单支付请求重复提交
-        String lockKey = Constants.ORDER_PAY_ORDER_ID + orderId;
-	if (bizCacheUtil.getObject(lockKey) == null) {
-	    bizCacheUtil.saveObject(lockKey, lockKey, 15);
-	} else {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-	}        
+        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);     
         
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
@@ -141,7 +133,6 @@ public class PayOrderV1Api implements ApiHandle {
 
         if (orderId == null || payId == null) {
             logger.error("orderId is empty or payId is empty");
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         // TODO获取用户订单
@@ -149,12 +140,10 @@ public class PayOrderV1Api implements ApiHandle {
 
         if (orderInfo == null) {
             logger.error("orderId is invalid");
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
 
@@ -163,7 +152,6 @@ public class PayOrderV1Api implements ApiHandle {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
             if (afResourceDo != null && afResourceDo.getValue().contains(orderInfo.getGoodsName())) {
                 logger.error("filter shop : " + orderInfo.getGoodsName());
-                bizCacheUtil.delCache(lockKey);
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
             }
         }
@@ -172,7 +160,6 @@ public class PayOrderV1Api implements ApiHandle {
             AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
             if (afDeUserGoodsDo != null && afDeUserGoodsDo.getIsbuy() == 1) {
                 logger.error(orderInfo.getThirdOrderNo() + ":afDeUserGoodsService the goods is buy.");
-                bizCacheUtil.delCache(lockKey);
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
             }
         }
@@ -184,7 +171,6 @@ public class PayOrderV1Api implements ApiHandle {
             if (afOrderService.getOverOrderByUserId(userId).size() > 0) {
 
                 logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
-                bizCacheUtil.delCache(lockKey);
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
             }
         }
@@ -199,17 +185,14 @@ public class PayOrderV1Api implements ApiHandle {
         // +++++++++++++++++++++++++<
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
 
         if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
         }
 
         if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
         //region 支付方式在这里处理
@@ -288,7 +271,6 @@ public class PayOrderV1Api implements ApiHandle {
                     currUpdateOrder.setStatusRemark(Constants.PAY_ORDER_PASSWORD_ERROR);
                     afOrderService.updateOrder(currUpdateOrder);
                 }
-                bizCacheUtil.delCache(lockKey);
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
             }
         }
@@ -305,7 +287,6 @@ public class PayOrderV1Api implements ApiHandle {
             if (WxpayConfig.RESULT_CODE_SUCCESS.equals(resultCode)
                     && (WxpayConfig.TRADE_STATE_SUCCESS.equals(tradeCode)
                     || WxpayConfig.TRADE_STATE_USERPAYING.equals(tradeCode))) {
-                bizCacheUtil.delCache(lockKey);
                 throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_DEALING);
             }
         }
@@ -322,6 +303,7 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
 
+	String lockKey = Constants.ORDER_PAY_ORDER_ID + orderId;
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
             if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
@@ -359,14 +341,17 @@ public class PayOrderV1Api implements ApiHandle {
                         .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
                 if (shareUserGoodsDo != null && !payType.equals(PayType.AGENT_PAY.getCode())) {
                     logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the payType is error.");
-                    bizCacheUtil.delCache(lockKey);
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PAYTYPE_ERROR);
                 }
             }
-
             // ----------------
 
-
+	    // 15秒内防止订单支付请求重复提交
+	    if (bizCacheUtil.getObject(lockKey) == null) {
+		bizCacheUtil.saveObject(lockKey, lockKey, 15);
+	    } else {
+		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	    }
             Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 
             Object success = result.get("success");
