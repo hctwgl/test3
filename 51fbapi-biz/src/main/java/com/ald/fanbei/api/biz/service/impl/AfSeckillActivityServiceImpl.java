@@ -68,4 +68,14 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	public int saveActivityOrde(AfSeckillActivityOrderDo afSeckillActivityOrderDo) {
 		return afSeckillActivityOrderDao.saveRecord(afSeckillActivityOrderDo);
 	}
+
+	@Override
+	public int updateActivityOrderById(AfSeckillActivityOrderDo afSeckillActivityOrderDo) {
+		return afSeckillActivityOrderDao.updateById(afSeckillActivityOrderDo);
+	}
+
+	@Override
+	public int getSaleCountByActivityIdAndGoodsId(Long activityId, Long goodsId) {
+		return afSeckillActivityOrderDao.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
+	}
 }

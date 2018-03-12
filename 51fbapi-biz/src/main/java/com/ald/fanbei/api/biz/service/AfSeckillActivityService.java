@@ -27,4 +27,8 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     int updateActivityGoodsById(AfSeckillActivityGoodsDo afSeckillActivityGoodsDo);
 
     int saveActivityOrde(AfSeckillActivityOrderDo afSeckillActivityOrderDo);
+
+    int updateActivityOrderById(AfSeckillActivityOrderDo afSeckillActivityOrderDo);
+
+    int getSaleCountByActivityIdAndGoodsId(Long activityId, Long goodsId);
 }

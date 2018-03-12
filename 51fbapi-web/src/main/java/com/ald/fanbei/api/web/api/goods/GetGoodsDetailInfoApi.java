@@ -108,6 +108,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		AfSeckillActivityDto afSeckillActivityDto = afSeckillActivityService.getActivityByGoodsId(goodsId);
 		if(afSeckillActivityDto!=null){
 			Long activityId = afSeckillActivityDto.getRid();
+			//获取活动已售商品数量
+			int actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
 			Date gmtStart = afSeckillActivityDto.getGmtStart();
 			Date gmtEnd = afSeckillActivityDto.getGmtEnd();
 			vo.setActivityId(activityId);
@@ -117,6 +119,9 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGmtEnd(gmtEnd);
 			vo.setGmtPstart(afSeckillActivityDto.getGmtPStart());
 			vo.setLimitCount(afSeckillActivityDto.getLimitCount());
+			vo.setGoodsLimitCount(afSeckillActivityDto.getGoodsLimitCount());
+			vo.setPayType(afSeckillActivityDto.getPayType());
+			vo.setActSaleCount(actSaleCount);
 			/*List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
 			for (int i=0;i<activityGoodsDos.size();i++){
 				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = activityGoodsDos.get(i);

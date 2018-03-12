@@ -9,7 +9,7 @@ public class AfSeckillActivityGoodsDto extends AfSeckillActivityGoodsDo {
     private Date gmtStart;
     private Date gmtEnd;
     private Integer closeTime;
-
+    private Integer goodsLimitCount;
     public Date getGmtStart() {
         return gmtStart;
     }
@@ -32,5 +32,13 @@ public class AfSeckillActivityGoodsDto extends AfSeckillActivityGoodsDo {
 
     public void setCloseTime(Integer closeTime) {
         this.closeTime = closeTime;
+    }
+
+    public Integer getGoodsLimitCount() {
+        return goodsLimitCount;
+    }
+
+    public void setGoodsLimitCount(Integer goodsLimitCount) {
+        this.goodsLimitCount = goodsLimitCount;
     }
 }

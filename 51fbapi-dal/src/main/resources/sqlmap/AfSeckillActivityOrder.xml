@@ -133,27 +133,10 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_seckill_activity_order
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
-        LIMIT 0,1
+	<select id="getSaleCountByActivityIdAndGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo">
+        SELECT count(1)
+        FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
+        WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
+        AND o.status NOT IN ('NEW','PAYFAIL')
     </select>
-
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_seckill_activity_order
-        <include refid="commonCondition"/> 
-        limit 0,1
-    </select>
-               
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_seckill_activity_order
-        <include refid="commonCondition"/>
-    </select>
-    
 </mapper>

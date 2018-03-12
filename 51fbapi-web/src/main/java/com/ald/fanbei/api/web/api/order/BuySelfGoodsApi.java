@@ -138,6 +138,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+		//秒杀活动id
+		Long activityOrderId = 0l;
+		int isSecKill = 0;
 		try{
 			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
 			if(resourceDo!=null){
@@ -348,6 +351,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if(activityType==2){
 				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceId(goodsPriceId);
 				Long activityId = afSeckillActivityGoodsDto.getActivityId();
+				int goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
+				if(goodsLimitCount<count){
+					//超过购买数量
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("activityCode", 1001);
+					resp.setResponseData(data);
+					return resp;
+				}
 				try{
 					Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
 					if(remainCount<0||remainCount-count<0){
@@ -368,6 +379,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 							resp.setResponseData(data);
 							return resp;
 						}
+						isSecKill = 1;
 						//创建秒杀单
 						AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
 						afSeckillActivityOrderDo.setActivityId(activityId);
@@ -379,9 +391,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 						afSeckillActivityOrderDo.setGmtCreate(new Date());
 						afSeckillActivityOrderDo.setGmtModified(new Date());
 						afSeckillActivityService.saveActivityOrde(afSeckillActivityOrderDo);
+						activityOrderId = afSeckillActivityOrderDo.getRid();
 						int closeTime = afSeckillActivityGoodsDto.getCloseTime();
 						if(closeTime>0){
 							gmtPayEnd = DateUtil.addMins(currTime, closeTime);
+							afOrder.setGmtPayEnd(gmtPayEnd);
 						}
 					}
 				}catch (Exception ex){
@@ -438,6 +452,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
 		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
+		//如果是秒杀单，创建秒杀订单
+		AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
+		afSeckillActivityOrderDo.setRid(activityOrderId);
+		afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
+		afSeckillActivityService.updateActivityOrderById(afSeckillActivityOrderDo);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
