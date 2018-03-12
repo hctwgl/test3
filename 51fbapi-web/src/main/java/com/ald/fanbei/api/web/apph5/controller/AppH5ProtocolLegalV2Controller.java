@@ -445,6 +445,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type, afResourceDo, "borrow");
+		model.put("dayOverdueRate",BigDecimal.valueOf(Double.parseDouble(model.get("overdueRate").toString())).divide(BigDecimal.valueOf(360)));//每日逾期费
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		model.put("email", afUserDo.getEmail());//电子邮箱
