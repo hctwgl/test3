@@ -1091,7 +1091,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		model.put("poundage",borrowAmount.multiply(BigDecimal.valueOf(Double.parseDouble(model.get("poundageRate").toString()))).divide(BigDecimal.valueOf(100)));//手续费
 		if (model.get("overdueRate") != null){
 			String overdueRate =  model.get("overdueRate").toString();
-			model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
+			model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)).multiply(BigDecimal.valueOf(Double.parseDouble(type))).divide(BigDecimal.valueOf(360)));
 		}
 		if(borrowId > 0){
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
