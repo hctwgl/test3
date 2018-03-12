@@ -8,6 +8,7 @@ package com.ald.fanbei.api.biz.third.util.baiqishi;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.enums.TongdunEventEnmu;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -39,10 +40,13 @@ public class BaiQiShiUtils {
         String platform;
         if ("h5".equals(requsetId)){
             platform = "h5";
+        }else if ("web".equals(requsetId)){
+            platform = requsetId;
         }else {
             platform = requsetId.startsWith("i") ? "ios" : "android";
         }
         Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"login",platform);
+        logger.info("baiQiShiUtils getLoginResult params ,"+JSON.toJSONString(params) + ",requsetId ="+requsetId + ",blackBox="+blackBox+",mobile ="+mobile+",name ="+name);
         JSONObject apiResp = null;
         String apiUrl = "https://api.baiqishi.com/services/decision";
         try {
@@ -53,17 +57,7 @@ public class BaiQiShiUtils {
             return;
         }
         logger.info("baiQiShiUtils getLoginResult info = "+apiResp);
-        /*String loginSwitch = resourceValueWhithType(AfResourceType.loginTongdunSwitch.getCode());
 
-        if (StringUtil.isBlank(loginSwitch) || "0".equals(loginSwitch)) {// 验证开关关闭
-            return;
-        }
-
-        if (apiResp != null && apiResp.get("final_decision") != null
-                && resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
-            logger.info("手机号码为：" + accountMobile + "的用户在验证登录的时候被拦截" + "....同盾返回的code是...." + apiResp.get("final_decision"));
-            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
-        }*/
     }
 
     private Map<String, Object> getCommonParam(String blackBox, String ip, String mobile, String name, String idNumber, String cardNumber, String openId,String eventType,String platform) {
@@ -97,10 +91,13 @@ public class BaiQiShiUtils {
         String platform;
         if ("h5".equals(requsetId)){
             platform = "h5";
+        }else if ("web".equals(requsetId)){
+            platform = requsetId;
         }else {
             platform = requsetId.startsWith("i") ? "ios" : "android";
         }
         Map<String, Object> params = getCommonParam(blackBox, ip, mobile, name, idNumber, cardNumber, openId,"register",platform);
+        logger.info("baiQiShiUtils getRegistResult params ,"+JSON.toJSONString(params) + ",requsetId ="+requsetId + ",blackBox="+blackBox+",mobile ="+mobile+",name ="+name);
         String apiUrl = "https://api.baiqishi.com/services/decision";
         JSONObject apiResp = null;
         try {
@@ -111,14 +108,7 @@ public class BaiQiShiUtils {
             return;
         }
         logger.info("baiQiShiUtils getRegistResult info = "+apiResp);
-        /*if (StringUtil.isBlank(registSwitch) || "0".equals(registSwitch)) {// 验证开关关闭
-            return;
-        }
-        if (apiResp != null && apiResp.get(" ") != null
-                && resourceValueWhithType(AfResourceType.tongdunAccecptLevel.getCode()).indexOf(apiResp.get("final_decision") + "") > -1) {
-            logger.info("手机号码为：" + accountMobile + "的用户在app端注册的时候被拦截....同盾返回的code是...." + apiResp.get("final_decision"));
-            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
-        }*/
+
     }
 
     /**
