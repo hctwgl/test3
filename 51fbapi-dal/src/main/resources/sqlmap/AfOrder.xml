@@ -277,6 +277,9 @@
 			<if test="ip != null">
 	            #{ip},
 	        </if>
+			<if test="lc != null and '' != lc">
+				#{lc},
+			</if>
 			NOW(),
 			NOW()
 		)
