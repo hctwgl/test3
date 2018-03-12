@@ -36,12 +36,6 @@ import java.math.BigDecimal;
      * 特惠价格
      */
     private BigDecimal specialPrice;
-
-    /**
-     * 商品数量
-     */
-    private Long goodsCount;
-
     /**
      * 限购数量
      */
@@ -149,24 +143,6 @@ import java.math.BigDecimal;
      */
     public void setSpecialPrice(BigDecimal specialPrice){
       this.specialPrice = specialPrice;
-    }
-
-    /**
-     * 获取商品数量
-     *
-     * @return 商品数量
-     */
-    public Long getGoodsCount(){
-      return goodsCount;
-    }
-
-    /**
-     * 设置商品数量
-     * 
-     * @param goodsCount 要设置的商品数量
-     */
-    public void setGoodsCount(Long goodsCount){
-      this.goodsCount = goodsCount;
     }
 
     /**

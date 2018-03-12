@@ -13,6 +13,5 @@ import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
  */
 public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long> {
 
-
     AfSeckillActivityDto getActivityByGoodsId(Long goodsId);
 }

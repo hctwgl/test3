@@ -78,11 +78,6 @@ import java.math.BigDecimal;
     private Integer isDisable;
 
     /**
-     * 排序字段值越大越靠前
-     */
-    private Integer sort;
-
-    /**
      * 折扣类型，1表示折扣，2表示立减
      */
     private Integer discounttype;
@@ -327,24 +322,6 @@ import java.math.BigDecimal;
      */
     public void setIsDisable(Integer isDisable){
       this.isDisable = isDisable;
-    }
-
-    /**
-     * 获取排序字段值越大越靠前
-     *
-     * @return 排序字段值越大越靠前
-     */
-    public Integer getSort(){
-      return sort;
-    }
-
-    /**
-     * 设置排序字段值越大越靠前
-     * 
-     * @param sort 要设置的排序字段值越大越靠前
-     */
-    public void setSort(Integer sort){
-      this.sort = sort;
     }
 
     /**

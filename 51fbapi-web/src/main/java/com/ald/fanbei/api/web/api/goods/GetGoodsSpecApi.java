@@ -145,13 +145,9 @@ public class GetGoodsSpecApi implements ApiHandle {
 			}
 
 		}
-		//秒杀活动规格
-		List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
-
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
-		data.put("activityGoodsData", activityGoodsDos);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -161,7 +157,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 		if (priceDos != null && priceDos.size() > 0) {
 			for (AfGoodsPriceDo priceDo : priceDos) {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
-
 				goodsPriceVo.setStock(priceDo.getStock());
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
 				goodsPriceVo.setIsSale(priceDo.getIsSale());
@@ -169,7 +164,18 @@ public class GetGoodsSpecApi implements ApiHandle {
 				goodsPriceVo.setPriceId(priceDo.getRid());
 				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
 				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
-
+				//判断是在在活动中，并且活动已经开始
+				Long priceId = priceDo.getRid();
+				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getStartActivityPriceByPriceId(priceId);
+				if(afSeckillActivityGoodsDo!=null){
+					int limitCount = afSeckillActivityGoodsDo.getLimitCount();
+					BigDecimal specialPrice = afSeckillActivityGoodsDo.getSpecialPrice();
+					if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
+						limitCount = 0;
+					}
+					goodsPriceVo.setStock(limitCount);
+					goodsPriceVo.setActualAmount(specialPrice);
+				}
 				propertyData.add(goodsPriceVo);
 			}
 		}

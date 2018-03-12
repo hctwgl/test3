@@ -133,7 +133,7 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getSaleCountByActivityIdAndGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo">
+	<select id="getSaleCountByActivityIdAndGoodsId" resultType="java.lang.Integer">
         SELECT count(1)
         FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
         WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}

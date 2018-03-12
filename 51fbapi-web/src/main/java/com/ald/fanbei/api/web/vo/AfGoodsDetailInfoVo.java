@@ -43,6 +43,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private String payType;
 	private Integer actSaleCount;
 	private String remark;
+	private BigDecimal specialPrice;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -223,5 +224,13 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public BigDecimal getSpecialPrice() {
+		return specialPrice;
+	}
+
+	public void setSpecialPrice(BigDecimal specialPrice) {
+		this.specialPrice = specialPrice;
 	}
 }

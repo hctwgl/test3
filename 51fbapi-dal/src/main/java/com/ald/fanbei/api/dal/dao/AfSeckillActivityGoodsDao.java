@@ -21,4 +21,6 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     AfSeckillActivityGoodsDto getActivityPriceByPriceId(Long goodsPriceId);
 
     int updateActivityGoodsById(AfSeckillActivityGoodsDo afSeckillActivityGoodsDo);
+
+    AfSeckillActivityGoodsDo getStartActivityPriceByPriceId(Long priceId);
 }

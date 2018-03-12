@@ -148,7 +148,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
 		//秒杀活动id
 		Long activityOrderId = 0l;
-		int isSecKill = 0;
 		try{
 			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
 			if(resourceDo!=null){
@@ -387,7 +386,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 							resp.setResponseData(data);
 							return resp;
 						}
-						isSecKill = 1;
 						//创建秒杀单
 						AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
 						afSeckillActivityOrderDo.setActivityId(activityId);
@@ -462,10 +460,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
 		//如果是秒杀单，创建秒杀订单
-		AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
-		afSeckillActivityOrderDo.setRid(activityOrderId);
-		afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
-		afSeckillActivityService.updateActivityOrderById(afSeckillActivityOrderDo);
+		if(activityOrderId!=0){
+			AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
+			afSeckillActivityOrderDo.setRid(activityOrderId);
+			afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
+			afSeckillActivityService.updateActivityOrderById(afSeckillActivityOrderDo);
+		}
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
