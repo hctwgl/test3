@@ -445,7 +445,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		getResourceRate(model, type, afResourceDo, "borrow");
-		model.put("dayOverdueRate",BigDecimal.valueOf(Double.parseDouble(model.get("overdueRate").toString())).divide(BigDecimal.valueOf(360)));//每日逾期费
+		model.put("dayOverdueRate",BigDecimal.valueOf(Double.parseDouble(model.get("overdueRate").toString())).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP));//每日逾期费
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		model.put("email", afUserDo.getEmail());//电子邮箱
@@ -490,6 +490,9 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(borrowId);
 			model.put("priceAmount",borrowLegalOrderDo.getPriceAmount());
 			model.put("accountAmount",borrowAmount.subtract(borrowLegalOrderDo.getPriceAmount()));
+			model.put("accountAmountCapital", toCapital(borrowAmount.subtract(borrowLegalOrderDo.getPriceAmount()).doubleValue()));
+			model.put("priceAmountCapital", toCapital(borrowLegalOrderDo.getPriceAmount().doubleValue()));
+			model.put("dayOverdueRate",BigDecimal.valueOf(Double.parseDouble(model.get("overdueRate").toString())).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP));//每日逾期率
 			model.put("idIsExist","y");
 			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 				AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName("金泰嘉鼎（深圳）资产管理有限公司");
@@ -1086,12 +1089,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		model.put("email", afUserDo.getEmail());//电子邮箱
 		model.put("mobile", afUserDo.getUserName());// 联系电话
 		model.put("realName",accountDo.getRealName());
-//		Integer days = NumberUtil.objToIntDefault(type, 0);
-//		BigDecimal serviceAmount = borrowAmount.multiply(new BigDecimal(days)).multiply(new BigDecimal(model.get("SERVICE_RATE").toString())).divide(BigDecimal.valueOf(360)).setScale(2,BigDecimal.ROUND_HALF_UP);
-		model.put("poundage",borrowAmount.multiply(BigDecimal.valueOf(Double.parseDouble(model.get("poundageRate").toString()))).divide(BigDecimal.valueOf(100)));//手续费
+		int numType = numberWordFormat.borrowTime(type);
+		model.put("poundage",borrowAmount.multiply(BigDecimal.valueOf(Double.parseDouble(model.get("poundageRate").toString()))).divide(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(numType)).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP));//手续费
 		if (model.get("overdueRate") != null){
 			String overdueRate =  model.get("overdueRate").toString();
-			model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)).multiply(BigDecimal.valueOf(Double.parseDouble(type))).divide(BigDecimal.valueOf(360)));
+			model.put("overdueRate",BigDecimal.valueOf(Double.parseDouble(overdueRate)).divide(BigDecimal.valueOf(360)));
 		}
 		if(borrowId > 0){
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);

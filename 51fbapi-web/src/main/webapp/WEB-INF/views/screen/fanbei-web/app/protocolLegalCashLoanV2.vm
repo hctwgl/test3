@@ -56,7 +56,7 @@
               <span>二、借款基本信息</span><br>
     <ul>
         <li><i>借款本金</i><i>#if($!{accountAmount})$!{accountAmount}#else $!{amountLower}#end 元</i></li>
-        <li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
+        <li><i>大写金额</i><i>#if($!{accountAmountCapital})人民币$!{accountAmountCapital}#else $!{amountCapital}#end</i></li>
         <li><i>借款利率（年化）</i><i>#if($!{yearRate})$!{yearRate}%#end</i></li>
         <li><i>借款期限</i><i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>到期还本付息</i></li>
@@ -205,7 +205,7 @@
         <ul>
             <!-- TODO：更改信息 -->
             <li><i>借款本金</i><i>#if($!{priceAmount})$!{priceAmount}元#end</i></li>
-            <li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
+            <li><i>大写金额</i><i>#if($!{priceAmountCapital})人民币$!{priceAmountCapital}#end</i></li>
             <li><i>借款利率（年化）</i><i>#if($!{yearRate})$!{yearRate}%#end</i></li>
             <li><i>借款期限</i><i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
             <li><i>还款日</i><i>#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end</i></li>
