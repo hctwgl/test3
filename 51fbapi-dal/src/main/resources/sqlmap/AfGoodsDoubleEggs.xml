@@ -283,16 +283,16 @@
 	AND (SELECT value_1 FROM af_resource WHERE type = 'SPRING_FESTIVAL_ACTIVITY' AND sec_type ='AP_ONLY_LIMIT' ))
     </select>
     
-        <select id="getGoodsListByActivityId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate">
+    <select id="getGoodsListByActivityId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate">
 		    	SELECT
 					de.id AS double_goods_id,
 					CASE
-				WHEN CURRENT_DATE > date(de.start_time) THEN
-					'4'
-				WHEN now() > de.start_time THEN
+				WHEN NOW() &gt; de.start_time AND NOW() &lt; de.end_time THEN
 					'2'
-				ELSE
+				WHEN now() &lt; de.start_time THEN
 					'0'
+				ELSE
+					'4'
 				END AS STATUS,
 				 de.goods_id,
 				 g.stock_count,
@@ -325,5 +325,4 @@
 					ORDER BY
 						de.sort;
     </select>
-    
 </mapper>
