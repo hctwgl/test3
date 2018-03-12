@@ -122,6 +122,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGoodsLimitCount(afSeckillActivityDto.getGoodsLimitCount());
 			vo.setPayType(afSeckillActivityDto.getPayType());
 			vo.setActSaleCount(actSaleCount);
+			vo.setRemark(goods.getRemark());
 			/*List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
 			for (int i=0;i<activityGoodsDos.size();i++){
 				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = activityGoodsDos.get(i);

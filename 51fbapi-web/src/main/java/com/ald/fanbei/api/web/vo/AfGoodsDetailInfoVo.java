@@ -42,6 +42,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Integer goodsLimitCount;
 	private String payType;
 	private Integer actSaleCount;
+	private String remark;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -214,5 +215,13 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setActSaleCount(Integer actSaleCount) {
 		this.actSaleCount = actSaleCount;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }
