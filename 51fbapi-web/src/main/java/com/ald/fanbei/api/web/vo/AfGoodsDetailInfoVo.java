@@ -39,6 +39,10 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Date gmtEnd;
 	private Date gmtPstart;
 	private Integer limitCount;
+	private Integer goodsLimitCount;
+	private String payType;
+	private Integer actSaleCount;
+	private String remark;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -187,5 +191,37 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setActivityId(Long activityId) {
 		this.activityId = activityId;
+	}
+
+	public Integer getGoodsLimitCount() {
+		return goodsLimitCount;
+	}
+
+	public void setGoodsLimitCount(Integer goodsLimitCount) {
+		this.goodsLimitCount = goodsLimitCount;
+	}
+
+	public String getPayType() {
+		return payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public Integer getActSaleCount() {
+		return actSaleCount;
+	}
+
+	public void setActSaleCount(Integer actSaleCount) {
+		this.actSaleCount = actSaleCount;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }

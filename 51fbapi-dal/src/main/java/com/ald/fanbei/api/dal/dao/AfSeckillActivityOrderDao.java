@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
  */
 public interface AfSeckillActivityOrderDao extends BaseDao<AfSeckillActivityOrderDo, Long> {
 
-    
 
+    int getSaleCountByActivityIdAndGoodsId(Long activityId, Long goodsId);
 }
