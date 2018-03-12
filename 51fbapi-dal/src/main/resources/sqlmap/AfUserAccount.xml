@@ -330,4 +330,13 @@
 		id_number = #{idNo}
 		limit 1;
 	</select>
+	
+	<update id="plusUsedAmount">
+        UPDATE af_user_account 
+        SET gmt_modified = NOW(),
+            used_amount = used_amount + #{amount}
+        where user_id = #{userId}
+    </update>
+	
+	
 </mapper>

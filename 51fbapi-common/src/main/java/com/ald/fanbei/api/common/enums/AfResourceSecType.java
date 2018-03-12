@@ -25,6 +25,7 @@ public enum AfResourceSecType {
 
 		//活动相关
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
+	    ASSET_PUSH_WHITE("ASSET_PUSH_WHITE","债权实时推送白名单"),
     
 	    //借钱模块
 		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
@@ -61,6 +62,7 @@ public enum AfResourceSecType {
 		SMS_REPAYMENT_CONFIRM_FAIL("SMS_REPAYMENT_CONFIRM_FAIL","还款处理后确认用户还款失败"),
 		SMS_REPAYMENT_CONFIRM_SUCCESS("SMS_REPAYMENT_CONFIRM_SUCCESS","还款处理后确认用户还款成功"),
 		SMS_BORROW_AUDIT("SMS_BORROW_AUDIT","借款审核通过"),
+		SMS_LOAN_AUDIT("SMS_LOAN_AUDIT","白领贷借款审核通过"),
 		SMS_REPAYMENT_SUCCESS("SMS_REPAYMENT_SUCCESS","还款成功"),
 		SMS_REPAYMENT_SUCCESS_REMAIN("SMS_REPAYMENT_SUCCESS_REMAIN","部分还款成功"),
 		SMS_LIMIT("SMS_LIMIT","短信限制"),

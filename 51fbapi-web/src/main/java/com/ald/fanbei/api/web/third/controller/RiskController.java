@@ -74,6 +74,8 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
+	
+	
 
 	@RequestMapping(value = { "/operator" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -138,6 +140,38 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
+	
+	
+	
+	/**
+	 * 开通白领贷回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/dredgeWhiteCollarLoan" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String dredgeWhiteCollarLoan(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("dredgeWhiteCollarLoan begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyDredgeWhiteCollarLoan(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
+	
+	
+	
 	/**
 	 * 公积金异步回调
 	 * @param request
@@ -268,7 +302,27 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
-	
+	/**
+	 *网银认证异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/onlinebank" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String wangyin(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal wangyin begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.onlinebankNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
 	
 	/**
 	 * 征信
@@ -321,6 +375,47 @@ public class RiskController {
 		logger.info("deal chsi begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
 			riskUtil.taskFinishNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	
+	/**
+	 * 补充认证回调
+	 */
+	@RequestMapping(value = { "/supplementAuth" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String supplementAuth(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal supplementAuth begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.supplementAuthNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	/**
+	 * 公信宝认证(电商)风控异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/gxb/ecommerce"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String authGxb(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal authGxb begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.authGxbNotify(code, data, msg, signInfo);
 			return "SUCCESS";
 		} else {
 			return "ERROR";

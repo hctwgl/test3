@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
 import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfLegalContractPdfCreateServiceV2;
+import com.ald.fanbei.api.biz.service.AfWhiteLoanContractPdfCreateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,10 @@ public class ContractPdfThreadPool{
     private AfContractPdfCreateService afContractPdfCreateService;
     @Resource
     private AfLegalContractPdfCreateService afLegalContractPdfCreateService;
+    @Resource
+    private AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
+    @Resource
+    private AfWhiteLoanContractPdfCreateService afWhiteLoanContractPdfCreateService;
     private int nThreads = Runtime.getRuntime().availableProcessors() ;
     private int maxThreads = Runtime.getRuntime().availableProcessors() * 2;
     private ExecutorService service;// 线程池
@@ -50,6 +56,10 @@ public class ContractPdfThreadPool{
     public void PlatformServiceProtocolPdf(Long platformBorrowId,String platformType,BigDecimal platformPoundage,Long userId){
         PlatformServiceProtocolTask platformServiceProtocolTask = new PlatformServiceProtocolTask(platformBorrowId,platformType,platformPoundage,userId);
         service.execute(platformServiceProtocolTask);
+    }
+    public void whiteLoanPlatformServiceProtocol(Long id,Long userId){
+        whiteLoanPlatformServiceProtocolTask whiteLoanPlatformServiceProtocolTask = new whiteLoanPlatformServiceProtocolTask(id,userId);
+        service.execute(whiteLoanPlatformServiceProtocolTask);
     }
 
     class ProtocolCashLoanTask implements Runnable {
@@ -97,7 +107,20 @@ public class ContractPdfThreadPool{
         }
         @Override
         public void run() {
-            afLegalContractPdfCreateService.platformServiceProtocol(borrowId, type, poundage, userId);
+            afLegalContractPdfCreateServiceV2.platformServiceProtocol(borrowId, type, poundage, userId);
+        }
+    }
+
+    class whiteLoanPlatformServiceProtocolTask implements Runnable {
+        private Long loanId;
+        private Long userId;
+        public whiteLoanPlatformServiceProtocolTask(Long id,Long uId) {
+            loanId = id;
+            userId = uId;
+        }
+        @Override
+        public void run() {
+            afWhiteLoanContractPdfCreateService.whiteLoanPlatformServiceProtocol(loanId,userId);
         }
     }
 

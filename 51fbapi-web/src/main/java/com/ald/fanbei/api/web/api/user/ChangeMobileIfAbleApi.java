@@ -8,6 +8,9 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -38,7 +41,8 @@ public class ChangeMobileIfAbleApi implements ApiHandle {
 	SmsUtil smsUtil;
 	@Resource
 	AfValidationLogDao afValidationLogDao;
-
+	@Resource
+	AfResourceService afResourceService;
 	/**
 	 * 点击更换手机号码，先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
 	 * @param requestDataVo
@@ -48,6 +52,10 @@ public class ChangeMobileIfAbleApi implements ApiHandle {
 	 */
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("enabled_change_mobile");
+		if (afResourceDo != null && afResourceDo.getValue().equals("Y")) {
+			throw new FanbeiException(afResourceDo.getValue2(), true);
+		}
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		//先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)

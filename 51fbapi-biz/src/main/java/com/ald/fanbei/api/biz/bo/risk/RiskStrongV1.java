@@ -35,10 +35,6 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		setOrderNo(riskOrderNo);
 		
 		JSONObject userInfo = new JSONObject();
-//		userInfo.put("realName", afUserDo.getRealName());
-//		userInfo.put("phone", afUserDo.getMobile());
-//		userInfo.put("idNo", accountDo.getIdNumber());
-//		userInfo.put("email", afUserDo.getEmail());
 		userInfo.put("alipayNo", accountDo.getAlipayAccount());
 		userInfo.put("openId", accountDo.getOpenId());
 		userInfo.put("address", afUserDo.getAddress());

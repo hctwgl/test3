@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,13 +15,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -77,6 +76,7 @@ public class SmsUtil extends AbstractThird {
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
+    private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
     private static String RECYCLE_REBATE_SUCCESS = "您的回收订单已完成，账户到账返现%s元，其中包含回收订单金额%s元，订单返现%s元，快去我的账户中查看吧~";//回收业务成功返现
     private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在51返呗回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
 
@@ -465,21 +465,24 @@ public class SmsUtil extends AbstractThird {
      * @param mobile 用户绑定的手机号（注意：不是userName）
      * @return
      */
-    public boolean sendMobileBindVerifyCode(String mobile) {
+    public boolean sendMobileBindVerifyCode(String mobile,SmsType smsType,long userid) {
         if (!CommonUtil.isMobile(mobile)) {
             throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
         }
 
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
         if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue2())) {
-            int countBind = afSmsRecordService.countMobileCodeToday(mobile, SmsType.MOBILE_BIND.getCode());
+            int countBind = afSmsRecordService.countMobileCodeToday(mobile, smsType.getCode());
             if (countBind >= Integer.valueOf(resourceDo.getValue2()))
                 throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = BIND_TEMPLATE.replace("&param1", verifyCode);
+        if (SmsType.ZHI_BIND.equals(smsType)){
+            content = ZHI_BIND.replace("&param1", verifyCode);
+        }
         SmsResult smsResult = sendSmsToDhst(mobile, content);
-        this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, 1L, smsResult);
+        this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
         return smsResult.isSucc();
     }
 
@@ -514,17 +517,20 @@ public class SmsUtil extends AbstractThird {
      * @param userId 用户id
      * @return
      */
-    public boolean sendEmailVerifyCode(String email, Long userId) {
+    public boolean sendEmailVerifyCode(String email,SmsType smsType, Long userId) {
 
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = EMAIL_TEMPLATE.replace("&param1", verifyCode);
+        if(SmsType.ZHI_BIND.equals(smsType)){
+            content = ZHI_BIND.replace("&param1", verifyCode);
+        }
         SmsResult emailResult = new SmsResult();
         emailResult.setResultStr("email send");
         try {
             sendEmailToDhst(email, content);
 
             emailResult.setSucc(true);
-            this.addEmailRecord(SmsType.EMAIL_BIND, email, verifyCode, userId, emailResult);
+            this.addEmailRecord(smsType, email, verifyCode, userId, emailResult);
             return emailResult.isSucc();
 
         } catch (Exception e) {
@@ -697,6 +703,22 @@ public class SmsUtil extends AbstractThird {
 
 
     /**
+     * 借款成功发送短信提醒用户(白领贷)
+     *
+     * @param mobile
+     * @param bank
+     */
+    public boolean sendloanCashCode(String mobile, String bank) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_LOAN_AUDIT.getCode());
+        if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+            String content = resourceDo.getValue().replace("&bankCardNo", bank);
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        }
+        return false;
+    }
+
+    /**
      * 发送商圈支付成功短信
      *
      * @param mobile
@@ -734,7 +756,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobiles
      * @param content
      */
-    private SmsResult sendSmsToDhst(String mobiles, String content) {
+    public SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)) {
@@ -909,6 +931,7 @@ public class SmsUtil extends AbstractThird {
             return this.sendSmsToDhst(mobile, content);
         }
     }
+
     public   String rules(String mobile){
         String switchRule = (String)bizCacheUtil.getObject("sms_switch");
         if(switchRule == null){
@@ -931,6 +954,9 @@ public class SmsUtil extends AbstractThird {
         return "DH";
     }
 }
+
+
+
 
 class SmsResult {
     private boolean isSucc;

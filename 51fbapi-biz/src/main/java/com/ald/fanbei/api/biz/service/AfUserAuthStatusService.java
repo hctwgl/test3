@@ -1,10 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
-
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 
 /**
  * @类现描述：
@@ -40,4 +38,11 @@ public interface AfUserAuthStatusService {
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);    
 
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(Long userId);
+    
+    /**
+     * 检测指定场景下用户是否通过信用认证
+     */
+    boolean isPass(String scene, Long userId);
+
+	String getBldOpenStatus(Long userId);
 }

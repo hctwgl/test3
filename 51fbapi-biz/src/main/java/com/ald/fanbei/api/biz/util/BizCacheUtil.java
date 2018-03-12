@@ -96,6 +96,9 @@ public class BizCacheUtil extends AbstractThird {
 	
 	
 	public void saveMap(final String key, final Map<?, ?> valMap) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
+			return;
+		}
 		try{
 			redisTemplate.opsForHash().putAll(key, valMap);
 			redisTemplate.expire(key, Constants.SECOND_OF_TEN_MINITS, TimeUnit.SECONDS);
@@ -106,6 +109,9 @@ public class BizCacheUtil extends AbstractThird {
 	}
 	
 	public void saveMapForever(final String key, final Map<?, ?> valMap) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
+			return;
+		}
 		try{
 			redisTemplate.opsForHash().putAll(key, valMap);
 		} catch (Exception e) {
@@ -136,6 +142,9 @@ public class BizCacheUtil extends AbstractThird {
 	
 	
 	public Map<?,?> getMap(final String key) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key)) {
+			return null;
+		}
 		try{
 			if(redisTemplate.hasKey(key)){
 				return redisTemplate.opsForHash().entries(key);

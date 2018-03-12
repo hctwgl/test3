@@ -49,7 +49,16 @@ public class AfGoodsDo extends AbstractSerial{
 	private String tags;//免息活动标签
 	private String stockCount;//库存
 	private Long primaryCategoryId;
-	
+	private Long brandId;
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
 	public String getStockCount() {
 		return stockCount;
 	}

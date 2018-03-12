@@ -8,15 +8,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.util.*;
-import com.alibaba.fastjson.JSONObject;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +29,18 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserOperationLogService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -52,9 +48,15 @@ import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -69,6 +71,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfScrollbarVo;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 /**
@@ -120,6 +123,8 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -191,7 +196,8 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-
+		maxAmount = afUserAccountSenceService.getLoanMaxPermitQuota(userId, SceneType.CASH, new BigDecimal(strMaxAmount));
+		
 		logger.info("max amount:"+maxAmount);
 		logger.info("usableAmount amount:"+usableAmount);
 		if(maxAmount.compareTo(BigDecimal.ZERO)==0){

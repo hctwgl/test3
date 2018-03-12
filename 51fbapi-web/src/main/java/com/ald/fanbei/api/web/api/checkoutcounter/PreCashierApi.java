@@ -43,6 +43,7 @@ public class PreCashierApi  implements ApiHandle {
             bussinessHandle=buySelfGoodsApi;
         }   else if(orderType.equals(OrderType.TRADE.getCode())){
             bussinessHandle=tradeOrderApi;
+            
         }
         request.setAttribute("fromCashier",1);
         return  bussinessHandle.process(requestDataVo,context,request);
