@@ -37,8 +37,5 @@ public interface AfSubjectDao {
 	List<AfSubjectDo> listAllParentSubjectByTag(@Param("tag")String tag);
 
 	List<AfSubjectDo> listByParentIdAndLevel(AfSubjectDo queryAfSubject);
-
-
-	AfSubjectDo getSubjectInfoByTag(@Param("tag")String tag);
 	
 }

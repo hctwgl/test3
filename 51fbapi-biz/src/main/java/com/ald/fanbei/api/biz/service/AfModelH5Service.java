@@ -25,5 +25,4 @@ public interface AfModelH5Service {
 	    int updateModelH5(AfModelH5Do afModelH5Do);
 	    
 	    AfModelH5Do selectMordelH5ById(Long rid);
-	    AfModelH5Do getByTagAndType(String type, String tag);
 }

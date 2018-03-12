@@ -31,8 +31,4 @@ public interface AfSubjectService {
 	List<AfSubjectDo> listByParentIdAndLevel(AfSubjectDo queryAfSubject);
 
 
-	AfSubjectDo getSubjectInfoByTag(String tag);
-
-
-
 }
