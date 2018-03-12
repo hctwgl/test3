@@ -27,7 +27,7 @@
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
         })(window);
     #end
-    </script>;
+    </script>
 </head>
 <body>
 <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
