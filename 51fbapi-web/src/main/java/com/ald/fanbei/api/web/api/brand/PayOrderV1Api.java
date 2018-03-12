@@ -335,6 +335,7 @@ public class PayOrderV1Api implements ApiHandle {
             //代付
             if (payId < 0) {
                 payType = PayType.WECHAT.getCode();
+                bizCacheUtil.delCache(lockKey);
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 
 
