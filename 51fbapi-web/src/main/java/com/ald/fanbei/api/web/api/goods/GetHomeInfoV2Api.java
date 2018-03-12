@@ -187,10 +187,10 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
 				}
 				
-				if (categoryGoodsInfo == null) {
+//				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
-				}
+//				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
 				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD.getCode();
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);
@@ -335,7 +335,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
@@ -358,7 +358,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
 		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
 			Map<String, Object> categoryInfoMap = Maps.newHashMap();
-			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryId",modelH5ItemDo.getRid());
 			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
 			categoryInfoList.add(categoryInfoMap);
 		}
@@ -383,7 +383,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			List<AfGoodsDo> goodsDoList = null;
 			if (null != categoryInfoList.get(0)) {
 				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
-				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
 			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
 			for (AfGoodsDo goodsDo : goodsDoList) {
@@ -418,7 +418,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");

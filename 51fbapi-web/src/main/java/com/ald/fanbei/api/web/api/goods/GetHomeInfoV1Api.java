@@ -16,6 +16,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
@@ -38,6 +39,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -83,6 +85,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -186,6 +190,21 @@ public class GetHomeInfoV1Api implements ApiHandle {
 						}
 					}
 				}
+				try {
+					String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+					if (StringUtils.isNotEmpty(deviceId)) {
+					  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+						AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+						abTestDeviceDo.setUserId(userId);
+						abTestDeviceDo.setDeviceNum(deviceId);
+						// 通过唯一组合索引控制数据不重复
+						afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+					}
+				}  catch (Exception e) {
+					// ignore error.
+				}
+				
+				
 			}
 		} catch (Exception e) {
 			logger.error("push wnd error=>" + e.getMessage());
@@ -284,7 +303,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			activityInfoList = getHomeActivityList(resource, array);
 			bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 		}
-
 		// 更多商品
 		Map<String, Object> moreGoodsInfo = (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		if(moreGoodsInfo == null) {
@@ -359,8 +377,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					interestFreeArray = JSON.parseArray(interestFreeJson);
 				}
 			}
+
 			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 			if (nperList != null) {
 				goodsInfo.put("goodsType", "1");
@@ -426,7 +445,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
 					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);

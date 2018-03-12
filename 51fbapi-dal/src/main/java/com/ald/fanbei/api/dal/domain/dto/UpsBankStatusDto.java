@@ -7,11 +7,11 @@ public class UpsBankStatusDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // 银行支付最低限额
-    private Integer limitDown = 0;
+    private Double limitDown = 0.0;
     // 银行支付最高限额
-    private Integer limitUp = 0;
+    private Double limitUp = 0.0;
     // 银行支付每日限额
-    private Integer dailyLimit = 0;
+    private Double dailyLimit = 0.0;
     // 银行是否维护中
     private Integer isMaintain = 0;
     // 维护起始时间 "yyyy-MM-dd HH:mm:ss"
@@ -19,27 +19,27 @@ public class UpsBankStatusDto implements Serializable {
     // 维护结束时间"yyyy-MM-dd HH:mm:ss"
     private String maintainEndtime = "";
 
-    public Integer getLimitDown() {
+    public Double getLimitDown() {
 	return limitDown;
     }
 
-    public void setLimitDown(Integer limitDown) {
+    public void setLimitDown(Double limitDown) {
 	this.limitDown = limitDown;
     }
 
-    public Integer getLimitUp() {
+    public Double getLimitUp() {
 	return limitUp;
     }
 
-    public void setLimitUp(Integer limitUp) {
+    public void setLimitUp(Double limitUp) {
 	this.limitUp = limitUp;
     }
 
-    public Integer getDailyLimit() {
+    public Double getDailyLimit() {
 	return dailyLimit;
     }
 
-    public void setDailyLimit(Integer dailyLimit) {
+    public void setDailyLimit(Double dailyLimit) {
 	this.dailyLimit = dailyLimit;
     }
 

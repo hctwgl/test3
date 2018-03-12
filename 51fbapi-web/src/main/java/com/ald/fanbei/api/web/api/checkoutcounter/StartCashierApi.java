@@ -23,6 +23,7 @@ import com.ald.fanbei.api.web.vo.CashierVo;
 import com.ald.fanbei.api.web.vo.ConfirmOrderVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
@@ -149,7 +150,7 @@ public class StartCashierApi implements ApiHandle {
         }        
 
         //--------------------------mqp second kill fixed goods limit Ap only -------------------
-        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
+/*        if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()) && afGoodsDoubleEggsService.shouldOnlyAp(orderInfo.getGoodsId())) {
             checkoutCounter.setAlipayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setWxpayStatus(YesNoStatus.NO.getCode());
             checkoutCounter.setBankpayStatus(YesNoStatus.NO.getCode());
@@ -159,7 +160,7 @@ public class StartCashierApi implements ApiHandle {
                 checkoutCounter.setCppayStatus(YesNoStatus.YES.getCode());
             else
                 checkoutCounter.setCppayStatus(YesNoStatus.NO.getCode());
-        }
+        }*/
         //--------------------------mqp second kill fixed goods limit Ap only -------------------        
 
         String scene = UserAccountSceneType.ONLINE.getCode();
@@ -312,18 +313,25 @@ public class StartCashierApi implements ApiHandle {
         //审核状态判定
         String status = getIsAuth(userDto, authDo, orderInfo, context);
         if (status.equals(YesNoStatus.YES.getCode())) {
-            AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
-            BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
-            if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
-            }
+            //跟据测试核对产品设计原型要求，在不满足限制条件的情况下需要显示当前可用额度，所以下面逻辑提前到限额验证前执行。
             //获取可使用额度+临时额度
             BigDecimal userabledAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-
+            
+            AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
+            BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
+            if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {                
+                CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
+        	cashierTypeVo.setUseableAmount(userabledAmount);
+        	
+        	return cashierTypeVo;
+            }
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
+        	CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
+        	cashierTypeVo.setUseableAmount(userabledAmount);
+        	
+        	return cashierTypeVo;
             }
 
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {

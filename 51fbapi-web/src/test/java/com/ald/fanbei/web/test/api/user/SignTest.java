@@ -2,9 +2,7 @@ package com.ald.fanbei.web.test.api.user;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideReqBo;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -71,6 +69,39 @@ public class SignTest extends BaseTest {
 //        String encryptData = AesUtil.encryptToBase64(JSON.toJSONString(data),"2KA4WGA857FFCC65");
         transport.setData(encryptData);
         return JSON.toJSONString(transport);
+    }
+
+    @Test
+    public void  testGetContractProtocolPdf() {
+        String url = urlBase + "/third/collection/getContractProtocolPdf";
+        Map params = new HashMap<>();
+        params.put("borrowNo", "jq2018030716224300273");
+        params.put("type", "1");
+        String data = JsonUtil.toJSONString(params);
+        String timestamp = DateUtil.formatDate(new Date());
+        String sign = DigestUtil.MD5(data);
+        Map<String,String> paramsT = new  HashMap<>();
+        paramsT.put("data",data);
+        paramsT.put("sign",sign);
+        paramsT.put("timestamp",timestamp);
+//        HttpUtil.doHttpsPostIgnoreCertUrlencoded(url,getUrlParamsByMap(paramsT) );
+        HttpUtil.doHttpPost(url,getUrlParamsByMap(paramsT));
+    }
+
+    public String getUrlParamsByMap(Map<String, String> map) {
+        if (map == null) {
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            sb.append(entry.getKey() + "=" + entry.getValue());
+            sb.append("&");
+        }
+        String s = sb.toString();
+        if (s.endsWith("&")) {
+            s = org.apache.commons.lang.StringUtils.substringBeforeLast(s, "&");
+        }
+        return s;
     }
 
     @Test

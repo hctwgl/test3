@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseExtBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -47,6 +48,7 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -57,6 +59,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
@@ -1239,12 +1242,18 @@ public class AppH5InvitationActivityController extends BaseController {
              resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
 	     bizCacheUtil.saveObject("recommend:activity:boluome_coupon", resourceDo, Constants.SECOND_OF_TEN_MINITS);
 	 }
-	
+         List<String> bList = new ArrayList<>();
+  
 	if (resourceDo != null) {
-		List<String> bList = new ArrayList<>();
-		bList.add(resourceDo.getValue());
-		bList.add(resourceDo.getValue2());
-		bList.add(resourceDo.getValue3());
+	   bList.add(resourceDo.getValue());
+	}
+	 List<String> rigsetCouponIdList = getBoluomecouponIdListForCategoryTag(CouponCateGoryType._NEW_USER_BOLUOME_COUPON_.getCode());
+         if(rigsetCouponIdList != null && rigsetCouponIdList.size() >0 ){
+             bList.addAll(rigsetCouponIdList);
+         }
+		
+//		bList.add(resourceDo.getValue2());
+//		bList.add(resourceDo.getValue3());
 		if (bList != null && bList.size() > 0) {
 			for (String resouceIdStr : bList) {
 				Long resourceId = Long.parseLong(resouceIdStr);
@@ -1293,10 +1302,28 @@ public class AppH5InvitationActivityController extends BaseController {
 					}
 				}
 			}
-		}
 	}
 	return boluomeCouponList;
     }
+    
+    private List<String> getBoluomecouponIdListForCategoryTag(String tag){
+    List<String> boluomeCouponIdList = new ArrayList<>();
+    AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
+	if(couponCategory != null){
+	    	String coupons = couponCategory.getCoupons();
+		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+		for (int i = 0; i < couponsArray.size(); i++) {
+			String couponId = (String) couponsArray.getString(i);
+			boluomeCouponIdList.add(couponId);
+    		}
+	}
+	return boluomeCouponIdList;
+}	    			    
+
+
+    
+    
+    
     private String activitySwitch(){
 	 String acticitySwitch = "";
 	 AfResourceDo  afResourceDo  =  afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "RECOMMEND_NEWBIE_TASK");

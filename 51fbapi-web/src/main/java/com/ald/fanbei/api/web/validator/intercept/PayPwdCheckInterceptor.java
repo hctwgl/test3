@@ -134,13 +134,13 @@ public class PayPwdCheckInterceptor implements Interceptor {
 		Integer times = (Integer) bizCacheUtil.getObject(key);
 		Date previousDate = (Date) bizCacheUtil.getObject(key1);
 		
-		log = log + String.format("times = %d ,previousDate = %tc", resourceDo.toString(),previousDate);
+		log = log + String.format("times = %d ,previousDate = %tc", times,previousDate);
 		logger.info(log);
 
-		if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
+		//if (!StringUtils.equals(inputOldPwd, userAccountInfo.getPassword())) {
 
 			// times > specific times
-			if (times != null && times >= specificTime) {
+			if (times != null && times >= specificTimes) {
 
 				// if in frozen states
 				
@@ -164,7 +164,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 
 					} else {
 						// get the time diff
-						int seconds = DateUtil.getTimeDiff(new Date(), previousDate).intValue();
+						int seconds = DateUtil.getTimeDiff(previousDate, compareDate).intValue();
 						int hours = seconds / (60 * 60);
 						int minutes = seconds / 60 - hours * 60;
 						
@@ -190,12 +190,15 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				     		if (previousDate != null) {
 								bizCacheUtil.delCache(key);
 							}
+				     		return;
 						}
-						return;
+						
 					}
 
 					// or not .
 					times = 1;
+					bizCacheUtil.saveObjectForever(key, times);
+					
 					times = specificTimes - 1;
 					bizCacheUtil.saveObjectForever(key1, new Date());;
 					
@@ -220,15 +223,16 @@ public class PayPwdCheckInterceptor implements Interceptor {
 			     		if (previousDate != null) {
 							bizCacheUtil.delCache(key);
 						}
+			     		return;
 					}
-					return;
+					
 				}
 				
 				// or not .
 				
 				//judge if the last_time is yesterday if yes then times=1 ,and last_tims = now .
 				//previousDate
-				if(DateUtil.addDays(new Date(), -1).getDate() == previousDate.getDate()){
+				if(previousDate != null && DateUtil.addDays(new Date(), -1).getDate() == previousDate.getDate()){
 					
 					bizCacheUtil.saveObjectForever(key, 1);
 					bizCacheUtil.saveObjectForever(key1, new Date());
@@ -252,7 +256,7 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				bizCacheUtil.saveObjectForever(key, times);
 				bizCacheUtil.saveObjectForever(key1, new Date());
 				
-				if (times == specificTime) {
+				if (times == specificTimes) {
 					//this time is the fifth time
 					
 					FanbeiExceptionCode exceptionCode = getErrorCodeByHoursAndMinute(specificTime, 0);
@@ -266,20 +270,19 @@ public class PayPwdCheckInterceptor implements Interceptor {
 
 			}
 
-		}
+		//}
 	}
 
 	private FanbeiExceptionCode getErrorByKeyAndTimes(String key, Integer times) {
-		bizCacheUtil.saveObjectForever(key, times);
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getErrorMsg().replace("x", times + "");
+		String mString = "支付密码错误，您还有x次机会！".replace("x", times + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}
 
 	private FanbeiExceptionCode getErrorCodeByHoursAndMinute(Integer hours, Integer minutes) {
 		FanbeiExceptionCode exceptionCode = FanbeiExceptionCode.PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES;
-		String mString = exceptionCode.getErrorMsg().replace("x", hours + "").replace("y", minutes + "");
+		String mString = "您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！".replace("x", hours + "").replace("y", minutes + "");
 		exceptionCode.setDesc(mString);
 		return exceptionCode;
 	}

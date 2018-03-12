@@ -33,7 +33,7 @@
     </select>
     <select id="selectBySealInfo" resultMap="BaseResultMap" parameterType="AfUserSealDo">
         select
-        a.id,a.user_seal,a.user_type
+        a.id,a.user_seal,a.user_type,a.user_account_id,a.user_name
         ,if(user_type=3,a.edspay_user_card_id,c.id_number) as edspayUserCardId
         from af_user_seal a
         LEFT JOIN af_user_account c on a.user_id = c.user_id
@@ -105,16 +105,16 @@
         update af_user_seal
         set user_seal = #{userSeal,jdbcType=VARCHAR}
         <if test="userAccountId != null ">
-            user_account_id = #{userAccountId}
+            , user_account_id = #{userAccountId}
         </if>
         <if test="userType != null ">
-            user_type = #{userType}
+            , user_type = #{userType}
         </if>
         <if test="userName != null ">
-            user_name = #{userName}
+            , user_name = #{userName}
         </if>
         <if test="edspayUserCardId != null ">
-            edspay_user_card_id = #{edspayUserCardId}
+            , edspay_user_card_id = #{edspayUserCardId}
         </if>
         where user_id = #{userId,jdbcType=BIGINT}
     </update>

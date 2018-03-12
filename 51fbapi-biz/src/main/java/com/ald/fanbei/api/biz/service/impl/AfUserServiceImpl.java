@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -45,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 import com.alibaba.fastjson.JSONObject;
 
@@ -416,7 +420,19 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
 	}
 
+	public void checkPayPwd(String reqPayPwd, Long userId) {
+		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		String finalPwd = UserUtil.getPassword(reqPayPwd, userAccount.getSalt());
+		if (!StringUtils.equals(finalPwd, userAccount.getPassword())) {
+			throw new FanbeiException("Pay Password is error",FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+		}
+	}
 	@Override
+	public AfUserDto getUserInfoByUserId(Long userId) {
+		return afUserDao.getUserInfoByUserId(userId);
+	}
+	
+		@Override
 	public Long convertUserNameToUserId(String userName) {
 		Long userId = null;
 		if (!StringUtil.isBlank(userName)) {
@@ -427,6 +443,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 		}
 		return userId;
+
 	}
 
 }

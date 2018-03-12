@@ -1,19 +1,19 @@
 package com.ald.fanbei.api.web.common;
 
-import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -22,13 +22,14 @@ import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
+import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -50,8 +51,6 @@ public abstract class H5BaseController {
 	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");// 第三方调用日志
 
 	@Resource
-	protected ApiHandleFactory apiHandleFactory;
-	@Resource
 	protected TokenCacheUtil tokenCacheUtil;
 	@Resource
 	AfUserService afUserService;
@@ -64,6 +63,9 @@ public abstract class H5BaseController {
 	@Resource
 	private AfResourceService afResourceService;
 
+	@Resource
+	private H5HandleFactory h5HandleFactory;
+
 	protected String processRequest(HttpServletRequest request) {
 		String retMsg = StringUtils.EMPTY;
 		BaseResponse baseResponse = null;
@@ -71,6 +73,7 @@ public abstract class H5BaseController {
 			checkAppInfo(request);
 			// 解析参数（包括请求头中的参数和报文体中的参数）
 			Context context = parseRequestData(request);
+			checkLogin(context);
 			// 校验请求数据
 			doCheck(context);
 			baseResponse = doProcess(context);
@@ -82,17 +85,52 @@ public abstract class H5BaseController {
 			baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
 			retMsg = JSON.toJSONString(baseResponse);
 		}
+		logger.info("response msg=>{}",retMsg);
 		return retMsg;
+	}
+
+	private void checkLogin(Context context) {
+		H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
+        
+        // 接口是否需要登录
+        boolean needLogin = isNeedLogin(methodHandle.getClass());
+        context.setData("_needLogin", needLogin);
+        
+        if(needLogin && context.getUserId() == null) {
+        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+        }
+		
+	}
+	
+	
+	private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
+		Annotation[] annotations = clazz.getDeclaredAnnotations();
+		for(Annotation annotation : annotations) {
+			if(annotation instanceof NeedLogin) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void checkAppInfo(HttpServletRequest request) {
 		String appInfo = request.getParameter("_appInfo");
+		if(StringUtils.isEmpty(appInfo)) {
+			String referer = request.getHeader("Referer");
+			if(StringUtils.isNotEmpty(referer)) {
+				if(StringUtils.contains(referer, "_appInfo")) 
+					return;
+			}
+		}
+		
 		// App内部H5接口，客户端必须上送_appInfo字段
 		if (StringUtils.isBlank(appInfo)) {
 			throw new FanbeiException("param is null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 	}
-
+	
+	
+	
 	protected BaseResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
 		H5HandleResponse resp = new H5HandleResponse();
 		resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
@@ -159,6 +197,43 @@ public abstract class H5BaseController {
 					FanbeiExceptionCode.REQUEST_PARAM_METHOD_ERROR);
 		}
 		doBaseParamCheck(context);
+		checkWebSign(context);
+	}
+
+	private void checkWebSign(Context context) {
+		String userName = context.getUserName();
+		Integer appVersion = context.getAppVersion();
+		String sign = (String) context.getSystemsMap().get("sign");
+		String netType = (String) context.getSystemsMap().get("netType");
+		String time = (String) context.getSystemsMap().get("time");
+		String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName="
+				+ userName;
+
+		TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
+		boolean needLogin = (boolean)context.getData("_needLogin");
+		
+		if (needLogin) {// 需要登录的接口必须加token
+			if (token == null) {
+				throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+			}
+			signStrBefore = signStrBefore + token.getToken();
+		} else {// 否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
+			if (token != null) {
+				signStrBefore = signStrBefore + token.getToken();
+			}
+		}
+		logger.info("signStrBefore = {}", signStrBefore);
+		//this.compareSign(signStrBefore, sign);
+
+	}
+
+	private void compareSign(String signStrBefore, String sign) {
+		String sha256Value = DigestUtil.getDigestStr(signStrBefore);
+		if (logger.isDebugEnabled())
+			logger.info("signStrBefore=" + signStrBefore + ",sha256Value=" + sha256Value + ",sign=" + sign);
+		if (!StringUtils.equals(sign, sha256Value)) {
+			throw new FanbeiException("sign is error", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+		}
 	}
 
 	private void doBaseParamCheck(Context context) {
@@ -174,7 +249,6 @@ public abstract class H5BaseController {
 					FanbeiExceptionCode.REQUEST_PARAM_SYSTEM_NOT_EXIST);
 		}
 	}
-
 
 	/**
 	 * 记录埋点相关日志日志

@@ -154,6 +154,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 */
 	@Override
 	public void repay(RepayBo bo) {
+		
+		lockRepay(bo.userId);
+		
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
@@ -164,9 +167,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 		bo.borrowOrderCashId = bo.orderCashDo.getRid();
-		
+	
 		generateRepayRecords(bo);
-		
+	
 		doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
 		
 	}
@@ -254,6 +257,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     		
     	}finally {
     		unLock(tradeNo);
+    		
+    		// 解锁还款
+    		unLockRepay(repaymentDo.getUserId());
 		}
     }
 	@Override
@@ -267,47 +273,51 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
      * 还款失败后调用
      */
     @Override
-    public void dealRepaymentFail(String tradeNo, String outTradeNo, boolean isNeedMsgNotice, String errorMsg) {
-	final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
-	final AfBorrowLegalOrderRepaymentDo orderRepaymentDo = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(tradeNo);
-	logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
-
-	// 检查交易流水
-	// 对应记录数据库中是否已经处理
-	if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus())) 
-		|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()))) {
-	    return;
+	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
+		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
+        final AfBorrowLegalOrderRepaymentDo orderRepaymentDo = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(tradeNo);
+        logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo 
+        		+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg 
+        		+ ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
+        
+        if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) ) // 检查交易流水 对应记录数据库中是否已经处理
+        		|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()) )) {
+            return;
+        }
+        
+        if(repaymentDo != null) {
+			changBorrowRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
+		}
+		if(orderRepaymentDo != null) {
+			changOrderRepaymentStatus(outTradeNo, AfBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getId());
+		}
+		
+		// 解锁还款
+     	unLockRepay(repaymentDo.getUserId());
+        
+		if(isNeedMsgNotice){
+			//用户信息及当日还款失败次数校验
+			int errorTimes = 0;
+			AfUserDo afUserDo = afUserService.getUserById(repaymentDo.getUserId());
+			//如果是代扣，不校验次数
+			String payType = repaymentDo.getName();
+			//模版数据map处理
+			Map<String,String> replaceMapData = new HashMap<String, String>();
+			replaceMapData.put("errorMsg", errorMsg);
+			//还款失败短信通知
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+			}else{
+				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+				String title = "本次还款支付失败";
+				String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
+				content = content.replace("&errorMsg",errorMsg);
+				pushService.pushUtil(title,content,afUserDo.getMobile());
+			}
+		}
+		
 	}
-
-	if (repaymentDo != null) {
-	    changBorrowRepaymentStatus(outTradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repaymentDo.getRid());
-	}
-	if (orderRepaymentDo != null) {
-	    changOrderRepaymentStatus(outTradeNo, AfBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getId());
-	}
-
-	if (isNeedMsgNotice) {
-	    // 用户信息及当日还款失败次数校验
-	    int errorTimes = 0;
-	    AfUserDo afUserDo = afUserService.getUserById(repaymentDo.getUserId());
-	    // 如果是代扣，不校验次数
-	    String payType = repaymentDo.getName();
-	    // 模版数据map处理
-	    Map<String, String> replaceMapData = new HashMap<String, String>();
-	    replaceMapData.put("errorMsg", errorMsg);
-	    // 还款失败短信通知
-	    if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
-		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
-	    } else {
-		errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
-		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
-		String title = "本次还款支付失败";
-		String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
-		content = content.replace("&errorMsg", errorMsg);
-		pushService.pushUtil(title, content, afUserDo.getMobile());
-	    }
-	}
-    }
     
     private void generateRepayRecords(RepayBo bo) {
     	Date now = new Date();
@@ -421,9 +431,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
-				    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-				    dealRepaymentFail(bo.tradeNo, "", true, errorMsg);
-				    throw new FanbeiException(errorMsg);					
+					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}
@@ -573,6 +581,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	if(repayDealBo.curUserCouponId != null && repayDealBo.curUserCouponId > 0) {
     		afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用
     	}
+    	
+    	// 解锁还款
+    	unLockRepay(repayDealBo.userId);
     }
     
     private void doAccountLog(RepayDealBo repayDealBo) {
@@ -875,6 +886,23 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	}	
 	private void unLock(String tradeNo) {
 		String key = tradeNo + "_success_legalRepay";
+		redisTemplate.delete(key);
+	}
+	
+	/**
+	 * 锁住还款
+	 */
+	private void lockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+        long count = redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+        if (count != 1) {
+            throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+        }
+	}	
+	
+	private void unLockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
 		redisTemplate.delete(key);
 	}
 

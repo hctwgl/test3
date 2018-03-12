@@ -3,16 +3,18 @@ package com.ald.fanbei.api.web.api.legalborrow;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -46,8 +48,19 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -57,6 +70,7 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -348,7 +362,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				HashMap summaryData = afBorrowService.getUserSummary(userId);
 				riskDataMap.put("summaryData", summaryData);
 				riskDataMap.put("summaryOrderData", new HashMap<>());
-				RiskVerifyRespBo verifyBo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+				RiskVerifyRespBo verifyBo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
 						afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null, 0l, afBorrowCashDo.getCardName(), null,

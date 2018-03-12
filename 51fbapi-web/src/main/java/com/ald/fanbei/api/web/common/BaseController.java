@@ -95,7 +95,8 @@ public abstract class BaseController {
 	 * 解析request
 	 *
 	 * @param reqData
-	 * @param httpServletRequest
+	 * @param request
+	 * @param isForQQ
 	 * @return
 	 */
 	protected String processRequest(String reqData, HttpServletRequest request, boolean isForQQ) {

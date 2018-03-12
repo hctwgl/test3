@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
@@ -72,7 +74,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
 	@Resource
-	AfAbTestDeviceService afAbTestDeviceService;
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	JpushService jpushService;
 	
@@ -224,12 +226,12 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
 			if (StringUtils.isNotEmpty(deviceId)) {
-				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
 				abTestDeviceDo.setUserId(userId);
-				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				abTestDeviceDo.setDeviceNum(deviceId);
 				// 通过唯一组合索引控制数据不重复
-				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
 			}
 		}  catch (Exception e) {
 			// ignore error.

@@ -7,6 +7,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 
+    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
+
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
 	return afUserBankcardDao.getUserMainBankcardByUserId(userId);
@@ -56,6 +60,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		// 获取银行状态（ups写入redis数据）
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
 		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
+
+		logger.info("getUserBankcardByUserId key:"+bankStatusKey+",value" + bankStatusValue.toString());
 		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    bankStatus.setDailyLimit(bankStatus.getDailyLimit() * scale);
@@ -80,7 +86,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		AfBankUserBankDto afBankUserBankDto = iterator.next();
 		if ("N".equals(afBankUserBankDto.getIsValid())) {
 		    // 移除维护状态的银行卡，循环结束后重新添加到集合的尾部
-		    list.remove(afBankUserBankDto);
+		    iterator.remove();
 		    listMaintain.add(afBankUserBankDto);
 		}
 	    }
@@ -139,5 +145,10 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     public AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId) {
 	return afUserBankcardDao.getUserBankcardByIdAndStatus(cardId);
     }
+	
+		@Override
+	public String hideCardNumber(String bankcard) {
+		return bankcard.substring(bankcard.length()-4);
+	}
 
 }

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -32,6 +33,8 @@ import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
+import com.ald.fanbei.api.web.validator.intercept.ValidationInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;

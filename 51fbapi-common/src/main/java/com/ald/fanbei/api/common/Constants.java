@@ -103,6 +103,7 @@ public class Constants {
 	public static final String DEFAULT_BORROW_CASH_NAME = "现金借款";
 	public static final String DEFAULT_MOBILE_CHARGE_NAME = "手机充值";
 	public static final String DEFAULT_BORROW_PURPOSE = "借款";
+	public static final String DEFAULT_LOAN_PURPOSE = "贷款";
 	public static final String DEFAULT_CASH_PURPOSE = "提现";
 	public static final String DEFAULT_REFUND_PURPOSE = "退款";
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
@@ -232,6 +233,9 @@ public class Constants {
 	// 客服电话
 	public static final String RES_COMSUMER_PHONE = "CONSUMER_PHONE";
 
+
+	//白领贷相关信息
+	public static final String WHITE_AGREEMENT = "WHITE_AGREEMENT";
 	// config key
 	public static final String CONFKEY_CHECK_SIGN_SWITCH = "fbapi.check.sign.switch";
 	public static final String CONFKEY_JPUSH_APPKEY = "fbapi.jpush.appkey";
@@ -387,23 +391,22 @@ public class Constants {
 	public static final String SHA1 = "SHA-1";
 	public static final String TRADE_LOGIN_BUSINESSID = "trade_login_businessId_";
 
+	/** ---------------
+	 * 缓存Key常量区域
+	 * ---------------- */
 	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
-
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
-
 	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
-
 	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "ala_apply_strong_risk_lock";
-
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
-
 	// 催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
-
 	// 借贷超市签到锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
 	// 借贷超市签到领奖锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
+	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
+	
 
 	// 借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR = "BORROWCASH_ TO_DRAW";
@@ -467,6 +470,9 @@ public class Constants {
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 	  
+	  //公信宝认证的密钥
+	  public static final String AUTH_GXB_APPID = "auth.gxb.appid";
+	  public static final String AUTH_GXB_APPSECURITY = "auth.gxb.appsecurity";
 	  //51公积金认证
 	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
 	  public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
@@ -475,4 +481,19 @@ public class Constants {
 	//快递鸟配置
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
+	
+
+	public static final String ORDER_PAY_ORDER_ID = "order_pay_orderId:";
+
+	//resource 类型
+	public static final String USER_SHARE_INFO = "USER_SHARE_INFO";
+	
+	public static final String USER_SHARE_INFO_CONFIGURE = "USER_SHARE_INFO_CONFIGURE";
+	//resource 类型
+	public static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
+	
+	//轮播图
+	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
+
+
 }
