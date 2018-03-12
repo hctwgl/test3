@@ -13,25 +13,24 @@ public class ReplaceMainCardParam {
 
 
 	@NotNull
-	@DecimalMin("0")
-	private Long userId;
+	private String pwd;
 
 	@NotNull
-	private String backcard;
+	private String cardNumber;
 
-	public Long getUserId() {
-		return userId;
+	public String getPwd() {
+		return pwd;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
 	}
 
-	public String getBackcard() {
-		return backcard;
+	public String getCardNumber() {
+		return cardNumber;
 	}
 
-	public void setBackcard(String backcard) {
-		this.backcard = backcard;
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
 	}
 }
