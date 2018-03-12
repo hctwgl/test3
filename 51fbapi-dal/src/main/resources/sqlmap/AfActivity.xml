@@ -130,11 +130,9 @@
 		  is_delete = 0
 		AND `status` = 2
 		AND `name` = #{tag}
-		AND gmt_start &gt; CURDATE()
-		AND gmt_start &lt; DATE_ADD(
-		  CURDATE(),
-		  INTERVAL 1 DAY
-		) ORDER BY gmt_start LIMIT 0,5 ;
+and DATE(`gmt_start`) &gt;DATE_ADD(CURRENT_DATE,INTERVAL -1 DAY)
+and DATE(`gmt_start`) &lt; DATE_ADD(CURRENT_DATE,INTERVAL 2 DAY)
+		ORDER BY gmt_start LIMIT 0,5 ;
 	</select>
 
 	
