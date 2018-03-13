@@ -257,4 +257,10 @@ public interface AfOrderDao {
 	 */
 	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
 
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	AfOrderLeaseDo getOrderLeaseByOrderId(@Param("orderId")Long orderId);
+
 }

@@ -85,7 +85,7 @@ public class AppH5LeaseController extends BaseController {
                 bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.LEASE_BANNER.getCode()));
             }
 
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", bannerList);
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", bannerList);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseBanner", e);
@@ -136,7 +136,7 @@ public class AppH5LeaseController extends BaseController {
                 }
                 goodsInfoList.add(goodsInfo);
             }
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", goodsInfoList);
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", goodsInfoList);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseGoods", e);
@@ -200,7 +200,7 @@ public class AppH5LeaseController extends BaseController {
                 }
             }
             data.put("propertyData",propertyData);
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", data);
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseGoods", e);
@@ -234,7 +234,7 @@ public class AppH5LeaseController extends BaseController {
                     data.put("status","underway");
                 }
             }
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", data);
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseBanner", e);
@@ -258,7 +258,7 @@ public class AppH5LeaseController extends BaseController {
             if(defauleDo == null){
                 defauleDo = new AfUserAddressDo();
             }
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", defauleDo);
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", defauleDo);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseBanner", e);
@@ -278,7 +278,7 @@ public class AppH5LeaseController extends BaseController {
         try{
             context = doWebCheck(request, true);
 
-            resp = H5CommonResponse.getNewInstance(false,"请求成功", "", "");
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", "");
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseBanner", e);
@@ -307,7 +307,6 @@ public class AppH5LeaseController extends BaseController {
         data.put("goodsIcon",goods.getGoodsIcon());
         data.put("goodsName",goods.getName());
         data.put("goodsUrl",goods.getGoodsUrl());
-        data.put("realAmount",goods.getRealAmount());
         data.put("rebateAmount",goods.getRebateAmount());
         /* 商品详情图：多图，用英文逗号隔开  by weiqingeng
          * 1: 图片没有尺寸 http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg,http://f.51fanbei.com/preEnv/a9e18267dd92e6ea.jpg

@@ -405,4 +405,10 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId);
 }

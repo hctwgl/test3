@@ -143,7 +143,7 @@ public class leaseOrderApi  implements ApiHandle {
         afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
 
         afOrder.setCount(1);
-        afOrder.setNper(nper);
+        afOrder.setNper(nper - 1);
         afOrder.setPayType(payType);
 
         afOrder.setInvoiceHeader(invoiceHeader);
@@ -220,6 +220,8 @@ public class leaseOrderApi  implements ApiHandle {
         afOrderLeaseDo.setMonthlyRent(monthlyRent);
         afOrderLeaseDo.setRecoverRate(recoverRate);
         afOrderLeaseDo.setRichieAmount(richieAmount);
+        afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
+        afOrderLeaseDo.setScore(score);
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
 

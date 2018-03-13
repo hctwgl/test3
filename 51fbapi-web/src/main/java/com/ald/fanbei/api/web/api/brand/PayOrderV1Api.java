@@ -304,10 +304,10 @@ public class PayOrderV1Api implements ApiHandle {
 
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
-            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
+            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode()) || StringUtils.equals(type, OrderType.LEASE.getCode())) {
                 saleAmount = orderInfo.getActualAmount();
             }
-            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || nper == null)) {
+            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.LEASE.getCode()) || nper == null)) {
                 nper = orderInfo.getNper();
             }
 

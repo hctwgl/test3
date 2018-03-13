@@ -1085,9 +1085,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         orderInfo.setPayType(PayType.WECHAT.getCode());
                         logger.info("payBrandOrder orderInfo = {}", orderInfo);
                         orderDao.updateOrder(orderInfo);
+                        String attach = isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode();
+                        if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+                            attach = PayOrderSource.LEASE_ORDER.getCode();
+                        }
                         // 微信支付
-                        resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount, isSelf
-                                ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode());
+                        resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount, attach);
                         resultMap.put("success", true);
                         // 活动返利
                         return resultMap;
@@ -1249,12 +1252,33 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             }
                             logger.info("payBrandOrder orderInfo = {}", orderInfo);
                             orderDao.updateOrder(orderInfo);
+                            String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
+                            String merPriv = isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode();
+                            //租赁逻辑
+                            BigDecimal actualAmount = saleAmount;
+                            AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
+                            if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+                                merPriv = OrderType.LEASE.getCode();
+                                remark = "租赁商品订单支付";
+                                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
+                                BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                                if(useableAmount.compareTo(saleAmount) >= 0){
+                                    afOrderLeaseDo.setQuotaDeposit(saleAmount);
+                                    afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
+                                    actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
+                                }
+                                else {
+                                    afOrderLeaseDo.setQuotaDeposit(useableAmount);
+                                    afOrderLeaseDo.setCashDeposit(useableAmount.subtract(saleAmount));
+                                    actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
+                                }
+                            }
                             // 银行卡支付 代收
-                            UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
+                            UpsCollectRespBo respBo = upsUtil.collect(tradeNo, actualAmount, userId + "",
                                     userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
                                     cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
-                                    Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02",
-                                    isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
+                                    Constants.DEFAULT_BRAND_SHOP, remark, "02",
+                                    merPriv);
                             if (!respBo.isSuccess()) {
                                 if (StringUtil.isNotBlank(respBo.getRespCode())) {
                                     //模版数据map处理
@@ -1268,6 +1292,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                                     }
                                 }
                                 throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                            }
+                            //回掉成功生成租赁借款（确认收货后生成账单）
+                            if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+
+                                AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, userId,
+                                        afOrderLeaseDo.getMonthlyRent(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
+                                        orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+                                borrow.setVersion(1);
+                                // 新增借款信息
+                                afBorrowDao.addBorrow(borrow); // 冻结状态
+                                // 在风控审批通过后额度不变生成账单
+                                AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+                                afBorrowExtendDo.setId(borrow.getRid());
+                                afBorrowExtendDo.setInBill(0);
+                                afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+                                afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
                             }
                             newMap.put("outTradeNo", respBo.getOrderNo());
                             newMap.put("tradeNo", respBo.getTradeNo());
@@ -1426,6 +1466,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         borrow.setBorrowRate(borrowRate);
         borrow.setCalculateMethod(BorrowCalculateMethod.DENG_BEN_DENG_XI.getCode());
         borrow.setFreeNper(freeNper);
+        if(borrow.getType().equals(BorrowType.LEASE.getCode())){
+            borrow.setNperAmount(amount);
+            borrow.setAmount(amount.multiply(new BigDecimal(nper)));
+        }
         return borrow;
     }
 
@@ -1597,6 +1641,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         // afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new
                         // Date());
                         // #endregion
+                    }
+                    //回掉成功生成租赁借款（确认收货后生成账单）
+                    if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+                        AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+                        AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
+                                afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
+                                orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+                        borrow.setVersion(1);
+                        // 新增借款信息
+                        afBorrowDao.addBorrow(borrow); // 冻结状态
+                        // 在风控审批通过后额度不变生成账单
+                        AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+                        afBorrowExtendDo.setId(borrow.getRid());
+                        afBorrowExtendDo.setInBill(0);
+                        afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+                        afBorrowService.updateBorrowStatus(borrow, afOrderLeaseDo.getUserName(), orderInfo.getUserId());
                     }
                     logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}",
                             new Object[]{payOrderNo, tradeNo, payType});
@@ -2806,5 +2866,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public int addOrderLease(AfOrderLeaseDo afOrderLeaseDo) {
         return orderDao.addOrderLease(afOrderLeaseDo);
+    }
+
+    @Override
+    public AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId) {
+        return orderDao.getOrderLeaseByOrderId(orderId);
     }
 }

@@ -33,6 +33,8 @@ public class AfOrderLeaseDo extends AbstractSerial {
     private BigDecimal buyout;
     private BigDecimal recoverRate;
     private BigDecimal richieAmount;
+    private String realName;
+    private Integer score;
 
     public Long getId() {
         return id;
@@ -192,5 +194,21 @@ public class AfOrderLeaseDo extends AbstractSerial {
 
     public void setRichieAmount(BigDecimal richieAmount) {
         this.richieAmount = richieAmount;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }

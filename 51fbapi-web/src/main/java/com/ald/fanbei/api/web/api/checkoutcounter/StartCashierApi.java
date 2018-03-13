@@ -299,7 +299,7 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter, AfInterimAuDo afInterimAuDo, FanbeiContext context) {
-        if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
+        if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode()) || orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
 
