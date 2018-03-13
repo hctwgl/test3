@@ -539,6 +539,105 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         }
     }
 
+    private byte[] aldCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            FileDigestSignResult fileDigestSignResult = afESdkService.selfStreamSign(map, stream);//阿拉丁盖章
+            if (fileDigestSignResult.getErrCode() != 0) {
+                result = false;
+                logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                return null;
+            }
+            stream = fileDigestSignResult.getStream();
+            map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
+            return stream;
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+            return null;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
+    }
+
+    private byte[] borrowerCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
+            if (fileDigestSignResult.getErrCode() != 0) {
+                result = false;
+                logger.error("getLegalContractPdf 甲方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",personKey =" + map.get("personKey") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                return null;
+            }
+            stream = fileDigestSignResult.getStream();
+            map.put("esignIdFirst", fileDigestSignResult.getSignServiceId());
+            return stream;
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf 甲方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",personKey =" + map.get("personKey") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+            return null;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
+    }
+
+    private byte[] edsPayLenderCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            List<AfUserSealDo> list = (List<AfUserSealDo>) map.get("userSealDoList");
+            FileDigestSignResult fileDigestSignResult = new FileDigestSignResult();
+            for (AfUserSealDo userSealDo : list) {
+                map.put("key", userSealDo.getUserName());
+                map.put("secondSeal", userSealDo.getUserSeal());
+                map.put("secondAccoundId", userSealDo.getUserAccountId());
+                fileDigestSignResult = afESdkService.secondStreamSign(map, stream);//出借人盖章
+                if (fileDigestSignResult.getErrCode() != 0) {
+                    result = false;
+                    logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg()+",key="+userSealDo.getUserName()+",PDFPath =" + map.get("PDFPath") + ",borrowId = "+ map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                    return null;
+                }
+                stream = fileDigestSignResult.getStream();
+                map.put("secondStream", fileDigestSignResult.getStream());
+                map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
+            }
+            return stream;
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+            return null;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
+    }
+
+    private void edsPayCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            map.put("thirdPartyKey","楚橡信息科技有限公司");
+            FileDigestSignResult fileDigestSignResult = afESdkService.thirdStreamSign(map, stream);//钱包盖章
+            if (fileDigestSignResult.isErrShow()) {
+                result = false;
+                logger.error("getLegalContractPdf e都市钱包盖章证书生成失败 => {}", fileDigestSignResult + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            }
+            stream = fileDigestSignResult.getStream();
+            map.put("esignIdFour", fileDigestSignResult.getSignServiceId());
+
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf e都市钱包盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
+    }
+
     @Override
     public String getProtocalLegalByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException {
         Map<String, Object> map = new HashMap();
@@ -856,129 +955,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return true;
     }
 
-
-    private String getLegalContractPdf(Map<String, Object> map) throws IOException {
-        OutputStream fos = null;
-        ByteArrayOutputStream bos = null;
-        boolean result = true;
-        byte[] stream;
-        try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
-            if (fileDigestSignResult.getErrCode() != 0) {
-                result = false;
-                logger.error("getLegalContractPdf 甲方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",personKey =" + map.get("personKey") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-                return null;
-            }
-            stream = fileDigestSignResult.getStream();
-            map.put("esignIdFirst", fileDigestSignResult.getSignServiceId());
-        } catch (Exception e) {
-            logger.error("getLegalContractPdf 甲方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",personKey =" + map.get("personKey") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-            result = false;
-            return null;
-        } finally {
-            if (!result) {
-                File file1 = new File(map.get("userPath").toString());
-                file1.delete();
-            }
-        }
-
-        try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.selfStreamSign(map, stream);//阿拉丁盖章
-            if (fileDigestSignResult.getErrCode() != 0) {
-                result = false;
-                logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-                return null;
-            }
-            stream = fileDigestSignResult.getStream();
-            map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
-        } catch (Exception e) {
-            logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-            result = false;
-            return null;
-        } finally {
-            if (!result) {
-                File file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-            }
-        }
-
-        try {
-            List<AfUserSealDo> list = (List<AfUserSealDo>) map.get("userSealDoList");
-            FileDigestSignResult fileDigestSignResult = new FileDigestSignResult();
-            for (AfUserSealDo userSealDo : list) {
-                map.put("key", userSealDo.getUserName());
-                map.put("secondSeal", userSealDo.getUserSeal());
-                map.put("secondAccoundId", userSealDo.getUserAccountId());
-                fileDigestSignResult = afESdkService.secondStreamSign(map, stream);//出借人盖章
-                if (fileDigestSignResult.getErrCode() != 0) {
-                    result = false;
-                    logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}",fileDigestSignResult.getMsg()+",key="+userSealDo.getUserName()+",PDFPath =" + map.get("PDFPath") + ",borrowId = "+ map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-                    return null;
-                }
-                stream = fileDigestSignResult.getStream();
-                map.put("secondStream", fileDigestSignResult.getStream());
-                map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
-            }
-            fileDigestSignResult.getStream();
-
-        } catch (Exception e) {
-            logger.error("getLegalContractPdf 乙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-            result = false;
-            return null;
-        } finally {
-            if (!result) {
-                File file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-                file1 = new File(map.get("secondPath").toString());
-                file1.delete();
-            }
-        }
-
-        try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.thirdStreamSign(map, stream);//钱包盖章
-            if (fileDigestSignResult.isErrShow()) {
-                result = false;
-                logger.error("getLegalContractPdf e都市钱包盖章证书生成失败 => {}", fileDigestSignResult + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-                return null;
-            }
-            stream = fileDigestSignResult.getStream();
-            map.put("esignIdFour", fileDigestSignResult.getSignServiceId());
-            String dstFile = String.valueOf(map.get("thirdPath"));
-            File file = new File(dstFile);
-            FileOutputStream outputStream = new FileOutputStream(file);
-            outputStream.write(stream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            logger.error("getLegalContractPdf e都市钱包盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
-            result = false;
-            return null;
-        } finally {
-            if (!result) {
-                File file1 = new File(map.get("thirdPath").toString());
-                file1.delete();
-                file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-                file1 = new File(map.get("secondPath").toString());
-                file1.delete();
-            }
-        }
-        //存证暂时不用
-        /*String evId = "";
-        try {
-            evId = eviPdf(map);
-        } catch (Exception e) {
-            logger.error("e签宝存证生成失败 => {}", e);
-        }*/
+    private String ossFileUploadWithEdspaySeal(Map<String, Object> map,String fileName) throws IOException {
         InputStream input = null;
         try {
-            File file = new File(map.get("thirdPath").toString());
+            File file = new File(fileName);
             input = new FileInputStream(file);
             MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
@@ -987,12 +967,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != ossUploadResult.getUrl()) {
                 String protocolCashType = map.get("protocolCashType").toString();
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
-//                if (!"".equals(evId)) {
-//                    afContractPdfDo.setEvId(evId);
-//                }
-                /*if (map.get("userSealIds") != null){
-                    afContractPdfDo.setUserSealId(String.valueOf(map.get("userSealIds")));
-                }*/
                 afContractPdfDo.setType(Byte.valueOf(protocolCashType));
                 afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
                 afContractPdfDo.setTypeId((Long) map.get("borrowId"));
@@ -1027,13 +1001,30 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             file1.delete();
             file1 = new File(map.get("userPath").toString());
             file1.delete();
-            file1 = new File(map.get("selfPath").toString());
-            file1.delete();
-            file1 = new File(map.get("secondPath").toString());
-            file1.delete();
             file1 = new File(map.get("thirdPath").toString());
             file1.delete();
         }
+        return null;
+    }
+
+    private String getLegalContractPdf(Map<String, Object> map) throws IOException {
+        boolean result = true;
+        byte[] stream = new byte[1024];
+        borrowerCreateSeal(result,stream,map);//借款人签章
+
+        aldCreateSeal(result,stream,map);//阿拉丁签章
+
+        edsPayLenderCreateSeal(result,stream,map);//出借人签章
+
+        edsPayCreateSeal(result,stream,map);//钱包签章
+        String dstFile = String.valueOf(map.get("thirdPath"));
+        File file = new File(dstFile);
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(stream);
+        outputStream.flush();
+        outputStream.close();
+        ossFileUploadWithEdspaySeal(map,dstFile);//oss上传
+
         return null;
     }
 
