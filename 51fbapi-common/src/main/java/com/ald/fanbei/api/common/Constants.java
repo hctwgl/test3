@@ -479,6 +479,9 @@ public class Constants {
 	
 	//轮播图
 	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
+
+	//设备黑名单
+	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 }
 
 
