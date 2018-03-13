@@ -56,10 +56,12 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 		// 获取借款分期配置信息
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 				Constants.RES_BORROW_CONSUME);
+		log.info("home page v1 resource = "+JSON.toJSONString(resource));
 		JSONArray array = JSON.parseArray(resource.getValue());
 		List<Map<String, Object>> activityInfoList = getHomeInfoV1Api.getHomeActivityList(resource, array);
-
+		log.info("home page v1 activityInfoList = "+JSON.toJSONString(activityInfoList));
 		Map<String, Object> moreGoodsInfo = getHomeInfoV1Api.getMoreGoodsInfo(resource, array);
+		log.info("home page v1 moreGoodsInfo = "+JSON.toJSONString(moreGoodsInfo));
 		// 更新jvm缓存
 		cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 
@@ -68,6 +70,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 //		if (lock.tryLock()) {
 			try {
 				// 更新redis缓存
+				log.info("home page v1 update redis cache start.");
 				bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(),
 						activityInfoList);
 				bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(),
@@ -76,6 +79,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 				
 				//TimeUnit.MINUTES.sleep(cache.getLockInterval());
 			} catch (Exception e) {
+				log.info("update home page v1 error:"+e);
 				e.printStackTrace();
 			}/* finally {
 				lock.unlock();
