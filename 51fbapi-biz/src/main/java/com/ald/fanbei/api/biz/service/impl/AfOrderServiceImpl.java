@@ -1081,6 +1081,24 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     orderInfo.setGmtPay(currentDate);
                     orderInfo.setActualAmount(saleAmount);
                     orderInfo.setBankId(payId);
+                    //租赁逻辑
+                    BigDecimal actualAmount = saleAmount;
+                    AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
+                    if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+                        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
+                        BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                        if(useableAmount.compareTo(saleAmount) >= 0){
+                            afOrderLeaseDo.setQuotaDeposit(saleAmount);
+                            afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
+                            actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
+                        }
+                        else {
+                            afOrderLeaseDo.setQuotaDeposit(useableAmount);
+                            afOrderLeaseDo.setCashDeposit(useableAmount.subtract(saleAmount));
+                            actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
+                        }
+                        orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(),afOrderLeaseDo.getQuotaDeposit(),afOrderLeaseDo.getId());
+                    }
                     if (payType.equals(PayType.WECHAT.getCode())) {
                         orderInfo.setPayType(PayType.WECHAT.getCode());
                         logger.info("payBrandOrder orderInfo = {}", orderInfo);
@@ -1090,7 +1108,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             attach = PayOrderSource.LEASE_ORDER.getCode();
                         }
                         // 微信支付
-                        resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, saleAmount, attach);
+                        resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, actualAmount, attach);
                         resultMap.put("success", true);
                         // 活动返利
                         return resultMap;
@@ -1255,23 +1273,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
                             String merPriv = isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode();
                             //租赁逻辑
-                            BigDecimal actualAmount = saleAmount;
-                            AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
                             if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
                                 merPriv = OrderType.LEASE.getCode();
                                 remark = "租赁商品订单支付";
-                                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
-                                BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
-                                if(useableAmount.compareTo(saleAmount) >= 0){
-                                    afOrderLeaseDo.setQuotaDeposit(saleAmount);
-                                    afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
-                                    actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
-                                }
-                                else {
-                                    afOrderLeaseDo.setQuotaDeposit(useableAmount);
-                                    afOrderLeaseDo.setCashDeposit(useableAmount.subtract(saleAmount));
-                                    actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
-                                }
                             }
                             // 银行卡支付 代收
                             UpsCollectRespBo respBo = upsUtil.collect(tradeNo, actualAmount, userId + "",
@@ -1295,7 +1299,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             }
                             //回掉成功生成租赁借款（确认收货后生成账单）
                             if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-
+                                afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),userId,afOrderLeaseDo.getQuotaDeposit());
                                 AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, userId,
                                         afOrderLeaseDo.getMonthlyRent(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
                                         orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
@@ -1642,9 +1646,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         // Date());
                         // #endregion
                     }
-                    //回掉成功生成租赁借款（确认收货后生成账单）
+                    // 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
                     if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
                         AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+                        afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit());
                         AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
                                 afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
                                 orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());

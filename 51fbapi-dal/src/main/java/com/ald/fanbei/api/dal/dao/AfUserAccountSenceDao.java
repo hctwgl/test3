@@ -31,6 +31,8 @@ public interface AfUserAccountSenceDao extends BaseDao<AfUserAccountSenceDo, Lon
 
     int updateUsedAmount(@Param("scene") String scene, @Param("userId") Long userId, @Param("usedAmount") BigDecimal usedAmount);
 
+    int updateFreezeAmount(@Param("scene") String scene, @Param("userId") Long userId, @Param("freezeAmount") BigDecimal freezeAmount);
+
     List<AfUserAccountSenceDo> getByUserId(@Param("userId") Long userId);
     
     int updateTrainInitUsedAmount(@Param("userId") Long userId);

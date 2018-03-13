@@ -1301,4 +1301,14 @@
 		SELECT * FROM af_order_lease WHERE order_id = #{orderId}
 	</select>
 
+	<update id="updateOrderLeaseByPay">
+		UPDATE
+		af_order_lease
+		SET
+		cash_deposit = #{cashDeposit},
+		quota_deposit = #{quotadeposit}
+		WHERE
+		id = #{id}
+	</update>
+
 </mapper>

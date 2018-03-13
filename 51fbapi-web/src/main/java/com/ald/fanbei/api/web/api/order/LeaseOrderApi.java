@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -38,7 +39,7 @@ import java.util.*;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("leaseOrderApi")
-public class leaseOrderApi  implements ApiHandle {
+public class LeaseOrderApi implements ApiHandle {
     @Resource
     AfResourceService afResourceService;
 
@@ -71,19 +72,21 @@ public class leaseOrderApi  implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         final Long userId = context.getUserId();
         final String userName = context.getUserName();
+        //商品ID
         Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
                 0l);
+        //商品价格ID
         Long goodsPriceId = NumberUtil
                 .objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsPriceId"), ""), 0l);
+        //地址ID
         Long addressId = NumberUtil
                 .objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
-        Integer score = NumberUtil
-                .objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("score"), ""), 0);
-        String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
-        String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
+
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 12);
 
         String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
+
+        Integer score = 0;
         logger.info("add lease order 1,lc=" + lc);
         if(StringUtils.isBlank(lc)){
             lc = ObjectUtils.toString(request.getAttribute("lc"));
@@ -144,9 +147,7 @@ public class leaseOrderApi  implements ApiHandle {
 
         afOrder.setCount(1);
         afOrder.setNper(nper - 1);
-        afOrder.setPayType(payType);
 
-        afOrder.setInvoiceHeader(invoiceHeader);
         afOrder.setGmtCreate(currTime);
         afOrder.setGmtPayEnd(gmtPayEnd);
         afOrder.setLc(lc);
@@ -243,7 +244,7 @@ public class leaseOrderApi  implements ApiHandle {
                             return 1;
                         }
                         catch (Exception e){
-                            logger.info("leaseOrderApi error:" + e);
+                            logger.info("LeaseOrderApi error:" + e);
                             transactionStatus.setRollbackOnly();
                             throw e;
                         }

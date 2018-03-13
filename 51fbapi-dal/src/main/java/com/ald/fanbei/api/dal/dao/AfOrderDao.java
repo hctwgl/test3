@@ -263,4 +263,10 @@ public interface AfOrderDao {
 	 */
 	AfOrderLeaseDo getOrderLeaseByOrderId(@Param("orderId")Long orderId);
 
+	/**
+	 * 支付时修改订单押金金额
+	 * @return
+	 */
+	int updateOrderLeaseByPay(@Param("cashDeposit")BigDecimal cashDeposit,@Param("quotadeposit")BigDecimal quotadeposit,@Param("id")Long id);
+
 }

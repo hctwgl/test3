@@ -405,7 +405,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId, "");
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
-						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach) || PayOrderSource.LEASE_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
 				}
 			}
