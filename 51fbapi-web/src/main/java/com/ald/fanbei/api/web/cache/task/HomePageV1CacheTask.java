@@ -42,12 +42,12 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
-	private RLock lock;
+//	private RLock lock;
 
 	@PostConstruct
-	public void init() {
-		lock = redissonProxy.getLock(LOCK_NAME);
-	}
+//	public void init() {
+//		lock = redissonProxy.getLock(LOCK_NAME);
+//	}
 
 	@Override
 	public void updateCache(Cache cache) {
@@ -65,7 +65,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 
 		cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 
-		if (lock.tryLock()) {
+//		if (lock.tryLock()) {
 			try {
 				// 更新redis缓存
 				bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(),
@@ -77,10 +77,10 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 				TimeUnit.MINUTES.sleep(cache.getLockInterval());
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
+			}/* finally {
 				lock.unlock();
 			}
-		}
+		}*/
 		log.info("update home page v1 cache task end,time =>{}", System.currentTimeMillis());
 	}
 
