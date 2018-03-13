@@ -543,9 +543,10 @@ public class StartCashierApi implements ApiHandle {
 	}
 	if (userAccountInfo != null) {
 	    BigDecimal leftAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 	    if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
 		cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
-		cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString());
+		cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString() + afResourceDo.getValue2());
 
 		if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
 		    cashierTypeVo.setVirtualGoodsUsableAmount(BigDecimal.ZERO);
@@ -577,7 +578,6 @@ public class StartCashierApi implements ApiHandle {
 		cashierTypeVo.setUseableAmount(leftAmount);
 		cashierTypeVo.setPayAmount(leftAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : leftAmount);
 
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 		if (afResourceDo != null)
 		    cashierTypeVo.setCategoryName(afResourceDo.getValue());
 	    }
