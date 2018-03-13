@@ -86,7 +86,7 @@ public class ProtocolUtil {
                             "&type=" + dayType + "&borrowId=" + borrowId + "&borrowAmount=" + arriveAmount);
                 } else if ("PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//平台服务协议
                     afResourceDo.setValue("/fanbei-web/app/platformServiceProtocol?userName=" + userName +
-                            "&type=" + dayType + "&borrowId=" + borrowId + "&poundage=" + poundage);
+                            "&type=" + dayType + "&borrowId=" + borrowId + "&poundage=" + poundage + "&borrowAmount=" + arriveAmount);
                 } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
                     afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" + userName);
                 } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议

@@ -20,6 +20,8 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     String getProtocalLegalByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
 
+    String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
+
     String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException;
 
 }
