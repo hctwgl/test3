@@ -46,28 +46,24 @@ public class PayPwdCheckInterceptor implements Interceptor {
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
 		String payPwd = ObjectUtils.toString(reqData.getParams().get("payPwd"), "").toString();
 		if (StringUtils.isNotBlank(payPwd) && !StringUtils.equals("null", payPwd)) {
-
-		if (StringUtils.isNotBlank(payPwd)) {
-			Long userId = context.getUserId();
-
-			// need version check
-			Integer version = context.getAppVersion();
-			checkPayPwd(userId, payPwd, version);
+			if (StringUtils.isNotBlank(payPwd)) {
+				Long userId = context.getUserId();
+				// need version check
+				Integer version = context.getAppVersion();
+				checkPayPwd(userId, payPwd, version);
+			}
 		}
 	}
-
-	@Override
-	public void intercept(Context context) {
-		String payPwd = ObjectUtils.toString(context.getData("payPwd"));
-		if (StringUtils.isNotBlank(payPwd)) {
-			Long userId = context.getUserId();
-
-			// need version check
-			Integer version = context.getAppVersion();
-			checkPayPwd(userId, payPwd, version);
+		@Override
+		public void intercept(Context context) {
+			String payPwd = ObjectUtils.toString(context.getData("payPwd"));
+			if (StringUtils.isNotBlank(payPwd)) {
+				Long userId = context.getUserId();
+				// need version check
+				Integer version = context.getAppVersion();
+				checkPayPwd(userId, payPwd, version);
+			}
 		}
-	}
-
 	/**
 	 *
 	 * @Title: checkPayPwd @author qiao @date 2018年3月1日 下午2:35:39 @Description:
