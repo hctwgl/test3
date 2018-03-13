@@ -61,7 +61,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		String bankStatusKey = "ups_collect_" + item.getBankCode();
 		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
 
-		logger.info("getUserBankcardByUserId key:"+bankStatusKey+",value" + bankStatusValue.toString());
+		logger.info("getUserBankcardByUserId key:"+bankStatusKey+",value：" + bankStatusValue);
 		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
 		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
 		    bankStatus.setDailyLimit(bankStatus.getDailyLimit() * scale);
