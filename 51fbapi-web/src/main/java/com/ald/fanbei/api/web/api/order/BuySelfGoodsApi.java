@@ -378,7 +378,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 						//更新数据库
 						AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
 						afSeckillActivityGoodsDo.setPriceId(goodsPriceId);
-						afSeckillActivityGoodsDo.setLimitCount(remainCount);
+						afSeckillActivityGoodsDo.setLimitCount(count);
+						afSeckillActivityGoodsDo.setActivityId(activityId);
 						if(afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo)<=0){
 							//超过购买数量
 							Map<String, Object> data = new HashMap<String, Object>();

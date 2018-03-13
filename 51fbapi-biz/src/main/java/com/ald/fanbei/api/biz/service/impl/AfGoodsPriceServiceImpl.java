@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsPriceDao;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 
 /**
@@ -32,26 +33,42 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 
 	@Resource
 	private AfGoodsPriceDao afGoodsPriceDao;
-
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public BaseDao<AfGoodsPriceDo, Long> getDao() {
 		return afGoodsPriceDao;
 	}
 
 	@Override
-	public int updateStockAndSaleByPriceId(Long priceId, boolean isSold) {
+	public int updateStockAndSaleByPriceId(Long priceId, AfOrderDo afOrderDo, boolean isSold) {
 		AfGoodsPriceDo priceDo = new AfGoodsPriceDo();
 		priceDo = afGoodsPriceDao.getById(priceId);
 		int result = 0;
-		if (priceDo != null) {
+		if (priceDo != null && afOrderDo !=null) {
+			int count = afOrderDo.getCount();
+			Long orderId = afOrderDo.getRid();
 			if (isSold) {// 出售
-				priceDo.setStock(priceDo.getStock() - 1);
-				priceDo.setSaleCount(priceDo.getSaleCount() + 1);
+				priceDo.setStock(priceDo.getStock() - count);
+				//priceDo.setSaleCount(priceDo.getSaleCount() + count);
 			}else{
-				priceDo.setStock(priceDo.getStock() + 1);
-				priceDo.setSaleCount(priceDo.getSaleCount() - 1);
+				priceDo.setStock(priceDo.getStock() + count);
+				//priceDo.setSaleCount(priceDo.getSaleCount() - count);
 			}
 			result += afGoodsPriceDao.updateById(priceDo);
+			if(result>0){
+				//判断是否是秒杀单
+				AfSeckillActivityOrderDo afSeckillActivityOrderDo = afSeckillActivityService.getActivityOrderByOrderId(orderId);
+				if(afSeckillActivityOrderDo!=null){
+					Long actvityId = afSeckillActivityOrderDo.getActivityId();
+					AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
+					afSeckillActivityGoodsDo.setActivityId(actvityId);
+					afSeckillActivityGoodsDo.setPriceId(priceId);
+					afSeckillActivityGoodsDo.setLimitCount(-count);
+					//更新秒杀价格
+					afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo);
+				}
+			}
 		}
 		return result;
 	}
