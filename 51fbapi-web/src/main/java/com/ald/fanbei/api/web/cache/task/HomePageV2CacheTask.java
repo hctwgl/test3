@@ -37,12 +37,12 @@ public class HomePageV2CacheTask extends AbstractCacheTask{
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
-//	private RLock lock;
+	private RLock lock;
 	
 	@PostConstruct
-//	public void init() {
-//		lock = redissonProxy.getLock(LOCK_NAME);
-//	}
+	public void init() {
+		lock = redissonProxy.getLock(LOCK_NAME);
+	}
 	
 	@Override
 	public void updateCache(Cache cache) {

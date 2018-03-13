@@ -42,12 +42,12 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
-//	private RLock lock;
+	private RLock lock;
 
 	@PostConstruct
-//	public void init() {
-//		lock = redissonProxy.getLock(LOCK_NAME);
-//	}
+	public void init() {
+		lock = redissonProxy.getLock(LOCK_NAME);
+	}
 
 	@Override
 	public void updateCache(Cache cache) {
@@ -74,7 +74,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 						moreGoodsInfo);
 				log.info("home page v1 update redis cache success.");
 				
-				TimeUnit.MINUTES.sleep(cache.getLockInterval());
+				//TimeUnit.MINUTES.sleep(cache.getLockInterval());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}/* finally {
