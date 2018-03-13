@@ -54,7 +54,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
     /**
      * 最后处理时间
      */
-    private Date gmtModify;
+    private Date gmtModified;
     
     /**
      * 业务内容
@@ -188,23 +188,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
       this.state = state;
     }
 
-    /**
-     * 获取最后处理时间
-     *
-     * @return 最后处理时间
-     */
-    public Date getGmtModify(){
-      return gmtModify;
-    }
-
-    /**
-     * 设置最后处理时间
-     * 
-     * @param gmtModify 要设置的最后处理时间
-     */
-    public void setGmtModify(Date gmtModify){
-      this.gmtModify = gmtModify;
-    }
 
 	public String getContent() {
 		return content;
@@ -214,4 +197,16 @@ import com.ald.fanbei.api.common.AbstractSerial;
 		this.content = content;
 	}
 
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
 }

@@ -502,7 +502,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						afRetryTemplDo.setGmtNext(gmtNext);
 						afRetryTemplDo.setTimes(0);
 						afRetryTemplDo.setState("N");
-						afRetryTemplDo.setGmtModify(now);
+						afRetryTemplDo.setGmtModified(now);
 						afRetryTemplService.saveRecord(afRetryTemplDo);
 						if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
 							//钱包满额,更新配置表
@@ -602,7 +602,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		afRetryTemplDo.setGmtNext(gmtNext);
 		afRetryTemplDo.setTimes(0);
 		afRetryTemplDo.setState("N");
-		afRetryTemplDo.setGmtModify(now);
+		afRetryTemplDo.setGmtModified(now);
 		afRetryTemplDo.setContent(borrowerJson);
 		afRetryTemplService.saveRecord(afRetryTemplDo);
 	}
