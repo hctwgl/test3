@@ -708,6 +708,10 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
+		boolean isblack = afResourceService.getBlackList();
+		if (isblack){
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);

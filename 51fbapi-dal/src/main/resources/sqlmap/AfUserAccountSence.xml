@@ -244,4 +244,13 @@
         <include refid="commonCondition"/>
     </select>
     
+    <update id="updateUserSceneAuAmountByScene">
+    	UPDATE
+        af_user_account_sence
+        SET
+        gmt_modified = NOW(),
+        au_amount = #{auAmount}
+        WHERE
+        user_id = #{userId} AND scene = #{scene}
+    </update>
 </mapper>
