@@ -1097,6 +1097,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             afOrderLeaseDo.setCashDeposit(useableAmount.subtract(saleAmount));
                             actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
                         }
+                        orderInfo.setActualAmount(actualAmount);
                         orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(),afOrderLeaseDo.getQuotaDeposit(),afOrderLeaseDo.getId());
                     }
                     if (payType.equals(PayType.WECHAT.getCode())) {

@@ -138,7 +138,7 @@ public class LeaseOrderApi implements ApiHandle {
         final AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, priceDo);
         afOrder.setUserId(userId);
         afOrder.setGoodsPriceId(goodsPriceId);
-        afOrder.setActualAmount(afOrderService.getLeaseFreeze(score,priceDo.getLeaseAmount()));
+        afOrder.setActualAmount(new BigDecimal(0));
 
         //新增下单时，记录ip和同盾设备指纹锁 cxk
         afOrder.setIp(request.getRemoteAddr());//用户ip地址
@@ -223,6 +223,7 @@ public class LeaseOrderApi implements ApiHandle {
         afOrderLeaseDo.setRichieAmount(richieAmount);
         afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
         afOrderLeaseDo.setScore(score);
+        afOrderLeaseDo.setFreezeAmount(afOrderService.getLeaseFreeze(score,priceDo.getLeaseAmount()));
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
 
@@ -254,7 +255,7 @@ public class LeaseOrderApi implements ApiHandle {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("orderId", afOrder.getRid());
         String isEnoughAmount = "Y";
-        if (useableAmount.compareTo(afOrder.getActualAmount()) < 0) {
+        if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) < 0) {
             isEnoughAmount = "N";
         }
         data.put("isEnoughAmount", isEnoughAmount);

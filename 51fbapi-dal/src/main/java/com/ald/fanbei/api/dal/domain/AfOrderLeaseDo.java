@@ -35,6 +35,7 @@ public class AfOrderLeaseDo extends AbstractSerial {
     private BigDecimal richieAmount;
     private String realName;
     private Integer score;
+    private BigDecimal freezeAmount;
 
     public Long getId() {
         return id;
@@ -210,5 +211,13 @@ public class AfOrderLeaseDo extends AbstractSerial {
 
     public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public BigDecimal getFreezeAmount() {
+        return freezeAmount;
+    }
+
+    public void setFreezeAmount(BigDecimal freezeAmount) {
+        this.freezeAmount = freezeAmount;
     }
 }
