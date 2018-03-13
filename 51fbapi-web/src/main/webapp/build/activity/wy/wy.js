@@ -80,7 +80,8 @@ $(".submit").click(function(){
                                 pointCode: pointCode,
                                 smsCode: register_verification,
                                 password: password_md5,
-                                token:token
+                                token:token,
+                                bsqToken:token
                             },
                             success: function(returnData){
                                 if (returnData.success) {
@@ -202,6 +203,7 @@ $("#imgVftCodeSbumit").click(function(){
             data: {
                 mobile: mobileNum,
                 token: token,
+                bsqToken:token,
                 channelCode: channelCode,
                 pointCode: pointCode,
                 verifyImgCode:verifyImgCode

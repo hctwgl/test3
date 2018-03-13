@@ -120,7 +120,8 @@ var vm=new Vue({
                     data: {
                         mobile: mobileNum,
                         token: token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function(returnData){
                         if (returnData.success) {
@@ -170,7 +171,8 @@ var vm=new Vue({
                                         smsCode: VerifiCode,
                                         password: pwdMd5,
                                         recommendCode: recommendCode,
-                                        token: token
+                                        token: token,
+                                        bsqToken:token
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {

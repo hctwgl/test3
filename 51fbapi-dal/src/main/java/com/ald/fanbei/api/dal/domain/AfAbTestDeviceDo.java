@@ -19,6 +19,9 @@ public class AfAbTestDeviceDo extends AbstractSerial{
 	private String isDelete;
 	private Long userId;
 	private String deviceNum;
+//	private String deviceNumber;
+//	private Date loginDate;
+	
 	public Long getRid() {
 		return rid;
 	}
@@ -56,6 +59,19 @@ public class AfAbTestDeviceDo extends AbstractSerial{
 		this.deviceNum = deviceNum;
 	}
 	
+//	public String getDeviceNumber() {
+//	    return deviceNumber;
+//	}
+//	public void setDeviceNumber(String deviceNumber) {
+//	    this.deviceNumber = deviceNumber;
+//	}
+//	public Date getLoginDate() {
+//	    return loginDate;
+//	}
+//	public void setLoginDate(Date loginDate) {
+//	    this.loginDate = loginDate;
+//	}
+//	
 	
 
 }

@@ -110,5 +110,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
+
+	List<AfGoodsDo> getGoodsByItem(Long categoryId);
 }
 

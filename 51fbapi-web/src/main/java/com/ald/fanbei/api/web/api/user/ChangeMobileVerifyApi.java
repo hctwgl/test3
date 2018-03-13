@@ -5,7 +5,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.web.api.order.BuySelfGoodsApi;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -31,7 +37,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("changeMobileVerifyApi")
 public class ChangeMobileVerifyApi implements ApiHandle {
-	
+	Logger logger = LoggerFactory.getLogger(ChangeMobileVerifyApi.class);
 	public static final int PAY_PWD_FAIL_THRESHOLD = 5;
 	public static final int ID_CARD_FAIL_THRESHOLD = 5;
 	
@@ -40,7 +46,8 @@ public class ChangeMobileVerifyApi implements ApiHandle {
 	
 	@Resource
 	private AfValidationLogDao afValidationLogDao;
-	
+	@Resource
+	private AfResourceService afResourceService;
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
@@ -48,6 +55,10 @@ public class ChangeMobileVerifyApi implements ApiHandle {
 	
 	@Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("enabled_change_mobile");
+		if (afResourceDo != null && afResourceDo.getValue().equals("Y")) {
+			throw new FanbeiException(afResourceDo.getValue2(), true);
+		}
         Map<String, Object> params = requestDataVo.getParams();
         String behaviorStr = (String)params.get("behavior");
         String newMobile = (String)params.get("newMobile");

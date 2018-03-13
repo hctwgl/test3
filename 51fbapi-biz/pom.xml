@@ -79,10 +79,6 @@
 			<version>1.3.1</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>third.taobao.sdk</groupId> <artifactId>taobao-sdk</artifactId> 
-			<version>20170204</version> </dependency> <dependency> <groupId>third.taobao.sdk</groupId> 
-			<artifactId>taobao-sdk-source</artifactId> <version>20170204</version> <classifier>source</classifier> 
-			</dependency> -->
 		<dependency>
 			<groupId>third.taobao.sdk</groupId>
 			<artifactId>taobao-sdk</artifactId>
@@ -130,19 +126,12 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.4</version>
 		</dependency>
-		
-
-
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.4</version>
-		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.10.3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.itextpdf.tool</groupId>
 			<artifactId>xmlworker</artifactId>
@@ -185,11 +174,11 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>RELEASE</version>
-		</dependency>
+	        <dependency>
+	            <groupId>org.springframework</groupId>
+	            <artifactId>spring-test</artifactId>
+	            <version>RELEASE</version>
+	        </dependency>
 		<dependency>
 			<groupId>jiazhiyi.web.com</groupId>
 			<artifactId>ComInterface</artifactId>

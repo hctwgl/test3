@@ -1,26 +1,32 @@
 package com.ald.fanbei.api.web.common;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.kafka.KafkaSync;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.AfAppUpgradeService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -41,12 +47,12 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author 陈金虎 2017年1月16日 下午11:56:17 @类描述：
@@ -107,22 +113,7 @@ public abstract class BaseController {
 
 			// 验证参数、签名
 			FanbeiContext contex = doCheck(requestDataVo);
-//			if(contex.getAppVersion()<390){
-//				throw new FanbeiException("您使用的app版本过低,请升级",true);
-//			}
-			//406强升需要数据拦截的借钱相关接口
-			String apiUrl = "/legalborrow/applyLegalBorrowCash,/legalborrowV2/applyLegalBorrowCash," +
-					"/legalborrowV2/confirmLegalRenewalPay,/legalborrow/confirmLegalRenewalPay," +
-					"/borrowCash/applyBorrowCashV1,/borrowCash/confirmRenewalPay,/legalborrow/getLegalBorrowCashHomeInfo," +
-					"/legalborrowV2/getLegalBorrowCashHomeInfo," +
-					"/borrowCash/getBowCashLogInInfo," +
-					"/borrowCash/getBorrowCashHomeInfo,";
-			if(apiUrl.toLowerCase().contains(request.getRequestURI().toString().toLowerCase()) && contex.getAppVersion()<406){
-				String afResourceDo = afResourceService.getAfResourceAppVesionV1();
-				if (afResourceDo != null && afResourceDo.equals("true") && requestDataVo.getId().endsWith("www")) {
-					throw new FanbeiException("version is letter 406", FanbeiExceptionCode.VERSION_ERROR);
-				}
-			}
+
 			// 判断版本更新 后台控制
 			try {
 				AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesion();

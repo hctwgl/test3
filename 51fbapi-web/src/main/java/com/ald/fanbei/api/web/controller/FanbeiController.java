@@ -21,6 +21,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -45,7 +46,7 @@ public class FanbeiController extends BaseController {
 	AfResourceService afResourceService;
 	
 	@Resource
-	ValidationInterceptor validationInterceptor;
+	InterceptorChain interceptorChain;
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
@@ -96,7 +97,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
-    	"/system/getTabbarInfor","/resource/getResourceConfig","/system/maidian","/clickAmount/clickAmountNum","/resource/getRedRainRounds" ,"/pushClickAmout/clickPushAmountNum","/resource/getConfigurableNumDay"
+    	"/system/getTabbarInfor","/resource/getResourceConfig","/resource/getFlowFlayerResourceConfig","/system/maidian","/clickAmount/clickAmountNum","/resource/getRedRainRounds" ,"/pushClickAmout/clickPushAmountNum","/resource/getConfigurableNumDay"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -107,7 +108,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/quickRegisterPwd","/user/login","/user/quickLoginOrRegister","/user/resetPwd","/user/setQuickFirstPwd","/user/getUserInfo",
-    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
+    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineInfoV1","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
@@ -151,12 +152,12 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
-			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor","/auth/authChsi","/auth/authZhengxin", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
+			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor","/auth/authChsi","/auth/authZhengxin","/auth/authOnlinebank", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi","/auth/bindingBankcard","/auth/checkMessages",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authFundNew","/auth/authFundNew/GiveBack","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
-			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota","/auth/authGxb"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -196,7 +197,7 @@ public class FanbeiController extends BaseController {
     		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1",
             "/repayCash/getConfirmRepayInfoV1","/borrowCash/confirmRenewalPayV1","/repayCash/getRepayCashByOrderId",
             "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket","/instalments/getInstalmentsAd",
-            "legalborrow/*", "legalborrowV2/*"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+            "/borrowCash/getAllBorrowList", "legalborrow/*", "legalborrowV2/*", "loan/*"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -263,7 +264,7 @@ public class FanbeiController extends BaseController {
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         // 数据校验拦截器
-        validationInterceptor.intercept(requestDataVo, context, httpServletRequest);
+        interceptorChain.execute(requestDataVo, context, httpServletRequest);
         
         ApiHandleResponse handelResult;
         try {

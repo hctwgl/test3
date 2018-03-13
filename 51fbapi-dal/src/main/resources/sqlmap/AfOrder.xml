@@ -278,8 +278,8 @@
 	            #{ip},
 	        </if>
 			<if test="lc != null and '' != lc">
-	            #{lc},
-	        </if>
+				#{lc},
+			</if>
 			NOW(),
 			NOW()
 		)

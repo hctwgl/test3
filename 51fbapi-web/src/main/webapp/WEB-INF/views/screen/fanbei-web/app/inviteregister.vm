@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201709262137")
+    #set($version="201803061430")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteregister.css?version=$version">
@@ -52,9 +52,13 @@
     </div>
     <button class="imgVftCodeSbumit">确定</button>
   </div> -->
+  <script type="text/javascript">
+      var _saber={};
+  </script>
   <script type="text/javascript" src="/dist/js/core.js"></script>
   <script type="text/javascript" src="/dist/js/md5.js"></script>
   <script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
+  <script type="text/javascript" src="/dist/js/saber.js?version=$version"></script>
   <script type="text/javascript" src="/dist/js/app/inviteregister.js?version=$version"></script>
 </body>
 </html>

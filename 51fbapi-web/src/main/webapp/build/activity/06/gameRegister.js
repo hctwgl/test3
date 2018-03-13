@@ -12,10 +12,10 @@ function formatDateTime() {
     var minute = date.getMinutes();  
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;    
-};  
+};
 
-var _fmOpt;
 // 同盾校验编号的sessionId
+var _fmOpt;
  (function() {
     _fmOpt = {
          partner: 'alading',
@@ -77,7 +77,8 @@ $(function(){
     			dataType: "JSON",
     			data: {
     				mobile: phone,
-    				token: token
+    				token: token,
+                    bsqToken:token
     			},
     			success: function(returnData){
     				if (returnData.success) {
@@ -126,7 +127,8 @@ $(function(){
 								smsCode: code,
 								password: password_md5,
 								recommendCode: recommendCode,
-								token:token
+								token:token,
+                                bsqToken:token
 							},
 							success: function(returnData){
 								if ( returnData.success ) {
