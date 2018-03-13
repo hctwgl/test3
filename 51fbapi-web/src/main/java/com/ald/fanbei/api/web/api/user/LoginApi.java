@@ -327,19 +327,19 @@ public class LoginApi implements ApiHandle {
 //		        }, 1000 * 5);// 一分钟
 //		}
 		// 记录用户设备信息
-//		try {
-//			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
-//			if (StringUtils.isNotEmpty(deviceId)) {
-//			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-//				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
-//				abTestDeviceDo.setUserId(userId);
-//				abTestDeviceDo.setDeviceNum(deviceId);
-//				// 通过唯一组合索引控制数据不重复
-//				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
-//			}
-//		}  catch (Exception e) {
-//			// ignore error.
-//		}
+		try {
+			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+			if (StringUtils.isNotEmpty(deviceId)) {
+			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+				abTestDeviceDo.setUserId(userId);
+				abTestDeviceDo.setDeviceNum(deviceId);
+				// 通过唯一组合索引控制数据不重复
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+			}
+		}  catch (Exception e) {
+			// ignore error.
+		}
 		return resp;
 	}
 
