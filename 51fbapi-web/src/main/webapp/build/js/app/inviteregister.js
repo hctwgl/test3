@@ -327,8 +327,9 @@ window.onload = () => {
         type: "POST",
         dataType: "json",
         data: {
-          "mobile": mobileNum, //将手机号码传给后台
-          token: token
+            "mobile": mobileNum, //将手机号码传给后台
+            token: token,
+            bsqToken:token
         },
         success: function (returnData) {
           if (returnData.success) {
@@ -447,12 +448,13 @@ window.onload = () => {
           type: 'POST',
           dataType: 'JSON',
           data: {
-            registerMobile: $('#user').val(),
-            smsCode: $('#verify').val(),
-            password: String(CryptoJS.MD5($("#pwd").val())),
-            recommendCode: recommendCode,
-            token: token,
-            'source':'recommend'
+              registerMobile: $('#user').val(),
+              smsCode: $('#verify').val(),
+              password: String(CryptoJS.MD5($("#pwd").val())),
+              recommendCode: recommendCode,
+              token: token,
+              'source':'recommend',
+              bsqToken:token
           },
           success: function (returnData) {
             maidianFnNew("registerSuccess", $('#user').val());

@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -77,6 +78,8 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -188,6 +191,11 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+			try {
+				baiQiShiUtils.getLoginResult(requestDataVo.getId(),bqsBlackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),null,null,null);
+			}catch (Exception e){
+				logger.info("checkLoginVerifyCodeApi baiQiShiUtils error =>{}",e.getMessage());
+			}
 		}
 
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",

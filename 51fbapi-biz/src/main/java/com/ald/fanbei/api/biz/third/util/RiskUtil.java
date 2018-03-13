@@ -1580,7 +1580,9 @@ public class RiskUtil extends AbstractThird {
 				
 				jpushService.strongRiskFail(userAccountDo.getUserName());
 				smsUtil.sendRiskFail(userAccountDo.getUserName());
-			}
+			} /*else if (StringUtils.equals("20", result)) {//人审
+				smsUtil.sendRiskNeedAudit(userAccountDo.getUserName());
+			}*/
 		}
 		return 0;
 	}

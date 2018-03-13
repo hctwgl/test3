@@ -135,6 +135,7 @@ $(function () {
                     data: {
                         mobile: userName,
                         token:token,
+                        bsqToken:token,
                         verifyImgCode:verifyImgCode
                     },
                     success: function (data) {
@@ -193,7 +194,8 @@ $(function () {
             data: {
                 mobile: userName,
                 verifyCode: mesg,
-                token:token
+                token:token,
+                bsqToken:token
             },
             success: function (data) {
                 if(data.url=="ForgetPwd"){

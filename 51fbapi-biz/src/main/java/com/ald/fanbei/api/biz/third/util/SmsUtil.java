@@ -273,6 +273,17 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 强风控需要人审
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendRiskNeedAudit(String mobile) {
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_NEED_AUDIT.getCode(), false);
+    }
+
+
+    /**
      * 强风控通过
      *
      * @param mobile
