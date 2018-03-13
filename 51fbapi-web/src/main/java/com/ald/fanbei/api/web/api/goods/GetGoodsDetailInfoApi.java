@@ -104,6 +104,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			Map nperMap = nperList.get(nperList.size() - 1);
 			vo.setNperMap(nperMap);
 		}
+		vo.setNperList(nperList);
 		//秒杀、促销活动商品信息
 		AfSeckillActivityDto afSeckillActivityDto = afSeckillActivityService.getActivityByGoodsId(goodsId);
 		if(afSeckillActivityDto!=null){

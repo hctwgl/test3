@@ -44,6 +44,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Integer actSaleCount;
 	private String remark;
 	private BigDecimal specialPrice;
+	private List<Map<String, Object>> nperList;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -232,5 +233,13 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setSpecialPrice(BigDecimal specialPrice) {
 		this.specialPrice = specialPrice;
+	}
+
+	public List<Map<String, Object>> getNperList() {
+		return nperList;
+	}
+
+	public void setNperList(List<Map<String, Object>> nperList) {
+		this.nperList = nperList;
 	}
 }
