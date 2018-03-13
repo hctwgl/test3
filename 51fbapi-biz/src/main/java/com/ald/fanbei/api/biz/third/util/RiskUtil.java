@@ -1205,7 +1205,8 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.isNotBlank(respBo.getRespCode())) {
 				// 模版数据map处理
 				Map<String, String> replaceMapData = new HashMap<String, String>();
-				replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+				replaceMapData.put("errorMsg", errorMsg);
 				try {
 					AfUserDo userDo = afUserService.getUserById(userId);
 					smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
@@ -1213,6 +1214,8 @@ public class RiskUtil extends AbstractThird {
 				} catch (Exception e) {
 					logger.error("pay order rela bank pay error,userId=" + userId, e);
 				}
+				
+				throw new FanbeiException(errorMsg);
 			}
 			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}

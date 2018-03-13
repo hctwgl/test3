@@ -6,6 +6,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.alibaba.fastjson.JSON;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
@@ -1149,17 +1152,17 @@ public class DateUtil {
         return s.getTime() >= e.getTime();
     }
     
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
       String data=  Base64.decodeToString("eyJhbW91bnQiOjIwMC4wMCwiYm9ycm93Tm8iOiJqcTIwMTgwMTA0MTYwMTM4MDEzMDMiLCJpbmNv\nbWUiOjE4LjIwLCJvdmVyZHVlQ291bnQiOjAsIm92ZXJkdWVEYXlzIjowfQ==");
-        /*
+        
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
          * System.out.println(DateUtils.getEndOfMonth(DateUtils.currentDate())); System.out.println("now:" +
          * DateUtils.now());
-         */
-        /*
+         
+        
          * Calendar cal1 = GregorianCalendar.getInstance(); cal1.add(Calendar.MINUTE, 2);
          * System.out.println(getNumberOfMinuteBetween(new Date(), cal1.getTime()));
-         */
+         
         // System.out.println("previous monday:" +
         // DateUtils.getPreviousMonday());
         // System.out.println("current monday:" + DateUtils.getCurrentMonday());
@@ -1192,7 +1195,7 @@ public class DateUtil {
 			e.printStackTrace();
 		}
     	
-    }
+    }*/
     
     public static Date stringToDate(String date) throws ParseException{
     	if(StringUtils.isBlank(date)){
@@ -1335,5 +1338,27 @@ public class DateUtil {
 			return new Date(timeSecondTimpstamp*1000);
 		}
 	}
-	
+	/**
+	 * 
+	* @Title: getTimeDiff
+	* @author qiao
+	* @date 2018年3月1日 下午2:00:51
+	* @Description: 获得两个日期的时间差，精确到秒
+	* @param d1
+	* @param d2
+	* @return    
+	* @return Long   
+	* @throws
+	 */
+	public static Long getTimeDiff(Date d1,Date d2){
+		Long result = 0L ;
+		if (d1 != null && d2 != null) {
+			Long l1 = d1.getTime();
+			Long l2 = d2.getTime();
+			
+			result = (l1-l2)/1000;
+		}
+		return result;
+	}
+
 }

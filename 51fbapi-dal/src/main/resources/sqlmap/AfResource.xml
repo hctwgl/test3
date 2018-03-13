@@ -520,6 +520,14 @@
 		is_delete = 0 AND type = #{type} AND  value= #{value}
 		LIMIT 1
 	</select>
+	<select id="getConfigsListByTypesAndSecType" resultType="AfResourceDo">
+	SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+	</select>
 	<select id="getFlowFlayerResourceConfig" resultType="AfResourceDo">
 		SELECT
 			a.*

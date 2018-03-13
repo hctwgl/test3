@@ -104,8 +104,7 @@
 		AND 
 			u.user_id = #{userId} 
 		ORDER BY
-			u.is_main,b.is_valid
-		DESC
+			b.is_valid DESC,u.is_main desc,u.gmt_create desc
 	</select>
 	
 	<update id="deleteUserBankcardByIdAndUserId">

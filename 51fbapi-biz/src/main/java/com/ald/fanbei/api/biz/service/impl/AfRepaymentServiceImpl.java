@@ -212,13 +212,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                 afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
                 afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
                 afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
+                String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
                 try {
                     //还款失败短信通知
-                    sendFailMessage(userId, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment.getName());
+                    sendFailMessage(userId, errorMsg, repayment.getName());
                 } catch (Exception e) {
                     logger.error("BorrowCash sendMessage but addMsg error for:" + e);
                 }
-                throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                throw new FanbeiException(errorMsg);
             }
             map.put("resp", respBo);
         } else if (cardId == -2) {//余额支付
@@ -289,13 +290,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                 } else {
                     logger.info("createRepayment ups response fail,bug syn have process success.repayNo:" + repayNo + ",repaymentId:" + repayment.getRid());
                 }
+                String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
                 try {
                     //还款失败短信通知
-                    sendFailMessage(userId, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), currRepayment.getName());
+                    sendFailMessage(userId, errorMsg, currRepayment.getName());
                 } catch (Exception e) {
                     logger.error("BorrowCash sendMessage but addMsg error for:" + e);
                 }
-                throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                throw new FanbeiException(errorMsg);
             }
             map.put("resp", respBo);
         } else if (cardId == -2) {//余额支付

@@ -306,6 +306,11 @@ public class Constants {
 	public static final String RESERVATION_IPHONEX_COUPON_STATUS = "coupon_status_";
 	public static final String RESERVATION_IPHONEX_COUPON_ID = "coupon_id";
 	public static final String RESERVATION_IPHONEX_SUM_COUNT = "sum_coupon_count_";
+	
+	//wrong paypwd times and the previous wrong time.
+	public static final String CACHKEY_WRONG_INPUT_PAYPWD_TIMES = "wrong_input_paypwd_times";
+	public static final String CACHKEY_THE_LAST_WRONG_PAYPWD_TIME = "the_last_wrong_paypwd_time";
+	
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
@@ -477,8 +482,18 @@ public class Constants {
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
 	
+
+	public static final String ORDER_PAY_ORDER_ID = "order_pay_orderId:";
+
+	//resource 类型
+	public static final String USER_SHARE_INFO = "USER_SHARE_INFO";
+	
+	public static final String USER_SHARE_INFO_CONFIGURE = "USER_SHARE_INFO_CONFIGURE";
+	//resource 类型
+	public static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
+	
 	//轮播图
 	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
+
+
 }
-
-

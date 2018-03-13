@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_seckill_activity_goods表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,special_price,goods_count,limit_count,goods_id,type,activity_id,creator,modifier,price_id 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="specialPrice != null and specialPrice != ''">
+            AND special_price = #{specialPrice,jdbcType=DECIMAL}
+        </if>
+        <if test="goodsCount != null and goodsCount != ''">
+            AND goods_count = #{goodsCount,jdbcType=INTEGER}
+        </if>
+        <if test="limitCount != null and limitCount != ''">
+            AND limit_count = #{limitCount,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=INTEGER}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            AND activity_id = #{activityId,jdbcType=INTEGER}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="priceId != null and priceId != ''">
+            AND price_id = #{priceId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_seckill_activity_goods
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="specialPrice != null">        
+	            special_price,
+	        </if>
+	        <if test="goodsCount != null">        
+	            goods_count,
+	        </if>
+	        <if test="limitCount != null">        
+	            limit_count,
+	        </if>
+	        <if test="goodsId != null">        
+	            goods_id,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="activityId != null">        
+	            activity_id,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="priceId != null">        
+	            price_id,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="specialPrice != null" >
+		       #{specialPrice,jdbcType=DECIMAL},
+		    </if>
+		    <if test="goodsCount != null" >
+		       #{goodsCount,jdbcType=INTEGER},
+		    </if>
+		    <if test="limitCount != null" >
+		       #{limitCount,jdbcType=VARCHAR},
+		    </if>
+		    <if test="goodsId != null" >
+		       #{goodsId,jdbcType=INTEGER},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=INTEGER},
+		    </if>
+		    <if test="activityId != null" >
+		       #{activityId,jdbcType=INTEGER},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="priceId != null" >
+		       #{priceId,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo">
+        UPDATE af_seckill_activity_goods
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="specialPrice != null and specialPrice != '' ">        
+                special_price = #{specialPrice,jdbcType=DECIMAL},                
+            </if>
+            <if test="goodsCount != null and goodsCount != '' ">        
+                goods_count = #{goodsCount,jdbcType=INTEGER},                
+            </if>
+            <if test="limitCount != null and limitCount != '' ">        
+                limit_count = #{limitCount,jdbcType=VARCHAR},                
+            </if>
+            <if test="goodsId != null and goodsId != '' ">        
+                goods_id = #{goodsId,jdbcType=INTEGER},                
+            </if>
+            <if test="type != null and type != '' ">        
+                type = #{type,jdbcType=INTEGER},                
+            </if>
+            <if test="activityId != null and activityId != '' ">        
+                activity_id = #{activityId,jdbcType=INTEGER},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="priceId != null and priceId != '' ">        
+                price_id = #{priceId,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_seckill_activity_goods
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_seckill_activity_goods
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+
+    <select id="getActivityGoodsByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo" parameterType="java.lang.Long">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.special_price,a.limit_count,a.goods_id,a.price_id,a.activity_id
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND b.is_delete=0 AND b.is_disable=0 AND a.type=2 AND a.goods_id=#{goodsId}
+    </select>
+
+    <select id="getActivityPriceByPriceId" resultType="AfSeckillActivityGoodsDto" parameterType="java.lang.Long">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.special_price,a.limit_count,a.goods_id,a.price_id,a.activity_id,
+        b.gmt_start,b.gmt_end,b.close_time,b.goods_limit_count
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND b.is_delete=0 AND b.is_disable=0 AND a.type=2
+        AND a.price_id=#{goodsPriceId} limit 1
+    </select>
+
+    <select id="getStartActivityPriceByPriceId" resultType="AfSeckillActivityGoodsDto" parameterType="java.lang.Long">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.special_price,a.limit_count,a.goods_id,a.price_id,a.activity_id,
+        b.gmt_start,b.gmt_end,b.close_time,b.goods_limit_count
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND b.is_delete=0 AND b.is_disable=0 AND a.type=2
+        AND a.price_id=#{goodsPriceId} AND b.gmt_start <![CDATA[<=]]> now() AND b.gmt_end <![CDATA[>=]]> now()
+        ORDER BY b.gmt_create DESC limit 1
+    </select>
+
+    <update id="updateActivityGoodsById" parameterType="AfSeckillActivityGoodsDo">
+        UPDATE af_seckill_activity_goods SET gmt_modified=now(),limit_count=limit_count-#{limitCount}
+        WHERE price_id=#{priceId} AND is_delete=0
+    </update>
+    
+</mapper>
