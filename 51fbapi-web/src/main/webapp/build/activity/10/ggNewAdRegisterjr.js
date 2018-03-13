@@ -141,7 +141,8 @@ $(function () {
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
                         token:token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
@@ -199,7 +200,8 @@ $(function () {
                     token:token,
                     'activityId':activityId,
                     'typeFrom':typeFrom,
-                    'typeFromNum':typeFromNum
+                    'typeFromNum':typeFromNum,
+                    bsqToken:token
                 },
                 success: function (returnData) {
                     console.log(0);

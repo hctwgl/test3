@@ -234,8 +234,9 @@
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
 				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
+				<entry key="/user/replaceMainCard" value-ref="replaceMainCardApi" />
 				<entry key="/user/getUserShareInfo" value-ref="getUserShareInfoApi"/>
-				
+
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
@@ -553,6 +554,8 @@
 				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
 				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
+
+
 
 			</map>
 		</constructor-arg>

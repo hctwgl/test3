@@ -151,4 +151,13 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		return bankcard.substring(bankcard.length()-4);
 	}
 
+	@Override
+	public int updateMainBankCard(Long userId){
+		return afUserBankcardDao.updateMainBankCard(userId);
+	}
+
+	@Override
+	public int updateViceBankCard(String cardNumber,Long userId){
+		return afUserBankcardDao.updateViceBankCard(cardNumber,userId);
+	}
 }

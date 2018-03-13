@@ -8,7 +8,7 @@
 	</sql>
 
 	<sql id="queryItemFields">
-		b.id rid,b.gmt_create,b.gmt_modified,b.creator,b.modifier,b.name,b.goods_icon,b.thumbnail_icon,b.goods_url,b.open_id,b.num_id,b.price_amount,
+		b.id rid,a.gmt_create,b.gmt_modified,b.creator,b.modifier,b.name,b.goods_icon,b.thumbnail_icon,b.goods_url,b.open_id,b.num_id,b.price_amount,
 		b.sale_amount,b.category_id,b.sale_count,b.gmt_start,b.gmt_end,b.status,b.source,b.rebate_amount,b.rebate_rate,b.shop_name,
 		(b.sale_amount-b.rebate_amount) real_amount,b.tags,b.goods_pic1,b.goods_pic2,b.goods_pic3,b.goods_pic4,b.goods_detail,b.remark,b.stock_count,b.primary_category_id
 	</sql>
@@ -336,7 +336,7 @@
 		and a.type = 'GOODSLIST'
 		and a.item_value = b.id
 		and a.is_delete = 0
-		and b.is_delete = 0 and b.status='PUBLISH'
+		and b.is_delete = 0 and b.status='PUBLISH' order by a.gmt_create desc LIMIT 50
 	</select>
 
 

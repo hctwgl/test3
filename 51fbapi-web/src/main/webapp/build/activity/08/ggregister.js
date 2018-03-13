@@ -222,7 +222,8 @@ $(function () {
                     dataType: "json",
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
-                        token: token
+                        token: token,
+                        bsqToken:token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
@@ -343,6 +344,7 @@ $(function () {
                     "password": password_md5,
                     "urlName": urlName,
                     token: token,
+                    bsqToken:token,
                     'activityId': activityId,
                     'refUserName': refUserName
                 },

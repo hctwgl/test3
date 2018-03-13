@@ -189,6 +189,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				
 //				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+					logger.info("getHomeInfoV2 cfp categoryGoodsInfo = " + categoryGoodsInfo);
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
 //				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
@@ -255,6 +256,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		if (!financialEntranceInfo.isEmpty()) {
 			data.put("financialEntranceInfo", financialEntranceInfo);
 		}
+		logger.info("getHomeInfoV2 cfp data = " + data);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -385,7 +387,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
 				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
-			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				goodsInfo.put("goodName", goodsDo.getName());
