@@ -87,5 +87,11 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 			return afGoodsDoubleEggsDao.getGoodsListByActivityId(activityId);
 		}
 
+		@Override
+		public Long getCurrentDoubleGoodsId(Long goodsId) {
+		
+			return afGoodsDoubleEggsDao.getCurrentDoubleGoodsId(goodsId);
+		}
+
 
 }

@@ -34,6 +34,7 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 	int shouldOnlyAp(@Param("goodsId")Long goodsId);
 
 	List<GoodsForDate> getGoodsListByActivityId(@Param("activityId")Long activityId);
+	Long getCurrentDoubleGoodsId(@Param("goodsId")Long goodsId);
 
 
 }

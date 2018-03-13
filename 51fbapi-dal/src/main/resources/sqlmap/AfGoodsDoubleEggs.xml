@@ -325,4 +325,16 @@
 					ORDER BY
 						de.sort;
     </select>
+    <select id="getCurrentDoubleGoodsId" parameterType="java.lang.long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+	    SELECT
+		de.`id`  FROM af_goods_double_eggs de 
+		INNER JOIN af_activity a on a.id = de.activity_id
+			WHERE
+			de.is_delete = 0
+			AND NOW() > de.start_time AND NOW() < de.end_time
+			AND a.is_delete = 0 
+			AND a.`status` = 2 
+	and de.`goods_id` = #{goodsId}
+			LIMIT 0,1;
+    </select>
 </mapper>
