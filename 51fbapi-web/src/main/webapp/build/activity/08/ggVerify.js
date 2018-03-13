@@ -66,7 +66,7 @@ $(function () {
     // 获取图形验证码
     $(".btn").click(function(){
         var mobileNum = $(".phoneNumber-right").val();
-        if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+        if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
             $.ajax({
                 url: "/app/user/getImgCode",
                 type: "POST",
@@ -120,7 +120,7 @@ $(function () {
     //点击获取验证码
     $("#imgVftCodeSbumit").click(function () {
         var userName = $(".phoneNumber-right").val(); //获取手机号
-        var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userName)); //手机号正则验证
+        var userck = (/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(userName)); //手机号正则验证
         // var mesg= $(".mesg-right").val();//获取验证码
         var isState = $(".btn").attr('isState');//获取设置的状态码
         var verifyImgCode=$("#imgVftCode").val(); // 图形验证码
@@ -135,7 +135,8 @@ $(function () {
                     data: {
                         mobile: userName,
                         token:token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function (data) {
                         console.log(data)
@@ -171,7 +172,7 @@ $(function () {
     $('.nextStep').click(function () {
         var mesg = $(".mesg-right").val(); //获取验证码 
         var userName = $(".phoneNumber-right").val(); //获取手机号
-        // var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userName)); //手机号正则验证
+        // var userck = (/^1[3|4|5|6|7|8|9][0-9]{9}$/.test(userName)); //手机号正则验证
 
         // if (userck) {
         //     requestMsg("请填写正确的手机号");
@@ -193,7 +194,8 @@ $(function () {
             data: {
                 mobile: userName,
                 verifyCode: mesg,
-                token:token
+                token:token,
+                bsqToken:token
             },
             success: function (data) {
                 if(data.url=="ForgetPwd"){

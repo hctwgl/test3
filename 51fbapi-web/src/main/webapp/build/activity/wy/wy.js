@@ -65,7 +65,7 @@ $(".submit").click(function(){
     var register_verification = $("#verification").val();
     var isState = $(".codeBtn").attr("isState");
 
-    if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
+    if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
         if ( register_verification != "" ) { // 验证码不能为空
             if ( password && 6 <= passwordLength && passwordLength <= 18 ) { // 密码6-18位
                 if ($("#input_check").is(":checked")) { // 判断当前是否选中
@@ -80,7 +80,8 @@ $(".submit").click(function(){
                                 pointCode: pointCode,
                                 smsCode: register_verification,
                                 password: password_md5,
-                                token:token
+                                token:token,
+                                bsqToken:token
                             },
                             success: function(returnData){
                                 if (returnData.success) {
@@ -133,7 +134,7 @@ $("img.lazy").lazyload({
 // 获取图形验证码
 $(".codeBtn").click(function(){
     let mobileNum = $("#mobile").val();
-    if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+    if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
         $.ajax({
             url: "/app/user/getImgCode",
             type: "POST",
@@ -193,7 +194,7 @@ $("#imgVftCodeSbumit").click(function(){
     var isState = $(this).attr("isState");
     var mobileNum = $("#mobile").val();
     var verifyImgCode=$("#imgVftCode").val();
-    if ( !isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
+    if ( !isNaN(mobileNum) && (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
         $("#codeBtn").attr("disabled",true);
         $.ajax({
             url: "/app/user/getRegisterSmsCode",
@@ -202,6 +203,7 @@ $("#imgVftCodeSbumit").click(function(){
             data: {
                 mobile: mobileNum,
                 token: token,
+                bsqToken:token,
                 channelCode: channelCode,
                 pointCode: pointCode,
                 verifyImgCode:verifyImgCode

@@ -159,6 +159,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
+
+        String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
+        logger.info("add self order 1,lc=" + lc);
+        if(StringUtils.isBlank(lc)){
+            lc = ObjectUtils.toString(request.getAttribute("lc"));
+        }
+        logger.info("add self order 2,lc=" + lc);
+
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
@@ -373,6 +381,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setPriceAmount(priceDo.getPriceAmount());
 
 		}
+		afOrder.setLc(lc);
 		afOrder.setUserCouponId(couponId);
 		//下单时所有场景额度使用情况
 		List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();

@@ -38,4 +38,10 @@ public class AfIdNumberServiceImpl implements AfIdNumberService {
 		return afIdNumberDao.selectUserIdNumberByUserId(userId);
 	}
 
+
+	@Override
+	public AfIdNumberDo getIdNumberInfoByUserId(Long userId) {
+		return afIdNumberDao.getIdNumberInfoByUserId(userId);
+	}
+
 }

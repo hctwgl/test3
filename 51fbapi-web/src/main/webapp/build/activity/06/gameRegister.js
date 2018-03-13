@@ -12,10 +12,10 @@ function formatDateTime() {
     var minute = date.getMinutes();  
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;    
-};  
+};
 
-var _fmOpt;
 // 同盾校验编号的sessionId
+var _fmOpt;
  (function() {
     _fmOpt = {
          partner: 'alading',
@@ -70,14 +70,15 @@ $(function(){
 
 	$("#codeBtn").click(function(){ // 获取验证码
 		let phone = $("#phone").val();
-		if (/^1(3|4|5|7|8)\d{9}$/i.test(phone)){
+		if (/^1(3|4|5|6|7|8|9)\d{9}$/i.test(phone)){
 	     	$.ajax({
     			url: "/app/user/getRegisterSmsCode",
     			type: "POST",
     			dataType: "JSON",
     			data: {
     				mobile: phone,
-    				token: token
+    				token: token,
+                    bsqToken:token
     			},
     			success: function(returnData){
     				if (returnData.success) {
@@ -113,7 +114,7 @@ $(function(){
 		let ispassword = pwdReg.test(password);
 
 
-		if(/^1(3|4|5|7|8)\d{9}$/i.test(phone)){ // 判断电话开头
+		if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(phone)){ // 判断电话开头
 			if ( code != "" ) { // 验证码不能为空
 				if ( ispassword && 6 <= passwordLength <= 18 ) { // 密码6-18位
 					if ($("#input_check").is(":checked")) { // 判断当前是否选中
@@ -126,7 +127,8 @@ $(function(){
 								smsCode: code,
 								password: password_md5,
 								recommendCode: recommendCode,
-								token:token
+								token:token,
+                                bsqToken:token
 							},
 							success: function(returnData){
 								if ( returnData.success ) {

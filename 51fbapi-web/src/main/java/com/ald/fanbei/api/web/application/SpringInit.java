@@ -103,8 +103,8 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 map1.put("organCode","095715972");
                 map1.put("userId",-3l);
                 createCompanySeal(mhSeal,map1);
-                AfUserSealDo cxSeal = afESdkService.selectUserSealByUserId(-4l);//浙江楚橡信息科技股份有限公司
-                map1.put("name","浙江楚橡信息科技股份有限公司");
+                AfUserSealDo cxSeal = afESdkService.selectByUserName("浙江楚橡信息科技有限公司");//浙江楚橡信息科技有限公司
+                map1.put("name","浙江楚橡信息科技有限公司");
                 map1.put("organCode","328203207");
                 map1.put("userId",-4l);
                 createCompanySeal(cxSeal,map1);
@@ -187,6 +187,12 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 .setLegalArea(legalArea);
         AddAccountResult r = SERVICE.addAccount(org);
         if (150016 == r.getErrCode() || r.getMsg().contains("账户已存在")){
+            if ("浙江楚橡信息科技有限公司".equals(name)){
+                AfUserSealDo mhSeal = afESdkService.selectUserSealByUserId(-4l);
+                SERVICE.deleteAccount(mhSeal.getUserAccountId());
+                r = SERVICE.addAccount(org);
+                return r.getAccountId();
+            }
             GetAccountProfileResult getAccountProfileResult = SERVICE.getAccountInfoByIdNo(legalIdNo,11);
             return getAccountProfileResult.getAccountInfo().getAccountUid();
         }

@@ -1169,7 +1169,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             _vcode = "99";
                         }
                         logger.info("verify userId" + userId);
-                        RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+                        RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName,
                                 orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
@@ -1219,7 +1219,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
                         codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
                         // 通过弱风控后才进行后续操作
-                        RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+                        RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
                                 borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
                                 ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount,
                                 BigDecimal.ZERO, borrowTime,
@@ -2257,7 +2257,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public Map<String, Object> getVirtualCodeAndAmount(AfOrderDo orderInfo) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String virtualCode = StringUtils.EMPTY;
+        //String virtualCode = StringUtils.EMPTY;
         if (orderInfo == null) {
             return resultMap;
         }
@@ -2273,7 +2273,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 resultMap.put(Constants.VIRTUAL_CHECK_NAME,shopDo.getName());
             }
         } else if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-            return null;
+            return resultMap;
         } else {
             AfGoodsDo afGoodsDo = afGoodsDao.getGoodsById(orderInfo.getGoodsId());
             AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(afGoodsDo.getPrimaryCategoryId());
@@ -2431,13 +2431,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 			//教育培训订单
 			if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
-				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDo.getUserId());
+				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), orderInfo.getUserId());
 				if (afUserAccountSenceDo != null) {
 					useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
 				}
 			}
 		} else {    //线上分期订单
-			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDo.getUserId());
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
 			if (afUserAccountSenceDo != null) {
 				//额度判断
 				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {

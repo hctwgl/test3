@@ -80,6 +80,11 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 	public AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId) {
 		return afUserBankcardDao.getUserBankcardByIdAndStatus(cardId);
 	}
+	
+	@Override
+	public String hideCardNumber(String bankcard) {
+		return bankcard.substring(bankcard.length()-4);
+	}
 
 	@Override
 	public int updateMainBankCard(Long userId){

@@ -114,7 +114,7 @@ $(function () {
         var verifyImgCode = $("#imgVftCode").val(); // 图形验证码
 
         if (isState == 0 || !isState) {
-            var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
+            var userck = (/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(mobileNum));
             if (userck) {
                 $(".checkbtn").attr("disabled", true);
                 $.ajax({
@@ -123,7 +123,8 @@ $(function () {
                     dataType: "json",
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
-                        token: token
+                        token: token,
+                        bsqToken:token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
@@ -163,7 +164,7 @@ $(function () {
             }, function (captchaObj) {
                 document.getElementById('checkbtn').addEventListener('click', function () {
                     var mobileNum = $("#mobile").val();
-                    if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
+                    if (!(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
                         requestMsg('请输入手机号')
                     } else {
                         $.ajax({
@@ -230,8 +231,8 @@ $(function () {
         console.log(smsCode);
         console.log(registerMoblie);
         var yzcheck = $('#yzcheck').val(); //获取验证码
-        //var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(registerMoblie));
-        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMoblie)); //手机号正则验证11位
+        //var userck=(/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(registerMoblie));
+        var userck = (/^1[3|4|5|6|7|8|9][0-9]{9}$/.test(registerMoblie)); //手机号正则验证11位
         var yztrue = (/^\d{6}$/.test(yzcheck)); //6位数字正则验证 验证码
         var mmtrue = /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
         if (((userck) && yztrue && yzcheck != '') && (mmtrue && password != undefined)) {
@@ -245,6 +246,7 @@ $(function () {
                     "password": password_md5,
                     "urlName": urlName,
                     token: token,
+                    bsqToken:token,
                     'activityId': activityId,
                     'refUserName': refUserName
                 },

@@ -82,7 +82,14 @@ public interface AfUserBankcardService {
 
 	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
 
-	int updateMainBankCard(Long userId);
+	/**
+	 * 加工银行卡号,只显示尾号
+	 * @param bankcard
+	 * @return
+	 */
+	String hideCardNumber(String bankcard);
 
-	int updateViceBankCard(String cardNumber,Long userId);
+    int updateMainBankCard(Long userId);
+
+    int updateViceBankCard(String cardNumber,Long userId);
 }
