@@ -213,7 +213,7 @@
 
     <update id="updateActivityGoodsById" parameterType="AfSeckillActivityGoodsDo">
         UPDATE af_seckill_activity_goods SET gmt_modified=now(),limit_count=limit_count-#{limitCount}
-        WHERE price_id=#{priceId} AND is_delete=0
+        WHERE price_id=#{priceId} AND activity_id=#{activityId} AND is_delete=0
     </update>
     
 </mapper>

@@ -139,4 +139,11 @@
         WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
         AND o.status NOT IN ('NEW','PAYFAIL')
     </select>
+
+    <select id="getActivityOrderByOrderId" resultType="AfSeckillActivityOrderDo">
+        SELECT id,order_id,activity_id
+        FROM af_seckill_activity_order
+        WHERE is_delete = 0 AND order_id=#{orderId}
+        limit 1
+    </select>
 </mapper>
