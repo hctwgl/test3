@@ -100,7 +100,10 @@ public class ProtocolUtil {
                 resourceDoList.add(afResourceDo);
             }
         }
-
+        AfResourceDo afResourceDo = new AfResourceDo();
+        afResourceDo.setValue("/fanbei-web/app/protocolLegalGoodsCashLoanV2?userName=" + userName +
+                "&type=" + dayType + "&borrowId=" + borrowId + "&borrowAmount=" + goodsAmount);
+        resourceDoList.add(afResourceDo);
 
         return resourceDoList;
     }
