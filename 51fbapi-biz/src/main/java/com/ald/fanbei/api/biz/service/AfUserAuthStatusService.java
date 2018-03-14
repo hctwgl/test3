@@ -38,11 +38,20 @@ public interface AfUserAuthStatusService {
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);    
 
     List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(Long userId);
-    
+
     /**
      * 检测指定场景下用户是否通过信用认证
      */
     boolean isPass(String scene, Long userId);
 
 	String getBldOpenStatus(Long userId);
+
+    /**
+     * 更新场景状态
+     * @Param userId
+     * @Param scene
+     * @Param status
+     * @return
+     * **/
+    int updateAfUserAuthStatusByUserId(Long userId, String scene, String status);
 }
