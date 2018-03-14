@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -152,23 +153,20 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 					afUserAuthDo.setUserId(afUserDo.getRid());
 					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
-					try{
-                        afUserAuthDao.addUserAuth(afUserAuthDo);
-                    }catch (Exception e){
-                        logger.info("addUser error addUserAuth:={}", e.getCause());
-                    }
+                    afUserAuthDao.addUserAuth(afUserAuthDo);
 
-
+                    logger.info("addUser error regist ");
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 			        //新人专享送自营商城优惠券
-
+                    logger.info("addUser error sentUserCouponGroup ");
 			        sentUserCouponGroup(afUserDo);
 			       
 			        long recommendId = afUserDo.getRecommendId();
+                    logger.info("addUser error recommendId ");
 					//#region add by hongzhengpei
 			        if(recommendId !=0){
 			        	//新增推荐记录表
@@ -204,11 +202,14 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 					//处理帐单日，还款日
 					addOutDay(afUserDo.getRid());
+                    logger.info("addUser error addOutDay "+ JSON.toJSONString(afUserDo));
 					long userId = 0L;
 					userId = afUserDo.getRid();
+                    logger.info("addUser error addOutDay ");
 					return userId;
 				} catch (Exception e) {
 					status.setRollbackOnly();
+					logger.error("addUser error ee",e);
                     logger.info("addUser error:={}", e.getCause());
 					logger.info("addUser error:", e,afUserDo);
 					return 0L;
