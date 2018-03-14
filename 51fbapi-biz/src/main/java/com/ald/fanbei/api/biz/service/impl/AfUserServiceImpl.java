@@ -160,7 +160,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 			        //新人专享送自营商城优惠券
-			        sentUserCouponGroup(afUserDo);
+
+			        //sentUserCouponGroup(afUserDo);
 			       
 			        long recommendId = afUserDo.getRecommendId();
 					//#region add by hongzhengpei
