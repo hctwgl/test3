@@ -471,6 +471,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				logger.info("home page nperList = "+JSON.toJSONString(nperList));
 				 goodsList.add(goodsInfo);
 				}catch (Exception e){
+					logger.error("getHomeActivityList getHomeActivityList" + JSON.toJSONString(e));
 					logger.info("getHomeActivityList getHomeActivityList is error = "+e+"goodsDo="+JSON.toJSONString(goodsDo)+"goodsInfo = "+JSON.toJSONString(goodsInfo));
 				}
 			}
@@ -480,7 +481,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		}
 		logger.info("home page activityInfoList = "+JSON.toJSONString(activityInfoList));
 		}catch (Exception e){
-			logger.info("getHomeActivityList getHomeActivityList is error = "+e);
+			logger.error("getHomeActivityList getHomeActivityList is error" + JSON.toJSONString(e));
 		}
 		
 		return activityInfoList;
