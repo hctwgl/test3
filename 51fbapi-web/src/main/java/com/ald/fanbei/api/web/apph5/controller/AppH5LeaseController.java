@@ -6,17 +6,16 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfGoodsSource;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.vo.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -67,6 +66,18 @@ public class AppH5LeaseController extends BaseController {
 
     @Resource
     AfUserAddressService afUserAddressService;
+
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
+
+    @Resource
+    AfUserAuthService afUserAuthService;
+
+    @Resource
+    AfUserAccountService afUserAccountService;
 
     /**
      *获取租赁首页banner
@@ -268,6 +279,229 @@ public class AppH5LeaseController extends BaseController {
     }
 
     /**
+     *获取用户收货地址列表
+     */
+    @ResponseBody
+    @RequestMapping(value = "getUserAddressList", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    public String getUserAddressList(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            List<AfUserAddressDo> list = afUserAddressService.selectUserAddressByUserId(afUser.getRid());
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", list);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *添加用户收货地址
+     */
+    @ResponseBody
+    @RequestMapping(value = "addUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String addUserAddress(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            String province = ObjectUtils.toString(request.getParameter("province"));
+            String city = ObjectUtils.toString(request.getParameter("city"));
+            String county = ObjectUtils.toString(request.getParameter("county"));
+            String address = ObjectUtils.toString(request.getParameter("address"));
+            String isDefault = ObjectUtils.toString(request.getParameter("isDefault"));
+            String consignee = ObjectUtils.toString(request.getParameter("consignee"));
+            String mobile = ObjectUtils.toString(request.getParameter("mobile"));
+            if (StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(address) || StringUtils.isBlank(isDefault) || StringUtils.isBlank(consignee)
+                    || StringUtils.isBlank(mobile)) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            if (!CommonUtil.isMobile(mobile)){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null).toString();
+            }
+
+            if(!StringUtils.equals(isDefault, YesNoStatus.YES.getCode())&&!StringUtils.equals(isDefault, YesNoStatus.NO.getCode())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+            }
+
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            // 如果是第一个的地址  ,就自动设置为默认地址
+            List<AfUserAddressDo> userAddressDo = afUserAddressService.selectUserAddressByUserId(afUser.getRid());
+            if(userAddressDo.size() == 0){
+                isDefault = "Y";
+            }
+
+
+
+            if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
+                AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(afUser.getRid());
+                if(defauleDo!=null ){
+                    defauleDo.setIsDefault(YesNoStatus.NO.getCode());
+                    afUserAddressService.updateUserAddress(defauleDo);
+                }
+            }
+            AfUserAddressDo addressDo = new AfUserAddressDo();
+            addressDo.setAddress(address);
+            addressDo.setUserId(afUser.getRid());
+            addressDo.setCity(city);
+            addressDo.setProvince(province);
+            addressDo.setCounty(county);
+            addressDo.setConsignee(consignee);
+            addressDo.setIsDefault(isDefault);
+            addressDo.setMobile(mobile);
+            if (afUserAddressService.addUserAddress(addressDo) > 0) {
+                resp = H5CommonResponse.getNewInstance(true, "添加成功", "", "");
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, "添加失败", "", "");
+            }
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *修改用户收货地址
+     */
+    @ResponseBody
+    @RequestMapping(value = "changeUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String changeUserAddress(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            Long addressId = NumberUtil.objToLongDefault(request.getParameter("addressId"), 0);
+            String province = ObjectUtils.toString(request.getParameter("province"));
+            String city = ObjectUtils.toString(request.getParameter("city"));
+            String county = ObjectUtils.toString(request.getParameter("county"));
+            String address = ObjectUtils.toString(request.getParameter("address"));
+            String isDefault = ObjectUtils.toString(request.getParameter("isDefault"));
+            String consignee = ObjectUtils.toString(request.getParameter("consignee"));
+            String mobile = ObjectUtils.toString(request.getParameter("mobile"));
+            if (StringUtils.isBlank(province) || StringUtils.isBlank(city) || StringUtils.isBlank(address) || StringUtils.isBlank(isDefault) || StringUtils.isBlank(consignee)
+                    || StringUtils.isBlank(mobile)) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            if (!CommonUtil.isMobile(mobile)){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SMS_MOBILE_ERROR.getDesc(), "", null).toString();
+            }
+
+            if(!StringUtils.equals(isDefault, YesNoStatus.YES.getCode())&&!StringUtils.equals(isDefault, YesNoStatus.NO.getCode())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+            }
+
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            // 取消上一个默认地址
+            if(StringUtils.equals(isDefault, YesNoStatus.YES.getCode())){
+                AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressDefaultByUserId(afUser.getRid());
+                if(defauleDo!=null && addressId!=defauleDo.getRid()){
+                    defauleDo.setIsDefault(YesNoStatus.NO.getCode());
+                    afUserAddressService.updateUserAddress(defauleDo);
+                }
+            }else{
+                // 不能从一个默认到不默认地址改变
+
+                AfUserAddressDo userAddressDo = afUserAddressService.selectUserAddressByrid(addressId);
+                if(userAddressDo != null){
+                    if(!StringUtils.equals(userAddressDo.getIsDefault(), isDefault)){
+                        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.CHANG_DEFAULT_ADDRESS_ERROR.getDesc(), "", null).toString();
+                    }
+                }
+
+                if(afUserAddressService.getCountOfAddressByUserId(afUser.getRid()) <= 1){
+                    isDefault = YesNoStatus.YES.getCode();
+                }
+            }
+
+
+            AfUserAddressDo addressDo = new AfUserAddressDo();
+            addressDo.setRid(addressId);
+            addressDo.setUserId(afUser.getRid());
+
+            if(StringUtils.isNotBlank(address)){
+                addressDo.setAddress(address);
+
+            }
+            if(StringUtils.isNotBlank(city)){
+                addressDo.setCity(city);
+
+            }
+            if(StringUtils.isNotBlank(province)){
+                addressDo.setProvince(province);
+
+            }
+            //如果改为空字符串是可以的
+            addressDo.setCounty(county);
+            if(StringUtils.isNotBlank(consignee)){
+                addressDo.setConsignee(consignee);
+
+            }
+            if(StringUtils.isNotBlank(isDefault)){
+                addressDo.setIsDefault(isDefault);
+
+            }
+            if(StringUtils.isNotBlank(mobile)){
+                addressDo.setMobile(mobile);
+
+            }
+            if (afUserAddressService.updateUserAddress(addressDo) > 0) {
+                resp = H5CommonResponse.getNewInstance(true, "修改成功", "", "");
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, "添加失败", "", "");
+            }
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *删除用户收货地址
+     */
+    @ResponseBody
+    @RequestMapping(value = "deleteUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String deleteUserAddress(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            Long addressId = NumberUtil.objToLongDefault(request.getParameter("addressId"), 0);
+            if(addressId == 0 ){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            AfUserAddressDo defauleDo = afUserAddressService.selectUserAddressByrid(addressId);
+            Integer count = afUserAddressService.getCountOfAddressByUserId(defauleDo.getUserId());
+            if(defauleDo == null || !defauleDo.getUserId().equals(afUser.getRid())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+            }
+            if(count == 1){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.CHANG_ADDRESS_ERROR.getDesc(), "", null).toString();
+            }
+            afUserAddressService.deleteUserAddress(addressId);
+            if(defauleDo.getIsDefault().equals("Y")){
+                afUserAddressService.reselectTheDefaultAddress(afUser.getRid());
+            }
+            resp = H5CommonResponse.getNewInstance(true,"删除成功", "", "");
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getHomeLeaseBanner", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
      *获取用户冻结购物额度
      */
     @ResponseBody
@@ -275,10 +509,50 @@ public class AppH5LeaseController extends BaseController {
     public String getUserFreeze(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        Map<String, Object> data = new HashMap<String, Object>();
         try{
             context = doWebCheck(request, true);
-
-            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", "");
+            Long goodsPriceId = NumberUtil.objToLongDefault(request.getParameter("goodsPriceId"), 0);
+            AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
+            if(priceDo == null){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
+            }
+            AfUserAccountDo afUser = afUserAccountService.getUserAccountInfoByUserName(context.getUserName());
+            AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(afUser.getUserId());
+            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(afUser.getUserId(), "ONLINE");
+            BigDecimal useableAmount = new BigDecimal(0);
+            data.put("riskStatus","Y");
+            if(afUserAuthStatusDo != null){
+                if(afUserAuthStatusDo.getStatus().equals("Y")){
+                    AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE", afUser.getUserId());
+                    useableAmount = afUserAccountSenceOnline.getAuAmount().subtract(afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
+                    BigDecimal freezeAmount = afOrderService.getLeaseFreeze(0,priceDo.getLeaseAmount());
+                    data.put("freezeAmount",freezeAmount);//总冻结额度
+                    if(useableAmount.compareTo(freezeAmount)>=0){
+                        data.put("quotaDeposit",freezeAmount);//冻结额度
+                        data.put("cashDeposit", 0);//支付金额
+                    }
+                    else {
+                        data.put("quotaDeposit",useableAmount);//冻结额度
+                        data.put("cashDeposit", freezeAmount.subtract(useableAmount));//支付金额
+                    }
+                }
+                else {
+                    data.put("action","DO_PROMOTE_BASIC");
+                }
+            }else {
+                data.put("riskStatus","N");
+                data.put("action", "DO_SCAN_ID");
+                if (StringUtil.equals(userAuth.getBankcardStatus(), "N") || StringUtil.equals(userAuth.getZmStatus(), "N") || StringUtil.equals(userAuth.getMobileStatus(), "N") || StringUtil.equals(userAuth.getTeldirStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N")) {
+                    data.put("action", "DO_PROMOTE_BASIC");
+                    if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
+                        data.put("action", "DO_BIND_CARD");
+                    }
+                }
+            }
+            data.put("realName",afUser.getRealName());//真实姓名
+            data.put("idNumber",afUser.getIdNumber());//身份证
+            resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getHomeLeaseBanner", e);
