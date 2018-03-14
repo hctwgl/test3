@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfTestManageService;
 import com.ald.fanbei.api.common.AbTestUrl;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfTestManageDo;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.controller.AbTestController;
@@ -36,6 +38,8 @@ public class HomePageAbTestController extends AbTestController {
 
 	@Resource
 	AfTestManageService afTestManageService;
+	@Resource
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 
 	@RequestMapping(value = "/goods/getHomeInfoFront", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
@@ -70,6 +74,24 @@ public class HomePageAbTestController extends AbTestController {
 			}
 		} catch (Exception e) {
 			logger.error("getHomeInfoFront error => {}", e.getMessage());
+		}
+		
+		String userName = context.getUserName();
+		Long userId = context.getUserId();
+		if (userName != null && userId != null) {
+		    try {
+			//String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+			if (StringUtils.isNotEmpty(deviceId)) {
+			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+				abTestDeviceDo.setUserId(userId);
+				abTestDeviceDo.setDeviceNum(deviceId);
+				// 通过唯一组合索引控制数据不重复
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+			}
+		}  catch (Exception e) {
+			// ignore error.
+		}
 		}
 		requestDataVo.setMethod(method);
 	}
