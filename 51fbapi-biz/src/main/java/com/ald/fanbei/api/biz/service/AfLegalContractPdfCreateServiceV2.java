@@ -18,6 +18,8 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     void platformServiceProtocol(Long borrowId, String type, BigDecimal poundage, Long userId);
 
+    void goodsInstalmentProtocol(Long borrowId, String type, Long userId);
+
     String getProtocalLegalByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
 
     String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
