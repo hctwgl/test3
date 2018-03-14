@@ -11,6 +11,55 @@
 		c.use_rule,c.valid_days,c.type,c.limit_count,c.expiry_type,c.quota_already,c.quota
 		,COUNT(uc.id) user_already
 	</sql>
+
+	<!-- 余额兑换成券 -->
+	<insert id="addCoupon" parameterType="AfCouponDo" keyProperty="rid" useGeneratedKeys="true">
+		INSERT INTO af_coupon
+		(
+		creator ,
+		modifier ,
+		name ,
+		type ,
+		limit_amount ,
+		amount ,
+		use_rule ,
+		gmt_end ,
+		gmt_start ,
+		quota ,
+		limit_count,
+		use_range,
+		activity_id,
+		activity_type
+		<if test="isGlobal != null and isGlobal != ''">
+			,is_global
+		</if>
+		<if test="shopUrl != null and shopUrl != ''">
+			,shop_url
+		</if>
+		)
+		VALUES (
+		#{creator},
+		#{modifier},
+		#{name},
+		#{type},
+		#{limitAmount},
+		#{amount},
+		#{useRule},
+		#{gmtEnd},
+		#{gmtStart},
+		#{quota},
+		#{limitCount},
+		#{useRange},
+		#{activityId},
+		#{activityType}
+		<if test="isGlobal != null and isGlobal != ''">
+			,#{isGlobal}
+		</if>
+		<if test="shopUrl != null and shopUrl != ''">
+			,#{shopUrl}
+		</if>
+		)
+	</insert>
 	
 	<select id="selectCouponByCouponIds" resultType="AfCouponDto">
 		SELECT
@@ -170,6 +219,17 @@
 		AND
 			status = 'O'
 	</select>
-	
+
+
+	<select id="getCouponByName" resultType="AfCouponDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_coupon
+		WHERE
+		is_delete = 0
+		AND
+		name = #{name}
+	</select>
 	
 </mapper>

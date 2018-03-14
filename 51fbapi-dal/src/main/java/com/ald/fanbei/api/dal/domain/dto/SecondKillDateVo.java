@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.vo;
+package com.ald.fanbei.api.dal.domain.dto;
 /**  
  * @Title: SecondKillDateVo.java
  * @Package com.ald.fanbei.api.web.vo
@@ -15,6 +15,14 @@ public class SecondKillDateVo {
 	private Date startTime;
 	private String startDate;
 	private int status;
+	private Long meetingId;
+	
+	public Long getMeetingId() {
+		return meetingId;
+	}
+	public void setMeetingId(Long meetingId) {
+		this.meetingId = meetingId;
+	}
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -35,9 +43,10 @@ public class SecondKillDateVo {
 	}
 	@Override
 	public String toString() {
-		return "SecondKillDateVo [startTime=" + startTime + ", startDate=" + startDate + ", status=" + status + "]";
+		return "SecondKillDateVo [startTime=" + startTime + ", startDate=" + startDate + ", status=" + status
+				+ ", meetingId=" + meetingId + "]";
 	}
-	
+
 	
 
 }

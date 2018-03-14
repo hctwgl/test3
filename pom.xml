@@ -372,13 +372,21 @@
 			<version>${tomcat-version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- 
+		<!--
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-logging-juli</artifactId>
 			<version>${tomcat-version}</version>
 		</dependency>
  		-->
+
+		<!-- lombok 为字段自动配置getter,setter等方法 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.16</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
@@ -426,7 +434,8 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+						<!--使用${path.separator}分隔符(系统级别变量)，替代Windows系统下的“;”分号或者在Linux下是“:”冒号，方便maven打包时自动选择 -->
+						<bootclasspath>${java.home}/lib/rt.jar${path.separator}${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>

@@ -213,7 +213,7 @@ $(function(){
                 if ( style=='8'||style=='9'||style=='10'||style=='11'||style=='12'||style=='13'||style=='14'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
                     if ($("#input_check").is(":checked") || (style=='12'||style=='13'||style=='14')) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
-                            _taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
+                            //_taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
                             $.ajax({ // 设置登录密码
                                 url: "/app/user/commitChannelRegister",
                                 type: 'POST',
@@ -238,9 +238,11 @@ $(function(){
                                             //     window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
                                             // },500)
                                         }
-                                        window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                         //转化代码
-                                        _taq.push({convert_id:"92097724391", event_type:"form"});
+                                        if(style=='14'){
+                                            _taq.push({convert_id:"92097724391", event_type:"form"});
+                                        }
+                                        window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
                                         maidianFnNew("registerFail", channelCode, pointCode, returnData.msg);
                                         requestMsg(returnData.msg);
