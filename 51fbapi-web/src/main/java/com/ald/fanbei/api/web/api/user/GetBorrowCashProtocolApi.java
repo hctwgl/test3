@@ -68,6 +68,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
         BigDecimal platformPoundage = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("platformPoundage"), BigDecimal.ZERO);
         Long userId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("userId"), 0l);
+        logger.info("getBorrowCashProtocolApi = >{}",requestDataVo.getParams());
         if ("4".equals(protocolCashType)){
             contractPdfThreadPool.PlatformServiceProtocolPdf(borrowId, type, platformPoundage,userId);
         }
