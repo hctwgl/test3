@@ -1108,9 +1108,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         outputStream.write(stream);
         outputStream.flush();
         outputStream.close();
-        ossFileUploadWithEdspaySeal(map,dstFile);//oss上传
+        return ossFileUploadWithEdspaySeal(map,dstFile);//oss上传
 
-        return null;
     }
 
     private String getLegalContractPdfWithOutLender(Map<String, Object> map) throws IOException {
