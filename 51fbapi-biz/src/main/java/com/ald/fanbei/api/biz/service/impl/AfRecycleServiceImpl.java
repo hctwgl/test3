@@ -90,9 +90,9 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                             baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
                         }
                     }
-                    logger.info("=========================================/fanbei/ydm/addRecycleOrder,baseUrl="+ baseUrl);
-                    String postResult = HttpUtil.post(baseUrl + RecycleUtil.YDM_CALLBACK_URL, map);//向有得卖进行握手
-                    logger.info("=========================================/fanbei/ydm/addRecycleOrder,resp=" + postResult);
+                    logger.info("========================================="+ baseUrl+"/fanbei/ydm/addRecycleOrder,baseUrl="+ baseUrl);
+                    String postResult = HttpUtil.doHttpPost(baseUrl + RecycleUtil.YDM_CALLBACK_URL,JSONObject.toJSONString(map));//向有得卖进行握手
+                    logger.info("========================================="+ baseUrl+"/fanbei/ydm/addRecycleOrder,resp=" + postResult);
                     JSONObject jsonObject = JSONObject.parseObject(postResult);
                     if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
                         //给用户账号添加回收订单金额
