@@ -105,6 +105,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperMap(nperMap);
 		}
 		vo.setNperList(nperList);
+		vo.setRemark(goods.getRemark());
 		//秒杀、促销活动商品信息
 		AfSeckillActivityDto afSeckillActivityDto = afSeckillActivityService.getActivityByGoodsId(goodsId);
 		if(afSeckillActivityDto!=null){
@@ -123,19 +124,19 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGoodsLimitCount(afSeckillActivityDto.getGoodsLimitCount());
 			vo.setPayType(afSeckillActivityDto.getPayType());
 			vo.setActSaleCount(actSaleCount);
-			vo.setRemark(goods.getRemark());
 			vo.setSpecialPrice(afSeckillActivityDto.getSpecialPrice());
-			/*List<AfSeckillActivityGoodsDo> activityGoodsDos = afSeckillActivityService.getActivityGoodsByGoodsId(goodsId);
-			for (int i=0;i<activityGoodsDos.size();i++){
-				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = activityGoodsDos.get(i);
-				Long actPriceId = afSeckillActivityGoodsDo.getPriceId();
-				int limitCount = afSeckillActivityGoodsDo.getLimitCount();
-				String lockKey = Constants.CACHEKEY_SECKILL_PRICE + activityId + "+" + actPriceId;
-				if(bizCacheUtil.getObject(lockKey)==null){
-					bizCacheUtil.saveObject(lockKey,limitCount, DateUtil.getNumberOfMinuteBetween(new Date(),gmtEnd)*60);
-				}
-			}*/
-
+		}else{
+			vo.setActivityId(0l);
+			vo.setActivityType(0);
+			vo.setActivityName("");
+			vo.setGmtStart(new Date());
+			vo.setGmtEnd(new Date());
+			vo.setGmtPstart(new Date());
+			vo.setLimitCount(0);
+			vo.setGoodsLimitCount(0);
+			vo.setPayType("");
+			vo.setActSaleCount(0);
+			vo.setSpecialPrice(BigDecimal.ZERO);
 		}
 
 		resp.setResponseData(vo);
