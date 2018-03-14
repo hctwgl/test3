@@ -436,10 +436,12 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				} catch (Exception e) {
 					logger.error(e.toString());
 				}
+				logger.info("getHomeActivityList schemeGoodsDo = "+JSON.toJSONString(schemeGoodsDo));
 				JSONArray interestFreeArray = null;
 				if (schemeGoodsDo != null) {
 					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
 							.getById(schemeGoodsDo.getInterestFreeId());
+				logger.info("getHomeActivityList interestFreeRulesDo = "+JSON.toJSONString(interestFreeRulesDo));
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
