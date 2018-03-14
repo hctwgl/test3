@@ -15,6 +15,7 @@ import com.ald.fanbei.api.dal.dao.AfActivityDao;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 
+
 /**
  * @类描述：
  * @author 江荣波 2017年6月20日下午4:47:54
@@ -66,12 +67,12 @@ public class AfActivityServiceImpl  implements AfActivityService {
 		
 		return afActivityDao.getDateListByName(tag);
 	}
-
+	
 	@Override
 	public List<SecondKillDateVo> getDateVoListByName(String tag) {
 		
 		return afActivityDao.getDateVoListByName(tag);
 	}
-	
+
 	
 }

@@ -57,6 +57,7 @@ public enum AfResourceSecType {
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
 		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),
+		SMS_RISK_NEED_AUDIT("SMS_RISK_NEED_AUDIT","强风控需要人审短信"),
 		SMS_BORROW_RISK_QUALIFIED("SMS_BORROW_RISK_QUALIFIED","用户借钱风控审核中状态被技术干预后用户符合借钱条件"),
 		SMS_BORROW_RISK_NOT_QUALIFIED("SMS_BORROW_RISK_NOT_QUALIFIED","用户借钱风控审核中状态被技术干预后用户不符合借钱条件"),
 		SMS_BORROW_PAY_MONEY_FAIL("SMS_BORROW_PAY_MONEY_FAIL","借钱审核通过但是打款失败"),

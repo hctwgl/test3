@@ -287,12 +287,12 @@
 		    	SELECT
 					de.id AS double_goods_id,
 					CASE
-				WHEN CURRENT_DATE > date(de.start_time) THEN
-					'4'
-				WHEN now() > de.start_time THEN
+				WHEN NOW() &gt; de.start_time AND NOW() &lt; de.end_time THEN
 					'2'
-				ELSE
+				WHEN now() &lt; de.start_time THEN
 					'0'
+				ELSE
+					'4'
 				END AS STATUS,
 				 de.goods_id,
 				 g.stock_count,

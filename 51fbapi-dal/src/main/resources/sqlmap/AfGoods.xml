@@ -336,7 +336,7 @@
 		and a.type = 'GOODSLIST'
 		and a.item_value = b.id
 		and a.is_delete = 0
-		and b.is_delete = 0 and b.status='PUBLISH' order by a.gmt_create desc
+		and b.is_delete = 0 and b.status='PUBLISH' order by a.gmt_create desc LIMIT 50
 	</select>
 
 

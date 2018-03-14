@@ -24,7 +24,6 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
@@ -36,15 +35,12 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
@@ -61,6 +57,20 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+
+import com.ald.fanbei.api.biz.service.AfModelH5Service;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfModelH5Do;
+
+
+
+
+
+
+
+
  /* 
  *@类现描述：会场相关接口
  *@author 江荣波 2017年6月3日 下午5:56:53
@@ -102,10 +112,10 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
+	
 	@Resource
 	AfModelH5Service afModelH5Service;
-	
-	
+
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -639,258 +649,6 @@ public class AppH5SubjectController  extends BaseController{
 		}
 		return resp.toString();
 	}
-	
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// 分会场接口
-		FanbeiWebContext context = new FanbeiWebContext();
-		
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-		try {
-			
-			context = doWebCheck(request, false);
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-			
-			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
-			
-			if(activityId == null) {
-				resp = H5CommonResponse.getNewInstance(false, "活动id不能为空！");
-				return resp.toString();
-			}
-			
-			//find the name from activityId
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
-			if (StringUtil.isBlank(tag)) {
-				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
-			}
-			
-			//find modeId by tag .
-			
-			
-
-		}catch(FanbeiException e){
-		}catch(Exception e){
-		
-		}
-		return resp.toString();
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "partActivityInfoByTag", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String partActivityInfoByTag(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// 分会场接口
-		FanbeiWebContext context = new FanbeiWebContext();
-		
-		Calendar calStart = Calendar.getInstance();
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-		try {
-			context = doWebCheck(request, false);
-			String tag = ObjectUtils.toString(request.getParameter("tag"), null);
-			if(tag == null || "".equals(tag)) {
-				resp = H5CommonResponse.getNewInstance(false, "tag不能为空！");
-				return resp.toString();
-			}
-			// 数据埋点
-			request.setAttribute("context", context);
-			doMaidianLog(request,H5CommonResponse.getNewInstance(true,"succ"));
-			
-			//获取借款分期配置信息
-	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-	        JSONArray array = JSON.parseArray(resource.getValue());
-	        //删除2分期
-	        if (array == null) {
-	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-	        }
-	        //removeSecondNper(array);
-			
-			JSONObject jsonObj = new JSONObject();
-			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
-			//根据tag获取modelId
-			Long modelId = 0L;
-			String type = "PARTACTIVITY_H5_TEMPLATE";
-			AfModelH5Do afModelH5Do = afModelH5Service.getByTagAndType(type,tag);
-			if(afModelH5Do != null){
-			    modelId = afModelH5Do.getRid();
-			}
-			
-			// 根据modelId 取优惠券信息
-			List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(modelId,
-					ActivityType.ACTIVITY_TEMPLATE.getCode());
-			String userName = context.getUserName();
-			AfUserDo userDo = afUserService.getUserByUserName(userName);
-			
-			for(AfCouponDto couponDto : couponList) {
-				// 判断用户是否领
-				if(userDo == null) {
-					couponDto.setUserAlready(0);
-				} else {
-					int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
-					couponDto.setUserAlready(pickCount);
-				}
-			}
-			jsonObj.put("couponList", couponList);
-						
-			jsonObj.put("notifyUrl", notifyUrl);
-			// 根据modelId查询banner信息
-			List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(modelId, "BANNER");
-			if(bannerList != null && bannerList.size() > 0){
-				AfModelH5ItemDo bannerInfo = bannerList.get(0);
-				jsonObj.put("bannerImage", bannerInfo.getItemIcon());
-			} else {
-				resp = H5CommonResponse.getNewInstance(false, "banner信息为空");
-				return resp.toString();
-			}
-			// 查询会场下所有二级会场
-			List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(modelId, "SUBJECT");
-			List<Map> activityList = new ArrayList<Map>();
-			if(subjectList == null || subjectList.size() == 0){
-				resp = H5CommonResponse.getNewInstance(false, "分会场信息为空"); 
-				return resp.toString();
-			}
-			AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
-			String secSubjectId = subjectH5ItemDo.getItemValue();
-			AfSubjectDo  parentSubjectDo = afSubjectService.getSubjectInfoById(secSubjectId);
-			Long parentId = parentSubjectDo.getParentId();
-			String subjectName  = parentSubjectDo.getName();
-			jsonObj.put("modelName", subjectName); // 主会场名称
-			
-			for(AfModelH5ItemDo subjectDo : subjectList) {
-				Map activityInfoMap = new HashMap();
-				String subjectId = subjectDo.getItemValue();
-				// 查询会场信息
-				AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
-				if(subjectInfo == null) {
-					resp = H5CommonResponse.getNewInstance(false, "会场不存在id=" + subjectId);
-					return resp.toString();
-				}
-				activityInfoMap.put("name", subjectInfo.getName());
-				activityInfoMap.put("subjectId", subjectInfo.getId());
-				// 获取一级会场名称
-				AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
-				String activityName = "";
-				if(parentSubjectInfo != null){
-					activityName = parentSubjectInfo.getName();
-				}
-				
-				// 查询会场下所有商品信息
-				List<AfGoodsDo> subjectGoodsList = afSubjectGoodsService.listAllSubjectGoodsV1(subjectId);
-				List<Map> activityGoodsList  = new ArrayList<Map>();
-				for(AfGoodsDo goodsDo : subjectGoodsList) {
-					Map activityGoodsInfo = new HashMap();
-					activityGoodsInfo.put("goodName",goodsDo.getName());
-					activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-					activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-					activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-					activityGoodsInfo.put("goodsId", goodsDo.getRid());
-					activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-					activityGoodsInfo.put("source", goodsDo.getSource());
-					activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-					activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-					activityGoodsInfo.put("remark", goodsDo.getRemark());
-					activityGoodsInfo.put("activityName", activityName);
-					// 如果是分期免息商品，则计算分期
-					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
-					JSONArray interestFreeArray = null;
-			        if(null != afSchemeGoodsDo){
-						Long goodsId = goodsDo.getRid();
-						AfSchemeGoodsDo  schemeGoodsDo = null;
-						try {
-							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-						} catch(Exception e){
-							logger.error(e.toString());
-						}
-						
-						if(schemeGoodsDo != null){
-							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-							String interestFreeJson = interestFreeRulesDo.getRuleJson();
-							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-								interestFreeArray = JSON.parseArray(interestFreeJson);
-							}
-						}
-						
-					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),0l);
-					
-					if(nperList!= null){
-						activityGoodsInfo.put("goodsType", "1");
-						Map nperMap = nperList.get(nperList.size() - 1);
-						activityGoodsInfo.put("nperMap", nperMap);
-					}
-					activityGoodsList.add(activityGoodsInfo);
-				}
-				activityInfoMap.put("activityGoodsList", activityGoodsList);
-				activityList.add(activityInfoMap);
-			}
-		
-			jsonObj.put("activityList", activityList);
-			// 获取精品推荐商品
-			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoodsByParentId(parentId);
-			List<Map> qualityGoodsList = new ArrayList<Map>();
-			for(AfGoodsDo qualityGoods : qualityGoodsDoList) {
-				Map qualityGoodsInfo = new HashMap();
-				qualityGoodsInfo.put("goodName", qualityGoods.getName());
-				qualityGoodsInfo.put("rebateAmount", qualityGoods.getRebateAmount());
-				qualityGoodsInfo.put("saleAmount", qualityGoods.getSaleAmount());
-				qualityGoodsInfo.put("goodsIcon", qualityGoods.getGoodsIcon());
-				qualityGoodsInfo.put("goodsId", qualityGoods.getRid());
-				qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
-				qualityGoodsInfo.put("source", qualityGoods.getSource());
-				qualityGoodsInfo.put("priceAmount", qualityGoods.getPriceAmount());
-				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
-				qualityGoodsInfo.put("remark",qualityGoods.getRemark());
-				qualityGoodsInfo.put("goodsType", "0");
-				
-				// 如果是分期免息商品，则计算分期
-				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(qualityGoods.getRid());
-				JSONArray interestFreeArray = null;
-		        if(null != afSchemeGoodsDo){
-					Long goodsId = qualityGoods.getRid();
-					AfSchemeGoodsDo  schemeGoodsDo = null;
-					try {
-						schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-					} catch(Exception e){
-						logger.error(e.toString());
-					}
-					
-					if(schemeGoodsDo != null){
-						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-						String interestFreeJson = interestFreeRulesDo.getRuleJson();
-						if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-							interestFreeArray = JSON.parseArray(interestFreeJson);
-						}
-					}
-				}
-		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),0l);
-				
-				if(nperList!= null){
-					qualityGoodsInfo.put("goodsType", "1");
-					Map nperMap = nperList.get(nperList.size() - 1);
-					qualityGoodsInfo.put("nperMap", nperMap);
-				}
-				
-				qualityGoodsList.add(qualityGoodsInfo);
-			}
-			jsonObj.put("qualityGoodsList",qualityGoodsList);
-			resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
-		}catch(FanbeiException e){
-			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
-			logger.error("请求失败"+context,e);
-		}catch(Exception e){
-			resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
-			logger.error("请求失败"+context,e);
-		}finally{
-			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
-		}
-		return resp.toString();
-	}
-	
-	
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "subjectGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

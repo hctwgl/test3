@@ -30,7 +30,8 @@ public interface AfActivityDao {
 	AfActivityDo getHomeMoreActivity();
 
 	List<Date> getDateListByName(@Param("tag")String tag);
-
+	
 	List<SecondKillDateVo> getDateVoListByName(@Param("tag")String tag);
+
 
 }

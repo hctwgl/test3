@@ -7,6 +7,7 @@ import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 
 
+
 /**
  * 
  * @类描述：
@@ -30,7 +31,8 @@ public interface AfActivityService {
 	AfActivityDo getHomeMoreActivity();
 
 	List<Date> getDateListByName(String tag);
-
+	
 	List<SecondKillDateVo> getDateVoListByName(String tag);
+
 
 }

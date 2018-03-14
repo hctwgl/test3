@@ -267,13 +267,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 				}
 				// ------------------------------------end mqp doubleEggs------------------------------------
 
-				// 双十二秒杀新增逻辑+++++++++++++>
+	/*			// 双十二秒杀新增逻辑+++++++++++++>
 				if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0){
 					//是双十二秒杀商品
 					double12GoodsCheck(userId, goodsId,count);
 				}
 				// +++++++++++++++++++++++++<
-				
+*/				
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -501,7 +501,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 	 * @author yanghailong
 	 * @data  2017年11月21日
 	 */
-	private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
+	/*private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
 		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
@@ -546,7 +546,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			bizCacheUtil.delCache(key);
 		}
 		
-	}
+	}*/
 	
 	/**
 	 * 
