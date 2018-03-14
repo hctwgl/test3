@@ -1126,9 +1126,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         outputStream.write(stream);
         outputStream.flush();
         outputStream.close();
-        ossFileUploadWithEdspaySeal(map,map.get("selfPath").toString());//oss上传
-
-        return null;
+        return ossFileUploadWithEdspaySeal(map,map.get("selfPath").toString());//oss上传
     }
 
     private String getPdfInfoWithOutSeal(Long userId, AfBorrowDo afBorrowDo, AfBorrowCashDo afBorrowCashDo, String type) throws IOException {
