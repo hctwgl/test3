@@ -349,11 +349,21 @@ public class CuiShouUtils {
                         return cuiShouBackMoney;
                     }
                     afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, null, repayAmount, tradeNo);
-                    respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo,
-                            repayType, repayTime,
-                            NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
-                            NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
-                            isBalance);
+                    try {
+                        respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo,
+                                repayType, repayTime,
+                                NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
+                                NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
+                                isBalance);
+                        if(!respCode.equals(FanbeiThirdRespCode.SUCCESS.getCode())){
+                            cuiShouBackMoney.setCode(500);
+                            return cuiShouBackMoney;
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        cuiShouBackMoney.setCode(500);
+                        return cuiShouBackMoney;
+                    }
                 }
 
                 cuiShouBackMoney.setCode(200);

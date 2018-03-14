@@ -860,13 +860,21 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Override
     public String dealOfflineRepaymentSucess(final String repayNo, final String borrowNo, final String repayType, final String repayTime, final BigDecimal repayAmount, final BigDecimal restAmount, final String tradeNo, final String isBalance) {
-        return transactionTemplate.execute(new TransactionCallback<String>() {
+        Date currDate = new Date();
+        Date gmtCreate = DateUtil.parseDateTimeShortExpDefault(repayTime, currDate);
+        //还款方式解析
+        OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
+        //线下还款记录添加
+        final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNoV1(borrowNo);
+        final AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+                0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
+        String ret = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try {
                     logger.info("dealOfflineRepaymentSucess begin repayNo=" + repayNo + ",borrowNo" + borrowNo + ",repayType" + repayType + ",repayTime" + repayTime
                             + ",repayAmount" + repayAmount + ",restAmount" + restAmount + ",tradeNo" + tradeNo + ",isBalance" + isBalance);
-                    AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNoV1(borrowNo);
+
                     if (afBorrowCashDo == null) {
                         logger.error("dealOfflineRepaymentSucess fail,borrowcash not exist,borrowNo=" + borrowNo);
                         return FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS.getCode();
@@ -877,13 +885,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         return FanbeiThirdRespCode.BORROW_CASH_HAVE_FINISHED.getCode();
                     }
 
-                    Date currDate = new Date();
-                    Date gmtCreate = DateUtil.parseDateTimeShortExpDefault(repayTime, currDate);
-                    //还款方式解析
-                    OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
-                    //线下还款记录添加
-                    AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
-                            0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
+
+
                     afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 
                     BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
@@ -957,8 +960,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     }
                     afBorrowCashService.updateBorrowCash(bcashDo);
 
-                    cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
-
                     return FanbeiThirdRespCode.SUCCESS.getCode();
                 } catch (Exception e) {
                     status.setRollbackOnly();
@@ -967,6 +968,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             }
         });
+
+        if(ret.equals(FanbeiThirdRespCode.SUCCESS.getCode())){
+            CuiShouUtils.setAfRepaymentBorrowCashDo(repayment);
+            cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
+        }
+        return ret;
     }
 
     @Override
