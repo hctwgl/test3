@@ -419,7 +419,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					.listHomeActivityGoodsByActivityId(afActivityDo.getId());
 			logger.info("getHomeActivityList activityGoodsDoList = "+JSON.toJSONString(activityGoodsDoList));
 			for (AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
+				
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				try{
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
@@ -446,13 +448,17 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				if (schemeGoodsDo != null) {
 					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
 							.getById(schemeGoodsDo.getInterestFreeId());
+					logger.info("home page interestFreeRulesDo = "+JSON.toJSONString(interestFreeRulesDo));
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
 				}
+				
+				logger.info("home page interestFreeArray = "+JSON.toJSONString(interestFreeArray));
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
+				logger.info("home page nperList = "+JSON.toJSONString(nperList));
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
 					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -462,8 +468,11 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					}
 					goodsInfo.put("nperMap", nperMap);
 				}
-
-				goodsList.add(goodsInfo);
+				logger.info("home page nperList = "+JSON.toJSONString(nperList));
+				 goodsList.add(goodsInfo);
+				}catch (Exception e){
+					logger.info("getHomeActivityList getHomeActivityList is error = "+e+"goodsDo="+JSON.toJSONString(goodsDo)+"goodsInfo = "+JSON.toJSONString(goodsInfo));
+				}
 			}
 			
 			activityData.put("goodsList", goodsList);
