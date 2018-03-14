@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CertificateException;
@@ -607,6 +608,22 @@ public class HttpUtil {
         httpclient.getConnectionManager().shutdown();
 
         return body;
+    }
+
+
+    public static HttpURLConnection connectToWeb(String uri) {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(uri);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return connection;
     }
 
     private static String invoke(DefaultHttpClient httpclient, HttpUriRequest httpost) {

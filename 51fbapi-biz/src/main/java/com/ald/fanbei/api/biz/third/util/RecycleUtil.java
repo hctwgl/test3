@@ -15,8 +15,8 @@ public class RecycleUtil {
 
     public static final String PARTNER_ID = "10000215";//与有得卖合作id，对应我们平台的appid
 
-    public static final String CALLBACK_BASE_URL_TEST = "http://120.27.147.62:8011";//有得卖握手接口  测试
-    //public static final String CALLBACK_BASE_URL_TEST = "https://51fanbei.youdemai.com";//有得卖握手接口  测试
+    //public static final String CALLBACK_BASE_URL_TEST = "http://120.27.147.62:8011";//有得卖握手接口  测试
+    public static final String CALLBACK_BASE_URL_TEST = "https://51fanbei.youdemai.com";//有得卖握手接口  测试
     public static final String CALLBACK__BASE_URL_ONLINE = "https://51fanbei.youdemai.com";//有得卖握手接口  线上
 
 
