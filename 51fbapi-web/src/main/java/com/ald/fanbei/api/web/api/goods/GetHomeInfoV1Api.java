@@ -461,6 +461,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			activityData.put("goodsList", goodsList);
 			activityInfoList.add(activityData);
 		}
+		logger.info("home page activityInfoList = "+JSON.toJSONString(activityInfoList));
 		return activityInfoList;
 	}
 

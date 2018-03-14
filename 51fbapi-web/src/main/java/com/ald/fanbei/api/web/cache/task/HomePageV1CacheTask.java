@@ -58,6 +58,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 				Constants.RES_BORROW_CONSUME);
 		log.info("home page v1 resource = "+JSON.toJSONString(resource));
 		JSONArray array = JSON.parseArray(resource.getValue());
+		log.info("home page v1 array = "+JSON.toJSONString(array));
 		List<Map<String, Object>> activityInfoList = getHomeInfoV1Api.getHomeActivityList(resource, array);
 		log.info("home page v1 activityInfoList = "+JSON.toJSONString(activityInfoList));
 		Map<String, Object> moreGoodsInfo = getHomeInfoV1Api.getMoreGoodsInfo(resource, array);
