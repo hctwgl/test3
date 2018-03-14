@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.ald.fanbei.api.web.api.brand;
 
@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -34,56 +35,57 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfShopVo;
 
 /**
- * 
- * @类描述：引流页轮播图
  * @author chenqiwei 2017年11月23日下午15:17:22
+ * @类描述：引流页轮播图
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("getDrainageBannerListApi")
 public class GetDrainageBannerListApi implements ApiHandle {
-       
-	@Resource
-	AfResourceService afResourceService;
 
-	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-	         String resourceType =  ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
-		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		 logger.info("getDrainageBannerListApi and type = {}", type);
-		 List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
-		//线上为开启状态
-		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-		 bannerList1 = afResourceService
-				.getResourceHomeListByTypeOrderBy(resourceType);
-		 }
-		 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
-		//预发不区分状态
-		 bannerList1 =  afResourceService
-				.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
-		 }
-		logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
-		List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
-		resp.addResponseData("bannerList", bannerList);
+    @Resource
+    AfResourceService afResourceService;
 
-		return resp;
-	}
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
-		List<Object> bannerList = new ArrayList<Object>();
-		
-		for (AfResourceDo afResourceDo : bannerResclist) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
-		data.put("type", afResourceDo.getValue1());
-		data.put("content", afResourceDo.getValue2());
-		data.put("sort", afResourceDo.getSort());
-		
-		bannerList.add(data);
-		
-		}
-		return bannerList;
-		}
-	
+    @Override
+    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+        String resourceType = ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
+        String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        logger.info("getDrainageBannerListApi and type = {}", type);
+        List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
+        //线上为开启状态
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+            bannerList1 = afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
+        } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+            //预发不区分状态
+            bannerList1 = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+        }
+        logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
+        List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
+        resp.addResponseData("bannerList", bannerList);
+
+        return resp;
+    }
+
+    private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+        List<Object> bannerList = new ArrayList<Object>();
+        if(CollectionUtils.isNotEmpty(bannerResclist)){
+            for (AfResourceDo afResourceDo : bannerResclist) {
+                Map<String, Object> data = new HashMap<String, Object>();
+                data.put("imageUrl", afResourceDo.getValue());
+                data.put("titleName", afResourceDo.getName());
+                data.put("type", afResourceDo.getValue1());
+                data.put("content", afResourceDo.getValue2());
+                data.put("sort", afResourceDo.getSort());
+                data.put("createType", 1);
+                data.put("className", "");
+                data.put("jumpType", "PUSH");
+                data.put("needLogin", 0);
+
+                bannerList.add(data);
+            }
+        }
+        return bannerList;
+    }
+
 
 }
