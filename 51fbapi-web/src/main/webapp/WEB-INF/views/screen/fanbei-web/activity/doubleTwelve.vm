@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017112901")
+    #set($version="20180306")
     #set($src="https://f.51fanbei.com/h5/app/activity/12")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -159,9 +159,13 @@
         </div>
     </div>
 </body>
+<script type="text/javascript">
+    var _saber={};
+</script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <!-- <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script> -->
 <script type="text/javascript" src="/dist/js/jquery.pin.js"></script>
+<script type="text/javascript" src="/dist/js/saber.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/12/doubleTwelve.js?version=$version"></script>
 
 

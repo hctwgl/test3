@@ -91,7 +91,7 @@ public class GetNperListApi implements ApiHandle {
             String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
 
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, rebateModels, BigDecimal.ONE.intValue(),
-                    nperAmount, resource.getValue1(), resource.getValue2());
+                    nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
             resp.addResponseData("nperList", nperList);
             return resp;
         } else {
@@ -114,15 +114,19 @@ public class GetNperListApi implements ApiHandle {
             }
             //获取借款分期配置信息
             //11.29修改专有利率
-            AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());//资源配置中的利率
-            if(resource==null){
-                resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-            }
-
+            //AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());//资源配置中的利率
+            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
             JSONArray array = JSON.parseArray(resource.getValue());
             //删除2分期
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+            }
+            AfResourceDo resource1= afResourceService.getBrandRate(orderInfo.getGoodsId());//资源配置中的品牌利率
+            if(resource1!=null){
+                String value = resource1.getValue();
+                if (value!=null && !"".equals(value)){
+                    array = JSON.parseArray(value);
+                }
             }
             //removeSecondNper(array);
 
@@ -131,7 +135,7 @@ public class GetNperListApi implements ApiHandle {
 
             try{
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
+                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
                 resp.addResponseData("nperList", nperList);
             }catch (Exception e){
                 logger.error("get nperList error:",e);

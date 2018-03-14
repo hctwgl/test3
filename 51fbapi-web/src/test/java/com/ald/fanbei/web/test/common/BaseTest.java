@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -80,7 +82,7 @@ public class BaseTest {
     	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
     	
 		try {
-			httpPost(urlString, JSONObject.toJSONString(params), header);
+			httpPost(urlString, JSONObject.toJSONString(params), header, "api");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -105,13 +107,12 @@ public class BaseTest {
 	    	String sign = sign(null, signStrPrefix);
 	    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
     	
-	    	params.putAll(header);
-	    	
 	    	StringBuilder referer = new StringBuilder();
-			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(params), "UTF-8"));
-	    	header.put("Referer", referer.toString());
+			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(header), "UTF-8"));
+			System.out.println("H5 _appInfo =" + JSON.toJSONString(header));
+			header.put("Referer", referer.toString());
 	    	
-			httpPost(urlString, "", header);
+			httpPost(urlString, urlJoin(params), header, "h5");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,13 +129,11 @@ public class BaseTest {
             Collections.sort(paramList);
         }
         String signStrBefore = signStrPrefix;
-        if (paramList.size() > 0) {
-            for (String item : paramList) {
-            	String value = params.get(item);
-            	if(value != null) {
-            		signStrBefore = signStrBefore + "&" + item + "=" + value;
-            	}
-            }
+        for (String item : paramList) {
+        	String value = params.get(item);
+        	if(value != null) {
+        		signStrBefore = signStrBefore + "&" + item + "=" + value;
+        	}
         }
         System.out.println("String before sign:"+signStrBefore);
         return DigestUtil.getDigestStr(signStrBefore);
@@ -142,8 +141,8 @@ public class BaseTest {
     
     private Map<String, String> createBaseHeader() {
     	Map<String, String> head = new HashMap<String,String>();
-        head.put(Constants.REQ_SYS_NODE_ID, "a_1234_hwe123");
-        head.put(Constants.REQ_SYS_NODE_VERSION, "1");
+        head.put(Constants.REQ_SYS_NODE_ID, "i_E647D820-D623-4CCC-9C14-1EA2E4E1C0A0_1508923514481_www");
+        head.put(Constants.REQ_SYS_NODE_VERSION, "407");
         head.put(Constants.REQ_SYS_NODE_NETTYPE, "4G");
         head.put(Constants.REQ_SYS_NODE_TIME, String.valueOf(System.currentTimeMillis()));
         return head;
@@ -156,7 +155,18 @@ public class BaseTest {
 		"&"+ Constants.REQ_SYS_NODE_USERNAME+"=" + header.get(Constants.REQ_SYS_NODE_USERNAME);
     }
     
-    private String httpPost(String url, String reqBody, Map<String, String> headers) throws Exception {
+    private static String urlJoin(Map<String, String> params) throws UnsupportedEncodingException {
+    	if(params == null) return "";
+    	
+    	StringBuilder res = new StringBuilder("");
+    	Set<Entry<String, String>> entrySet = params.entrySet();
+    	for (Entry<String, String> entry : entrySet) {
+    		res.append("&" + URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+    	return res.substring(1);
+    }
+    
+    private String httpPost(String url, String reqBody, Map<String, String> headers, String type) throws Exception {
     	CloseableHttpClient httpClient = null;
     	
     	if(url.contains("https")) {
@@ -194,7 +204,13 @@ public class BaseTest {
         // request body
     	EntityBuilder builder = EntityBuilder.create();
     	builder.setContentEncoding("UTF-8");
-    	builder.setContentType(ContentType.APPLICATION_JSON);
+    	
+    	if("api".equals(type)) {
+    		builder.setContentType(ContentType.APPLICATION_JSON);
+    	}else {
+    		builder.setContentType(ContentType.APPLICATION_FORM_URLENCODED);
+    	}
+    	
     	builder.setText(reqBody);
         HttpEntity reqEntity = builder.build();
         postMethod.setEntity(reqEntity);

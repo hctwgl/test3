@@ -144,7 +144,8 @@ $(function () {
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
                         token:token,
-                        verifyImgCode:verifyImgCode
+                        verifyImgCode:verifyImgCode,
+                        bsqToken:token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
@@ -200,6 +201,7 @@ $(function () {
                     "smsCode":smsCode,
                     "password":password_md5,
                     token:token,
+                    bsqToken:token,
                     'inviteer':userName,
                     'activityId':'1000',
                     'typeFrom':typeFrom,

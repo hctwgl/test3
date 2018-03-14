@@ -165,6 +165,11 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 
 	@Override
+	public List<AfGoodsDo> getGoodsByItem(Long categoryId){
+		return afGoodsDao.getGoodsByItem(categoryId);
+	}
+
+	@Override
 	public List<LeaseGoods> getHomeLeaseGoods(Long pageIndex,Long pageSize) {
 		pageIndex = (pageIndex-1) * pageSize;
 		return afGoodsDao.getHomeLeaseGoods(pageIndex,pageSize);

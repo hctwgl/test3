@@ -12,9 +12,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -33,6 +36,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -67,6 +71,8 @@ public class GetHomeInfoApi implements ApiHandle {
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	
 	private FanbeiContext contextApp;
 
@@ -166,7 +172,22 @@ public class GetHomeInfoApi implements ApiHandle {
 							}
 						}
 					}
-				}	
+				}
+				
+				try {
+					String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+					if (StringUtils.isNotEmpty(deviceId)) {
+					  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+						AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+						abTestDeviceDo.setUserId(userId);
+						abTestDeviceDo.setDeviceNum(deviceId);
+						// 通过唯一组合索引控制数据不重复
+						afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+					}
+				}  catch (Exception e) {
+					// ignore error.
+				}
+				
 			}
 		} catch(Exception e) {
 			logger.error("push wnd error=>" + e.getMessage());

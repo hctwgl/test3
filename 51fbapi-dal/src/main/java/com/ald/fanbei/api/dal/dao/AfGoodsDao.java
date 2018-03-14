@@ -106,6 +106,8 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 
+	List<AfGoodsDo> getGoodsByItem(@Param("categoryId") Long categoryId);
+
 	List<LeaseGoods> getHomeLeaseGoods(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
 
 	LeaseGoods getLeaseGoodsByGoodsId(@Param("goodsId")Long goodsId);

@@ -23,6 +23,8 @@ public abstract class RiskRegisterStrongReqBo extends HashMap<String, String> {
 	public RiskRegisterStrongReqBo(String consumerNo,  String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost,String bqsBlackBox,String riskScene){
 		create(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, NotifyHost,bqsBlackBox,riskScene);
 	}
+	
+	public RiskRegisterStrongReqBo(){};
 
 	public String getOrderNo() {
 		return orderNo;

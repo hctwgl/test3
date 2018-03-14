@@ -8,12 +8,14 @@ import java.util.TimerTask;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -34,6 +36,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
@@ -72,9 +75,11 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
 	@Resource
-	AfAbTestDeviceService afAbTestDeviceService;
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -186,6 +191,11 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+			try {
+				baiQiShiUtils.getLoginResult(requestDataVo.getId(),bqsBlackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),null,null,null);
+			}catch (Exception e){
+				logger.info("checkLoginVerifyCodeApi baiQiShiUtils error =>{}",e.getMessage());
+			}
 		}
 
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
@@ -224,12 +234,12 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		try {
 			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
 			if (StringUtils.isNotEmpty(deviceId)) {
-				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
 				abTestDeviceDo.setUserId(userId);
-				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				abTestDeviceDo.setDeviceNum(deviceId);
 				// 通过唯一组合索引控制数据不重复
-				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
 			}
 		}  catch (Exception e) {
 			// ignore error.

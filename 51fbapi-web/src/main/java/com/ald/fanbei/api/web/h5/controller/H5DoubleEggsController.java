@@ -46,10 +46,10 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.GoodsForDate;
+import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
-import com.ald.fanbei.api.web.vo.SecondKillDateVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -419,7 +419,7 @@ public class H5DoubleEggsController extends H5Controller {
 					}
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 							BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(),
-							resource.getValue2());
+							resource.getValue2(),goodsId);
 					if (nperList != null) {
 						goodsInfo.put("goodsType", "1");
 						Map<String, Object> nperMap = nperList.get(nperList.size() - 1);

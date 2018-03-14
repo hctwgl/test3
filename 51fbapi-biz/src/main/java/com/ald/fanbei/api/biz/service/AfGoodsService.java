@@ -115,5 +115,7 @@ public interface AfGoodsService {
 	List<LeaseGoods> getHomeLeaseGoods(Long pageIndex,Long pageSize);
 
 	LeaseGoods getLeaseGoodsByGoodsId(Long goodsId);
+
+	List<AfGoodsDo> getGoodsByItem(Long categoryId);
 }
 

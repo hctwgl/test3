@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,13 +15,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -77,7 +76,7 @@ public class SmsUtil extends AbstractThird {
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
-    private static String ZHI_BIND = "【51返呗】验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
+    private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -250,6 +249,17 @@ public class SmsUtil extends AbstractThird {
     public boolean sendRiskFail(String mobile) {
         return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode(), true);
     }
+
+    /**
+     * 强风控需要人审
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendRiskNeedAudit(String mobile) {
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_NEED_AUDIT.getCode(), false);
+    }
+
 
     /**
      * 强风控通过
@@ -688,6 +698,22 @@ public class SmsUtil extends AbstractThird {
 
 
     /**
+     * 借款成功发送短信提醒用户(白领贷)
+     *
+     * @param mobile
+     * @param content
+     */
+    public boolean sendloanCashCode(String mobile, String bank) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_LOAN_AUDIT.getCode());
+        if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+            String content = resourceDo.getValue().replace("&bankCardNo", bank);
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        }
+        return false;
+    }
+
+    /**
      * 发送商圈支付成功短信
      *
      * @param mobile
@@ -725,7 +751,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private SmsResult sendSmsToDhst(String mobiles, String content) {
+    public SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
@@ -901,6 +927,7 @@ public class SmsUtil extends AbstractThird {
             return this.sendSmsToDhst(mobile, content);
         }
     }
+
     public   String rules(String mobile){
         String switchRule = (String)bizCacheUtil.getObject("sms_switch");
         if(switchRule == null){
@@ -923,6 +950,9 @@ public class SmsUtil extends AbstractThird {
         return "DH";
     }
 }
+
+
+
 
 class SmsResult {
     private boolean isSucc;

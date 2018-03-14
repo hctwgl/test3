@@ -123,7 +123,8 @@ var vm=new Vue({
                         token: token,
                         verifyImgCode:verifyImgCode,
                         channelCode:channelCode,
-                        pointCode:pointCode
+                        pointCode:pointCode,
+                        bsqToken:token
                     },
                     success: function(returnData){
                         if (returnData.success) {
@@ -175,7 +176,8 @@ var vm=new Vue({
                                         recommendCode: recommendCode,
                                         token: token,
                                         channelCode:channelCode,
-                                        pointCode:pointCode
+                                        pointCode:pointCode,
+                                        bsqToken:token
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {

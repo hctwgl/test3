@@ -5,11 +5,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.common.enums.LoanType;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
@@ -25,10 +28,12 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 @Service("afUserAccountSenceService")
 public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccountSenceDo, Long> implements AfUserAccountSenceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AfUserAccountSenceServiceImpl.class);
-
     @Resource
     private AfUserAccountSenceDao afUserAccountSenceDao;
+    @Resource
+    private AfUserAccountDao afUserAccountDao;
+    @Resource
+	private TransactionTemplate transactionTemplate;
 
     @Override
     public BaseDao<AfUserAccountSenceDo, Long> getDao() {
@@ -60,4 +65,116 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     public List<AfUserAccountSenceDo> getByUserId(Long userId) {
         return afUserAccountSenceDao.getByUserId(userId);
     }
+
+    @Override
+    public BigDecimal getAuAmountByScene(String scene, Long userId) {
+    	AfUserAccountSenceDo accScene = afUserAccountSenceDao.getByUserIdAndScene(scene, userId);
+    	if(accScene != null) {
+    		return accScene.getAuAmount();
+    	}else {
+    		return BigDecimal.ZERO;
+    	}
+    }
+
+	@Override
+	public AfUserAccountSenceDo buildAccountScene(Long userId, String loanType, String amount) {
+		AfUserAccountSenceDo authAccountSceneDo = new AfUserAccountSenceDo();
+		authAccountSceneDo.setUserId(userId);
+		authAccountSceneDo.setScene(loanType);
+		authAccountSceneDo.setAuAmount(new BigDecimal(amount));
+		return authAccountSceneDo;
+	}
+
+	@Override
+	public void saveOrUpdateAccountSence(AfUserAccountSenceDo accountSenceDo) {
+		AfUserAccountSenceDo accountSence = afUserAccountSenceDao.getByUserIdAndScene(accountSenceDo.getScene(), accountSenceDo.getUserId());
+		if(accountSence == null) {
+			afUserAccountSenceDao.saveRecord(accountSenceDo);
+		} else {
+			accountSenceDo.setRid(accountSence.getRid());
+			afUserAccountSenceDao.updateById(accountSenceDo);
+		}
+
+	}
+
+	@Override
+	public BigDecimal getTotalAmount(Long userId) {
+		AfUserAccountSenceDo sceneDo = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+		if(sceneDo != null) {
+			return sceneDo.getAuAmount();
+		}
+		return BigDecimal.ZERO;
+	}
+
+	@Override
+	public BigDecimal getBldUsedAmount(Long userId) {
+		AfUserAccountSenceDo sceneDo = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userId);
+		if(sceneDo != null) {
+			return sceneDo.getUsedAmount();
+		}
+		return BigDecimal.ZERO;
+	}
+
+
+	@Override
+	public void checkLoanQuota(Long userId, SceneType scene, BigDecimal amount) {
+	}
+
+	@Override
+	public void syncLoanUsedAmount(final Long userId, final SceneType scene, final BigDecimal amount) {
+    	if(SceneType.CASH.equals(scene)) {
+			afUserAccountDao.plusUsedAmount(userId, amount);
+		}else {
+			afUserAccountSenceDao.updateUsedAmount(scene.getName(), userId, amount);
+		}
+    	afUserAccountSenceDao.updateUsedAmount(SceneType.LOAN_TOTAL.getName(), userId, amount);
+	}
+
+	@Override
+	public BigDecimal getLoanMaxPermitQuota(Long userId, SceneType scene, BigDecimal cfgAmount) {
+		BigDecimal maxPermitQuota = BigDecimal.ZERO;
+		BigDecimal auAmount = BigDecimal.ZERO;
+
+		if(SceneType.CASH.equals(scene)) {
+			auAmount = afUserAccountDao.getUserAccountInfoByUserId(userId).getAuAmount();
+		}else {
+			AfUserAccountSenceDo senceDo =  afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
+			if(senceDo != null ) {
+				auAmount = senceDo.getAuAmount();
+			}
+		}
+
+		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+		if(totalScene != null) {
+			BigDecimal totalAuAmount = totalScene.getAuAmount();
+			BigDecimal totalUsedAmount = totalScene.getUsedAmount();
+
+			BigDecimal totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
+			maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
+			maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
+		}else {
+			maxPermitQuota = auAmount.compareTo(cfgAmount) > 0? cfgAmount:auAmount ;
+		}
+
+		return maxPermitQuota;
+	}
+
+	@Override
+	public void raiseQuota(Long userId, SceneType scene, BigDecimal bldAmount, BigDecimal totalAmount) {
+		// TODO 提额
+		AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, SceneType.BLD_LOAN.getName(),
+				ObjectUtils.toString(bldAmount));
+		AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(),
+				ObjectUtils.toString(totalAmount));
+
+		this.saveOrUpdateAccountSence(bldAccountSenceDo);
+		this.saveOrUpdateAccountSence(totalAccountSenceDo);
+	}
+
+
+	@Override
+	public int updateUserSceneAuAmountByScene(String scene, Long userId,
+			BigDecimal auAmount) {
+		return afUserAccountSenceDao.updateUserSceneAuAmountByScene(scene, userId, auAmount);
+	}
 }
