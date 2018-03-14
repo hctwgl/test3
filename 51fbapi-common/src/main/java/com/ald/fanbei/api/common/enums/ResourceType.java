@@ -25,6 +25,7 @@ public enum ResourceType {
 	BRAND_SHOP("BRAND_SHOP", "品牌特卖,品牌"), 
 	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
 	BORROW_RATE("BORROW_RATE","疯分期设置"),
+	AUTH_FUND("AUTH_FUND","公积金认证"),
 	
 	HOME_NAVIGATION_BACKGROUND("HOME_NAVIGATION_BACKGROUND","快速导航背景"),
 
