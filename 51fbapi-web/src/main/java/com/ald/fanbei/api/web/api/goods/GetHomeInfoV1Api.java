@@ -190,20 +190,20 @@ public class GetHomeInfoV1Api implements ApiHandle {
 						}
 					}
 				}
-//				try {
-//					String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
-//					if (StringUtils.isNotEmpty(deviceId)) {
-//					  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
-//						AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
-//						abTestDeviceDo.setUserId(userId);
-//						abTestDeviceDo.setDeviceNum(deviceId);
-//						// 通过唯一组合索引控制数据不重复
-//						afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
-//					}
-//				}  catch (Exception e) {
-//					// ignore error.
-//				}
-//				
+				try {
+					String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+					if (StringUtils.isNotEmpty(deviceId)) {
+					  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+						AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+						abTestDeviceDo.setUserId(userId);
+						abTestDeviceDo.setDeviceNum(deviceId);
+						// 通过唯一组合索引控制数据不重复
+						afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+					}
+				}  catch (Exception e) {
+					// ignore error.
+				}
+				
 				
 			}
 		} catch (Exception e) {
@@ -293,24 +293,24 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 		// removeSecondNper(array);
-		List<Map<String, Object>> activityInfoList = null;/*bizCacheUtil.getObjectList(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());*/
+		List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
 		if(activityInfoList == null) {
 			// redis取不到，则从一级缓存获取
-			//activityInfoList = (List<Map<String, Object>>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
+			activityInfoList = (List<Map<String, Object>>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
 		}
 		if(activityInfoList == null) {
 			// 一级缓存获取不到，则从数据库获取
 			activityInfoList = getHomeActivityList(resource, array);
-			//bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+			bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 		}
 		// 更多商品
 		Map<String, Object> moreGoodsInfo = (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		if(moreGoodsInfo == null) {
-			//moreGoodsInfo = (Map<String, Object>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
+			moreGoodsInfo = (Map<String, Object>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		}
 		if(moreGoodsInfo == null) {
 			moreGoodsInfo = getMoreGoodsInfo(resource, array);
-			//bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
+			bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 		}
 
 		// 背景图配置
@@ -399,13 +399,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	}
 
 	public List<Map<String, Object>> getHomeActivityList(AfResourceDo resource, JSONArray array) {
-		
-		logger.info("getHomeActivityList start");
 		List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
 		List<Map<String, Object>> activityInfoList = new ArrayList<Map<String, Object>>();
-		
-		logger.info("getHomeActivityList activityList = "+JSON.toJSONString(activityList));
-		try{
 		for (AfActivityDo afActivityDo : activityList) {
 			Map<String, Object> activityData = new HashMap<String, Object>();
 			activityData.put("titleName", afActivityDo.getName());
@@ -417,11 +412,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			// 获取活动商品
 			List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService
 					.listHomeActivityGoodsByActivityId(afActivityDo.getId());
-			logger.info("getHomeActivityList activityGoodsDoList = "+JSON.toJSONString(activityGoodsDoList));
 			for (AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
-				
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
-				try{
+			try{
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
@@ -441,24 +434,19 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				try {
 					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				} catch (Exception e) {
-					logger.info("getHomeActivityList schemeGoodsDo error = "+e);
 					logger.error(e.toString());
 				}
 				JSONArray interestFreeArray = null;
 				if (schemeGoodsDo != null) {
 					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
 							.getById(schemeGoodsDo.getInterestFreeId());
-					logger.info("home page interestFreeRulesDo = "+JSON.toJSONString(interestFreeRulesDo));
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
 				}
-				
-				logger.info("home page interestFreeArray = "+JSON.toJSONString(interestFreeArray));
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
-				logger.info("home page nperList = "+JSON.toJSONString(nperList));
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
 					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -468,24 +456,18 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					}
 					goodsInfo.put("nperMap", nperMap);
 				}
-				logger.info("home page nperList = "+JSON.toJSONString(nperList));
-				 goodsList.add(goodsInfo);
-				}catch (Exception e){
-					logger.error("getHomeActivityList getHomeActivityList" + JSON.toJSONString(e));
-					logger.info("getHomeActivityList getHomeActivityList is error = "+e+"goodsDo="+JSON.toJSONString(goodsDo)+"goodsInfo = "+JSON.toJSONString(goodsInfo));
-				}
+
+				goodsList.add(goodsInfo);
+			}catch (Exception e){
+				logger.error("getHomeActivityList error:" + JSON.toJSONString(e));
+				logger.info("getHomeActivityList is error = "+e+"goodsDo="+JSON.toJSONString(goodsDo)+"goodsInfo = "+JSON.toJSONString(goodsInfo));
 			}
-			
+		}
 			activityData.put("goodsList", goodsList);
 			activityInfoList.add(activityData);
-		}
-		logger.info("home page activityInfoList = "+JSON.toJSONString(activityInfoList));
-		}catch (Exception e){
-			logger.error("getHomeActivityList getHomeActivityList is error" + JSON.toJSONString(e));
-		}
-		
-		return activityInfoList;
 	}
+		return activityInfoList;
+}
 
 	private void grantBoluomiCoupon(Long sceneId, Long userId) {
 		logger.info(" pickBoluomeCoupon begin , sceneId = {}, userId = {}", sceneId, userId);
