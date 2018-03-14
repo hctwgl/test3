@@ -405,6 +405,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		List<Map<String, Object>> activityInfoList = new ArrayList<Map<String, Object>>();
 		
 		logger.info("getHomeActivityList activityList = "+JSON.toJSONString(activityList));
+		try{
 		for (AfActivityDo afActivityDo : activityList) {
 			Map<String, Object> activityData = new HashMap<String, Object>();
 			activityData.put("titleName", afActivityDo.getName());
@@ -416,6 +417,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			// 获取活动商品
 			List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService
 					.listHomeActivityGoodsByActivityId(afActivityDo.getId());
+			logger.info("getHomeActivityList activityGoodsDoList = "+JSON.toJSONString(activityGoodsDoList));
 			for (AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				goodsInfo.put("goodName", goodsDo.getName());
@@ -437,6 +439,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				try {
 					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 				} catch (Exception e) {
+					logger.info("getHomeActivityList schemeGoodsDo error = "+e);
 					logger.error(e.toString());
 				}
 				JSONArray interestFreeArray = null;
@@ -467,6 +470,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			activityInfoList.add(activityData);
 		}
 		logger.info("home page activityInfoList = "+JSON.toJSONString(activityInfoList));
+		}catch (Exception e){
+			logger.info("getHomeActivityList getHomeActivityList is error = "+e);
+		}
+		
 		return activityInfoList;
 	}
 
