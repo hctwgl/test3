@@ -571,13 +571,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 				
 				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
 				String key1 = Constants.CACHKEY_DOUBLE_USER +userId+doubleEggsId;
-				String value = (String)bizCacheUtil.getObject(key1);
+				Integer value = (Integer)bizCacheUtil.getObject(key1);
 				if (count != 1 || value != null) {
 					throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 				}
 				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
 				
-				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(doubleEggsId);
 				if(doubleEggsDo != null){
 					if (doubleEggsDo.getStartTime().after(new Date())) {
 						//before start
@@ -589,9 +589,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_EXPIRE);
 					}
 					
+					Integer alreadyCount = 0;
+					alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsId);
+					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
+					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-alreadyCount);//秒杀商品余量
 					if(goodsDouble12Count <= 0){
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
@@ -601,7 +604,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 	            	afGoodsDoubleEggsService.updateCountById(goodsId);
 	            	
 	            	//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
-	            	bizCacheUtil.saveObject(key1, value, Constants.SECOND_OF_ONE_MONTH);
+	            	bizCacheUtil.saveObject(key1, 1, Constants.SECOND_OF_ONE_MONTH);
 		            
 				}
 			}

@@ -31,5 +31,6 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 
 	List<GoodsForDate> getGoodsListByActivityId(Long activityId);
 	Long getCurrentDoubleGoodsId(Long goodsId);
+	Integer getAlreadyCount(Long goodsId);
 
 }

@@ -325,7 +325,7 @@
 					ORDER BY
 						de.sort;
     </select>
-    <select id="getCurrentDoubleGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+    <select id="getCurrentDoubleGoodsId" parameterType="java.lang.Long" resultType="java.lang.Long">
 	    SELECT
 		de.`id`  FROM af_goods_double_eggs de 
 		INNER JOIN af_activity a on a.id = de.activity_id
@@ -336,5 +336,13 @@
 			AND a.`status` = 2 
 	and de.`goods_id` = #{goodsId}
 			LIMIT 0,1;
+    </select>
+    <select id="getAlreadyCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT
+		sum(already_count)
+	FROM
+		af_goods_double_eggs
+	WHERE
+		goods_id = #{goodsId};
     </select>
 </mapper>

@@ -665,6 +665,15 @@ public class AppH5DoubleEggsController extends BaseController {
 		String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
 		
 		List<GoodsForDate> goodsList = afGoodsDoubleEggsService.getGoodsListByActivityId(activityId);
+		
+		if (CollectionUtil.isNotEmpty(goodsList)) {
+			for(GoodsForDate goodsForDate : goodsList){
+				Integer alreadyCount = 0;
+				alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsForDate.getGoodsId());
+				goodsForDate.setCount(goodsForDate.getStockCount() - alreadyCount);
+			}
+		}
+		
 		log = log + String.format("goodsList = %s",goodsList.toString());
 		logger.info(log);
 		
