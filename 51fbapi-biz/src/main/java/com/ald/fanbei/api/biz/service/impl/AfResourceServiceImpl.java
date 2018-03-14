@@ -678,6 +678,15 @@ public class AfResourceServiceImpl implements AfResourceService {
 
         return resource;
     }
+    @Override
+    public boolean getBorrowCashCLosed() {
+
+        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, AfResourceSecType.borrowCashSupuerSwitch.getCode());
+        if (resource != null && "N".equals(resource.getValue1())){
+            return true;
+        }
+        return false;
+    }
     /**
      * 获取黑名单
      *
