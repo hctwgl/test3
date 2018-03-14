@@ -50,4 +50,163 @@ public class AfUserAccountDo extends AbstractSerial {
 		this.rebateAmount = rebateAmount;
 	}
 
+	public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public BigDecimal getAuAmount() {
+		return auAmount;
+	}
+
+	public void setAuAmount(BigDecimal auAmount) {
+		this.auAmount = auAmount;
+	}
+
+	public BigDecimal getUsedAmount() {
+		return usedAmount;
+	}
+
+	public void setUsedAmount(BigDecimal usedAmount) {
+		this.usedAmount = usedAmount;
+	}
+
+	public BigDecimal getFreezeAmount() {
+		return freezeAmount;
+	}
+
+	public void setFreezeAmount(BigDecimal freezeAmount) {
+		this.freezeAmount = freezeAmount;
+	}
+
+	public BigDecimal getScore() {
+		return score;
+	}
+
+	public void setScore(BigDecimal score) {
+		this.score = score;
+	}
+
+	public String getAlipayAccount() {
+		return alipayAccount;
+	}
+
+	public void setAlipayAccount(String alipayAccount) {
+		this.alipayAccount = alipayAccount;
+	}
+
+	public BigDecimal getRebateAmount() {
+		return rebateAmount;
+	}
+
+	public void setRebateAmount(BigDecimal rebateAmount) {
+		this.rebateAmount = rebateAmount;
+	}
+
+	public String getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	public BigDecimal getJfbAmount() {
+		return jfbAmount;
+	}
+
+	public void setJfbAmount(BigDecimal jfbAmount) {
+		this.jfbAmount = jfbAmount;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
+	public BigDecimal getUcAmount() {
+		return ucAmount;
+	}
+
+	public void setUcAmount(BigDecimal ucAmount) {
+		this.ucAmount = ucAmount;
+	}
+
+	public Integer getFailCount() {
+		return failCount;
+	}
+
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
+	}
+
+	public String getBindCard() {
+		return bindCard;
+	}
+
+	public void setBindCard(String bindCard) {
+		this.bindCard = bindCard;
+	}
+
+	public Integer getCreditScore() {
+		return creditScore;
+	}
+
+	public void setCreditScore(Integer creditScore) {
+		this.creditScore = creditScore;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public BigDecimal getBorrowCashAmount() {
+		return borrowCashAmount;
+	}
+
+	public void setBorrowCashAmount(BigDecimal borrowCashAmount) {
+		this.borrowCashAmount = borrowCashAmount;
+	}
 }

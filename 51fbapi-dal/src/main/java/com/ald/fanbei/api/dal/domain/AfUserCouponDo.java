@@ -43,4 +43,99 @@ public class AfUserCouponDo extends AbstractSerial{
 		this.gmtEnd = gmtEnd;
 	}
 
+	public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
+
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
+
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
+
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Long getCouponId() {
+		return couponId;
+	}
+
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
+	}
+
+	public Date getGmtStart() {
+		return gmtStart;
+	}
+
+	public void setGmtStart(Date gmtStart) {
+		this.gmtStart = gmtStart;
+	}
+
+	public Date getGmtEnd() {
+		return gmtEnd;
+	}
+
+	public void setGmtEnd(Date gmtEnd) {
+		this.gmtEnd = gmtEnd;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getGmtUse() {
+		return gmtUse;
+	}
+
+	public void setGmtUse(Date gmtUse) {
+		this.gmtUse = gmtUse;
+	}
+
+	public String getSourceType() {
+		return sourceType;
+	}
+
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getSourceRef() {
+		return sourceRef;
+	}
+
+	public void setSourceRef(String sourceRef) {
+		this.sourceRef = sourceRef;
+	}
 }

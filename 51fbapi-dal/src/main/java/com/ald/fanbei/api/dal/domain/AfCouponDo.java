@@ -56,5 +56,195 @@ public class AfCouponDo extends AbstractSerial {
 	}
 
 
+	public Long getRid() {
+		return rid;
+	}
 
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
+
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
+
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
+
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigDecimal getLimitAmount() {
+		return limitAmount;
+	}
+
+	public void setLimitAmount(BigDecimal limitAmount) {
+		this.limitAmount = limitAmount;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public String getUseRule() {
+		return useRule;
+	}
+
+	public void setUseRule(String useRule) {
+		this.useRule = useRule;
+	}
+
+	public Integer getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Integer totalCount) {
+		this.totalCount = totalCount;
+	}
+
+	public Date getGmtStart() {
+		return gmtStart;
+	}
+
+	public void setGmtStart(Date gmtStart) {
+		this.gmtStart = gmtStart;
+	}
+
+	public Date getGmtEnd() {
+		return gmtEnd;
+	}
+
+	public void setGmtEnd(Date gmtEnd) {
+		this.gmtEnd = gmtEnd;
+	}
+
+	public Integer getValidDays() {
+		return validDays;
+	}
+
+	public void setValidDays(Integer validDays) {
+		this.validDays = validDays;
+	}
+
+	public Integer getLimitCount() {
+		return limitCount;
+	}
+
+	public void setLimitCount(Integer limitCount) {
+		this.limitCount = limitCount;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getExpiryType() {
+		return expiryType;
+	}
+
+	public void setExpiryType(String expiryType) {
+		this.expiryType = expiryType;
+	}
+
+	public Integer getQuotaAlready() {
+		return quotaAlready;
+	}
+
+	public void setQuotaAlready(Integer quotaAlready) {
+		this.quotaAlready = quotaAlready;
+	}
+
+	public Long getQuota() {
+		return quota;
+	}
+
+	public void setQuota(Long quota) {
+		this.quota = quota;
+	}
+
+	public String getUseRange() {
+		return useRange;
+	}
+
+	public void setUseRange(String useRange) {
+		this.useRange = useRange;
+	}
+
+	public String getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(String activityType) {
+		this.activityType = activityType;
+	}
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+	public Integer getIsGlobal() {
+		return isGlobal;
+	}
+
+	public void setIsGlobal(Integer isGlobal) {
+		this.isGlobal = isGlobal;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+
+	public String getModifier() {
+		return modifier;
+	}
+
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	public String getShopUrl() {
+		return shopUrl;
+	}
+
+	public void setShopUrl(String shopUrl) {
+		this.shopUrl = shopUrl;
+	}
 }

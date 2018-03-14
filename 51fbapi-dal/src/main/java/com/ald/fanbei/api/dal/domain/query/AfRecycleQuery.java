@@ -36,4 +36,68 @@ public class AfRecycleQuery{
 				", partnerId='" + partnerId + '\'' +
 				'}';
 	}
+
+	public Integer getRid() {
+		return rid;
+	}
+
+	public void setRid(Integer rid) {
+		this.rid = rid;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public Long getUserId(){
+		return this.userId;
+	}
+
+	public void setRefOrderId(String refOrderId) {
+		this.refOrderId = refOrderId;
+	}
+
+	public String getRefOrderId(){
+		return this.refOrderId;
+	}
+
+	public void setPayType(Integer payType) {
+		this.payType = payType;
+	}
+	public Integer getPayType() {
+		return payType;
+	}
+
+	public void setSettlePrice(BigDecimal settlePrice) {
+		this.settlePrice = settlePrice;
+	}
+
+	public BigDecimal getSettlePrice() {
+		return settlePrice;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Integer getStatus(){
+		return this.status;
+	}
+
+
+
+	public void setPartnerId(String partnerId) {
+		this.partnerId = partnerId;
+	}
+	public String getPartnerId(){
+		return this.partnerId;
+	}
+
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }
