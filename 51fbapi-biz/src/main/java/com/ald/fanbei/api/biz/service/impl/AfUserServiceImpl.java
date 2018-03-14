@@ -152,13 +152,18 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 					afUserAuthDo.setUserId(afUserDo.getRid());
 					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
-					afUserAuthDao.addUserAuth(afUserAuthDo);
+					try{
+                        afUserAuthDao.addUserAuth(afUserAuthDo);
+                    }catch (Exception e){
+                        logger.info("addUser error addUserAuth:={}", e.getCause());
+                    }
+
 
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
-			        //couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
+			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 			        //新人专享送自营商城优惠券
 
 			        sentUserCouponGroup(afUserDo);
@@ -204,6 +209,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					return userId;
 				} catch (Exception e) {
 					status.setRollbackOnly();
+                    logger.info("addUser error:={}", e.getCause());
 					logger.info("addUser error:", e,afUserDo);
 					return 0L;
 				}
