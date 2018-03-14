@@ -23,6 +23,7 @@ public class AfRecycleQuery{
 	private BigDecimal settlePrice;//结算价格
 	private Integer status;//订单状态 1：待确认 2：待上门 3：待检测 6：待发货 7：待收货 8：待支付 66：已完成 98：终止退回 99：已终止
 	private String partnerId;//合作id
+	private String url;
 
 	@Override
 	public String toString() {

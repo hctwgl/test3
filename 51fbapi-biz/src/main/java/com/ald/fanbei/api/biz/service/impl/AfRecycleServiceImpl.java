@@ -83,11 +83,16 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                     String sign = SignUtil.signForYdm(RecycleUtil.createLinkString(map), RecycleUtil.PRIVATE_KEY);
                     map.put("sign", sign);
                     String baseUrl = RecycleUtil.CALLBACK__BASE_URL_ONLINE;
-                    if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
-                         baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
+                    if(StringUtils.isNotBlank(afRecycleQuery.getUrl())){
+                        baseUrl = afRecycleQuery.getUrl();
+                    }else{
+                        if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)){
+                            baseUrl = RecycleUtil.CALLBACK_BASE_URL_TEST;
+                        }
                     }
-                    logger.info("/fanbei/ydm/addRecycleOrder,baseUrl="+ baseUrl);
+                    logger.info("=========================================/fanbei/ydm/addRecycleOrder,baseUrl="+ baseUrl);
                     String postResult = HttpUtil.post(baseUrl + RecycleUtil.YDM_CALLBACK_URL, map);//向有得卖进行握手
+                    logger.info("=========================================/fanbei/ydm/addRecycleOrder,resp=" + postResult);
                     JSONObject jsonObject = JSONObject.parseObject(postResult);
                     if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
                         //给用户账号添加回收订单金额

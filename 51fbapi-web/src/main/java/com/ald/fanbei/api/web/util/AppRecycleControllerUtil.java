@@ -22,6 +22,7 @@ public class AppRecycleControllerUtil {
     public static AfRecycleQuery buildParam(HttpServletRequest request){
         String partnerId = ObjectUtils.toString(request.getParameter("partnerId"), null);
         String orderId = ObjectUtils.toString(request.getParameter("orderId"), null);
+        String url = ObjectUtils.toString(request.getParameter("url"), null);
         BigDecimal settlePrice = NumberUtil.objToBigDecimalZeroToDefault(request.getParameter("settlePrice"), null);
         Long userId = NumberUtil.objToLongDefault(request.getParameter("userId"), null);
         Integer status = NumberUtil.objToIntDefault(request.getParameter("status"),null);
@@ -33,6 +34,7 @@ public class AppRecycleControllerUtil {
         afRecycleQuery.setUserId(userId);
         afRecycleQuery.setStatus(status);
         afRecycleQuery.setPayType(payType);
+        afRecycleQuery.setUrl(url);
         return afRecycleQuery;
     }
 

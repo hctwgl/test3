@@ -597,7 +597,7 @@ public class HttpUtil {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         String body = null;
 
-        logger.info("create httppost:" + url);
+        logger.info("create httppost: url = " + url);
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
