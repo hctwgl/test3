@@ -219,7 +219,7 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         Map<String, Object> data = new HashMap<String, Object>();
         try{
-            data.put("status","");
+            data.put("status",0);
             context = doWebCheck(request, true);
             Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("goodsId")), 0l);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
@@ -227,11 +227,11 @@ public class AppH5LeaseController extends BaseController {
             if(status != null){
                 if(status.equals("NEW")){
                     //待支付
-                    data.put("status","unpaid");
+                    data.put("status",1);
                 }
                 else {
                     //进行中
-                    data.put("status","underway");
+                    data.put("status",2);
                 }
             }
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);

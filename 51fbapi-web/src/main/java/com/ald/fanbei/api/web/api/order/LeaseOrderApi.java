@@ -92,7 +92,10 @@ public class LeaseOrderApi implements ApiHandle {
             lc = ObjectUtils.toString(request.getAttribute("lc"));
         }
         logger.info("add lease order 2,lc=" + lc);
-
+        String status = afOrderService.checkLeaseOrder(userId,goodsId);
+        if(!StringUtil.isBlank(status)){
+            throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_LEASE_ERROR);
+        }
         Date currTime = new Date();
         int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
         try{
