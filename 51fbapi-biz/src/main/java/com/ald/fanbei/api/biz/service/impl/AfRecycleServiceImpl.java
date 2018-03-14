@@ -69,7 +69,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
      */
     @Override
     public Integer addRecycleOrder(final AfRecycleQuery afRecycleQuery) {
-        transactionTemplate.execute(new TransactionCallback<Integer>() {
+        return transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus transactionStatus) {
                 if (null != afRecycleQuery && AfRecycleOrderType.CONFIRM_PAY.getCode().equals(afRecycleQuery.getStatus())) {
@@ -92,7 +92,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                         }
                     }
                     logger.info("=========================================" + baseUrl + "/fanbei/ydm/addRecycleOrder,baseUrl=" + baseUrl);
-                    String postResult = HttpUtil.doHttpPost(baseUrl + RecycleUtil.YDM_CALLBACK_URL, JSONObject.toJSONString(map));//向有得卖进行握手
+                    String postResult = HttpUtil.post(baseUrl + RecycleUtil.YDM_CALLBACK_URL, map);//向有得卖进行握手
                     logger.info("=========================================" + baseUrl + "/fanbei/ydm/addRecycleOrder,resp=" + postResult);
                     JSONObject jsonObject = JSONObject.parseObject(postResult);
                     if (null != jsonObject && StringUtils.equals("1", jsonObject.getString("code"))) {//返回成功
@@ -133,20 +133,20 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                                 afUserAccountDao.updateUserAccount(afUserAccountDo);
                                 //有得卖账户减钱操作
                                 remainAmount = recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
-                                doSmsNotice(afRecycleQuery.getUserId(), remainAmount, settlePrice, rebateAmount);//是否需要短信通知
                             } else {
                                 throw new FanbeiException(userId + " 不存在");
                             }
                         }
+                        doSmsNotice(afRecycleQuery.getUserId(), remainAmount, settlePrice, rebateAmount);//是否需要短信通知
                     } else {
                         logger.error("addRecycleOrder callBack,param=" + map.toString() + ", errorCode=" + (jsonObject == null ? null : jsonObject.getString("code")));
+                        return -1;
                     }
                 }
                 return 1;
             }
 
         });
-        return 1;
     }
 
 

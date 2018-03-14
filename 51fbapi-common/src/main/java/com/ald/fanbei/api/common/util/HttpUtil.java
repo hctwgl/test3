@@ -102,10 +102,10 @@ public class HttpUtil {
     }
     
     /**
-     * 执行GET请求
+     * 执行POST请求
      * 
      * @param url
-     * @param timeout
+     * @param param
      * @return
      */
     public static String doPost(String url, String param) {
