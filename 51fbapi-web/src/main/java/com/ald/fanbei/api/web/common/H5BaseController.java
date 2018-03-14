@@ -69,10 +69,11 @@ public abstract class H5BaseController {
 	protected String processRequest(HttpServletRequest request) {
 		String retMsg = StringUtils.EMPTY;
 		BaseResponse baseResponse = null;
+		Context context = null;
 		try {
 			checkAppInfo(request);
 			// 解析参数（包括请求头中的参数和报文体中的参数）
-			Context context = parseRequestData(request);
+			context = parseRequestData(request);
 			checkLogin(context);
 			// 校验请求数据
 			doCheck(context);
@@ -85,7 +86,7 @@ public abstract class H5BaseController {
 			baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
 			retMsg = JSON.toJSONString(baseResponse);
 		}
-		logger.info("response msg=>{}",retMsg);
+		logger.info("req method=>"+context.getMethod()+",userId=>"+context.getUserId()+",response msg=>" + retMsg);
 		return retMsg;
 	}
 
