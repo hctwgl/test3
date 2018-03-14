@@ -293,24 +293,24 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 		// removeSecondNper(array);
-		List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
+		List<Map<String, Object>> activityInfoList = null;/*bizCacheUtil.getObjectList(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());*/
 		if(activityInfoList == null) {
 			// redis取不到，则从一级缓存获取
-			activityInfoList = (List<Map<String, Object>>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
+			//activityInfoList = (List<Map<String, Object>>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode());
 		}
 		if(activityInfoList == null) {
 			// 一级缓存获取不到，则从数据库获取
 			activityInfoList = getHomeActivityList(resource, array);
-			bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+			//bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
 		}
 		// 更多商品
 		Map<String, Object> moreGoodsInfo = (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		if(moreGoodsInfo == null) {
-			moreGoodsInfo = (Map<String, Object>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
+			//moreGoodsInfo = (Map<String, Object>) schedeledCache.getObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode());
 		}
 		if(moreGoodsInfo == null) {
 			moreGoodsInfo = getMoreGoodsInfo(resource, array);
-			bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
+			//bizCacheUtil.saveMapForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 		}
 
 		// 背景图配置
