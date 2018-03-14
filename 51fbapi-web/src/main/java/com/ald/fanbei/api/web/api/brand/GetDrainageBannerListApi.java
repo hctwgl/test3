@@ -79,27 +79,31 @@ public class GetDrainageBannerListApi implements ApiHandle {
 
     private Map<String,Object> buildParam(AfResourceDo afResourceDo,Integer appVersion,boolean isIos){
         Map<String, Object> data = new HashMap<String, Object>();
-        if(appVersion >= 408) {
-            if (isIos) {
-                String param = afResourceDo.getValue3();
-                data.put("className", param.split(",")[0]);
-                data.put("createType", param.split(",")[1]);
-                data.put("needLogin", param.split(",")[2]);
-                data.put("paramDic", param.split(",")[3]);
-                data.put("jumpType", param.split(",")[4]);
+        try {
+            if(appVersion >= 408) {
+                if (isIos) {
+                    String param = afResourceDo.getValue3();
+                    data.put("className", param.split(",")[0]);
+                    data.put("createType", param.split(",")[1]);
+                    data.put("needLogin", param.split(",")[2]);
+                    data.put("paramDic", param.split(",")[3]);
+                    data.put("jumpType", param.split(",")[4]);
+                }else{
+                    String param = afResourceDo.getValue4();
+                    data.put("className", param.split(",")[0]);
+                    data.put("createType", param.split(",")[1]);
+                    data.put("needLogin", param.split(",")[2]);
+                    data.put("paramDic", param.split(",")[3]);
+                }
             }else{
-                String param = afResourceDo.getValue4();
-                data.put("className", param.split(",")[0]);
-                data.put("createType", param.split(",")[1]);
-                data.put("needLogin", param.split(",")[2]);
-                data.put("paramDic", param.split(",")[3]);
+                data.put("className", null);
+                data.put("createType", null);
+                data.put("needLogin", null);
+                data.put("paramDic", null);
+                data.put("jumpType", null);
             }
-        }else{
-            data.put("className", null);
-            data.put("createType", null);
-            data.put("needLogin", null);
-            data.put("paramDic", null);
-            data.put("jumpType", null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return data;
     }
