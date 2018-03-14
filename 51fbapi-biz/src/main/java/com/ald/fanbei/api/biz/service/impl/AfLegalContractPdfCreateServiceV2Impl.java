@@ -504,7 +504,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 if (null != afBorrowCashDo) {
                     map.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
                 }
-//                poundage =  afBorrowCashDo.getAmount().multiply(BigDecimal.valueOf(Double.parseDouble(map.get("poundageRate").toString()))).divide(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(numberWordFormat.borrowTime(afBorrowCashDo.getType()))).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP);
+                poundage =  afBorrowCashDo.getAmount().multiply(BigDecimal.valueOf(Double.parseDouble(map.get("poundageRate").toString()))).divide(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(numberWordFormat.borrowTime(afBorrowCashDo.getType()))).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP);
                 map.put("poundage", poundage);//手续费
                 map.put("borrowId", borrowId);
                 Calendar c = Calendar.getInstance();
