@@ -379,7 +379,7 @@ public class CuiShouUtils {
      */
     public void sycnSuccessAndError(CuiShouBackMoney cuiShouBackMoney,Integer type){
 //        String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/callback/nperRepay";
-        String url = ConfigProperties.get("fbapi.cuishou.sycnurl");
+        String url = ConfigProperties.get("fbapi.cuishou.sycnurl")+"/report/repayment";
         //String url ="http://192.168.117.50:8003/report/repayment";
         try {
             String mm = JSON.toJSONString(cuiShouBackMoney);
