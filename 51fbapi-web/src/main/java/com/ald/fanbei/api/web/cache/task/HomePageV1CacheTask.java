@@ -51,7 +51,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 
 	@Override
 	public void updateCache(Cache cache) {
-
+		try {
 		log.info("update home page v1 cache task start,time =>{}", System.currentTimeMillis());
 		// 获取借款分期配置信息
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
@@ -69,7 +69,7 @@ public class HomePageV1CacheTask extends AbstractCacheTask {
 		cache.putObject(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_MORE_GOODS_INFO.getCode(), moreGoodsInfo);
 
 //		if (lock.tryLock()) {
-			try {
+			
 				// 更新redis缓存
 				log.info("home page v1 update redis cache start.");
 				bizCacheUtil.saveListForever(CacheConstants.HOME_PAGE.GET_HOME_INFO_V1_ACTIVITY_INFO_LIST.getCode(),

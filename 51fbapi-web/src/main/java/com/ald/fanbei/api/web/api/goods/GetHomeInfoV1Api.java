@@ -399,8 +399,12 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	}
 
 	public List<Map<String, Object>> getHomeActivityList(AfResourceDo resource, JSONArray array) {
+		
+		logger.info("getHomeActivityList start");
 		List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
 		List<Map<String, Object>> activityInfoList = new ArrayList<Map<String, Object>>();
+		
+		logger.info("getHomeActivityList activityList = "+JSON.toJSONString(activityList));
 		for (AfActivityDo afActivityDo : activityList) {
 			Map<String, Object> activityData = new HashMap<String, Object>();
 			activityData.put("titleName", afActivityDo.getName());
@@ -458,6 +462,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 
 				goodsList.add(goodsInfo);
 			}
+			
 			activityData.put("goodsList", goodsList);
 			activityInfoList.add(activityData);
 		}
