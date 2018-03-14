@@ -62,8 +62,6 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	@Resource
 	AfUserAuthService afUserAuthService;
 	
-	@Resource
-	BizCacheUtil bizCacheUtil;
 	
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
@@ -73,6 +71,9 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 	
 	@Resource
 	AfIdNumberService afIdNumberService;
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -82,6 +83,7 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		DredgeWhiteCollarLoanParam param = (DredgeWhiteCollarLoanParam) context.getParamEntity();
 		// 提交风控审核，获取白领贷额度
 		String clientIp = context.getClientIp();
+		
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(mainCard == null) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
