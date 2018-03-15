@@ -39,4 +39,8 @@ public interface AfCouponDao {
 
 	List<AfCouponDo> getByActivityType(@Param("activityType")String activityType);
 
+	Integer addCoupon(AfCouponDo couponDo);
+
+	AfCouponDo getCouponByName(@Param("name") String name);//根据名称查找券信息
+
 }

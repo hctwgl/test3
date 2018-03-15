@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfCategoryService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -91,6 +93,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	
 	@Resource
 	Cache scheduledCache;
+	@Resource
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -98,6 +102,26 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		data.put("homePageType", "NEW");
+		
+//		String userName = context.getUserName();
+//		Long userId = context.getUserId();
+//		if (userName != null && userId != null) {
+//		    try {
+//			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+//			if (StringUtils.isNotEmpty(deviceId)) {
+//			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+//				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+//				abTestDeviceDo.setUserId(userId);
+//				abTestDeviceDo.setDeviceNum(deviceId);
+//				// 通过唯一组合索引控制数据不重复
+//				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+//			}
+//		}  catch (Exception e) {
+//			// ignore error.
+//		}
+//		}
+		
+		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
@@ -187,11 +211,11 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					categoryGoodsInfo = (List<Map<String, Object>>) scheduledCache.getObject(cacheKey);
 				}
 				
-//				if (categoryGoodsInfo == null) {
+				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 					logger.info("getHomeInfoV2 cfp categoryGoodsInfo = " + categoryGoodsInfo);
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
-//				}
+				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
 				String cacheKey = CacheConstants.HOME_PAGE.GET_HOME_INFO_V2_GOODS_INFO_FOR_OLD.getCode();
 				categoryGoodsInfo = bizCacheUtil.getObjectList(cacheKey);

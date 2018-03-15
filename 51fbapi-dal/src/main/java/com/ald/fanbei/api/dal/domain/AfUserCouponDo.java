@@ -3,6 +3,8 @@ package com.ald.fanbei.api.dal.domain;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 
@@ -10,31 +12,36 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @author hexin 2017年1月20日下午11:08:05
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Setter
+@Getter
 public class AfUserCouponDo extends AbstractSerial{
 
 	private static final long serialVersionUID = 105301942297258703L;
-
 	private	Long	rid;
-	
 	private Date 	gmtCreate;
-	
 	private Date 	gmtModified;
-	
 	private Long	userId;
-	
 	private Long	couponId;//优惠券id
-	
 	private Date	gmtStart;//开始时间
-	
 	private Date	gmtEnd;//截止时间
-	
 	private String  status;//状态 【 EXPIRE:过期 ; NOUSE:未使用 ， USED:已使】
-	
 	private Date	gmtUse;//使用时间
-	
-	private String	sourceType;//获取来源【REGIST：注册， INVITE：邀请 】
+	private String	sourceType;//'获取来源【REGIST：注册， INVITE：邀请, SPECIAL：专场, GAME：游戏,REDRAIN：红包雨,USERWAKE：用户唤醒, RECYCLE:有得卖回收业务】',
 	private String	type;//获取来源【REGIST：注册， INVITE：邀请 】
 	private String	sourceRef = "SYS"; //对应数据库默认值
+
+	public AfUserCouponDo(){
+
+	}
+
+	public AfUserCouponDo(Long uid, Long couponId, String status,String	sourceType,Date gmtStart,Date gmtEnd){
+		this.userId = uid;
+		this.couponId = couponId;
+		this.status = status;
+		this.sourceType = sourceType;
+		this.gmtStart = gmtStart;
+		this.gmtEnd = gmtEnd;
+	}
 
 	public Long getRid() {
 		return rid;
@@ -116,16 +123,10 @@ public class AfUserCouponDo extends AbstractSerial{
 		this.sourceType = sourceType;
 	}
 
-	/**
-	 * @return the type
-	 */
 	public String getType() {
 		return type;
 	}
 
-	/**
-	 * @param type the type to set
-	 */
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -137,5 +138,4 @@ public class AfUserCouponDo extends AbstractSerial{
 	public void setSourceRef(String sourceRef) {
 		this.sourceRef = sourceRef;
 	}
-	
 }
