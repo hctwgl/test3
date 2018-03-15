@@ -72,7 +72,7 @@ public class WithdrawCashApi implements ApiHandle {
             throw new FanbeiException("cash switch is not open", FanbeiExceptionCode.CASH_LIMIT);
         }
         if (userId == null || StringUtils.isEmpty(account) || StringUtils.isEmpty(type)) {
-            throw new FanbeiException("user id or account or type is  empty", FanbeiExceptionCode.PARAM_ERROR);
+            throw new FanbeiException("user id or account or type is empty", FanbeiExceptionCode.PARAM_ERROR);
         }
         if (!StringUtils.equals(type, UserAccountLogType.JIFENBAO.getCode())
                 && !StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {

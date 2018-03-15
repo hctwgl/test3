@@ -430,6 +430,7 @@ public class Constants {
 	// 双十二秒杀抢券活动
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
 	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
+	public static final String CACHKEY_DOUBLE_USER = "double_user";
 
 	// 借钱费率配置相关
 	public static final String BORROW_RATE = "BORROW_RATE";

@@ -205,6 +205,9 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			
 		}
 		respData.put("goodsInfoList", goodsInfoList);
+		if(afResourceService.getBorrowCashCLosed()){
+			respData.put("goodsInfoList", Lists.newArrayList());
+		}
 		logger.info("getBorrowCashGoodInfoApi process, userid => {} , resp data => {}", userId,
 				JSONObject.toJSONString(respData));
 		resp.setResponseData(respData);
