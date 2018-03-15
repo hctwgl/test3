@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,7 +84,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁首页banner
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getHomeLeaseBanner(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -109,7 +110,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁首页商品
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getHomeLeaseGoods(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -160,7 +161,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁商品详情
      */
     @ResponseBody
-    @RequestMapping(value = "getLeaseGoodsDetail", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getLeaseGoodsDetail", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getLeaseGoodsDetail(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -214,7 +215,7 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseGoods", e);
+            logger.error("getLeaseGoodsDetail", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -224,7 +225,7 @@ public class AppH5LeaseController extends BaseController {
      *获取商品是否存在有效订单
      */
     @ResponseBody
-    @RequestMapping(value = "checkOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "checkOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String checkOrder(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -248,7 +249,7 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("checkOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -258,7 +259,7 @@ public class AppH5LeaseController extends BaseController {
      *获取用户默认收货地址
      */
     @ResponseBody
-    @RequestMapping(value = "getDefaultUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getDefaultUserAddress", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getDefaultUserAddress(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -272,7 +273,7 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", defauleDo);
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("getDefaultUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -282,7 +283,7 @@ public class AppH5LeaseController extends BaseController {
      *获取用户收货地址列表
      */
     @ResponseBody
-    @RequestMapping(value = "getUserAddressList", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getUserAddressList", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getUserAddressList(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -293,7 +294,7 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", list);
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("getUserAddressList", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -361,7 +362,7 @@ public class AppH5LeaseController extends BaseController {
             }
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("addUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -459,7 +460,7 @@ public class AppH5LeaseController extends BaseController {
             }
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("changeUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -495,7 +496,7 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"删除成功", "", "");
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("deleteUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -505,7 +506,7 @@ public class AppH5LeaseController extends BaseController {
      *获取用户冻结购物额度
      */
     @ResponseBody
-    @RequestMapping(value = "getUserFreeze", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getUserFreeze", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getUserFreeze(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -555,7 +556,29 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
         }catch  (Exception e) {
-            logger.error("getHomeLeaseBanner", e);
+            logger.error("getUserFreeze", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *获取租赁订单列表
+     */
+    @ResponseBody
+    @RequestMapping(value = "getLeaseOrderList", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String getLeaseOrderList(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
+        try{
+            Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
+            Long pageSize = NumberUtil.objToLongDefault(request.getParameter("pageSize"), 50);
+            Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
+
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getLeaseOrderList", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
