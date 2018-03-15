@@ -71,8 +71,8 @@ public class GetDrainageBannerListApi implements ApiHandle {
 
         List<Object> resultList = new ArrayList<Object>();
         List<AfResourceDo> bannerList = new ArrayList<AfResourceDo>();
-        if(from.equals(ResourceFromEnum.SPECIAL)){//专场
-            bannerList = afResourceService.getNewSpecialResource(type);
+        if(from.equals(ResourceFromEnum.SPECIAL.getCode())){//专场
+            bannerList = afResourceService.getNewSpecialResource(resourceType);
         }else{
             //线上为开启状态
             if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
