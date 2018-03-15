@@ -354,7 +354,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 			//秒杀活动增加逻辑
 			int activityType = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityType"), ""),
-					0);
+					2);
 			if(activityType==2){
 				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceId(goodsPriceId);
 				Long activityId = afSeckillActivityGoodsDto.getActivityId();
