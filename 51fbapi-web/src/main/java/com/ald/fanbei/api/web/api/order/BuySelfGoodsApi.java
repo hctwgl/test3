@@ -49,6 +49,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -262,10 +263,17 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 				
 				// ------------------------------------begin mqp doubleEggs------------------------------------
-				Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
-				if(doubleEggsId != null){
-					doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+				//first to check if this goods is special goods
+				List<AfGoodsDoubleEggsDo> list = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				if (CollectionUtil.isNotEmpty(list)) {
+					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
+					if(doubleEggsId != null){
+						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+					}else{
+						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
+					}
 				}
+				
 				// ------------------------------------end mqp doubleEggs------------------------------------
 
 	/*			// 双十二秒杀新增逻辑+++++++++++++>
