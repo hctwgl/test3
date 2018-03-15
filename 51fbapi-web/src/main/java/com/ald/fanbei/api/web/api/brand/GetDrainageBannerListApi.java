@@ -50,11 +50,11 @@ public class GetDrainageBannerListApi implements ApiHandle {
         Integer appVersion = NumberUtil.objToInteger(requestDataVo.getSystem().get("appVersion"));
         logger.info("getDrainageBannerListApi and type = {}", type);
         List<Object> resultList = new ArrayList<Object>();
-        if(appVersion >= 408) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)，老专场走老逻辑
+        if(appVersion >= 408) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)
             boolean isIos = requestDataVo.getId().startsWith("i");
             String from = ObjectUtils.toString(requestDataVo.getParams().get("from"));// 1:banner
             resultList = doNewProcess(type,resourceType,isIos,from);
-        }else{//老逻辑
+        }else{//老专场走老逻辑
             resultList = doOldProcess(type,resourceType);
         }
         resp.addResponseData("bannerList", resultList);
@@ -83,7 +83,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
             }
             logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList);
         }
-        resultList = getObjectWithResourceList(bannerList,false,false);
+        resultList = getObjectWithResourceList(bannerList,false,isIos);
         return resultList;
 
     }
@@ -102,7 +102,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
             //预发不区分状态
             bannerList = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
         }
-        logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList);
+        logger.info("doOldProcess = {}", bannerList);
         List<Object> resultList = getObjectWithResourceList(bannerList,true,false);
         return resultList;
 
