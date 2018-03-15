@@ -273,12 +273,12 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 						if (result) {
 							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
-							//设置borrow状态
-							AfBorrowCashDo borrowCashTemp = new AfBorrowCashDo();
-							borrowCashTemp.setRid(borrowId);
-							borrowCashTemp.setStatus(AfBorrowCashStatus.waitTransed.getCode());
-							afBorrowCashService.updateBorrowCash(borrowCashTemp);
 						}
+						//设置borrow状态
+						AfBorrowCashDo borrowCashTemp = new AfBorrowCashDo();
+						borrowCashTemp.setRid(borrowId);
+						borrowCashTemp.setStatus(AfBorrowCashStatus.waitTransed.getCode());
+						afBorrowCashService.updateBorrowCash(borrowCashTemp);
 						
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
