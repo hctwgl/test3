@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
-import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
@@ -128,6 +128,7 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			afUserAccountSenceDao.updateUsedAmount(scene.getName(), userId, amount);
 		}
     	afUserAccountSenceDao.updateUsedAmount(SceneType.LOAN_TOTAL.getName(), userId, amount);
+    	
 	}
 
 	@Override
@@ -153,6 +154,14 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
 			maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
 		}else {
+    		AfUserAccountSenceDo senceDo = new AfUserAccountSenceDo();
+    		senceDo.setScene(SceneType.LOAN_TOTAL.getName());
+    		senceDo.setAuAmount(auAmount);
+    		senceDo.setUsedAmount(BigDecimal.ZERO);
+    		senceDo.setUserId(userId);
+    		senceDo.setGmtCreate(new Date());
+    		afUserAccountSenceDao.saveRecord(senceDo);
+			
 			maxPermitQuota = auAmount.compareTo(cfgAmount) > 0? cfgAmount:auAmount ;
 		}
 		
