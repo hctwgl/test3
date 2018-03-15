@@ -163,19 +163,29 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 			}
 
-			if (SceneType.CASH.getCode().equals(riskScene)) {
-				if (!StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
-				    bizCacheUtil.delCache(lockKey);
-				    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
-				}
-			} else {
-				if(afUserAuthStatus!=null) {
-					if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.CHECKING.getCode())) {
-					    bizCacheUtil.delCache(lockKey);
-					    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
-					}
-				}
-			}
+                	if (SceneType.CASH.getCode().equals(riskScene)) {
+                	    if (!StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
+                		bizCacheUtil.delCache(lockKey);
+                		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+                	    }
+                	} else {
+                	    if (afUserAuthStatus != null) {
+                		if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.CHECKING.getCode())) {
+                		    bizCacheUtil.delCache(lockKey);
+                		    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+                		} else if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.FAILED.getCode())) {
+                		    Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
+                		    long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+                
+                		    if (between > 1) {
+                			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR, "请" + between + "天后尝试重新提交");
+                
+                		    } else if (between == 1) {
+                			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR, "明天可以重新提交审核");
+                		    }
+                		}
+                	    }
+                	}
 
 			Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 			if (directoryCache == null) {

@@ -174,4 +174,15 @@
         is_delete = 0
         AND user_id=#{userId}
     </select>
+    
+    <update id="updateAfUserAuthStatusByUserId">
+    	   UPDATE af_user_auth_status SET gmt_modified = NOW()
+        <if test="status != null" >
+            ,status = #{status,jdbcType=VARCHAR}
+        </if>
+        WHERE
+        is_delete = 0
+        AND user_id=#{userId}
+        AND scene =#{scene}
+    </update>
 </mapper>

@@ -223,7 +223,9 @@ public interface AfResourceService {
 	 * @return 利率相关详情
 	 */
 	AfResourceDo getVipUserRate(String userName);
-
+	public AfResourceDo getBrandRate(long goodsId);
+	public boolean getBorrowCashCLosed() ;
+		boolean getBlackList();
 	AfResourceDo getEcommerceFloorImgRes();
 
 	AfResourceDo getBrandFloorImgRes();

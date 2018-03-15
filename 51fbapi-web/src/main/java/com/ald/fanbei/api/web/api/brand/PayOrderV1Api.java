@@ -412,14 +412,14 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
-    /**
+/*    *//**
 	 * 
 	 * @Title: double12GoodsCheck
 	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
 	 * @return  void  
 	 * @author yanghailong
 	 * @data  2017年11月21日
-	 */
+	 *//*
 	private void double12GoodsCheck(Long userId, Long goodsId){
 		
 		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
@@ -440,9 +440,9 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 	
-	/**
+/*	*//**
 	 * 
 	* @Title: doubleEggsGoodsCheck
 	* @author qiao
@@ -452,7 +452,7 @@ public class PayOrderV1Api implements ApiHandle {
 	* @param goodsId    
 	* @return void   
 	* @throws
-	 */
+	 *//*
 	private void doubleEggsGoodsCheck(Long userId, Long goodsId){
 		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 		if(doubleEggsDo != null){
@@ -472,5 +472,5 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 }
