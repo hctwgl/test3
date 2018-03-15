@@ -144,7 +144,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
             if(!isOldVersion) {
-                String jsonParam = afResourceDo.getValue3();
+                String jsonParam = afResourceDo.getValue5();
                 if(StringUtils.isNotBlank(jsonParam)){
                     JSONObject json = JSONObject.parseObject(jsonParam);
                     data.put("createType", json.get("createType"));
