@@ -94,7 +94,7 @@ public class StartCashierApi implements ApiHandle {
         String plantform = ObjectUtils.toString(params.get("plantform"), null);
         String thirdOrderNo = orderType.equals(OrderType.BOLUOME.getCode()) ? ObjectUtils.toString(params.get("orderId"), null) : "";
         AfOrderDo orderInfo = null;
-        if (orderType.equals(OrderType.AGENTBUY.getCode()) || orderType.equals(OrderType.SELFSUPPORT.getCode()) || orderType.equals(OrderType.TRADE.getCode())) {
+        if (orderType.equals(OrderType.AGENTBUY.getCode()) || orderType.equals(OrderType.SELFSUPPORT.getCode()) || orderType.equals(OrderType.TRADE.getCode()) || orderType.equals(OrderType.LEASE.getCode())) {
             orderInfo = afOrderService.getOrderById(orderId);
         } else if (orderType.equals(OrderType.BOLUOME.getCode())) {
             //region 菠萝蜜独立逻辑
