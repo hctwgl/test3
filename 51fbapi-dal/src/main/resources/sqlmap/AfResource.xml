@@ -345,6 +345,7 @@
 		AND type = 'GG_FAKE_PERSON'
 		AND value = #{activityId}
 	</select>
+
 	<select id = "getGGSpecificBanner" resultType = "AfResourceDo">
 		SELECT
 			*
@@ -551,5 +552,17 @@
 		WHERE
 			a.type = #{type}
 		AND a.sec_type = #{secType};
+	</select>
+
+
+	<!-- 获取新的专场信息(未出账单列表页|已出账单列表页) -->
+	<select id="getNewSpecialResource" resultType="AfResourceDo">
+		SELECT
+			a.*
+		FROM
+			af_resource a
+		INNER JOIN af_resource b on b.id = a.value_4 AND b.value_4 = 'O'
+		WHERE
+			a.type = #{type}
 	</select>
 </mapper>

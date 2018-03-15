@@ -849,4 +849,15 @@ public class AfResourceServiceImpl implements AfResourceService {
 	    return afResourceDao.getConfigsListByTypesAndSecType(type,secType);
 	}	
 
+
+    /**
+     * 获取新的专场信息(未出账单列表页|已出账单列表页)
+     * @param type
+     * @return
+     */
+	@Override
+   public List<AfResourceDo> getNewSpecialResource(String type){
+        return afResourceDao.getNewSpecialResource(type);
+    }
+
 }

@@ -154,7 +154,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		 }
 		 
 		 //更换的个性配置
-		 ///////////////////////////////////////////////////////////
+		
 		 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
 			    try{
 				List<JSONObject>   list =  JSONObject.parseArray(afResource.getValue1(), JSONObject.class);
@@ -166,6 +166,9 @@ public class GetUserShareInfoApi implements ApiHandle {
 				        doChangeImage(userId);
 				         changeImage = "Y";
 				}
+				if("noChange".equals(image)){
+			         changeImage = "Y";
+			     }
 			     }
 			    }catch(Exception e){
 				 logger.error("getUserShareInfoApi value1 error  e = "+ e);

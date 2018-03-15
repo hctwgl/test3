@@ -11,8 +11,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.ResourceFromEnum;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -27,7 +30,9 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
- * @author chenqiwei 2017年11月23日下午15:17:22
+ * @author chenqiwei
+ * @author weiqingeng
+ * @date 2017年11月23日下午15:17:22
  * @类描述：引流页轮播图
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -43,24 +48,74 @@ public class GetDrainageBannerListApi implements ApiHandle {
         String resourceType = ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         Integer appVersion = NumberUtil.objToInteger(requestDataVo.getSystem().get("appVersion"));
-        boolean isIos = requestDataVo.getId().startsWith("i");
         logger.info("getDrainageBannerListApi and type = {}", type);
-        List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
-        //线上为开启状态
-        if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-            bannerList1 = afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
-        } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
-            //预发不区分状态
-            bannerList1 = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+        List<Object> resultList = new ArrayList<Object>();
+        if(appVersion >= 408) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)，老专场走老逻辑
+            boolean isIos = requestDataVo.getId().startsWith("i");
+            String from = ObjectUtils.toString(requestDataVo.getParams().get("from"));// 1:banner
+            resultList = doNewProcess(type,resourceType,isIos,from);
+        }else{//老逻辑
+            resultList = doOldProcess(type,resourceType);
         }
-        logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
-        List<Object> bannerList = getObjectWithResourceList(bannerList1,appVersion,isIos);
-        resp.addResponseData("bannerList", bannerList);
-
+        resp.addResponseData("bannerList", resultList);
         return resp;
     }
 
-    private List<Object> getObjectWithResourceList(List<AfResourceDo> bannerResclist,Integer appVersion,boolean isIos) {
+
+    /**
+     * 处理新逻辑
+     * @author weiqingeng
+     * @return
+     */
+    private List<Object> doNewProcess(String type, String resourceType,boolean isIos,String from){
+
+        List<Object> resultList = new ArrayList<Object>();
+        List<AfResourceDo> bannerList = new ArrayList<AfResourceDo>();
+        if(from.equals(ResourceFromEnum.SPECIAL)){//专场
+            bannerList = afResourceService.getNewSpecialResource(type);
+        }else{
+            //线上为开启状态
+            if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+                bannerList = afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
+            } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+                //预发不区分状态
+                bannerList = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+            }
+            logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList);
+        }
+        resultList = getObjectWithResourceList(bannerList,false,false);
+        return resultList;
+
+    }
+
+    /**
+     * 处理老逻辑
+     * @author weiqingeng
+     * @return
+     */
+    private List<Object> doOldProcess(String type, String resourceType){
+        List<AfResourceDo> bannerList = new ArrayList<AfResourceDo>();
+        //线上为开启状态
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+            bannerList = afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
+        } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+            //预发不区分状态
+            bannerList = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
+        }
+        logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList);
+        List<Object> resultList = getObjectWithResourceList(bannerList,true,false);
+        return resultList;
+
+    }
+
+    /**
+     * 数据整理
+     * @param bannerResclist
+     * @param isOldVersion
+     * @param isIos
+     * @return
+     */
+    private List<Object> getObjectWithResourceList(List<AfResourceDo> bannerResclist,boolean isOldVersion,boolean isIos) {
         List<Object> bannerList = new ArrayList<Object>();
         if(CollectionUtils.isNotEmpty(bannerResclist)){
             for (AfResourceDo afResourceDo : bannerResclist) {
@@ -70,37 +125,38 @@ public class GetDrainageBannerListApi implements ApiHandle {
                 data.put("type", afResourceDo.getValue1());
                 data.put("content", afResourceDo.getValue2());
                 data.put("sort", afResourceDo.getSort());
-                data.putAll(buildParam(afResourceDo,appVersion,isIos));
+                Map<String, Object> autoParam = buildParam(afResourceDo,isOldVersion,isIos);
+                data.putAll(autoParam);
                 bannerList.add(data);
             }
         }
         return bannerList;
     }
 
-    private Map<String,Object> buildParam(AfResourceDo afResourceDo,Integer appVersion,boolean isIos){
+    /**
+     * 包装客户端的动态参数
+     * @param afResourceDo
+     * @param isOldVersion
+     * @param isIos
+     * @return
+     */
+    private Map<String,Object> buildParam(AfResourceDo afResourceDo,boolean isOldVersion,boolean isIos){
         Map<String, Object> data = new HashMap<String, Object>();
         try {
-            if(appVersion >= 408) {
-                if (isIos) {
-                    String param = afResourceDo.getValue3();
-                    data.put("className", param.split(",")[0]);
-                    data.put("createType", param.split(",")[1]);
-                    data.put("needLogin", param.split(",")[2]);
-                    data.put("paramDic", param.split(",")[3]);
-                    data.put("jumpType", param.split(",")[4]);
-                }else{
-                    String param = afResourceDo.getValue4();
-                    data.put("className", param.split(",")[0]);
-                    data.put("createType", param.split(",")[1]);
-                    data.put("needLogin", param.split(",")[2]);
-                    data.put("paramDic", param.split(",")[3]);
+            if(!isOldVersion) {
+                String jsonParam = afResourceDo.getValue3();
+                if(StringUtils.isNotBlank(jsonParam)){
+                    JSONObject json = JSONObject.parseObject(jsonParam);
+                    data.put("createType", json.get("createType"));
+                    data.put("needLogin", json.get("needLogin"));
+                    data.put("paramDic", json.getJSONObject("paramDic"));
+                    data.put("jumpType", json.get("jumpType"));
+                    if (isIos) {
+                        data.put("className", json.getString("classNameIOS"));
+                    }else{
+                        data.put("className", json.getString("classNameAndroid"));
+                    }
                 }
-            }else{
-                data.put("className", null);
-                data.put("createType", null);
-                data.put("needLogin", null);
-                data.put("paramDic", null);
-                data.put("jumpType", null);
             }
         } catch (Exception e) {
             e.printStackTrace();
