@@ -352,7 +352,7 @@ public class PayOrderV1Api implements ApiHandle {
             Object payStatus = result.get("status");
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
-                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+/*                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
                 	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
                 	if (resourceDo != null) {
                 		Date current = new Date();
@@ -364,7 +364,7 @@ public class PayOrderV1Api implements ApiHandle {
                 		
 					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
-                	
+*/                	
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {

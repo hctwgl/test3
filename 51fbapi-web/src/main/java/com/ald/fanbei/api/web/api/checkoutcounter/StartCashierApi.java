@@ -564,6 +564,7 @@ public class StartCashierApi implements ApiHandle {
             }
         } else {    //线上分期订单
             AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
+          
             if (afUserAccountSenceDo != null) {
                 //额度判断
                 if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
@@ -571,6 +572,8 @@ public class StartCashierApi implements ApiHandle {
                     BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                     useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);
                 } else {
+                //  add temporary amount switch for boluome 
+                	
                     useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
                 }
             }
