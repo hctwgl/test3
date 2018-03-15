@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
 /**
@@ -84,4 +85,12 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
 	/** -------- end 借贷额度 ---------- */
 
     int updateUserSceneAuAmountByScene(String scene, Long userId, BigDecimal auAmount);
+    
+    /**
+     * 初始化用户的 TOTAL_LOAN 记录
+     * @param accInfo
+     * @return
+     */
+    AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo);
+    AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo);
 }
