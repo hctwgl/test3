@@ -1,13 +1,8 @@
 package com.ald.fanbei.api.common.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CertificateException;
@@ -26,6 +21,7 @@ import com.ald.fanbei.api.common.SSLClient;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -106,10 +102,10 @@ public class HttpUtil {
     }
     
     /**
-     * 执行GET请求
+     * 执行POST请求
      * 
      * @param url
-     * @param timeout
+     * @param param
      * @return
      */
     public static String doPost(String url, String param) {
@@ -596,7 +592,7 @@ public class HttpUtil {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         String body = null;
 
-        logger.info("create httppost:" + url);
+        logger.info("create httppost: url = " + url);
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
@@ -607,6 +603,22 @@ public class HttpUtil {
         httpclient.getConnectionManager().shutdown();
 
         return body;
+    }
+
+
+    public static HttpURLConnection connectToWeb(String uri) {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(uri);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return connection;
     }
 
     private static String invoke(DefaultHttpClient httpclient, HttpUriRequest httpost) {
@@ -671,5 +683,6 @@ public class HttpUtil {
 
         return httpost;
     }
+
 
 }

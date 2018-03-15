@@ -34,8 +34,7 @@ public class AfterSaleLogisticSupplyApi implements ApiHandle{
 	AfAftersaleApplyService afAftersaleApplyService;
 	
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,
-			FanbeiContext context, HttpServletRequest request) {
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		Long orderId = NumberUtil.objToLong(requestDataVo.getParams().get("orderId"));
