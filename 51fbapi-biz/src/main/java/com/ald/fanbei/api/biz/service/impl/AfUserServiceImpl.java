@@ -440,6 +440,18 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserDao.getUserInfoByUserId(userId);
 	}
 
-	
+	@Override
+	public Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = this.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+
+		}
+		return userId;
+
+	}
 
 }

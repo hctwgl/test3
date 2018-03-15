@@ -81,11 +81,15 @@ public interface AfUserBankcardService {
 	String getAfUserBankcardList(long userId);
 
 	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
-	
+
 	/**
 	 * 加工银行卡号,只显示尾号
 	 * @param bankcard
 	 * @return
 	 */
 	String hideCardNumber(String bankcard);
+
+    int updateMainBankCard(Long userId);
+
+    int updateViceBankCard(String cardNumber,Long userId);
 }

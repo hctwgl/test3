@@ -9,24 +9,16 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsPropertyService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfPropertyValueService;
-import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPropertyDo;
-import com.ald.fanbei.api.dal.domain.AfPropertyValueDo;
-import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -70,6 +62,8 @@ public class GetGoodsSpecApi implements ApiHandle {
 	@Resource
 	AfShareGoodsService afShareGoodsService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -151,7 +145,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 			}
 
 		}
-
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
@@ -164,7 +157,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 		if (priceDos != null && priceDos.size() > 0) {
 			for (AfGoodsPriceDo priceDo : priceDos) {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
-
 				goodsPriceVo.setStock(priceDo.getStock());
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
 				goodsPriceVo.setIsSale(priceDo.getIsSale());
@@ -172,7 +164,18 @@ public class GetGoodsSpecApi implements ApiHandle {
 				goodsPriceVo.setPriceId(priceDo.getRid());
 				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
 				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
-
+				//判断是在在活动中，并且活动已经开始
+				Long priceId = priceDo.getRid();
+				AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getStartActivityPriceByPriceId(priceId);
+				if(afSeckillActivityGoodsDo!=null){
+					int limitCount = afSeckillActivityGoodsDo.getLimitCount();
+					BigDecimal specialPrice = afSeckillActivityGoodsDo.getSpecialPrice();
+					if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
+						limitCount = 0;
+					}
+					goodsPriceVo.setStock(limitCount);
+					goodsPriceVo.setActualAmount(specialPrice);
+				}
 				propertyData.add(goodsPriceVo);
 			}
 		}

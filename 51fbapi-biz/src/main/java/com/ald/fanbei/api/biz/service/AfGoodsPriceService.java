@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 
@@ -14,7 +15,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
  * @date 2017-07-13 20:34:26 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long> {
-	int updateStockAndSaleByPriceId(Long priceId, boolean isSold);
+	int updateStockAndSaleByPriceId(Long priceId, AfOrderDo afOrderDo, boolean isSold);
 
 	List<AfGoodsPriceDo> getByGoodsId(Long goodsId);
 

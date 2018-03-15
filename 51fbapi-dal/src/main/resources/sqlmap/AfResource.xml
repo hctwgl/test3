@@ -522,8 +522,16 @@
 		LIMIT 1
 	</select>
 
+	<select id="getConfigsListByTypesAndSecType" resultType="AfResourceDo">
+	SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+	</select>
 
-	<!-- 根据类型获取单个配置信息 -->
+<!-- 根据类型获取单个配置信息 -->
 	<select id="getConfigByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
@@ -534,7 +542,7 @@
 		ORDER BY id DESC
 		LIMIT 1
 	</select>
-
+	
 	<select id="getFlowFlayerResourceConfig" resultType="AfResourceDo">
 		SELECT
 			a.*

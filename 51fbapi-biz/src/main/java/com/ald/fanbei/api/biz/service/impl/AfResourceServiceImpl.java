@@ -843,6 +843,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 
 		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
 	}
+	
+	public List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType) {
+	    // TODO Auto-generated method stub
+	    return afResourceDao.getConfigsListByTypesAndSecType(type,secType);
+	}	
 
 
     /**
