@@ -71,7 +71,9 @@ public class GetDrainageBannerListApi implements ApiHandle {
 
         List<Object> resultList = new ArrayList<Object>();
         List<AfResourceDo> bannerList = new ArrayList<AfResourceDo>();
-        if(from.equals(ResourceFromEnum.BANNER.getCode())){//轮播
+        if(from.equals(ResourceFromEnum.SPECIAL)){//专场
+            bannerList = afResourceService.getNewSpecialResource(type);
+        }else{
             //线上为开启状态
             if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
                 bannerList = afResourceService.getResourceHomeListByTypeOrderBy(resourceType);
@@ -80,9 +82,6 @@ public class GetDrainageBannerListApi implements ApiHandle {
                 bannerList = afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
             }
             logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList);
-            return resultList;
-        }else if(from.equals(ResourceFromEnum.SPECIAL)){//专场
-            bannerList = afResourceService.getNewSpecialResource(type);
         }
         resultList = getObjectWithResourceList(bannerList,false,false);
         return resultList;
