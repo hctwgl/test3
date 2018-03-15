@@ -277,7 +277,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 							AfBorrowCashDo borrowCashTemp = new AfBorrowCashDo();
 							borrowCashTemp.setRid(borrowId);
 							borrowCashTemp.setStatus(AfBorrowCashStatus.waitTransed.getCode());
-							afBorrowCashService.updateBorrowCash(afBorrowCashDo);
+							afBorrowCashService.updateBorrowCash(borrowCashTemp);
 						}
 						
 					}else{
