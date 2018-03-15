@@ -18,7 +18,9 @@ public enum CouponSenceRuleType {
     PICK("PICK", "领取"),
     INVITE("INVITE", "邀请"),
     RESERVATION("RESERVATION","预约活动"),
-    CREDITAUTH("CREDITAUTH", "信用认证");
+    CREDITAUTH("CREDITAUTH", "信用认证"),
+    DOUBLE_EXCHANGE("DOUBLE_EXCHANGE", "翻倍兑换优惠券")
+    ;
   
     
 

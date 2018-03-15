@@ -177,7 +177,7 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
     @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
-    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1","/drainage/getBannerList"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1","/drainage/getBannerList","/brand/getRecycleUrl"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

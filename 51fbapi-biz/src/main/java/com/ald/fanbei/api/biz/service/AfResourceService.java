@@ -225,6 +225,8 @@ public interface AfResourceService {
 	 */
 	AfResourceDo getVipUserRate(String userName);
 	public AfResourceDo getBrandRate(long goodsId);
+	public boolean getBorrowCashCLosed() ;
+		boolean getBlackList();
 	AfResourceDo getEcommerceFloorImgRes();
 
 	AfResourceDo getBrandFloorImgRes();

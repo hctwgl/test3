@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.domain.*;
@@ -101,9 +100,7 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
     @Resource
     AfUserCouponTigerMachineService afUserCouponTigerMachineService;
-
-	@Resource
-	BizCacheUtil bizCacheUtil;
+    
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -112,8 +109,7 @@ public class PayOrderV1Api implements ApiHandle {
         if (context.getAppVersion() < 390) {
             throw new FanbeiException("您使用的app版本过低,请升级", true);
         }
-        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);     
-        
+        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
@@ -146,7 +142,10 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
-
+        if (orderInfo == null) {
+            logger.error("orderId is invalid");
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        }
         orderInfo.setGpsAddress(gpsAddress);
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
@@ -303,7 +302,6 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
 
-	String lockKey = Constants.ORDER_PAY_ORDER_ID + orderId;
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
             if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
@@ -344,14 +342,10 @@ public class PayOrderV1Api implements ApiHandle {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PAYTYPE_ERROR);
                 }
             }
+
             // ----------------
 
-	    // 15秒内防止订单支付请求重复提交
-	    if (bizCacheUtil.getObject(lockKey) == null) {
-		bizCacheUtil.saveObject(lockKey, lockKey, 15);
-	    } else {
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-	    }
+
             Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 
             Object success = result.get("success");
@@ -401,7 +395,6 @@ public class PayOrderV1Api implements ApiHandle {
 
                     
                 } else {
-                    bizCacheUtil.delCache(lockKey);
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
                     response.setResponseData(result);
@@ -411,24 +404,22 @@ public class PayOrderV1Api implements ApiHandle {
             resp.setResponseData(result);
 
         } catch (FanbeiException exception) {
-            bizCacheUtil.delCache(lockKey);
             return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
         } catch (Exception e) {
             logger.error("pay order failed e = {}", e);
-            bizCacheUtil.delCache(lockKey);
             resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
         }
         return resp;
     }
 
-    /**
+/*    *//**
 	 * 
 	 * @Title: double12GoodsCheck
 	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
 	 * @return  void  
 	 * @author yanghailong
 	 * @data  2017年11月21日
-	 */
+	 *//*
 	private void double12GoodsCheck(Long userId, Long goodsId){
 		
 		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
@@ -449,9 +440,9 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 	
-	/**
+/*	*//**
 	 * 
 	* @Title: doubleEggsGoodsCheck
 	* @author qiao
@@ -461,7 +452,7 @@ public class PayOrderV1Api implements ApiHandle {
 	* @param goodsId    
 	* @return void   
 	* @throws
-	 */
+	 *//*
 	private void doubleEggsGoodsCheck(Long userId, Long goodsId){
 		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 		if(doubleEggsDo != null){
@@ -481,5 +472,5 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 }
