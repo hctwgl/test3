@@ -476,20 +476,17 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			map.put("sign", sign);
 			map.put("appId", assetSideFanbeiFlag);
 			//发送前数据打印
-			logger.info("borrowCashCurPush originBorrowerJson"+borrowerJson+",data="+data+",sendTime="+sendTime+",sign="+sign+",appId="+assetSideFanbeiFlag);
+			logger.info("borrowCashCurPush originBorrowerJson = {},request = {}",borrowerJson,JSONObject.toJSONString(map));
 			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
 				//推送数据给钱包
-				System.out.println(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush");
 				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
-				logger.info("borrowCashCurPush jsonParam  = {}, respResult = {}", JSONObject.toJSONString(map), respResult);
-				logger.info("borrowCashCurPush jsonParam:"+JSONObject.toJSONString(map)+"respResult:"+respResult);
+				logger.info("borrowCashCurPush request  = {}, response = {}", JSONObject.toJSONString(map), respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 					try {
 						//推送成功
-						logger.info("borrowCashCurPush success,respInfo:"+respInfo.getMessage());
 						//进入查询表
 						AfRetryTemplDo afRetryTemplDo =new AfRetryTemplDo();
 						afRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
@@ -618,20 +615,21 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//请求时间校验
-			/*Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
+			Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}*/
+			}
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGiveBackPayResultReqBo PayResultReqBo = null;
 			try {
 				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+				logger.info("giveBackPayResult,request = {}",realDataJson);
 				PayResultReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGiveBackPayResultReqBo.class);
 			} catch (Exception e) {
-				logger.error("EdspayController getBatchCreditInfo parseJosn error,appId="+appId+ ",sendTime=" + sendTime, e);
+				logger.error("EdspayController giveBackPayResult parseJosn error,appId="+appId+ ",sendTime=" + sendTime, e);
 			}
 			if(PayResultReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
