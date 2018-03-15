@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
 
@@ -17,6 +18,9 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
@@ -26,13 +30,18 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.impl.ApplyLegalBorrowCashServiceImpl;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -40,7 +49,9 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BeanUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -52,6 +63,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
@@ -99,6 +111,20 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 	AfAssetSideInfoService afAssetSideInfoService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	JpushService jpushService;
+	@Resource
+	SmsUtil smsUtil;
+	@Resource
+	NumberWordFormat numberWordFormat;
+	@Resource
+	TransactionTemplate transactionTemplate;
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
+	@Resource
+	ApplyLegalBorrowCashServiceImpl applyLegalBorrowCashServiceImpl;
 
 	// [end]
 	@Override
@@ -141,13 +167,13 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 			// 业务加锁处理
 			applyLegalBorrowCashService.checkLock(lockKey);
 			
-			AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildBorrowCashDo(
+			final AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildBorrowCashDo(
 					mainCard, userId, rateInfoDo, paramBo);
 			// 用户借钱时app来源区分
 			String appName = getAppName(requestDataVo);
 			afBorrowCashDo.setMajiabaoName(appName);
 			// 搭售商品订单
-			AfBorrowLegalOrderDo afBorrowLegalOrderDo = applyLegalBorrowCashService.buildBorrowLegalOrder(userId,
+			final AfBorrowLegalOrderDo afBorrowLegalOrderDo = applyLegalBorrowCashService.buildBorrowLegalOrder(userId,
 					paramBo);
 			// 数据库中新增借钱记录
 			Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo,afBorrowLegalOrderDo);
@@ -169,7 +195,22 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				// 提交风控审核
 				RiskVerifyRespBo verifyBo = applyLegalBorrowCashService.submitRiskReview(borrowId,appType,ipAddress,paramBo,
 						accountDo,userId,afBorrowCashDo,riskOrderNo);
-				if (verifyBo.isSuccess()) {
+				// 判断是否在风控白名单里面
+				List<String> whiteIdsList = new ArrayList<String>();
+				final int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+				AfUserDo afUserDo = afUserService.getUserById(userId);
+				// 判断是否在风控白名单里面
+				AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+				if (whiteListInfo != null) {
+					whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
+						new Converter<String, String>() {
+							@Override
+							public String convert(String source) {
+								return source.trim();
+							}
+						});
+				}
+				if((verifyBo.isSuccess()&&StringUtils.equals("10", verifyBo.getResult()))||whiteIdsList.contains(afUserDo.getUserName())) {
 					//风控审核通过,根据开关判断是否推送钱包打款
 					Boolean flag=true;
 					//新增白名单逻辑
@@ -274,12 +315,40 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						if (result) {
 							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
 						}
-						//设置borrow状态
-						AfBorrowCashDo borrowCashTemp = new AfBorrowCashDo();
-						borrowCashTemp.setRid(borrowId);
-						borrowCashTemp.setStatus(AfBorrowCashStatus.waitTransed.getCode());
-						afBorrowCashService.updateBorrowCash(borrowCashTemp);
-						
+						//老ups逻辑
+						final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+						Date currDate = new Date();
+						delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
+						jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+						String bankNumber = mainCard.getCardNumber();
+						String lastBank = bankNumber.substring(bankNumber.length() - 4);
+						smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+						String title = "恭喜您，审核通过啦！";
+						String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
+						msgContent = msgContent.replace("&bankCardNo", lastBank);
+						jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
+						// 审核通过
+						delegateBorrowCashDo.setGmtArrival(currDate);
+						delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+						afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+						delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
+						Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+						Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
+						Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+						delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+
+						transactionTemplate.execute(new TransactionCallback<String>() {
+							@Override
+							public String doInTransaction(TransactionStatus status) {
+								// 更新借款状态
+								afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
+								// 更新订单状态
+								afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+								applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
+								return "success";
+							}
+
+						});
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
@@ -339,7 +408,6 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		String ext3 =  ObjectUtils.toString(afBorrowCashDo.getAmount());
 		String ext4 =  ObjectUtils.toString(context.getAppVersion());
 		LogUtil.doMaidianLog(request, afBorrowCashDo, requestDataVo, context, ext1, ext2, ext3, ext4);
-		
 	}
 
 	private String getAppName(RequestDataVo requestDataVo) {

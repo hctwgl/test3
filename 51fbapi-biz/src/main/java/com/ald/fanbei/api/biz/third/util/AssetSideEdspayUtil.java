@@ -38,9 +38,12 @@ import com.ald.fanbei.api.biz.service.AfBorrowPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
@@ -53,6 +56,8 @@ import com.ald.fanbei.api.common.enums.PushEdspayResult;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.RetryEventType;
 import com.ald.fanbei.api.common.enums.RiskReviewStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -66,6 +71,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashPushDo;
@@ -76,6 +82,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -121,6 +128,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfAssetSideInfoService afAssetSideInfoService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -481,7 +494,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
 				//推送数据给钱包
-				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush2", JSONObject.toJSONString(map));
+				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
 				logger.info("borrowCashCurPush request  = {}, response = {}", JSONObject.toJSONString(map), respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
@@ -725,6 +738,19 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						afBorrowCashPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
 						afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowCashDo.getRid());
+						// 打款成功，更新借款状态、可用额度等信息
+						try {
+							BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
+							afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
+						} catch (Exception e) {
+							logger.error("updateAuAmountByRid is fail;msg=" + e);
+						}
+						// 减少额度，包括搭售商品借款 
+						afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
+						// 增加日志
+						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
+								borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
+						afUserAccountLogDao.addUserAccountLog(accountLog);
 						afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 						// FIXME 查询是否有订单，查询订单状态
 						final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
