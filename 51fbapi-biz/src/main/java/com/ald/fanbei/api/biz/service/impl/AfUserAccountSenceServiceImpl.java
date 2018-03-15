@@ -15,6 +15,7 @@ import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
 /**
@@ -128,7 +129,6 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			afUserAccountSenceDao.updateUsedAmount(scene.getName(), userId, amount);
 		}
     	afUserAccountSenceDao.updateUsedAmount(SceneType.LOAN_TOTAL.getName(), userId, amount);
-    	
 	}
 
 	@Override
@@ -154,19 +154,31 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
 			maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
 		}else {
-			auAmount = afUserAccountDao.getUserAccountInfoByUserId(userId).getAuAmount();
-    		AfUserAccountSenceDo senceDo = new AfUserAccountSenceDo();
-    		senceDo.setScene(SceneType.LOAN_TOTAL.getName());
-    		senceDo.setAuAmount(auAmount);
-    		senceDo.setUsedAmount(BigDecimal.ZERO);
-    		senceDo.setUserId(userId);
-    		senceDo.setGmtCreate(new Date());
-    		afUserAccountSenceDao.saveRecord(senceDo);
-			
 			maxPermitQuota = auAmount.compareTo(cfgAmount) > 0? cfgAmount:auAmount ;
 		}
 
 		return maxPermitQuota;
+	}
+	
+	@Override
+	public AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo) {
+		AfUserAccountSenceDo totalScene = new AfUserAccountSenceDo();
+		totalScene.setScene(SceneType.LOAN_TOTAL.getName());
+		totalScene.setAuAmount(accInfo.getAuAmount());
+		totalScene.setUsedAmount(accInfo.getUsedAmount());
+		totalScene.setUserId(accInfo.getUserId());
+		totalScene.setGmtCreate(new Date());
+		afUserAccountSenceDao.saveRecord(totalScene);
+		return totalScene;
+	}
+	
+	@Override
+	public AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo) {
+		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), accInfo.getUserId());
+		if(totalScene == null) {
+			totalScene = initTotalLoan(accInfo);
+		}
+		return totalScene;
 	}
 
 	@Override
