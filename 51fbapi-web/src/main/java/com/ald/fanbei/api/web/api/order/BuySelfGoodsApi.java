@@ -265,8 +265,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 				// ------------------------------------begin mqp doubleEggs------------------------------------
 				//first to check if this goods is special goods
 				List<AfGoodsDoubleEggsDo> list = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				logger.info("mqpCheck goodsId = {},list = {}",goodsId ,list.size());
+				
 				if (CollectionUtil.isNotEmpty(list)) {
 					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
+					logger.info("mqpCheck goodsId = {},doublegoodsId = {}",goodsId ,doubleEggsId);
 					if(doubleEggsId != null){
 						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
 					}else{
