@@ -66,11 +66,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 //			throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 //		}
 	
-		if (StringUtils.isBlank(source)) {
-			logger.error("getUserShareInfo source can't be empty");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-		
+//		if (StringUtils.isBlank(source)) {
+//			logger.error("getUserShareInfo source can't be empty");
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+//		}
+//		
 		//查询配置信息，如果不存在，返回 默认类型URL;
 		AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
 		List<AfResourceDo>   resourceList =   afResourceService.getConfigsByTypesAndSecType(Constants.USER_SHARE_INFO_CONFIGURE, source);
@@ -154,7 +154,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		 }
 		 
 		 //更换的个性配置
-		 ///////////////////////////////////////////////////////////
+		
 		 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
 			    try{
 				List<JSONObject>   list =  JSONObject.parseArray(afResource.getValue1(), JSONObject.class);
@@ -166,6 +166,9 @@ public class GetUserShareInfoApi implements ApiHandle {
 				        doChangeImage(userId);
 				         changeImage = "Y";
 				}
+				if("noChange".equals(image)){
+			         changeImage = "Y";
+			     }
 			     }
 			    }catch(Exception e){
 				 logger.error("getUserShareInfoApi value1 error  e = "+ e);
