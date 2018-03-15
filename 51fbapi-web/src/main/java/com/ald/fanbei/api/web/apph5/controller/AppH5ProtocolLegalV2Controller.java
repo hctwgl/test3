@@ -719,8 +719,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		afContractPdfDo.setTypeId(borrowId);
 		afContractPdfDo.setType(type);
 		afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
-		if (afContractPdfDo != null && afContractPdfDo.getUserSealId() != null) {
-			AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
+		if (afContractPdfDo != null ) {
 			List<AfContractPdfEdspaySealDto> edspaySealDoList = afContractPdfEdspaySealDao.getByPDFId(afContractPdfDo.getId());
 			if (edspaySealDoList.size() <= 0){
 				return;
@@ -735,9 +734,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				String cardId = eds.getEdspayUserCardId().substring(0,10);
 				eds.setEdspayUserCardId(cardId+"*********");
 			}
-			model.put("edspayUserCardId", afUserSealDo.getEdspayUserCardId());
-			model.put("edspayUserName", afUserSealDo.getUserName());
-			model.put("secondSeal", afUserSealDo.getUserSeal());
 			model.put("edspaySealDoList", edspaySealDoList);
 		}
 	}
