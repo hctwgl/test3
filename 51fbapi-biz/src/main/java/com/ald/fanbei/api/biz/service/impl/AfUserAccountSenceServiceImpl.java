@@ -154,6 +154,7 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 			maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0? totalUsableAmount:auAmount ;
 			maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0? cfgAmount:maxPermitQuota ;
 		}else {
+			auAmount = afUserAccountDao.getUserAccountInfoByUserId(userId).getAuAmount();
     		AfUserAccountSenceDo senceDo = new AfUserAccountSenceDo();
     		senceDo.setScene(SceneType.LOAN_TOTAL.getName());
     		senceDo.setAuAmount(auAmount);
