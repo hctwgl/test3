@@ -30,6 +30,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
@@ -233,7 +234,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 
 		//———————mqp doubleEggs add function———————
 		List<AfGoodsDoubleEggsDo> doubleEggsDos = afGoodsDoubleEggsService.getByGoodsId(goodsId);
-		if(doubleEggsDos != null){
+		if(CollectionUtil.isNotEmpty(doubleEggsDos)){
 			//不使用优惠券
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("couponList", null);
