@@ -54,6 +54,8 @@ import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
@@ -334,15 +336,19 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				null);
 		
 		tarLoanDo.setRiskNo(verifyBo.getOrderNo());
+		tarLoanDo.setReviewDetails(verifyBo.getMsg());
 		tarLoanDo.setGmtReview(new Date());
-		if(verifyBo.isSuccess()) {
+		
+		if (afUserAuthService.passWhiteList(bo.userName)) {
+		    tarLoanDo.setReviewStatus(AfLoanReviewStatus.AGREE.name());
+		    tarLoanDo.setReviewDetails("White List Direct Pass!");
+		    afLoanDao.updateById(tarLoanDo);
+		} else if(verifyBo.isPassWeakRisk()) {
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.AGREE.name());
-			tarLoanDo.setReviewDetails("");
 			afLoanDao.updateById(tarLoanDo);
-		}else {
+		} else {
 			tarLoanDo.setStatus(AfLoanStatus.CLOSED.name());
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.REFUSE.name());
-			tarLoanDo.setReviewDetails(verifyBo.getMsg());
 			afLoanDao.updateById(tarLoanDo);
 			//审核失败
 			jpushService.dealBorrowCashApplyFail(bo.userName, new Date());
