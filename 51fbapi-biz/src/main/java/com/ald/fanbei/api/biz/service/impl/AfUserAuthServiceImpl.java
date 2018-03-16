@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,11 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -718,5 +722,24 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean passWhiteList(String userName) {
+		List<String> whiteIdsList = new ArrayList<String>();
+		
+		AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		if (whiteListInfo != null) {
+		    whiteIdsList = CollectionConverterUtil.convertToListFromArray(
+		        whiteListInfo.getValue3().split(","),
+		        new Converter<String, String>() {
+		            @Override
+		            public String convert(String source) {
+		                return source.trim();
+		            }
+		        });
+		}
+		
+		return whiteIdsList.contains(userName);
 	}
 }

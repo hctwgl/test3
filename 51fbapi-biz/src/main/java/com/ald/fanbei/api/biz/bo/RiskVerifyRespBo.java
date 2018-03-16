@@ -3,7 +3,11 @@ package com.ald.fanbei.api.biz.bo;
 import java.math.BigDecimal;
 
 public class RiskVerifyRespBo extends RiskRespBo {
-
+	
+	public static final String RISK_SUCC_CODE = "10";
+	
+	private boolean isPassWeakRisk;
+	
 	private String result;
 
 	private String data;
@@ -114,6 +118,12 @@ public class RiskVerifyRespBo extends RiskRespBo {
 	@Override
 	public String toString() {
 		return "RiskVerifyRespBo [result=" + result + ", data=" + data + ", orderNo=" + orderNo + ", consumerNo=" + consumerNo + ", virtualCode=" + virtualCode + ", virtualQuota=" + virtualQuota + ", rejectCode=" + rejectCode + ", borrowNo=" + borrowNo + "]";
+	}
+	public boolean isPassWeakRisk() {
+		return isPassWeakRisk;
+	}
+	public void setPassWeakRisk(boolean isPassWeakRisk) {
+		this.isPassWeakRisk = isPassWeakRisk;
 	}
 
 }
