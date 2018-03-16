@@ -232,8 +232,8 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		}
 
 		//———————mqp doubleEggs add function———————
-		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
-		if(doubleEggsDo != null){
+		List<AfGoodsDoubleEggsDo> doubleEggsDos = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+		if(doubleEggsDos != null){
 			//不使用优惠券
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("couponList", null);
@@ -244,7 +244,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		}
 		//———————end mqp doubleEggs add function———————
 
-		// 双十二秒杀新增逻辑+++++++++++++>
+/*		// 双十二秒杀新增逻辑+++++++++++++>
 		if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0 || afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){
 			//是双十二秒杀活动商品，不使用优惠券
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -255,7 +255,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 			return resp;
 		}
 		// +++++++++++++++++++++++++<
-		
+*/		
 		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		
 		// 查询商品是否在H5活动中
