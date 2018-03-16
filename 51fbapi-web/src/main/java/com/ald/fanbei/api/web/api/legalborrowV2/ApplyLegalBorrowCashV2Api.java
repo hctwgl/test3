@@ -210,6 +210,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 							}
 						});
 				}
+				Date currDate = new Date();
 				if((verifyBo.isSuccess()&&StringUtils.equals("10", verifyBo.getResult()))||whiteIdsList.contains(afUserDo.getUserName())) {
 					//风控审核通过,根据开关判断是否推送钱包打款
 					Boolean flag=true;
@@ -317,7 +318,6 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						}
 						//老ups逻辑
 						final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-						Date currDate = new Date();
 						delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
 						jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 						String bankNumber = mainCard.getCardNumber();
@@ -347,7 +347,6 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 								applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 								return "success";
 							}
-
 						});
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
@@ -373,6 +372,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+					jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
 				}
 				return resp;
 			} catch (Exception e) {

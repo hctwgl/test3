@@ -804,7 +804,21 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	
 	public int queryEdspayApiHandle(String orderNo) {
 		try {
+			
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
+			// 打款成功，更新借款状态、可用额度等信息
+			try {
+				BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
+				afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
+			} catch (Exception e) {
+				logger.error("updateAuAmountByRid is fail;msg=" + e);
+			}
+			// 减少额度，包括搭售商品借款 
+			afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
+			// 增加日志
+			AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
+					borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
+			afUserAccountLogDao.addUserAccountLog(accountLog);
 			if (borrowCashDo!=null) {
 				//现金贷
 				borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
