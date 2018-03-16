@@ -267,7 +267,7 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                 couponInfo.setIsGlobal(0);// '是否为全场通用券,0表示全场券,1表示活动券'
                 couponInfo.setShopUrl("");
                 couponInfo.setExpiryType("R");
-                couponInfo.setUseRange("EXCHANGE");
+                couponInfo.setUseRange("");
                 afCouponDao.addCoupon(couponInfo);
                 Long couponId = couponInfo.getRid();
                 //将券分配给当前兑换用户
