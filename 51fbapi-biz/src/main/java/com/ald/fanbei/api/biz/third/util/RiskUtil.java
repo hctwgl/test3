@@ -708,6 +708,10 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
+		boolean isblack = afResourceService.getBlackList();
+		if (isblack){
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -811,6 +815,8 @@ public class RiskUtil extends AbstractThird {
 			String result = dataObj.getString("result");
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
+			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) { riskResp.setPassWeakRisk(true); }
+			else {riskResp.setPassWeakRisk(false);}
 			riskResp.setConsumerNo(consumerNo);
 			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
 			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));

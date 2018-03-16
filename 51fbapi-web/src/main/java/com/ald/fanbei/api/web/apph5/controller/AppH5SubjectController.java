@@ -57,6 +57,20 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+
+import com.ald.fanbei.api.biz.service.AfModelH5Service;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfModelH5Do;
+
+
+
+
+
+
+
+
  /* 
  *@类现描述：会场相关接口
  *@author 江荣波 2017年6月3日 下午5:56:53
@@ -98,6 +112,10 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfUserCouponService afUserCouponService;
+	
+	@Resource
+	AfModelH5Service afModelH5Service;
+
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

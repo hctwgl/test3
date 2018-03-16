@@ -561,7 +561,7 @@ public class AppH5UserContorler extends BaseController {
             }
 
             String realCode = smsDo.getVerifyCode();
-            /*if (!StringUtils.equals(verifyCode, realCode)) {
+            if (!StringUtils.equals(verifyCode, realCode)) {
                 logger.error("verifyCode is invalid");
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null);
                 return resp.toString();
@@ -576,7 +576,7 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null);
                 return resp.toString();
 
-            }*/
+            }
             try {
                 tongdunUtil.getPromotionResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {

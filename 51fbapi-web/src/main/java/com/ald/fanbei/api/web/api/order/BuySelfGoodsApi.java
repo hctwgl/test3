@@ -49,6 +49,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -262,18 +263,29 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 				
 				// ------------------------------------begin mqp doubleEggs------------------------------------
-				if(afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){
-					doubleEggsGoodsCheck(userId, goodsId,count);
+				//first to check if this goods is special goods
+				List<AfGoodsDoubleEggsDo> list = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				logger.info("mqpCheck goodsId = {},list = {}",goodsId ,list.size());
+				
+				if (CollectionUtil.isNotEmpty(list)) {
+					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
+					logger.info("mqpCheck goodsId = {},doublegoodsId = {}",goodsId ,doubleEggsId);
+					if(doubleEggsId != null){
+						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+					}else{
+						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
+					}
 				}
+				
 				// ------------------------------------end mqp doubleEggs------------------------------------
 
-				// 双十二秒杀新增逻辑+++++++++++++>
+	/*			// 双十二秒杀新增逻辑+++++++++++++>
 				if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0){
 					//是双十二秒杀商品
 					double12GoodsCheck(userId, goodsId,count);
 				}
 				// +++++++++++++++++++++++++<
-				
+*/				
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -420,6 +432,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
+		
+
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
 		if (!fromCashier) {
@@ -501,7 +515,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 	 * @author yanghailong
 	 * @data  2017年11月21日
 	 */
-	private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
+	/*private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
 		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
@@ -546,7 +560,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			bizCacheUtil.delCache(key);
 		}
 		
-	}
+	}*/
 	
 	/**
 	 * 
@@ -560,17 +574,21 @@ public class BuySelfGoodsApi implements ApiHandle {
 	* @return void   
 	* @throws
 	 */
-	private void doubleEggsGoodsCheck(Long userId, Long goodsId, Integer count){
+	private void doubleEggsGoodsCheck(Long userId, Long goodsId, Integer count,Long doubleEggsId){
 		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
-				if (count != 1||afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
-					//报错提示只能买一件商品
+				
+				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
+				String key1 = Constants.CACHKEY_DOUBLE_USER +userId+doubleEggsId;
+				Integer value = (Integer)bizCacheUtil.getObject(key1);
+				if (count != 1 || value != null) {
 					throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 				}
+				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
 				
-				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(doubleEggsId);
 				if(doubleEggsDo != null){
 					if (doubleEggsDo.getStartTime().after(new Date())) {
 						//before start
@@ -582,9 +600,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_EXPIRE);
 					}
 					
+					Integer alreadyCount = 0;
+					alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsId);
+					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
+					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-alreadyCount);//秒杀商品余量
 					if(goodsDouble12Count <= 0){
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
@@ -592,6 +613,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 					
 	            	//---->update 更新 已被秒杀的商品数量（count+1）
 	            	afGoodsDoubleEggsService.updateCountById(goodsId);
+	            	
+	            	//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
+	            	bizCacheUtil.saveObject(key1, 1, Constants.SECOND_OF_ONE_MONTH);
 		            
 				}
 			}
