@@ -3,10 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +35,22 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("getDrainageBannerListApi")
 public class GetDrainageBannerListApi implements ApiHandle {
-
     @Resource
     AfResourceService afResourceService;
+
+    /**
+     *
+     营销管理】-【轮播管理】
+     1.BORROW_MONEY_BANNER  借钱还款结果页
+     2.INSTALLMENT_PAYMENT_BANNER 分期账单还款结果页
+     3.BORROW_FINISH_BANNER 借款完成页
+     4.BILLING_DETAIL_BANNER 账单详情页
+
+     【营销管理】-【专场管理】
+     5.NO_PAYMENT_BANNER 未出账单列表页
+     6.YES_PAYMENT_BANNER 已出账单列表页
+     */
+    private final String[] RESOURCE_TYPES = new String[]{"BORROW_MONEY_BANNER","INSTALLMENT_PAYMENT_BANNER","BORROW_FINISH_BANNER","BILLING_DETAIL_BANNER","NO_PAYMENT_BANNER","YES_PAYMENT_BANNER"};
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -50,7 +60,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
         Integer appVersion = NumberUtil.objToInteger(requestDataVo.getSystem().get("appVersion"));
         logger.info("getDrainageBannerListApi and type = {}", type);
         List<Object> resultList = new ArrayList<Object>();
-        if(appVersion >= 408) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)
+        if(appVersion >= 408 && Arrays.asList(RESOURCE_TYPES).contains(resourceType)) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)
             boolean isIos = requestDataVo.getId().startsWith("i");
             String from = ObjectUtils.toString(requestDataVo.getParams().get("from"));// 1:banner
             resultList = doNewProcess(type,resourceType,isIos,from);
