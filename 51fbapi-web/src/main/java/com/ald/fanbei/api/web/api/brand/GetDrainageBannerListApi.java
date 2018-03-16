@@ -68,7 +68,6 @@ public class GetDrainageBannerListApi implements ApiHandle {
      * @return
      */
     private List<Object> doNewProcess(String type, String resourceType,boolean isIos,String from){
-
         List<Object> resultList = new ArrayList<Object>();
         List<AfResourceDo> bannerList = new ArrayList<AfResourceDo>();
         if(from.equals(ResourceFromEnum.SPECIAL.getCode())){//专场
@@ -151,6 +150,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
                     data.put("needLogin", json.get("needLogin"));
                     data.put("paramDic", json.getJSONObject("paramDic"));
                     data.put("jumpType", json.get("jumpType"));
+                    data.put("needParam", json.get("needParam"));
                     if (isIos) {
                         data.put("className", json.getString("classNameIOS"));
                     }else{
