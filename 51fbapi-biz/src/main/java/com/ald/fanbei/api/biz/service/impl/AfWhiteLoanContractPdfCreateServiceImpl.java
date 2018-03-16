@@ -395,8 +395,8 @@ public class AfWhiteLoanContractPdfCreateServiceImpl implements AfWhiteLoanContr
             int year = c.get(Calendar.YEAR);
             String time = year + "年" + month + "月" + day + "日";
             map.put("time", time);// 签署日期
-            map.put("totalServiceFee", afLoanDo.getTotalServiceFee().multiply(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_UP));//手续费
-            map.put("overdueRate", afLoanDo.getOverdueRate().multiply(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_UP));//逾期费率
+            map.put("totalServiceFee", afLoanDo.getTotalServiceFee().setScale(2,BigDecimal.ROUND_HALF_UP));//手续费
+            map.put("overdueRate", afLoanDo.getOverdueRate().multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(360),2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP));//逾期费率
             map.put("serviceRate", afLoanDo.getServiceRate().multiply(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_UP));//手续费率
             map.put("interestRate", afLoanDo.getInterestRate().multiply(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_UP));//借钱利率
             secondSeal(map, null, afUserDo, accountDo);
