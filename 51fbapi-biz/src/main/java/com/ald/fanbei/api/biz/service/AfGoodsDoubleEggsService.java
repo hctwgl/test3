@@ -17,7 +17,7 @@ import com.ald.fanbei.api.dal.domain.GoodsForDate;
  */
 public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEggsDo, Long>{
 
-	AfGoodsDoubleEggsDo getByGoodsId(Long goodsId);
+	List<AfGoodsDoubleEggsDo> getByGoodsId(Long goodsId);
 	AfGoodsDoubleEggsDo getByDoubleGoodsId(Long goodsId);
 	
 	List<Date> getAvalibleDateList(String beginningDate);
@@ -30,5 +30,7 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 	boolean shouldOnlyAp(Long goodsId);
 
 	List<GoodsForDate> getGoodsListByActivityId(Long activityId);
+	Long getCurrentDoubleGoodsId(Long goodsId);
+	Integer getAlreadyCount(Long goodsId);
 
 }

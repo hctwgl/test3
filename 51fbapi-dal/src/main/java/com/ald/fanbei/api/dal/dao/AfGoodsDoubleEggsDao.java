@@ -19,7 +19,7 @@ import com.ald.fanbei.api.dal.domain.GoodsForDate;
  */
 public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long> {
 
-	AfGoodsDoubleEggsDo getByGoodsId(@Param("goodsId")Long goodsId);
+	List<AfGoodsDoubleEggsDo> getByGoodsId(@Param("goodsId")Long goodsId);
 	AfGoodsDoubleEggsDo getByDoubleGoodsId(@Param("doubleGoodsId")Long doubleGoodsId);
 	
 
@@ -34,6 +34,8 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 	int shouldOnlyAp(@Param("goodsId")Long goodsId);
 
 	List<GoodsForDate> getGoodsListByActivityId(@Param("activityId")Long activityId);
+	Long getCurrentDoubleGoodsId(@Param("goodsId")Long goodsId);
+	Integer getAlreadyCount(@Param("goodsId")Long goodsId);
 
 
 }

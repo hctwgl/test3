@@ -96,10 +96,10 @@ public class GetUserAuthStatusApi implements H5Handle {
 			fundStatus = "P";
 		}
 		if (StringUtils.equals("Y", jinpoStatus) && nowDate.after(DateUtil.addDays(gmtJinpo, insuranceDay))) {
-			fundStatus = "P";
+			jinpoStatus = "P";
 		}
 		if (StringUtils.equals("Y", onlinebankStatus) && nowDate.after(DateUtil.addDays(gmtOnlinebank, bankDay))) {
-			fundStatus = "P";
+			onlinebankStatus = "P";
 		}
 
 		data.put("fundStatus", fundStatus);

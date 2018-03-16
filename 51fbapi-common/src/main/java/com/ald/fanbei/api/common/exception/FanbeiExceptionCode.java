@@ -7,8 +7,8 @@ package com.ald.fanbei.api.common.exception;
  */
 public enum FanbeiExceptionCode {
 
-	SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-
+    SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
+	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
 
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
@@ -347,6 +347,7 @@ public enum FanbeiExceptionCode {
     ONLY_ONE_DOUBLE12GOODS_ACCEPTED("ONLY_ONE_DOUBLE12GOODS_ACCEPTED",4035,"only one double12Goods could be accepted","亲，每个账号限购1件，不要太贪心哦"),
     DOUBLE_EGGS_EXPIRE("DOUBLE_EGGS_EXPIRE",4038,"double eggs goods expired","亲，已经过了秒杀时间哦，请准备下一场秒杀吧！"),
     DOUBLE_EGGS_WITHOUT_START("DOUBLE_EGGS_WITHOUT_START",4039,"double eggs goods has not started yet","亲，此商品是秒杀商品，还未开始哟！"),
+    DOUBLE_EGGS_LIMIT_TIME("DOUBLE_EGGS_LIMIT_TIME",4040,"double eggs goods has limit time","亲，此商品是秒杀商品，只能指定时间购买哟！"),
     NO_DOUBLE12GOODS_ACCEPTED("NO_DOUBLE12GOODS_ACCEPTED",4036,"only one double12Goods could be accepted","秒杀商品已售空"),
     DOUBLE12ORDER_ERROR("DOUBLE12ORDER_ERROR",4037,"double12 activity order error","秒杀商品下单异常"),
     HAVE_BOUGHT_GOODS("HAVE_BOUGHT_GOODS",4039,"have bought goods","您已经购物过商品了哦"),
@@ -399,7 +400,7 @@ public enum FanbeiExceptionCode {
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 	//公信宝认证
     AUTH_GXB_GETTOKEN_ERROR("AUTH_GXB_GETTOKEN_ERROR",7008,"auth gxb gettoken error","认证公信宝获取token失败"),
-	
+
 
 	//用户现金流不存在
 

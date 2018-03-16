@@ -40,7 +40,7 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 	}
 
 		@Override
-		public AfGoodsDoubleEggsDo getByGoodsId(Long goodsId) {
+		public List<AfGoodsDoubleEggsDo> getByGoodsId(Long goodsId) {
 			
 			return afGoodsDoubleEggsDao.getByGoodsId(goodsId);
 		}
@@ -85,6 +85,17 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		public List<GoodsForDate> getGoodsListByActivityId(Long activityId) {
 			
 			return afGoodsDoubleEggsDao.getGoodsListByActivityId(activityId);
+		}
+
+		@Override
+		public Long getCurrentDoubleGoodsId(Long goodsId) {
+		
+			return afGoodsDoubleEggsDao.getCurrentDoubleGoodsId(goodsId);
+		}
+
+		@Override
+		public Integer getAlreadyCount(Long goodsId) {
+			return afGoodsDoubleEggsDao.getAlreadyCount(goodsId);
 		}
 
 

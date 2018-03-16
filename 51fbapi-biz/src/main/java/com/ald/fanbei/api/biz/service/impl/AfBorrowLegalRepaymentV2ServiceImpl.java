@@ -185,7 +185,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
+		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
 		
 	}
 	
