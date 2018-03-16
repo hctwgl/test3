@@ -127,4 +127,140 @@ public class LeaseOrderDto {
     public void setRichieAmount(BigDecimal richieAmount) {
         this.richieAmount = richieAmount;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getClosedReason() {
+        return closedReason;
+    }
+
+    public void setClosedReason(String closedReason) {
+        this.closedReason = closedReason;
+    }
+
+    public String getConsignee() {
+        return consignee;
+    }
+
+    public void setConsignee(String consignee) {
+        this.consignee = consignee;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getConsigneeMobile() {
+        return consigneeMobile;
+    }
+
+    public void setConsigneeMobile(String consigneeMobile) {
+        this.consigneeMobile = consigneeMobile;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public String getGoodsIcon() {
+        return goodsIcon;
+    }
+
+    public void setGoodsIcon(String goodsIcon) {
+        this.goodsIcon = goodsIcon;
+    }
+
+    public BigDecimal getPriceAmount() {
+        return priceAmount;
+    }
+
+    public void setPriceAmount(BigDecimal priceAmount) {
+        this.priceAmount = priceAmount;
+    }
+
+    public String getGoodsPriceName() {
+        return goodsPriceName;
+    }
+
+    public void setGoodsPriceName(String goodsPriceName) {
+        this.goodsPriceName = goodsPriceName;
+    }
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Date getGmtPayEnd() {
+        return gmtPayEnd;
+    }
+
+    public void setGmtPayEnd(Date gmtPayEnd) {
+        this.gmtPayEnd = gmtPayEnd;
+    }
+
+    public String getLogistics() {
+        return logistics;
+    }
+
+    public void setLogistics(String logistics) {
+        this.logistics = logistics;
+    }
+
+    public Date getLogisticsTime() {
+        return logisticsTime;
+    }
+
+    public void setLogisticsTime(Date logisticsTime) {
+        this.logisticsTime = logisticsTime;
+    }
 }

@@ -33,7 +33,7 @@
 
     <resultMap id="leaseResultMap" type="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
 		<id column="id" property="rid" jdbcType="BIGINT" />
-        <collection select="getByGoodsId" property="goodsPrice" column="id" ofType="AfGoodsPriceDo">
+        <collection select="getByGoodsId" property="goodsPrice" column="rid" ofType="AfGoodsPriceDo">
         </collection>
     </resultMap>
 
@@ -442,7 +442,7 @@
 		SELECT
 		lease_param,lease_amount
 		from af_goods_price
-		WHERE goods_id=#{id}
+		WHERE goods_id=#{rid}
 	</select>
 
 </mapper>

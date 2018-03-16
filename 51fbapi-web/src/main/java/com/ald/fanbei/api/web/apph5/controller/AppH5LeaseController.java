@@ -110,7 +110,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁首页商品
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
     public String getHomeLeaseGoods(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -133,12 +133,12 @@ public class AppH5LeaseController extends BaseController {
                         if(afGoodsPriceDo.getLeaseParam() != null && afGoodsPriceDo.getLeaseParam() != ""){
                             if(priceAmount.compareTo(afGoodsPriceDo.getLeaseAmount())>0 || priceAmount.compareTo(new BigDecimal(0))==0){
                                 priceAmount = afGoodsPriceDo.getLeaseAmount();
-                            }
-                            JSONArray leaseParam = JSON.parseArray(afGoodsPriceDo.getLeaseParam());
-                            for (int i = 0;i < leaseParam.size(); i++){
-                                JSONObject obj = leaseParam.getJSONObject(i);
-                                if(nperAmount.compareTo(obj.getBigDecimal("monthlyRent"))>0 || nperAmount.compareTo(new BigDecimal(0))==0){
-                                    nperAmount = obj.getBigDecimal("monthlyRent");
+                                JSONArray leaseParam = JSON.parseArray(afGoodsPriceDo.getLeaseParam());
+                                for (int i = 0;i < leaseParam.size(); i++){
+                                    JSONObject obj = leaseParam.getJSONObject(i);
+                                    if(nperAmount.compareTo(obj.getBigDecimal("monthlyRent"))>0 || nperAmount.compareTo(new BigDecimal(0))==0){
+                                        nperAmount = obj.getBigDecimal("monthlyRent");
+                                    }
                                 }
                             }
                         }
