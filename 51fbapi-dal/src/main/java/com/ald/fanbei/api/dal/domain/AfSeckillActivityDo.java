@@ -80,7 +80,7 @@ import java.math.BigDecimal;
     /**
      * 折扣类型，1表示折扣，2表示立减
      */
-    private Integer discounttype;
+    private Integer discountType;
 
     /**
      * 折扣
@@ -90,7 +90,7 @@ import java.math.BigDecimal;
     /**
      * 立减价格
      */
-    private BigDecimal subtractprice;
+    private BigDecimal subtractPrice;
 
     /**
      * 添加者
@@ -119,7 +119,7 @@ import java.math.BigDecimal;
     /**
      * 设置主键Id
      * 
-     * @param 要设置的主键Id
+     * @param 
      */
     public void setRid(Long rid){
       this.rid = rid;
@@ -329,17 +329,17 @@ import java.math.BigDecimal;
      *
      * @return 折扣类型，1表示折扣，2表示立减
      */
-    public Integer getDiscounttype(){
-      return discounttype;
+    public Integer getDiscountType(){
+      return discountType;
     }
 
     /**
      * 设置折扣类型，1表示折扣，2表示立减
      * 
-     * @param discounttype 要设置的折扣类型，1表示折扣，2表示立减
+     * @param discountType 要设置的折扣类型，1表示折扣，2表示立减
      */
-    public void setDiscounttype(Integer discounttype){
-      this.discounttype = discounttype;
+    public void setDiscountType(Integer discountType){
+      this.discountType = discountType;
     }
 
     /**
@@ -365,17 +365,17 @@ import java.math.BigDecimal;
      *
      * @return 立减价格
      */
-    public BigDecimal getSubtractprice(){
-      return subtractprice;
+    public BigDecimal getSubtractPrice(){
+      return subtractPrice;
     }
 
     /**
      * 设置立减价格
      * 
-     * @param subtractprice 要设置的立减价格
+     * @param subtractPrice 要设置的立减价格
      */
-    public void setSubtractprice(BigDecimal subtractprice){
-      this.subtractprice = subtractprice;
+    public void setSubtractPrice(BigDecimal subtractPrice){
+      this.subtractPrice = subtractPrice;
     }
 
     /**

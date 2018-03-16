@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end,bg_color,goods_count,status,is_disable,discounttype,discount,subtractprice,creator,modifier
+        id rid,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end,bg_color,goods_count,status,is_disable,discount_type,discount,subtract_price,creator,modifier
     </sql>
 
 	<select id="getActivityByGoodsId" resultType="AfSeckillActivityDto" parameterType="java.lang.Long">
