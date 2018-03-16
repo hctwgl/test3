@@ -60,7 +60,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
         Integer appVersion = NumberUtil.objToInteger(requestDataVo.getSystem().get("appVersion"));
         logger.info("getDrainageBannerListApi and type = {}", type);
         List<Object> resultList = new ArrayList<Object>();
-        if(appVersion >= 408 && Arrays.asList(RESOURCE_TYPES).contains(resourceType)) {//新逻辑，轮播图和新专场(未出账单列表页和已出账单列表页)
+        if(appVersion >= 408 && Arrays.asList(RESOURCE_TYPES).contains(resourceType)) {//新逻辑，新轮播图和新专场(未出账单列表页和已出账单列表页)
             boolean isIos = requestDataVo.getId().startsWith("i");
             String from = ObjectUtils.toString(requestDataVo.getParams().get("from"));// 1:banner
             resultList = doNewProcess(type,resourceType,isIos,from);
