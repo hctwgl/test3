@@ -409,9 +409,10 @@ public enum FanbeiExceptionCode {
     //有过期数据
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
+    TEMPORARY_AMOUNT_SWITH_EMPTY("TEMPORARY_AMOUNT_SWITH_EMPTY",7010,"TEMPORARY_AMOUNT_SWITH_EMPTY","临时额度开关没有设置"),
 
     SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过");
-
+	
 
     /**
      * 错误码
