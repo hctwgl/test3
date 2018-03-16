@@ -174,6 +174,8 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		if (userAccount == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
+		
+		afUserAccountSenceService.initTotalLoanSelection(userAccount);	// 白领贷数据同步 2018.3.15 - zjf
 
 		// 获取后台配置的最大金额和最小金额
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL_NEW);

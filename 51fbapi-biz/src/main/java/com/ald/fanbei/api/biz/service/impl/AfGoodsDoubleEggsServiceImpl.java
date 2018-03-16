@@ -40,7 +40,7 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 	}
 
 		@Override
-		public AfGoodsDoubleEggsDo getByGoodsId(Long goodsId) {
+		public List<AfGoodsDoubleEggsDo> getByGoodsId(Long goodsId) {
 			
 			return afGoodsDoubleEggsDao.getByGoodsId(goodsId);
 		}
