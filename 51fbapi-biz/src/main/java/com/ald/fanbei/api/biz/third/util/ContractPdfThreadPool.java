@@ -62,6 +62,11 @@ public class ContractPdfThreadPool{
         service.execute(whiteLoanPlatformServiceProtocolTask);
     }
 
+    public void createGoodsInstalmentProtocolPdf(Long borrowId,String type,Long userId){
+        GoodsInstalmentProtocolTask goodsInstalmentProtocolTask = new GoodsInstalmentProtocolTask(borrowId,type,userId);
+        service.execute(goodsInstalmentProtocolTask);
+    }
+
     class ProtocolCashLoanTask implements Runnable {
         private Long borrowId;
         private BigDecimal borrowAmount;
@@ -108,6 +113,21 @@ public class ContractPdfThreadPool{
         @Override
         public void run() {
             afLegalContractPdfCreateServiceV2.platformServiceProtocol(borrowId, type, poundage, userId);
+        }
+    }
+
+    class GoodsInstalmentProtocolTask implements Runnable {
+        private Long borrowId;
+        private String type;
+        private Long userId;
+        public GoodsInstalmentProtocolTask(Long platformBorrowId,String borrowType,Long uId) {
+            borrowId = platformBorrowId;
+            type = borrowType;
+            userId = uId;
+        }
+        @Override
+        public void run() {
+            afLegalContractPdfCreateServiceV2.goodsInstalmentProtocol(borrowId, type, userId);
         }
     }
 

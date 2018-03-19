@@ -240,6 +240,8 @@ public interface AfResourceService {
 	AfResourceDo getWechatConfig();
 
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
+
+	int editResource(AfResourceDo assetPushResource);
 	
 	/**
 	 * 获取合规借钱相关的所有配置信息

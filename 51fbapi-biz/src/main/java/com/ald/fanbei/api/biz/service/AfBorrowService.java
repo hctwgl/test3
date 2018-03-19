@@ -322,4 +322,6 @@ public interface AfBorrowService {
 	 */
 	HashMap getUserSummary(Long userId);
 
+	AfBorrowDto getBorrowInfoById(Long borrowId);
+
 }
