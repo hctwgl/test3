@@ -601,6 +601,8 @@ public class StartCashierApi implements ApiHandle {
      */
     private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDto userDto, AfInterimAuDo afInterimAuDo) {
 	BigDecimal useableAmount = BigDecimal.ZERO;
+	
+	afInterimAuDo = afOrderService.getInterimAuDo(orderInfo);
 	// 判断商圈订单
 	if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 	    // 教育培训订单
@@ -612,7 +614,7 @@ public class StartCashierApi implements ApiHandle {
 	    }
         } else {    //线上分期订单
         	//线上分期订单
-            //mqp  add switch for different scene without TRADE
+         /*   //mqp  add switch for different scene without TRADE
             String orderType = orderInfo.getOrderType();
             String secOrderType = orderInfo.getSecType();
             
@@ -634,13 +636,13 @@ public class StartCashierApi implements ApiHandle {
 			}
             
             //end mqp add switch for different scene
-        	
+        	*/
         	
 	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
           
 	    if (afUserAccountSenceDo != null) {
 		// 额度判断
-                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && isSwitch.equals("Y")) {
+                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
                     //获取当前用户可用临时额度
                     BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                     useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);
