@@ -1327,7 +1327,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								if (StringUtil.isNotBlank(respBo.getRespCode())) {
 									// 模版数据map处理
 									Map<String, String> replaceMapData = new HashMap<String, String>();
-									replaceMapData.put("errorMsg",
                                     String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
                                     replaceMapData.put("errorMsg", errorMsg);
                                     try {
