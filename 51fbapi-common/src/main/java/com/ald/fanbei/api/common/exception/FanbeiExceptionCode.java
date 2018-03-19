@@ -10,7 +10,7 @@ public enum FanbeiExceptionCode {
     SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
-
+    RESUBMIT_ERROR("RESUBMIT_ERROR",11615,"RESUBMIT_ERROR","请勿重复确认收货"),
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
 
     VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
@@ -107,7 +107,7 @@ public enum FanbeiExceptionCode {
     USER_GET_SIGN_AWARD_ERROR("USER_GET_SIGN_AWARD_ERROR",1214,"user get sign award error ","签到奖励已领取"),
     USER_GET_TO_COUPON_CENTER("USER_GET_TO_COUPON_CENTER",1215,"user get coupon to my coupon center ","您已领取，可前往我的优惠券中查看~"),
     USER_SIGNIN_SUCCESS("USER_SIGNIN_SUCCESS", 1000, "success", "签到成功"),
-
+    REPLACE_MAIN_CARD_FAIL("REPLACE_MAIN_CARD_FAIL",1216,"replace main card fail","更换银行主副卡失败~"),
     // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
@@ -166,6 +166,7 @@ public enum FanbeiExceptionCode {
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
 
     UPS_REPEAT_NOTIFY("UPS_REPEAT_NOTIFY",1549,"ups repeat notify","重复UPS回调"),
+    COMPLETE_ORDER("COMPLETE_ORDER",1580,"complete order","确认收货"),
     UPS_AUTH_BF_SIGN_ERROR("UPS_AUTH_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
     UPS_AUTH_YSB_SIGN_ERROR("UPS_AUTH_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
     UPS_DELEGATE_PAY_ERROR("UPS_DELEGATE_PAY_ERROR",1552,"ups delegate pay error","单笔代付失败"),
@@ -410,7 +411,13 @@ public enum FanbeiExceptionCode {
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
 
-    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过");
+    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过"),
+	//paypwd wrong less than specific times
+	PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES",8003,"paypwd wrong less than specific times","支付密码错误，您还有x次机会！"),
+	//paypwd wrong more than specific times
+	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
+	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！");
+
 
 
     /**
@@ -470,4 +477,21 @@ public enum FanbeiExceptionCode {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 }

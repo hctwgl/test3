@@ -306,6 +306,11 @@ public class Constants {
 	public static final String RESERVATION_IPHONEX_COUPON_STATUS = "coupon_status_";
 	public static final String RESERVATION_IPHONEX_COUPON_ID = "coupon_id";
 	public static final String RESERVATION_IPHONEX_SUM_COUNT = "sum_coupon_count_";
+	
+	//wrong paypwd times and the previous wrong time.
+	public static final String CACHKEY_WRONG_INPUT_PAYPWD_TIMES = "wrong_input_paypwd_times";
+	public static final String CACHKEY_THE_LAST_WRONG_PAYPWD_TIME = "the_last_wrong_paypwd_time";
+	
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
@@ -393,6 +398,7 @@ public class Constants {
 	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
 	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
 	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "ala_apply_strong_risk_lock";
+	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "ala_apply_bld_risk_lock";
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
 	// 催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
@@ -457,6 +463,7 @@ public class Constants {
 	public static final int ONE_YEAY_DAYS = 360;
 	//返呗与资产方对接时的平台标识
 	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
+	  public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
 	  //资产方查询用户借款及逾期信息redis中的key前缀
 	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
 	  //资产包
@@ -465,6 +472,9 @@ public class Constants {
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+	  
+	  public static final String CACHEKEY_COMPLETEORDER_LOCK = "cachekey_completeorder_lock";
+	  public static final String CACHEKEY_COMPLETEORDER_LOCK_VALUE = "cachekey_completeorder_lock_value";
 	  
 	  //公信宝认证的密钥
 	  public static final String AUTH_GXB_APPID = "auth.gxb.appid";
@@ -478,11 +488,21 @@ public class Constants {
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
 	
+
+	public static final String ORDER_PAY_ORDER_ID = "order_pay_orderId:";
+
+	//resource 类型
+	public static final String USER_SHARE_INFO = "USER_SHARE_INFO";
+	
+	public static final String USER_SHARE_INFO_CONFIGURE = "USER_SHARE_INFO_CONFIGURE";
+	//resource 类型
+	public static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
+	
 	//轮播图
 	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
 
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
+
+
 }
-
-

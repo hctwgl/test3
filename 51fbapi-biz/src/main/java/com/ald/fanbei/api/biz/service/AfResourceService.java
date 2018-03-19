@@ -6,6 +6,7 @@ import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
@@ -239,6 +240,8 @@ public interface AfResourceService {
 	AfResourceDo getWechatConfig();
 
 	AfResourceDo getConfigByTypesAndValue(String type,String value);
+
+	int editResource(AfResourceDo assetPushResource);
 	
 	/**
 	 * 获取合规借钱相关的所有配置信息
@@ -255,4 +258,7 @@ public interface AfResourceService {
 	List<Object> getLoanHomeListByType();
 
 	List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType);
+	List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType);
+
+	List<AfResourceDo> getNewSpecialResource(String type);//获取新的专场信息(未出账单列表页|已出账单列表页)
 }

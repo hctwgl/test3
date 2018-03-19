@@ -29,6 +29,7 @@ public class FanbeiException extends RuntimeException {
     public FanbeiException(String message) {
         super(message);
         errorCode = FanbeiExceptionCode.SYSTEM_ERROR;
+        errorCode.setDesc(message);
     }
 
     /**
@@ -40,6 +41,7 @@ public class FanbeiException extends RuntimeException {
         super(message);
         this.dynamicMsg = dynamicMsg;
         errorCode = FanbeiExceptionCode.SYSTEM_ERROR;
+        errorCode.setDesc(message);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.util.EviDoc;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -58,27 +59,20 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     @Resource
     private ContractPdfThreadPool contractPdfThreadPool;
 
-    private static final String src = "F:/doc/";
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+        Long borrowId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"), 0l);
         String protocolCashType = ObjectUtils.toString(requestDataVo.getParams().get("protocolCashType"), "").toString();
-        if (null != protocolCashType && !"".equals(protocolCashType)) {
-            try {
-                /*if ("1".equals(protocolCashType)) {//借款协议
-                    protocolCashLoan(requestDataVo, resp);
-                } else if ("2".equals(protocolCashType)) {//分期服务协议
-                    protocolFenqiService(requestDataVo, resp);
-                } else if ("3".equals(protocolCashType)) {//续借协议
-                    protocolRenewal(requestDataVo, resp);
-                }*/
-                afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal(0, "jq2018020516234401769");
-//                contractPdfThreadPool.PlatformServiceProtocolPdf(3338754l, "SEVEN", BigDecimal.valueOf(33.6),13989455696l);
-            } catch (Exception e) {
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
-            }
+        String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
+        BigDecimal platformPoundage = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("platformPoundage"), BigDecimal.ZERO);
+        Long userId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("userId"), 0l);
+        logger.info("getBorrowCashProtocolApi = >{}",requestDataVo.getParams());
+        if ("4".equals(protocolCashType)){
+            contractPdfThreadPool.PlatformServiceProtocolPdf(borrowId, type, platformPoundage,userId);
         }
+
         return resp;
     }
 }

@@ -10,11 +10,13 @@ import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -86,6 +88,11 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 	@Override
 	public void updateSmartAddressScore(int smartAddressScore,long borrowId,String orderno) {
 		 afBorrowLegalOrderDao.updateSmartAddressScore(smartAddressScore, borrowId,orderno);
+	}
+
+	@Override
+	public AfBorrowLegalOrderDo getBorrowLegalOrderByBorrowId(Long borrowId) {
+		return afBorrowLegalOrderDao.getBorrowLegalOrderByBorrowId(borrowId);
 	}
 
 }

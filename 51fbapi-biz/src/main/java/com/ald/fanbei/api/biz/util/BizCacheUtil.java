@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.util;
 
+import io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -235,6 +237,27 @@ public class BizCacheUtil extends AbstractThird {
 		}
 	}
 
+	public Object getStringObject(final String key) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key)) {
+			return null;
+		}
+		try {
+			return redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Object doInRedis(RedisConnection connection) throws DataAccessException {
+					byte[] getResult = connection.get(redisTemplate.getStringSerializer().serialize(key));
+					if (getResult == null || getResult.length == 0) {
+						return null;
+					}
+					return new String(getResult);
+				}
+			});
+		} catch (Exception e) {
+			logger.error("getObject error", e);
+			return null;
+		}
+	}
+	
 	/**
 	 * 锁住某个key值，需要解锁时删除即可
 	 * 
@@ -666,7 +689,7 @@ public class BizCacheUtil extends AbstractThird {
 					return true;
 				}
 				if (i == times - 1) {
-					this.delCache(key);
+					return false;
 				}
 			}
 		} catch (Exception e) {

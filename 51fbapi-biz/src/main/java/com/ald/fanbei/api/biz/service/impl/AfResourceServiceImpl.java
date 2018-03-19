@@ -761,6 +761,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
 	}
 
+	@Override
+	public int editResource(AfResourceDo assetPushResource) {
+		return afResourceDao.editResource(assetPushResource);
+	}
 	public BorrowLegalCfgBean getBorrowLegalCfgInfo() {
 		List<AfResourceDo> borrowHomeConfigList = this.newSelectBorrowHomeConfigByAllTypes();
 		BorrowLegalCfgBean cfgBean = new BorrowLegalCfgBean();
@@ -843,5 +847,21 @@ public class AfResourceServiceImpl implements AfResourceService {
 
 		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
 	}
+	
+	public List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType) {
+	    // TODO Auto-generated method stub
+	    return afResourceDao.getConfigsListByTypesAndSecType(type,secType);
+	}	
+
+
+    /**
+     * 获取新的专场信息(未出账单列表页|已出账单列表页)
+     * @param type
+     * @return
+     */
+	@Override
+   public List<AfResourceDo> getNewSpecialResource(String type){
+        return afResourceDao.getNewSpecialResource(type);
+    }
 
 }

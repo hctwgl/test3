@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentServiceImpl.RepayBo;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
