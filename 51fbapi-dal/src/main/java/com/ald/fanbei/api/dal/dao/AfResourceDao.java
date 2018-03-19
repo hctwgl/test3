@@ -193,7 +193,12 @@ public interface AfResourceDao {
 	 */
 	AfResourceDo getConfigByTypesAndValue(@Param("type") String type, @Param("value")String value);
 
+	int editResource(AfResourceDo assetPushResource);
+	
 	AfResourceDo getConfigByType(@Param("type") String type);//根据类型获取单个配置信息
 
 	List<AfResourceDo> getFlowFlayerResourceConfig(@Param("type")String resourceType, @Param("secType")String secType);
+		List<AfResourceDo> getConfigsListByTypesAndSecType(@Param("type")String type,@Param("secType") String secType);
+
+	List<AfResourceDo> getNewSpecialResource(@Param("type") String type);//获取新的专场信息(未出账单列表页|已出账单列表页)
 }

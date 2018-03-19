@@ -1580,4 +1580,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	public Integer countNperRepaymentByBorrowId(Long rid) {
 		return afBorrowDao.countNperRepaymentByBorrowId(rid);
 	}
+	@Override
+	public AfBorrowDto getBorrowInfoById(Long borrowId) {
+		return afBorrowDao.getBorrowInfoById(borrowId);
+	}
 }

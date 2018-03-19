@@ -185,7 +185,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
+		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
 		
 	}
 	
@@ -350,7 +350,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
-					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+				    dealRepaymentFail(bo.tradeNo, "", true, errorMsg);
+				    throw new FanbeiException(errorMsg);
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}

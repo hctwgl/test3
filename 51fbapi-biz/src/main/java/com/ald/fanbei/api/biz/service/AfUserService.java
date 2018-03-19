@@ -96,4 +96,5 @@ public interface AfUserService {
 	 */
 	void checkPayPwd(String reqPayPwd, Long userId);
 	AfUserDto getUserInfoByUserId(Long userId);
+		Long convertUserNameToUserId(String userName);
 }

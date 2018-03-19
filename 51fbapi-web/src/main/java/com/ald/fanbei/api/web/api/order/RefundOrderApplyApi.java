@@ -151,12 +151,13 @@ public class RefundOrderApplyApi implements ApiHandle{
 			afAftersaleApplyService.saveRecord(afAftersaleApplyDo);
 			
 			//自营商品减少商品销量
-			if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+			//2018-03-13售后单不再操作销量跟库存
+			/*if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
 				afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
 				if (orderInfo.getGoodsPriceId() != null) {
 					afGoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), false);//规格没有出售成功
 				}
-			}
+			}*/
 			//订单状态改为退款中
 			String preStatus = orderInfo.getStatus();
 			orderInfo.setPreStatus(preStatus);

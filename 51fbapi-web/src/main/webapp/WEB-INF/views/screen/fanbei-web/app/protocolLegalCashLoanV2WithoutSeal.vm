@@ -149,7 +149,7 @@
         </tr>
         #foreach($item in $!{edspaySealDoList})
             <tr>
-                <td>$!{item.edspayUserName}</td>
+                <td>$!{item.userName}</td>
                 <td>$!{item.edspayUserCardId}</td>
                 <td>#if($!{item.investorAmount})$!{item.investorAmount}元#end</td>
             </tr>

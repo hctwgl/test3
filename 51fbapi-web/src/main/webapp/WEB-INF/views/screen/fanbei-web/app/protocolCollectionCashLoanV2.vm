@@ -131,7 +131,7 @@
         <tr><td>姓名</td><td>身份证号码</td><td>出借金额</td></tr>
         #foreach($item in $!{edspaySealDoList})
             <tr>
-                <td>$!{item.edspayUserName}</td><td>$!{item.edspayUserCardId}</td>
+                <td>$!{item.userName}</td><td>$!{item.edspayUserCardId}</td>
                 <td>#if($!{item.investorAmount})$!{item.investorAmount}元#end</td>
             </tr>
         #end
