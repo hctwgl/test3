@@ -2449,11 +2449,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo,
 			AfUserAccountSenceDo userAccountInfo) {
 		// 获取临时额度
-		AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+		AfInterimAuDo afInterimAuDo = getInterimAuDo(orderInfo);		
 		if (afInterimAuDo == null) {
 			afInterimAuDo = new AfInterimAuDo();
 			afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
 		}
+		
 		if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
 			BigDecimal leftAmount = BigDecimal.ZERO;
 			if (resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) != null) {
@@ -2479,34 +2480,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			BigDecimal useableAmount;
 			// 判断临时额度是否到期
 
-			// mqp add switch for different scene without TRADE
-			String isSwitch = "";
-			if (!orderInfo.getOrderType().equals("TRADE")) {
-
-				String orderType = orderInfo.getOrderType();
-				String secOrderType = orderInfo.getSecType();
-
-				if (orderInfo.equals("SELFSUPPORT")) {
-					secOrderType = "SELFSUPPORT";
-				}
-
-				AfCheckoutCounterDo checkoutCounterDo = afCheckoutCounterService.getByType(orderType, secOrderType);
-				if (checkoutCounterDo == null) {
-					logger.info("checkUsedAmount checkoutcounterdo is null");
-					throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
-				}
-
-				isSwitch = checkoutCounterDo.getTemporaryAmountStatus();
-
-				if (StringUtil.isEmpty(isSwitch)) {
-					logger.info("checkUsedAmount isSwitch is null");
-					throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
-				}
-			}
-			// end mqp add switch for different scene
-
 			if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0
-					&& !orderInfo.getOrderType().equals("TRADE") && isSwitch.equals("Y")) {
+					&& !orderInfo.getOrderType().equals("TRADE") ) {
 				// 获取当前用户可用临时额度
 				BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
 				// 用户额度加上临时额度
@@ -2525,6 +2500,39 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 			return useableAmount;
 		}
+	}
+
+	
+	private AfInterimAuDo getInterimAuDo(AfOrderDo orderInfo) {
+		// mqp add switch for different scene without TRADE
+		String isSwitch = "";
+		if (!orderInfo.getOrderType().equals("TRADE")) {
+
+			String orderType = orderInfo.getOrderType();
+			String secOrderType = orderInfo.getSecType();
+
+			if (orderInfo.equals("SELFSUPPORT")) {
+				secOrderType = "SELFSUPPORT";
+			}
+
+			AfCheckoutCounterDo checkoutCounterDo = afCheckoutCounterService.getByType(orderType, secOrderType);
+			if (checkoutCounterDo == null) {
+				logger.info("checkUsedAmount checkoutcounterdo is null");
+				throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
+			}
+
+			isSwitch = checkoutCounterDo.getTemporaryAmountStatus();
+
+			if (StringUtil.isEmpty(isSwitch)) {
+				logger.info("checkUsedAmount isSwitch is null");
+				throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
+			}
+
+			return afInterimAuDao.getByUserId(orderInfo.getUserId());
+		}
+		
+		// end mqp add switch for different scene
+		return null;
 	}
 
 	/**
@@ -2554,7 +2562,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			if (afUserAccountSenceDo != null) {
 				// 额度判断
 				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0
-						&& !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
+						) {
 					// 获取当前用户可用临时额度
 					BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
 					useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount())
