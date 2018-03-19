@@ -407,7 +407,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 					});
 		}
 
-		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
+		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) {
 			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 			String bankNumber = mainCard.getCardNumber();
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);

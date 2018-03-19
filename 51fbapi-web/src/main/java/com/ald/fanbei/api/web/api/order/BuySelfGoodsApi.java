@@ -12,6 +12,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +24,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
-import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
-import com.ald.fanbei.api.biz.service.AfShareGoodsService;
-import com.ald.fanbei.api.biz.service.AfShareUserGoodsService;
-import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAddressService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -52,23 +39,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
-import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -144,6 +114,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -170,6 +143,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+		//秒杀活动id
+		Long activityOrderId = 0l;
 		try{
 			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
 			if(resourceDo!=null){
@@ -274,7 +249,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					double12GoodsCheck(userId, goodsId,count);
 				}
 				// +++++++++++++++++++++++++<
-*/				
+*/
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -374,6 +349,69 @@ public class BuySelfGoodsApi implements ApiHandle {
 					}
 				}
 			}
+
+			//秒杀活动增加逻辑
+			int activityType = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityType"), ""),
+					0);
+			if(activityType==2){
+				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceId(goodsPriceId);
+				Long activityId = afSeckillActivityGoodsDto.getActivityId();
+				int goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
+				if(goodsLimitCount<count){
+					//超过购买数量
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("activityCode", 1001);
+					resp.setResponseData(data);
+					return resp;
+				}
+				try{
+					Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
+					if(remainCount<0||remainCount-count<0){
+						//超过购买数量
+						Map<String, Object> data = new HashMap<String, Object>();
+						data.put("activityCode", 1001);
+						resp.setResponseData(data);
+						return resp;
+					}else{
+						//更新数据库
+						AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
+						afSeckillActivityGoodsDo.setPriceId(goodsPriceId);
+						afSeckillActivityGoodsDo.setLimitCount(count);
+						afSeckillActivityGoodsDo.setActivityId(activityId);
+						if(afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo)<=0){
+							//超过购买数量
+							Map<String, Object> data = new HashMap<String, Object>();
+							data.put("activityCode", 1001);
+							resp.setResponseData(data);
+							return resp;
+						}
+						//创建秒杀单
+						AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
+						afSeckillActivityOrderDo.setActivityId(activityId);
+						afSeckillActivityOrderDo.setSpecialPrice(afSeckillActivityGoodsDto.getSpecialPrice());
+						afSeckillActivityOrderDo.setGmtStart(afSeckillActivityGoodsDto.getGmtStart());
+						afSeckillActivityOrderDo.setGmtEnd(afSeckillActivityGoodsDto.getGmtEnd());
+						afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
+						afSeckillActivityOrderDo.setGoodsId(goodsId);
+						afSeckillActivityOrderDo.setGmtCreate(new Date());
+						afSeckillActivityOrderDo.setGmtModified(new Date());
+						afSeckillActivityService.saveActivityOrde(afSeckillActivityOrderDo);
+						activityOrderId = afSeckillActivityOrderDo.getRid();
+						int closeTime = afSeckillActivityGoodsDto.getCloseTime();
+						if(closeTime>0){
+							gmtPayEnd = DateUtil.addMins(currTime, closeTime);
+							afOrder.setGmtPayEnd(gmtPayEnd);
+						}
+					}
+				}catch (Exception ex){
+					logger.error("afSeckillActivity error for:" + ex);
+					//人太多了，被挤爆了
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("activityCode", 1002);
+					resp.setResponseData(data);
+					return resp;
+				}
+			}
 			//-------------------------------
 
 			afGoodsPriceService.updateNewStockAndSaleByPriceId(goodsPriceId,count, true);
@@ -420,8 +458,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
 		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
+		//如果是秒杀单，创建秒杀订单
+		if(activityOrderId!=0){
+			AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
+			afSeckillActivityOrderDo.setRid(activityOrderId);
+			afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
+			afSeckillActivityService.updateActivityOrderById(afSeckillActivityOrderDo);
+		}
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
-		
+
 
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
@@ -568,7 +613,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
-				
+
 				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
 				String key1 = Constants.CACHKEY_DOUBLE_USER +userId+doubleEggsId;
 				Integer value = (Integer)bizCacheUtil.getObject(key1);
@@ -576,7 +621,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 				}
 				//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
-				
+
 				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(doubleEggsId);
 				if(doubleEggsDo != null){
 					if (doubleEggsDo.getStartTime().after(new Date())) {
@@ -591,7 +636,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					
 					Integer alreadyCount = 0;
 					alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsId);
-					
+
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-alreadyCount);//秒杀商品余量
@@ -602,10 +647,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 					
 	            	//---->update 更新 已被秒杀的商品数量（count+1）
 	            	afGoodsDoubleEggsService.updateCountById(goodsId);
-	            	
+
 	            	//--------------------------mqp add redis for goodsDoubleEggs to get rid of different activity goods num limitation--------------
 	            	bizCacheUtil.saveObject(key1, 1, Constants.SECOND_OF_ONE_MONTH);
-		            
+
 				}
 			}
 		} catch(FanbeiException e){

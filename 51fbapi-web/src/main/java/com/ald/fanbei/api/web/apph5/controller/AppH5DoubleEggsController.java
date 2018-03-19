@@ -669,8 +669,9 @@ public class AppH5DoubleEggsController extends BaseController {
 		if (CollectionUtil.isNotEmpty(goodsList)) {
 			for(GoodsForDate goodsForDate : goodsList){
 				Integer alreadyCount = 0;
-				alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsForDate.getGoodsId());
-				goodsForDate.setCount(goodsForDate.getStockCount() - alreadyCount);
+		        alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsForDate.getGoodsId());
+		        Integer intstock= goodsForDate.getStockCount() - alreadyCount;
+		        goodsForDate.setCount(intstock<0?0:intstock);
 			}
 		}
 		

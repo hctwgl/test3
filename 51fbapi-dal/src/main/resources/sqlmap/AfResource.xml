@@ -2,26 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfResourceDao">
 	<sql id="queryAllFields">
-
-		id
-		rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
-		sec_type,value_1,value_2,value_3,value_4,sort,pic1,pic2
+		id rid,gmt_create,gmt_modified,creator,modifier,data_type,`type`,type_desc,`name`,`value`,description,
+		sec_type,value_1,value_2,value_3,value_4,value_5,sort,pic1,pic2
 	</sql>
 	<sql id="queryManyAllFields">
 
 		r1.id
 		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
-		r2.sec_type,r1.value_1,r1.value_2,r1.value_3,r2.value_4,r1.sort
+		r2.sec_type,r1.value_1,r1.value_2,r1.value_3,r2.value_4,r2.value_5,r1.sort
 	</sql>
 	<sql id="queryManyAllFieldsOneTwo">
 		r1.id
 		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r2.type_desc,r1.name,r2.value,r1.description,
-		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r1.sort
+		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r2.value_5,r1.sort
 	</sql>
 	<sql id="queryManyAllFieldsTwo">
 		r1.id
 		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
-		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.sort
+		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.value_5,r1.sort
 	</sql>
 	<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
@@ -345,6 +343,7 @@
 		AND type = 'GG_FAKE_PERSON'
 		AND value = #{activityId}
 	</select>
+
 	<select id = "getGGSpecificBanner" resultType = "AfResourceDo">
 		SELECT
 			*
@@ -572,8 +571,16 @@
 	</update>
 	
 
+	<select id="getConfigsListByTypesAndSecType" resultType="AfResourceDo">
+	SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+	</select>
 
-	<!-- 根据类型获取单个配置信息 -->
+<!-- 根据类型获取单个配置信息 -->
 	<select id="getConfigByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
@@ -584,7 +591,7 @@
 		ORDER BY id DESC
 		LIMIT 1
 	</select>
-
+	
 	<select id="getFlowFlayerResourceConfig" resultType="AfResourceDo">
 		SELECT
 			a.*
@@ -594,5 +601,19 @@
 		WHERE
 			a.type = #{type}
 		AND a.sec_type = #{secType};
+	</select>
+
+
+	<!-- 获取新的专场信息(未出账单列表页|已出账单列表页) -->
+	<select id="getNewSpecialResource" resultType="AfResourceDo">
+		SELECT
+			a.*
+		FROM
+			af_resource a
+		INNER JOIN af_resource b on b.id = a.value_4 AND b.value_4 = 'O'
+		WHERE
+		    a.is_delete = 0 AND
+            b.is_delete = 0 AND
+			a.type = #{type}
 	</select>
 </mapper>

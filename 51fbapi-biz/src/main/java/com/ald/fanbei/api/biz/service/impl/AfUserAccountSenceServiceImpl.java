@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,11 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
-import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
 /**
@@ -157,6 +158,27 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		}
 
 		return maxPermitQuota;
+	}
+	
+	@Override
+	public AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo) {
+		AfUserAccountSenceDo totalScene = new AfUserAccountSenceDo();
+		totalScene.setScene(SceneType.LOAN_TOTAL.getName());
+		totalScene.setAuAmount(accInfo.getAuAmount());
+		totalScene.setUsedAmount(accInfo.getUsedAmount());
+		totalScene.setUserId(accInfo.getUserId());
+		totalScene.setGmtCreate(new Date());
+		afUserAccountSenceDao.saveRecord(totalScene);
+		return totalScene;
+	}
+	
+	@Override
+	public AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo) {
+		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), accInfo.getUserId());
+		if(totalScene == null) {
+			totalScene = initTotalLoan(accInfo);
+		}
+		return totalScene;
 	}
 
 	@Override

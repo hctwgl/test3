@@ -89,13 +89,13 @@ public abstract class BaseRebateService {
      */
     protected  boolean addRebateAmount(BigDecimal rebateAmount,AfOrderDo orderInfo){
 
-        AfUserAccountLogDo existItem= afUserAccountLogDao.getByRefAndType(orderInfo.getRid(),UserAccountLogType.REBATE_CASH.getCode());
+        AfUserAccountLogDo existItem= afUserAccountLogDao.getByRefAndType(orderInfo.getRid().toString(),UserAccountLogType.REBATE_CASH.getCode());
         String logs = String.format("selfsupport order existItem = %s",JSONObject.toJSONString(existItem));
        	logger.info(logs);
         if(existItem!=null){
            return false;
         }
-        AfUserAccountLogDo existDoubleRebate = afUserAccountLogDao.getByRefAndType(orderInfo.getRid(),UserAccountLogType.DOUBLE_REBATE_CASH.getCode());
+        AfUserAccountLogDo existDoubleRebate = afUserAccountLogDao.getByRefAndType(orderInfo.getRid().toString(),UserAccountLogType.DOUBLE_REBATE_CASH.getCode());
         logs =  logs + String.format("selfsupport order existDoubleRebate = %s",JSONObject.toJSONString(existDoubleRebate));
        	logger.info(logs);
         if(existDoubleRebate!=null){

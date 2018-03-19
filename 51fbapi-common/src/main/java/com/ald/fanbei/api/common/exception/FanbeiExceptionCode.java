@@ -107,7 +107,7 @@ public enum FanbeiExceptionCode {
     USER_GET_SIGN_AWARD_ERROR("USER_GET_SIGN_AWARD_ERROR",1214,"user get sign award error ","签到奖励已领取"),
     USER_GET_TO_COUPON_CENTER("USER_GET_TO_COUPON_CENTER",1215,"user get coupon to my coupon center ","您已领取，可前往我的优惠券中查看~"),
     USER_SIGNIN_SUCCESS("USER_SIGNIN_SUCCESS", 1000, "success", "签到成功"),
-
+    REPLACE_MAIN_CARD_FAIL("REPLACE_MAIN_CARD_FAIL",1216,"replace main card fail","更换银行主副卡失败~"),
     // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
@@ -348,6 +348,7 @@ public enum FanbeiExceptionCode {
     ONLY_ONE_DOUBLE12GOODS_ACCEPTED("ONLY_ONE_DOUBLE12GOODS_ACCEPTED",4035,"only one double12Goods could be accepted","亲，每个账号限购1件，不要太贪心哦"),
     DOUBLE_EGGS_EXPIRE("DOUBLE_EGGS_EXPIRE",4038,"double eggs goods expired","亲，已经过了秒杀时间哦，请准备下一场秒杀吧！"),
     DOUBLE_EGGS_WITHOUT_START("DOUBLE_EGGS_WITHOUT_START",4039,"double eggs goods has not started yet","亲，此商品是秒杀商品，还未开始哟！"),
+    DOUBLE_EGGS_LIMIT_TIME("DOUBLE_EGGS_LIMIT_TIME",4040,"double eggs goods has limit time","亲，此商品是秒杀商品，只能指定时间购买哟！"),
     NO_DOUBLE12GOODS_ACCEPTED("NO_DOUBLE12GOODS_ACCEPTED",4036,"only one double12Goods could be accepted","秒杀商品已售空"),
     DOUBLE12ORDER_ERROR("DOUBLE12ORDER_ERROR",4037,"double12 activity order error","秒杀商品下单异常"),
     HAVE_BOUGHT_GOODS("HAVE_BOUGHT_GOODS",4039,"have bought goods","您已经购物过商品了哦"),
@@ -410,7 +411,13 @@ public enum FanbeiExceptionCode {
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
 
-    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过");
+    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过"),
+	//paypwd wrong less than specific times
+	PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES",8003,"paypwd wrong less than specific times","支付密码错误，您还有x次机会！"),
+	//paypwd wrong more than specific times
+	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
+	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！");
+
 
 
     /**
@@ -470,4 +477,21 @@ public enum FanbeiExceptionCode {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 }

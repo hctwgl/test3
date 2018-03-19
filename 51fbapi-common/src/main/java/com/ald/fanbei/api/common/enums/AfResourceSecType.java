@@ -54,6 +54,7 @@ public enum AfResourceSecType {
 		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
 		BORROW_CASH_INFO_LEGAL_NEW("BORROW_CASH_INFO_LEGAL_NEW","新借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
+		AUTH_FUND_SWITCH("AUTH_FUND_SWITCH","公积金认证开关"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
 		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),
