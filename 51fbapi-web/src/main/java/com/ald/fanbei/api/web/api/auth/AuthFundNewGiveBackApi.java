@@ -62,7 +62,6 @@ public class AuthFundNewGiveBackApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String orderSn = ObjectUtils.toString(requestDataVo.getParams().get("orderSn"));
-		//String orderSn = request.getParameter("orderSn");
 		try {
 			auth51FundUtil.giveBack(orderSn,userId+"");
 			//保存认证的状态为认证中

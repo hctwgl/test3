@@ -132,7 +132,7 @@ public class AuthFundNewApi implements ApiHandle {
 		    String newStr = mapStr + "&appSecret=" + secret;
 		    String sign = AuthFundSecret.signToHexStr(AuthFundSecret.ALGORITHMS_MD5, newStr).toUpperCase();
 		    paramSortedMap.put("sign", sign);
-		    String redirectUrl = "https://testapp.51fanbei.com/third/newFund/giveBack";
+		    String redirectUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+"/third/newFund/giveBack";
 		    paramSortedMap.put("redirectUrl", redirectUrl);
 		    paramSortedMap.put("userId", userId+"");
 		    String urlParams=AuthFundSecret.paramTreeMapToString(paramSortedMap);
@@ -140,8 +140,6 @@ public class AuthFundNewApi implements ApiHandle {
 		    logger.info("token=" + token + " orderSn="+orderSn+"url=" + urlFull+"redirectUrl="+redirectUrl+"userId="+userId);
 		    resp.addResponseData("url", urlFull);
 		} catch (Exception e) {
-			
-			
 			logger.error("error = " + e);
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 		}
