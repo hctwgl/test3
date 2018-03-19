@@ -7,12 +7,8 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 
-
-
-import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -269,4 +265,27 @@ public interface AfOrderDao {
 	 */
 	int updateOrderLeaseByPay(@Param("cashDeposit")BigDecimal cashDeposit,@Param("quotadeposit")BigDecimal quotadeposit,@Param("id")Long id);
 
+	/**
+	 * 关闭订单
+	 * @return
+	 */
+	int closeOrder(@Param("closedReason")String closedReason,@Param("closedDetail")String closedDetail,@Param("id")Long id);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	LeaseOrderDto getAllOrderLeaseByOrderId(@Param("orderId")Long orderId);
+
+	/**
+	 * 查询所有租赁订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeaseList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
+
+	/**
+	 * 查询租赁中订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeasingList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
 }

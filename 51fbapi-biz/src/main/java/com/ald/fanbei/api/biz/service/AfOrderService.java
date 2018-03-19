@@ -8,9 +8,7 @@ import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 import com.alibaba.fastjson.JSONArray;
 
 
@@ -411,4 +409,22 @@ public interface AfOrderService {
 	 * @return
 	 */
 	AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId);
+
+	/**
+	 * 关闭订单
+	 * @return
+	 */
+	int closeOrder(String closedReason,String closedDetail,Long id);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type);
 }

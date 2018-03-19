@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -119,10 +120,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -2877,5 +2874,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId) {
         return orderDao.getOrderLeaseByOrderId(orderId);
+    }
+
+    @Override
+    public int closeOrder(String closedReason, String closedDetail, Long id) {
+        return orderDao.closeOrder(closedReason,closedDetail,id);
+    }
+
+    @Override
+    public LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId) {
+        return orderDao.getAllOrderLeaseByOrderId(orderId);
+    }
+
+    @Override
+    public List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex, Long pageSize, Integer type) {
+        List<LeaseOrderListDto> list = new ArrayList<>();
+        if(type == 0){
+            list = orderDao.getOrderLeaseList(pageIndex,pageSize);
+        }
+        else if(type == 1){
+            list = orderDao.getOrderLeasingList(pageIndex,pageSize);
+        }
+        return list;
     }
 }

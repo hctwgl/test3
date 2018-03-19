@@ -15,6 +15,8 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
 import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.vo.*;
 import com.alibaba.fastjson.JSON;
@@ -31,10 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhourui on 2018年03月03日 13:20
@@ -110,7 +109,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁首页商品
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "getHomeLeaseGoods", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String getHomeLeaseGoods(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -570,15 +569,51 @@ public class AppH5LeaseController extends BaseController {
     public String getLeaseOrderList(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
+        List<LeaseOrderListDto> list = new ArrayList<>();
         try{
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
             Long pageSize = NumberUtil.objToLongDefault(request.getParameter("pageSize"), 50);
             Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
-
+            list = afOrderService.getOrderLeaseList(pageIndex,pageSize,type);
+            if(list!=null&&list.size()>0){
+                for (LeaseOrderListDto item:list) {
+                    if(item.getGmtPayEnd().getTime() < new Date().getTime() && (item.getStatus().equals("NEW") || item.getStatus().equals("PAYFAIL"))){
+                        item.setStatus("CLOSED");
+                        item.setClosedReason("超时未支付");
+                        afOrderService.closeOrder("超时未支付","",item.getId());
+                    }
+                }
+            }
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", list);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getLeaseOrderList", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *获取租赁订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "getLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String getLeaseOrder(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        LeaseOrderDto lease = new LeaseOrderDto();
+        try{
+            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            lease = afOrderService.getAllOrderLeaseByOrderId(orderId);
+            if(lease.getGmtPayEnd().getTime() < new Date().getTime() && (lease.getStatus().equals("NEW") || lease.getStatus().equals("PAYFAIL"))){
+                lease.setStatus("CLOSED");
+                lease.setClosedReason("超时未支付");
+                afOrderService.closeOrder("超时未支付","",orderId);
+            }
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("getLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
