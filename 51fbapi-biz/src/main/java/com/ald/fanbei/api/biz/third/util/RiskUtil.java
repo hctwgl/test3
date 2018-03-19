@@ -3613,10 +3613,7 @@ public class RiskUtil extends AbstractThird {
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		System.out.println(reqBo.toString());
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/processData.htm", reqBo);
-		// String reqResult = requestProxy.post("http://192.168.117.20:8080" +
-		// "/modules/api/user/processData.htm",reqBo);
 		logThird(reqResult, "FundNotifyRisk", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -3624,6 +3621,7 @@ public class RiskUtil extends AbstractThird {
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskOperatorRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
+			logger.info("fund notify risk success, orderSn="+orderSn+",Result:"+riskResp.toString());	
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);

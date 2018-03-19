@@ -55,9 +55,13 @@ public class Auth51FundUtil extends AbstractThird {
         resultSortedMap.put("sign",sign);
         resultSortedMap.put("type","gjj");
         resultSortedMap.put("params",paramSortedMap);
-        String respResult = HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getGjjData", JSON.toJSONString(resultSortedMap));
+        String gjjUrl="https://t.51gjj.com/gjj/getGjjData";
+        String params = JSONObject.toJSONString(resultSortedMap);
+        logger.info("get51Gjj url = {},params = {}",gjjUrl,params);
+        String respResult = HttpUtil.doHttpPostJsonParam(gjjUrl, params);
+        logger.info("get51Gjj result = {}", respResult);
 		if (StringUtil.isBlank(respResult)) {
-			logger.error("getGjjData req success,respResult is null,orderSn=" + orderSn);
+			logger.error("getGjjData result is null,orderSn=" + orderSn);
 			throw new Exception("获取用户公积金信息为null");
 		}else {
 			Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
@@ -65,21 +69,10 @@ public class Auth51FundUtil extends AbstractThird {
 				String respData = respInfo.getData();
 				//推送公积金信息给风控
 				RiskRespBo riskRespBo = riskUtil.FundNotifyRisk(respData,userId,token,orderSn);
-				if (StringUtil.isBlank(respResult)) {
-					logger.error("notify risk req success,respResult is null,orderSn=" + orderSn+"data="+respData+"userId="+userId+"orderSn="+orderSn);
-					throw new Exception("推送信息给风控，返回结果为null");
-				}else{
-					if (riskRespBo.isSuccess()) {
-						logger.info("notify risk success,resp success, orderSn="+orderSn+",riskRespInfo"+riskRespBo.getMsg());	
-					}else{
-						logger.error("notify risk success,resp fail,errorCode="+riskRespBo.getCode());
-						throw new Exception("推送信息给风控，返回失败");
-					}
-				}
 			}else {
 				//三方处理错误
 				Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
-				logger.error("getGjjData req success,resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+				logger.error("getGjjData result fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
 			}
 		}
 	}
