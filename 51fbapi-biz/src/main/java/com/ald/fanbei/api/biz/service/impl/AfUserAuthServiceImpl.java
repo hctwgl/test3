@@ -541,7 +541,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("fundTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.FUND.getCode(), authDo.getGmtFund());
 		if (supplementAuth.get("status") != null) {
 		    data.put("fundStatus", supplementAuth.get("status"));
@@ -556,7 +556,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("socialSecurityTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.INSURANCE.getCode(), authDo.getGmtJinpo());
 		if (supplementAuth.get("status") != null) {
 		    data.put("socialSecurityStatus", supplementAuth.get("status"));
@@ -571,7 +571,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("creditTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.CARDEMAIL.getCode(), authDo.getGmtCredit());
 		if (supplementAuth.get("status") != null) {
 		    data.put("creditStatus", supplementAuth.get("status"));
@@ -586,7 +586,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("alipayTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.ALIPAY.getCode(), authDo.getGmtAlipay());
 		if (supplementAuth.get("status") != null) {
 		    data.put("alipayStatus", supplementAuth.get("status"));
@@ -601,7 +601,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("chsiTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.CHSI.getCode(), authDo.getGmtChsi());
 		if (supplementAuth.get("status") != null) {
 		    data.put("chsiStatus", supplementAuth.get("status"));
@@ -616,7 +616,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("zhengxinTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.ZHENGXIN.getCode(), authDo.getGmtZhengxin());
 		if (supplementAuth.get("status") != null) {
 		    data.put("zhengxinStatus", supplementAuth.get("status"));
@@ -631,7 +631,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("onlinebankTitle", supplementAuth.get("title"));
 	    }
 	    // 如果白领贷强风控通过判断是否提额
-	    if (data.get("bldRiskStatus").equals("Y")) {
+	    if (data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
 		supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.BANK.getCode(), authDo.getGmtOnlinebank());
 		if (supplementAuth.get("status") != null) {
 		    data.put("onlinebankStatus", supplementAuth.get("status"));
