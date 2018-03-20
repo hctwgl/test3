@@ -79,11 +79,6 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public AfSeckillActivityGoodsDo getStartActivityPriceByPriceId(Long priceId) {
-		return afSeckillActivityGoodsDao.getStartActivityPriceByPriceId(priceId);
-	}
-
-	@Override
 	public AfSeckillActivityOrderDo getActivityOrderByOrderId(Long orderId) {
 		return afSeckillActivityOrderDao.getActivityOrderByOrderId(orderId);
 	}
@@ -91,5 +86,10 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public AfSeckillActivityGoodsDo getActivityGoodsByGoodsIdAndActId(Long activityId, Long goodsId) {
 		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
+	}
+
+	@Override
+	public AfSeckillActivityGoodsDto getActivityInfoByPriceIdAndActId(Long goodsPriceId, Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
 	}
 }

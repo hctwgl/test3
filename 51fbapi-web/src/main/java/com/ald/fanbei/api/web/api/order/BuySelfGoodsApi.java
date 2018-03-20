@@ -351,10 +351,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 
 			//秒杀活动增加逻辑
-			Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityType"), ""),
+			Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityId"), ""),
 					0l);
 			if(activityId>0l){
-				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceIdAndActId(goodsPriceId,activityId);
+				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
 				if(afSeckillActivityGoodsDto==null){
 					//超过购买数量
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);

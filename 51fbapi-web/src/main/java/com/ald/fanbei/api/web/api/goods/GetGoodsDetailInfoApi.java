@@ -112,7 +112,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGmtEnd(gmtEnd);
 			vo.setGmtPstart(afSeckillActivityDo.getGmtPStart());
 			vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
-			vo.setGoodsLimitCount(afSeckillActivityDo.getGoodsLimitCount());
+			vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
 			vo.setPayType(afSeckillActivityDo.getPayType());
 			vo.setActSaleCount(actSaleCount);
 			vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
@@ -125,7 +125,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGmtEnd(new Date());
 			vo.setGmtPstart(new Date());
 			vo.setLimitCount(0);
-			vo.setGoodsLimitCount(0);
+			//vo.setLimitedPurchase(0);
 			vo.setPayType("");
 			vo.setActSaleCount(0);
 			vo.setSpecialPrice(BigDecimal.ZERO);
