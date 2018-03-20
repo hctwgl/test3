@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
+import com.ald.fanbei.api.biz.service.AfFacescoreShareCountService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -31,6 +32,8 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 	private AfGameChanceService afGameChanceService;
 	@Resource
 	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
+	@Resource
+	private AfFacescoreShareCountService faceScoreShareCountService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -43,6 +46,9 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 		}
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
+		}
+		if ("faceScore".equals(sharePage)){
+			faceScoreShareCountService.dealWithShareCount(context.getUserId());
 		}
 		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
 		//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));

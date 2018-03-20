@@ -1,16 +1,16 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -19,46 +19,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
-import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
-import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
-import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
+import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.enums.UserStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -97,6 +87,8 @@ public class H5ActivityCommonController extends BaseController {
     AfOrderService afOrderService;
     @Resource
     SmsUtil smsUtil;
+    @Resource
+    AfFacescoreRedService afFacescoreRedService;
 
     // H5活动登录
     @RequestMapping(value = "/userLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -309,20 +301,17 @@ public class H5ActivityCommonController extends BaseController {
 	}
     }
 
-    @Override
-    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-	try {
-	    RequestDataVo reqVo = new RequestDataVo();
 
-	    JSONObject jsonObj = JSON.parseObject(requestData);
-	    reqVo.setId(jsonObj.getString("id"));
-	    reqVo.setMethod(request.getRequestURI());
-	    reqVo.setSystem(jsonObj);
-	    return reqVo;
-	} catch (Exception e) {
-	    throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+	@Override
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
+
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
 	}
-    }
 
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
@@ -333,5 +322,257 @@ public class H5ActivityCommonController extends BaseController {
     public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 	return null;
     }
+    @ResponseBody
+    @RequestMapping(value = "/getUserShareInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String getGoodsList(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		   FanbeiH5Context context = doH5Check(request, false);
+		
+			String userName = context.getUserName();
+			//AfUserDo user = afUserService.getUserByUserName(userName);
+			//Long userId = user == null ? -1 : user.getRid();
+			String source = ObjectUtils.toString(request.getParameter("source"), "").toString();
+			JSONObject json = new JSONObject();
+			
+		    try{
+			String isHidden = "N";
+			String changeImage = "N";
+			String shareType = "URL";
+			data.put("shareType", shareType);
+			json.put("shareType", shareType);
+			//Long userId = context.getUserId();
+			//AfUserDo afUserDo =  afUserService.getUserById(userId) ;
+			AfUserDo afUserDo =  afUserService.getUserByUserName(userName) ;
+			
+//			if (userId == null || afUserDo == null) {
+//				throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
+//			}
+		
+//			if (StringUtils.isBlank(source)) {
+//				logger.error("getUserShareInfo source can't be empty");
+//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+//			}
+//			
+			//查询配置信息，如果不存在，返回 默认类型URL;
+			AfResourceDo   afResource=   afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, source);
+			List<AfResourceDo>   resourceList =   afResourceService.getConfigsByTypesAndSecType(Constants.USER_SHARE_INFO_CONFIGURE, source);
+			
+			//获取list,随机得到一个配置？
+			
+			if(afResource == null){
+				logger.info("getUserShareInfoApi afResourceList is null source = " + source);
+				return H5CommonResponse.getNewInstance(true, "未找到配置，默认链接",null,data).toString();
+				 //resp.setResponseData(data);
+			     
+			       // return resp;
+			}
+			//预发线上区分
+			 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+			 logger.info("getUserShareInfoApi and type = {}"+ type);
+			//线上
+			 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+			   if(afResource.getValue4().equals("C")){
+				   logger.info("getUserShareInfoApi afResource value4 is close");
+				   return H5CommonResponse.getNewInstance(true, "配置已关闭，默认链接",null,data).toString();
+			        
+			   }
+			 }
+		//value1:需要更换的个性配置，value2,个性配置是否展示 key:value（隐藏手机号，展示头像）
+			 
+			 
+			//获取json,并增加属性。
+		
+			 JSONObject jsonStr = JSONObject.parseObject(afResource.getValue3());
+			 JSONArray userInfo= jsonStr.getJSONArray("userInfo");
+			 if(afUserDo != null){
+			 if(userInfo != null){
+			     JSONObject jOUser = userInfo.getJSONObject(0); 
+			     String mobile = "";
+			     mobile = changePhone(afUserDo.getUserName());
+			     jOUser.put("content", mobile);//JSONObject对象中添加键值对  
+			    // JSONArray user= jOUser.getJSONArray("userInfo");
+			     JSONArray userMesage= new JSONArray();
+			     userMesage.add(jOUser);
+			     jsonStr.put("userInfo", userMesage);
+			   
+			 }
+			 }else{
+			     jsonStr.remove("userInfo");
+			 }
+			 try{
+	        		 if(resourceList != null && resourceList.size() >0){
+	        		     for(AfResourceDo afResourceDo :resourceList){
+	        			 //添加配置，若是content且是是需要随机配置，否则
+	        			 
+	        			 String changeJson = afResourceDo.getValue();
+	        			 //所有的jsonStr的key是否有等于changeJson，有则添加JSONArray
+	        			 Iterator<String> sIterator = jsonStr.keySet().iterator();
+	        			 while (sIterator.hasNext()) {
+	        			     // 获得key
+	        			     String key = sIterator.next();
+	        			     if(key.equals(changeJson)){
+	        				 String addValue = afResourceDo.getValue2();
+	    				         JSONArray info= jsonStr.getJSONArray(key);
+	    				         JSONObject jso = JSONObject.parseObject(addValue);
+	    				         List<JSONObject>   list =  JSONObject.parseArray(jso.getJSONArray("configure").toString(), JSONObject.class); 
+	    				         if(list != null && list.size() >0){
+	    				         if(!"RANDOM".equals(afResourceDo.getValue1())){
+	        				     //添加所有
+	        				     for(JSONObject jo :list){
+	        					 info.add(jo);
+	        				     }
+	        				 }else{
+	        				     //随机添加一条
+	        				     int randomLenght = list.size();
+	        				     int num=(int)(Math.random() * randomLenght); 
+	        				     info.add(list.get(num));
+	        				 }
+	        			      }
+	        			    }
+	        			 }
+	        		     }
+	        		 }
+			 }catch(Exception e){
+			     logger.error("getUserShareInfoApi add configure error  e = "+ e);
+			 }
+			 
+			 //更换的个性配置
+			
+			 if(afResource.getValue1() != null  && StringUtils.isNotEmpty(afResource.getValue1())){
+				    try{
+					List<JSONObject>   list =  JSONObject.parseArray(afResource.getValue1(), JSONObject.class);
+				     if(list != null){
+					JSONObject jsonObject = list.get(0);
+					String image  = "";
+					image = jsonObject.getString("changeConfigure");
+					if("avatar".equals(image)){
+					        doChangeImage(afUserDo.getRid(),jsonStr);
+					         changeImage = "Y";
+					}
+					if("noChange".equals(image)){
+				         changeImage = "Y";
+				     }
+				     }
+				    }catch(Exception e){
+					 logger.error("getUserShareInfoApi value1 error  e = "+ e);
+				    }
+				     
+				 }
+			 if(afUserDo != null){
+			 if("N".equals(changeImage)){
+			     //将用户头像放入imageList 
+			     List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
+			     afUserDo.getAvatar();
+			     //获取该list(type = 'avatar')
+			     JSONArray ja= new JSONArray();
+			     for(JSONObject jso:list){
+				 if(jso.getString("type")!= null && "avatar".equals(jso.getString("type"))){
+				    //对该list加入头像，
+					 if(userInfo != null){
+					     String image = "";
+					     image = afUserDo.getAvatar();
+					     if(StringUtil.isBlank(image)){
+						 //获取默认头像配置
+						 AfResourceDo afResourceDo  = afResourceService.getConfigByTypesAndSecType(Constants.USER_SHARE_INFO, Constants.DEFAULT_AVATAR);
+						if(afResourceDo != null){
+							 image = afResourceDo.getValue();
+						}
+					     }
+					     jso.put("image", image);//JSONObject对象中添加键值对  
+					     jso.remove("type");
+					     ja.add(jso);
+					 }
+					
+				 }else{
+				     ja.add(jso);  
+				 }
+				 
+			     }
+			     jsonStr.put("imageList", ja);
+			     
+			 }
+			}
+			 //
+			 List<JSONObject> listRule = JSONObject.parseArray("[]", JSONObject.class);
+			 jsonStr.put("hideElement", listRule);
+			 if(afResource.getValue2() != null  && StringUtils.isNotEmpty(afResource.getValue2())){
+			    try{
+			     isHidden = "Y";
+			     listRule =  JSONObject.parseArray(afResource.getValue2(), JSONObject.class);
+			     
+			     for(JSONObject jso:listRule){
+				 if(jso.getString("entityName")== null || "".equals(jso.getString("entityName"))){
+				     isHidden = "N";
+				     break;
+				 }
+			     }
+			     if("Y".equals(isHidden)){
+				  jsonStr.put("hideElement", listRule); 
+			     }
+			     
+			    }catch(Exception e){
+				 logger.error("getUserShareInfoApi value2 error  e = "+ e);
+			    }
+			     
+			 }
+			
+			 jsonStr.put("shareType", "IMAGE");
+			 json = JSONObject.parseObject(jsonStr.toString());	
+			
+			
+			return H5CommonResponse.getNewInstance(true, "获取分享信息成功", null, json).toString();
+		} catch (Exception e) {
+			logger.error("/h5Common/getUserShareInfo" + context + "error = {}", e);
+			return H5CommonResponse.getNewInstance(false, "获取分享信息表失败,默认链接",null,json).toString();
+		}
+	}
+
+
+private int doChangeImage(Long userId,JSONObject jsonStr) {
+    //获取数据库用户上传的最后一张图片。放入json 
+   //AfFacescoreRedDo afFacescoreRedDo = new AfFacescoreRedDo();
+ try{
+	AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
+  String image = "";
+   if(afFacescoreRedDo != null){
+	   image =  afFacescoreRedDo.getImageurl();
+   }
+   List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
+     //获取该list(type = 'avatar')
+     JSONArray ja= new JSONArray();
+     for(JSONObject jso:list){
+	 if(jso.getString("type")!= null && "avatar".equals(jso.getString("type"))){
+	    //对该list加入头像，		 
+		 if(StringUtil.isNotEmpty(image)){
+		     jso.put("image", image);//JSONObject对象中添加键值对  
+		     jso.remove("type");
+		     ja.add(jso);
+		 }
+		
+	 }else{
+	     ja.add(jso);  
+	 }
+	 
+     }
+     jsonStr.put("imageList", ja);
+ }catch(Exception e) {
+	 logger.error("doChangeImage error:"+e);
+ }
+   
+    return 0;
+}
+
+
+private String changePhone(String userName) {
+	String newUserName = "";
+	if (!StringUtil.isBlank(userName)) {
+		newUserName = userName.substring(0, 3);
+		newUserName = newUserName + "****";
+		newUserName = newUserName + userName.substring(7, 11);
+	}
+	return newUserName;
+}
+	
+	
 
 }
