@@ -10,7 +10,8 @@ public enum RiskSceneType {
 
 	BLDANDXJD("1", "白领贷与现金贷"), 
 	XJD("2", "现金贷"),
-	BLD("3", "白领贷");
+	BLD("3", "白领贷"),
+	ONLINE("4", "消费分期");
 
 	private String code;
 	private String name;
