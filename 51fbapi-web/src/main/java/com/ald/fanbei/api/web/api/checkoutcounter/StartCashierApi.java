@@ -601,8 +601,13 @@ public class StartCashierApi implements ApiHandle {
      */
     private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDto userDto, AfInterimAuDo afInterimAuDo) {
 	BigDecimal useableAmount = BigDecimal.ZERO;
-	
-	afInterimAuDo = afOrderService.getInterimAuDo(orderInfo);
+
+    afInterimAuDo = afOrderService.getInterimAuDo(orderInfo);
+	if (afInterimAuDo == null) {
+		afInterimAuDo = new AfInterimAuDo();
+		afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+	}
+
 	// 判断商圈订单
 	if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 	    // 教育培训订单
@@ -640,7 +645,7 @@ public class StartCashierApi implements ApiHandle {
         	
 	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
           
-	    if (afUserAccountSenceDo != null) {
+	    if (afUserAccountSenceDo != null ) {
 		// 额度判断
                 if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
                     //获取当前用户可用临时额度

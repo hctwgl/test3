@@ -692,13 +692,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		orderDo.setMobile(mobile);
 		orderDo.setBankId(bankId);
 		// AfUserAccountDo userAccountInfo =
-        //AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
-	if (afUserAccountSenceDo != null) {
-            orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
-            orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
-        }
-	
+		// AfUserAccountDo userAccountInfo =
+		// afUserAccountService.getUserAccountByUserId(userId);
+		AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService
+				.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), NumberUtil.objToLongDefault(userId, 0l));
+		if (afUserAccountSenceDo != null) {
+			orderDo.setAuAmount(afUserAccountSenceDo.getAuAmount());
+			orderDo.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
+		}
+
 		return orderDo;
 	}
 
@@ -811,9 +813,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					replaceMapData.put("errorMsg", errorMsg);
 					try {
 						AfUserDo userDo = afUserService.getUserById(userId);
-						smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+						smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
+								AfResourceType.SMS_TEMPLATE.getCode(),
+								AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
 					} catch (Exception e) {
-						logger.error("pay order rela bank pay error,userId="+userId,e);
+						logger.error("pay order rela bank pay error,userId=" + userId, e);
 					}
 					throw new FanbeiException(errorMsg);
 				}
@@ -1000,13 +1004,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						if (afResourceDo != null) {
 							String swtich = "";
 							String ctype = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-                		//线上为开启状态
-                		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype) || Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
-                		     swtich = afResourceDo.getValue();
-                		 } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype) ){
-                		     swtich = afResourceDo.getValue1();
-                		 }
-                                //String swtich = afResourceDo.getValue();
+							// 线上为开启状态
+							if (Constants.INVELOMENT_TYPE_ONLINE.equals(ctype)
+									|| Constants.INVELOMENT_TYPE_TEST.equals(ctype)) {
+								swtich = afResourceDo.getValue();
+							} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(ctype)) {
+								swtich = afResourceDo.getValue1();
+							}
+							// String swtich = afResourceDo.getValue();
 
 							if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
 								// qiao+2017-11-14 15:30:27:the second time to
@@ -1327,16 +1332,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								if (StringUtil.isNotBlank(respBo.getRespCode())) {
 									// 模版数据map处理
 									Map<String, String> replaceMapData = new HashMap<String, String>();
-                                    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-                                    replaceMapData.put("errorMsg", errorMsg);
-                                    try {
-                                        AfUserDo userDo = afUserService.getUserById(userId);
-                                        smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-                                    } catch (Exception e) {
-                                        logger.error("pay order rela bank pay error,userId=" + userId, e);
-                                    }
-                                    throw new FanbeiException(errorMsg);
-                                }
+									String errorMsg = afTradeCodeInfoService
+											.getRecordDescByTradeCode(respBo.getRespCode());
+									replaceMapData.put("errorMsg", errorMsg);
+									try {
+										AfUserDo userDo = afUserService.getUserById(userId);
+										smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
+												AfResourceType.SMS_TEMPLATE.getCode(),
+												AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+									} catch (Exception e) {
+										logger.error("pay order rela bank pay error,userId=" + userId, e);
+									}
+									throw new FanbeiException(errorMsg);
+								}
 								throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 							}
 							newMap.put("outTradeNo", respBo.getOrderNo());
@@ -1615,17 +1623,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						if (!respBo.isSuccess()) {
 							if (StringUtil.isNotBlank(respBo.getRespCode())) {
 								// 模版数据map处理
-                                Map<String, String> replaceMapData = new HashMap<String, String>();
-                                String errorMsg =  afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-                                replaceMapData.put("errorMsg", errorMsg);
-                                try {
-                                    AfUserDo userDo = afUserService.getUserById(userId);
-                                    smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-                                } catch (Exception e) {
-                                    logger.error("pay order rela bank pay error,userId=" + userId, e);
-                                }
-                                throw new FanbeiException(errorMsg);
-                            }
+								Map<String, String> replaceMapData = new HashMap<String, String>();
+								String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+								replaceMapData.put("errorMsg", errorMsg);
+								try {
+									AfUserDo userDo = afUserService.getUserById(userId);
+									smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
+											AfResourceType.SMS_TEMPLATE.getCode(),
+											AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+								} catch (Exception e) {
+									logger.error("pay order rela bank pay error,userId=" + userId, e);
+								}
+								throw new FanbeiException(errorMsg);
+							}
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
 						Map<String, Object> newMap = new HashMap<String, Object>();
@@ -2449,12 +2459,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public BigDecimal checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo,
 			AfUserAccountSenceDo userAccountInfo) {
 		// 获取临时额度
-		AfInterimAuDo afInterimAuDo = getInterimAuDo(orderInfo);		
+		AfInterimAuDo afInterimAuDo = getInterimAuDo(orderInfo);
 		if (afInterimAuDo == null) {
 			afInterimAuDo = new AfInterimAuDo();
 			afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
 		}
-		
+
 		if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
 			BigDecimal leftAmount = BigDecimal.ZERO;
 			if (resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) != null) {
@@ -2481,7 +2491,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			// 判断临时额度是否到期
 
 			if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0
-					&& !orderInfo.getOrderType().equals("TRADE") ) {
+					&& !orderInfo.getOrderType().equals("TRADE")) {
 				// 获取当前用户可用临时额度
 				BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
 				// 用户额度加上临时额度
@@ -2527,10 +2537,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 				logger.info("checkUsedAmount isSwitch is null");
 				throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
 			}
+			if (isSwitch.equals("Y")) {
+				return afInterimAuDao.getByUserId(orderInfo.getUserId());
+			}
 
-			return afInterimAuDao.getByUserId(orderInfo.getUserId());
 		}
-		
+
 		// end mqp add switch for different scene
 		return null;
 	}
@@ -2561,8 +2573,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
 			if (afUserAccountSenceDo != null) {
 				// 额度判断
-				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0
-						) {
+				if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
 					// 获取当前用户可用临时额度
 					BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
 					useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount())
