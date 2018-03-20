@@ -420,11 +420,11 @@ public interface AfOrderService {
 	 * 查询租赁订单
 	 * @return
 	 */
-	LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId);
+	LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId,Long userId);
 
 	/**
 	 * 查询租赁订单
 	 * @return
 	 */
-	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type);
+	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type,Long userId);
 }

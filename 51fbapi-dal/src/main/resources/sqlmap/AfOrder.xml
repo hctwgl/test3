@@ -1330,23 +1330,27 @@
 		id = #{id}
 	</update>
 
+	<update id="rebateOrderLease" parameterType="java.lang.Long" >
+		UPDATE af_order_lease SET rebate_status = 'Y' WHERE order_id=#{orderId}
+	</update>
+
 	<select id="getOrderLeaseList" resultType="LeaseOrderListDto">
 		SELECT a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
-		WHERE a.is_delete=0 AND b.is_delete=0
+		WHERE a.is_delete=0 AND b.is_delete=0 AND a.user_id=#{userId}
 		ORDER BY a.id DESC
 		LIMIT #{pageIndex},#{pageSize}
 	</select>
 
 	<select id="getOrderLeasingList" resultType="LeaseOrderListDto">
 		SELECT a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
-		WHERE a.is_delete=0 AND b.is_delete=0 AND a.lease_status = '' AND  b.status != 'CLOSED'
+		WHERE a.is_delete=0 AND b.is_delete=0 AND a.lease_status = '' AND  b.status != 'CLOSED' AND a.user_id=#{userId}
 		ORDER BY a.id DESC
 		LIMIT #{pageIndex},#{pageSize}
 	</select>
 
 	<select id="getAllOrderLeaseByOrderId" resultType="LeaseOrderDto">
 		SELECT b.*,a.monthly_rent,a.lease_status,a.rebate_status,a.gmt_end,a.policy_number,a.unique,a.cash_deposit,a.gmt_start,a.quota_deposit,a.richie_amount FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
-		WHERE a.is_delete=0 AND b.is_delete=0 AND a.id = #{orderId}
+		WHERE a.is_delete=0 AND b.is_delete=0 AND a.id = #{orderId} AND a.user_id=#{userId}
 	</select>
 
 </mapper>

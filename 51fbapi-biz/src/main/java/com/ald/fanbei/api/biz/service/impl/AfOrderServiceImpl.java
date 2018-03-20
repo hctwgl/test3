@@ -2882,18 +2882,18 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId) {
-        return orderDao.getAllOrderLeaseByOrderId(orderId);
+    public LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId,Long userId) {
+        return orderDao.getAllOrderLeaseByOrderId(orderId,userId);
     }
 
     @Override
-    public List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex, Long pageSize, Integer type) {
+    public List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex, Long pageSize, Integer type,Long userId) {
         List<LeaseOrderListDto> list = new ArrayList<>();
         if(type == 0){
-            list = orderDao.getOrderLeaseList(pageIndex,pageSize);
+            list = orderDao.getOrderLeaseList(pageIndex,pageSize,userId);
         }
         else if(type == 1){
-            list = orderDao.getOrderLeasingList(pageIndex,pageSize);
+            list = orderDao.getOrderLeasingList(pageIndex,pageSize,userId);
         }
         return list;
     }

@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.AfGoodsSource;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -13,6 +16,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
@@ -24,7 +28,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,6 +82,21 @@ public class AppH5LeaseController extends BaseController {
 
     @Resource
     AfUserAccountService afUserAccountService;
+
+    @Resource
+    RebateContext rebateContext;
+
+    @Autowired
+    KafkaSync kafkaSync;
+
+    @Resource
+    AfBorrowService afBorrowService;
+
+    @Resource
+    AfBorrowExtendDao afBorrowExtendDao;
+
+    @Resource
+    AfBorrowBillService afBorrowBillService;
 
     /**
      *获取租赁首页banner
@@ -571,10 +590,12 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         List<LeaseOrderListDto> list = new ArrayList<>();
         try{
+            context = doWebCheck(request, true);
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
             Long pageSize = NumberUtil.objToLongDefault(request.getParameter("pageSize"), 50);
             Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
-            list = afOrderService.getOrderLeaseList(pageIndex,pageSize,type);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            list = afOrderService.getOrderLeaseList(pageIndex,pageSize,type,afUser.getRid());
             if(list!=null&&list.size()>0){
                 for (LeaseOrderListDto item:list) {
                     if(item.getGmtPayEnd().getTime() < new Date().getTime() && (item.getStatus().equals("NEW") || item.getStatus().equals("PAYFAIL"))){
@@ -610,8 +631,13 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
+            context = doWebCheck(request, true);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
-            lease = afOrderService.getAllOrderLeaseByOrderId(orderId);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            lease = afOrderService.getAllOrderLeaseByOrderId(orderId,afUser.getRid());
+            if(lease == null){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+            }
             if(lease.getGmtPayEnd().getTime() < new Date().getTime() && (lease.getStatus().equals("NEW") || lease.getStatus().equals("PAYFAIL"))){
                 lease.setStatus("CLOSED");
                 lease.setClosedReason("超时未支付");
@@ -643,8 +669,15 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
+            context = doWebCheck(request, true);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
             String closedReason = ObjectUtils.toString(request.getParameter("closedReason"));
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            //用户订单检查
+            AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
+            if(orderInfo == null){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+            }
             afOrderService.closeOrder(closedReason,"",orderId);
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
@@ -653,6 +686,64 @@ public class AppH5LeaseController extends BaseController {
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
+    }
+
+    /**
+     *确认收货
+     */
+    @ResponseBody
+    @RequestMapping(value = "completedLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String completedLeaseOrder(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        LeaseOrderDto lease = new LeaseOrderDto();
+        try{
+            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            //用户订单检查
+            AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
+            if(orderInfo == null){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            rebateContext.rebate(orderInfo);
+
+            addBorrowBill_1(orderInfo,afUser);
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("cancelLeaseOrder", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    private void addBorrowBill_1(AfOrderDo afOrderDo,AfUserDo afUser){
+        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+        if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+            //查询是否己产生
+            List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+            if (borrowList == null || borrowList.size() == 0) {
+                AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+                if (_aa == null) {
+                    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+                    afBorrowExtendDo.setId(afBorrowDo.getRid());
+                    afBorrowExtendDo.setInBill(1);
+                    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+                } else {
+                    _aa.setInBill(1);
+                    afBorrowExtendDao.updateBorrowExtend(_aa);
+                }
+                List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+                for(AfBorrowBillDo _afBorrowExtendDo:billList){
+                    _afBorrowExtendDo.setStatus("N");
+                }
+                afBorrowService.addBorrowBill(billList);
+
+                afBorrowService.updateBorrowStatus(afBorrowDo, afUser.getUserName(), afOrderDo.getUserId());
+            }
+        }
+        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
     }
 
     private List<Object> getBannerObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {

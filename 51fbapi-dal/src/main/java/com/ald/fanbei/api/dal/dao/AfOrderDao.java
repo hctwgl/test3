@@ -272,20 +272,26 @@ public interface AfOrderDao {
 	int closeOrder(@Param("closedReason")String closedReason,@Param("closedDetail")String closedDetail,@Param("id")Long id);
 
 	/**
+	 * 修改租赁订单返利
+	 * @return
+	 */
+	int rebateOrderLease(@Param("orderId")Long orderId);
+
+	/**
 	 * 查询租赁订单
 	 * @return
 	 */
-	LeaseOrderDto getAllOrderLeaseByOrderId(@Param("orderId")Long orderId);
+	LeaseOrderDto getAllOrderLeaseByOrderId(@Param("orderId")Long orderId,@Param("userId")Long userId);
 
 	/**
 	 * 查询所有租赁订单
 	 * @return
 	 */
-	List<LeaseOrderListDto> getOrderLeaseList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
+	List<LeaseOrderListDto> getOrderLeaseList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize,@Param("userId")Long userId);
 
 	/**
 	 * 查询租赁中订单
 	 * @return
 	 */
-	List<LeaseOrderListDto> getOrderLeasingList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
+	List<LeaseOrderListDto> getOrderLeasingList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize,@Param("userId")Long userId);
 }
