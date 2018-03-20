@@ -1331,14 +1331,14 @@
 	</update>
 
 	<select id="getOrderLeaseList" resultType="LeaseOrderListDto">
-		SELECT b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,a.rebate_status,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
+		SELECT a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
 		WHERE a.is_delete=0 AND b.is_delete=0
 		ORDER BY a.id DESC
 		LIMIT #{pageIndex},#{pageSize}
 	</select>
 
 	<select id="getOrderLeasingList" resultType="LeaseOrderListDto">
-		SELECT b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,a.rebate_status,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
+		SELECT a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
 		WHERE a.is_delete=0 AND b.is_delete=0 AND a.lease_status = '' AND  b.status != 'CLOSED'
 		ORDER BY a.id DESC
 		LIMIT #{pageIndex},#{pageSize}

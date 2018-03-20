@@ -15,6 +15,7 @@ public class LeaseOrderListDto {
     private String rebateAmount;
     private String rebateStatus;
     private String closedReason;
+    private String leaseStatus;
     private Date gmtCreate;
     private Date gmtPayEnd;
 
@@ -88,5 +89,13 @@ public class LeaseOrderListDto {
 
     public void setRebateStatus(String rebateStatus) {
         this.rebateStatus = rebateStatus;
+    }
+
+    public String getLeaseStatus() {
+        return leaseStatus;
+    }
+
+    public void setLeaseStatus(String leaseStatus) {
+        this.leaseStatus = leaseStatus;
     }
 }

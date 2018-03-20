@@ -582,6 +582,13 @@ public class AppH5LeaseController extends BaseController {
                         item.setClosedReason("超时未支付");
                         afOrderService.closeOrder("超时未支付","",item.getId());
                     }
+                    //待收货
+                    if(item.getStatus().equals("AUDITSUCCESS")){
+                        item.setStatus("PAID");
+                    }
+                    if(StringUtil.isNotEmpty(item.getLeaseStatus())){
+                        item.setStatus(item.getLeaseStatus());
+                    }
                 }
             }
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", list);
@@ -610,10 +617,39 @@ public class AppH5LeaseController extends BaseController {
                 lease.setClosedReason("超时未支付");
                 afOrderService.closeOrder("超时未支付","",orderId);
             }
+            //待收货
+            if(lease.getStatus().equals("AUDITSUCCESS")){
+                lease.setStatus("PAID");
+            }
+            if(StringUtil.isNotEmpty(lease.getLeaseStatus())){
+                lease.setStatus(lease.getLeaseStatus());
+            }
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("getLeaseOrder", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *取消租赁订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "cancelLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String cancelLeaseOrder(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        LeaseOrderDto lease = new LeaseOrderDto();
+        try{
+            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            String closedReason = ObjectUtils.toString(request.getParameter("closedReason"));
+            afOrderService.closeOrder(closedReason,"",orderId);
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("cancelLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
