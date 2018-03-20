@@ -356,12 +356,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if(activityId>0l){
 				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
 				if(afSeckillActivityGoodsDto==null){
-					//超过购买数量
+					//活动结束
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
 				}
 				//Long activityId = afSeckillActivityGoodsDto.getActivityId();
-				int goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
-				if(goodsLimitCount<count){
+				Integer goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
+				if(goodsLimitCount!=null&&goodsLimitCount<count){
 					//超过购买数量
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 				}
