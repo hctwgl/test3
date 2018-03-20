@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.domain.*;
@@ -100,6 +101,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
     @Resource
     AfUserCouponTigerMachineService afUserCouponTigerMachineService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
     
 
     @Override
@@ -194,6 +197,15 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
+        
+	String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+	if (bizCacheUtil.getObject(lockKey) == null) {
+	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+	} else {
+	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	}
+        
+        
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
