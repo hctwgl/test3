@@ -194,10 +194,10 @@
 
     <select id="getActivityPriceByPriceIdAndActId" resultType="AfSeckillActivityGoodsDto">
         SELECT
-        a.id rid,a.special_price,a.limit_count,a.goods_id,a.price_id
-        FROM af_seckill_activity_goods a
+        a.id rid,a.special_price,a.limit_count,a.goods_id,a.price_id,b.type
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
         WHERE a.is_delete=0 AND a.type=2
-        AND a.price_id=#{goodsPriceId} AND a.activity_id=#{activityId}
+        AND a.price_id=#{goodsPriceId} AND b.id=#{activityId}
         limit 1
     </select>
 

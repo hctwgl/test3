@@ -105,12 +105,17 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			int actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
 			Date gmtStart = afSeckillActivityDo.getGmtStart();
 			Date gmtEnd = afSeckillActivityDo.getGmtEnd();
+			Date gmtPStart = afSeckillActivityDo.getGmtPStart();
 			vo.setActivityId(activityId);
 			vo.setActivityType(afSeckillActivityDo.getType());
 			vo.setActivityName(afSeckillActivityDo.getName());
-			vo.setGmtStart(gmtStart);
-			vo.setGmtEnd(gmtEnd);
-			vo.setGmtPstart(afSeckillActivityDo.getGmtPStart());
+			vo.setGmtStart(gmtStart.getTime());
+			vo.setGmtEnd(gmtEnd.getTime());
+			if(gmtPStart.getTime()>=gmtStart.getTime()){
+				vo.setGmtPstart(0l);
+			}else{
+				vo.setGmtPstart(gmtPStart.getTime());
+			}
 			vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
 			vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
 			vo.setPayType(afSeckillActivityDo.getPayType());
@@ -121,9 +126,9 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setActivityId(0l);
 			vo.setActivityType(0);
 			vo.setActivityName("");
-			vo.setGmtStart(new Date());
-			vo.setGmtEnd(new Date());
-			vo.setGmtPstart(new Date());
+			vo.setGmtStart(0l);
+			vo.setGmtEnd(0l);
+			vo.setGmtPstart(0l);
 			vo.setLimitCount(0);
 			//vo.setLimitedPurchase(0);
 			vo.setPayType("");

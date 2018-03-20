@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -169,14 +170,16 @@ public class GetGoodsSpecApi implements ApiHandle {
 				//判断是在在活动中，并且活动已经开始
 				Long priceId = priceDo.getRid();
 				if(activityId>0){
-					AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityPriceByPriceIdAndActId(priceId,activityId);
-					if(afSeckillActivityGoodsDo!=null){
-						int limitCount = afSeckillActivityGoodsDo.getLimitCount();
-						BigDecimal specialPrice = afSeckillActivityGoodsDo.getSpecialPrice();
+					AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceIdAndActId(priceId,activityId);
+					if(afSeckillActivityGoodsDto!=null){
+						int limitCount = afSeckillActivityGoodsDto.getLimitCount();
+						BigDecimal specialPrice = afSeckillActivityGoodsDto.getSpecialPrice();
 						if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
 							limitCount = 0;
 						}
-						goodsPriceVo.setStock(limitCount);
+						if(afSeckillActivityGoodsDto.getType()!=null&&afSeckillActivityGoodsDto.getType()==2){
+							goodsPriceVo.setStock(limitCount);
+						}
 						goodsPriceVo.setActualAmount(specialPrice);
 					}
 				}

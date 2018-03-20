@@ -35,9 +35,9 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Long activityId;
 	private Integer activityType;
 	private String activityName;
-	private Date gmtStart;
-	private Date gmtEnd;
-	private Date gmtPstart;
+	private Long gmtStart;
+	private Long gmtEnd;
+	private Long gmtPstart;
 	private Integer limitCount;
 	private Integer goodsLimitCount;
 	private String payType;
@@ -155,30 +155,6 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 		this.activityName = activityName;
 	}
 
-	public Date getGmtStart() {
-		return gmtStart;
-	}
-
-	public void setGmtStart(Date gmtStart) {
-		this.gmtStart = gmtStart;
-	}
-
-	public Date getGmtEnd() {
-		return gmtEnd;
-	}
-
-	public void setGmtEnd(Date gmtEnd) {
-		this.gmtEnd = gmtEnd;
-	}
-
-	public Date getGmtPstart() {
-		return gmtPstart;
-	}
-
-	public void setGmtPstart(Date gmtPstart) {
-		this.gmtPstart = gmtPstart;
-	}
-
 	public Integer getLimitCount() {
 		return limitCount;
 	}
@@ -241,5 +217,29 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setNperList(List<Map<String, Object>> nperList) {
 		this.nperList = nperList;
+	}
+
+	public Long getGmtStart() {
+		return gmtStart;
+	}
+
+	public void setGmtStart(Long gmtStart) {
+		this.gmtStart = gmtStart;
+	}
+
+	public Long getGmtEnd() {
+		return gmtEnd;
+	}
+
+	public void setGmtEnd(Long gmtEnd) {
+		this.gmtEnd = gmtEnd;
+	}
+
+	public Long getGmtPstart() {
+		return gmtPstart;
+	}
+
+	public void setGmtPstart(Long gmtPstart) {
+		this.gmtPstart = gmtPstart;
 	}
 }
