@@ -6,7 +6,6 @@ import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public AfSeckillActivityDto getActivityByGoodsId(Long goodsId) {
+	public AfSeckillActivityDo getActivityByGoodsId(Long goodsId) {
 		return afSeckillActivityDao.getActivityByGoodsId(goodsId);
 	}
 
@@ -55,8 +54,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public AfSeckillActivityGoodsDto getActivityPriceByPriceId(Long goodsPriceId) {
-		return afSeckillActivityGoodsDao.getActivityPriceByPriceId(goodsPriceId);
+	public AfSeckillActivityGoodsDto getActivityPriceByPriceIdAndActId(Long goodsPriceId,Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityPriceByPriceIdAndActId(goodsPriceId,activityId);
 	}
 
 	@Override
@@ -87,5 +86,10 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public AfSeckillActivityOrderDo getActivityOrderByOrderId(Long orderId) {
 		return afSeckillActivityOrderDao.getActivityOrderByOrderId(orderId);
+	}
+
+	@Override
+	public AfSeckillActivityGoodsDo getActivityGoodsByGoodsIdAndActId(Long activityId, Long goodsId) {
+		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
 	}
 }

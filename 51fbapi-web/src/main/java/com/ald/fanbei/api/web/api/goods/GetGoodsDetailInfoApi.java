@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -97,34 +95,28 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				interestFreeArray = JSON.parseArray(interestFreeJson);
 			}
 		}
-		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
 		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
-		if(nperList!= null){
-			Map nperMap = nperList.get(nperList.size() - 1);
-			vo.setNperMap(nperMap);
-		}
-		vo.setNperList(nperList);
-		vo.setRemark(goods.getRemark());
 		//秒杀、促销活动商品信息
-		AfSeckillActivityDto afSeckillActivityDto = afSeckillActivityService.getActivityByGoodsId(goodsId);
-		if(afSeckillActivityDto!=null){
-			Long activityId = afSeckillActivityDto.getRid();
+		AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
+		if(afSeckillActivityDo!=null){
+			Long activityId = afSeckillActivityDo.getRid();
 			//获取活动已售商品数量
+			AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
 			int actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
-			Date gmtStart = afSeckillActivityDto.getGmtStart();
-			Date gmtEnd = afSeckillActivityDto.getGmtEnd();
+			Date gmtStart = afSeckillActivityDo.getGmtStart();
+			Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 			vo.setActivityId(activityId);
-			vo.setActivityType(afSeckillActivityDto.getType());
-			vo.setActivityName(afSeckillActivityDto.getName());
+			vo.setActivityType(afSeckillActivityDo.getType());
+			vo.setActivityName(afSeckillActivityDo.getName());
 			vo.setGmtStart(gmtStart);
 			vo.setGmtEnd(gmtEnd);
-			vo.setGmtPstart(afSeckillActivityDto.getGmtPStart());
-			vo.setLimitCount(afSeckillActivityDto.getLimitCount());
-			vo.setGoodsLimitCount(afSeckillActivityDto.getGoodsLimitCount());
-			vo.setPayType(afSeckillActivityDto.getPayType());
+			vo.setGmtPstart(afSeckillActivityDo.getGmtPStart());
+			vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
+			vo.setGoodsLimitCount(afSeckillActivityDo.getGoodsLimitCount());
+			vo.setPayType(afSeckillActivityDo.getPayType());
 			vo.setActSaleCount(actSaleCount);
-			vo.setSpecialPrice(afSeckillActivityDto.getSpecialPrice());
+			vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
+			saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
 		}else{
 			vo.setActivityId(0l);
 			vo.setActivityType(0);
@@ -138,7 +130,15 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setActSaleCount(0);
 			vo.setSpecialPrice(BigDecimal.ZERO);
 		}
+		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
 
+		if(nperList!= null){
+			Map nperMap = nperList.get(nperList.size() - 1);
+			vo.setNperMap(nperMap);
+		}
+		vo.setNperList(nperList);
+		vo.setRemark(goods.getRemark());
 		resp.setResponseData(vo);
 		return resp;
 	}

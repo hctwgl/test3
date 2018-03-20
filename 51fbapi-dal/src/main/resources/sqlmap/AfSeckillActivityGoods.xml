@@ -192,13 +192,14 @@
         WHERE a.is_delete=0 AND b.is_delete=0 AND b.is_disable=0 AND a.type=2 AND a.goods_id=#{goodsId}
     </select>
 
-    <select id="getActivityPriceByPriceId" resultType="AfSeckillActivityGoodsDto" parameterType="java.lang.Long">
+    <select id="getActivityPriceByPriceIdAndActId" resultType="AfSeckillActivityGoodsDto">
         SELECT
         a.id rid,a.gmt_create,a.gmt_modified,a.special_price,a.limit_count,a.goods_id,a.price_id,a.activity_id,
         b.gmt_start,b.gmt_end,b.close_time,b.goods_limit_count
         FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
         WHERE a.is_delete=0 AND b.is_delete=0 AND b.is_disable=0 AND a.type=2
-        AND a.price_id=#{goodsPriceId} limit 1
+        AND a.price_id=#{goodsPriceId} AND b.id=#{activityId} AND b.gmt_start <![CDATA[<=]]> now() AND b.gmt_end <![CDATA[>=]]> now()
+        limit 1
     </select>
 
     <select id="getStartActivityPriceByPriceId" resultType="AfSeckillActivityGoodsDto" parameterType="java.lang.Long">
@@ -215,5 +216,12 @@
         UPDATE af_seckill_activity_goods SET gmt_modified=now(),limit_count=limit_count-#{limitCount}
         WHERE price_id=#{priceId} AND activity_id=#{activityId} AND is_delete=0
     </update>
-    
+
+    <select id="getActivityGoodsByGoodsIdAndActId" resultType="AfSeckillActivityGoodsDo">
+        SELECT
+        a.id rid,min(a.special_price) special_price,sum(a.limit_count) limit_count
+        FROM af_seckill_activity_goods a
+        WHERE a.is_delete=0 AND a.type=2
+        AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId}
+    </select>
 </mapper>

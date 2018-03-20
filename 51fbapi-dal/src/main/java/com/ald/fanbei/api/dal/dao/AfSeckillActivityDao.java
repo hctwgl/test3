@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 
 /**
  * 秒杀活动管理Dao
@@ -13,5 +12,5 @@ import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
  */
 public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long> {
 
-    AfSeckillActivityDto getActivityByGoodsId(Long goodsId);
+    AfSeckillActivityDo getActivityByGoodsId(Long goodsId);
 }

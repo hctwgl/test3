@@ -351,27 +351,25 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 
 			//秒杀活动增加逻辑
-			int activityType = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityType"), ""),
-					0);
-			if(activityType==2){
-				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceId(goodsPriceId);
-				Long activityId = afSeckillActivityGoodsDto.getActivityId();
+			Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityType"), ""),
+					0l);
+			if(activityId>0l){
+				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceIdAndActId(goodsPriceId,activityId);
+				if(afSeckillActivityGoodsDto==null){
+					//超过购买数量
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
+				}
+				//Long activityId = afSeckillActivityGoodsDto.getActivityId();
 				int goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
 				if(goodsLimitCount<count){
 					//超过购买数量
-					Map<String, Object> data = new HashMap<String, Object>();
-					data.put("activityCode", 1001);
-					resp.setResponseData(data);
-					return resp;
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 				}
 				try{
 					Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
 					if(remainCount<0||remainCount-count<0){
 						//超过购买数量
-						Map<String, Object> data = new HashMap<String, Object>();
-						data.put("activityCode", 1001);
-						resp.setResponseData(data);
-						return resp;
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 					}else{
 						//更新数据库
 						AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
@@ -380,10 +378,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 						afSeckillActivityGoodsDo.setActivityId(activityId);
 						if(afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo)<=0){
 							//超过购买数量
-							Map<String, Object> data = new HashMap<String, Object>();
-							data.put("activityCode", 1001);
-							resp.setResponseData(data);
-							return resp;
+							return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 						}
 						//创建秒杀单
 						AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
@@ -406,10 +401,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 				}catch (Exception ex){
 					logger.error("afSeckillActivity error for:" + ex);
 					//人太多了，被挤爆了
-					Map<String, Object> data = new HashMap<String, Object>();
-					data.put("activityCode", 1002);
-					resp.setResponseData(data);
-					return resp;
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
 				}
 			}
 			//-------------------------------
