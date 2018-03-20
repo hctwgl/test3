@@ -88,10 +88,10 @@ public class AppH5FaceTestController extends BaseController {
 		AfFacescoreRedConfigDo redConfigDo = afFacescoreRedConfigService
 				.getById(redConfigId);
 		if (redConfigDo != null) {
-			BigDecimal maxmoney = redConfig.getMaxmoney();
-			BigDecimal minmoney = redConfig.getMinmoney();
+			BigDecimal maxmoney = redConfigDo.getMaxmoney();
+			BigDecimal minmoney = redConfigDo.getMinmoney();
 			// 确定红包的金额
-			BigDecimal amout = redConfig.getMinmoney().add(
+			BigDecimal amout = redConfigDo.getMinmoney().add(
 					new BigDecimal(
 							random.nextInt((maxmoney.intValue() - minmoney
 									.intValue()) * 100) / 100));
