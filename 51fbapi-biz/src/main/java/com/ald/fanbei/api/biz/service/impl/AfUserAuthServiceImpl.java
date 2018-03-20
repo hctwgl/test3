@@ -525,7 +525,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	    }
 	}
-	if (!isExist && scene.equals(UserAccountSceneType.BLD_LOAN.getCode())) {
+	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
 	    data.put("status", "F");
 	    data.put("title", "");
 	}
