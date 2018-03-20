@@ -161,7 +161,7 @@
 	  		#{item.poundageAmount},
 	  		#{item.isFreeInterest},
 			#{item.gmtOutDay},
-			#{item.gmtPayTime}
+			if(#{item.gmtPayTime}>NOW(),#{item.gmtPayTime},ADDDATE(DATE(now()),INTERVAL 59+59*60+23*60*60 SECOND))
 	  	)
 	  	</foreach> 
    </insert>
