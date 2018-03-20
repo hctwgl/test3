@@ -1712,7 +1712,7 @@ public class RiskUtil extends AbstractThird {
 				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
 				// 处理已认证，未提额的补充认证
-				processAuthedNotRaiseAuth(consumerNo);
+				processAuthedNotRaiseAuth(consumerNo,LoanType.BLD_LOAN.getCode());
 
 				jpushService.strongRiskSuccess(userAccountDo.getUserName());
 				smsUtil.sendRiskSuccess(userAccountDo.getUserName());
@@ -1729,7 +1729,7 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 
-	private void processAuthedNotRaiseAuth(Long userId) {
+	private void processAuthedNotRaiseAuth(Long userId,String scene) {
 		AfUserAuthDo userAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String, String> authInfoMap = Maps.newHashMap();
 		authInfoMap.put(AuthType.ALIPAY.getCode(), userAuthInfo.getAlipayStatus());
@@ -1744,12 +1744,12 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtils.equals(authStatus, "Y")) {
 				AfAuthRaiseStatusDo authRaiseStatusDo = new AfAuthRaiseStatusDo();
 				authRaiseStatusDo.setAuthType(authType);
-				authRaiseStatusDo.setPrdType(LoanType.BLD_LOAN.getCode());
+				authRaiseStatusDo.setPrdType(scene);
 				authRaiseStatusDo.setUserId(userId);
 				authRaiseStatusDo = afAuthRaiseStatusService.getByCommonCondition(authRaiseStatusDo);
 				if(authRaiseStatusDo == null || !StringUtils.equals("Y", authRaiseStatusDo.getRaiseStatus())) {
 					AuthCallbackBo authCallbackBo = new AuthCallbackBo("", ObjectUtils.toString(userId), authType,
-							RiskAuthStatus.SUCCESS.getCode());
+							RiskAuthStatus.SUCCESS.getCode(),scene);
 					authCallbackManager.execute(authCallbackBo);
 				}
 			}
@@ -3665,7 +3665,7 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 
-	public int supplementAuthNotify(String code, String data, String msg, String signInfo) {
+	public int supplementAuthNotify(String code, String data, String msg, String signInfo,String scene) {
 
 		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
 		reqBo.setCode(code);
@@ -3684,7 +3684,7 @@ public class RiskUtil extends AbstractThird {
 			String authItem = obj.getString("authItem");
 			String orderNo = obj.getString("orderNo");
 			String result = obj.getString("result");
-			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
+			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result,scene);
 			authCallbackManager.execute(callbackBo);
 		}
 		return 0;
