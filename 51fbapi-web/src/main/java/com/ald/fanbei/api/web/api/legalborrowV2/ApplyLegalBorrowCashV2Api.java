@@ -218,7 +218,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
 					if (pushWhiteResource != null) {
 						//白名单开启
-						String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
+						String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
 						Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 						if(!Arrays.asList(whiteUserIds).contains(userId)){
 							//不在白名单不推送
