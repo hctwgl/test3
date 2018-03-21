@@ -102,7 +102,10 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			Long activityId = afSeckillActivityDo.getRid();
 			//获取活动已售商品数量
 			AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
-			int actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
+			int actSaleCount = 0;
+			if(afSeckillActivityDo.getType()==2){
+				actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
+			}
 			Date gmtStart = afSeckillActivityDo.getGmtStart();
 			Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 			Date gmtPStart = afSeckillActivityDo.getGmtPStart();
