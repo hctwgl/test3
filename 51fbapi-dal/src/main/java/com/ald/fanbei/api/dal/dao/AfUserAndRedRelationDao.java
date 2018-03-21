@@ -17,6 +17,8 @@ public interface AfUserAndRedRelationDao {
 
 	int findUserAndRedRelationRecordByUserId(Long userId);
 
+	int findUserAndRedRelationRecordByRedId(long redId);
+
 	
 	
 }

@@ -29,6 +29,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.yeepay.g3.utils.common.StringUtils;
 
 @Controller
 public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
@@ -54,34 +55,67 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 		// 2判断用户是否处于登陆状态
 		if (context.isLogin()) {
 			afUser = afUserService.getUserByUserName(context.getUserName());
-			if (afUser == null){
-				return H5CommonResponse.getNewInstance(false, "用户非法", null, null).toString();
+			if (afUser == null) {
+				return H5CommonResponse.getNewInstance(false, "用户非法", null,
+						null).toString();
 			}
 			if (afUser != null) {
 				userId = afUser.getRid();
 				// 1先查询有没有测试过，是否对红包进行了提现
-				int count = faceScoreRedService.findUserAndRedRelationRecordByUserId(userId);
-				List<AfResourceDo> configList = afResourceService.getConfigByTypes("USER_FACETEST");
-				if (CollectionUtil.isEmpty(configList)){
-					 return H5CommonResponse.getNewInstance(false, "该活动已经结束！", "", null).toString();
+				int count = faceScoreRedService
+						.findUserAndRedRelationRecordByUserId(userId);
+				List<AfResourceDo> configList = afResourceService
+						.getConfigByTypes("USER_FACETEST");
+				if (CollectionUtil.isEmpty(configList)) {
+					return H5CommonResponse.getNewInstance(false, "该活动已经结束！",
+							"", null).toString();
 				}
-				Integer totalAllowedCount = Integer.valueOf(configList.get(0).getValue1());
-				if (count == totalAllowedCount){
-					return H5CommonResponse.getNewInstance(false, "拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null).toString();
-				}else if (count == 1){
+				Integer totalAllowedCount = Integer.valueOf(configList.get(0)
+						.getValue1());
+				if (count == totalAllowedCount) {
+					return H5CommonResponse.getNewInstance(false,
+							"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null).toString();
+				} else if (count == 1) {
 					// 已经领取过一次，进行分享次数的判断
-				    AfFacescoreShareCountDo shareCountDo = faceScoreShareCountService.getById(userId);
-				    Integer sharedCount = shareCountDo.getCount();
+					AfFacescoreShareCountDo shareCountDo = faceScoreShareCountService
+							.getByUserId(userId);
+					if (shareCountDo == null) {
+						return H5CommonResponse.getNewInstance(false,
+								"你已经提现过一次，分享五个群可再得一次拆红包的机会！", "", null)
+								.toString();
+					}
+					Integer sharedCount = shareCountDo.getCount();
 					// 获取需要分享的次数
-					int needSharedCount = Integer.valueOf(configList.get(0).getValue());
-					if (sharedCount < needSharedCount ){
-					   return H5CommonResponse.getNewInstance(false, "拆红包的次数已经用完 ,分享五个群可再得一次拆红包的机会！", "", null).toString();
+					int needSharedCount = Integer.valueOf(configList.get(0)
+							.getValue());
+					if (sharedCount < needSharedCount) {
+						int a = needSharedCount - sharedCount;
+						String str = StringUtils.EMPTY;
+						switch (a) {
+						case 1:
+							str = "一";
+							break;
+						case 2:
+							str = "二";
+							break;
+						case 3:
+							str ="三";
+							break;
+						case 4:
+							str = "四";
+							break;
+						}
+						return H5CommonResponse.getNewInstance(false,
+								"拆红包的次数已经用完 ,分享 "+ str +"个群可再得一次拆红包的机会！", "", null)
+								.toString();
 					}
 				}
-		return H5CommonResponse.getNewInstance(true, "可以进行下一步的拆红包", "", null).toString();
+				return H5CommonResponse.getNewInstance(true, "可以进行下一步的拆红包", "",
+						null).toString();
 			}
 		}
-		return H5CommonResponse.getNewInstance(true, "", null, null).toString();
+		return H5CommonResponse.getNewInstance(true, "用户没有登陆，可以接着拆红包!", null,
+				null).toString();
 	}
 
 	@Override

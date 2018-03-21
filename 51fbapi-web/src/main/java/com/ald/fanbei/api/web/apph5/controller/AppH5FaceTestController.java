@@ -17,9 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ald.fanbei.api.biz.service.AfFacescoreRedConfigService;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
@@ -29,10 +27,8 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedConfigDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -59,55 +55,8 @@ public class AppH5FaceTestController extends BaseController {
 	private AfUserService afUserService;
 
 	private ConcurrentHashMap<ArrayList<Integer>, Long> map;
-	private List<AfFacescoreRedConfigDo> redConfigList;
 
-	@ResponseBody
-	@RequestMapping(value = "/fanbeiapi/faceTest", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String faceScoreTest(@RequestParam MultipartFile file,
-			@RequestParam(required = false) String username,
-			@RequestParam String imgUrl) {
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-		AfFacescoreRedDo redDo = new AfFacescoreRedDo();
-		// 掉用apiFile系统的接口来存储图片
-		/*
-		 * byte[] data; String result = null; try { data = file.getBytes();
-		 * result =
-		 * HttpsUtil.doPost("http://file.domain.com/file/uploadFile.htm",
-		 * "application/json", data, 500, 500); }catch (Exception e) {
-		 * e.printStackTrace(); logger.error("人脸图片上传失败!"); // return }
-		 * ApiHandleResponse resultBean = JsonUtil.toJavaBean(result,
-		 * ApiHandleResponse.class);
-		 * 
-		 * String imageurl = (String) resultBean.getResult().getData();
-		 */
-		Random random = new Random();
-		int a = random.nextInt(100);
-		// 根据随机概率获取对应等级红包的配置对象
-		AfFacescoreRedConfigDo redConfig = generateRedDegree(a, redConfigList);
-		Long redConfigId = redConfig.getRid();
-		AfFacescoreRedConfigDo redConfigDo = afFacescoreRedConfigService
-				.getById(redConfigId);
-		if (redConfigDo != null) {
-			BigDecimal maxmoney = redConfigDo.getMaxmoney();
-			BigDecimal minmoney = redConfigDo.getMinmoney();
-			// 确定红包的金额
-			BigDecimal amout = redConfigDo.getMinmoney().add(
-					new BigDecimal(
-							random.nextInt((maxmoney.intValue() - minmoney
-									.intValue()) * 100) / 100));
-			redDo.setAmount(amout);
-			redDo.setConfigId(redConfigId);
-			redDo.setImageurl(imgUrl);
-		} else {
-			return H5CommonResponse.getNewInstance(false, "", "", null)
-					.toString();
-		}
-		// 保存红包到颜值红包表
-		int redId = afFacescoreRedService.saveRecord(redDo);
-		redDo.setRid(NumberUtil.objToLong(redId));
-		resp = H5CommonResponse.getNewInstance(true, "成功", "", redDo);
-		return resp.toString();
-	}
+	
 
 	@ResponseBody
 	@RequestMapping(value = "/fanbei_api/faceScore", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -134,7 +83,9 @@ public class AppH5FaceTestController extends BaseController {
 				BigDecimal maxmoney = redConfigDo.getMaxmoney();
 				BigDecimal minmoney = redConfigDo.getMinmoney();
 				// 确定红包的金额
-				BigDecimal amout = redConfigDo.getMinmoney().add(new BigDecimal(random.nextInt((maxmoney.intValue() - minmoney.intValue()) * 100) / 100));
+				int value = random.nextInt((maxmoney.intValue() - minmoney.intValue()) * 100);
+				BigDecimal bigDecimal = new BigDecimal(value * 0.01).setScale(2, BigDecimal.ROUND_DOWN);
+				BigDecimal amout = minmoney.add(bigDecimal);
 				redDo.setAmount(amout);
 				redDo.setConfigId(redConfigId);
 				// redDo.setImageurl(imgUrl);
@@ -143,8 +94,7 @@ public class AppH5FaceTestController extends BaseController {
 				return H5CommonResponse.getNewInstance(false, "", "", null).toString();
 			}
 			// 保存红包到颜值红包表
-			int redId = afFacescoreRedService.saveRecord(redDo);
-			redDo.setRid(NumberUtil.objToLong(redId));
+			afFacescoreRedService.addRed(redDo);
 			return H5CommonResponse.getNewInstance(true, "颜值测试成功", "", redDo).toString();
 		}
 	}

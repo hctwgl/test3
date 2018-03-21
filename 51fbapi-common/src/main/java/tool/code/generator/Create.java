@@ -20,7 +20,7 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_borrow_cash_push,af_borrow_push";
+		String tables = "af_facescore_share_count";
 
 
 

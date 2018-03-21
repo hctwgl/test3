@@ -45,7 +45,9 @@ public class AfFacescoreRedServiceImpl extends ParentServiceImpl<AfFacescoreRedD
 				AfUserAndRedRelationDo afUserAndRedRelationDo) {
 			return afUserAndRedRelationDao.addUserAndRedRelation(afUserAndRedRelationDo);
 		}
-
+		/**
+		 * 查询用户提现的次数
+		 */
 		@Override
 		public int findUserAndRedRelationRecordByUserId(Long userId) {
 			return afUserAndRedRelationDao.findUserAndRedRelationRecordByUserId(userId);
@@ -55,5 +57,19 @@ public class AfFacescoreRedServiceImpl extends ParentServiceImpl<AfFacescoreRedD
 		public AfFacescoreRedDo getImageUrlByUserId(Long userId) {
 			// TODO Auto-generated method stub
 			return afFacescoreRedDao.getImageUrlByUserId(userId);
+		}
+		/**
+		 * 添加红包记录的方法
+		 */
+		@Override
+		public int addRed(AfFacescoreRedDo redDo) {
+			return afFacescoreRedDao.addRed(redDo);
+		}
+		/**
+		 * 查询红包是否已经被提现的方法
+		 */
+		@Override
+		public int findUserAndRedRelationRecordByRedId(long redId) {
+			return afUserAndRedRelationDao.findUserAndRedRelationRecordByRedId(redId);
 		}
 }

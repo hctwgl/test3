@@ -53,4 +53,9 @@ public class AfFacescoreShareCountServiceImpl extends ParentServiceImpl<AfFacesc
 				afFacescoreShareCountDao.updateById(shareCountDo);
 			}
 		}
+
+		@Override
+		public AfFacescoreShareCountDo getByUserId(Long userId) {
+			return afFacescoreShareCountDao.getByUserId(userId);
+		}
 }

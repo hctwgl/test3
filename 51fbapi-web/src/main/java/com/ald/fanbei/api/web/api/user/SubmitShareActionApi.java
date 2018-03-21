@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
 import com.ald.fanbei.api.biz.service.AfFacescoreShareCountService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -18,6 +19,8 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  *@类现描述：客户端提交分享行为，针对某些h5页面用户去分享时服务端需要记录是否分享、分享了之后需要做一些业务。针对需要服务端统计分享的页面客户端需把分享的行为告诉服务端
@@ -87,8 +90,19 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 	}
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-	    // TODO Auto-generated method stub
-	    return null;
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
+
+			JSONObject jsonObj = JSON.parseObject(requestData);
+			reqVo.setId(jsonObj.getString("id"));
+			reqVo.setMethod(request.getRequestURI());
+			reqVo.setSystem(jsonObj);
+
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(),
+					FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
 	}
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {

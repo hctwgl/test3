@@ -17,4 +17,8 @@ public interface AfFacescoreRedService extends ParentService<AfFacescoreRedDo, L
 	int findUserAndRedRelationRecordByUserId(Long userId);
 
 	AfFacescoreRedDo getImageUrlByUserId(Long userId);
+
+	int addRed(AfFacescoreRedDo redDo);
+
+	int findUserAndRedRelationRecordByRedId(long redId);
 }

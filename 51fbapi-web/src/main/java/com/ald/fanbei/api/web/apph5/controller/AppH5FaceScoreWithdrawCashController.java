@@ -73,7 +73,7 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 				long redId = NumberUtil.objToLongDefault(request.getParameter("rid"),0L);
 				AfFacescoreRedDo redDo = faceScoreRedService.getById(redId);
 				if (redDo == null){
-					return H5CommonResponse.getNewInstance(false, "参数有误", "", null).toString();
+					return H5CommonResponse.getNewInstance(false, "红包不存在,参数有误!", "", null).toString();
 				}
 				try {
 					Long userId = -1l;
@@ -105,6 +105,10 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 								   return H5CommonResponse.getNewInstance(false, "分享五个群可再得一次拆红包的机会！", "", null).toString();
 								}
 							}*/
+							int count = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
+							if (count > 0){
+								return H5CommonResponse.getNewInstance(false, "该红包已经被提现了！", "", null).toString();
+							}
 							AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 					        if (userAccountDo == null) {
 					            throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -126,7 +130,7 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					        faceScoreRedService.addUserAndRedRecord(new AfUserAndRedRelationDo(userId,redId));
 							} else {
 								// 用户未登陆的情况
-								return H5CommonResponse.getNewInstance(false, "用户不合法！", "", null).toString();
+								return H5CommonResponse.getNewInstance(false, "用户不存在！", "", null).toString();
 							}
 					}else{
 						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", null).toString();

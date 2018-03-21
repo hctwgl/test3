@@ -16,6 +16,10 @@ public interface AfFacescoreRedDao extends BaseDao<AfFacescoreRedDo, Long> {
 
 	AfFacescoreRedDo getImageUrlByUserId(@Param("userId")Long userId);
 
+	int addRed(AfFacescoreRedDo redDo);
+
+
+
     
 
 }

@@ -14,4 +14,6 @@ public interface AfFacescoreShareCountService extends ParentService<AfFacescoreS
 
 	void dealWithShareCount(Long userId);
 
+	AfFacescoreShareCountDo getByUserId(Long userId);
+
 }
