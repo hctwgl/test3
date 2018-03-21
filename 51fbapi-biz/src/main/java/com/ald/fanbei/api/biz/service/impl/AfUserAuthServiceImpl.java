@@ -383,7 +383,13 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
-	    data.put("showExtraTab", afResourceDoAuth.getValue());
+	    //是否显示补充认证（兼容老版本）
+	    if (appVersion <= 408) {
+		data.put("showExtraTab", afResourceDoAuth.getValue());
+	    } else {
+		data.put("showExtraTab", "1");
+	    }
+	    
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
 		data.put("basicStatus", "A");
