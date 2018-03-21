@@ -164,7 +164,7 @@ public final class HtmlToPdfUtil {
         ITextFontResolver fontResolver = render.getFontResolver();
         try {
             if("linux".equals(getCurrentOperatingSystem())){
-                fontResolver.addFont("/usr/share/fonts/chiness/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             }else{
                 fontResolver.addFont("c:/Windows/Fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
             }
@@ -177,10 +177,10 @@ public final class HtmlToPdfUtil {
             render.createPDF(new FileOutputStream(outFilePath));
         } catch (DocumentException e) {
             e.printStackTrace();
-            logger.info("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
         } catch (IOException e) {
             e.printStackTrace();
-            logger.info("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
         }
     }
 
