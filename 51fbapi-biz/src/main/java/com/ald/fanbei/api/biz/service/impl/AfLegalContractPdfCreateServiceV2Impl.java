@@ -209,6 +209,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                                 map.put("yearRate", jsonObject.get("consumeFirstType"));
                             } else if (twoDay.equals(type)) {
                                 map.put("yearRate", jsonObject.get("consumeSecondType"));
+                            } else if ("7".equals(type)){
+                                map.put("yearRate", jsonObject.get("consumeFirstType"));
+                            } else if ("14".equals(type)){
+                                map.put("yearRate", jsonObject.get("consumeSecondType"));
                             }
                         }
                     }
@@ -222,6 +226,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                                 map.put("poundageRate", jsonObject.get("consumeFirstType"));
                             } else if (twoDay.equals(type)) {
                                 map.put("poundageRate", jsonObject.get("consumeSecondType"));
+                            } else if ("7".equals(type)){
+                                map.put("poundageRate", jsonObject.get("consumeFirstType"));
+                            } else if ("14".equals(type)){
+                                map.put("poundageRate", jsonObject.get("consumeSecondType"));
                             }
                         }
                     }
@@ -234,6 +242,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                             if (oneDay.equals(type)) {
                                 map.put("overdueRate", jsonObject.get("consumeFirstType"));
                             } else if (twoDay.equals(type)) {
+                                map.put("overdueRate", jsonObject.get("consumeSecondType"));
+                            }else if ("7".equals(type)){
+                                map.put("overdueRate", jsonObject.get("consumeFirstType"));
+                            } else if ("14".equals(type)){
                                 map.put("overdueRate", jsonObject.get("consumeSecondType"));
                             }
                         }
@@ -254,6 +266,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                                 map.put("yearRate", jsonObject.get("borrowFirstType"));
                             } else if (twoDay.equals(type)) {
                                 map.put("yearRate", jsonObject.get("borrowSecondType"));
+                            }else if ("7".equals(type)){
+                                map.put("yearRate", jsonObject.get("borrowFirstType"));
+                            } else if ("14".equals(type)){
+                                map.put("yearRate", jsonObject.get("borrowSecondType"));
                             }
                         }
                     }
@@ -267,6 +283,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                                 map.put("poundageRate", jsonObject.get("borrowFirstType"));
                             } else if (twoDay.equals(type)) {
                                 map.put("poundageRate", jsonObject.get("borrowSecondType"));
+                            } else if ("7".equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowFirstType"));
+                            } else if ("14".equals(type)){
+                                map.put("poundageRate", jsonObject.get("borrowSecondType"));
                             }
                         }
                     }
@@ -279,6 +299,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                             if (oneDay.equals(type)) {
                                 map.put("overdueRate", jsonObject.get("borrowFirstType"));
                             } else if (twoDay.equals(type)) {
+                                map.put("overdueRate", jsonObject.get("borrowSecondType"));
+                            } else if ("7".equals(type)){
+                                map.put("overdueRate", jsonObject.get("borrowFirstType"));
+                            } else if ("14".equals(type)){
                                 map.put("overdueRate", jsonObject.get("borrowSecondType"));
                             }
                         }
