@@ -482,4 +482,12 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int getOnRepaymentCountByUserId(@Param("userId")Long userId);
+
+	/**
+	 * 获取租赁账单
+	 *
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillLeaseAmountByIds(@Param("ids") List<String> ids);
 }
