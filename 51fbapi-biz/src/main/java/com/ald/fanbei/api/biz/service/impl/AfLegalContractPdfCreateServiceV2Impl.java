@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -11,9 +10,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
@@ -85,6 +82,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     NumberWordFormat numberWordFormat;
     @Resource
     AfLoanService afLoanService;
+    @Resource
+    AfUserOutDayDao afUserOutDayDao;
+    @Resource
+    AfBorrowService afBorrowService;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -1131,8 +1132,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     private String getPdfInfoWithOutSeal(Long userId, AfBorrowDo afBorrowDo, AfBorrowCashDo afBorrowCashDo, String type) throws IOException {
         long time = new Date().getTime();
         Map<String, String> map = new HashMap();
-//        String url = "http://localhost:8080";
-        String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
         AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (accountDo == null) {
             logger.error("account not exist => {}" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -1144,12 +1143,14 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
         String html = "";
-        /*if (type.equals("cashLoan")){
-            html = getVelocityHtml(afUserDo.getUserName(),afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(), BigDecimal.valueOf(0),afBorrowCashDo.getType());
+        if (type.equals("cashLoan")){
+            html = getCashVelocityHtml(afUserDo.getUserName(),afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(), BigDecimal.valueOf(0),afBorrowCashDo.getType(),"protocolLegalCashLoanV2WithoutSealTemplate.vm");
+            map.put("protocolCashType","1");
         }else if (type.equals("instalment")){
-            html = getVelocityHtml(afUserDo.getUserName(),afBorrowDo.getRid(),afBorrowDo.getAmount(), BigDecimal.valueOf(0),afBorrowCashDo.getType());
-        }*/
-        if (type.equals("instalment")) {
+            html = getInstalmentVelocityHtml(afUserDo.getUserName(),afBorrowDo.getRid(),afBorrowDo.getNper(),afBorrowDo.getAmount(),BigDecimal.ZERO,"protocolLegalInstalmentV2WithoutSealTemplate.vm");
+            map.put("protocolCashType","2");
+        }
+        /*if (type.equals("instalment")) {
             url += ("/fanbei-web/app/protocolLegalInstalmentV2WithoutSeal?");
             url += ("userName=" + afUserDo.getUserName());
             url += ("&borrowId=" + afBorrowDo.getRid());
@@ -1166,26 +1167,127 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             map.put("protocolCashType", "1");
             map.put("borrowId", afBorrowCashDo.getRid().toString());
         }
-        html = HttpUtil.doGet(String.valueOf(url), 10);
+        html = HttpUtil.doGet(String.valueOf(url), 10);*/
         String outFilePath = src + accountDo.getUserName() + type + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         map.put("PDFPath", outFilePath);
+
         return pdfCreateWithoutSeal(map);
     }
 
-    private String getVelocityHtml(String userName, Long borrowId, BigDecimal amount, BigDecimal poundage, String type) {
+    private String getCashVelocityHtml(String userName, Long borrowId, BigDecimal amount, BigDecimal poundage, String type,String pdfType) {
         try {
-            String html = VelocityUtil.getHtml(protocolLegalCashLoan(userName, borrowId, amount, poundage, type));
+            String html = VelocityUtil.getHtml(protocolLegalCashLoan(userName, borrowId, amount, poundage, type,pdfType));
             return html;
         } catch (IOException e) {
             e.printStackTrace();
+            logger.error("getCashVelocityHtml IOException",e);
         } catch (DocumentException e) {
             e.printStackTrace();
+            logger.error("getCashVelocityHtml DocumentException",e);
         }
         return null;
     }
 
-    public Map protocolLegalCashLoan(String userName, Long borrowId, BigDecimal borrowAmount, BigDecimal poundage, String type) throws IOException {
+    private String getInstalmentVelocityHtml(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,BigDecimal poundage,String pdfTemplate) {
+        try {
+            String html = VelocityUtil.getHtml(protocolLegalInstalmentV2WithoutSeal(userName,borrowId,nper,borrowAmount,poundage,pdfTemplate));
+            return html;
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("getCashVelocityHtml IOException",e);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+            logger.error("getCashVelocityHtml DocumentException",e);
+        }
+        return null;
+    }
+
+    public Map protocolLegalInstalmentV2WithoutSeal(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,BigDecimal poundage,String pdfTemplate){
+        AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        Map<String, Object> map = new HashMap();
+        map.put("templateSrc",pdfTemplate);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+
+        map.put("idNumber", accountDo.getIdNumber());
+        map.put("realName", accountDo.getRealName());
+        AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
+        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
+        map.put("lender", lenderDo.getValue());// 出借人
+        map.put("mobile", afUserDo.getUserName());// 联系电话
+        map.put("lateFeeRate", consumeOverdueDo.getValue1());
+        if (StringUtils.isNotBlank(consumeOverdueDo.getValue2())) {
+            String[] amounts = consumeOverdueDo.getValue2().split(",");
+            map.put("lateFeeMin", new BigDecimal(amounts[0]));
+            map.put("lateFeeMax", new BigDecimal(amounts[1]));
+        }
+        List<NperDo> rateList = JSONArray.parseArray(consumeDo.getValue3(), NperDo.class);
+        for (NperDo nperDo : rateList) {
+            if (nperDo.getNper() == nper) {
+                map.put("interest", (BigDecimal)nperDo.getRate().multiply(BigDecimal.valueOf(100))+"%");
+            }
+        }
+
+        if (null != borrowId && 0 != borrowId) {
+            AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
+            lender(map);
+            Date date = afBorrowDo.getGmtCreate();
+            BigDecimal nperAmount = afBorrowDo.getNperAmount();
+            map.put("nperAmount", nperAmount);
+            map.put("gmtStart", date);
+            map.put("gmtEnd", DateUtil.addMonths(date, nper));
+            map.put("borrowNo", afBorrowDo.getBorrowNo());
+            nper = afBorrowDo.getNper();
+            String borrowRate = afBorrowDo.getBorrowRate();
+            String interest = borrowRate.split(";")[1].split(",")[1];
+            if (interest != null){
+                BigDecimal rate = BigDecimal.valueOf(Double.parseDouble(interest)).multiply(BigDecimal.valueOf(100));
+                map.put("interest", rate.toString()+"%");
+            }
+            List repayPlan = new ArrayList();
+            if (nper != null) {
+                List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
+                int num = 1;
+                for (AfBorrowBillDo bill:afBorrowBillDos) {
+                    AfBorrowDo borrowDo = new AfBorrowDo();
+                    borrowDo.setGmtCreate(bill.getGmtPayTime());
+                    borrowDo.setNperAmount(bill.getInterestAmount());
+                    borrowDo.setAmount(bill.getPrincipleAmount());
+                    borrowDo.setNper(num);
+                    repayPlan.add(borrowDo);
+                    num++;
+                }
+                Date repayDay = null;
+                if (afBorrowBillDos.size() > 0){
+                    AfBorrowBillDo billDo = afBorrowBillDos.get(afBorrowBillDos.size()-1);
+                    AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
+                    if(afUserOutDayDo !=null) {
+                        repayDay = billDo.getGmtPayTime();
+                    }
+                }
+                map.put("repayDay", repayDay);
+                map.put("repayPlan", repayPlan);
+            }
+        }
+
+        map.put("amountCapital", toCapital(borrowAmount.doubleValue()));
+        map.put("amountLower", borrowAmount);
+        map.put("poundage", poundage);
+        return map;
+    }
+
+    private void lender(Map model) {
+        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+        model.put("lender", lenderDo.getValue());// 出借人
+    }
+
+    public Map protocolLegalCashLoan(String userName, Long borrowId, BigDecimal borrowAmount, BigDecimal poundage, String type,String pdfTemplate) throws IOException {
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -1198,6 +1300,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
         Map<String, Object> map = new HashMap();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        map.put("templateSrc",pdfTemplate);
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
         getResourceRate(map, type, afResourceDo, "borrow");
         map.put("idNumber", accountDo.getIdNumber());
@@ -1215,18 +1319,18 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
             if (afBorrowCashDo != null) {
                 getResourceRate(map, type, afResourceDo, "borrow");
-                map.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
+                map.put("gmtCreate", format.format(afBorrowCashDo.getGmtCreate()));// 出借时间
                 map.put("borrowNo", afBorrowCashDo.getBorrowNo());
                 if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                    map.put("gmtArrival", afBorrowCashDo.getGmtArrival());
+                    map.put("gmtArrival", format.format(afBorrowCashDo.getGmtArrival()));
 //					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                     Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
                     Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                     Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-                    map.put("repaymentDay", repaymentDay);
+                    map.put("repaymentDay", format.format(repaymentDay));
                     map.put("lenderIdNumber", rate.get("lenderIdNumber"));
                     map.put("lenderIdAmount", afBorrowCashDo.getAmount());
-                    map.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment());
+                    map.put("gmtPlanRepayment", format.format(afBorrowCashDo.getGmtPlanRepayment()));
                     //查看有无和资金方关联，有的话，替换里面的借出人信息
                     AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
                     map.put("lender", lenderDo.getValue());// 出借人

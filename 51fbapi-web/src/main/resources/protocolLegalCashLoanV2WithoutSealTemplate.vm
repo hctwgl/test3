@@ -17,6 +17,8 @@
 <p>1.6 借款本金：借款人在丙方平台发布借款需求时所设定的借款金额。借款本金以丙方平台具体展示及记录为准。</p>
 <p>1.7 指定账户：与履行本协议项下权利义务相关的账户，包括但不限于平台账户和银行存管账户两类账户类型。具体适用的账户类型视实际情况确定。</p>
 <p>    根据就甲方通过丙方平台向乙方提出借款需求，丙方介绍甲方在丁方运营的融资撮合平台向乙方借款，乙方了解甲方借款需求并同意向甲方出借款项，同时由丙方、丁方为甲方、乙方借款提供居间服务。经各方协商一致，现就上述借款事宜订立如下协议，以期共同遵守。</p>
+<br/>
+<br/>
 <p style="margin-bottom: 40px;">二、借款基本信息</p>
 <div  style="margin-bottom: 30px;">
     <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
@@ -34,7 +36,7 @@
         </tr>
         <tr style="text-align:center;">
             <td>借款期限</td>
-            <td>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</td>
+            <td>#if($!{gmtArrival})$!{gmtArrival} 至 $!{repaymentDay}#end</td>
         </tr>
         <tr style="text-align:center;">
             <td>还款方式</td>
@@ -42,7 +44,7 @@
         </tr>
         <tr style="text-align:center;">
             <td>还款日</td>
-            <td>#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end</td>
+            <td>#if($!{gmtPlanRepayment})$!{gmtPlanRepayment}#end</td>
         </tr>
         <tr style="text-align:center;">
             <td>借款用途</td>
@@ -158,6 +160,6 @@
 </div>
 <p style="margin-bottom: 30px;">丙方：<em>浙江阿拉丁电子商务股份有限公司</em></p>
 <p style="margin-bottom: 30px;">丁方：<em>浙江楚橡信息科技有限公司</em></p>
-<p style="margin-bottom: 80px;">签署时间：<em>$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")</em></p>
+<p style="margin-bottom: 80px;">签署时间：<em>$!{gmtCreate}</em></p>
 <p style="margin-bottom: 80px;">签署地点：杭州市滨江区</p>
 </body>
