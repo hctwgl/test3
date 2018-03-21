@@ -204,7 +204,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 		final AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, count);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
-
+		AfGoodsPriceDo afGoodsPriceDo= 	afGoodsPriceService.getById(goodsPriceId);
+		if(afGoodsPriceDo.getActualAmount().compareTo(actualAmount)>0){
+			logger.info("actualAmount less than afGoodsPriceDo.getActualAmount() ,username:"+context.getUserName());
+			actualAmount=afGoodsPriceDo.getActualAmount();
+		}
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
 		//新增下单时，记录ip和同盾设备指纹锁 cxk
