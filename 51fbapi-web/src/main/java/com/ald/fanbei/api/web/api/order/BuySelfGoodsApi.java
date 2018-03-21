@@ -36,6 +36,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGoodsPriceVo;
+import com.twitter.util.Future.NextThrewException;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -237,9 +239,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 				
 				// ------------------------------------begin mqp doubleEggs------------------------------------
-				Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
-				if(doubleEggsId != null){
-					doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+				List<AfGoodsDoubleEggsDo> listGoods = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				if (CollectionUtil.isNotEmpty(listGoods)) {
+					
+					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
+					if(doubleEggsId != null){
+						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+					}
+				throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
+					
 				}
 				// ------------------------------------end mqp doubleEggs------------------------------------
 
