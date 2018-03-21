@@ -84,7 +84,8 @@ public class StartCashierApi implements ApiHandle {
     AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
-
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -226,7 +227,25 @@ public class StartCashierApi implements ApiHandle {
 	if (YesNoStatus.YES.getCode().equals(cashierVo.getBank().getStatus())) {
 	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId));
 	}
-
+	//判断是不是活动订单
+	AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
+	if(afSeckillActivityDo!=null){
+		String payType = afSeckillActivityDo.getPayType();
+		if(StringUtil.isNotBlank(payType)){
+			if(payType.indexOf("1")==-1){
+				cashierVo.setWx(null);
+				cashierVo.setAli(null);
+				//cashierVo.setBank(null);
+				cashierVo.setBankCardList(null);
+			}
+			if(payType.indexOf("2")==-1){
+				cashierVo.setCredit(null);
+			}
+			if(payType.indexOf("3")==-1){
+				cashierVo.setCp(null);
+			}
+		}
+	}
 	resp.setResponseData(cashierVo);
 	return resp;
     }

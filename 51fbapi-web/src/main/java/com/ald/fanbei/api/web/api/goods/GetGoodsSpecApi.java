@@ -81,8 +81,16 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 		goodsPriceDo.setGoodsId(goodsId);
 		List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getListByCommonCondition(goodsPriceDo);
-		priceData = convertListForPrice(priceDos,activityId);
-				
+		List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = new ArrayList<>();
+		if(activityId>0){
+			afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+		}
+		if(afSeckillActivityGoodsDtos!=null&&afSeckillActivityGoodsDtos.size()>0){
+			priceData = convertListForPriceAct(priceDos,afSeckillActivityGoodsDtos);
+		}else{
+			priceData = convertListForPrice(priceDos);
+		}
+
 		//双十一砍价活动增加逻辑
 		for ( AfGoodsPriceVo afGoodsPriceDo : priceData) {
 		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getPriceId());
@@ -155,7 +163,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 		return resp;
 	}
 
-	private List<AfGoodsPriceVo> convertListForPrice(List<AfGoodsPriceDo> priceDos, Long activityId) {
+	private List<AfGoodsPriceVo> convertListForPrice(List<AfGoodsPriceDo> priceDos) {
 		List<AfGoodsPriceVo> propertyData = new ArrayList<>();
 		if (priceDos != null && priceDos.size() > 0) {
 			for (AfGoodsPriceDo priceDo : priceDos) {
@@ -167,20 +175,41 @@ public class GetGoodsSpecApi implements ApiHandle {
 				goodsPriceVo.setPriceId(priceDo.getRid());
 				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
 				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
-				//判断是在在活动中，并且活动已经开始
+				propertyData.add(goodsPriceVo);
+			}
+		}
+		return propertyData;
+	}
+
+	private List<AfGoodsPriceVo> convertListForPriceAct(List<AfGoodsPriceDo> priceDos, List<AfSeckillActivityGoodsDto> afSeckillActivityInfos) {
+		List<AfGoodsPriceVo> propertyData = new ArrayList<>();
+		if (priceDos != null && priceDos.size() > 0) {
+			for (AfGoodsPriceDo priceDo : priceDos) {
+				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
+				goodsPriceVo.setStock(priceDo.getStock());
+				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
+				goodsPriceVo.setIsSale(priceDo.getIsSale());
+				goodsPriceVo.setPriceAmount(priceDo.getPriceAmount());
+				goodsPriceVo.setPriceId(priceDo.getRid());
+				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
+				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
+				//更换活动价格库存
 				Long priceId = priceDo.getRid();
-				if(activityId>0){
-					AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityPriceByPriceIdAndActId(priceId,activityId);
-					if(afSeckillActivityGoodsDto!=null){
-						int limitCount = afSeckillActivityGoodsDto.getLimitCount();
-						BigDecimal specialPrice = afSeckillActivityGoodsDto.getSpecialPrice();
-						if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
-							limitCount = 0;
+				if (afSeckillActivityInfos != null && afSeckillActivityInfos.size() > 0) {
+					for (AfSeckillActivityGoodsDto activityDo : afSeckillActivityInfos) {
+						if(activityDo.getPriceId()!=null&&activityDo.getPriceId().equals(priceId)){
+							BigDecimal specialPrice = activityDo.getSpecialPrice();
+							if(activityDo.getType()!=null&&activityDo.getType()==2){
+								int limitCount = activityDo.getLimitCount();
+								goodsPriceVo.setStock(limitCount);
+							}
+							//如果售价有问题，设置为不能销售
+							if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
+								goodsPriceVo.setStock(0);
+							}
+							goodsPriceVo.setActualAmount(specialPrice);
+							break;
 						}
-						if(afSeckillActivityGoodsDto.getType()!=null&&afSeckillActivityGoodsDto.getType()==2){
-							goodsPriceVo.setStock(limitCount);
-						}
-						goodsPriceVo.setActualAmount(specialPrice);
 					}
 				}
 				propertyData.add(goodsPriceVo);

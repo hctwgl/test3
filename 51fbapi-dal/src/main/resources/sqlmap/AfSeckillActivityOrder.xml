@@ -137,13 +137,20 @@
         SELECT count(1)
         FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
         WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
-        AND o.id IS NOT NULL 
+        AND o.id IS NOT NULL
     </select>
 
     <select id="getActivityOrderByOrderId" resultType="AfSeckillActivityOrderDo">
         SELECT id,order_id,activity_id
         FROM af_seckill_activity_order
         WHERE is_delete = 0 AND order_id=#{orderId}
+        limit 1
+    </select>
+
+    <select id="getActivityByOrderId" resultType="AfSeckillActivityDo">
+        SELECT b.id,b.pay_type
+        FROM af_seckill_activity_order a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND b.is_delete = 0 AND a.order_id=#{orderId}
         limit 1
     </select>
 </mapper>

@@ -223,4 +223,12 @@
         WHERE a.is_delete=0 AND a.type=2
         AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId}
     </select>
+
+    <select id="getActivityPricesByGoodsIdAndActId" resultType="AfSeckillActivityGoodsDto">
+        SELECT
+        a.id rid,a.special_price,a.limit_count,a.goods_id,a.price_id,b.type
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND b.is_delete=0 AND b.is_disable=0
+        AND a.goods_id=#{goodsId} AND b.id=#{activityId}
+    </select>
 </mapper>

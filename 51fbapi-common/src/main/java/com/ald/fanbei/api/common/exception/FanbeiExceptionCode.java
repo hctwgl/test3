@@ -416,7 +416,7 @@ public enum FanbeiExceptionCode {
 	//paypwd wrong more than specific times
 	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
 	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！"),
-    SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动已结束！"),
+    SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
     SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
 

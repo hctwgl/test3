@@ -356,7 +356,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if(activityId>0l){
 				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
 				if(afSeckillActivityGoodsDto==null){
-					//活动结束
+					//活动未开始或已结束
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
 				}
 				if(afSeckillActivityGoodsDto.getType()==2){

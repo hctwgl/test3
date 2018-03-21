@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -109,6 +110,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			Date gmtStart = afSeckillActivityDo.getGmtStart();
 			Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 			Date gmtPStart = afSeckillActivityDo.getGmtPStart();
+			//返利金额
+			vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
 			vo.setActivityId(activityId);
 			vo.setActivityType(afSeckillActivityDo.getType());
 			vo.setActivityName(afSeckillActivityDo.getName());

@@ -29,4 +29,6 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     AfSeckillActivityGoodsDo getActivityGoodsByGoodsIdAndActId(@Param("activityId") Long activityId, @Param("goodsId") Long goodsId);
 
     AfSeckillActivityGoodsDto getActivityInfoByPriceIdAndActId(@Param("goodsPriceId")Long goodsPriceId,@Param("activityId")Long activityId);
+
+    List<AfSeckillActivityGoodsDto> getActivityPricesByGoodsIdAndActId(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId);
 }
