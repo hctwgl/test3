@@ -654,6 +654,7 @@ public class AppH5LeaseController extends BaseController {
             else {
                 lease.setShowLogistics("N");
             }
+            lease.setLogisticsInfo(StringUtil.logisticsInfoDeal(lease.getLogisticsInfo()));
             //待收货
             if(lease.getStatus().equals("AUDITSUCCESS")){
                 lease.setStatus("PAID");
