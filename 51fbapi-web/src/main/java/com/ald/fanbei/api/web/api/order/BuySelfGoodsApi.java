@@ -359,49 +359,51 @@ public class BuySelfGoodsApi implements ApiHandle {
 					//活动结束
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
 				}
-				//Long activityId = afSeckillActivityGoodsDto.getActivityId();
-				Integer goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
-				if(goodsLimitCount!=null&&goodsLimitCount<count){
-					//超过购买数量
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
-				}
-				try{
-					Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
-					if(remainCount<0||remainCount-count<0){
+				if(afSeckillActivityGoodsDto.getType()==2){
+					//Long activityId = afSeckillActivityGoodsDto.getActivityId();
+					Integer goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
+					if(goodsLimitCount!=null&&goodsLimitCount<count){
 						//超过购买数量
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
-					}else{
-						//更新数据库
-						AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
-						afSeckillActivityGoodsDo.setPriceId(goodsPriceId);
-						afSeckillActivityGoodsDo.setLimitCount(count);
-						afSeckillActivityGoodsDo.setActivityId(activityId);
-						if(afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo)<=0){
+					}
+					try{
+						Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
+						if(remainCount<0||remainCount-count<0){
 							//超过购买数量
 							return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
+						}else{
+							//更新数据库
+							AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = new AfSeckillActivityGoodsDo();
+							afSeckillActivityGoodsDo.setPriceId(goodsPriceId);
+							afSeckillActivityGoodsDo.setLimitCount(count);
+							afSeckillActivityGoodsDo.setActivityId(activityId);
+							if(afSeckillActivityService.updateActivityGoodsById(afSeckillActivityGoodsDo)<=0){
+								//超过购买数量
+								return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
+							}
+							//创建秒杀单
+							AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
+							afSeckillActivityOrderDo.setActivityId(activityId);
+							afSeckillActivityOrderDo.setSpecialPrice(afSeckillActivityGoodsDto.getSpecialPrice());
+							afSeckillActivityOrderDo.setGmtStart(afSeckillActivityGoodsDto.getGmtStart());
+							afSeckillActivityOrderDo.setGmtEnd(afSeckillActivityGoodsDto.getGmtEnd());
+							afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
+							afSeckillActivityOrderDo.setGoodsId(goodsId);
+							afSeckillActivityOrderDo.setGmtCreate(new Date());
+							afSeckillActivityOrderDo.setGmtModified(new Date());
+							afSeckillActivityService.saveActivityOrde(afSeckillActivityOrderDo);
+							activityOrderId = afSeckillActivityOrderDo.getRid();
+							int closeTime = afSeckillActivityGoodsDto.getCloseTime();
+							if(closeTime>0){
+								gmtPayEnd = DateUtil.addMins(currTime, closeTime);
+								afOrder.setGmtPayEnd(gmtPayEnd);
+							}
 						}
-						//创建秒杀单
-						AfSeckillActivityOrderDo afSeckillActivityOrderDo = new AfSeckillActivityOrderDo();
-						afSeckillActivityOrderDo.setActivityId(activityId);
-						afSeckillActivityOrderDo.setSpecialPrice(afSeckillActivityGoodsDto.getSpecialPrice());
-						afSeckillActivityOrderDo.setGmtStart(afSeckillActivityGoodsDto.getGmtStart());
-						afSeckillActivityOrderDo.setGmtEnd(afSeckillActivityGoodsDto.getGmtEnd());
-						afSeckillActivityOrderDo.setOrderId(afOrder.getRid());
-						afSeckillActivityOrderDo.setGoodsId(goodsId);
-						afSeckillActivityOrderDo.setGmtCreate(new Date());
-						afSeckillActivityOrderDo.setGmtModified(new Date());
-						afSeckillActivityService.saveActivityOrde(afSeckillActivityOrderDo);
-						activityOrderId = afSeckillActivityOrderDo.getRid();
-						int closeTime = afSeckillActivityGoodsDto.getCloseTime();
-						if(closeTime>0){
-							gmtPayEnd = DateUtil.addMins(currTime, closeTime);
-							afOrder.setGmtPayEnd(gmtPayEnd);
-						}
+					}catch (Exception ex){
+						logger.error("afSeckillActivity error for:" + ex);
+						//人太多了，被挤爆了
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
 					}
-				}catch (Exception ex){
-					logger.error("afSeckillActivity error for:" + ex);
-					//人太多了，被挤爆了
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
 				}
 			}
 			//-------------------------------
