@@ -647,6 +647,13 @@ public class AppH5LeaseController extends BaseController {
 //                lease.setClosedReason("超时未支付");
 //                afOrderService.closeOrder("超时未支付","",orderId);
 //            }
+            if(StringUtils.isNotBlank(lease.getLogisticsNo())){
+                //有物流单号就显示物流信息
+                lease.setShowLogistics("Y");
+            }
+            else {
+                lease.setShowLogistics("N");
+            }
             //待收货
             if(lease.getStatus().equals("AUDITSUCCESS")){
                 lease.setStatus("PAID");

@@ -29,6 +29,7 @@ public class LeaseOrderDto {
     private BigDecimal monthlyRent;
     private String leaseStatus;
     private String rebateStatus;
+    private String rebateAmount;
     private Date gmtStart;
     private Date gmtEnd;
     private BigDecimal quotaDeposit;
@@ -37,8 +38,11 @@ public class LeaseOrderDto {
     private String policyNumber;
     private String unique;
     private BigDecimal richieAmount;
-    private String logistics;
-    private Date logisticsTime;
+    private String logisticsInfo;
+    private String logisticsCompany;
+    private String logisticsNo;
+    private Date gmtDeliver;
+    private String showLogistics;
 
     public BigDecimal getMonthlyRent() {
         return monthlyRent;
@@ -248,19 +252,51 @@ public class LeaseOrderDto {
         this.gmtPayEnd = gmtPayEnd;
     }
 
-    public String getLogistics() {
-        return logistics;
+    public String getRebateAmount() {
+        return rebateAmount;
     }
 
-    public void setLogistics(String logistics) {
-        this.logistics = logistics;
+    public void setRebateAmount(String rebateAmount) {
+        this.rebateAmount = rebateAmount;
     }
 
-    public Date getLogisticsTime() {
-        return logisticsTime;
+    public String getLogisticsInfo() {
+        return logisticsInfo;
     }
 
-    public void setLogisticsTime(Date logisticsTime) {
-        this.logisticsTime = logisticsTime;
+    public void setLogisticsInfo(String logisticsInfo) {
+        this.logisticsInfo = logisticsInfo;
+    }
+
+    public String getLogisticsCompany() {
+        return logisticsCompany;
+    }
+
+    public void setLogisticsCompany(String logisticsCompany) {
+        this.logisticsCompany = logisticsCompany;
+    }
+
+    public String getLogisticsNo() {
+        return logisticsNo;
+    }
+
+    public void setLogisticsNo(String logisticsNo) {
+        this.logisticsNo = logisticsNo;
+    }
+
+    public Date getGmtDeliver() {
+        return gmtDeliver;
+    }
+
+    public void setGmtDeliver(Date gmtDeliver) {
+        this.gmtDeliver = gmtDeliver;
+    }
+
+    public String getShowLogistics() {
+        return showLogistics;
+    }
+
+    public void setShowLogistics(String showLogistics) {
+        this.showLogistics = showLogistics;
     }
 }
