@@ -93,4 +93,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
      */
     AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo);
     AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo);
+    
+    void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType);
 }

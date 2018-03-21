@@ -42,22 +42,22 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 public class AlipayAuthCallbackExecutor implements Executor {
 
     @Resource
-    AfUserAuthService afUserAuthService;
+    private AfUserAuthService afUserAuthService;
 
     @Resource
-    AfUserAuthStatusService afUserAuthStatusService;
+    private AfUserAuthStatusService afUserAuthStatusService;
 
     @Resource
-    AfUserAccountSenceService afUserAccountSenceService;
+    private AfUserAccountSenceService afUserAccountSenceService;
 
     @Resource
-    AfAuthRaiseStatusService afAuthRaiseStatusService;
+    private AfAuthRaiseStatusService afAuthRaiseStatusService;
 
     @Resource
-    AfUserAccountService afUserAccountService;
+    private AfUserAccountService afUserAccountService;
 
     @Resource
-    RiskUtil riskUtil;
+    private RiskUtil riskUtil;
 
     private Logger logger = LoggerFactory.getLogger(AlipayAuthCallbackExecutor.class);
 
@@ -95,7 +95,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 			afUserAccountDo.setAuAmount(new BigDecimal(amount));
 			afUserAccountService.updateUserAccount(afUserAccountDo);
 			// 更新总额度
-			AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
+			AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 			afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(), LoanType.CASH.getCode(), "Y", new BigDecimal(amount), new Date());
 			// 提额成功，记录提额状态
@@ -122,7 +122,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 			afUserAccountDo.setAuAmount(new BigDecimal(amount));
 			afUserAccountService.updateUserAccount(afUserAccountDo);
 			// 更新总额度
-			AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
+			AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 			afUserAccountSenceService.updateById(totalAccountSenceDo);
 			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(), LoanType.CASH.getCode(), "Y", new BigDecimal(amount), new Date());
 			// 提额成功，记录提额状态
@@ -149,8 +149,8 @@ public class AlipayAuthCallbackExecutor implements Executor {
 			if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
 			    String bldAmount = respBo.getData().getBldAmount();
 			    String totalAmount = respBo.getData().getTotalAmount();
-			    AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, LoanType.BLD_LOAN.getCode(), bldAmount);
-			    AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
+			    AfUserAccountSenceDo bldAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, LoanType.BLD_LOAN.getCode(), bldAmount);
+			    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
 
 			    afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
 			    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
@@ -171,48 +171,11 @@ public class AlipayAuthCallbackExecutor implements Executor {
 	    }
 
 	    // 线上分期提额
-	    raiseOnlineQuato(userId, SceneType.ONLINE.getCode(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.ALIPAY.getCode());
+	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getCode(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.ALIPAY.getCode());
 	} else {
 	    // 更新认证状态为失败
 	    afUserAuthDo.setAlipayStatus("N");
 	    afUserAuthService.updateUserAuth(afUserAuthDo);
-	}
-    }
-
-    private AfUserAccountSenceDo buildAccountScene(Long userId, String loanType, String amount) {
-	AfUserAccountSenceDo bldAuthStatusDo = new AfUserAccountSenceDo();
-	bldAuthStatusDo.setUserId(userId);
-	bldAuthStatusDo.setScene(loanType);
-	bldAuthStatusDo.setAuAmount(new BigDecimal(amount));
-	return bldAuthStatusDo;
-    }
-
-    private void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType) {
-	try {
-	    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
-	    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
-		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
-		// 提额成功
-		if (respBo != null && respBo.isSuccess()) {
-		    // 获取提额结果
-		    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
-		    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-			String fqAmount = respBo.getData().getFqAmount();
-			AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
-			afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
-
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		    } else {
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "F", BigDecimal.ZERO, new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		    }
-		}
-	    }
-	} catch (Exception e) {
-	    logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
 	}
     }
 
