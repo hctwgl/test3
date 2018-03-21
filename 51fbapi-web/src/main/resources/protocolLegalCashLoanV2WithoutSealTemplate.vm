@@ -21,7 +21,7 @@
 <br/>
 <p style="margin-bottom: 40px;">二、借款基本信息</p>
 <div  style="margin-bottom: 30px;">
-    <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
+    <table border="1" cellspacing="0" cellpadding="0" width="600" align='center'>
         <tr style="text-align:center;">
             <td style="width: 40%">借款本金</td>
             <td style="width: 60%">${amountLower}元</td>
@@ -143,7 +143,7 @@
 <p style="margin-bottom: 30px;">甲方 （借款人）：<em>${realName}</em></p>
 <p style="margin-bottom: 30px;">乙方 （出借人）：</p>
 <div  style="margin-bottom: 30px;">
-    <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
+    <table border="1" cellspacing="0" cellpadding="0" width="600" align='center'>
         <tr style="text-align:center;">
             <th>姓名</th>
             <th>身份证号码</th>

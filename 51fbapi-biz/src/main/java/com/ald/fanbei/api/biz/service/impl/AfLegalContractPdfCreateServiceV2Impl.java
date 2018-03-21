@@ -1146,9 +1146,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         if (type.equals("cashLoan")){
             html = getCashVelocityHtml(afUserDo.getUserName(),afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(), BigDecimal.valueOf(0),afBorrowCashDo.getType(),"protocolLegalCashLoanV2WithoutSealTemplate.vm");
             map.put("protocolCashType","1");
+            map.put("borrowId", String.valueOf(afBorrowCashDo.getRid()));
         }else if (type.equals("instalment")){
             html = getInstalmentVelocityHtml(afUserDo.getUserName(),afBorrowDo.getRid(),afBorrowDo.getNper(),afBorrowDo.getAmount(),BigDecimal.ZERO,"protocolLegalInstalmentV2WithoutSealTemplate.vm");
             map.put("protocolCashType","2");
+            map.put("borrowId", String.valueOf(afBorrowDo.getRid()));
         }
         /*if (type.equals("instalment")) {
             url += ("/fanbei-web/app/protocolLegalInstalmentV2WithoutSeal?");
@@ -1357,15 +1359,15 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 if ("1".equals(protocolCashType)) {//借款协议
                     afContractPdfDo.setType((byte) 1);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("borrowId"));
+                    afContractPdfDo.setTypeId(Long.parseLong(map.get("borrowId").toString()));
                 } else if ("2".equals(protocolCashType)) {//分期服务协议
                     afContractPdfDo.setType((byte) 2);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("borrowId"));
+                    afContractPdfDo.setTypeId(Long.parseLong(map.get("borrowId").toString()));
                 } else if ("3".equals(protocolCashType)) {//续借协议
                     afContractPdfDo.setType((byte) 3);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
-                    afContractPdfDo.setTypeId((Long) map.get("renewalId"));
+                    afContractPdfDo.setTypeId(Long.parseLong(map.get("borrowId").toString()));
                 }
                 afContractPdfDao.insert(afContractPdfDo);
             }
