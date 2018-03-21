@@ -137,7 +137,7 @@
         SELECT count(1)
         FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
         WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
-        AND o.status NOT IN ('NEW','PAYFAIL')
+        AND o.id IS NOT NULL 
     </select>
 
     <select id="getActivityOrderByOrderId" resultType="AfSeckillActivityOrderDo">
