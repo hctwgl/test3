@@ -2733,6 +2733,77 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
+	 * 获取租赁用户分层得分
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public Integer getRentScore(String consumerNo, JSONObject params) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		if (params != null) {
+			AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+			JSONObject eventObj = new JSONObject();
+			eventObj.put("appName", params.get("appName") + "");
+			eventObj.put("cardNo", card == null ? "" : card.getCardNumber());
+			eventObj.put("blackBox", params.get("blackBox") == null ? "" : params.get("blackBox"));
+			eventObj.put("ipAddress", params.get("ipAddress") == null ? "" : params.get("ipAddress"));
+			reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
+		}
+		HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
+		reqBo.setSummaryData(JSON.toJSONString(summaryData));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/getRentScore.htm";
+		// String url =
+		// "http://192.168.110.22:80/modules/api/risk/getRentScore.htm";
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "getRentScore", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			Integer result = dataObj.getInteger("score");
+			return result;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * 更新租赁用户分层得分
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public boolean updateRentScore(String consumerNo) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/updateRentScore.htm";
+		// String url =
+		// "http://192.168.110.22:80/modules/api/risk/updateRentScore.htm";
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "updateRentScore", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 登录可信验证码
 	 *
 	 * @param consumerNo

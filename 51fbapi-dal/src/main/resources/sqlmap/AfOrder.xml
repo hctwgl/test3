@@ -1353,4 +1353,8 @@
 		WHERE a.is_delete=0 AND b.is_delete=0 AND a.id = #{orderId} AND a.user_id=#{userId}
 	</select>
 
+	<update id="UpdateOrderLeaseTime" parameterType="java.lang.Long" >
+		UPDATE af_order_lease SET gmt_start = #{gmtStart},gmt_end=#{gmtEnd} WHERE order_id=#{orderId}
+	</update>
+
 </mapper>

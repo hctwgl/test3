@@ -2838,7 +2838,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public BigDecimal getLeaseFreeze(Integer score, BigDecimal goodsPrice) {
+    public BigDecimal getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId) {
+        Integer score = riskUtil.getRentScore(userId.toString(),new JSONObject(data));
         AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("LEASE_FREEZE");
         JSONArray leaseFreezeArray = JSON.parseArray(resourceDo.getValue2());
         Integer freezeScore = 0;
@@ -2896,5 +2897,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             list = orderDao.getOrderLeasingList(pageIndex,pageSize,userId);
         }
         return list;
+    }
+
+    @Override
+    public int UpdateOrderLeaseTime(Date gmtStart, Date gmtEnd, Long orderId) {
+        return orderDao.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderId);
     }
 }

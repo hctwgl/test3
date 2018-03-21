@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +68,6 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBankDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
@@ -925,7 +921,12 @@ public class PayRoutController {
 			orderDoUpdate.setGmtFinished(new Date());
 			orderDoUpdate.setLogisticsInfo("已签收");
 			afOrderService.updateOrder(orderDoUpdate);
-
+			if(afOrder.getOrderType().equals(OrderType.LEASE.getCode())){
+				Date today = new Date();
+				Date gmtStart = DateUtil.addDays(today,1);
+				Date gmtEnd = DateUtil.addMonths(gmtStart,afOrder.getNper() + 1);
+				afOrderDao.UpdateOrderLeaseTime(gmtStart,gmtEnd,afOrder.getRid());
+			}
 			return "success";
 		}
 		catch (Exception e){

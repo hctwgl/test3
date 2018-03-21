@@ -12,10 +12,7 @@ import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
@@ -532,6 +529,7 @@ public class AppH5LeaseController extends BaseController {
         try{
             context = doWebCheck(request, true);
             Long goodsPriceId = NumberUtil.objToLongDefault(request.getParameter("goodsPriceId"), 0);
+            String blackBox = ObjectUtils.toString(request.getParameter("blackBox"));
             AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
             if(priceDo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
@@ -545,7 +543,13 @@ public class AppH5LeaseController extends BaseController {
                 if(afUserAuthStatusDo.getStatus().equals("Y")){
                     AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE", afUser.getUserId());
                     useableAmount = afUserAccountSenceOnline.getAuAmount().subtract(afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
-                    BigDecimal freezeAmount = afOrderService.getLeaseFreeze(0,priceDo.getLeaseAmount());
+                    Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
+                    dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
+                    String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+                    String appName = sysModeId.startsWith("i") ? "alading_ios" : "alading_and";
+                    dataLeaseFreeze.put("appName",appName);
+                    dataLeaseFreeze.put("blackBox",blackBox == null ? "":blackBox);
+                    BigDecimal freezeAmount = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
                     data.put("freezeAmount",freezeAmount);//总冻结额度
                     if(useableAmount.compareTo(freezeAmount)>=0){
                         data.put("quotaDeposit",freezeAmount);//冻结额度
@@ -598,11 +602,11 @@ public class AppH5LeaseController extends BaseController {
             list = afOrderService.getOrderLeaseList(pageIndex,pageSize,type,afUser.getRid());
             if(list!=null&&list.size()>0){
                 for (LeaseOrderListDto item:list) {
-                    if(item.getGmtPayEnd().getTime() < new Date().getTime() && (item.getStatus().equals("NEW") || item.getStatus().equals("PAYFAIL"))){
-                        item.setStatus("CLOSED");
-                        item.setClosedReason("超时未支付");
-                        afOrderService.closeOrder("超时未支付","",item.getId());
-                    }
+//                    if(item.getGmtPayEnd().getTime() < new Date().getTime() && (item.getStatus().equals("NEW") || item.getStatus().equals("PAYFAIL"))){
+//                        item.setStatus("CLOSED");
+//                        item.setClosedReason("超时未支付");
+//                        afOrderService.closeOrder("超时未支付","",item.getId());
+//                    }
                     //待收货
                     if(item.getStatus().equals("AUDITSUCCESS")){
                         item.setStatus("PAID");
@@ -638,11 +642,11 @@ public class AppH5LeaseController extends BaseController {
             if(lease == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
-            if(lease.getGmtPayEnd().getTime() < new Date().getTime() && (lease.getStatus().equals("NEW") || lease.getStatus().equals("PAYFAIL"))){
-                lease.setStatus("CLOSED");
-                lease.setClosedReason("超时未支付");
-                afOrderService.closeOrder("超时未支付","",orderId);
-            }
+//            if(lease.getGmtPayEnd().getTime() < new Date().getTime() && (lease.getStatus().equals("NEW") || lease.getStatus().equals("PAYFAIL"))){
+//                lease.setStatus("CLOSED");
+//                lease.setClosedReason("超时未支付");
+//                afOrderService.closeOrder("超时未支付","",orderId);
+//            }
             //待收货
             if(lease.getStatus().equals("AUDITSUCCESS")){
                 lease.setStatus("PAID");
@@ -708,6 +712,10 @@ public class AppH5LeaseController extends BaseController {
             rebateContext.rebate(orderInfo);
 
             addBorrowBill_1(orderInfo,afUser);
+            Date today = new Date();
+            Date gmtStart = DateUtil.addDays(today,1);
+            Date gmtEnd = DateUtil.addMonths(gmtStart,orderInfo.getNper() + 1);
+            afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
         }catch  (Exception e) {

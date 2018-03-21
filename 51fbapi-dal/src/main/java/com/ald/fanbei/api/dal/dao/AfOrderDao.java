@@ -294,4 +294,10 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<LeaseOrderListDto> getOrderLeasingList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize,@Param("userId")Long userId);
+
+	/**
+	 * 修改租赁订单租期开始时间和结束时间
+	 * @return
+	 */
+	int UpdateOrderLeaseTime(@Param("gmtStart")Date gmtStart,@Param("gmtEnd")Date gmtEnd, @Param("orderId")Long orderId);
 }

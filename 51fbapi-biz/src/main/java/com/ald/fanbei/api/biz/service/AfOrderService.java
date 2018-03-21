@@ -396,7 +396,7 @@ public interface AfOrderService {
 	 * 获取租赁商品是否存在订单
 	 * @return
 	 */
-	BigDecimal getLeaseFreeze(Integer score, BigDecimal goodsPrice);
+	BigDecimal getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId);
 
 	/**
 	 * 添加租赁订单
@@ -427,4 +427,10 @@ public interface AfOrderService {
 	 * @return
 	 */
 	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type,Long userId);
+
+	/**
+	 * 修改租赁订单租期开始时间和结束时间
+	 * @return
+	 */
+	int UpdateOrderLeaseTime(Date gmtStart,Date gmtEnd,Long orderId);
 }

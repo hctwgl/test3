@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -226,7 +227,12 @@ public class LeaseOrderApi implements ApiHandle {
         afOrderLeaseDo.setRichieAmount(richieAmount);
         afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
         afOrderLeaseDo.setScore(score);
-        afOrderLeaseDo.setFreezeAmount(afOrderService.getLeaseFreeze(score,priceDo.getLeaseAmount()));
+        Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
+        dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
+        String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+        dataLeaseFreeze.put("appName",appName);
+        dataLeaseFreeze.put("blackBox",afOrder.getBlackBox());
+        afOrderLeaseDo.setFreezeAmount(afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),userId));
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
 
