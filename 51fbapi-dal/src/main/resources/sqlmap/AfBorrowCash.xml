@@ -565,7 +565,7 @@
 		and gmt_arrival &lt; #{activityTime}
 		</if>
 	</select>
-		<select id="getCashBorrowByUserIdAndActivity" resultType="java.lang.Integer">
+	<select id="getCashBorrowByUserIdAndActivity" resultType="java.lang.Integer">
 		SELECT
 			count(1)
 		FROM
@@ -576,4 +576,28 @@
 		and gmt_arrival &lt; #{activityTime}
 		</if>
 	</select>
+	
+	<select id="getBorrowCashInfoById" parameterType="java.lang.Long" resultType="AfBorrowCashDto">
+		SELECT
+			abc.borrow_no orderNo,
+			abc.user_id userId,
+			au.real_name NAME,
+			aua.id_number cardId,
+			au.user_name mobile,
+			abc.card_number bankNo,
+			abc.card_name cardName,
+			abc.arrival_amount money,
+			abc.type type,
+			abc.gmt_create loanStartTime,
+			abloc.borrow_remark,
+       		abloc.refund_remark
+		FROM
+			af_borrow_cash abc
+		LEFT JOIN af_user au ON au.id = abc.user_id
+		LEFT JOIN af_user_account aua ON aua.user_id = au.id
+		LEFT JOIN af_borrow_legal_order_cash abloc on abc.id=abloc.borrow_id
+		WHERE
+			abc.id = #{borrowCashId}
+	</select>
+
 </mapper>

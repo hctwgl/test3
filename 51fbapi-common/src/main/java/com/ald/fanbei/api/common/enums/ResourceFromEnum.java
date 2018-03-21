@@ -13,7 +13,7 @@ import java.util.Map;
 public enum ResourceFromEnum {
 
 	BANNER("BANNER", "轮播"),
-	SPECIAL("HOME_SECOND_BANNER", "专场"),
+	SPECIAL("SPECIAL", "专场"),
 
 	;
 	private String code;

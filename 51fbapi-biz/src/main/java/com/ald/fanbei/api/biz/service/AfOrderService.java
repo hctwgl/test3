@@ -387,5 +387,6 @@ public interface AfOrderService {
 	int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount);
 
 	int addSceneAmount(List<AfOrderSceneAmountDo> list);
+	AfInterimAuDo getInterimAuDo(AfOrderDo orderInfo);
 
 }

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,21 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.*;
+import com.ald.fanbei.api.biz.rebate.RebateContext;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.*;
+import com.ald.fanbei.api.common.VersionCheckUitl;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
+
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
@@ -26,6 +42,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.auth.executor.AuthCallbackManager;
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
 import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
@@ -154,6 +174,9 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import com.google.common.collect.Maps;
 
 /**
@@ -256,6 +279,14 @@ public class RiskUtil extends AbstractThird {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfAssetSideInfoService afAssetSideInfoService;
 
 	@Resource
 	AuthCallbackManager authCallbackManager;
@@ -266,6 +297,7 @@ public class RiskUtil extends AbstractThird {
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+//			url = "http://btestarc.51fanbei.com";
 			return url;
 		}
 		return url;
@@ -1088,6 +1120,32 @@ public class RiskUtil extends AbstractThird {
 				afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
 						orderInfo.getOrderType());
+				
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				Boolean flag=true;
+				//新增白名单逻辑
+				AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+				if (pushWhiteResource != null) {
+					//白名单开启
+					String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
+					Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+					if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
+						//不在白名单不推送
+						flag=false;
+					}
+				}
+				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
+						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag) {
+					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
+					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
+					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+					//债权实时推送
+					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (resp) {
+						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+					}
+				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
 				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 			} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
@@ -1116,6 +1174,81 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+
+	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
+		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
+		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		//获取开户行信息
+		FanbeiBorrowBankInfoBo bankInfo = assetSideEdspayUtil.getAssetSideBankInfo(assetSideEdspayUtil.getAssetSideBankInfo());
+		//借款人平台逾期信息
+		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(borrow.getUserId());
+		//获取资产方的分润利率
+		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+		AfBorrowDto borrowDto = afBorrowService.getBorrowInfoById(borrow.getRid());
+		//消费分期的还款计划
+		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
+		List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrow.getRid());
+		Date lastBorrowBillGmtPayTime=null;
+		for (int i = 0; i < afBorrowBillDos.size(); i++) {
+			RepaymentPlan repaymentPlan = new RepaymentPlan();
+			repaymentPlan.setRepaymentNo(afBorrowBillDos.get(i).getRid()+"");
+			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(afBorrowBillDos.get(i).getGmtPayTime()));
+			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(borrowDto.getGmtCreate(), afBorrowBillDos.get(i).getGmtPayTime()));
+			repaymentPlan.setRepaymentAmount(afBorrowBillDos.get(i).getPrincipleAmount());
+			repaymentPlan.setRepaymentInterest(afBorrowBillDos.get(i).getInterestAmount());
+			repaymentPlan.setRepaymentPeriod(afBorrowBillDos.get(i).getBillNper()-1);
+			repaymentPlans.add(repaymentPlan);
+			if (i == afBorrowBillDos.size() - 1) {
+				lastBorrowBillGmtPayTime= afBorrowBillDos.get(i).getGmtPayTime();
+			}
+		}
+		Integer nper = borrowDto.getNper();//分期数
+		//获取消费分期协议年化利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONArray array= new JSONArray();
+		if (afResourceDo!=null&& afResourceDo.getValue3()!=null) {
+			array= JSONObject.parseArray(afResourceDo.getValue3());
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject jsonObject = array.getJSONObject(i);
+				Integer confNper= (Integer) jsonObject.get("nper");
+				if (nper == confNper) {
+					borrowRate=(BigDecimal) jsonObject.get("rate");
+					break;
+				}
+			}
+		}
+		creditRespBo.setOrderNo(borrow.getBorrowNo());
+		creditRespBo.setUserId(borrow.getUserId());
+		creditRespBo.setName(borrowDto.getRealName());
+		creditRespBo.setCardId(borrowDto.getIdNumber());
+		creditRespBo.setMobile(borrowDto.getUserName());
+		creditRespBo.setBankNo("");
+		creditRespBo.setAcctName(bankInfo.getAcctName());
+		creditRespBo.setMoney(borrowDto.getAmount());
+		creditRespBo.setApr(BigDecimalUtil.multiply(borrowRate, new BigDecimal(100)));
+		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(borrowDto.getGmtCreate(), lastBorrowBillGmtPayTime));
+		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(borrowDto.getGmtCreate()));
+		creditRespBo.setPurpose("个人消费");
+		creditRespBo.setRepaymentStatus(0);
+		creditRespBo.setRepayName(bankInfo.getRepayName());
+		creditRespBo.setRepayAcct(bankInfo.getRepayAcct());
+		creditRespBo.setRepayAcctBankNo(bankInfo.getRepayAcctBankNo());
+		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
+		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
+		creditRespBo.setManageFee(afAssetSideInfoDo.getAnnualRate());
+		creditRespBo.setRepaymentSource("工资收入");
+		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
+		creditRespBo.setIsPeriod(1);
+		creditRespBo.setTotalPeriod(borrowDto.getNper());
+		creditRespBo.setLoanerType(0);
+		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
+		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
+		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(0);
+		creditRespBos.add(creditRespBo);
+		return creditRespBos;
 	}
 
 	/**
