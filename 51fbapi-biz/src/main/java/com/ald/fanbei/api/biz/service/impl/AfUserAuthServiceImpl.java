@@ -384,7 +384,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
 	    //是否显示补充认证（兼容老版本）
-	    if (appVersion <= 408) {
+	    if (appVersion < 411) {
 		data.put("showExtraTab", afResourceDoAuth.getValue());
 	    } else {
 		data.put("showExtraTab", "1");
