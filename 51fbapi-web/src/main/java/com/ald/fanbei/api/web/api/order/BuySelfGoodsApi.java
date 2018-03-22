@@ -394,8 +394,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 				//重新计算秒杀实付金额跟返利
 				if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
 					logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
-					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)));
-					afOrder.setRebateAmount(afOrder.getActualAmount().multiply(goodsDo.getRebateRate()));
+					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
+					BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
+					if(afOrder.getRebateAmount().compareTo(secKillRebAmount)>0){
+						afOrder.setRebateAmount(secKillRebAmount);
+					}
+				}else{
+					//秒杀价有问题
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 				}
 				if(afSeckillActivityGoodsDto.getType()==2){
 					//Long activityId = afSeckillActivityGoodsDto.getActivityId();
