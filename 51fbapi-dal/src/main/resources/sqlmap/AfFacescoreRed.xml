@@ -138,5 +138,7 @@
 		where user_id = #{userId}
 		)
 	</select>
-
+	<select id="getAllRedImg" resultType="com.ald.fanbei.api.dal.domain.AfFacescoreImgDo">
+	 select id,url as imgUrl from af_facescore_img  where is_delete = 0
+	</select>
 </mapper>

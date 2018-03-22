@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfUserAndRedRelationDo;
 
@@ -21,4 +24,6 @@ public interface AfFacescoreRedService extends ParentService<AfFacescoreRedDo, L
 	int addRed(AfFacescoreRedDo redDo);
 
 	int findUserAndRedRelationRecordByRedId(long redId);
+
+	List<AfFacescoreImgDo> findRedImg();
 }

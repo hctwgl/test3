@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.AfUserAndRedRelationDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfFacescoreRedDao;
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfUserAndRedRelationDo;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
@@ -71,5 +74,10 @@ public class AfFacescoreRedServiceImpl extends ParentServiceImpl<AfFacescoreRedD
 		@Override
 		public int findUserAndRedRelationRecordByRedId(long redId) {
 			return afUserAndRedRelationDao.findUserAndRedRelationRecordByRedId(redId);
+		}
+
+		@Override
+		public List<AfFacescoreImgDo> findRedImg() {
+			return afFacescoreRedDao.getAllRedImg();
 		}
 }

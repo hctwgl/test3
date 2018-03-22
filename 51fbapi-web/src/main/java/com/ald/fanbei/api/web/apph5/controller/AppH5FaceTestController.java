@@ -27,6 +27,7 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedConfigDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -64,7 +65,6 @@ public class AppH5FaceTestController extends BaseController {
 			HttpServletResponse response) {
 		AfFacescoreRedDo redDo = new AfFacescoreRedDo();
 		FanbeiWebContext context = new FanbeiWebContext();
-	//	String imgUrl = request.getParameter("imgUrl");
 		// 和登录有关的
 		context = doWebCheck(request, false);
 		logger.info("/fanbeiapi/faceScore params: ");
@@ -88,7 +88,12 @@ public class AppH5FaceTestController extends BaseController {
 				BigDecimal amout = minmoney.add(bigDecimal);
 				redDo.setAmount(amout);
 				redDo.setConfigId(redConfigId);
-				// redDo.setImageurl(imgUrl);
+				List<AfFacescoreImgDo> imgList = afFacescoreRedService.findRedImg();
+				if (CollectionUtil.isNotEmpty(imgList)){
+					int index = random.nextInt(imgList.size());
+					String imgUrl = imgList.get(index).getImgUrl();
+					redDo.setImageurl(imgUrl);
+				}
 			} else {
 				logger.error("颜值测试红包配置信息类异常...", redConfigId);
 				return H5CommonResponse.getNewInstance(false, "", "", null).toString();

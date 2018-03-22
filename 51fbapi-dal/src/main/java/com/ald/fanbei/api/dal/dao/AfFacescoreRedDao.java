@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
@@ -17,6 +19,8 @@ public interface AfFacescoreRedDao extends BaseDao<AfFacescoreRedDo, Long> {
 	AfFacescoreRedDo getImageUrlByUserId(@Param("userId")Long userId);
 
 	int addRed(AfFacescoreRedDo redDo);
+
+	List<com.ald.fanbei.api.dal.domain.AfFacescoreImgDo> getAllRedImg();
 
 
 

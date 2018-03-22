@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
@@ -18,6 +20,7 @@ public interface AfUserAndRedRelationDao {
 	int findUserAndRedRelationRecordByUserId(Long userId);
 
 	int findUserAndRedRelationRecordByRedId(long redId);
+
 
 	
 	
