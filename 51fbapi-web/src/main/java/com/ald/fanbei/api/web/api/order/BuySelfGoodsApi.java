@@ -92,6 +92,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfOrderService afOrderService;
 	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
 	AfResourceService afResourceService;
 	@Resource
 	AfUserAddressService afUserAddressService;
@@ -128,7 +130,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	@Resource
-
 	AfModelH5ItemService afModelH5ItemService;
 	
 	@Resource
@@ -205,10 +206,17 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
 		AfGoodsPriceDo afGoodsPriceDo= 	afGoodsPriceService.getById(goodsPriceId);
+		BigDecimal couponAmount=BigDecimal.ZERO;
+		if(couponId!=0){
+			AfUserCouponDto afUserCouponDto=afUserCouponService.getUserCouponById(couponId);
+			couponAmount=afUserCouponDto.getAmount();
+		}
+
 		if(afGoodsPriceDo.getActualAmount().compareTo(actualAmount)>0){
 			logger.info("actualAmount less than afGoodsPriceDo.getActualAmount() ,username:"+context.getUserName());
 			actualAmount=afGoodsPriceDo.getActualAmount();
 		}
+		actualAmount=actualAmount.subtract(couponAmount);
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
 		//新增下单时，记录ip和同盾设备指纹锁 cxk
@@ -448,6 +456,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
 			afOrder.setPriceAmount(priceDo.getPriceAmount());
+
+		}
+
+
+		if(couponId!=0){
 
 		}
 		afOrder.setLc(lc);
