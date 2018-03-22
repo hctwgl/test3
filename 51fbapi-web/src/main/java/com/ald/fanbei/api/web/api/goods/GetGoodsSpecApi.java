@@ -183,10 +183,18 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 	private List<AfGoodsPriceVo> convertListForPriceAct(List<AfGoodsPriceDo> priceDos, List<AfSeckillActivityGoodsDto> afSeckillActivityInfos) {
 		List<AfGoodsPriceVo> propertyData = new ArrayList<>();
+		Integer type = 0;
+		if (afSeckillActivityInfos != null && afSeckillActivityInfos.size() > 0) {
+			type = afSeckillActivityInfos.get(0).getType();
+		}
 		if (priceDos != null && priceDos.size() > 0) {
 			for (AfGoodsPriceDo priceDo : priceDos) {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
-				goodsPriceVo.setStock(priceDo.getStock());
+				if(type!=null&&type==2){
+					goodsPriceVo.setStock(0);
+				}else{
+					goodsPriceVo.setStock(priceDo.getStock());
+				}
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
 				goodsPriceVo.setIsSale(priceDo.getIsSale());
 				goodsPriceVo.setPriceAmount(priceDo.getPriceAmount());
@@ -202,12 +210,17 @@ public class GetGoodsSpecApi implements ApiHandle {
 							if(activityDo.getType()!=null&&activityDo.getType()==2){
 								int limitCount = activityDo.getLimitCount();
 								goodsPriceVo.setStock(limitCount);
+								goodsPriceVo.setActualAmount(specialPrice);
+								//如果售价有问题，设置为不能销售
+								if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
+									goodsPriceVo.setStock(0);
+								}
+							}else{
+								//如果售价有问题，设置为不能销售
+								if(specialPrice.compareTo(BigDecimal.ZERO)>0&&specialPrice.compareTo(priceDo.getActualAmount())<=0){
+									goodsPriceVo.setActualAmount(specialPrice);
+								}
 							}
-							//如果售价有问题，设置为不能销售
-							if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
-								goodsPriceVo.setStock(0);
-							}
-							goodsPriceVo.setActualAmount(specialPrice);
 							break;
 						}
 					}

@@ -219,9 +219,9 @@
     <select id="getActivityGoodsByGoodsIdAndActId" resultType="AfSeckillActivityGoodsDo">
         SELECT
         a.id rid,min(a.special_price) special_price,sum(a.limit_count) limit_count
-        FROM af_seckill_activity_goods a
-        WHERE a.is_delete=0 AND a.type=2
-        AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId}
+        FROM af_seckill_activity_goods a LEFT JOIN af_goods_price b ON (a.price_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND b.is_delete=0 AND b.is_sale = 'Y'
+        AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId} AND a.special_price>0
     </select>
 
     <select id="getActivityPricesByGoodsIdAndActId" resultType="AfSeckillActivityGoodsDto">

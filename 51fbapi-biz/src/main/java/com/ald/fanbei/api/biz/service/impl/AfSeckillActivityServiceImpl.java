@@ -2,16 +2,13 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 
@@ -38,6 +35,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	private AfSeckillActivityGoodsDao afSeckillActivityGoodsDao;
 	@Resource
 	private AfSeckillActivityOrderDao afSeckillActivityOrderDao;
+	@Resource
+	AfGoodsPriceDao afGoodsPriceDao;
 	@Override
 	public BaseDao<AfSeckillActivityDo, Long> getDao() {
 		return afSeckillActivityDao;
@@ -101,5 +100,10 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public List<AfSeckillActivityGoodsDto> getActivityPricesByGoodsIdAndActId(Long goodsId, Long activityId) {
 		return afSeckillActivityGoodsDao.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+	}
+
+	@Override
+	public int getSumCountByGoodsId(Long goodsId) {
+		return afGoodsPriceDao.selectSumStock(goodsId);
 	}
 }

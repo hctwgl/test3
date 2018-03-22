@@ -233,17 +233,20 @@ public class StartCashierApi implements ApiHandle {
 	if(afSeckillActivityDo!=null){
 		String payType = afSeckillActivityDo.getPayType();
 		if(StringUtil.isNotBlank(payType)){
+			//直接支付（微信、支付宝、银行卡）
 			if(payType.indexOf("1")==-1){
-				cashierVo.setWx(null);
-				cashierVo.setAli(null);
-				//cashierVo.setBank(null);
-				cashierVo.setBankCardList(null);
+				cashierVo.getWx().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getAli().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getBank().setStatus(YesNoStatus.NO.getCode());
 			}
+			//额度支付
 			if(payType.indexOf("2")==-1){
-				cashierVo.setCredit(null);
+				cashierVo.getAp().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getCredit().setStatus(YesNoStatus.NO.getCode());
 			}
+			//组合支付
 			if(payType.indexOf("3")==-1){
-				cashierVo.setCp(null);
+				cashierVo.getCp().setStatus(YesNoStatus.NO.getCode());
 			}
 		}
 	}

@@ -101,33 +101,51 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
 		if(afSeckillActivityDo!=null){
 			Long activityId = afSeckillActivityDo.getRid();
-			//获取活动已售商品数量
 			AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
-			int actSaleCount = 0;
-			if(afSeckillActivityDo.getType()==2){
-				actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
-			}
-			Date gmtStart = afSeckillActivityDo.getGmtStart();
-			Date gmtEnd = afSeckillActivityDo.getGmtEnd();
-			Date gmtPStart = afSeckillActivityDo.getGmtPStart();
-			//返利金额
-			vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
-			vo.setActivityId(activityId);
-			vo.setActivityType(afSeckillActivityDo.getType());
-			vo.setActivityName(afSeckillActivityDo.getName());
-			vo.setGmtStart(gmtStart.getTime());
-			vo.setGmtEnd(gmtEnd.getTime());
-			if(gmtPStart.getTime()>=gmtStart.getTime()){
-				vo.setGmtPstart(0l);
+			if(afSeckillActivityGoodsDo!=null){
+				//活动商品配置有问题，秒杀不参加活动，特惠按照原来
+				int actSaleCount = 0;
+				//获取活动已售商品数量
+				if(afSeckillActivityDo.getType()==2){
+					actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
+					vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
+				}else{
+					Integer limitCount = afSeckillActivityService.getSumCountByGoodsId(goodsId);
+					vo.setLimitCount(limitCount);
+				}
+				Date gmtStart = afSeckillActivityDo.getGmtStart();
+				Date gmtEnd = afSeckillActivityDo.getGmtEnd();
+				Date gmtPStart = afSeckillActivityDo.getGmtPStart();
+				//返利金额
+				vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
+				vo.setActivityId(activityId);
+				vo.setActivityType(afSeckillActivityDo.getType());
+				vo.setActivityName(afSeckillActivityDo.getName());
+				vo.setGmtStart(gmtStart.getTime());
+				vo.setGmtEnd(gmtEnd.getTime());
+				if(gmtPStart.getTime()>=gmtStart.getTime()){
+					vo.setGmtPstart(0l);
+				}else{
+					vo.setGmtPstart(gmtPStart.getTime());
+				}
+				vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
+				vo.setPayType(afSeckillActivityDo.getPayType());
+				vo.setActSaleCount(actSaleCount);
+				vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
+				saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
 			}else{
-				vo.setGmtPstart(gmtPStart.getTime());
+				vo.setActivityId(0l);
+				vo.setActivityType(0);
+				vo.setActivityName("");
+				vo.setGmtStart(0l);
+				vo.setGmtEnd(0l);
+				vo.setGmtPstart(0l);
+				vo.setLimitCount(0);
+				//vo.setLimitedPurchase(0);
+				vo.setPayType("");
+				vo.setActSaleCount(0);
+				vo.setSpecialPrice(BigDecimal.ZERO);
 			}
-			vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
-			vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
-			vo.setPayType(afSeckillActivityDo.getPayType());
-			vo.setActSaleCount(actSaleCount);
-			vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
-			saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
 		}else{
 			vo.setActivityId(0l);
 			vo.setActivityType(0);

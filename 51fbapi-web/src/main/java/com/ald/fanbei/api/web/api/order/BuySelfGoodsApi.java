@@ -383,6 +383,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			//秒杀活动增加逻辑
 			Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityId"), ""),
 					0l);
+			logger.error("afSeckillActivity for userId:" + userId + ",activityId:" + activityId);
 			if(activityId>0l){
 				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
 				if(afSeckillActivityGoodsDto==null){
@@ -434,6 +435,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 						//人太多了，被挤爆了
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
 					}
+				}
+				if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
+					logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
+					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice());
 				}
 			}
 			//-------------------------------
