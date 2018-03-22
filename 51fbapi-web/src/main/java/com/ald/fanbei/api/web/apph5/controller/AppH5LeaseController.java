@@ -691,7 +691,7 @@ public class AppH5LeaseController extends BaseController {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
             afOrderService.closeOrder(closedReason,"",orderId,afUser.getRid());
-            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", null);
+            resp = H5CommonResponse.getNewInstance(true, "取消成功", "", null);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
@@ -718,7 +718,7 @@ public class AppH5LeaseController extends BaseController {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
             afOrderService.UpdateOrderLeaseShow(orderId,afUser.getRid());
-            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", null);
+            resp = H5CommonResponse.getNewInstance(true, "删除成功", "", null);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
