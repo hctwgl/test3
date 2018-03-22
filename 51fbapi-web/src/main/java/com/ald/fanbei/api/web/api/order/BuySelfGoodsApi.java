@@ -390,6 +390,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 					//活动未开始或已结束
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
 				}
+				//重新计算秒杀实付金额跟返利
+				if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
+					logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
+					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)));
+					afOrder.setRebateAmount(afOrder.getActualAmount().multiply(goodsDo.getRebateRate()));
+				}
 				if(afSeckillActivityGoodsDto.getType()==2){
 					//Long activityId = afSeckillActivityGoodsDto.getActivityId();
 					Integer goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
@@ -435,10 +441,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 						//人太多了，被挤爆了
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
 					}
-				}
-				if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
-					logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
-					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice());
 				}
 			}
 			//-------------------------------
