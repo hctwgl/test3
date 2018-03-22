@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.apph5.controller;
+package com.ald.fanbei.api.web.h5.controller;
 
 import java.util.List;
 
@@ -15,29 +15,25 @@ import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfFacescoreShareCountService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.AfFacescoreShareCountDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.yeepay.g3.utils.common.StringUtils;
+
 /**
  * 颜值测试游戏颜值变现功能接口
  * @author liutengyuan 
  * @date 2018年3月22日
  */
 @Controller
-public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
-
+public class H5FaceScoreWithdrawJudgeController extends H5Controller {
+	
 	@Resource
 	private AfUserService afUserService;
 	@Resource
@@ -48,15 +44,15 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 	private AfResourceService afResourceService;
 
 	@ResponseBody
-	@RequestMapping(value = "/fanbei_api/withDraw/judge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/fanbei_api/H5withDraw/judge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String withDrawJudge(HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
-			FanbeiWebContext context = new FanbeiWebContext();
+			FanbeiH5Context context = new FanbeiH5Context();
 			Long userId = -1l;
 			AfUserDo afUser = null;
 			// 和登录有关的
-			context = doWebCheck(request, false);
+			context = doH5Check(request, false);
 			// 2判断用户是否处于登陆状态
 			if (context.isLogin()) {
 				afUser = afUserService.getUserByUserName(context.getUserName());
@@ -128,36 +124,35 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 			return result;
 		}
 	}
+			
+			
 
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request,
-			boolean isForQQ) {
-		return null;
-	}
+	
 
+	
+
+	
+
+	
 	@Override
-	public RequestDataVo parseRequestData(String requestData,
-			HttpServletRequest request) {
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 		try {
 			RequestDataVo reqVo = new RequestDataVo();
 
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
 			return reqVo;
 		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(),
-					FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}
 	}
 
-	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo,
-			FanbeiContext context, HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
+
+
+	
+	
+
+	
+
+
