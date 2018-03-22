@@ -51,13 +51,15 @@ public class Auth51FundController {
     @ResponseBody
     public String giveBack(@RequestParam("orderSn") String orderSn,@RequestParam("userId") String userId,HttpServletRequest request,HttpServletResponse response) throws IOException{
 		try {
-			auth51FundUtil.giveBack(orderSn,userId);
-			//保存认证的状态为认证中
-            AfUserAuthDo authDo = new AfUserAuthDo();
-            authDo.setUserId(NumberUtil.objToLongDefault(userId, 0l));
-            authDo.setGmtFund(new Date(System.currentTimeMillis()));
-            authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
-            afUserAuthService.updateUserAuth(authDo);
+			int result = auth51FundUtil.giveBack(orderSn,userId+"");
+			if (result == 1) {
+				//保存认证的状态为认证中
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(NumberUtil.objToLongDefault(userId, 0l));
+				authDo.setGmtFund(new Date(System.currentTimeMillis()));
+				authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
+				afUserAuthService.updateUserAuth(authDo);
+			}
         } catch (Exception e) {
         	logger.error("51fund giveBack error", e);
         	return "FAIL";

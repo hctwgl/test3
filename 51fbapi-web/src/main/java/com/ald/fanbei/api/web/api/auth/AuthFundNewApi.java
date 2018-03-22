@@ -63,6 +63,7 @@ public class AuthFundNewApi implements ApiHandle {
 		        resultSortedMap.put("params",paramSortedMap);
 		        String postParams=JSON.toJSONString(resultSortedMap);
 		        String respResult=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", postParams);
+		        logger.info("getToken result  = {}, response = {}", respResult);
 				if (StringUtil.isBlank(respResult)) {
 					logger.error("getToken req success,respResult is null");
 					return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETTOKEN_ERROR );

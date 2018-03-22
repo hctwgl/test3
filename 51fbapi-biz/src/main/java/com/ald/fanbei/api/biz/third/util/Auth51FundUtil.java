@@ -1,24 +1,32 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.Auth51FundRespBo;
+import com.ald.fanbei.api.biz.bo.RiskQuotaReqBo;
+import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.Auth51FundRespCode;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AuthFundSecret;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 /**
  * 51公积金对接的工具类
@@ -28,6 +36,7 @@ import com.alibaba.fastjson.JSONObject;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("auth51FundUtil")
+@SuppressWarnings("unused")
 public class Auth51FundUtil extends AbstractThird {
 
 	@Resource
@@ -35,7 +44,7 @@ public class Auth51FundUtil extends AbstractThird {
 	@Resource
 	RiskUtil riskUtil;
 	
-	public void giveBack(String orderSn,String userId) throws Exception {
+	public int giveBack(String orderSn,String userId) throws Exception {
 		// 响应数据,默认成功
 		String appKey = ConfigProperties.get(Constants.CONFKEY_NEWFUND_APPKEY);
 		String secret = ConfigProperties.get(Constants.CONFKEY_NEWFUND_SECRET);
@@ -68,12 +77,18 @@ public class Auth51FundUtil extends AbstractThird {
 			if (Auth51FundRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 				String respData = respInfo.getData();
 				//推送公积金信息给风控
-				RiskRespBo riskRespBo = riskUtil.FundNotifyRisk(respData,userId,token,orderSn);
+				try {
+					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respData,userId);
+					return 1;
+				} catch (Exception e) {
+					logger.error("error:"+e);
+				}
 			}else {
 				//三方处理错误
 				Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
 				logger.error("getGjjData result fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
 			}
 		}
+		return 0;
 	}
 }
