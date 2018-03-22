@@ -251,8 +251,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
 					if(doubleEggsId != null){
 						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+					}else {
+					    throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
 					}
-				throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
+				
 					
 				}
 				// ------------------------------------end mqp doubleEggs------------------------------------

@@ -36,13 +36,10 @@ public class ApplyLoanParam {
 	@NotNull
 	public String longitude;
 	
-	@NotNull
 	public String province;
 	
-	@NotNull
 	public String city;
 	
-	@NotNull
 	public String county;
 	
 	public String address;
