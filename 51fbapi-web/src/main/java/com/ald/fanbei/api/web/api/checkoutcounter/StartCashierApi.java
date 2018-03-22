@@ -238,11 +238,14 @@ public class StartCashierApi implements ApiHandle {
 				cashierVo.getWx().setStatus(YesNoStatus.NO.getCode());
 				cashierVo.getAli().setStatus(YesNoStatus.NO.getCode());
 				cashierVo.getBank().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getCp().setStatus(YesNoStatus.NO.getCode());
 			}
 			//额度支付
 			if(payType.indexOf("2")==-1){
 				cashierVo.getAp().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getAp().setReasonType(CashierReasonType.CASHIER.getCode());
 				cashierVo.getCredit().setStatus(YesNoStatus.NO.getCode());
+				cashierVo.getCp().setStatus(YesNoStatus.NO.getCode());
 			}
 			//组合支付
 			if(payType.indexOf("3")==-1){
