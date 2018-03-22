@@ -786,8 +786,8 @@ public class RiskUtil extends AbstractThird {
 		String codeForThirdSceneBasis = null;
 		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
 		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
-		//二级类型同上
-		codeForSecSceneBasis = OrderTypeSecSence.getCodeByNickName(SecSence);
+		//二级类型
+		codeForSecSceneBasis = SecSence;
 		//三级类型(区分逛逛和商圈)
 		
 		if(SecSence.equals("BOLUOME")){
