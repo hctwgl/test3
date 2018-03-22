@@ -54,6 +54,21 @@ public class ThirdController extends AbstractThird{
     @Resource
     BoluomeService boluomeService;
 
+    @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String iagentReport( HttpServletRequest request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append("---iagentReport begin:");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        for (String key : paramMap.keySet()) {
+            String[] values = paramMap.get(key);
+            for (String value : values) {
+                sb.append("键:" + key + ",值:" + value);
+            }
+        }
+        sb.append("---iagentReport end");
+        return "{\"success\":{receipt_id\":\"iagentReport_"+System.currentTimeMillis()+"\",\"received_time\":\"2016_08_21_132011\"}}";
+    }
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String orderRefund(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception {
