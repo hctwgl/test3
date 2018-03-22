@@ -153,4 +153,12 @@
         WHERE a.is_delete=0 AND b.is_delete = 0 AND a.order_id=#{orderId}
         limit 1
     </select>
+
+    <select id="getActivityOrderByGoodsIdAndActId" resultType="AfSeckillActivityOrderDo">
+        SELECT a.id,a.order_id,a.activity_id
+        FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
+        WHERE a.is_delete = 0 AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId} AND o.user_id=#{userId}
+        AND o.status NOT IN ('NEW','PAYFAIL','CLOSED')
+        limit 1
+    </select>
 </mapper>

@@ -20,4 +20,6 @@ public interface AfSeckillActivityOrderDao extends BaseDao<AfSeckillActivityOrde
     AfSeckillActivityOrderDo getActivityOrderByOrderId(@Param("orderId") Long orderId);
 
     AfSeckillActivityDo getActivityByOrderId(@Param("orderId") Long orderId);
+
+    AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId, @Param("userId") Long userId);
 }

@@ -106,4 +106,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	public int getSumCountByGoodsId(Long goodsId) {
 		return afGoodsPriceDao.selectSumStock(goodsId);
 	}
+
+	@Override
+	public AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(Long goodsId, Long activityId, Long userId) {
+		return afSeckillActivityOrderDao.getActivityOrderByGoodsIdAndActId(goodsId,activityId,userId);
+	}
 }
