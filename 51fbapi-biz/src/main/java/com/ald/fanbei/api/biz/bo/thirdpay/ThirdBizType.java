@@ -8,6 +8,7 @@ package com.ald.fanbei.api.biz.bo.thirdpay;
 public enum ThirdBizType {
     CASH_REPAYMENT( "现金贷还款"),
     CASH_RENEWAL( "现金贷续期"),
+    LOAN_REPAYMENT ("白领贷还款"),
     REPAYMENT("分期还款");
     private String name;
     ThirdBizType(String name) {
