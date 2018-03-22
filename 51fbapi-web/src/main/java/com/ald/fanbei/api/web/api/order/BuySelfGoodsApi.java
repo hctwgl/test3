@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,24 +56,6 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
-import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -386,24 +369,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 					0l);
 			logger.error("afSeckillActivity for userId:" + userId + ",activityId:" + activityId);
 			if(activityId>0l){
-				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
-				if(afSeckillActivityGoodsDto==null){
+				//AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
+				AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityById(activityId);
+				if(afSeckillActivityDo==null){
 					//活动未开始或已结束
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
 				}
-				//重新计算秒杀实付金额跟返利
-				if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
-					logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
-					afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
-					BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
-					if(afOrder.getRebateAmount().compareTo(secKillRebAmount)>0){
-						afOrder.setRebateAmount(secKillRebAmount);
-					}
-				}else{
-					//秒杀价有问题
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
-				}
-				if(afSeckillActivityGoodsDto.getType()==2){
+				AfSeckillActivityGoodsDto afSeckillActivityGoodsDto = afSeckillActivityService.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
+				//秒杀
+				if(afSeckillActivityDo.getType()==2){
 					//Long activityId = afSeckillActivityGoodsDto.getActivityId();
 					Integer goodsLimitCount = afSeckillActivityGoodsDto.getGoodsLimitCount();
 					if(goodsLimitCount!=null&&goodsLimitCount<count){
@@ -411,6 +385,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
 					}
 					try{
+						//重新计算秒杀实付金额跟返利
+						if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
+							logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
+							afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
+							BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
+							if(afOrder.getRebateAmount().compareTo(secKillRebAmount)>0){
+								afOrder.setRebateAmount(secKillRebAmount);
+							}
+						}else{
+							//秒杀价有问题
+							return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
+						}
 						Integer remainCount = afSeckillActivityGoodsDto.getLimitCount();
 						if(remainCount<0||remainCount-count<0){
 							//超过购买数量
@@ -455,6 +441,23 @@ public class BuySelfGoodsApi implements ApiHandle {
 						logger.error("afSeckillActivity error for:" + ex);
 						//人太多了，被挤爆了
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR);
+					}
+				}else{
+					//如果是特惠，规格未配置或者特惠价格为0，正常购买
+					/*if(afSeckillActivityGoodsDto==null){
+
+					}else{
+						if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)==0){
+							//正常销售
+						}
+					}*/
+					if(afSeckillActivityGoodsDto!=null&&afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
+						logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
+						afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
+						BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
+						if(afOrder.getRebateAmount().compareTo(secKillRebAmount)>0){
+							afOrder.setRebateAmount(secKillRebAmount);
+						}
 					}
 				}
 			}

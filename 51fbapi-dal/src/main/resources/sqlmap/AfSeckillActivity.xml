@@ -17,5 +17,15 @@
         AND a.gmt_pstart <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
         ORDER BY a.gmt_create DESC limit 1
     </select>
+
+    <select id="getActivityById" resultType="AfSeckillActivityDo" parameterType="java.lang.Long">
+        SELECT
+        a.id rid,a.name,a.type,a.gmt_start,a.gmt_end,a.gmt_pstart,
+        a.close_time,a.goods_limit_count,a.type
+        FROM af_seckill_activity a
+        WHERE a.is_delete = 0 AND a.is_disable=0 AND a.id=#{activityId ,jdbcType=BIGINT}
+        AND a.gmt_start <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
+        limit 1
+    </select>
     
 </mapper>

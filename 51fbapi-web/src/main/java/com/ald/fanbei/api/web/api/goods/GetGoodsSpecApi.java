@@ -216,7 +216,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 									goodsPriceVo.setStock(0);
 								}
 							}else{
-								//如果售价有问题，设置为不能销售
+								//活动价应该小于售价
 								if(specialPrice.compareTo(BigDecimal.ZERO)>0&&specialPrice.compareTo(priceDo.getActualAmount())<=0){
 									goodsPriceVo.setActualAmount(specialPrice);
 								}

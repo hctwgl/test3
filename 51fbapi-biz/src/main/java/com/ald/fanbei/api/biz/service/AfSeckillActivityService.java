@@ -44,4 +44,6 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     int getSumCountByGoodsId(Long goodsId);
 
     AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(Long goodsId, Long activityId,Long userId);
+
+    AfSeckillActivityDo getActivityById(Long activityId);
 }
