@@ -534,7 +534,8 @@ public class AppH5LeaseController extends BaseController {
             if(priceDo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
             }
-            AfUserAccountDo afUser = afUserAccountService.getUserAccountInfoByUserName(context.getUserName());
+            AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+            AfUserAccountDo afUser = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
             AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(afUser.getUserId());
             AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(afUser.getUserId(), "ONLINE");
             BigDecimal useableAmount = new BigDecimal(0);
