@@ -245,7 +245,7 @@ public interface AfOrderDao {
 	 * 获取租赁商品是否存在订单
 	 * @return
 	 */
-	String checkLeaseOrder(@Param("userId")Long userId ,@Param("goodsId") Long goodsId);
+	HashMap checkLeaseOrder(@Param("userId")Long userId ,@Param("goodsId") Long goodsId);
 
 	/**
 	 * 添加租赁订单

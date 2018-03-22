@@ -390,7 +390,7 @@ public interface AfOrderService {
 	 * 获取租赁商品是否存在订单
 	 * @return
 	 */
-	String checkLeaseOrder(Long userId, Long goodsId);
+	HashMap checkLeaseOrder(Long userId, Long goodsId);
 
 	/**
 	 * 获取租赁商品是否存在订单

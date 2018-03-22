@@ -2833,7 +2833,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public String checkLeaseOrder(Long userId, Long goodsId) {
+    public HashMap checkLeaseOrder(Long userId, Long goodsId) {
         return orderDao.checkLeaseOrder(userId,goodsId);
     }
 

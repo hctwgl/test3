@@ -1283,8 +1283,8 @@
 		order_id = #{orderId}
 	</select>
 
-	<select id="checkLeaseOrder" resultType="java.lang.String">
-		SELECT b.`status` FROM af_order_lease a INNER JOIN af_order b ON a.order_id=a.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED'
+	<select id="checkLeaseOrder" resultType="HashMap">
+		SELECT b.`status`,b.id FROM af_order_lease a INNER JOIN af_order b ON a.order_id=a.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED'
 	</select>
 
 	<insert id="addOrderLease" parameterType="AfOrderLeaseDo">

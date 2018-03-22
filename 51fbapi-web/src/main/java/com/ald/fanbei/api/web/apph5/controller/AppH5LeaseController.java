@@ -250,9 +250,9 @@ public class AppH5LeaseController extends BaseController {
             context = doWebCheck(request, true);
             Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("goodsId")), 0l);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-            String status = afOrderService.checkLeaseOrder(afUser.getRid(),goodsId);
-            if(status != null){
-                if(status.equals("NEW")){
+            HashMap result = afOrderService.checkLeaseOrder(afUser.getRid(),goodsId);
+            if(result != null){
+                if(result.get("status").equals("NEW")){
                     //待支付
                     data.put("status",1);
                 }
@@ -260,6 +260,7 @@ public class AppH5LeaseController extends BaseController {
                     //进行中
                     data.put("status",2);
                 }
+                data.put("orderId",result.get("id"));
             }
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
