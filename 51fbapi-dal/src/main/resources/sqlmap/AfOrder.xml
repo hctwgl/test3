@@ -707,7 +707,7 @@
 		FROM
 			af_order
 		WHERE
-			is_delete=0 and user_id = #{userId} 
+			is_hide=0 and user_id = #{userId}
 		<if test="orderStatus == 'WC'" >
 			and (status = 'NEW' or status = 'PAID')
 		</if>
@@ -1003,7 +1003,7 @@
 	</select>
 	
 	<update id="deleteOrder" parameterType="java.lang.Long" >
-		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
+		UPDATE af_order SET gmt_modified=NOW(),is_hide = 1 WHERE id=#{rid}
 	</update>
 	
 	<select id = "getDealAmount" resultType="java.lang.Integer" >
