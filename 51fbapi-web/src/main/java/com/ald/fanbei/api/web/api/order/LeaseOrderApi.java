@@ -23,7 +23,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -232,7 +231,11 @@ public class LeaseOrderApi implements ApiHandle {
         String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
         dataLeaseFreeze.put("appName",appName);
         dataLeaseFreeze.put("blackBox",afOrder.getBlackBox());
-        afOrderLeaseDo.setFreezeAmount(afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),userId));
+        BigDecimal freezeAmount = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),userId);
+        if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
+            throw new FanbeiException(FanbeiExceptionCode.LEASE_NOT_BUY);
+        }
+        afOrderLeaseDo.setFreezeAmount(freezeAmount);
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
 

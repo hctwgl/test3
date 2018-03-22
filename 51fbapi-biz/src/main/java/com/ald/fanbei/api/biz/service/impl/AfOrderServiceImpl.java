@@ -2847,22 +2847,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         for (int i=0;i<leaseFreezeArray.size();i++){
             JSONObject obj = leaseFreezeArray.getJSONObject(i);
             //判断分数
-            if(score >= obj.getInteger("score") || freezeScore == obj.getInteger("score")){
-                BigDecimal minPrice = obj.getBigDecimal("minPrice");
-                BigDecimal maxPrice = obj.getBigDecimal("maxPrice");
-                boolean isAccord = true;
+            if(score > obj.getInteger("minScore") && score <= obj.getInteger("maxScore")){
                 //判断价格
-                if(minPrice.compareTo(new BigDecimal(0)) != 0 && goodsPrice.compareTo(minPrice) <= 0){
-                    isAccord = false;
-                }
-                if(maxPrice.compareTo(new BigDecimal(0)) != 0 && goodsPrice.compareTo(maxPrice) == 1){
-                    isAccord = false;
-                }
-                if(isAccord){
+                if(goodsPrice.compareTo(obj.getBigDecimal("minPrice")) > 1 && goodsPrice.compareTo( obj.getBigDecimal("maxPrice")) <= 0){
                     freeze = obj.getInteger("freeze");
-                    freezeScore = obj.getInteger("score");
                 }
             }
+        }
+        if(freeze == 100){
+            return BigDecimal.ZERO;
         }
         return goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100));
     }

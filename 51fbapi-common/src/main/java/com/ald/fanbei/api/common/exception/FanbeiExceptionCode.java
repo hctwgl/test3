@@ -361,7 +361,7 @@ public enum FanbeiExceptionCode {
     //订单
     ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),
     AMOUNT_IS_LESS("AMOUNT_IS_LESS",6002,"amount_is_less","还款金额过少"),
-
+    LEASE_NOT_BUY("LEASE_NOT_BUY",6007,"order_not_exist","分层得分过低不能租赁"),
 
 
     CUT_PRICE_ISBUY("CUT_PRICE_ISBUY",6003,"cut_price_isbut","砍价商品已购买"),

@@ -551,6 +551,9 @@ public class AppH5LeaseController extends BaseController {
                     dataLeaseFreeze.put("appName",appName);
                     dataLeaseFreeze.put("blackBox",blackBox == null ? "":blackBox);
                     BigDecimal freezeAmount = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
+                    if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
+                        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.LEASE_NOT_BUY.getDesc(), "", null).toString();
+                    }
                     data.put("freezeAmount",freezeAmount);//总冻结额度
                     if(useableAmount.compareTo(freezeAmount)>=0){
                         data.put("quotaDeposit",freezeAmount);//冻结额度
