@@ -106,8 +106,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
-	AfUserCouponService afUserCouponService;
-	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
 	AfGoodsDouble12Service afGoodsDouble12Service;
