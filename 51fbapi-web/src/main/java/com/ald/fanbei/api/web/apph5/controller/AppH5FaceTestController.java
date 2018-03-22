@@ -91,7 +91,7 @@ public class AppH5FaceTestController extends BaseController {
 					List<AfFacescoreImgDo> imgList = afFacescoreRedService.findRedImg();
 					if (CollectionUtil.isNotEmpty(imgList)){
 						int index = random.nextInt(imgList.size());
-						String imgUrl = imgList.get(index).getImgUrl();
+						String imgUrl = imgList.get(index).getUrl();
 						redDo.setImageurl(imgUrl);
 					}
 				} else {
