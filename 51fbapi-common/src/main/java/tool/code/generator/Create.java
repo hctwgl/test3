@@ -20,13 +20,13 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_facescore_share_count";
+		String tables = "af_facescore_img";
 
 
 
 		// 配置作者及Domain说明
 		String classAuthor = "liutengyuan";
-		String functionName = "颜值测试红包表实体类";
+		String functionName = "颜值测试图片表";
 
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
