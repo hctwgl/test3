@@ -171,7 +171,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 	    }
 
 	    // 线上分期提额
-	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getCode(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.ALIPAY.getCode());
+	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.ALIPAY.getCode());
 	} else {
 	    // 更新认证状态为失败
 	    afUserAuthDo.setAlipayStatus("N");

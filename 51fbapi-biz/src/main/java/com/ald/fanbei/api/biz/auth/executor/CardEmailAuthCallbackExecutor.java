@@ -98,7 +98,7 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 	    }
 
 	    // 线上分期提额
-	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getCode(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.ALIPAY.getCode());
+	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.CARDMAIL_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.CARDEMAIL.getCode());
 
 	} else {
 	    afUserAuthDo.setCreditStatus("N");
