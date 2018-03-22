@@ -23,7 +23,6 @@ import com.ald.fanbei.api.biz.service.AfFacescoreRedConfigService;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -63,44 +62,51 @@ public class AppH5FaceTestController extends BaseController {
 	@RequestMapping(value = "/fanbei_api/faceScore", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String faceScore(HttpServletRequest request,
 			HttpServletResponse response) {
-		AfFacescoreRedDo redDo = new AfFacescoreRedDo();
-		FanbeiWebContext context = new FanbeiWebContext();
-		// 和登录有关的
-		context = doWebCheck(request, false);
-		logger.info("/fanbeiapi/faceScore params: ");
-		List<AfFacescoreRedConfigDo> redConfigList = afFacescoreRedConfigService.findAll();
-		if (redConfigList == null || redConfigList.size() == 0) {
-			return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束", "", null).toString();
-		} else {
-			Random random = new Random();
-			int a = random.nextInt(100);
-			// 根据随机概率获取对应等级红包的配置对象
-			AfFacescoreRedConfigDo redConfig = generateRedDegree(a,
-					redConfigList);
-			Long redConfigId = redConfig.getRid();
-			AfFacescoreRedConfigDo redConfigDo = afFacescoreRedConfigService.getById(redConfigId);
-			if (redConfigDo != null) {
-				BigDecimal maxmoney = redConfigDo.getMaxmoney();
-				BigDecimal minmoney = redConfigDo.getMinmoney();
-				// 确定红包的金额
-				int value = random.nextInt((maxmoney.intValue() - minmoney.intValue()) * 100);
-				BigDecimal bigDecimal = new BigDecimal(value * 0.01).setScale(2, BigDecimal.ROUND_DOWN);
-				BigDecimal amout = minmoney.add(bigDecimal);
-				redDo.setAmount(amout);
-				redDo.setConfigId(redConfigId);
-				List<AfFacescoreImgDo> imgList = afFacescoreRedService.findRedImg();
-				if (CollectionUtil.isNotEmpty(imgList)){
-					int index = random.nextInt(imgList.size());
-					String imgUrl = imgList.get(index).getUrl();
-					redDo.setImageurl(imgUrl);
-				}
+		try {
+			AfFacescoreRedDo redDo = new AfFacescoreRedDo();
+			// FanbeiWebContext context = new FanbeiWebContext();
+			// 和登录有关的
+			// context = doWebCheck(request, false);
+			logger.info("/fanbeiapi/faceScore params: ");
+			List<AfFacescoreRedConfigDo> redConfigList = afFacescoreRedConfigService.findAll();
+			if (redConfigList == null || redConfigList.size() == 0) {
+				return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束", "", null).toString();
 			} else {
-				logger.error("颜值测试红包配置信息类异常...", redConfigId);
-				return H5CommonResponse.getNewInstance(false, "", "", null).toString();
+				Random random = new Random();
+				int a = random.nextInt(100);
+				// 根据随机概率获取对应等级红包的配置对象
+				AfFacescoreRedConfigDo redConfig = generateRedDegree(a,
+						redConfigList);
+				Long redConfigId = redConfig.getRid();
+				AfFacescoreRedConfigDo redConfigDo = afFacescoreRedConfigService.getById(redConfigId);
+				if (redConfigDo != null) {
+					BigDecimal maxmoney = redConfigDo.getMaxmoney();
+					BigDecimal minmoney = redConfigDo.getMinmoney();
+					// 确定红包的金额
+					int value = random.nextInt((maxmoney.intValue() - minmoney.intValue()) * 100);
+					BigDecimal bigDecimal = new BigDecimal(value * 0.01).setScale(2, BigDecimal.ROUND_DOWN);
+					BigDecimal amout = minmoney.add(bigDecimal);
+					redDo.setAmount(amout);
+					redDo.setConfigId(redConfigId);
+					List<AfFacescoreImgDo> imgList = afFacescoreRedService.findRedImg();
+					if (CollectionUtil.isNotEmpty(imgList)){
+						int index = random.nextInt(imgList.size());
+						String imgUrl = imgList.get(index).getImgUrl();
+						redDo.setImageurl(imgUrl);
+					}
+				} else {
+					logger.error("颜值测试红包配置信息类异常...", redConfigId);
+					return H5CommonResponse.getNewInstance(false, "红包结果初始化失败..", "", null).toString();
+				}
+				// 保存红包到颜值红包表
+				afFacescoreRedService.addRed(redDo);
+				return H5CommonResponse.getNewInstance(true, "颜值测试成功", "", redDo).toString();
 			}
-			// 保存红包到颜值红包表
-			afFacescoreRedService.addRed(redDo);
-			return H5CommonResponse.getNewInstance(true, "颜值测试成功", "", redDo).toString();
+		} catch (Exception e) {
+			String result =  H5CommonResponse.getNewInstance(false, "红包结果初始化失败..", "", e.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", e, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+			return result;
 		}
 	}
 
