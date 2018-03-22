@@ -269,7 +269,7 @@ public interface AfOrderDao {
 	 * 关闭订单
 	 * @return
 	 */
-	int closeOrder(@Param("closedReason")String closedReason,@Param("closedDetail")String closedDetail,@Param("id")Long id);
+	int closeOrder(@Param("closedReason")String closedReason,@Param("closedDetail")String closedDetail,@Param("id")Long id,@Param("userId")Long userId);
 
 	/**
 	 * 修改租赁订单返利
@@ -300,4 +300,10 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	int UpdateOrderLeaseTime(@Param("gmtStart")Date gmtStart,@Param("gmtEnd")Date gmtEnd, @Param("orderId")Long orderId);
+
+	/**
+	 * h5删除订单
+	 * @return
+	 */
+	int UpdateOrderLeaseShow(@Param("orderId")Long orderId,@Param("userId")Long userId);
 }

@@ -2878,8 +2878,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public int closeOrder(String closedReason, String closedDetail, Long id) {
-        return orderDao.closeOrder(closedReason,closedDetail,id);
+    public int closeOrder(String closedReason, String closedDetail, Long id,Long userId) {
+        return orderDao.closeOrder(closedReason,closedDetail,id,userId);
     }
 
     @Override
@@ -2902,5 +2902,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Override
     public int UpdateOrderLeaseTime(Date gmtStart, Date gmtEnd, Long orderId) {
         return orderDao.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderId);
+    }
+
+    @Override
+    public int UpdateOrderLeaseShow(Long orderId,Long userId) {
+        return orderDao.UpdateOrderLeaseShow(orderId,userId);
     }
 }

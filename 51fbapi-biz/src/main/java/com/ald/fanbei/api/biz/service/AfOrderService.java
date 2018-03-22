@@ -414,7 +414,7 @@ public interface AfOrderService {
 	 * 关闭订单
 	 * @return
 	 */
-	int closeOrder(String closedReason,String closedDetail,Long id);
+	int closeOrder(String closedReason,String closedDetail,Long id,Long userId);
 
 	/**
 	 * 查询租赁订单
@@ -433,4 +433,10 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int UpdateOrderLeaseTime(Date gmtStart,Date gmtEnd,Long orderId);
+
+	/**
+	 * h5删除订单
+	 * @return
+	 */
+	int UpdateOrderLeaseShow(Long orderId,Long userId);
 }

@@ -679,7 +679,6 @@ public class AppH5LeaseController extends BaseController {
     public String cancelLeaseOrder(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        LeaseOrderDto lease = new LeaseOrderDto();
         try{
             context = doWebCheck(request, true);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
@@ -690,8 +689,35 @@ public class AppH5LeaseController extends BaseController {
             if(orderInfo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
-            afOrderService.closeOrder(closedReason,"",orderId);
-            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
+            afOrderService.closeOrder(closedReason,"",orderId,afUser.getRid());
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", null);
+            return resp.toString();
+        }catch  (Exception e) {
+            logger.error("cancelLeaseOrder", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
+    /**
+     *删除租赁订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "deleteLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String deleteLeaseOrder(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            context = doWebCheck(request, true);
+            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            //用户订单检查
+            AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
+            if(orderInfo == null){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            afOrderService.UpdateOrderLeaseShow(orderId,afUser.getRid());
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", null);
             return resp.toString();
         }catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
