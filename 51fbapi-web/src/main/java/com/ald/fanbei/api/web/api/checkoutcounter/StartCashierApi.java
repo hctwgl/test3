@@ -243,7 +243,7 @@ public class StartCashierApi implements ApiHandle {
 			//额度支付
 			if(payType.indexOf("2")==-1){
 				cashierVo.getAp().setStatus(YesNoStatus.NO.getCode());
-				cashierVo.getAp().setReasonType(CashierReasonType.CASHIER.getCode());
+				//cashierVo.getAp().setReasonType(CashierReasonType.CASHIER.getCode());
 				cashierVo.getCredit().setStatus(YesNoStatus.NO.getCode());
 				cashierVo.getCp().setStatus(YesNoStatus.NO.getCode());
 			}
