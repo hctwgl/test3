@@ -32,7 +32,7 @@
 	</sql>
 
     <resultMap id="leaseResultMap" type="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
-		<id column="id" property="rid" jdbcType="BIGINT" />
+		<id column="rid" property="rid" jdbcType="BIGINT" />
         <collection select="getByGoodsId" property="goodsPrice" column="rid" ofType="AfGoodsPriceDo">
         </collection>
     </resultMap>
