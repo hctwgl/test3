@@ -296,8 +296,8 @@ public class RiskUtil extends AbstractThird {
 
 	public static String getUrl() {
 		if (url == null) {
-			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-//			url = "http://btestarc.51fanbei.com";
+//			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+			url = "http://ctestarc.51fanbei.com";
 			return url;
 		}
 		return url;
@@ -3610,17 +3610,16 @@ public class RiskUtil extends AbstractThird {
 		String detailsBase64 = Base64.encodeString(details);
 		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
-		reqBo.setOrderNo(getOrderNo("newfund", temp.substring(temp.length() - 4, temp.length())));
-		System.out.println(111111111);
+		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		System.out.println(222222222);
-		String url = getUrl() +  "modules/api/thrid/receiveData.htm";
-		System.out.println(33333333);
+		String url = getUrl() +  "/modules/api/thrid/receiveData.htm";
+//		String url = "http://122.224.88.51:18080" +  "/modules/api/thrid/receiveData.htm";
 		logger.info("newFundInfoNotify url = {},params = {}",url,JSONObject.toJSONString(reqBo));
 		String reqResult = requestProxy.post(url, reqBo);
 		logger.info("newFundInfoNotify result = {}", reqResult);
-	//	logThird(reqResult, "newFundInfoNotify", reqBo);
+		logThird(reqResult, "newFundInfoNotify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
+			logger.info("newFundInfoNotify fail ,result is null");
 			throw new FanbeiException(FanbeiExceptionCode.RISK_NEWFUND_NOTIFY_ERROR);
 		}
 		try {

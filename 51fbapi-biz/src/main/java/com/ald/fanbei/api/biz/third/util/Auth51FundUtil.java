@@ -70,7 +70,7 @@ public class Auth51FundUtil extends AbstractThird {
         String respResult = HttpUtil.doHttpPostJsonParam(gjjUrl, params);
         logger.info("get51Gjj result = {}", respResult);
 		if (StringUtil.isBlank(respResult)) {
-			logger.error("getGjjData result is null,orderSn=" + orderSn);
+			logger.error("getGjjData fail, result is null,orderSn=" + orderSn);
 			throw new Exception("获取用户公积金信息为null");
 		}else {
 			Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
@@ -78,15 +78,17 @@ public class Auth51FundUtil extends AbstractThird {
 				String respData = respInfo.getData();
 				//推送公积金信息给风控
 				try {
+					logger.error("getGjjData success,orderSn=" + orderSn);
 					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respData,userId);
 					return 1;
 				} catch (Exception e) {
 					logger.error("error:"+e);
+					return 0;
 				}
 			}else {
 				//三方处理错误
 				Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
-				logger.error("getGjjData result fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+				logger.error("getGjjData  fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
 			}
 		}
 		return 0;
