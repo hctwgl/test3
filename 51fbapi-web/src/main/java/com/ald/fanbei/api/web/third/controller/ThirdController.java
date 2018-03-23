@@ -65,11 +65,15 @@ public class ThirdController extends AbstractThird{
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( @RequestParam("audio") MultipartFile audio) throws Exception {
+    public String iagentReport( @RequestParam("audio") MultipartFile audio, @RequestParam("work_id")String   work_id,@RequestParam("work_result")String work_result,@RequestParam("token")String token) throws Exception {
         FileOutputStream fos = null;
         InputStream in = null;
         String fileUrl = null;
         StringBuilder sb = new StringBuilder();
+        sb.append("---work_id:"+work_id);
+        sb.append("---work_result:"+work_result);
+        sb.append("---token:"+token);
+
         sb.append("---iagentReport begin:");
         Map<String, String[]> paramMap = request.getParameterMap();
         for (String key : paramMap.keySet()) {
