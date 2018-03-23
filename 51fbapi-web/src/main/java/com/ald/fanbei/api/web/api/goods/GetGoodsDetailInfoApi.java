@@ -170,7 +170,9 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			Map nperMap = nperList.get(nperList.size() - 1);
 			vo.setNperMap(nperMap);
 		}
-		vo.setNperList(nperList);
+		if(context.getAppVersion()>=409){
+			vo.setNperList(nperList);
+		}
 		vo.setRemark(goods.getRemark());
 		resp.setResponseData(vo);
 		return resp;

@@ -398,7 +398,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					}
 					try{
 						//重新计算秒杀实付金额跟返利
-						if(afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
+						if(afSeckillActivityGoodsDto!=null&&afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
 							logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
 							afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
 							BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
