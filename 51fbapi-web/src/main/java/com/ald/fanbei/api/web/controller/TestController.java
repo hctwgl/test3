@@ -264,6 +264,18 @@ public class TestController {
         return "调用处理中^";
     }
 
+
+    @RequestMapping("/kafkaTest")
+    @ResponseBody
+    public String kafkaTest() {
+       kafkaSync.syncEvent(13989455786l,"sync_directory",true);
+        kafkaSync.syncEvent(18637963069l,"sync_directory",true);
+        kafkaSync.syncEvent(18637963176l,"sync_directory",true);
+
+        return "调用处理中^";
+
+    }
+
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
