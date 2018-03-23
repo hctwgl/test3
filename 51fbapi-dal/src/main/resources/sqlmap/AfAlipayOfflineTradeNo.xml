@@ -71,7 +71,7 @@
         LIMIT 0,1
     </select>
     <select id="getTradeNosByUserId" resultType="map">
-       SELECT tn.payserialnum,DATE_FORMAT(tn.gmt_create,'%Y-%m-%d') gmtCreate,oa.alipay_account alipayAccount,bc.`status` payStatus FROM af_alipay_offline_trade_no tn LEFT JOIN af_repayment_borrow_cash bc ON  tn.payserialnum=bc.trade_no
+       SELECT tn.payserialnum,DATE_FORMAT(tn.gmt_create,'%Y-%m-%d %H:%i:%s') gmtCreate,oa.alipay_account alipayAccount,bc.`status` payStatus FROM af_alipay_offline_trade_no tn LEFT JOIN af_repayment_borrow_cash bc ON  tn.payserialnum=bc.trade_no
 LEFT JOIN af_alipay_offline_audit oa ON tn.payserialnum=oa.alipay_trade_no
 WHERE tn.user_id=#{userId} and DATE_FORMAT(tn.gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
         <if test="status != null and status != '' ">
