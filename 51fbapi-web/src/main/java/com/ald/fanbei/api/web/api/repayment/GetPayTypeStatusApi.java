@@ -56,9 +56,9 @@ public class GetPayTypeStatusApi  implements ApiHandle{
         	value = afResourceDo.getValue();
          	value1 = afResourceDo.getValue1();
         	value2 = afResourceDo.getValue2();
-        	wXdata.put("status", value == null || value == "" ? 0 : value);
-        	zFbdata.put("status", value1 == null || value1 == "" ? 0 : value1);
-        	xXhkdata.put("status", value2 == null || value2 == "" ? 0 : value2);
+        	wXdata.put("status", value == null || value == "" ? 0 : Integer.parseInt(value));
+        	zFbdata.put("status", value1 == null || value1 == "" ? 0 : Integer.parseInt(value1));
+        	xXhkdata.put("status", value2 == null || value2 == "" ? 0 : Integer.parseInt(value2));
         }else{
          	wXdata.put("status", 0);
         	zFbdata.put("status", 0);
