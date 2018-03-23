@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfAlipayOfflineTradeNoDo;
-import com.sun.javafx.collections.MappingChange;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
