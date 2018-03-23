@@ -3611,14 +3611,15 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("newfund", temp.substring(temp.length() - 4, temp.length())));
+		System.out.println(111111111);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
+		System.out.println(222222222);
 		String url = getUrl() +  "modules/api/thrid/receiveData.htm";
-
+		System.out.println(33333333);
 		logger.info("newFundInfoNotify url = {},params = {}",url,JSONObject.toJSONString(reqBo));
 		String reqResult = requestProxy.post(url, reqBo);
 		logger.info("newFundInfoNotify result = {}", reqResult);
-		logThird(reqResult, "newFundInfoNotify", reqBo);
+	//	logThird(reqResult, "newFundInfoNotify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_NEWFUND_NOTIFY_ERROR);
 		}
