@@ -118,13 +118,18 @@ public class ChangeUserAmountAndAuthStatusController extends AbstractThird {
     	
     	logger.info("updateUser begin");
     	String uid = ObjectUtils.toString(request.getParameter("uidStr"));
-    	long uidStr = Long.parseLong(uid);
+    	String userDoStr = ObjectUtils.toString(request.getParameter("userDo"));
+    	String userAccountDoStr = ObjectUtils.toString(request.getParameter("userAccountDo"));
     	
-    	AfUserDo userDo = afUserService.getUserById(uidStr);
-		AfUserAccountDo userAccountDo = afUserAccountService.getUserAndAccountByUserId(uidStr);
     	
-    	logger.info("updateUser req uidStr= "+uidStr+" ,userDo= "+userDo+" ,userAccountDo= "+userAccountDo);
-    	RiskRespBo riskRespBo = riskUtil.registerStrongRisk(uid, RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "","");
+    	
+    	AfUserDo userDo = JSONObject.parseObject(userDoStr, AfUserDo.class);
+    	AfUserAccountDto userAccountDo = JSONObject.parseObject(userAccountDoStr, AfUserAccountDto.class);
+    	
+    	
+    	
+    	logger.info("updateUser req uidStr= "+uid+" ,userDo= "+userDo+" ,userAccountDo= "+userAccountDo);
+    	RiskRespBo riskRespBo = riskUtil.registerStrongRisk(uid, RiskEventType.USER.name(), userDo, null, "", "", userAccountDo, "", "", "","");
     	logger.info("updateUser resp riskRespBo= "+riskRespBo);
     	
     	return JsonUtil.toJSONString(riskRespBo);
