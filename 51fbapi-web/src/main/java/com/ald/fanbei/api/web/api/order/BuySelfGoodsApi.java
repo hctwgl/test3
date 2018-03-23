@@ -132,6 +132,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
+		BigDecimal clientActualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 
@@ -370,9 +371,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 			Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityId"), ""),
 					0l);
 			if(context.getAppVersion()<409){
-				AfGoodsPriceDo  realActualAmount = afGoodsPriceService.getById(goodsPriceId);
-				BigDecimal realAmount = realActualAmount.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
-				if(realAmount.compareTo(afOrder.getActualAmount())!=0){
+				//AfGoodsPriceDo  realActualAmount = afGoodsPriceService.getById(goodsPriceId);
+				//BigDecimal realAmount = realActualAmount.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
+				if(clientActualAmount.compareTo(afOrder.getActualAmount())!=0){
 					//取最新的活动
 					AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getStartActivityByGoodsId(goodsId);
 					if(afSeckillActivityDo!=null){
