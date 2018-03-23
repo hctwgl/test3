@@ -112,4 +112,11 @@ public interface AfRepaymentBorrowCashDao {
     int getCurrDayRepayErrorTimesByUser(@Param("userId") Long userId);
 
     String getProcessingRepayNo(@Param("userId")Long userId);
+    
+    /**
+     * @param trandeNo 可选参数
+     * @param repaymentId
+     * @return
+     */
+    int status2Process(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
 }
