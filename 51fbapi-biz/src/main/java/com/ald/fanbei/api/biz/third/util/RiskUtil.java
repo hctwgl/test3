@@ -3602,7 +3602,7 @@ public class RiskUtil extends AbstractThird {
 		newFundNotifyReqBo reqBo = new newFundNotifyReqBo();
 		reqBo.setConsumerNo(userId);
 		Map<String, Object> detailsMap = Maps.newHashMap();
-		detailsMap.put("source", "51Fund");
+		detailsMap.put("source", "51fund");
 		detailsMap.put("item", "fund");
 		detailsMap.put("data", data);
 		String details = JSONObject.toJSONString(detailsMap);
