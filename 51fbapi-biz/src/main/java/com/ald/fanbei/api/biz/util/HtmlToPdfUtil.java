@@ -163,11 +163,14 @@ public final class HtmlToPdfUtil {
         ITextRenderer render = new ITextRenderer();
         ITextFontResolver fontResolver = render.getFontResolver();
         try {
-            if("linux".equals(getCurrentOperatingSystem())){
-                fontResolver.addFont("/usr/share/fonts/chiness/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            }else{
+            if (null != getCurrentOperatingSystem() && getCurrentOperatingSystem().contains("windows")){
                 fontResolver.addFont("c:/Windows/Fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }else {
+                fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             }
+            if("linux".equals(getCurrentOperatingSystem())){
+
+            }else
             // 解析html生成pdf
             render.setDocumentFromString(content);
             //解决图片相对路径的问题
@@ -177,10 +180,10 @@ public final class HtmlToPdfUtil {
             render.createPDF(new FileOutputStream(outFilePath));
         } catch (DocumentException e) {
             e.printStackTrace();
-            logger.info("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
         } catch (IOException e) {
             e.printStackTrace();
-            logger.info("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
         }
     }
 

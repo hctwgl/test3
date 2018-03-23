@@ -155,14 +155,14 @@ public class SmsUtil extends AbstractThird {
 
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
         if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
-            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_REGIST.getCode());
             if (countRegist >= Integer.valueOf(resourceDo.getValue()))
                 throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = switchSmsSend(mobile, content);
-        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
+        this.addSmsRecord(SmsType.QUICK_REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
     /**

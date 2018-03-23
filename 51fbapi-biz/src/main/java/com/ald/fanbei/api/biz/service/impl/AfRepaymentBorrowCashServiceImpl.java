@@ -857,7 +857,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     }
 
     @Override
-    public String dealOfflineRepaymentSucess(final String repayNo, final String borrowNo, final String repayType, final String repayTime, final BigDecimal repayAmount, final BigDecimal restAmount, final String tradeNo, final String isBalance) {
+    public String dealOfflineRepaymentSucess(final String repayNo, final String borrowNo, final String repayType, final String repayTime, final BigDecimal repayAmount, final BigDecimal restAmount, final String tradeNo, final String isBalance,final String isAdmin) {
         return transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -880,7 +880,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     //还款方式解析
                     OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
                     //线下还款记录添加
-                    AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+                    String name;
+                    if (isAdmin != null && "Y".equals(isAdmin)){
+                        name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
+                    }else {
+                        name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
+                    }
+                    AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, name, repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
                             0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
                     afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 
