@@ -1,7 +1,12 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -34,6 +39,9 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
  * 提供给第三方调用接口 @类描述：
@@ -53,10 +61,14 @@ public class ThirdController extends AbstractThird{
     BoluomeUtil boluomeUtil;
     @Resource
     BoluomeService boluomeService;
-
+    @Resource
+    HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( HttpServletRequest request) throws Exception {
+    public String iagentReport( @RequestParam("audio") MultipartFile audio) throws Exception {
+        FileOutputStream fos = null;
+        InputStream in = null;
+        String fileUrl = null;
         StringBuilder sb = new StringBuilder();
         sb.append("---iagentReport begin:");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -67,7 +79,14 @@ public class ThirdController extends AbstractThird{
             }
         }
         sb.append("---iagentReport end");
-        return "{\"success\":{receipt_id\":\"iagentReport_"+System.currentTimeMillis()+"\",\"received_time\":\"2016_08_21_132011\"}}";
+        sb.append("---audio name："+audio.getOriginalFilename());
+        logger.info(sb.toString());
+        JSONObject jsonObject=new JSONObject();
+        JSONObject innerJsonObject=new JSONObject();
+        innerJsonObject.put("receipt_id",System.currentTimeMillis());
+        innerJsonObject.put("received_time","2018-10-10 10:10:10");
+        jsonObject.put("success",innerJsonObject);
+        return JSON.toJSONString(jsonObject);
     }
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
