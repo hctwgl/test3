@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -195,6 +196,7 @@ public class ZhiBalanceGetBindApi extends H5Controller {
 
     }
     @RequestMapping(value = "/zhiBalanceSaveTradeNo", method = RequestMethod.POST)
+    @ResponseBody
     public String zhiBalanceSaveTradeNo(HttpServletRequest request, HttpServletResponse response) {
         try {
             FanbeiWebContext context = new FanbeiWebContext();
@@ -225,6 +227,7 @@ public class ZhiBalanceGetBindApi extends H5Controller {
 
     }
     @RequestMapping(value = "/zhiBalanceGetTradeNos", method = RequestMethod.POST)
+    @ResponseBody
     public String zhiBalanceGetTradeNos(HttpServletRequest request, HttpServletResponse response) {
         try {
             FanbeiWebContext context = new FanbeiWebContext();
