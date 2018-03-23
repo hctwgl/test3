@@ -68,15 +68,13 @@ public class GetLoanHomeInfoApi implements H5Handle {
 			
 			AfUserAccountSenceDo totalScene = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
 			BigDecimal totalAmount = BigDecimal.ZERO;
-			BigDecimal usedAmount = BigDecimal.ZERO;
 			if(totalScene == null) { //TOTAL数据初始化
 				totalScene = afUserAccountSenceService.initTotalLoan(accInfo);
 			}
 			totalAmount = totalScene.getAuAmount();
-			usedAmount = totalScene.getUsedAmount();
 			
 			resp.addResponseData("totalAmount",totalAmount);
-			resp.addResponseData("useableAmount", totalAmount.subtract(usedAmount));
+			resp.addResponseData("useableAmount", afUserAccountSenceService.getTotalUsableAmount(accInfo));
 			
 			resp.addResponseData("isLogin", true);
 			resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
