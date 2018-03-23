@@ -72,14 +72,14 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 
 			@Override
 			public String doInTransaction(TransactionStatus status) {
-				String resultStr = H5CommonResponse.getNewInstance(false, "红包提现失败!", "", null).toString();
+				String resultStr = H5CommonResponse.getNewInstance(false, "提现失败 ！", "", null).toString();
 				FanbeiWebContext context = new FanbeiWebContext();
 				try {
 				 // 1查询红包记录是否存在
 				long redId = NumberUtil.objToLongDefault(request.getParameter("rid"),0L);
 				AfFacescoreRedDo redDo = faceScoreRedService.getById(redId);
 				if (redDo == null){
-					return H5CommonResponse.getNewInstance(false, "红包不存在,参数有误!", "", null).toString();
+					return H5CommonResponse.getNewInstance(false, "提现失败 ！", "", null).toString();
 				}
 					Long userId = -1l;
 					AfUserDo afUser = null;
@@ -112,7 +112,7 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 							}*/
 							int count = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
 							if (count > 0){
-								return H5CommonResponse.getNewInstance(false, "该红包已经被提现了！", "", null).toString();
+								return H5CommonResponse.getNewInstance(true, "提现成功 ！", "", redDo).toString();
 							}
 							AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 					        if (userAccountDo == null) {
@@ -133,12 +133,13 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					        afUserAccountService.addUserAccountLog(afUserAccountLogDo);
 					        // 记录数据到用户——红包记录表
 					        faceScoreRedService.addUserAndRedRecord(new AfUserAndRedRelationDo(userId,redId));
+					        return H5CommonResponse.getNewInstance(true, "提现成功！","", redDo).toString();
 							} else {
 							// 用户未登陆的情况
-							return H5CommonResponse.getNewInstance(false, "用户不存在！", "", null).toString();
+							return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", redDo).toString();
 							}
 					}else{
-						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", null).toString();
+						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", redDo).toString();
 					}
 				} catch (FanbeiException e) {
 					if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
@@ -146,13 +147,13 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 						String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 						data.put("loginUrl", loginUrl);
 						logger.error("/activity/de/share" + context + "login error ");
-						resultStr =  H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+						resultStr =  H5CommonResponse.getNewInstance(false, "请先登陆或者注册", "", data).toString();
 					    }else{
-					    resultStr = H5CommonResponse.getNewInstance(false, "颜值红包提现失败", "", e.getMessage()).toString();
+					    resultStr = H5CommonResponse.getNewInstance(false, "提现失败 ！", "", e.getMessage()).toString();
 					    }
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					resultStr = H5CommonResponse.getNewInstance(false, "颜值红包提现失败", "", "").toString();
+					resultStr = H5CommonResponse.getNewInstance(false, "提现失败 ！", "", "").toString();
 					logger.error("颜值红包提现失败" + context, e);
 				}
 				return resultStr;
@@ -184,7 +185,12 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					Long userId = -1l;
 					AfUserDo afUser = null;
 					// 和登录有关的
-					context = doH5Check(request, true);
+				//	context = doH5Check(request, true);
+					String userName = request.getParameter("userName");
+					if (userName != null){
+						context.setLogin(true);
+						context.setUserName(userName);
+					}
 					// 2判断用户是否处于登陆状态
 					if (context.isLogin()) {
 						afUser = afUserService.getUserByUserName(context.getUserName());
@@ -233,12 +239,13 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					        afUserAccountService.addUserAccountLog(afUserAccountLogDo);
 					        // 记录数据到用户——红包记录表
 					        faceScoreRedService.addUserAndRedRecord(new AfUserAndRedRelationDo(userId,redId));
+					        return H5CommonResponse.getNewInstance(true, "提现成功！","", redDo).toString();
 							} else {
 								// 用户未登陆的情况
-								return H5CommonResponse.getNewInstance(false, "用户不存在！", "", null).toString();
+								return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "",redDo).toString();
 							}
 					}else{
-						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", null).toString();
+						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", redDo).toString();
 					}
 				} catch (FanbeiException e) {
 					if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
@@ -270,18 +277,16 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 	public RequestDataVo parseRequestData(String requestData,
 			HttpServletRequest request) {
 		try {
-			RequestDataVo reqVo = new RequestDataVo();
-
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(),
-					FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
+            RequestDataVo reqVo = new RequestDataVo();
+            
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
 	}
 
 	@Override

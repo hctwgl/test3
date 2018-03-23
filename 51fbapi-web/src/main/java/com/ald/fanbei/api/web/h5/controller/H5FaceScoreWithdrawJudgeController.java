@@ -32,6 +32,7 @@ import com.yeepay.g3.utils.common.StringUtils;
  * @date 2018年3月22日
  */
 @Controller
+@RequestMapping(value = "/activityH5", produces = "application/json;charset=UTF-8")
 public class H5FaceScoreWithdrawJudgeController extends H5Controller {
 	
 	@Resource
@@ -107,7 +108,7 @@ public class H5FaceScoreWithdrawJudgeController extends H5Controller {
 								break;
 							}
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完 ,分享 "+ str +"个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完 ,分享"+ str +"个群可再得一次拆红包的机会！", "", null)
 									.toString();
 						}
 					}

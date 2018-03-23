@@ -104,14 +104,14 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 								str = "二";
 								break;
 							case 3:
-								str ="三";
+								str = "三";
 								break;
 							case 4:
 								str = "四";
 								break;
 							}
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完 ,分享 "+ str +"个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完 ,分享"+ str +"个群可再得一次拆红包的机会！", "", null)
 									.toString();
 						}
 					}

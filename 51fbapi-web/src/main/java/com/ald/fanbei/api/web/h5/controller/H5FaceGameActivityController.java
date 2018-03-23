@@ -50,10 +50,14 @@ public class H5FaceGameActivityController extends BaseController {
     BizCacheUtil bizCacheUtil;
 	 // 菠萝觅活动登录
 	@ResponseBody
-    @RequestMapping(value = "/registerWithCash", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/registerWithCash", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String registerWithCash(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 		 String resultStr = "";
 		 String referer = request.getHeader("referer"); 
+		 /*if(request.getHeader("Origin").contains("woego.cn")) {
+	            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+	        }*/
+	        response.setHeader("Access-Control-Allow-Credentials", "true");
 		try {
 		    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 		    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -131,6 +135,7 @@ public class H5FaceGameActivityController extends BaseController {
 		    bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
 		    //埋点
 		    //doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
+		    System.out.println(response.toString());
 		    return resultStr;
 
 		} catch (FanbeiException e) {
