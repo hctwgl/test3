@@ -165,10 +165,8 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		if(totalScene != null) {
 			totalAuAmount = totalScene.getAuAmount();
 		}
-		if(scenes != null) {
-			for(AfUserAccountSenceDo scene : scenes) {
-				totalUsedAmount = totalUsedAmount.add(scene.getUsedAmount());
-			}
+		for(AfUserAccountSenceDo scene : scenes) {
+			if(scene != null) { totalUsedAmount = totalUsedAmount.add(scene.getUsedAmount()); }
 		}
 		
 		totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
