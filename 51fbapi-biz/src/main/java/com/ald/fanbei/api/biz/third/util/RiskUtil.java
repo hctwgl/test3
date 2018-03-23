@@ -782,13 +782,28 @@ public class RiskUtil extends AbstractThird {
 		// 增加3个参数，配合风控策略的改变
 		String codeForSecond = null;
 		String codeForThird = null;
+		String codeForSecSceneBasis = null;
+		String codeForThirdSceneBasis = null;
 		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
 		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		//二级类型
+		codeForSecSceneBasis = SecSence;
+		//三级类型(区分逛逛和商圈)
+		
+		if(SecSence.equals("BOLUOME")){
+			codeForThirdSceneBasis = ThirdSence;
+		}
+		if(SecSence.equals("TRADE")){
+			codeForThirdSceneBasis  =  afOrderService.getTradeBusinessNameByOrderId(orderid);
+		}
 
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo), SecSence);
 		eventObj.put("dealAmount", dealAmount);
 		eventObj.put("SecSence", codeForSecond == null ? "" : codeForSecond);
 		eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
+		
+		eventObj.put("secSceneBasis", codeForSecSceneBasis == null ? "" : codeForSecSceneBasis);
+		eventObj.put("thirdSceneBasis", codeForThirdSceneBasis == null ? "" : codeForThirdSceneBasis);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		// 12-13 弱风控加入用户借款信息
 		HashMap summaryData = riskDataMap.get("summaryData");
