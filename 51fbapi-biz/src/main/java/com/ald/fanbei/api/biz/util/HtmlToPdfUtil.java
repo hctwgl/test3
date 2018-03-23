@@ -163,11 +163,14 @@ public final class HtmlToPdfUtil {
         ITextRenderer render = new ITextRenderer();
         ITextFontResolver fontResolver = render.getFontResolver();
         try {
-            if("linux".equals(getCurrentOperatingSystem())){
-                fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            }else{
+            if (null != getCurrentOperatingSystem() && getCurrentOperatingSystem().contains("windows")){
                 fontResolver.addFont("c:/Windows/Fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }else {
+                fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             }
+            if("linux".equals(getCurrentOperatingSystem())){
+
+            }else
             // 解析html生成pdf
             render.setDocumentFromString(content);
             //解决图片相对路径的问题

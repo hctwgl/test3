@@ -115,10 +115,10 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		login.setUserName(userName);
 		login.setUuid(uuid);
 		if (afUserDo == null){
-			login.setResult("quick login start");
+			login.setResult("quick register start");
 			afUserLoginLogService.addUserLoginLog(login);//埋点
 		}else {
-			login.setResult("quick register start");
+			login.setResult("quick login start");
 			afUserLoginLogService.addUserLoginLog(login);//埋点
 		}
 
