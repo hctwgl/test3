@@ -109,6 +109,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				if(afSeckillActivityDo.getType()==2){
 					actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
 					vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
+					//兼容老版本
+					vo.setSaleCount(actSaleCount);
 				}else{
 					Integer limitCount = afSeckillActivityService.getSumCountByGoodsId(goodsId);
 					vo.setLimitCount(limitCount);
@@ -133,6 +135,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setActSaleCount(actSaleCount);
 				vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
 				saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
+				//兼容老版本
+				vo.setSaleAmount(saleAmount);
 			}else{
 				vo.setActivityId(0l);
 				vo.setActivityType(0);

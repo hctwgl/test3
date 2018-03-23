@@ -82,9 +82,20 @@ public class GetGoodsSpecApi implements ApiHandle {
 		goodsPriceDo.setGoodsId(goodsId);
 		List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getListByCommonCondition(goodsPriceDo);
 		List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = new ArrayList<>();
-		if(activityId>0){
-			afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+
+		//版本兼容
+		if(context.getAppVersion()>=409){
+			if(activityId>0){
+				afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+			}
+		}else{
+			//取最新的活动
+			AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
+			if(afSeckillActivityDo!=null){
+				afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,afSeckillActivityDo.getRid());
+			}
 		}
+
 		if(afSeckillActivityGoodsDtos!=null&&afSeckillActivityGoodsDtos.size()>0){
 			priceData = convertListForPriceAct(priceDos,afSeckillActivityGoodsDtos);
 		}else{
