@@ -335,6 +335,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	List<AfAuthRaiseStatusDo> listRaiseStatus = afAuthRaiseStatusService.getListByCommonCondition(afAuthRaiseStatusDo);
 	AfResourceDo authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY");
 	AfResourceDo userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY");
+	if (scene.equals(UserAccountSceneType.ONLINE.getCode())) {
+	    authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY_ONLINE");
+	    userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY_ONLINE");
+	}
 	setAuthRaiseStatus(listRaiseStatus, scene, authDay, userAuthDay, data, authDo);
 
 	if (scene.equals(UserAccountSceneType.CASH.getCode())) {
@@ -383,13 +387,13 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
-	    //是否显示补充认证（兼容老版本）
+	    // 是否显示补充认证（兼容老版本）
 	    if (appVersion < 411) {
 		data.put("showExtraTab", afResourceDoAuth.getValue());
 	    } else {
 		data.put("showExtraTab", "1");
 	    }
-	    
+
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
 		data.put("basicStatus", "A");
