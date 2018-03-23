@@ -75,11 +75,10 @@ public class Auth51FundUtil extends AbstractThird {
 		}else {
 			Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
 			if (Auth51FundRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
-				String respData = respInfo.getData();
 				//推送公积金信息给风控
 				try {
 					logger.error("getGjjData success,orderSn=" + orderSn);
-					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respData,userId);
+					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respResult,userId);
 					return 1;
 				} catch (Exception e) {
 					logger.error("error:"+e);
