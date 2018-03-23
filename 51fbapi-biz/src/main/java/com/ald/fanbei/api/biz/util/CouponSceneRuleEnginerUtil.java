@@ -39,11 +39,16 @@ public class CouponSceneRuleEnginerUtil {
 	 */
 	@Async
 	public void regist(Long userId,Long invitor,AfUserDo afUserDo){
-		Map<String,Object> inputData = new HashMap<String,Object>();
-		inputData.put("userId", userId);
-		inputData.put("invitor", invitor);
-		inputData.put("userDo", afUserDo);
-		registRuleEngine.executeRule(inputData);
+		try {
+			Map<String,Object> inputData = new HashMap<String,Object>();
+			inputData.put("userId", userId);
+			inputData.put("invitor", invitor);
+			inputData.put("userDo", afUserDo);
+			registRuleEngine.executeRule(inputData);
+		}catch (Exception e){
+			logger.info("addUser error regist:", e,afUserDo);
+		}
+
 	}
 	
 	/**

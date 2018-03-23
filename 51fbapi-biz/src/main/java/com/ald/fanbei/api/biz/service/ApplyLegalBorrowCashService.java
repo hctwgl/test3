@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 public interface ApplyLegalBorrowCashService {
 
@@ -58,5 +59,7 @@ public interface ApplyLegalBorrowCashService {
 	public void updateBorrowStatus2Apply(Long borrowId, String riskOrderNo);
 
 	public void checkGenRecordError(Long borrowId);
+
+	public AfBorrowCashDto getBorrowCashInfoById(Long rid);
 
 }

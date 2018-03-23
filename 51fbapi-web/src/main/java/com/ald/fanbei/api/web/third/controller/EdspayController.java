@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -38,6 +40,7 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
+	
 	@RequestMapping(value = { "/giveBackCreditInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public AssetSideRespBo giveBackCreditInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
@@ -94,4 +97,78 @@ public class EdspayController {
 		logger.info("EdspayController getPlatUserInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
+	
+	/**
+	 * 钱包回传实时推送债权的打款情况接口
+	 * @param requestData
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/giveBackPayResult" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public AssetSideRespBo giveBackPayResult(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
+		logger.info("EdspayController giveBackPayResult,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+		
+		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.giveBackPayResult(sendTime, data, sign,appId);
+		logger.info("EdspayController giveBackPayResult,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
+		return notifyRespBo;
+	}
+	
+	/**
+	 * 返呗主动查询钱包打款结果后的调用api处理接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/queryEdspayApiHandle"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String queryEdspayApiHandle(HttpServletRequest request, HttpServletResponse response) {
+		String orderNo = request.getParameter("orderNo");
+        int result = assetSideEdspayUtil.queryEdspayApiHandle(orderNo);
+        if (result == 1) {
+			return "FAIl";
+		}
+	  return "SUCCESS";
+    }
+	
+	/**
+	 * 租房审核通过生成账单后调用api推送钱包接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/tenementPushEdspay"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String tenementPushEdspay(HttpServletRequest request, HttpServletResponse response) {
+		String borrowId = request.getParameter("borrowId");
+		int result = assetSideEdspayUtil.tenementPushEdspay(Long.valueOf(borrowId));
+        if (result == 1) {
+			return "FAIl";
+		}
+        return "SUCCESS";
+	}
+	
+	/**
+	 * admin重推达上限调用api处理接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/repushMaxApiHandle"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String repushMaxApiHandle(HttpServletRequest request, HttpServletResponse response) {
+		String orderNo = request.getParameter("orderNo");
+        int result = assetSideEdspayUtil.repushMaxApiHandle(orderNo);
+        if (result == 1) {
+			return "FAIl";
+		}
+        return "SUCCESS";
+    }
+	
 }

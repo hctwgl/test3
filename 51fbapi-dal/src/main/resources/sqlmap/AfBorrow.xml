@@ -161,7 +161,7 @@
 	  		#{item.poundageAmount},
 	  		#{item.isFreeInterest},
 			#{item.gmtOutDay},
-			#{item.gmtPayTime}
+			if(#{item.gmtPayTime}>NOW(),#{item.gmtPayTime},ADDDATE(DATE(now()),INTERVAL 59+59*60+23*60*60 SECOND))
 	  	)
 	  	</foreach> 
    </insert>
@@ -295,7 +295,8 @@ o.`ip` ,o.`lat` ,o.`lng`
 (SELECT br.`free_nper`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) freeNper,
 (SELECT br.`nper_amount`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) nperAmount,
 (SELECT br.`card_number`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardNumber,
-(SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName
+(SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName,
+(SELECT COUNT(uu.`id`)  FROM `af_user` uu WHERE uu.`user_name` = o.`consignee_mobile` and `is_delete` =0) phoneCorrespondingPersion
 FROM `af_order` o  WHERE o.`id`  =#{id}
 	</select>
 	<select id="getBolumeSumDataById" resultType="java.util.HashMap">
@@ -320,5 +321,25 @@ FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no
 	<select id="getUserSummaryForCapital" resultType="java.util.HashMap">
 		SELECT IF(sum(renewal_num)>0,'false','true') first,IF(sum(renewal_num)>0,IFNULL(sum(overdue_day ),0),max(overdue_day)) allDays,IFNULL(SUM(IF(renewal_num>0,overdue_day,0)),0) allDays1 FROM af_borrow_cash
 		WHERE user_id =#{userId} AND `status`='FINSH'
+	</select>
+	
+	<select id="getBorrowInfoById" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.dto.AfBorrowDto">
+	  select `ab`.`id` AS `borrow_id`,
+	        min(`abb`.`id`) AS `min_borrow_bill_id`,
+	       `abb`.`gmt_create` AS `gmt_create`,
+	       `au`.`id` AS `user_id`,
+		   `ab`.`borrow_no` AS `borrow_no`,
+	       `au`.`real_name` AS `real_name`,
+	       `aua`.`id_number` AS `id_number`,
+	       `au`.`user_name` AS `user_name`,
+	       `ab`.`amount` AS `amount`,
+	       `ab`.`nper_amount` AS `nper_amount`,
+	       `abb`.`nper` AS `nper`
+	   from `af_borrow` `ab`
+	   left join `af_order` `ao` on `ab`.`order_id`= `ao`.`id`
+	   left join `af_borrow_bill` `abb` on`abb`.`borrow_id`= `ab`.`id`
+	   left join `af_user` `au` on`ab`.`user_id`= `au`.`id`
+	   left join `af_user_account` `aua` on`au`.`id`= `aua`.`user_id`
+	   where ab.id=#{borrowId}
 	</select>
 </mapper>

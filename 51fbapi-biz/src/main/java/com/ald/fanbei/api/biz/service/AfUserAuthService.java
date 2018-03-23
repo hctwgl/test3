@@ -71,4 +71,10 @@ public interface AfUserAuthService {
 	boolean allSupplementAuthPassed(Long userId);
 
 	boolean allSupplementAuthPassed(AfUserAuthDo authInfo);
+	
+	/**
+	 * 判断用户是否是白名单用户
+	 * @return
+	 */
+	boolean passWhiteList(String userName);
 }

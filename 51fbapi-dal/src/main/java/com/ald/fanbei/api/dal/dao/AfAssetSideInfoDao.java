@@ -20,4 +20,5 @@ public interface AfAssetSideInfoDao extends BaseDao<AfAssetSideInfoDo, Long> {
 	 * @return
 	 */
 	AfAssetSideInfoDo getByAssetSideFlag(@Param("assetSideFlag")String assetSideFlag);
+
 }

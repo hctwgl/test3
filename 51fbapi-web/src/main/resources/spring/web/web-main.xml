@@ -38,7 +38,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.auth.executor" />
-	
+
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"
@@ -163,10 +163,10 @@
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
 				<value>/resource/getFlowFlayerResourceConfig</value>
-
+				<value>/user/getUserShareInfo</value>
 
 				<value>/order/dmNperEnabled</value>
-				
+
 				<value>/user/getMineInfoV1</value>
 			</list>
 		</constructor-arg>
@@ -234,10 +234,13 @@
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
 				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
+				<entry key="/user/replaceMainCard" value-ref="replaceMainCardApi" />
+				<entry key="/user/getUserShareInfo" value-ref="getUserShareInfoApi"/>
 
-				
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
+
+
 
 
 				<!-- goods -->
@@ -329,6 +332,7 @@
 				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
 				<entry key="/auth/authFund" value-ref="authFundApi" />
 				<entry key="/auth/authFundNew" value-ref="authFundNewApi" />
+				<entry key="/auth/authFundSwitch" value-ref="authFundSwitchApi" />
 				<entry key="/auth/authFundNew/GiveBack" value-ref="authFundNewGiveBackApi" />
 				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
@@ -340,7 +344,7 @@
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
-				
+
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
@@ -386,6 +390,7 @@
 				<entry key="/drainage/getBannerList" value-ref="getDrainageBannerListApi" />
 
 
+
 				<!--borrowCash -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
 				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />
@@ -414,7 +419,7 @@
 				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
 				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
 				<entry key="/borrowCash/getAllBorrowList" value-ref="getAllBorrowListApi" />
-				
+
 				<!-- 代买模块 -->
 				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
 				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
@@ -548,17 +553,19 @@
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
 				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
-				
+
 				<!-- 贷款相关接口 -->
 				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
 				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
 
+
+
 			</map>
 		</constructor-arg>
 	</bean>
 	
-	
+
 
 	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
 	<bean id="h5HandleMap" class="java.util.HashMap">
@@ -576,7 +583,7 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
-				
+
 			</map>
 		</constructor-arg>
 	</bean>
@@ -621,7 +628,7 @@
         	</list>
 		</property>
 	</bean>
-	
+
 	<!-- 拦截器链 -->
 	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
 		<property name="interceptors">
@@ -633,5 +640,5 @@
 			</list>
 		</property>
 	</bean>
-	
+
 </beans>

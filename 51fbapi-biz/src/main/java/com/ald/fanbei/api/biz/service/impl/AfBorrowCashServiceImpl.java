@@ -317,6 +317,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 
             contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
+
+            contractPdfThreadPool.createGoodsInstalmentProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
+                    afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
 
         return resultValue;

@@ -118,4 +118,9 @@ public interface AfUserBankcardDao {
 	AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber);
 
 	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
+
+	int updateMainBankCard(@Param("userId") Long userId);
+
+	int updateViceBankCard(@Param("cardNumber") String cardNumber,@Param("userId") Long userId);
 }
+

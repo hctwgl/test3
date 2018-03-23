@@ -277,6 +277,9 @@
 			<if test="ip != null">
 	            #{ip},
 	        </if>
+			<if test="lc != null and '' != lc">
+				#{lc},
+			</if>
 			NOW(),
 			NOW()
 		)
@@ -1182,14 +1185,21 @@
 	
 	<select id="getDouble12OrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
-		<include refid="queryFields"/>
-		FROM af_order
+		o.*
+		FROM af_order o 
+		INNER JOIN af_goods_double_eggs de on de.goods_id = o.goods_id
+		INNER JOIN af_activity a on a.id = de.activity_id
 		WHERE
-			is_delete = 0
+			o.is_delete = 0
  	 	AND
-			goods_id=#{goodsId}
+			o.goods_id=#{goodsId}
 		AND
-			user_id=#{userId}
+			o.user_id=#{userId}
+		AND de.is_delete = 0
+		AND NOW() &gt; de.start_time AND NOW() &lt; de.end_time
+		AND a.is_delete = 0 
+		AND a.`status` = 2 
+		LIMIT 0,1
 	</select>
 
 	<select id="getCountPaidOrderByUserAndOrderType" resultType="HashMap">
