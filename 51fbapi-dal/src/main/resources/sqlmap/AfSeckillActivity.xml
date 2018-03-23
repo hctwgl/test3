@@ -36,5 +36,15 @@
         AND a.gmt_start <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
         limit 1
     </select>
+
+    <select id="getStartActivityByGoodsId" resultType="AfSeckillActivityDo" parameterType="java.lang.Long">
+        SELECT
+        a.id rid,a.name,a.type,a.gmt_start,a.gmt_end,a.gmt_pstart,a.goods_limit_count,a.pay_type
+        FROM af_seckill_activity a LEFT JOIN af_seckill_activity_goods b
+        ON (a.id=b.activity_id)
+        WHERE a.is_delete = 0 AND a.is_disable=0 AND b.is_delete=0 AND b.type=2 AND b.goods_id=#{goodsId ,jdbcType=BIGINT}
+        AND a.gmt_start <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
+        ORDER BY a.gmt_create DESC limit 1
+    </select>
     
 </mapper>

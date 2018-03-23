@@ -17,4 +17,6 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
     AfSeckillActivityDo getActivityById(Long activityId);
 
     AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId);
+
+    AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
 }

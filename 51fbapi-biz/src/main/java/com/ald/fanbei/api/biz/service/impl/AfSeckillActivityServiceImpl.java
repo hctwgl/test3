@@ -121,4 +121,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	public AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId) {
 		return afSeckillActivityDao.getStartActivityByPriceId(goodsPriceId);
 	}
+
+	@Override
+	public AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId) {
+		return afSeckillActivityDao.getStartActivityByGoodsId(goodsId);
+	}
 }
