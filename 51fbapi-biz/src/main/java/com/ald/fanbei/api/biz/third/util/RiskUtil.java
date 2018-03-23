@@ -790,10 +790,10 @@ public class RiskUtil extends AbstractThird {
 		codeForSecSceneBasis = SecSence;
 		//三级类型(区分逛逛和商圈)
 		
-		if(SecSence.equals("BOLUOME")){
+		if(SecSence!=null && SecSence.equals("BOLUOME")){
 			codeForThirdSceneBasis = ThirdSence;
 		}
-		if(SecSence.equals("TRADE")){
+		if(SecSence!=null &&SecSence.equals("TRADE")){
 			codeForThirdSceneBasis  =  afOrderService.getTradeBusinessNameByOrderId(orderid);
 		}
 
