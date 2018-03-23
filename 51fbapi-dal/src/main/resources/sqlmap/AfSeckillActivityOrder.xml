@@ -41,11 +41,7 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" useGeneratedKeys="true" keyProperty="rid">
         INSERT INTO af_seckill_activity_order
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
