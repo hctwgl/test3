@@ -118,8 +118,8 @@ public class ChangeUserAmountAndAuthStatusController extends AbstractThird {
     	
     	logger.info("updateUser begin");
     	String uid = ObjectUtils.toString(request.getParameter("uidStr"));
-    	String userDoStr = ObjectUtils.toString(request.getParameter("userDo"));
-    	String userAccountDoStr = ObjectUtils.toString(request.getParameter("userAccountDo"));
+    	String userDoStr = (request.getParameter("userDo"));
+    	String userAccountDoStr = (request.getParameter("userAccountDo"));
     	
     	
     	
@@ -129,7 +129,7 @@ public class ChangeUserAmountAndAuthStatusController extends AbstractThird {
     	
     	
     	logger.info("updateUser req uidStr= "+uid+" ,userDo= "+userDo+" ,userAccountDo= "+userAccountDo);
-    	RiskRespBo riskRespBo = riskUtil.registerStrongRisk(uid, RiskEventType.USER.name(), userDo, null, "", "", userAccountDo, "", "", "","");
+    	RiskRespBo riskRespBo = riskUtil.registerStrongRisk(uid, RiskEventType.USER.name(), userDo, null, "", "",  userAccountDo, "", "", "","");
     	logger.info("updateUser resp riskRespBo= "+riskRespBo);
     	
     	return JsonUtil.toJSONString(riskRespBo);
