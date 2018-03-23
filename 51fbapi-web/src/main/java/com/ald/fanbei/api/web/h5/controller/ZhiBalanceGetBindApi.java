@@ -240,16 +240,20 @@ public class ZhiBalanceGetBindApi extends H5Controller {
             }
             AfAlipayOfflineTradeNoDo afAlipayOfflineTradeNoDo = new AfAlipayOfflineTradeNoDo();
             afAlipayOfflineTradeNoDo.setUserId(user.getRid());
-            List<AfAlipayOfflineTradeNoDo> tradeNoDos =  new ArrayList<>();
+            List<Map<String,Object>> tradeNoDosY =  new ArrayList<>();
+            List<Map<String,Object>> tradeNoDos =  new ArrayList<>();
              AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(user.getRid());
              String borrowCash = "0";
             if (afBorrowCashDo != null){
                 borrowCash = "1";
-                tradeNoDos = afAlipayOfflineTradeNoService.getListByCommonCondition(afAlipayOfflineTradeNoDo);
+                tradeNoDosY = afAlipayOfflineTradeNoService.getTradeNosByUserId(user.getRid(),"Y");
+                tradeNoDos = afAlipayOfflineTradeNoService.getTradeNosByUserId(user.getRid(),"");
             }
+            int tradeNoCount = (tradeNoDos==null?0:tradeNoDos.size()) - (tradeNoDosY==null?0:tradeNoDosY.size()) ;
             Map<String,Object> result = new HashMap<>();
             result.put("borrowCash",borrowCash);
             result.put("tradeNoDos",tradeNoDos);
+            result.put("tradeNoCount",tradeNoCount);
             return H5CommonResponse.getNewInstance(true, "查询转账列表成功", null, result).toString();
         }catch (Exception e){
             logger.info("查询转账列表失败" + e);

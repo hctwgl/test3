@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfAlipayOfflineTradeNoDo;
+import com.sun.javafx.collections.MappingChange;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 支付宝线下转账流水号Dao
@@ -12,6 +17,6 @@ import com.ald.fanbei.api.dal.domain.AfAlipayOfflineTradeNoDo;
  */
 public interface AfAlipayOfflineTradeNoDao extends BaseDao<AfAlipayOfflineTradeNoDo, Long> {
 
-    
+    public List<Map<String,Object>> getTradeNosByUserId(@Param("userId") long userId, @Param("status") String status);
 
 }

@@ -10,6 +10,8 @@ import com.ald.fanbei.api.dal.dao.AfAlipayOfflineTradeNoDao;
 import com.ald.fanbei.api.dal.domain.AfAlipayOfflineTradeNoDo;
 import com.ald.fanbei.api.biz.service.AfAlipayOfflineTradeNoService;
 
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -32,5 +34,9 @@ public class AfAlipayOfflineTradeNoServiceImpl extends ParentServiceImpl<AfAlipa
 		@Override
 	public BaseDao<AfAlipayOfflineTradeNoDo, Long> getDao() {
 		return afAlipayOfflineTradeNoDao;
+	}
+
+	public List<Map<String,Object>> getTradeNosByUserId(long userId,String status){
+		return afAlipayOfflineTradeNoDao.getTradeNosByUserId(userId,status);
 	}
 }
