@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -71,6 +73,7 @@ public class ThirdController extends AbstractThird{
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
     public String iagentReport( @RequestParam("audio") MultipartFile audio, @RequestParam("work_id")String   work_id,@RequestParam("work_result")String work_result,@RequestParam("token")String token) throws Exception {
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
         String fileUrl = null;
@@ -96,7 +99,7 @@ public class ThirdController extends AbstractThird{
         JSONObject jsonObject=new JSONObject();
         JSONObject innerJsonObject=new JSONObject();
         innerJsonObject.put("receipt_id",System.currentTimeMillis());
-        innerJsonObject.put("received_time","2018-10-10 10:10:10");
+        innerJsonObject.put("received_time",simpleDateFormat.format(new Date()));
         jsonObject.put("success",innerJsonObject);
         return JSON.toJSONString(jsonObject);
     }
