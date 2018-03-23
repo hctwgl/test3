@@ -137,7 +137,9 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
 				saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
 				//兼容老版本
-				vo.setSaleAmount(saleAmount);
+				if(context.getAppVersion()<409){
+					vo.setSaleAmount(saleAmount);
+				}
 			}else{
 				vo.setActivityId(0l);
 				vo.setActivityType(0);
