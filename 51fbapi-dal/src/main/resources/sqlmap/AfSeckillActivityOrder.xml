@@ -148,7 +148,7 @@
     </select>
 
     <select id="getActivityByOrderId" resultType="AfSeckillActivityDo">
-        SELECT b.id,b.pay_type
+        SELECT b.id rid,b.pay_type,b.goods_limit_count
         FROM af_seckill_activity_order a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
         WHERE a.is_delete=0 AND b.is_delete = 0 AND a.order_id=#{orderId}
         limit 1
