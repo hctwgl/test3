@@ -300,7 +300,7 @@
 	</update>
 	
 	<update id="status2Process">
-        UPDATE af_repayment_borrow_cash SET status='P' AND trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
+        UPDATE af_repayment_borrow_cash SET status='P',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 	
 </mapper>
