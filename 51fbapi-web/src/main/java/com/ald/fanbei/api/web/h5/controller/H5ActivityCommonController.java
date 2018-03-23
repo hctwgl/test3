@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfFacescoreImgService;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -44,6 +46,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
@@ -52,7 +55,6 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -89,6 +91,8 @@ public class H5ActivityCommonController extends BaseController {
     SmsUtil smsUtil;
     @Resource
     AfFacescoreRedService afFacescoreRedService;
+    @Resource 
+    AfFacescoreImgService afFacescoreImgService;
 
     // H5活动登录
     @RequestMapping(value = "/userLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -326,7 +330,7 @@ public class H5ActivityCommonController extends BaseController {
     @RequestMapping(value = "/getUserShareInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		   FanbeiH5Context context = doH5Check(request, false);
+		FanbeiWebContext context = doWebCheck(request, false);
 		
 			String userName = context.getUserName();
 			//AfUserDo user = afUserService.getUserByUserName(userName);
@@ -446,7 +450,11 @@ public class H5ActivityCommonController extends BaseController {
 					String image  = "";
 					image = jsonObject.getString("changeConfigure");
 					if("avatar".equals(image)){
+						if(afUserDo != null){
 					        doChangeImage(afUserDo.getRid(),jsonStr);
+						}else{
+							doChangeImage(null,jsonStr);
+						}
 					         changeImage = "Y";
 					}
 					if("noChange".equals(image)){
@@ -534,9 +542,19 @@ private int doChangeImage(Long userId,JSONObject jsonStr) {
  try{
 	AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
   String image = "";
-   if(afFacescoreRedDo != null){
+   if(afFacescoreRedDo != null && userId != null ){
 	   image =  afFacescoreRedDo.getImageurl();
+   }else{
+	   //随机一张图片
+	    
+	     AfFacescoreImgDo findFacescoreImg = new AfFacescoreImgDo();
+	     findFacescoreImg.setIsDelete(0);
+	     List<AfFacescoreImgDo> afFacescoreImglist = afFacescoreImgService.getListByCommonCondition(findFacescoreImg);
+	     int randomLenght = afFacescoreImglist.size();
+	     int num=(int)(Math.random() * randomLenght); 
+	      image = afFacescoreImglist.get(num).getUrl();
    }
+   
    List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
      //获取该list(type = 'avatar')
      JSONArray ja= new JSONArray();

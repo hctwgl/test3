@@ -12,6 +12,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfFacescoreImgService;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -47,6 +49,8 @@ public class GetUserShareInfoApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfFacescoreRedService afFacescoreRedService;
+	@Resource
+	AfFacescoreImgService afFacescoreImgService;
 	
 	
 	@Override
@@ -166,7 +170,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 				String image  = "";
 				image = jsonObject.getString("changeConfigure");
 				if("avatar".equals(image)){
-				        doChangeImage(userId,jsonStr);
+					if(afUserDo != null){
+				        doChangeImage(afUserDo.getRid(),jsonStr);
+					}else{
+						doChangeImage(null,jsonStr);
+					}
 				         changeImage = "Y";
 				}
 				if("noChange".equals(image)){
@@ -254,8 +262,17 @@ public class GetUserShareInfoApi implements ApiHandle {
 	 try{
 		AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
 	  String image = "";
-	   if(afFacescoreRedDo != null){
+	  if(afFacescoreRedDo != null && userId != null ){
 		   image =  afFacescoreRedDo.getImageurl();
+	   }else{
+		   //随机一张图片
+		    
+		     AfFacescoreImgDo findFacescoreImg = new AfFacescoreImgDo();
+		     findFacescoreImg.setIsDelete(0);
+		     List<AfFacescoreImgDo> afFacescoreImglist = afFacescoreImgService.getListByCommonCondition(findFacescoreImg);
+		     int randomLenght = afFacescoreImglist.size();
+		     int num=(int)(Math.random() * randomLenght); 
+		      image = afFacescoreImglist.get(num).getUrl();
 	   }
 	   List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
 	     //获取该list(type = 'avatar')
