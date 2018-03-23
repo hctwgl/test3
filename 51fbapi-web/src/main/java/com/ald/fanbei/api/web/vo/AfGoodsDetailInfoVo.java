@@ -38,6 +38,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Long gmtStart;
 	private Long gmtEnd;
 	private Long gmtPstart;
+	private Long nowDate;
 	private Integer limitCount;
 	private Integer goodsLimitCount;
 	private String payType;
@@ -241,5 +242,13 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setGmtPstart(Long gmtPstart) {
 		this.gmtPstart = gmtPstart;
+	}
+
+	public Long getNowDate() {
+		return nowDate;
+	}
+
+	public void setNowDate(Long nowDate) {
+		this.nowDate = nowDate;
 	}
 }

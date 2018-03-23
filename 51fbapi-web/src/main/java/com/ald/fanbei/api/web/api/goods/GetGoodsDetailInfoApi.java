@@ -125,6 +125,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setActivityName(afSeckillActivityDo.getName());
 				vo.setGmtStart(gmtStart.getTime());
 				vo.setGmtEnd(gmtEnd.getTime());
+				vo.setNowDate(afSeckillActivityDo.getNowDate().getTime());
 				if(gmtPStart.getTime()>=gmtStart.getTime()){
 					vo.setGmtPstart(0l);
 				}else{
@@ -144,6 +145,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setGmtStart(0l);
 				vo.setGmtEnd(0l);
 				vo.setGmtPstart(0l);
+				vo.setNowDate(0l);
 				vo.setLimitCount(0);
 				//vo.setLimitedPurchase(0);
 				vo.setPayType("");
@@ -157,6 +159,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setGmtStart(0l);
 			vo.setGmtEnd(0l);
 			vo.setGmtPstart(0l);
+			vo.setNowDate(0l);
 			vo.setLimitCount(0);
 			//vo.setLimitedPurchase(0);
 			vo.setPayType("");
