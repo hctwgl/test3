@@ -93,8 +93,8 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	String getCurrentLastRepayNo(String orderNoPre);
-	
-	public String dealOfflineRepaymentSucess(final String repayNo,final String borrowNo,final String repayType,final String repayTime,final BigDecimal repayAmount,final BigDecimal restAmount,final String tradeNo,final String isBalance);
+
+	public String dealOfflineRepaymentSucess(final String repayNo,final String borrowNo,final String repayType,final String repayTime,final BigDecimal repayAmount,final BigDecimal restAmount,final String tradeNo,final String isBalance,String isAdmin);
 
 	int updateRepaymentBorrowCashName(Long refId);
 
