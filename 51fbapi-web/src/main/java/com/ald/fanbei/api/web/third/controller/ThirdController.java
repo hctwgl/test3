@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.OssFileUploadService;
+import com.ald.fanbei.api.biz.util.OssUploadResult;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,6 +64,9 @@ public class ThirdController extends AbstractThird{
     @Resource
     BoluomeService boluomeService;
     @Resource
+    OssFileUploadService ossFileUploadService;
+
+    @Resource
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
@@ -84,6 +89,9 @@ public class ThirdController extends AbstractThird{
         }
         sb.append("---iagentReport end");
         sb.append("---audio name："+audio.getOriginalFilename());
+        OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
+        sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
+
         logger.info(sb.toString());
         JSONObject jsonObject=new JSONObject();
         JSONObject innerJsonObject=new JSONObject();
