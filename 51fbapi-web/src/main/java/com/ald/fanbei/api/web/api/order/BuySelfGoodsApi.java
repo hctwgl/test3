@@ -373,14 +373,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if(context.getAppVersion()<409){
 				//AfGoodsPriceDo  realActualAmount = afGoodsPriceService.getById(goodsPriceId);
 				//BigDecimal realAmount = realActualAmount.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
-				if(clientActualAmount.compareTo(afOrder.getActualAmount())!=0){
-					//取最新的活动
-					AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getStartActivityByGoodsId(goodsId);
-					if(afSeckillActivityDo!=null){
-						activityId = afSeckillActivityDo.getRid();
-					}else{
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_END);
-					}
+				//取最新的活动
+				AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getStartActivityByPriceId(goodsPriceId);
+				if(afSeckillActivityDo!=null){
+					activityId = afSeckillActivityDo.getRid();
 				}
 			}
 			logger.error("afSeckillActivity for userId:" + userId + ",activityId:" + activityId);
