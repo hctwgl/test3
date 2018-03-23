@@ -111,7 +111,7 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 								}
 							}*/
 							int count = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
-							if (count > 0){
+						    if (count > 0){
 								return H5CommonResponse.getNewInstance(true, "提现成功 ！", "", redDo).toString();
 							}
 							AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
