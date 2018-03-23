@@ -257,6 +257,7 @@ public class ZhiBalanceGetBindApi extends H5Controller {
             result.put("borrowCash",borrowCash);
             result.put("tradeNoDos",tradeNoDos);
             result.put("tradeNoCount",tradeNoCount);
+
             return H5CommonResponse.getNewInstance(true, "查询转账列表成功", null, result).toString();
         }catch (Exception e){
             logger.info("查询转账列表失败" + e);
