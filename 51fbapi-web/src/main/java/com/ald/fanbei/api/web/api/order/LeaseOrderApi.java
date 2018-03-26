@@ -232,6 +232,7 @@ public class LeaseOrderApi implements ApiHandle {
         afOrderLeaseDo.setRichieAmount(richieAmount);
         afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
         afOrderLeaseDo.setScore(dataObj.getInteger("score"));
+        afOrderLeaseDo.setOrderNo(afOrder.getOrderNo());
         BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
         if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
             afOrder.setActualAmount(priceDo.getLeaseAmount().add(monthlyRent).add(richieAmount));
@@ -241,6 +242,8 @@ public class LeaseOrderApi implements ApiHandle {
         }
         else {
             afOrderLeaseDo.setFreezeAmount(freezeAmount);
+            afOrderLeaseDo.setCashDeposit(BigDecimal.ZERO);
+            afOrderLeaseDo.setQuotaDeposit(BigDecimal.ZERO);
         }
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
