@@ -440,14 +440,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("highestAmount", afResource.getValue());// 可获取最高额度
 		data.put("currentAmount", userDto.getAuAmount());// 当前认证额度
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
-		data.put("title2", afResource.getValue1());
+		data.put("title2", afResourceDo.getValue1());
 		data.put("sceneStatus", "4");// 认证成功
 	    } else {
 		data.put("basicStatus", "P");
 		data.put("riskStatus", "P");
 		data.put("flag", "Y");
-		data.put("title1", "正在快马加鞭为您审核中");
-		data.put("title2", afResource.getValue2());
+		data.put("title1", "基础信息认证中");
+		data.put("title2", afResourceDo.getValue2());
 		data.put("sceneStatus", "6");// 认证中
 	    }
 
