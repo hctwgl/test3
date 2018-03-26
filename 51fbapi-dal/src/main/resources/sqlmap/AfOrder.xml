@@ -1293,7 +1293,7 @@
 			(0,NOW(),NOW(),
 			#{userId},
 			#{orderId},
-			#{monthlyRent},'','N'
+			#{monthlyRent},'','N',
 			#{userName},
 			'A',
 			#{buyout},
