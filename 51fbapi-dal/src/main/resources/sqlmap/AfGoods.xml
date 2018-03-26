@@ -419,7 +419,9 @@
 
 	<select id="getGoodsDoByGoodsId" resultType="AfActivityGoodsDto">
 		SELECT
-			g.name,sum(p.sale_count) count ,g.goods_icon , g.sale_amount
+			g.id rid,g.name,g.goods_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
+			g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
+			(g.sale_amount-g.rebate_amount) real_amount,g.goods_detail,sum(p.sale_count) count
 		FROM
 		af_goods g
 		LEFT JOIN af_goods_price p ON p.is_delete = 0 AND p.is_sale = 'Y' AND p.goods_id = g.id

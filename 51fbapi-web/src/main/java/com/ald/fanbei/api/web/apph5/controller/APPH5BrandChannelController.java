@@ -59,10 +59,7 @@ public class APPH5BrandChannelController extends BaseController {
 		for(AfResourceH5Dto afResourceH5Dto : list){
 			List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getRid());
 			for(AfResourceH5ItemDto afResourceH5ItemDto : itemList){
-				if(!StringUtils.isBlank(afResourceH5ItemDto.getValue2()) && StringUtils.equals(afResourceH5ItemDto.getValue4(),"Y")){
-					List<AfActivityGoodsDto> goodslist = afGoodsService.getGoodsDoByGoodsId(afResourceH5ItemDto.getValue2());
-					afResourceH5ItemDto.setGoodsList(goodslist);
-				}else if(!StringUtils.isBlank(afResourceH5ItemDto.getValue2())){
+				if(!StringUtils.isBlank(afResourceH5ItemDto.getValue2())){
 					List<AfGoodsDo> goodslist = afGoodsService.getGoodsListByGoodsId(afResourceH5ItemDto.getValue2());
 					afResourceH5ItemDto.setGoodsList(getGoodsList(goodslist));
 				}
@@ -75,9 +72,10 @@ public class APPH5BrandChannelController extends BaseController {
 
 	}
 
-	public List<AfGoodsDo> getGoodsList(List<AfGoodsDo> list) {
+	public List<Map<String,Object>> getGoodsList(List<AfGoodsDo> list) {
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 		JSONArray array = JSON.parseArray(resource.getValue());
+		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 		if (array == null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
@@ -117,9 +115,9 @@ public class APPH5BrandChannelController extends BaseController {
 				}
 				goodsInfo.put("nperMap", nperMap);
 			}
-
+			goodsList.add(goodsInfo);
 		}
-		return list;
+		return goodsList;
 	}
 
 
