@@ -782,13 +782,28 @@ public class RiskUtil extends AbstractThird {
 		// 增加3个参数，配合风控策略的改变
 		String codeForSecond = null;
 		String codeForThird = null;
+		String codeForSecSceneBasis = null;
+		String codeForThirdSceneBasis = null;
 		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
 		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		//二级类型
+		codeForSecSceneBasis = SecSence;
+		//三级类型(区分逛逛和商圈)
+		
+		if(SecSence!=null && SecSence.equals("BOLUOME")){
+			codeForThirdSceneBasis = ThirdSence;
+		}
+		if(SecSence!=null &&SecSence.equals("TRADE")){
+			codeForThirdSceneBasis  =  afOrderService.getTradeBusinessNameByOrderId(orderid);
+		}
 
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo), SecSence);
 		eventObj.put("dealAmount", dealAmount);
 		eventObj.put("SecSence", codeForSecond == null ? "" : codeForSecond);
 		eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
+		
+		eventObj.put("secSceneBasis", codeForSecSceneBasis == null ? "" : codeForSecSceneBasis);
+		eventObj.put("thirdSceneBasis", codeForThirdSceneBasis == null ? "" : codeForThirdSceneBasis);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		// 12-13 弱风控加入用户借款信息
 		HashMap summaryData = riskDataMap.get("summaryData");
@@ -1128,7 +1143,7 @@ public class RiskUtil extends AbstractThird {
 				AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
 				if (pushWhiteResource != null) {
 					//白名单开启
-					String[] whiteUserIdStrs = pushWhiteResource.getValue().split(",");
+					String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
 					Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 					if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
 						//不在白名单不推送

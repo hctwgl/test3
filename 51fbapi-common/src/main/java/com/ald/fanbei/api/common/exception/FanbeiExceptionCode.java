@@ -235,7 +235,7 @@ public enum FanbeiExceptionCode {
 
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
-    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审批失败"),
+    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
     AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败，请稍后重试。若一直认证失败，请联系客服电话400-002-5151"),
@@ -410,6 +410,7 @@ public enum FanbeiExceptionCode {
     //有过期数据
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
+    TEMPORARY_AMOUNT_SWITH_EMPTY("TEMPORARY_AMOUNT_SWITH_EMPTY",7010,"TEMPORARY_AMOUNT_SWITH_EMPTY","临时额度开关没有设置"),
 
     SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过"),
 	//paypwd wrong less than specific times
@@ -417,8 +418,6 @@ public enum FanbeiExceptionCode {
 	//paypwd wrong more than specific times
 	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
 	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！");
-
-
 
     /**
      * 错误码

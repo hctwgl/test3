@@ -10,6 +10,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
@@ -600,6 +601,13 @@ public class StartCashierApi implements ApiHandle {
      */
     private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDto userDto, AfInterimAuDo afInterimAuDo) {
 	BigDecimal useableAmount = BigDecimal.ZERO;
+
+    afInterimAuDo = afOrderService.getInterimAuDo(orderInfo);
+	if (afInterimAuDo == null) {
+		afInterimAuDo = new AfInterimAuDo();
+		afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+	}
+
 	// 判断商圈订单
 	if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 	    // 教育培训订单
@@ -609,16 +617,44 @@ public class StartCashierApi implements ApiHandle {
 		    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
 		}
 	    }
-	} else { // 线上分期订单
+        } else {    //线上分期订单
+        	//线上分期订单
+         /*   //mqp  add switch for different scene without TRADE
+            String orderType = orderInfo.getOrderType();
+            String secOrderType = orderInfo.getSecType();
+            
+            if (orderInfo.equals("SELFSUPPORT")) {
+				secOrderType = "SELFSUPPORT";
+			}
+            
+            AfCheckoutCounterDo checkoutCounterDo = afCheckoutCounterService.getByType(orderType, secOrderType);
+            if (checkoutCounterDo == null) {
+            	logger.info("checkUsedAmount checkoutcounterdo is null");
+				throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
+			}
+            
+            String isSwitch = checkoutCounterDo.getTemporaryAmountStatus();
+            
+            if (StringUtil.isEmpty(isSwitch)) {
+            	logger.info("checkUsedAmount isSwitch is null");
+				throw new FanbeiException(FanbeiExceptionCode.TEMPORARY_AMOUNT_SWITH_EMPTY);
+			}
+            
+            //end mqp add switch for different scene
+        	*/
+        	
 	    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
-	    if (afUserAccountSenceDo != null) {
+          
+	    if (afUserAccountSenceDo != null ) {
 		// 额度判断
-		if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
-		    // 获取当前用户可用临时额度
-		    BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
-		    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);
-		} else {
-		    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
+                    //获取当前用户可用临时额度
+                    BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);
+                } else {
+                //  add temporary amount switch for boluome 
+                	
+                    useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
 		}
 	    }
 	}

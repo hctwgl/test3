@@ -30,9 +30,8 @@ public final class VelocityUtil {
             Properties p = new Properties();
             p.put("file.resource.loader.class",
                     "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-            p.put("file.resource.loader.path","/WEB-INF/views");
             Velocity.init(p);
-            Template template = Velocity.getTemplate("/screen/fanbei-web/app/protocolLegalCashLoanV2.vm", "UTF-8");
+            Template template = Velocity.getTemplate(String.valueOf(map.get("templateSrc")), "UTF-8");
             //初始化上下文
             VelocityContext context = new VelocityContext();
             //添加数据到上下文中

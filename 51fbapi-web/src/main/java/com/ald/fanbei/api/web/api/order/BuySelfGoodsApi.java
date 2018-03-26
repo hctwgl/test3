@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.order;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +13,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,23 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
+import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
+import com.ald.fanbei.api.biz.service.AfShareGoodsService;
+import com.ald.fanbei.api.biz.service.AfShareUserGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
@@ -36,28 +51,33 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
+import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfGoodsPriceVo;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 
 /**
@@ -72,6 +92,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfOrderService afOrderService;
 	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
 	AfResourceService afResourceService;
 	@Resource
 	AfUserAddressService afUserAddressService;
@@ -83,8 +105,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
 	AfUserAccountService afUserAccountService;
-	@Resource
-	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
@@ -108,7 +128,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	@Resource
-
 	AfModelH5ItemService afModelH5ItemService;
 	
 	@Resource
@@ -184,7 +203,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 		final AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, count);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
-
+		AfGoodsPriceDo afGoodsPriceDo= 	afGoodsPriceService.getById(goodsPriceId);
+		BigDecimal couponAmount=BigDecimal.ZERO;
+		if(couponId!=0){
+			AfUserCouponDto afUserCouponDto=afUserCouponService.getUserCouponById(couponId);
+			couponAmount=afUserCouponDto.getAmount();
+		}
+		actualAmount=afGoodsPriceDo.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
 		//新增下单时，记录ip和同盾设备指纹锁 cxk
@@ -237,9 +262,17 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 				
 				// ------------------------------------begin mqp doubleEggs------------------------------------
-				Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
-				if(doubleEggsId != null){
-					doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+				List<AfGoodsDoubleEggsDo> listGoods = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				if (CollectionUtil.isNotEmpty(listGoods)) {
+					
+					Long doubleEggsId = afGoodsDoubleEggsService.getCurrentDoubleGoodsId(goodsId);
+					if(doubleEggsId != null){
+						doubleEggsGoodsCheck(userId, goodsId,count,doubleEggsId);
+					}else {
+					    throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_LIMIT_TIME);
+					}
+				
+					
 				}
 				// ------------------------------------end mqp doubleEggs------------------------------------
 
@@ -418,6 +451,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
 			afOrder.setPriceAmount(priceDo.getPriceAmount());
+
+		}
+
+
+		if(couponId!=0){
 
 		}
 		afOrder.setLc(lc);
