@@ -313,7 +313,7 @@ public class PayRoutController {
 					afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
-				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
                     AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
                     afSupDo.setRid(result);
                     afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
