@@ -49,7 +49,7 @@ public class APPH5BrandChannelController extends BaseController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = "/getBrandChannel", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/getBrandChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getBrandChannel(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
