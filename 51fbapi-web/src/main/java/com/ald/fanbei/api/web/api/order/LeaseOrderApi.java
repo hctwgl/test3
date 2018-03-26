@@ -92,7 +92,7 @@ public class LeaseOrderApi implements ApiHandle {
         }
         logger.info("add lease order 2,lc=" + lc);
         HashMap checkResult = afOrderService.checkLeaseOrder(userId,goodsId);
-        if(checkResult == null){
+        if(checkResult != null){
             throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_LEASE_ERROR);
         }
         Date currTime = new Date();
