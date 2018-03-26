@@ -2983,13 +2983,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             //判断分数
             if(score > obj.getInteger("minScore") && (score <= obj.getInteger("maxScore") || obj.getInteger("maxScore") == 0)){
                 //判断价格
-                if(goodsPrice.compareTo(obj.getBigDecimal("minPrice")) > 1 && (goodsPrice.compareTo(obj.getBigDecimal("maxPrice")) <= 0 || obj.getBigDecimal("maxPrice").compareTo(BigDecimal.ZERO) == 0)){
+                if(goodsPrice.compareTo(obj.getBigDecimal("minPrice")) == 1 && (goodsPrice.compareTo(obj.getBigDecimal("maxPrice")) <= 0 || obj.getBigDecimal("maxPrice").compareTo(BigDecimal.ZERO) == 0)){
                     freeze = obj.getInteger("freeze");
                 }
             }
-        }
-        if(freeze == 100){
-            return BigDecimal.ZERO;
         }
         return goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100));
     }
