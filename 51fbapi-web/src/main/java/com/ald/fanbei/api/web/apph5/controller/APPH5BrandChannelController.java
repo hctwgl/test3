@@ -1,12 +1,15 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 
+import com.ald.fanbei.api.biz.service.AfResourceH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
+import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
+import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
 import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -30,6 +33,8 @@ public class APPH5BrandChannelController extends BaseController {
 
 	@Resource
 	AfResourceH5Service afResourceH5Service;
+	@Resource
+	AfResourceH5ItemService afResourceH5ItemService;
 
 	/**
 	 * 品牌频道
@@ -42,13 +47,12 @@ public class APPH5BrandChannelController extends BaseController {
 	public String GetFlashSaleGoods(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
-		List<AfResourceH5Do> list = afResourceH5Service.selectByStatus();
-		for(AfResourceH5Do afResourceH5Do : list){
-
+		List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus();
+		for(AfResourceH5Dto afResourceH5Dto : list){
+			List<AfResourceH5ItemDo> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getRid());
+			afResourceH5Dto.setResourceH5List(itemList);
 		}
-
-
-
+		data.put("resourceH5List",list);
 		resp = H5CommonResponse.getNewInstance(true, "成功","",data);
 		return resp.toString();
 

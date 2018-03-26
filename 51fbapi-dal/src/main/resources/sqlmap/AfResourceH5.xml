@@ -8,7 +8,7 @@
       id rid,gmt_create,gmt_modified,creator,modifier,name,status,sort
     </sql>
     
-    <select id="selectByStatus" resultType="AfResourceH5Do">
+    <select id="selectByStatus" resultType="AfResourceH5Dto">
         SELECT
           <include refid="queryFields"/>
         FROM

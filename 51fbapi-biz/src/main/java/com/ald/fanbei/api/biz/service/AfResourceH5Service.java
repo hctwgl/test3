@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 
 import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
+import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
 
 import java.util.List;
 
@@ -14,6 +15,6 @@ import java.util.List;
  */
 public interface AfResourceH5Service {
 
-	List<AfResourceH5Do> selectByStatus();
+	List<AfResourceH5Dto> selectByStatus();
 
 }
