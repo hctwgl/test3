@@ -414,7 +414,7 @@
 			af_goods
 		WHERE is_delete = 0
 		AND status = 'PUBLISH'
-		AND id in #{goodsId}
+		AND id in (#{goodsId})
 	</select>
 
 	<select id="getGoodsDoByGoodsId" resultType="AfActivityGoodsDto">
@@ -427,7 +427,7 @@
 		LEFT JOIN af_goods_price p ON p.is_delete = 0 AND p.is_sale = 'Y' AND p.goods_id = g.id
 		where g.is_delete = 0
 		AND g.status = 'PUBLISH'
-		AND g.id in #{goodsId}
+		AND g.id in (#{goodsId})
 	</select>
 
 </mapper>
