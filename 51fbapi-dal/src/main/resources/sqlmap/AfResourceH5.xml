@@ -8,7 +8,13 @@
       id rid,gmt_create,gmt_modified,creator,modifier,name,status,sort
     </sql>
     
-
+    <select id="selectByStatus" resultType="AfResourceH5Do">
+        SELECT
+          <include refid="queryFields"/>
+        FROM
+          af_resource_h5
+        where is_delete = 0 AND status = 0 order by sort desc
+    </select>
 
     
 

@@ -1,9 +1,14 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfResourceH5Service;
+import com.ald.fanbei.api.dal.dao.AfResourceH5Dao;
+import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -16,10 +21,14 @@ import org.springframework.stereotype.Service;
 
 @Service("afResourceH5Service")
 public class AfResourceH5ServiceImpl implements AfResourceH5Service {
-	 private static final Logger logger = LoggerFactory.getLogger(AfResourceH5ServiceImpl.class);
-	   
 
+	 @Resource
+	 AfResourceH5Dao afResourceH5Dao;
 
+	@Override
+	public List<AfResourceH5Do> selectByStatus(){
+		return afResourceH5Dao.selectByStatus();
+	}
 		
 
 
