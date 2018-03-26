@@ -437,7 +437,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("basicStatus", "Y");
 		data.put("riskStatus", "Y");
 		data.put("flag", "Y");
-		data.put("highestAmount", afResource.getValue());// 可获取最高额度
+		data.put("highestAmount", afResourceDo.getValue5());// 可获取最高额度
 		data.put("currentAmount", userDto.getAuAmount());// 当前认证额度
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
 		data.put("title2", afResourceDo.getValue1());
