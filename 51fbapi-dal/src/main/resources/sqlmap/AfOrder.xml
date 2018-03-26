@@ -1288,7 +1288,7 @@
 	</select>
 
 	<insert id="addOrderLease" parameterType="AfOrderLeaseDo">
-		INSERT INTO af_order_lease(is_delete , gmt_create , gmt_modified , user_id , order_id , monthly_rent, lease_status,rebate_status,user_name,verify_status,buyout,richie_amount,recover_rate,real_name,score,freeze_amount,order_no,quota_deposit)
+		INSERT INTO af_order_lease(is_delete , gmt_create , gmt_modified , user_id , order_id , monthly_rent, lease_status,rebate_status,user_name,verify_status,buyout,richie_amount,recover_rate,real_name,score,freeze_amount,order_no,quota_deposit,cash_deposit)
 		VALUES
 			(0,NOW(),NOW(),
 			#{userId},
@@ -1303,7 +1303,8 @@
 			#{score},
 			#{freezeAmount},
 			#{orderNo},
-			#{quotaDeposit}
+			#{quotaDeposit},
+			#{cashDeposit}
 			)
 	</insert>
 
