@@ -1,15 +1,14 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,6 +57,12 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	@Resource
 	private AfInterestFreeRulesService afInterestFreeRulesService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
+
+	@Resource
+	BizCacheUtil bizCacheUtil;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -91,13 +96,89 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				interestFreeArray = JSON.parseArray(interestFreeJson);
 			}
 		}
+		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
+		//秒杀、促销活动商品信息
+		AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
+		if(afSeckillActivityDo!=null){
+			Long activityId = afSeckillActivityDo.getRid();
+			AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
+			if(afSeckillActivityGoodsDo!=null){
+				//活动商品配置有问题，秒杀不参加活动，特惠按照原来
+				int actSaleCount = 0;
+				//获取活动已售商品数量
+				if(afSeckillActivityDo.getType()==2){
+					actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
+					vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
+					//兼容老版本
+					vo.setSaleCount(actSaleCount);
+				}else{
+					Integer limitCount = afSeckillActivityService.getSumCountByGoodsId(goodsId);
+					vo.setLimitCount(limitCount);
+				}
+				Date gmtStart = afSeckillActivityDo.getGmtStart();
+				Date gmtEnd = afSeckillActivityDo.getGmtEnd();
+				Date gmtPStart = afSeckillActivityDo.getGmtPStart();
+				//返利金额
+				vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
+				vo.setActivityId(activityId);
+				vo.setActivityType(afSeckillActivityDo.getType());
+				vo.setActivityName(afSeckillActivityDo.getName());
+				vo.setGmtStart(gmtStart.getTime());
+				vo.setGmtEnd(gmtEnd.getTime());
+				vo.setNowDate(afSeckillActivityDo.getNowDate().getTime());
+				if(gmtPStart.getTime()>=gmtStart.getTime()){
+					vo.setGmtPstart(0l);
+				}else{
+					vo.setGmtPstart(gmtPStart.getTime());
+				}
+				vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
+				vo.setPayType(afSeckillActivityDo.getPayType());
+				vo.setActSaleCount(actSaleCount);
+				vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
+				saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
+				//兼容老版本
+				if(context.getAppVersion()<409){
+					vo.setSaleAmount(saleAmount);
+				}
+			}else{
+				vo.setActivityId(0l);
+				vo.setActivityType(0);
+				vo.setActivityName("");
+				vo.setGmtStart(0l);
+				vo.setGmtEnd(0l);
+				vo.setGmtPstart(0l);
+				vo.setNowDate(0l);
+				vo.setLimitCount(0);
+				//vo.setLimitedPurchase(0);
+				vo.setPayType("");
+				vo.setActSaleCount(0);
+				vo.setSpecialPrice(BigDecimal.ZERO);
+			}
+		}else{
+			vo.setActivityId(0l);
+			vo.setActivityType(0);
+			vo.setActivityName("");
+			vo.setGmtStart(0l);
+			vo.setGmtEnd(0l);
+			vo.setGmtPstart(0l);
+			vo.setNowDate(0l);
+			vo.setLimitCount(0);
+			//vo.setLimitedPurchase(0);
+			vo.setPayType("");
+			vo.setActSaleCount(0);
+			vo.setSpecialPrice(BigDecimal.ZERO);
+		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
 				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
-		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
+
 		if(nperList!= null){
 			Map nperMap = nperList.get(nperList.size() - 1);
 			vo.setNperMap(nperMap);
 		}
+		if(context.getAppVersion()>=409){
+			vo.setNperList(nperList);
+		}
+		vo.setRemark(goods.getRemark());
 		resp.setResponseData(vo);
 		return resp;
 	}

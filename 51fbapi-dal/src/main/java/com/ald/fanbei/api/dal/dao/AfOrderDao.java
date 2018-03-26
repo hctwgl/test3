@@ -306,4 +306,6 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	int UpdateOrderLeaseShow(@Param("orderId")Long orderId,@Param("userId")Long userId);
+	String getTradeBusinessNameByOrderId(@Param("orderId")Long orderid);
+
 }

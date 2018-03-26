@@ -665,6 +665,16 @@ public class AppH5DoubleEggsController extends BaseController {
 		String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
 		
 		List<GoodsForDate> goodsList = afGoodsDoubleEggsService.getGoodsListByActivityId(activityId);
+		
+		if (CollectionUtil.isNotEmpty(goodsList)) {
+			for(GoodsForDate goodsForDate : goodsList){
+				Integer alreadyCount = 0;
+		        alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsForDate.getGoodsId());
+		        Integer intstock= goodsForDate.getStockCount() - alreadyCount;
+		        goodsForDate.setCount(intstock<0?0:intstock);
+			}
+		}
+		
 		log = log + String.format("goodsList = %s",goodsList.toString());
 		logger.info(log);
 		
@@ -763,21 +773,22 @@ public class AppH5DoubleEggsController extends BaseController {
 				Long userId = convertUserNameToUserId(context.getUserName());
 				java.util.Map<String, Object> data = new HashMap<>();
 
-				Long goodsId = NumberUtil.objToLong(request.getParameter("goodsId"));
+				Long doubleGoodsId = NumberUtil.objToLong(request.getParameter("doubleGoodsId"));
 				
-				log = log + String.format("goodsId = %s",goodsId);
+				log = log + String.format("doubleGoodsId = %s",doubleGoodsId);
 				logger.info(log);
 				
-			
-				
-				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
-
-				log = log + String.format("goodsDo = %s",goodsDo.toString());
+				AfGoodsDoubleEggsDo tempDo = afGoodsDoubleEggsService.getByDoubleGoodsId(doubleGoodsId);
+				if (tempDo == null ) {
+					result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
+				}
+		
+				log = log + String.format("AfGoodsDoubleEggsDo = %s",tempDo.toString());
 				logger.info(log);
 				
 				//根据goodsId查询商品信息
-				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-goodsDo.getAlreadyCount());//秒杀商品余量
+				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(tempDo.getGoodsId());
+				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-tempDo.getAlreadyCount());//秒杀商品余量
 				
 				log = log + String.format("goodsDouble12Count = %d",goodsDouble12Count);
 				logger.info(log);
@@ -787,7 +798,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 				}
 				
-				if (goodsDo != null) {
+				if (tempDo != null) {
 
 					//String time = "10";
 					//Integer.parseInt(time);
@@ -796,18 +807,11 @@ public class AppH5DoubleEggsController extends BaseController {
 
 					// if now + preTime >= goods start time then throw
 					// error"time分钟内无需预约"
-					if (DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())) {
+					if (DateUtil.addMins(now, preTime).after(tempDo.getStartTime())) {
 						return  H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
 						
 					}
 
-					long doubleGoodsId = goodsDo.getRid();
-					AfGoodsDoubleEggsDo tempDo = new AfGoodsDoubleEggsDo();
-					tempDo.setGoodsId(goodsId);
-					tempDo = afGoodsDoubleEggsService.getByCommonCondition(tempDo);
-					if (tempDo == null ) {
-						result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
-					}
 					
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"

@@ -503,7 +503,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk secondStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -575,12 +574,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream) {//钱包字节流签章
-        // 待签署文档路径
-        String srcFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 待签署文档路径
-        logger.info("sign doc: " + srcFile);
-        String dstFile = ObjectUtils.toString(map.get("thirdPath"), "");// 签署后文档保存路径
         String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("thirdSeal"), "");// 签章数据
@@ -598,15 +592,12 @@ public class AfESdkServiceImpl implements AfESdkService {
 
         String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
 
-        int posType = 1;
-        int width = 70;
-
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
         boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "楚橡信息科技有限公司";
+        String key = ObjectUtils.toString(map.get("thirdPartyKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sign account id: " + accountId);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);

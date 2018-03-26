@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.ProtocolUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -40,6 +41,8 @@ public class AgentBuyHintsV2Api  implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(RESOURCE_TYPE);
         Map<String, Object> data = new HashMap<>();
+        String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+        String ipAddress = CommonUtil.getIpAddr(request);
         if(null != afResourceDo){
             if(StringUtils.equals(afResourceDo.getValue1(),"1")){
                 data.put("hint",afResourceDo.getValue());
@@ -47,6 +50,8 @@ public class AgentBuyHintsV2Api  implements ApiHandle {
         }
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
+        map.put("appName",appName);
+        map.put("ipAddress",ipAddress);
         List<AfResourceDo> agentBuyList = protocolUtil.getProtocolList("agentbuy",map);
         data.put("agentBuyList",agentBuyList);
         resp.setResponseData(data);

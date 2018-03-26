@@ -9,24 +9,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsPropertyService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfPropertyValueService;
-import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPropertyDo;
-import com.ald.fanbei.api.dal.domain.AfPropertyValueDo;
-import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -70,12 +63,16 @@ public class GetGoodsSpecApi implements ApiHandle {
 	@Resource
 	AfShareGoodsService afShareGoodsService;
 
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
-
+		//秒杀或特惠活动id
+		Long activityId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("activityId"), ""),
+				0l);
 		Map<String, Object> data = new HashMap<>();
 		List<AfGoodsPriceVo> priceData = new ArrayList<>();
 		List<AfPropertyVo> propertyData = new ArrayList<>();
@@ -84,8 +81,27 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 		goodsPriceDo.setGoodsId(goodsId);
 		List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getListByCommonCondition(goodsPriceDo);
-		priceData = convertListForPrice(priceDos);
-				
+		List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = new ArrayList<>();
+
+		//版本兼容
+		if(context.getAppVersion()>=409){
+			if(activityId>0){
+				afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+			}
+		}else{
+			//取最新的活动
+			AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
+			if(afSeckillActivityDo!=null){
+				afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityPricesByGoodsIdAndActId(goodsId,afSeckillActivityDo.getRid());
+			}
+		}
+
+		if(afSeckillActivityGoodsDtos!=null&&afSeckillActivityGoodsDtos.size()>0){
+			priceData = convertListForPriceAct(priceDos,afSeckillActivityGoodsDtos);
+		}else{
+			priceData = convertListForPrice(priceDos);
+		}
+
 		//双十一砍价活动增加逻辑
 		for ( AfGoodsPriceVo afGoodsPriceDo : priceData) {
 		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getPriceId());
@@ -151,7 +167,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 			}
 
 		}
-
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
@@ -164,7 +179,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 		if (priceDos != null && priceDos.size() > 0) {
 			for (AfGoodsPriceDo priceDo : priceDos) {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
-
 				goodsPriceVo.setStock(priceDo.getStock());
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
 				goodsPriceVo.setIsSale(priceDo.getIsSale());
@@ -172,7 +186,56 @@ public class GetGoodsSpecApi implements ApiHandle {
 				goodsPriceVo.setPriceId(priceDo.getRid());
 				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
 				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
+				propertyData.add(goodsPriceVo);
+			}
+		}
+		return propertyData;
+	}
 
+	private List<AfGoodsPriceVo> convertListForPriceAct(List<AfGoodsPriceDo> priceDos, List<AfSeckillActivityGoodsDto> afSeckillActivityInfos) {
+		List<AfGoodsPriceVo> propertyData = new ArrayList<>();
+		Integer type = 0;
+		if (afSeckillActivityInfos != null && afSeckillActivityInfos.size() > 0) {
+			type = afSeckillActivityInfos.get(0).getType();
+		}
+		if (priceDos != null && priceDos.size() > 0) {
+			for (AfGoodsPriceDo priceDo : priceDos) {
+				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
+				if(type!=null&&type==2){
+					goodsPriceVo.setStock(0);
+				}else{
+					goodsPriceVo.setStock(priceDo.getStock());
+				}
+				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
+				goodsPriceVo.setIsSale(priceDo.getIsSale());
+				goodsPriceVo.setPriceAmount(priceDo.getPriceAmount());
+				goodsPriceVo.setPriceId(priceDo.getRid());
+				goodsPriceVo.setPropertyValueIds(priceDo.getPropertyValueIds());
+				goodsPriceVo.setPropertyValueNames(priceDo.getPropertyValueNames());
+				//更换活动价格库存
+				Long priceId = priceDo.getRid();
+				if (afSeckillActivityInfos != null && afSeckillActivityInfos.size() > 0) {
+					for (AfSeckillActivityGoodsDto activityDo : afSeckillActivityInfos) {
+						if(activityDo.getPriceId()!=null&&activityDo.getPriceId().equals(priceId)){
+							BigDecimal specialPrice = activityDo.getSpecialPrice();
+							if(activityDo.getType()!=null&&activityDo.getType()==2){
+								int limitCount = activityDo.getLimitCount();
+								goodsPriceVo.setStock(limitCount);
+								goodsPriceVo.setActualAmount(specialPrice);
+								//如果售价有问题，设置为不能销售
+								if(specialPrice.compareTo(BigDecimal.ZERO)<=0||specialPrice.compareTo(priceDo.getActualAmount())>=0){
+									goodsPriceVo.setStock(0);
+								}
+							}else{
+								//活动价应该小于售价
+								if(specialPrice.compareTo(BigDecimal.ZERO)>0&&specialPrice.compareTo(priceDo.getActualAmount())<=0){
+									goodsPriceVo.setActualAmount(specialPrice);
+								}
+							}
+							break;
+						}
+					}
+				}
 				propertyData.add(goodsPriceVo);
 			}
 		}

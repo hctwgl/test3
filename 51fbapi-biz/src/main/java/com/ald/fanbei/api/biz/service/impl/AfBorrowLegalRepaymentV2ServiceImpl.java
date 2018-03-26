@@ -185,7 +185,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
+		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
 		
 	}
 	
@@ -202,7 +202,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     		
             logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) );
             
-            preCheck(repaymentDo, tradeNo);
+            this.preCheck(repaymentDo, tradeNo);
+            
 			repaymentDo.setOperator(operator);
             final RepayDealBo repayDealBo = new RepayDealBo();
             repayDealBo.curTradeNo = tradeNo;
@@ -346,11 +347,13 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
-				changBorrowRepaymentStatus(respBo.getTradeNo(), AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
+				afRepaymentBorrowCashDao.status2Process(respBo.getTradeNo(), repayment.getRid());
 			}
 			if (!respBo.isSuccess()) {
 				if(StringUtil.isNotBlank(respBo.getRespCode())){
-					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+				    dealRepaymentFail(bo.tradeNo, "", true, errorMsg);
+				    throw new FanbeiException(errorMsg);
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}
@@ -366,7 +369,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     
     private void preCheck(AfRepaymentBorrowCashDo repaymentDo, String tradeNo) {
 		// 检查交易流水 对应记录数据库中是否已经处理
-		if ( repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) ) {
+		if ( repaymentDo != null && AfBorrowCashRepmentStatus.YES.getCode().equals(repaymentDo.getStatus()) ) {
 			throw new FanbeiException("preCheck,repayment has been dealed!"); // TODO
 		}
         

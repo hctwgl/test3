@@ -74,9 +74,20 @@ import java.math.BigDecimal;
      * 商城名称
      */
     private String name;
+    
+    private String temporaryAmountStatus;
+    
 
 
-    /**
+    public String getTemporaryAmountStatus() {
+		return temporaryAmountStatus;
+	}
+
+	public void setTemporaryAmountStatus(String temporaryAmountStatus) {
+		this.temporaryAmountStatus = temporaryAmountStatus;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid

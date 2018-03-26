@@ -207,7 +207,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.cardNo = repayCardNum;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
+		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
 	}
 	
 	/**

@@ -12,12 +12,13 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
  */
 public class AfBankUserBankDto extends AfUserBankcardDo {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String bankIcon;
-	private String isValid;
+	private String isValid;	
+	private UpsBankStatusDto bankStatus;
+	
+	private String message;
 
 	public String getIsValid() {
 		return isValid;
@@ -38,6 +39,28 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
 	 */
 	public void setBankIcon(String bankIcon) {
 		this.bankIcon = bankIcon;
+	}
+
+	public UpsBankStatusDto getBankStatus() {
+	    return bankStatus;
+	}
+
+	public void setBankStatus(UpsBankStatusDto bankStatus) {
+	    this.bankStatus = bankStatus;
+	}
+
+	
+	public String getMessage() {
+	    return message;
+	}
+
+	public void setMessage(String message) {
+	    this.message = message;
+	}
+
+	@Override
+	public String toString() {
+	    return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid=" + isValid + ", bankStatus=" + bankStatus + ", message=" + message + "]";
 	}
 
 }
