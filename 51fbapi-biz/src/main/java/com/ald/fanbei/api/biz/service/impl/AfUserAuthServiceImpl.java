@@ -446,7 +446,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("basicStatus", "P");
 		data.put("riskStatus", "P");
 		data.put("flag", "Y");
-		data.put("title1", "基础信息认证中");
+		data.put("title1", "正在快马加鞭为您审核中");
 		data.put("title2", afResource.getValue2());
 		data.put("sceneStatus", "6");// 认证中
 	    }
