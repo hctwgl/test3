@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -403,7 +404,7 @@ public interface AfOrderService {
 	 * 获取租赁商品是否存在订单
 	 * @return
 	 */
-	BigDecimal getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId);
+	JSONObject getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId);
 
 	/**
 	 * 添加租赁订单

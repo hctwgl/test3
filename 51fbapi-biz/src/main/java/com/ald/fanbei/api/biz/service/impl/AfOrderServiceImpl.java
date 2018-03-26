@@ -1126,25 +1126,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     BigDecimal actualAmount = saleAmount;
                     AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
                     if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
-                        BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
-                        if(useableAmount.compareTo(saleAmount) >= 0){
-                            afOrderLeaseDo.setQuotaDeposit(saleAmount);
-                            afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
-                            actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
-                        }
-                        else {
-                            afOrderLeaseDo.setQuotaDeposit(useableAmount);
-                            afOrderLeaseDo.setCashDeposit(useableAmount.subtract(saleAmount));
-                            actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
-                        }
-                        orderInfo.setActualAmount(actualAmount);
+                    	if(saleAmount.compareTo(BigDecimal.ZERO) == 0){
+							AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
+							BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+							if(useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0){
+								afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
+								afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
+								actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
+							}
+							else {
+								afOrderLeaseDo.setQuotaDeposit(useableAmount);
+								afOrderLeaseDo.setCashDeposit(useableAmount.subtract(afOrderLeaseDo.getFreezeAmount()));
+								actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
+							}
+						}
                         orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(),afOrderLeaseDo.getQuotaDeposit(),afOrderLeaseDo.getId());
                     }
                     if (payType.equals(PayType.WECHAT.getCode())) {
                         orderInfo.setPayType(PayType.WECHAT.getCode());
                         logger.info("payBrandOrder orderInfo = {}", orderInfo);
-                        orderDao.updateOrder(orderInfo);String attach = isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode();
+                        orderDao.updateOrder(orderInfo);
+                        String attach = isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode();
                         if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
                             attach = PayOrderSource.LEASE_ORDER.getCode();
                         }
@@ -1341,22 +1343,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                                         logger.error("pay order rela bank pay error,userId=" + userId, e);
                                     }throw new FanbeiException(errorMsg);
                                 }
-                                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);}
-                            //回掉成功生成租赁借款（确认收货后生成账单）
-                            if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                                afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),userId,afOrderLeaseDo.getQuotaDeposit());
-                                AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, userId,
-                                        afOrderLeaseDo.getMonthlyRent(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-                                        orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-                                borrow.setVersion(1);
-                                // 新增借款信息
-                                afBorrowDao.addBorrow(borrow); // 冻结状态
-                                // 在风控审批通过后额度不变生成账单
-                                AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-                                afBorrowExtendDo.setId(borrow.getRid());
-                                afBorrowExtendDo.setInBill(0);
-                                afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-                                afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
+                                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
                             }
                             newMap.put("outTradeNo", respBo.getOrderNo());
                             newMap.put("tradeNo", respBo.getTradeNo());
@@ -1707,6 +1694,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                     // 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
                     if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
                         AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+						orderInfo.setActualAmount(afOrderLeaseDo.getRichieAmount().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getCashDeposit()));
                         afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit());
                         AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
                                 afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
@@ -2972,8 +2960,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public BigDecimal getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId) {
+    public JSONObject getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId) {
+		JSONObject dataObj=new JSONObject();
         Integer score = riskUtil.getRentScore(userId.toString(),new JSONObject(data));
+		dataObj.put("score",score);
         AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("LEASE_FREEZE");
         JSONArray leaseFreezeArray = JSON.parseArray(resourceDo.getValue2());
         Integer freezeScore = 0;
@@ -2988,7 +2978,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 }
             }
         }
-        return goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100));
+        if(freeze == 100){
+			dataObj.put("freezeAmount",BigDecimal.ZERO);
+            return dataObj;
+        }
+		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100)));
+        return dataObj;
     }
 
     @Override

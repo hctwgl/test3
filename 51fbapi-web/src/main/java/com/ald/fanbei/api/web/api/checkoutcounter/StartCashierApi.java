@@ -145,7 +145,20 @@ public class StartCashierApi implements ApiHandle {
 	cashierVo.setAmount(orderInfo.getActualAmount());
 	cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
 	cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter, afInterimAuDo, context));
-
+	//租赁计算支付金额
+	if(orderType.equals(OrderType.LEASE.getCode())){
+		if(orderInfo.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
+			BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+			AfOrderLeaseDo afOrderLeaseDo = afOrderService.getOrderLeaseByOrderId(orderInfo.getRid());
+			if(useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0){
+				cashierVo.setAmount(afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount()));
+			}
+			else {
+				cashierVo.setAmount(afOrderLeaseDo.getFreezeAmount().subtract(useableAmount).add(afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount())));
+			}
+		}
+	}
 	if (cashierVo.getAp().getTotalVirtualAmount() == null) {
 	    cashierVo.getAp().setTotalVirtualAmount(BigDecimal.ZERO);
 	}

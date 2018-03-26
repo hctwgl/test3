@@ -86,7 +86,6 @@ public class LeaseOrderApi implements ApiHandle {
 
         String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
 
-        Integer score = 0;
         logger.info("add lease order 1,lc=" + lc);
         if(StringUtils.isBlank(lc)){
             lc = ObjectUtils.toString(request.getAttribute("lc"));
@@ -141,7 +140,7 @@ public class LeaseOrderApi implements ApiHandle {
         final AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, priceDo);
         afOrder.setUserId(userId);
         afOrder.setGoodsPriceId(goodsPriceId);
-        afOrder.setActualAmount(new BigDecimal(0));
+        afOrder.setActualAmount(BigDecimal.ZERO);
 
         //新增下单时，记录ip和同盾设备指纹锁 cxk
         afOrder.setIp(request.getRemoteAddr());//用户ip地址
@@ -220,22 +219,29 @@ public class LeaseOrderApi implements ApiHandle {
         listSceneAmount.add(onlineSceneAmount);
         listSceneAmount.add(trainSceneAmount);
 
-        final AfOrderLeaseDo afOrderLeaseDo = new AfOrderLeaseDo();
-        afOrderLeaseDo.setMonthlyRent(monthlyRent);
-        afOrderLeaseDo.setRecoverRate(recoverRate);
-        afOrderLeaseDo.setRichieAmount(richieAmount);
-        afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
-        afOrderLeaseDo.setScore(score);
         Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
         dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
         String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
         dataLeaseFreeze.put("appName",appName);
         dataLeaseFreeze.put("blackBox",afOrder.getBlackBox());
-        BigDecimal freezeAmount = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),userId);
+        JSONObject dataObj = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),userId);
+
+        final AfOrderLeaseDo afOrderLeaseDo = new AfOrderLeaseDo();
+        afOrderLeaseDo.setMonthlyRent(monthlyRent);
+        afOrderLeaseDo.setRecoverRate(recoverRate);
+        afOrderLeaseDo.setRichieAmount(richieAmount);
+        afOrderLeaseDo.setRealName(userAccountInfo.getRealName());
+        afOrderLeaseDo.setScore(dataObj.getInteger("score"));
+        BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
         if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
-            throw new FanbeiException(FanbeiExceptionCode.LEASE_NOT_BUY);
+            afOrder.setActualAmount(priceDo.getLeaseAmount().add(monthlyRent).add(richieAmount));
+            afOrderLeaseDo.setFreezeAmount(priceDo.getLeaseAmount());
+            afOrderLeaseDo.setCashDeposit(priceDo.getLeaseAmount());
+            afOrderLeaseDo.setQuotaDeposit(BigDecimal.ZERO);
         }
-        afOrderLeaseDo.setFreezeAmount(freezeAmount);
+        else {
+            afOrderLeaseDo.setFreezeAmount(freezeAmount);
+        }
         Integer result = transactionTemplate
                 .execute(new TransactionCallback<Integer>() {
 

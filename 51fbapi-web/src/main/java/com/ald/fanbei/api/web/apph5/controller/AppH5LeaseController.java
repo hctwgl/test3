@@ -551,18 +551,23 @@ public class AppH5LeaseController extends BaseController {
                     String appName = sysModeId.startsWith("i") ? "alading_ios" : "alading_and";
                     dataLeaseFreeze.put("appName",appName);
                     dataLeaseFreeze.put("blackBox",blackBox == null ? "":blackBox);
-                    BigDecimal freezeAmount = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
+                    JSONObject dataObj = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
+                    BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
                     if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
-                        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.LEASE_NOT_BUY.getDesc(), "", null).toString();
-                    }
-                    data.put("freezeAmount",freezeAmount);//总冻结额度
-                    if(useableAmount.compareTo(freezeAmount)>=0){
-                        data.put("quotaDeposit",freezeAmount);//冻结额度
-                        data.put("cashDeposit", 0);//支付金额
+                        data.put("freezeAmount",priceDo.getLeaseAmount());//总冻结额度
+                        data.put("quotaDeposit",0);//冻结额度
+                        data.put("cashDeposit", priceDo.getLeaseAmount());//支付金额
                     }
                     else {
-                        data.put("quotaDeposit",useableAmount);//冻结额度
-                        data.put("cashDeposit", freezeAmount.subtract(useableAmount));//支付金额
+                        data.put("freezeAmount",freezeAmount);//总冻结额度
+                        if(useableAmount.compareTo(freezeAmount)>=0){
+                            data.put("quotaDeposit",freezeAmount);//冻结额度
+                            data.put("cashDeposit", 0);//支付金额
+                        }
+                        else {
+                            data.put("quotaDeposit",useableAmount);//冻结额度
+                            data.put("cashDeposit", freezeAmount.subtract(useableAmount));//支付金额
+                        }
                     }
                 }
                 else {

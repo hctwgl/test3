@@ -457,7 +457,7 @@ public class PayRoutController {
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
-						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
 				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
 					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
