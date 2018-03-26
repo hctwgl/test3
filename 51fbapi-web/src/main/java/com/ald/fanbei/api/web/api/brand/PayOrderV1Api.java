@@ -103,7 +103,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfUserCouponTigerMachineService afUserCouponTigerMachineService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-    
+    @Resource
+    AfSeckillActivityService afSeckillActivityService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -155,6 +156,16 @@ public class PayOrderV1Api implements ApiHandle {
             if (afResourceDo != null && afResourceDo.getValue().contains(orderInfo.getGoodsName())) {
                 logger.error("filter shop : " + orderInfo.getGoodsName());
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
+            }
+        }
+        //秒杀逻辑
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+            AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
+            if(afSeckillActivityDo!=null&&afSeckillActivityDo.getGoodsLimitCount()!=null){
+                AfSeckillActivityOrderDo seckillActivityOrderInfo = afSeckillActivityService.getActivityOrderByGoodsIdAndActId(orderInfo.getGoodsId(),afSeckillActivityDo.getRid(),userId);
+                if(seckillActivityOrderInfo!=null){
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
+                }
             }
         }
         //双十一砍价添加
