@@ -117,8 +117,9 @@ public class APPH5BrandChannelController extends BaseController {
 				}
 				goodsInfo.put("nperMap", nperMap);
 			}
-			return list;
+
 		}
+		return list;
 	}
 
 
