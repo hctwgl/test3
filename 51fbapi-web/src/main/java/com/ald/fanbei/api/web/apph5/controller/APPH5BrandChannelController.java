@@ -51,7 +51,7 @@ public class APPH5BrandChannelController extends BaseController {
 	 */
 	@RequestMapping(value = "/getBrandChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String GetFlashSaleGoods(HttpServletRequest request,HttpServletResponse response) {
+	public String getBrandChannel(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
 		StringBuffer params = new StringBuffer();
