@@ -3,7 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfResourceH5ItemService;
 import com.ald.fanbei.api.dal.dao.AfResourceH5ItemDao;
-import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
+import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +26,7 @@ public class AfResourceH5ItemServiceImpl implements AfResourceH5ItemService {
 	AfResourceH5ItemDao afResourceH5ItemDao;
 
 	@Override
-	public List<AfResourceH5ItemDo> selectByModelId(Long modelId){
+	public List<AfResourceH5ItemDto> selectByModelId(Long modelId){
 		return afResourceH5ItemDao.selectByModelId(modelId);
 	}
 

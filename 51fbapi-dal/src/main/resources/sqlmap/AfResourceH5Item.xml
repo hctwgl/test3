@@ -8,7 +8,7 @@
       id rid,gmt_create,gmt_modified,creator,modifier,model_id,value1,value2,value3,value4,sort
     </sql>
     
-    <select id="selectByModelId" resultType="AfRecourceH5ItemDo">
+    <select id="selectByModelId" resultType="AfRecourceH5ItemDto">
         SELECT
           <include refid="queryFields"/>
         FROM

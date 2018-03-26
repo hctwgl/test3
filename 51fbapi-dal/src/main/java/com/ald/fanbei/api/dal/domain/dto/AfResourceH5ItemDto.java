@@ -3,12 +3,11 @@
  */
 package com.ald.fanbei.api.dal.domain.dto;
 
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
+import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -19,8 +18,8 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class AfResourceH5Dto extends AfResourceH5Do {
+public class AfResourceH5ItemDto extends AfResourceH5ItemDo {
 
-    private List itemList;
+    private List goodsList;
 	
 }
