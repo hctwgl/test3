@@ -566,6 +566,7 @@ public class AppH5LeaseController extends BaseController {
                     }
                 }
                 else {
+                    data.put("riskStatus","N");
                     data.put("action","DO_PROMOTE_BASIC");
                 }
             }else {
