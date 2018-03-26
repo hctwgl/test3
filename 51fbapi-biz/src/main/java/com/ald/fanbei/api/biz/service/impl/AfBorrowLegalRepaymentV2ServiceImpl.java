@@ -188,9 +188,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.cardNo = repayCardNum;
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
-
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
 		CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
+		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
 	}
 	
 	/**

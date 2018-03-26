@@ -1,11 +1,20 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.alibaba.fastjson.JSON;
+import com.github.tomakehurst.wiremock.common.Json;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 @Controller
 @RequestMapping("/third/newcollection/")
@@ -36,5 +45,20 @@ public class NewCollectoinController {
     @RequestMapping("finishBorrow")
     public String finishBorrow(String data,String sign){
         return cuiShouUtils.finishBorrow(data,sign);
+    }
+
+
+    @Resource
+    AfBorrowBillService afBorrowBillService;
+
+    @ResponseBody
+    @RequestMapping("geBillAllClear")
+    public String geBillAllClear(Long userId,Long billId){
+        HashMap resulitMap = new HashMap();
+        List<AllBarlyClearanceBo> list = afBorrowBillService.getAllClear(userId,billId);
+
+        resulitMap.put("result",list);
+
+        return JSON.toJSONString(resulitMap);
     }
 }
