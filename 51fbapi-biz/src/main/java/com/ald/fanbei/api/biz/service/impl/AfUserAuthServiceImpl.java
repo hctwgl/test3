@@ -337,7 +337,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	AfResourceDo userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY");
 	if (scene.equals(UserAccountSceneType.ONLINE.getCode())) {
 	    authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY_ONLINE");
-	    userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY_ONLINE");
+	    //有效期一致，不在独立配置
+	    //userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY_ONLINE");
 	}
 	setAuthRaiseStatus(listRaiseStatus, scene, authDay, userAuthDay, data, authDo);
 
