@@ -17,6 +17,8 @@ public interface AfFacescoreShareCountDao extends BaseDao<AfFacescoreShareCountD
 
 	AfFacescoreShareCountDo getByUserId(@Param(value="userId")Long userId);
 
+	void addRecord(AfFacescoreShareCountDo shareCountDo2);
+
     
 
 }

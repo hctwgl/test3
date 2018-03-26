@@ -44,10 +44,10 @@ public class AfFacescoreShareCountServiceImpl extends ParentServiceImpl<AfFacesc
 			if(userDo == null){
 				return ;
 			}
-			AfFacescoreShareCountDo shareCountDo = afFacescoreShareCountDao.getById(userId);
+			AfFacescoreShareCountDo shareCountDo = afFacescoreShareCountDao.getByUserId(userId);
 			if (shareCountDo == null){
-				AfFacescoreShareCountDo shareCountDo2 = new AfFacescoreShareCountDo(userId,0);
-				afFacescoreShareCountDao.saveRecord(shareCountDo2);
+				AfFacescoreShareCountDo shareCountDo2 = new AfFacescoreShareCountDo(userId,1);
+				afFacescoreShareCountDao.addRecord(shareCountDo2);
 			}else{
 				shareCountDo.setCount(shareCountDo.getCount()+1);
 				afFacescoreShareCountDao.updateById(shareCountDo);

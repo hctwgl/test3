@@ -54,10 +54,6 @@ public class H5FaceGameActivityController extends BaseController {
     public String registerWithCash(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 		 String resultStr = "";
 		 String referer = request.getHeader("referer"); 
-		 /*if(request.getHeader("Origin").contains("woego.cn")) {
-	            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-	        }*/
-	        response.setHeader("Access-Control-Allow-Credentials", "true");
 		try {
 		    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 		    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -67,7 +63,7 @@ public class H5FaceGameActivityController extends BaseController {
 
 		    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
 		    if (eUserDo != null) {
-			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null).toString();
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
 
 		    }
 		    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());

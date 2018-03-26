@@ -72,7 +72,7 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 					List<AfResourceDo> configList = afResourceService
 							.getConfigByTypes("USER_FACETEST");
 					if (CollectionUtil.isEmpty(configList)) {
-						return H5CommonResponse.getNewInstance(false, "该活动已经结束！",
+						return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束！",
 								"", null).toString();
 					}
 					Integer totalAllowedCount = Integer.valueOf(configList.get(0)

@@ -59,7 +59,7 @@
 				count = #{count,jdbcType=INTEGER}
 			</if>
 		</set>
-		WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+		WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT}
 	</update>
 
 	<select id="getById"
@@ -96,4 +96,8 @@
 		FROM af_facescore_share_count
 		WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
 	</select>
+	<!-- 新增记录 -->
+	<insert id="addRecord" parameterType="com.ald.fanbei.api.dal.domain.AfFacescoreShareCountDo">
+	insert into af_facescore_share_count (user_id,count,gmt_modified) values (#{userId,jdbcType=BIGINT},#{count,jdbcType=INTEGER},now())
+	</insert>
 </mapper>
