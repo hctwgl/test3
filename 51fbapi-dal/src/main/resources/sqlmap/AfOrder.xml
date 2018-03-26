@@ -1338,7 +1338,7 @@
 	</update>
 
 	<select id="getOrderLeaseList" resultType="LeaseOrderListDto">
-		SELECT a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
+		SELECT a.gmt_end,a.monthly_rent,a.rebate_status,a.lease_status,b.id,b.status,b.goods_name,b.goods_icon,b.rebate_amount,b.closed_reason,b.gmt_create,b.gmt_pay_end FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
 		WHERE a.is_delete=0 AND b.is_delete=0 AND a.is_show=0 AND a.user_id=#{userId}
 		ORDER BY a.id DESC
 		LIMIT #{pageIndex},#{pageSize}

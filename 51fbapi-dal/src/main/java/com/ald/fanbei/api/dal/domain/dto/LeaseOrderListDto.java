@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.domain.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -18,6 +19,8 @@ public class LeaseOrderListDto {
     private String leaseStatus;
     private Date gmtCreate;
     private Date gmtPayEnd;
+    private Date gmtEnd;
+    private BigDecimal monthlyRent;
 
     public Long getId() {
         return id;
@@ -97,5 +100,21 @@ public class LeaseOrderListDto {
 
     public void setLeaseStatus(String leaseStatus) {
         this.leaseStatus = leaseStatus;
+    }
+
+    public Date getGmtEnd() {
+        return gmtEnd;
+    }
+
+    public void setGmtEnd(Date gmtEnd) {
+        this.gmtEnd = gmtEnd;
+    }
+
+    public BigDecimal getMonthlyRent() {
+        return monthlyRent;
+    }
+
+    public void setMonthlyRent(BigDecimal monthlyRent) {
+        this.monthlyRent = monthlyRent;
     }
 }
