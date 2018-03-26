@@ -2534,7 +2534,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public AfInterimAuDo getInterimAuDo(AfOrderDo orderInfo) {
 		// mqp add switch for different scene without TRADE
 		String isSwitch = "";
-		if (!orderInfo.getOrderType().equals("TRADE")) {
+		if (!orderInfo.getOrderType().equals("TRADE") && !orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
 
 			String orderType = orderInfo.getOrderType();
 			String secOrderType = orderInfo.getSecType();
