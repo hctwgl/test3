@@ -115,7 +115,7 @@ public class LeaseOrderApi implements ApiHandle {
         if (goodsDo == null || priceDo == null) {
             throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
         }
-        if ("N".equals(goodsDo.getIsSale())) {
+        if ("N".equals(goodsDo.getIsSale()) || priceDo.getLeaseSale().equals("N")) {
             throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
         }
         AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
