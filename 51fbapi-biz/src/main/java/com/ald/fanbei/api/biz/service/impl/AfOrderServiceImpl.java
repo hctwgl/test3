@@ -3008,6 +3008,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Override
     public List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex, Long pageSize, Integer type,Long userId) {
+		pageIndex = (pageIndex-1) * pageSize;
         List<LeaseOrderListDto> list = new ArrayList<>();
         if(type == 0){
             list = orderDao.getOrderLeaseList(pageIndex,pageSize,userId);
