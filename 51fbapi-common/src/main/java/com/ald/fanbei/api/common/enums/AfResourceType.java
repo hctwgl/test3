@@ -111,6 +111,8 @@ public enum AfResourceType {
 	YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询配置"),
 	RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 
+	LEASE_BANNER("LEASE_BANNER", "租赁首页轮播"),
+
 	//资产方相关配置
 	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),
 	//登录白名单

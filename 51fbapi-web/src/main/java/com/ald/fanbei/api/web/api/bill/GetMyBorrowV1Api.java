@@ -124,11 +124,11 @@ public class GetMyBorrowV1Api implements ApiHandle {
             BigDecimal trainAmount = BigDecimal.ZERO;
             if(afUserAccountSenceOnline!=null){
                 onlineAuAmount=afUserAccountSenceOnline.getAuAmount();
-                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceOnline.getUsedAmount());
+                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
             }
             if(afUserAccountSenceTrain!=null){
                 trainAuAmount=afUserAccountSenceTrain.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount());
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
             }
 
             //信用描述
@@ -169,6 +169,9 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     String onlineDesc="总额度"+onlineAuAmount+"元";
                     if(interimExist){//有临时额度下的描述
                         onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元";
+                    }
+                    if(afUserAccountSenceOnline.getFreezeAmount().compareTo(BigDecimal.ZERO)>1){
+                        onlineDesc=onlineDesc + "（含冻结" + afUserAccountSenceOnline.getFreezeAmount() + "）";
                     }
                     map.put("onlineDesc",onlineDesc);//线上描述
                     map.put("onlineStatus","4");
