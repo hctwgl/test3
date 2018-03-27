@@ -53,12 +53,12 @@ public class NewCollectoinController {
 
     @ResponseBody
     @RequestMapping("geBillAllClear")
-    public String geBillAllClear(Long userId,Long billId){
+    public HashMap geBillAllClear(Long userId,Long billId){
         HashMap resulitMap = new HashMap();
         List<AllBarlyClearanceBo> list = afBorrowBillService.getAllClear(userId,billId);
 
         resulitMap.put("result",list);
-
-        return JSON.toJSONString(resulitMap);
+        return resulitMap;
+//        return JSON.toJSONString(resulitMap);
     }
 }
