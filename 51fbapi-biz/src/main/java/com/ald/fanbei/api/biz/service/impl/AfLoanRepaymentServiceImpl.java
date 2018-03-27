@@ -848,7 +848,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		//模版数据map处理
 		Map<String,String> replaceMapData = new HashMap<String, String>();
 		BigDecimal repayMoney = repayDealBo.curSumRepayAmount;
-		BigDecimal notRepayMoney = BigDecimal.ZERO;
+		BigDecimal notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 		replaceMapData.put("repayMoney", repayMoney+"");
 		logger.info("sendRepaymentBorrowCashWarnMsg repayDealBo.isAllRepay = " + repayDealBo.isAllRepay + "repayMoney" + repayMoney);
 		if(repayDealBo.isAllRepay){
@@ -856,7 +856,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			replaceMapData.put("remainAmount", notRepayMoney+"");
 			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
 		} else if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
-			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 			replaceMapData.put("remainAmount", notRepayMoney+"");
 			String title = "恭喜您，借款已还清！";
 			String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
@@ -864,7 +863,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			pushService.pushUtil(title,content,mobile);
 			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
 		} else {
-			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 			replaceMapData.put("remainAmount", notRepayMoney+"");
 			String title = "部分还款成功！";
 			String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
