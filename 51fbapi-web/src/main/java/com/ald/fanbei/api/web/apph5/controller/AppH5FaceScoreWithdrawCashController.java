@@ -90,31 +90,10 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					AfUserDo afUser = null;
 					// 和登录有关的
 					context = doWebCheck(request, true);
-					// 2判断用户是否处于登陆状态
-					if (context.isLogin()) {
+					// 2用户处于登陆状态
 						afUser = afUserService.getUserByUserName(context.getUserName());
 						if (afUser != null) {
 							userId = afUser.getRid();
-							/*AfFacescoreShareCountDo shareCountDo = faceScoreShareCountService.getById(userId);
-							Integer sharedCount = shareCountDo.getCount();
-							// 1先查询有没有测试过，是否对红包进行了提现
-							int count = faceScoreRedService.findUserAndRedRelationRecordByUserId(userId);
-							List<AfResourceDo> configList = afResourceService.getConfigByTypes("USER_FACETEST");
-							if (CollectionUtil.isEmpty(configList)){
-								 return H5CommonResponse.getNewInstance(false, "该活动已经结束！", "", null).toString();
-							}
-							Integer totalAllowedCount = Integer.valueOf(configList.get(0).getValue1());
-							if (count == totalAllowedCount){
-								return H5CommonResponse.getNewInstance(false, "领取红包的次数已经用完！", "", null).toString();
-							}else if (count == 1){
-								// 已经领取过一次，进行分享次数的判断
-								
-								// 获取需要分享的次数
-								int needSharedCount = Integer.valueOf(configList.get(0).getValue());
-								if (sharedCount < needSharedCount ){
-								   return H5CommonResponse.getNewInstance(false, "分享五个群可再得一次拆红包的机会！", "", null).toString();
-								}
-							}*/
 							int count = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
 						    if (count > 0){
 								return H5CommonResponse.getNewInstance(true, "提现成功 ！", "", redDo).toString();
@@ -143,9 +122,6 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 							// 用户未登陆的情况
 							return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", redDo).toString();
 							}
-					}else{
-						return H5CommonResponse.getNewInstance(false, "请先登陆或者注册！", "", redDo).toString();
-					}
 				} catch (FanbeiException e) {
 					if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
 						Map<String, Object> data = new HashMap<>();
