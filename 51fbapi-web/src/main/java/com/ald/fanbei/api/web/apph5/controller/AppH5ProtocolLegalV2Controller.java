@@ -82,11 +82,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfContractPdfDao afContractPdfDao;
 	@Resource
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
-
 	@Resource
 	AfBorrowBillService afBorrowBillService;
 	@Resource
 	NumberWordFormat numberWordFormat;
+	@Resource
+	AfBorrowCashOverduePushService overduePushService;
+
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
@@ -481,6 +483,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					model.put("lenderUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 					getSeal(model, afUserDo, accountDo);
 					lender(model, null);
+					AfBorrowCashOverduePushDo overduePushDo = overduePushService.getBorrowCashOverduePushByBorrowId(borrowId);
+					if (overduePushDo != null){
+						model.put("isOverdue","y");
+						model.put("overdueGmtCreate",overduePushDo.getGmtArrival());
+						model.put("overdueBorrowNo",overduePushDo.getBorrowNo());
+					}
 				}
 			}
 		}
