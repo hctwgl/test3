@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,work_id,order_id,user_id,work_result,audio_url 
+        id rid,gmt_create,gmt_modified,work_id,order_id,user_id,audio_url
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -60,7 +60,7 @@
 	        <if test="userId != null">        
 	            user_id,
 	        </if>
-	        <if test="workResult != null">        
+	        <if test="workResult != null">
 	            work_result,
 	        </if>
 	        <if test="audioUrl != null">        
