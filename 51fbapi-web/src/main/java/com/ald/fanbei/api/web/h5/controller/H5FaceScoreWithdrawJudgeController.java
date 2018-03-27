@@ -77,13 +77,13 @@ public class H5FaceScoreWithdrawJudgeController extends H5Controller {
 					if (count == totalAllowedCount) {
 						return H5CommonResponse.getNewInstance(false,
 								"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null).toString();
-					} else if (count == 1) {
+					} else if (count == totalAllowedCount - 1) {
 						// 已经领取过一次，进行分享次数的判断
 						AfFacescoreShareCountDo shareCountDo = faceScoreShareCountService
 								.getByUserId(userId);
 						if (shareCountDo == null) {
 							return H5CommonResponse.getNewInstance(false,
-									"你已经提现过一次，分享五个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完，分享五个群可再得一次拆红包的机会！", "", null)
 									.toString();
 						}
 						Integer sharedCount = shareCountDo.getCount();
