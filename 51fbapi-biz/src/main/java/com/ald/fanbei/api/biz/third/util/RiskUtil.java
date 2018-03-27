@@ -2902,6 +2902,8 @@ public class RiskUtil extends AbstractThird {
 			eventObj.put("cardNo", card == null ? "" : card.getCardNumber());
 			eventObj.put("blackBox", params.get("blackBox") == null ? "" : params.get("blackBox"));
 			eventObj.put("ipAddress", params.get("ipAddress") == null ? "" : params.get("ipAddress"));
+			String riskOrderNo = riskUtil.getOrderNo("rent", card.getCardNumber().substring(card.getCardNumber().length() - 4, card.getCardNumber().length()));
+			reqBo.setOrderNo(riskOrderNo);
 			reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
 		}
 		HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
