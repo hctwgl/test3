@@ -185,4 +185,33 @@
         AND user_id=#{userId}
         AND scene =#{scene}
     </update>
+    
+     <insert id="updateAfUserAuthStatus" >
+        INSERT INTO af_user_auth_status
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+
+            <if test="scene != null">
+                scene,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="scene != null" >
+                #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    
 </mapper>

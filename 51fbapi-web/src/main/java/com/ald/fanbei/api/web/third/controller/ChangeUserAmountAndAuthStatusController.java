@@ -80,7 +80,7 @@ public class ChangeUserAmountAndAuthStatusController extends AbstractThird {
 	          AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    	  if(afUserAuthStatusDo == null) {	//认证信息并不存在，插入认证信息与场景额度
 	    		  logger.info("afUserAuthStatusDo is null,userId= "+userId +",scene= "+scene);
-	    		  if(afUserAuthStatusService.addAfUserAuthStatus(userId, scene, status)>0) {
+	    		  if(afUserAuthStatusService.updateAfUserAuthStatus(userId, scene, status)>0) {
 	    			 afUserAccountSenceService.updateUserSceneAuAmount(scene, userId, auAmount);
 	    			 notifyRespBo.setCode("1000");
 	   	    	     notifyRespBo.setMsg("ChangeUserAmountAndAuthStatus is SUCCESS");

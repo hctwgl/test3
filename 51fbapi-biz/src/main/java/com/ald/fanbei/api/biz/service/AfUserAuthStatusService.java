@@ -62,5 +62,5 @@ public interface AfUserAuthStatusService {
      * @Param status
      * @return
      * **/
-    int addAfUserAuthStatus(Long userId, String scene, String status);
+    int updateAfUserAuthStatus(Long userId, String scene, String status);
 }
