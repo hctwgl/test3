@@ -850,7 +850,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		BigDecimal repayMoney = repayDealBo.curSumRepayAmount;
 		BigDecimal notRepayMoney = BigDecimal.ZERO;
 		replaceMapData.put("repayMoney", repayMoney+"");
-		logger.info("sendRepaymentBorrowCashWarnMsg repayDealBo.isAllRepay = " + repayDealBo.isAllRepay);
+		logger.info("sendRepaymentBorrowCashWarnMsg repayDealBo.isAllRepay = " + repayDealBo.isAllRepay + "repayMoney" + repayMoney);
 		if(repayDealBo.isAllRepay){
 			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount.add(repayDealBo.sumPoundage).add(repayDealBo.sumInterest));
 			replaceMapData.put("remainAmount", notRepayMoney+"");
