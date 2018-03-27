@@ -57,7 +57,7 @@ public class APPH5BrandChannelController extends BaseController {
 		StringBuffer params = new StringBuffer();
 		List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus();
 		for(AfResourceH5Dto afResourceH5Dto : list){
-			List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getRid());
+			List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getId());
 			for(AfResourceH5ItemDto afResourceH5ItemDto : itemList){
 				if(!StringUtils.isBlank(afResourceH5ItemDto.getValue2())){
 					List<AfGoodsDo> goodslist = afGoodsService.getGoodsListByGoodsId(afResourceH5ItemDto.getValue2());
