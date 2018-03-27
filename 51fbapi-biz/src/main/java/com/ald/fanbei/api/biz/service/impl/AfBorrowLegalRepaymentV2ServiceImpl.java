@@ -578,7 +578,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 
         //会对逾期的借款还款，向催收平台同步还款信息
         if (DateUtil.compareDate(new Date(), repayDealBo.cashDo.getGmtPlanRepayment()) && repayDealBo.curName != Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE){
-            try {
+        	logger.info("collection consumerRepayment begin, borrowNo={}", repayDealBo.borrowNo);
+        	try {
                 CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
                 		repayDealBo.curTradeNo,
                 		repayDealBo.borrowNo,
