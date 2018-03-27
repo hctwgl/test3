@@ -186,7 +186,7 @@
         AND scene =#{scene}
     </update>
     
-     <insert id="updateAfUserAuthStatus" >
+     <insert id="insertAfUserAuthStatus" >
         INSERT INTO af_user_auth_status
         <trim prefix="(" suffix=")" suffixOverrides="," >
 

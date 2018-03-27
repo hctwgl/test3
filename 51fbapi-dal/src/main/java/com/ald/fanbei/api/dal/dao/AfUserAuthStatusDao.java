@@ -82,7 +82,7 @@ public interface AfUserAuthStatusDao extends BaseDao<AfUserAuthStatusDo, Long>{
      * @Param status
      * @return
      * **/
-    int updateAfUserAuthStatus(@Param("userId") Long userId, @Param("scene") String scene,@Param("status") String status);
+    int insertAfUserAuthStatus(@Param("userId") Long userId, @Param("scene") String scene,@Param("status") String status);
 }
 
 
