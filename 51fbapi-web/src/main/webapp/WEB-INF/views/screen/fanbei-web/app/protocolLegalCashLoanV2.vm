@@ -309,18 +309,17 @@
             <br> 受托人：$!{overdueRepayName}
             <br> 身份证号：$!{overdueIdNumber}
             <br> 鉴于委托人为浙江阿拉丁电子商务股份有限公司运营的51返呗APP的实名注册用户，现拟通过51返呗平台发起借款$!{overdueBorrowNo}，鉴于本次借款用于偿还委托人通过51返呗平台实现的上一笔借款$!{borrowNo}，经委托人同意，为保障上一笔借款能按照本次约定归还，委托人特向受托人作出如下不可撤销的授权：
-            <br> 一、 代委托人接受编号为$!{overdueBorrowNo}的借款协议之借款金额，并在1-3个工作日内归还给上一笔借款$!{borrowNo}的出借人}。
+            <br> 一、 代委托人接受编号为$!{overdueBorrowNo}的借款协议之借款金额，并在1-3个工作日内归还给上一笔借款$!{borrowNo}的出借人。
             <br> 二、 委托人将以下账号为本次受托人名下作为协助还款使用的账号：
             <br>账户名称：$!{overdueRepayName}
             <br>开户银行：$!{overdueBankName}
             <br>开户账号：$!{overdueRepayAcct}
             <br> 三、 本委托书经委托人在51返呗平台上以线上点击确认的方式签署。
             <br> 四、 委托人知悉、了解并不可撤销的同意本授权委托书及相关借款协议；且认同该等自动签署的授权委托书、借款协议均为本人真实意思的表示，并对该等法律文件的效力无任何异议，无条件接受授权范围内签署的授权委托书、借款协议之约束。
-            <br> 五、
             <br>
             <span class="fr">
             委托人：$!{realName}
-            <br/> 签署日期：$dateUtil.formatDate($!{overdueGmtCreate},"yyyy-MM-dd")
+            <br> 签署日期：$dateUtil.formatDate($!{overdueGmtCreate},"yyyy-MM-dd")
         </span>
         </p>
     #end

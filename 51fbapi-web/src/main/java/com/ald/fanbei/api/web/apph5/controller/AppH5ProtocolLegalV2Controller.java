@@ -411,12 +411,17 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					getSeal(model, afUserDo, accountDo);
 					lender(model, fundSideInfo);
 				}
-			} else {
-				getResourceRate(model, type, afResourceDo, "borrow");
+				AfBorrowCashOverduePushDo overduePushDo = overduePushService.getBorrowCashOverduePushByBorrowId(borrowId);
+				if (overduePushDo != null){
+					model.put("isOverdue","y");
+					model.put("overdueGmtCreate",overduePushDo.getGmtArrival());
+					model.put("overdueBorrowNo",overduePushDo.getBorrowNo());
+					model.put("overdueBankName",overduePushDo.getBankName());
+					model.put("overdueIdNumber",overduePushDo.getIdNumber());
+					model.put("overdueRepayAcct",overduePushDo.getRepayAcct());
+					model.put("overdueRepayName",overduePushDo.getRepayName());
+				}
 			}
-
-		} else {
-			getResourceRate(model, type, afResourceDo, "borrow");
 		}
 
 		logger.info(JSON.toJSONString(model));
@@ -483,16 +488,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					model.put("lenderUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 					getSeal(model, afUserDo, accountDo);
 					lender(model, null);
-					AfBorrowCashOverduePushDo overduePushDo = overduePushService.getBorrowCashOverduePushByBorrowId(borrowId);
-					if (overduePushDo != null){
-						model.put("isOverdue","y");
-						model.put("overdueGmtCreate",overduePushDo.getGmtArrival());
-						model.put("overdueBorrowNo",overduePushDo.getBorrowNo());
-						model.put("overdueBankName",overduePushDo.getBankName());
-						model.put("overdueIdNumber",overduePushDo.getIdNumber());
-						model.put("overdueRepayAcct",overduePushDo.getRepayAcct());
-						model.put("overdueRepayName",overduePushDo.getRepayName());
-					}
 				}
 			}
 		}
@@ -750,11 +745,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 	}
 
-	private void getResourceRate(ModelMap model, String type, AfResourceDo afResourceDo, String borrowType) {
+	private void getResourceRate(ModelMap map, String type, AfResourceDo afResourceDo, String borrowType) {
 		if (afResourceDo != null && afResourceDo.getValue2() != null) {
 			String oneDay = "";
 			String twoDay = "";
-			if(null != afResourceDo){
+			if (null != afResourceDo) {
 				oneDay = afResourceDo.getTypeDesc().split(",")[0];
 				twoDay = afResourceDo.getTypeDesc().split(",")[1];
 			}
@@ -766,40 +761,52 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					String consumeTag = jsonObject.get("consumeTag").toString();
 					if ("INTEREST_RATE".equals(consumeTag)) {//借款利率
 						if ("SEVEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("consumeFirstType"));
+							map.put("yearRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("consumeSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("yearRate",jsonObject.get("consumeFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("yearRate",jsonObject.get("consumeSecondType"));
+							map.put("yearRate", jsonObject.get("consumeSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("yearRate", jsonObject.get("consumeFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("yearRate", jsonObject.get("consumeSecondType"));
+							} else if ("7".equals(type)){
+								map.put("yearRate", jsonObject.get("consumeFirstType"));
+							} else if ("14".equals(type)){
+								map.put("yearRate", jsonObject.get("consumeSecondType"));
 							}
 						}
 					}
 					if ("SERVICE_RATE".equals(consumeTag)) {//手续费利率
 						if ("SEVEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("consumeFirstType"));
+							map.put("poundageRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("consumeSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("consumeFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("consumeSecondType"));
+							map.put("poundageRate", jsonObject.get("consumeSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("poundageRate", jsonObject.get("consumeFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("poundageRate", jsonObject.get("consumeSecondType"));
+							} else if ("7".equals(type)){
+								map.put("poundageRate", jsonObject.get("consumeFirstType"));
+							} else if ("14".equals(type)){
+								map.put("poundageRate", jsonObject.get("consumeSecondType"));
 							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(consumeTag)) {//逾期利率
 						if ("SEVEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("consumeFirstType"));
+							map.put("overdueRate", jsonObject.get("consumeFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("consumeSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("overdueRate", jsonObject.get("consumeFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("overdueRate", jsonObject.get("consumeSecondType"));
+							map.put("overdueRate", jsonObject.get("consumeSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("overdueRate", jsonObject.get("consumeFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("overdueRate", jsonObject.get("consumeSecondType"));
+							}else if ("7".equals(type)){
+								map.put("overdueRate", jsonObject.get("consumeFirstType"));
+							} else if ("14".equals(type)){
+								map.put("overdueRate", jsonObject.get("consumeSecondType"));
 							}
 						}
 					}
@@ -811,40 +818,52 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					String borrowTag = jsonObject.get("borrowTag").toString();
 					if ("INTEREST_RATE".equals(borrowTag)) {//借款利率
 						if ("SEVEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowFirstType"));
+							map.put("yearRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("yearRate", jsonObject.get("borrowSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("yearRate", jsonObject.get("borrowFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("yearRate", jsonObject.get("borrowSecondType"));
+							map.put("yearRate", jsonObject.get("borrowSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("yearRate", jsonObject.get("borrowFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("yearRate", jsonObject.get("borrowSecondType"));
+							}else if ("7".equals(type)){
+								map.put("yearRate", jsonObject.get("borrowFirstType"));
+							} else if ("14".equals(type)){
+								map.put("yearRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
 					if ("SERVICE_RATE".equals(borrowTag)) {//手续费利率
 						if ("SEVEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowFirstType"));
+							map.put("poundageRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("poundageRate", jsonObject.get("borrowSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("poundageRate", jsonObject.get("borrowSecondType"));
+							map.put("poundageRate", jsonObject.get("borrowSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("poundageRate", jsonObject.get("borrowFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("poundageRate", jsonObject.get("borrowSecondType"));
+							} else if ("7".equals(type)){
+								map.put("poundageRate", jsonObject.get("borrowFirstType"));
+							} else if ("14".equals(type)){
+								map.put("poundageRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
 					if ("OVERDUE_RATE".equals(borrowTag)) {//逾期利率
 						if ("SEVEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowFirstType"));
+							map.put("overdueRate", jsonObject.get("borrowFirstType"));
 						} else if ("FOURTEEN".equals(type)) {
-							model.put("overdueRate", jsonObject.get("borrowSecondType"));
-						}else if(numberWordFormat.isNumeric(type)){
-							if(oneDay.equals(type)){
-								model.put("overdueRate", jsonObject.get("borrowFirstType"));
-							}else if(twoDay.equals(type)){
-								model.put("overdueRate", jsonObject.get("borrowSecondType"));
+							map.put("overdueRate", jsonObject.get("borrowSecondType"));
+						} else if (numberWordFormat.isNumeric(type)) {
+							if (oneDay.equals(type)) {
+								map.put("overdueRate", jsonObject.get("borrowFirstType"));
+							} else if (twoDay.equals(type)) {
+								map.put("overdueRate", jsonObject.get("borrowSecondType"));
+							} else if ("7".equals(type)){
+								map.put("overdueRate", jsonObject.get("borrowFirstType"));
+							} else if ("14".equals(type)){
+								map.put("overdueRate", jsonObject.get("borrowSecondType"));
 							}
 						}
 					}
