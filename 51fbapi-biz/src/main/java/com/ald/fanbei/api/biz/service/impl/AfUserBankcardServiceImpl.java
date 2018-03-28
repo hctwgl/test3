@@ -59,10 +59,6 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 	if (CollectionUtil.isNotEmpty(list)) {
 	    for (AfBankUserBankDto item : list) {
 		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode());
-
-		bankStatus.setDailyLimit(bankStatus.getDailyLimit());
-		bankStatus.setLimitDown(bankStatus.getLimitDown());
-		bankStatus.setLimitUp(bankStatus.getLimitUp());
 		item.setBankStatus(bankStatus);
 
 		if (bankStatus.getIsMaintain() == 1) {
