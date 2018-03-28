@@ -75,6 +75,17 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
 	BigDecimal getLoanMaxPermitQuota(Long userId, SceneType scene, BigDecimal cfgAmount);
 
 	/**
+	 * 获取用户 总 可用额度
+	 *
+	 * @param userId
+	 * @param scene
+	 * @param cfgAmount 运营配置的最大借款额
+	 * @return
+	 */
+	BigDecimal getTotalUsableAmount(AfUserAccountDo userAccount, AfUserAccountSenceDo... scenes);
+	BigDecimal getTotalUsableAmount(AfUserAccountDo userAccount);
+	
+	/**
 	 * 提额,修改目标场景额度为tarAmount
 	 *
 	 * @param userId
