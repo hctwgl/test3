@@ -56,8 +56,9 @@
 				user_id = #{userId,jdbcType=INTEGER},
 			</if>
 			<if test="count != null and count != '' ">
-				count = #{count,jdbcType=INTEGER}
+				count = #{count,jdbcType=INTEGER},
 			</if>
+			gmt_modified = now()
 		</set>
 		WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT}
 	</update>

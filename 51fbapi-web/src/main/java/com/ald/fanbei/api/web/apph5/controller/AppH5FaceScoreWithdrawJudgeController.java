@@ -29,7 +29,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.yeepay.g3.utils.common.StringUtils;
 /**
  * 颜值测试游戏颜值变现功能接口
  * @author liutengyuan 
@@ -95,21 +94,6 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 								.getValue());
 						if (sharedCount < needSharedCount) {
 							int a = needSharedCount - sharedCount;
-							/*String str = StringUtils.EMPTY;
-							switch (a) {
-							case 1:
-								str = "一";
-								break;
-							case 2:
-								str = "二";
-								break;
-							case 3:
-								str = "三";
-								break;
-							case 4:
-								str = "四";
-								break;
-							}*/
 							return H5CommonResponse.getNewInstance(false,
 									"拆红包的次数已经用完 ,分享"+ a +"个群可再得一次拆红包的机会！", "", null)
 									.toString();

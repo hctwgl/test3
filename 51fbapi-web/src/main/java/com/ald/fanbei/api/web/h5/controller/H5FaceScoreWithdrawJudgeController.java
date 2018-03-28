@@ -92,23 +92,8 @@ public class H5FaceScoreWithdrawJudgeController extends H5Controller {
 								.getValue());
 						if (sharedCount < needSharedCount) {
 							int a = needSharedCount - sharedCount;
-							String str = StringUtils.EMPTY;
-							switch (a) {
-							case 1:
-								str = "一";
-								break;
-							case 2:
-								str = "二";
-								break;
-							case 3:
-								str ="三";
-								break;
-							case 4:
-								str = "四";
-								break;
-							}
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完 ,分享"+ str +"个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完 ,分享"+ a +"个群可再得一次拆红包的机会！", "", null)
 									.toString();
 						}
 					}
