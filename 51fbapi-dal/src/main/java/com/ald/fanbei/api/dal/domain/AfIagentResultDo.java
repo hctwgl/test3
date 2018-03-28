@@ -56,7 +56,33 @@ import java.math.BigDecimal;
      * 录音url
      */
     private String audioUrl;
+    private String orderNo;
+    private String orderType;
+    private String checkState;
 
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
+    }
 
     /**
      * 获取主键Id

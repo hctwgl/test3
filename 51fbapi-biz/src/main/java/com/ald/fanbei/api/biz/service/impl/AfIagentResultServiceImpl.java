@@ -29,8 +29,16 @@ public class AfIagentResultServiceImpl extends ParentServiceImpl<AfIagentResultD
     @Resource
     private AfIagentResultDao afIagentResultDao;
 
-		@Override
+	@Override
 	public BaseDao<AfIagentResultDo, Long> getDao() {
 		return afIagentResultDao;
+	}
+	@Override
+	public void updateResultByWorkId(AfIagentResultDo afIagentResultDo){
+			afIagentResultDao.updateResultByWorkId(afIagentResultDo);
+	}
+	@Override
+	public AfIagentResultDo getIagentByWorkId(long workId){
+		afIagentResultDao.getIagentByWorkId(workId);
 	}
 }

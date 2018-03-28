@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 智能电核表Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
  */
 public interface AfIagentResultDao extends BaseDao<AfIagentResultDo, Long> {
 
-    
-
+    public void updateResultByWorkId(AfIagentResultDo afIagentResultDo);
+    public AfIagentResultDo getIagentByWorkId(@Param("workId") long workId);
 }

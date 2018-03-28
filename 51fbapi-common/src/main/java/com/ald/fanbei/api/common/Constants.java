@@ -504,5 +504,9 @@ public class Constants {
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
+	public static final String ORDER_MOBILE_VERIFY_SET = "ORDER_MOBILE_VERIFY_SET";
+
+	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
+
 
 }

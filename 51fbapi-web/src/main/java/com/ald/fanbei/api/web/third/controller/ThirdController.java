@@ -6,17 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.service.OssFileUploadService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.BoluomeService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
@@ -57,6 +54,15 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @RequestMapping("/thirdApi")
 public class ThirdController extends AbstractThird{
 
+    private static Map<String,String> RESULT_CODE = new HashMap<String, String>() {
+        {
+            put("未接通", "1");
+            put("非本人", "2");
+            put("未完成", "3");
+            put("拒绝", "4");
+            put("通过", "5");
+        }
+    };
     @Resource
     AfOrderService afOrderService;
     @Resource
@@ -67,12 +73,18 @@ public class ThirdController extends AbstractThird{
     BoluomeService boluomeService;
     @Resource
     OssFileUploadService ossFileUploadService;
+    @Resource
+    AfIagentResultService afIagentResultService;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfOrderService afOrderService;
 
     @Resource
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( @RequestParam("audio") MultipartFile audio, @RequestParam("work_id")String   work_id,@RequestParam("work_result")String work_result,@RequestParam("token")String token) throws Exception {
+    public String iagentReport( @RequestParam("audio") MultipartFile audio, @RequestParam("work_id")String   work_id, @RequestParam("job_id")String   job_id,@RequestParam("work_result")String work_result,@RequestParam("token")String token) throws Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
@@ -102,6 +114,106 @@ public class ThirdController extends AbstractThird{
         innerJsonObject.put("received_time",simpleDateFormat.format(new Date()));
         jsonObject.put("success",innerJsonObject);
         return JSON.toJSONString(jsonObject);
+    }
+
+    /**
+     * 处理返回结果
+     * @param audioUrl
+     * @param job_id
+     * @param work_result
+     */
+    private void processIagentResult(String audioUrl,String job_id,String work_result){
+        JSONObject result = JSONObject.parseObject(work_result);
+        String result_code= result.getString("result_code");
+        AfIagentResultDo afIagentResultDo = new AfIagentResultDo();
+        afIagentResultDo.setAudioUrl(audioUrl);
+        afIagentResultDo.setWorkId(Long.parseLong(job_id));
+        afIagentResultDo.setWorkResult(work_result);
+        afIagentResultDo.setCheckState(RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code));
+        afIagentResultService.updateResultByWorkId(afIagentResultDo);
+    }
+
+    /**
+     * 处理订单
+     * @param result
+     */
+    private void dealOrder(JSONObject result,long job_id){
+
+        Map<String,Integer> answers = new HashMap<>();
+        answers.put("baseR",0);
+        answers.put("baseW",0);
+        answers.put("unbaseR",0);
+        answers.put("unbaseW",0);
+        //审核结果统计
+        checkAnswers(answers,result);
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.ORDER_MOBILE_VERIFY_SET,Constants.ORDER_MOBILE_VERIFY_SET);
+        int max = Integer.parseInt(afResourceDo.getValue4());
+        int min = Integer.parseInt(afResourceDo.getValue5());
+        String checkstate = "";
+        if (answers.get("baseW")>0){
+            checkstate = "close";
+        }else{
+            if (answers.get("unbaseW")<=min){
+                checkstate = "success";
+            }else{
+                if (answers.get("unbaseW")>=max){
+                    checkstate = "close";
+                }else{
+                    checkstate = "review";
+                }
+            }
+        }
+        AfOrderDo afOrderDo = null;
+        AfIagentResultDo afIagentResultDo = afIagentResultService.getIagentByWorkId(job_id);
+        if (afIagentResultDo != null){
+            String ordertype = afIagentResultDo.getOrderType();
+            //订单类型0自营订单1白领带
+            if ("0".equals(ordertype)){
+                afOrderDo = afOrderService.getOrderById(afIagentResultDo.getOrderId());
+            }else{
+
+            }
+
+        }
+
+        if ("close".equals(checkstate)){
+
+        }
+    }
+
+    /**
+     * 电核结果统计
+     * @param answers
+     * @param result
+     */
+    private void checkAnswers(Map<String,Integer> answers ,JSONObject result){
+        List<AfResourceDo> questions = afResourceService.getConfigByTypes(Constants.ORDER_MOBILE_VERIFY_QUESTION_SET);
+        Map<String,String> qmap = new HashMap<>();
+        for (AfResourceDo temp:questions){
+            qmap.put(temp.getName(),temp.getValue());
+        }
+        JSONArray detail = result.getJSONArray("result_details");
+        if (detail != null){
+            for (Object temp:detail){
+                JSONObject tempj = (JSONObject)temp;
+                String Q_TXT = tempj.getString("Q_TXT");
+                String Q_ANS = tempj.getString("Q_ANS");
+                String baseFlag = qmap.get(Q_TXT);
+                if ("Y".equals(baseFlag)){
+                    if ("正确".equals(Q_ANS)){
+                        answers.put("baseR",answers.get("baseR").intValue()+1);
+                    }else{
+                        answers.put("baseW",answers.get("baseW").intValue()+1);
+                    }
+                }else{
+                    if ("正确".equals(Q_ANS)){
+                        answers.put("unbaseR",answers.get("unbaseR").intValue()+1);
+                    }else{
+                        answers.put("unbaseW",answers.get("unbaseW").intValue()+1);
+                    }
+                }
+            }
+        }
     }
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody

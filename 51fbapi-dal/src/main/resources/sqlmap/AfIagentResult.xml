@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,work_id,order_id,user_id,audio_url
+        id rid,gmt_create,gmt_modified,work_id,order_id,user_id,audio_url,order_no,order_type,check_state
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -143,5 +143,13 @@
         FROM af_iagent_result
         <include refid="commonCondition"/>
     </select>
-    
+    <update id="updateResultByWorkId" parameterType="com.ald.fanbei.api.dal.domain.AfIagentResultDo">
+        UPDATE af_iagent_result SET gmt_modified=now(),work_result=#{workResult},audio_url=#{audioUrl},check_state=#{checkState} WHERE work_id=#{workId}
+    </update>
+    <select id="getIagentByWorkId">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_iagent_result
+        WHERE work_id=#{workId}
+    </select>
 </mapper>
