@@ -274,7 +274,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
             
             //还款金额是否大于银行单笔限额
-            afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
+            //afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
             
             repayment.setStatus(RepaymentStatus.PROCESS.getCode());
             afRepaymentDao.addRepayment(repayment);

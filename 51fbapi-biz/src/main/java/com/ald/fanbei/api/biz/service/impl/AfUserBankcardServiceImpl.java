@@ -48,6 +48,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 
     Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
 
+    private int scale = 10000;
+
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
 	return afUserBankcardDao.getUserMainBankcardByUserId(userId);
@@ -56,7 +58,6 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Override
     public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
 	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
-	int scale = 10000;
 	if (CollectionUtil.isNotEmpty(list)) {
 	    for (AfBankUserBankDto item : list) {
 		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode());
@@ -179,7 +180,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 	UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode);
 
 	if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
-	    throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()));
+	    throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp() * scale));
 	}
     }
 }
