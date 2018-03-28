@@ -51,7 +51,12 @@ public class AuthFundSwitchApi implements ApiHandle {
 			Long userId = context.getUserId();
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.AUTH_FUND.getCode(), AfResourceSecType.AUTH_FUND_SWITCH.getCode());
 			String fundSwitch=  resourceDo.getValue();
-		    resp.addResponseData("fundSwitch", fundSwitch);
+			String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+			if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+				resp.addResponseData("fundSwitch", resourceDo.getValue1());
+			}else{
+				resp.addResponseData("fundSwitch", fundSwitch);
+			}
 		} catch (Exception e) {
 			logger.error("error = " + e);
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
