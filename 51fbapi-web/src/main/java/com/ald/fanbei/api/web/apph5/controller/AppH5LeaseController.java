@@ -7,9 +7,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
@@ -264,7 +262,19 @@ public class AppH5LeaseController extends BaseController {
             }
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("checkOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -288,7 +298,19 @@ public class AppH5LeaseController extends BaseController {
             }
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", defauleDo);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("getDefaultUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -309,7 +331,19 @@ public class AppH5LeaseController extends BaseController {
             List<AfUserAddressDo> list = afUserAddressService.selectUserAddressByUserId(afUser.getRid());
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", list);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("getUserAddressList", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -377,7 +411,19 @@ public class AppH5LeaseController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, "添加失败", "", "");
             }
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("addUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -475,7 +521,19 @@ public class AppH5LeaseController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, "添加失败", "", "");
             }
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("changeUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -511,7 +569,19 @@ public class AppH5LeaseController extends BaseController {
             }
             resp = H5CommonResponse.getNewInstance(true,"删除成功", "", "");
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("deleteUserAddress", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -588,7 +658,19 @@ public class AppH5LeaseController extends BaseController {
             data.put("idNumber",afUser.getIdNumber());//身份证
             resp = H5CommonResponse.getNewInstance(true,"请求成功", "", data);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("getUserFreeze", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -629,7 +711,19 @@ public class AppH5LeaseController extends BaseController {
             }
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", list);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("getLeaseOrderList", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -673,9 +767,36 @@ public class AppH5LeaseController extends BaseController {
             if(StringUtil.isNotEmpty(lease.getLeaseStatus())){
                 lease.setStatus(lease.getLeaseStatus());
             }
+            //计算冻结额度
+            if(lease.getStatus().equals(OrderStatus.NEW.getCode()) || lease.getStatus().equals(OrderStatus.PAYFAIL.getCode())){
+                if(lease.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
+                    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), afUser.getRid());
+                    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                    if(useableAmount.compareTo(lease.getFreezeAmount()) >= 0){
+                        lease.setQuotaDeposit(lease.getFreezeAmount());
+                        lease.setCashDeposit(new BigDecimal(0));
+                    }
+                    else {
+                        lease.setQuotaDeposit(useableAmount);
+                        lease.setCashDeposit(lease.getFreezeAmount().subtract(useableAmount));
+                    }
+                }
+            }
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("getLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -703,7 +824,19 @@ public class AppH5LeaseController extends BaseController {
             afOrderService.closeOrder(closedReason,"",orderId,afUser.getRid());
             resp = H5CommonResponse.getNewInstance(true, "取消成功", "", null);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -730,7 +863,19 @@ public class AppH5LeaseController extends BaseController {
             afOrderService.UpdateOrderLeaseShow(orderId,afUser.getRid());
             resp = H5CommonResponse.getNewInstance(true, "删除成功", "", null);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
@@ -747,6 +892,7 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
+            context = doWebCheck(request, true);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
             //用户订单检查
@@ -763,7 +909,19 @@ public class AppH5LeaseController extends BaseController {
             afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
-        }catch  (Exception e) {
+        }
+        catch (FanbeiException e){
+            logger.error("checkOrder", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
+            return resp.toString();
+        }
+        catch  (Exception e) {
             logger.error("cancelLeaseOrder", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();

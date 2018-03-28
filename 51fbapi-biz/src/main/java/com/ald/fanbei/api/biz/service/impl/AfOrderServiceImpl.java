@@ -1136,8 +1136,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							}
 							else {
 								afOrderLeaseDo.setQuotaDeposit(useableAmount);
-								afOrderLeaseDo.setCashDeposit(useableAmount.subtract(afOrderLeaseDo.getFreezeAmount()));
-								actualAmount = useableAmount.subtract(saleAmount).add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
+								afOrderLeaseDo.setCashDeposit(afOrderLeaseDo.getFreezeAmount().subtract(useableAmount));
+								actualAmount = afOrderLeaseDo.getCashDeposit().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
 							}
 						}
                         orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(),afOrderLeaseDo.getQuotaDeposit(),afOrderLeaseDo.getId());

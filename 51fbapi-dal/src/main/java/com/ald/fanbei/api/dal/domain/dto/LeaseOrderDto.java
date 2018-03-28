@@ -43,6 +43,7 @@ public class LeaseOrderDto {
     private String logisticsNo;
     private Date gmtDeliver;
     private String showLogistics;
+    private BigDecimal actualAmount;
 
     public BigDecimal getMonthlyRent() {
         return monthlyRent;
@@ -298,5 +299,13 @@ public class LeaseOrderDto {
 
     public void setShowLogistics(String showLogistics) {
         this.showLogistics = showLogistics;
+    }
+
+    public BigDecimal getActualAmount() {
+        return actualAmount;
+    }
+
+    public void setActualAmount(BigDecimal actualAmount) {
+        this.actualAmount = actualAmount;
     }
 }
