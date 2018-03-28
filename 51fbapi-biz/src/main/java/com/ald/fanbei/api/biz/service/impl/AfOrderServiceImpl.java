@@ -2966,8 +2966,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		dataObj.put("score",score);
         AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("LEASE_FREEZE");
         JSONArray leaseFreezeArray = JSON.parseArray(resourceDo.getValue2());
-        Integer freezeScore = 0;
-        Integer freeze = 100;
+        // -1 只能现金支付（配置规则没匹配）
+        Integer freeze = -1;
         for (int i=0;i<leaseFreezeArray.size();i++){
             JSONObject obj = leaseFreezeArray.getJSONObject(i);
             //判断分数
@@ -2978,10 +2978,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                 }
             }
         }
-        if(freeze == 100){
-			dataObj.put("freezeAmount",BigDecimal.ZERO);
-            return dataObj;
-        }
+		dataObj.put("freeze",freeze);
 		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100)));
         return dataObj;
     }

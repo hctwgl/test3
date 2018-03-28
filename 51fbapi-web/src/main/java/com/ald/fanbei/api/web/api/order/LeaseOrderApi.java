@@ -234,7 +234,8 @@ public class LeaseOrderApi implements ApiHandle {
         afOrderLeaseDo.setScore(dataObj.getInteger("score"));
         afOrderLeaseDo.setOrderNo(afOrder.getOrderNo());
         BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
-        if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
+        // -1 只能现金支付（配置规则没匹配）
+        if(dataObj.getInteger("freeze") == -1){
             afOrder.setActualAmount(priceDo.getLeaseAmount().add(monthlyRent).add(richieAmount));
             afOrderLeaseDo.setFreezeAmount(priceDo.getLeaseAmount());
             afOrderLeaseDo.setCashDeposit(priceDo.getLeaseAmount());

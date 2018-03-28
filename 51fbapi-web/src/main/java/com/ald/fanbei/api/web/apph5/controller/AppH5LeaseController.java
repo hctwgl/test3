@@ -623,7 +623,8 @@ public class AppH5LeaseController extends BaseController {
                     dataLeaseFreeze.put("blackBox",blackBox == null ? "":blackBox);
                     JSONObject dataObj = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
                     BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
-                    if(freezeAmount.compareTo(BigDecimal.ZERO) == 0){
+                    // -1 只能现金支付（配置规则没匹配）
+                    if(dataObj.getInteger("freeze") == -1){
                         data.put("freezeAmount",priceDo.getLeaseAmount());//总冻结额度
                         data.put("quotaDeposit",0);//冻结额度
                         data.put("cashDeposit", priceDo.getLeaseAmount());//支付金额
