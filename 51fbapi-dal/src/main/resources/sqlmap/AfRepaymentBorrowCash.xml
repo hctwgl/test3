@@ -298,4 +298,9 @@
 		UPDATE
 		af_repayment_borrow_cash SET name = '代扣还款' WHERE id=#{refId}
 	</update>
+	
+	<update id="status2Process">
+        UPDATE af_repayment_borrow_cash SET status='P',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
+    </update>
+	
 </mapper>

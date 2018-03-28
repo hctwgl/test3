@@ -2,17 +2,13 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 
@@ -39,13 +35,15 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	private AfSeckillActivityGoodsDao afSeckillActivityGoodsDao;
 	@Resource
 	private AfSeckillActivityOrderDao afSeckillActivityOrderDao;
+	@Resource
+	AfGoodsPriceDao afGoodsPriceDao;
 	@Override
 	public BaseDao<AfSeckillActivityDo, Long> getDao() {
 		return afSeckillActivityDao;
 	}
 
 	@Override
-	public AfSeckillActivityDto getActivityByGoodsId(Long goodsId) {
+	public AfSeckillActivityDo getActivityByGoodsId(Long goodsId) {
 		return afSeckillActivityDao.getActivityByGoodsId(goodsId);
 	}
 
@@ -55,8 +53,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public AfSeckillActivityGoodsDto getActivityPriceByPriceId(Long goodsPriceId) {
-		return afSeckillActivityGoodsDao.getActivityPriceByPriceId(goodsPriceId);
+	public AfSeckillActivityGoodsDto getActivityPriceByPriceIdAndActId(Long goodsPriceId,Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityPriceByPriceIdAndActId(goodsPriceId,activityId);
 	}
 
 	@Override
@@ -80,12 +78,52 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public AfSeckillActivityGoodsDo getStartActivityPriceByPriceId(Long priceId) {
-		return afSeckillActivityGoodsDao.getStartActivityPriceByPriceId(priceId);
+	public AfSeckillActivityOrderDo getActivityOrderByOrderId(Long orderId) {
+		return afSeckillActivityOrderDao.getActivityOrderByOrderId(orderId);
 	}
 
 	@Override
-	public AfSeckillActivityOrderDo getActivityOrderByOrderId(Long orderId) {
-		return afSeckillActivityOrderDao.getActivityOrderByOrderId(orderId);
+	public AfSeckillActivityGoodsDo getActivityGoodsByGoodsIdAndActId(Long activityId, Long goodsId) {
+		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
+	}
+
+	@Override
+	public AfSeckillActivityGoodsDto getActivityInfoByPriceIdAndActId(Long goodsPriceId, Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityInfoByPriceIdAndActId(goodsPriceId,activityId);
+	}
+
+	@Override
+	public AfSeckillActivityDo getActivityByOrderId(Long orderId) {
+		return afSeckillActivityOrderDao.getActivityByOrderId(orderId);
+	}
+
+	@Override
+	public List<AfSeckillActivityGoodsDto> getActivityPricesByGoodsIdAndActId(Long goodsId, Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityPricesByGoodsIdAndActId(goodsId,activityId);
+	}
+
+	@Override
+	public int getSumCountByGoodsId(Long goodsId) {
+		return afGoodsPriceDao.selectSumStock(goodsId);
+	}
+
+	@Override
+	public AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(Long goodsId, Long activityId, Long userId) {
+		return afSeckillActivityOrderDao.getActivityOrderByGoodsIdAndActId(goodsId,activityId,userId);
+	}
+
+	@Override
+	public AfSeckillActivityDo getActivityById(Long activityId) {
+		return afSeckillActivityDao.getActivityById(activityId);
+	}
+
+	@Override
+	public AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId) {
+		return afSeckillActivityDao.getStartActivityByPriceId(goodsPriceId);
+	}
+
+	@Override
+	public AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId) {
+		return afSeckillActivityDao.getStartActivityByGoodsId(goodsId);
 	}
 }

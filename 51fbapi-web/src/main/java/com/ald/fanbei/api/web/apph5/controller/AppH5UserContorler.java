@@ -231,7 +231,7 @@ public class AppH5UserContorler extends BaseController {
             }
 
             try {
-                baiQiShiUtils.getRegistResult("web",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
+                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
             }catch (Exception e){
                 logger.error("AppH5UserContorler baiQiShiUtils getRegistResult error => {}",e.getMessage());
             }

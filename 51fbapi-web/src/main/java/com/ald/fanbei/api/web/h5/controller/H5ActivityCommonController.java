@@ -134,7 +134,7 @@ public class H5ActivityCommonController extends BaseController {
 
 	    }
 		try {
-			baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),UserDo.getRealName(),"","","");
+			baiQiShiUtils.getLoginResult("h5",bsqToken,CommonUtil.getIpAddr(request),UserDo.getMobile(),UserDo.getRealName(),"","","");
 		}catch (Exception e){
 			logger.error("h5Common userLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
 		}

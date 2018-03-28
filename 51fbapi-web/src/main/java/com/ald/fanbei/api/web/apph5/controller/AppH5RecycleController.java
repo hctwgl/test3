@@ -54,7 +54,8 @@ public class AppH5RecycleController extends BaseController {
     @RequestMapping(value = "/exchange", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String exchange(HttpServletRequest request) {
-        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        throw new FanbeiException("活动已结束!", false);
+       /* H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try {
             Integer amount = NumberUtil.objToIntDefault(request.getParameter("amount"), null);
@@ -99,7 +100,7 @@ public class AppH5RecycleController extends BaseController {
             resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg(), "", e.getMessage());
             logger.error("兑换失败" + context, e);
         }
-        return resp.toString();
+        return resp.toString();*/
 
     }
 
