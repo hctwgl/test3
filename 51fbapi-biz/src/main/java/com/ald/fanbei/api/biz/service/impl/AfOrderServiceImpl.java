@@ -1242,7 +1242,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						// 银行卡需要支付的金额
 						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
-
+						AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+						//还款金额是否大于银行单笔限额
+					        afUserBankcardService.checkUpsBankLimit(cardInfo.getBankCode(), bankAmount);
+						
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -1283,7 +1286,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
 							orderInfo.setStatus(OrderStatus.DEALING.getCode());
 							orderDao.updateOrder(orderInfo);
-							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
 							resultMap = new HashMap<String, Object>();
 
@@ -1314,12 +1316,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
 							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-
-							resultMap = new HashMap<String, Object>();
-
 							if (null == cardInfo) {
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 							}
+							//还款金额是否大于银行单笔限额
+						        afUserBankcardService.checkUpsBankLimit(cardInfo.getBankCode(), saleAmount);							
+							resultMap = new HashMap<String, Object>();
+						        
 							logger.info("payBrandOrder orderInfo = {}", orderInfo);
 							orderDao.updateOrder(orderInfo);
 							// 银行卡支付 代收
