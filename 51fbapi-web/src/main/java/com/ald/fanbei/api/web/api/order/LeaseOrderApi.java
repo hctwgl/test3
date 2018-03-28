@@ -108,7 +108,7 @@ public class LeaseOrderApi implements ApiHandle {
         }catch (Exception e){
             logger.error("resource config error:",e);
         }
-        Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
+        Date gmtPayEnd = DateUtil.addMins(currTime, order_pay_time_limit);
 
         final AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
         final LeaseGoods goodsDo = afGoodsService.getLeaseGoodsByGoodsId(goodsId);
