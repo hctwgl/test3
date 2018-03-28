@@ -43,27 +43,28 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		String sharePage = (String)requestDataVo.getParams().get("sharePage");
-		if(StringUtil.isBlank(sharePage)){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-		if(!CommonUtil.isMobile(context.getMobile())){
-			return resp;
-		}
-		logger.info("user/submitShareActionApi params:", sharePage);
-		if("gameShare".equals(sharePage)){
-			afGameChanceService.dealWithShareGame(context.getMobile());
-		}
-		if ("faceScore".equals(sharePage)){
-			faceScoreShareCountService.dealWithShareCount(context.getUserId());
-		}
-		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
-		//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
+		try {
+			String sharePage = (String)requestDataVo.getParams().get("sharePage");
+			if(StringUtil.isBlank(sharePage)){
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+			}
+			if(!CommonUtil.isMobile(context.getMobile())){
+				return resp;
+			}
+			if("gameShare".equals(sharePage)){
+				afGameChanceService.dealWithShareGame(context.getMobile());
+			}
+			// 颜值测试分享成功次数的统计
+			if ("shareEveryone".equals(sharePage)){
+				faceScoreShareCountService.dealWithShareCount(context.getUserId());
+			}
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
+			//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
 //		if("ggIndexShare".equals(sharePage)){
 //			maidianLog.info(context.getUserName() + "ggIndexShare");
 //		}
 //
-		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
+			//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 //		String[] strings = sharePage.split("_");
 //		if (strings != null && strings.length == 3) {
 //		       maidianLog.info(context.getUserName() +strings[0]);
@@ -84,7 +85,12 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 //			}
 //			
 //		}
-		
+			
+			
+		} catch (Exception e) {
+			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+			logger.error("user/submitShareActionApi",e,resp);
+		}
 		return resp;
 	}
 	@Override
