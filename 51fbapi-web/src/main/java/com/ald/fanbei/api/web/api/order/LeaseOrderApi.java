@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.order;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -155,6 +157,10 @@ public class LeaseOrderApi implements ApiHandle {
         afOrder.setLc(lc);
 
         afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
+
+        // 保存手续费信息
+        BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,userName);
+        afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 
         //下单时所有场景额度使用情况
         final List<AfOrderSceneAmountDo> listSceneAmount = new ArrayList<AfOrderSceneAmountDo>();
