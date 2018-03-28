@@ -112,6 +112,12 @@ public class AfResourceH5ServiceImpl implements AfResourceH5Service {
 		return afResourceH5Dao.selectByStatus();
 	}
 
+	@Override
+	public void clearCache() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 
 }

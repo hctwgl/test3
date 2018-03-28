@@ -34,4 +34,5 @@ public interface AfResourceH5Dao extends BaseDao<AfResourceH5Do, Long> {
 
 	List<AfResourceH5Do> getListByCommonCondition(AfResourceH5Do queryDo);
 	List<AfResourceH5Dto> selectByStatus();
+	
 }

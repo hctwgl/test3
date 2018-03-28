@@ -39,5 +39,7 @@ public interface AfResourceH5Service {
 	AfResourceH5Do getById(Long resourceH5Id);
 
 	List<AfResourceH5Dto> selectByStatus();
+	void clearCache();
+	
 
 }
