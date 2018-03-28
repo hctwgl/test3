@@ -77,7 +77,7 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 					}
 					Integer totalAllowedCount = Integer.valueOf(configList.get(0)
 							.getValue1());
-					if (count == totalAllowedCount) {
+					if (count >= totalAllowedCount) {
 						return H5CommonResponse.getNewInstance(false,
 								"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null).toString();
 					} else if (count == totalAllowedCount - 1) {

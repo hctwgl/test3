@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
@@ -31,6 +33,7 @@ import com.alibaba.fastjson.JSONObject;
 @Controller("submitShareActionApi")
 public class SubmitShareActionApi extends BaseController implements ApiHandle {
 	//protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
+	protected final Logger logger = LoggerFactory.getLogger(SubmitShareActionApi.class);
 	@Resource
 	private AfGameChanceService afGameChanceService;
 	@Resource
@@ -47,6 +50,7 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 		if(!CommonUtil.isMobile(context.getMobile())){
 			return resp;
 		}
+		logger.info("user/submitShareActionApi params:", sharePage);
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
