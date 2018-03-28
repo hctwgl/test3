@@ -150,16 +150,21 @@ public class ThirdController extends AbstractThird{
         int max = Integer.parseInt(afResourceDo.getValue4());
         int min = Integer.parseInt(afResourceDo.getValue5());
         String checkstate = "";
+        String iagentstate="";
         if (answers.get("baseW")>0){
             checkstate = "close";
+            iagentstate="C";
         }else{
             if (answers.get("unbaseW")<=min){
                 checkstate = "success";
+                iagentstate="B";
             }else{
                 if (answers.get("unbaseW")>=max){
                     checkstate = "close";
+                    iagentstate="C";
                 }else{
                     checkstate = "review";
+                    iagentstate="D";
                 }
             }
         }
@@ -176,9 +181,16 @@ public class ThirdController extends AbstractThird{
 
         }
 
-        if ("close".equals(checkstate)){
+        if (afOrderDo !=null){
+            String iagentStatus = afOrderDo.getIagentStatus();
+            if (!"DEF".equals(iagentStatus)){
+                afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
+            }
+            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())){
 
+            }
         }
+
     }
 
     /**

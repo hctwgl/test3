@@ -244,4 +244,5 @@ public interface AfOrderDao {
 
 	List<AfOrderSceneAmountDto> getSceneAmountByOrderId(@Param("orderId")Long orderId);
 
+	void updateIagentStatusByOrderId(@Param("orderId")Long orderId, @Param("iagentStatus")String iagentStatus);
 }

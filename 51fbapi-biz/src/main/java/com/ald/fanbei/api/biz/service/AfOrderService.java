@@ -388,5 +388,5 @@ public interface AfOrderService {
 
 	int addSceneAmount(List<AfOrderSceneAmountDo> list);
 	AfInterimAuDo getInterimAuDo(AfOrderDo orderInfo);
-
+	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 }

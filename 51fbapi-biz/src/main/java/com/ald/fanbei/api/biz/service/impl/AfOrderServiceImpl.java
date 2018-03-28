@@ -2929,4 +2929,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public int addSceneAmount(List<AfOrderSceneAmountDo> list) {
 		return orderDao.addSceneAmount(list);
 	}
+	@Override
+	public void updateIagentStatusByOrderId(Long orderId,String iagentStatus){
+		orderDao.updateIagentStatusByOrderId(orderId,iagentStatus);
+	}
 }
