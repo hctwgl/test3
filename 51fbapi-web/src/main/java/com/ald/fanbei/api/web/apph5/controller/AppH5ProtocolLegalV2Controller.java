@@ -488,6 +488,10 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 						model.put("isOverdue","y");
 						model.put("overdueGmtCreate",overduePushDo.getGmtArrival());
 						model.put("overdueBorrowNo",overduePushDo.getBorrowNo());
+						model.put("overdueBankName",overduePushDo.getBankName());
+						model.put("overdueIdNumber",overduePushDo.getIdNumber());
+						model.put("overdueRepayAcct",overduePushDo.getRepayAcct());
+						model.put("overdueRepayName",overduePushDo.getRepayName());
 					}
 				}
 			}

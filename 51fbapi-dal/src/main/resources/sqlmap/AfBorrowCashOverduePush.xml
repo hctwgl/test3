@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,borrow_no,borrow_id,borrow_rate,gmt_arrival,gmt_plan_repayment,gmt_create,gmt_modified,
+        id rid,borrow_no,borrow_id,borrow_rate,gmt_arrival,gmt_plan_repayment,gmt_create,gmt_modified,repay_name,repay_acct,bank_name,id_number
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -34,6 +34,18 @@
         </if>
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="repayName != null and repayName != ''">
+            AND repay_name = #{repayName,jdbcType=VARCHAR}
+        </if>
+        <if test="repayAcct != null and repayAcct != ''">
+            AND repay_acct = #{repayAcct,jdbcType=VARCHAR}
+        </if>
+        <if test="bankName != null and bankName != ''">
+            AND bank_name = #{bankName,jdbcType=VARCHAR}
+        </if>
+        <if test="idNumber != null and idNumber != ''">
+            AND id_number = #{idNumber,jdbcType=VARCHAR}
         </if>
     </sql>
 
@@ -66,6 +78,18 @@
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
+            <if test="repayName != null">
+                repay_name,
+            </if>
+            <if test="repayAcct != null">
+                repay_acct,
+            </if>
+            <if test="bankName != null">
+                bank_name,
+            </if>
+            <if test="idNumber != null">
+                id_number,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -90,6 +114,18 @@
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
+            <if test="repayName != null" >
+                #{repayName,jdbcType=VARCHAR},
+            </if>
+            <if test="repayAcct != null" >
+                #{repayAcct,jdbcType=VARCHAR},
+            </if>
+            <if test="bankName != null" >
+                #{bankName,jdbcType=VARCHAR},
+            </if>
+            <if test="idNumber != null" >
+                #{idNumber,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
@@ -117,6 +153,18 @@
             <if test="gmtModified != null and gmtModified != '' ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
+              <if test="repayName != null and repayName != '' ">
+                  repay_name = #{repayName,jdbcType=VARCHAR},
+              </if>
+              <if test="repayAcct != null and repayAcct != '' ">
+                  repay_acct = #{repayAcct,jdbcType=VARCHAR},
+              </if>
+              <if test="bankName != null and bankName != '' ">
+                  bank_name = #{bankName,jdbcType=VARCHAR},
+              </if>
+              <if test="idNumber != null and idNumber != '' ">
+                  id_number = #{idNumber,jdbcType=VARCHAR},
+              </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
