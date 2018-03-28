@@ -21,6 +21,8 @@ public class LeaseOrderListDto {
     private Date gmtPayEnd;
     private Date gmtEnd;
     private BigDecimal monthlyRent;
+    private String goodsPriceName;
+    private BigDecimal priceAmount;
 
     public Long getId() {
         return id;
@@ -116,5 +118,21 @@ public class LeaseOrderListDto {
 
     public void setMonthlyRent(BigDecimal monthlyRent) {
         this.monthlyRent = monthlyRent;
+    }
+
+    public String getGoodsPriceName() {
+        return goodsPriceName;
+    }
+
+    public void setGoodsPriceName(String goodsPriceName) {
+        this.goodsPriceName = goodsPriceName;
+    }
+
+    public BigDecimal getPriceAmount() {
+        return priceAmount;
+    }
+
+    public void setPriceAmount(BigDecimal priceAmount) {
+        this.priceAmount = priceAmount;
     }
 }
