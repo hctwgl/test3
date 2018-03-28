@@ -296,8 +296,7 @@ public class RiskUtil extends AbstractThird {
 
 	public static String getUrl() {
 		if (url == null) {
-//			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-			url = "http://testarc.51fanbei.com";
+			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
 			return url;
 		}
 		return url;
