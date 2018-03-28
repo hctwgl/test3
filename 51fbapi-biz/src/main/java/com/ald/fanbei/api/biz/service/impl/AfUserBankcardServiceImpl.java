@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
@@ -44,7 +46,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 
-    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);    
 
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
@@ -54,28 +56,15 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Override
     public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
 	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
-	int scale = 10000;
 	if (CollectionUtil.isNotEmpty(list)) {
 	    for (AfBankUserBankDto item : list) {
-		// 获取银行状态（ups写入redis数据）
-		String bankStatusKey = "ups_collect_" + item.getBankCode();
-		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
+		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode());
+		item.setBankStatus(bankStatus);
 
-		logger.info("getUserBankcardByUserId key:"+bankStatusKey+",value：" + bankStatusValue);
-		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
-		    UpsBankStatusDto bankStatus = JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
-		    bankStatus.setDailyLimit(bankStatus.getDailyLimit() * scale);
-		    bankStatus.setLimitDown(bankStatus.getLimitDown() * scale);
-		    bankStatus.setLimitUp(bankStatus.getLimitUp() * scale);
-		    item.setBankStatus(bankStatus);
-
-		    if (bankStatus.getIsMaintain() == 1) {
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
-			item.setMessage(afResourceDo.getValue1());
-			item.setIsValid("N");
-		    }
-		} else {
-		    item.setBankStatus(new UpsBankStatusDto());
+		if (bankStatus.getIsMaintain() == 1) {
+		    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
+		    item.setMessage(afResourceDo.getValue1());
+		    item.setIsValid("N");
 		}
 	    }
 
@@ -145,19 +134,47 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     public AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId) {
 	return afUserBankcardDao.getUserBankcardByIdAndStatus(cardId);
     }
-	
-		@Override
-	public String hideCardNumber(String bankcard) {
-		return bankcard.substring(bankcard.length()-4);
-	}
 
-	@Override
-	public int updateMainBankCard(Long userId){
-		return afUserBankcardDao.updateMainBankCard(userId);
-	}
+    @Override
+    public String hideCardNumber(String bankcard) {
+	return bankcard.substring(bankcard.length() - 4);
+    }
 
-	@Override
-	public int updateViceBankCard(String cardNumber,Long userId){
-		return afUserBankcardDao.updateViceBankCard(cardNumber,userId);
+    @Override
+    public int updateMainBankCard(Long userId) {
+	return afUserBankcardDao.updateMainBankCard(userId);
+    }
+
+    @Override
+    public int updateViceBankCard(String cardNumber, Long userId) {
+	return afUserBankcardDao.updateViceBankCard(cardNumber, userId);
+    }
+
+    @Override
+    public UpsBankStatusDto getUpsBankStatus(String bankCode) {
+	String bankStatusKey = "ups_collect_" + bankCode;
+	Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
+	logger.info("getUserBankcardByUserId key:" + bankStatusKey + ",value：" + bankStatusValue);
+	if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
+	    return JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
+	} else {
+	    return new UpsBankStatusDto();
 	}
+    }
+
+    @Override
+    public UpsBankStatusDto getUpsBankStatus(Long cardId) {
+
+	AfUserBankcardDo afUserBankcardDo = getUserBankcardById(cardId);
+	return getUpsBankStatus(afUserBankcardDo.getBankCode());
+    }
+
+    @Override
+    public void checkUpsBankLimit(String bankCode, BigDecimal amount) {
+	UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode);
+
+	if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
+	    throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()));
+	}
+    }
 }
