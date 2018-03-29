@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -28,10 +29,13 @@ import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
+import com.ald.fanbei.api.dal.domain.AfFacescoreShareCountDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAndRedRelationDo;
@@ -80,12 +84,6 @@ public class H5FaceScoreWithdrawCash extends BaseController {
 				String resultStr = H5CommonResponse.getNewInstance(false, "提现失败!", "", null).toString();
 				FanbeiH5Context context = new FanbeiH5Context();
 				try {
-				 // 1查询红包记录是否存在
-				long redId = NumberUtil.objToLongDefault(request.getParameter("rid"),0L);
-				AfFacescoreRedDo redDo = faceScoreRedService.getById(redId);
-				if (redDo == null){
-					return H5CommonResponse.getNewInstance(false, "红包不存在,参数有误!", "", null).toString();
-				}
 					Long userId = -1l;
 					AfUserDo afUser = null;
 					String userName = request.getParameter("userName");
@@ -95,15 +93,33 @@ public class H5FaceScoreWithdrawCash extends BaseController {
 						context.setLogin(true);
 						context.setUserName(userName);
 					}
+				 // 1查询红包记录是否存在
+				long redId = NumberUtil.objToLongDefault(request.getParameter("rid"),0L);
+				AfFacescoreRedDo redDo = faceScoreRedService.getById(redId);
+				if (redDo == null){
+					return H5CommonResponse.getNewInstance(false, "红包不存在,参数有误!", "", null).toString();
+				}
 					// 2判断用户是否处于登陆状态
 					if (context.isLogin()) {
 						afUser = afUserService.getUserByUserName(context.getUserName());
 						if (afUser != null) {
 							userId = afUser.getRid();
-							int count = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
-							if (count > 0){
-								return H5CommonResponse.getNewInstance(false, "该红包已经被提现了！", "", null).toString();
+							// 1先查询有没有测试过，是否对红包进行了提现
+							int count = faceScoreRedService
+									.findUserAndRedRelationRecordByUserId(userId);
+							List<AfResourceDo> configList = afResourceService
+									.getConfigByTypes("USER_FACETEST");
+							if (CollectionUtil.isEmpty(configList)) {
+								return H5CommonResponse.getNewInstance(false,
+										"该活动已经结束！", "", null).toString();
 							}
+							Integer totalAllowedCount = Integer.valueOf(configList.get(
+									0).getValue1());
+							if (count >= totalAllowedCount) {
+								return H5CommonResponse.getNewInstance(false,
+										"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null)
+										.toString();
+							} 
 							AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 					        if (userAccountDo == null) {
 					            throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
