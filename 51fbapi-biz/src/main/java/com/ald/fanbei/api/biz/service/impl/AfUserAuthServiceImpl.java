@@ -537,7 +537,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    }
 	}
 	if (!isExist) {
-	    data.put("status", "N");
+	    data.put("status", "F");
 	    data.put("title", "");
 	}
 	return data;
