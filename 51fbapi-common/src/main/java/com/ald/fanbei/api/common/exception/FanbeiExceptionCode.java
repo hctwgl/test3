@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.common.exception;
 
 /**
@@ -263,6 +264,7 @@ public enum FanbeiExceptionCode {
     RISK_RAISE_CAPTIL_ERROR("RISK_RAISE_CAPTIL_ERROR",1923,"get captil error","风控应还本金获取失败"),
     RISK_FORBIDDEN_ERROR("RISK_FORBIDDEN_ERROR",1923,"get captil error","抱歉，无法续期"),
     RISK_RAISE_AMOUNT_ERROR("RISK_RAISE_AMOUNT_ERROR",1924,"risk raise amount error","提额异常"),
+    RISK_NEWFUND_NOTIFY_ERROR("RISK_NEWFUND_NOTIFY_ERROR",1925,"risk newfund notify error","51公积金信息通知风控异常"),
     RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
     UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
     //2000-2100
@@ -417,7 +419,12 @@ public enum FanbeiExceptionCode {
 	PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES",8003,"paypwd wrong less than specific times","支付密码错误，您还有x次机会！"),
 	//paypwd wrong more than specific times
 	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
-	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！");
+	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！"),
+    SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
+    SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
+    SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
+    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
+
 
     /**
      * 错误码

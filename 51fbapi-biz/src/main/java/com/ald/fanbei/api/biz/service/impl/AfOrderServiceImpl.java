@@ -2467,61 +2467,55 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		}
 
 		if ("TRUE".equals(resultMap.get(Constants.VIRTUAL_CHECK))) {
-			BigDecimal dayLeftAmount = BigDecimal.ZERO;
-			//验证场景总额度
-			if(resultMap.get(Constants.VIRTUAL_DAY_AMOUNT) != null){
-                		String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
-                		BigDecimal virtualDayAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_DAY_AMOUNT).toString());
-                		// 验证累计额度
-                		dayLeftAmount = virtualDayAmount.subtract(afUserVirtualAccountService.getCurrentDayUsedAmount(virtualCode));
-                		dayLeftAmount = dayLeftAmount.compareTo(BigDecimal.ZERO) >= 0 ? dayLeftAmount : BigDecimal.ZERO;
-			}
-
-			BigDecimal leftAmount = BigDecimal.ZERO;
-			if(dayLeftAmount.compareTo(BigDecimal.ZERO) > 0)
-			{
-        			//验证用户限额
-        			if (resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) != null) {
-        				String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
-        				BigDecimal virtualTotalAmount = new BigDecimal(
-        						resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
-        				Integer virtualRecentDay = new Integer(resultMap.get(Constants.VIRTUAL_RECENT_DAY).toString());
-        				// 验证累计额度
-        				leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode,
-        						virtualTotalAmount, virtualRecentDay);
+        	    BigDecimal dayLeftAmount = BigDecimal.ZERO;
+        	    // 验证场景总额度
+        	    if (resultMap.get(Constants.VIRTUAL_DAY_AMOUNT) != null) {
+        		String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
+        		BigDecimal virtualDayAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_DAY_AMOUNT).toString());
+        		// 验证累计额度
+        		dayLeftAmount = virtualDayAmount.subtract(afUserVirtualAccountService.getCurrentDayUsedAmount(virtualCode));
+        		dayLeftAmount = dayLeftAmount.compareTo(BigDecimal.ZERO) >= 0 ? dayLeftAmount : BigDecimal.ZERO;
+        	    }
         
-        				// 判断单笔限额
-        				if (leftAmount.compareTo(BigDecimal.ZERO) > 0 && resultMap.get(Constants.VIRTUAL_AMOUNT) != null) {
-        					BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
-        					leftAmount = leftAmount.compareTo(virtualAmount) > 0 ? virtualAmount : leftAmount;
-        				}
-        			} else if (resultMap.get(Constants.VIRTUAL_AMOUNT) != null) {
-        				BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
-        				// 当前可用额度为虚拟限额额度（后面逻辑再与用户账户可用额度判断）
-        				leftAmount = virtualAmount;
-        			}
-        			
-                		leftAmount = dayLeftAmount.compareTo(leftAmount) > 0 ? leftAmount : dayLeftAmount;
-			}
-			
-			BigDecimal useableAmount;
-			// 判断临时额度是否到期
-
-			if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0
-					&& !orderInfo.getOrderType().equals("TRADE")) {
-				// 获取当前用户可用临时额度
-				BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
-				// 用户额度加上临时额度
-				useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-						.subtract(userAccountInfo.getFreezeAmount()).add(interim);
-			} else {
-				useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-						.subtract(userAccountInfo.getFreezeAmount());
-			}
-			// 虚拟剩余额度大于信用可用额度 则为可用额度
-			leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
-
-			return leftAmount;
+        	    BigDecimal leftAmount = BigDecimal.ZERO;
+        	    if (dayLeftAmount.compareTo(BigDecimal.ZERO) > 0) {
+        		// 验证用户限额
+        		if (resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT) != null) {
+        		    String virtualCode = resultMap.get(Constants.VIRTUAL_CODE).toString();
+        		    BigDecimal virtualTotalAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_TOTAL_AMOUNT).toString());
+        		    Integer virtualRecentDay = new Integer(resultMap.get(Constants.VIRTUAL_RECENT_DAY).toString());
+        		    // 验证累计额度
+        		    leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount, virtualRecentDay);
+        
+        		    // 判断单笔限额
+        		    if (leftAmount.compareTo(BigDecimal.ZERO) > 0 && resultMap.get(Constants.VIRTUAL_AMOUNT) != null) {
+        			BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+        			leftAmount = leftAmount.compareTo(virtualAmount) > 0 ? virtualAmount : leftAmount;
+        		    }
+        		} else if (resultMap.get(Constants.VIRTUAL_AMOUNT) != null) {
+        		    BigDecimal virtualAmount = new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
+        		    // 当前可用额度为虚拟限额额度（后面逻辑再与用户账户可用额度判断）
+        		    leftAmount = virtualAmount;
+        		}
+        
+        		leftAmount = dayLeftAmount.compareTo(leftAmount) > 0 ? leftAmount : dayLeftAmount;
+        	    }
+        
+        	    BigDecimal useableAmount;
+        	    // 判断临时额度是否到期
+        
+        	    if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("TRADE")) {
+        		// 获取当前用户可用临时额度
+        		BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+        		// 用户额度加上临时额度
+        		useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
+        	    } else {
+        		useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+        	    }
+        	    // 虚拟剩余额度大于信用可用额度 则为可用额度
+        	    leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
+        
+        	    return leftAmount;
 		} else {
 			BigDecimal useableAmount = getUseableAmount(orderInfo, userAccountInfo, afInterimAuDo);
 

@@ -41,11 +41,7 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo" useGeneratedKeys="true" keyProperty="rid">
         INSERT INTO af_seckill_activity_order
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
@@ -137,13 +133,28 @@
         SELECT count(1)
         FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
         WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
-        AND o.status NOT IN ('NEW','PAYFAIL')
+        AND o.id IS NOT NULL
     </select>
 
     <select id="getActivityOrderByOrderId" resultType="AfSeckillActivityOrderDo">
         SELECT id,order_id,activity_id
         FROM af_seckill_activity_order
         WHERE is_delete = 0 AND order_id=#{orderId}
+        limit 1
+    </select>
+
+    <select id="getActivityByOrderId" resultType="AfSeckillActivityDo">
+        SELECT b.id rid,b.pay_type,b.goods_limit_count
+        FROM af_seckill_activity_order a LEFT JOIN af_seckill_activity b ON (a.activity_id=b.id)
+        WHERE a.is_delete=0 AND b.is_delete = 0 AND a.order_id=#{orderId}
+        limit 1
+    </select>
+
+    <select id="getActivityOrderByGoodsIdAndActId" resultType="AfSeckillActivityOrderDo">
+        SELECT a.id,a.order_id,a.activity_id
+        FROM af_seckill_activity_order a LEFT JOIN af_order o ON (a.order_id=o.id)
+        WHERE a.is_delete = 0 AND a.goods_id=#{goodsId} AND a.activity_id=#{activityId} AND o.user_id=#{userId}
+        AND o.status NOT IN ('NEW','PAYFAIL','CLOSED')
         limit 1
     </select>
 </mapper>

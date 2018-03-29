@@ -272,6 +272,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(), true);
         } else if (cardId > 0) {//银行卡支付
             AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+            
+            //还款金额是否大于银行单笔限额
+            //afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
+            
             repayment.setStatus(RepaymentStatus.PROCESS.getCode());
             afRepaymentDao.addRepayment(repayment);
             afUserAmountService.addUseAmountDetail(repayment);
