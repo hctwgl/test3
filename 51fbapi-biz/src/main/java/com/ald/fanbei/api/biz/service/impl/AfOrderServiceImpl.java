@@ -1238,7 +1238,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 
 						// 银行卡需要支付的金额
-						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
+						BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
