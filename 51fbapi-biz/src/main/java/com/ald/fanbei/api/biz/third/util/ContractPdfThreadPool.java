@@ -177,7 +177,11 @@ public class ContractPdfThreadPool{
         }
         @Override
         public void run() {
+            try {
                 afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }

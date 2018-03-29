@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
@@ -21,6 +22,10 @@ import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -762,14 +767,44 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     @Override
-    public void leaseProtocolPdf(HashMap data){
+    public String leaseProtocolPdf(HashMap data)throws IOException{
+        long time = new Date().getTime();
         String html = "";
-        html = getLeaseHtml(data,"protocolLegalCashLoanV2WithoutSealTemplate.vm");
+        html = getLeaseHtml(data,"https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false");
+        String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
+        HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
+        data.put("outFilePath",outFilePath);
+        return getLeaseContractPdf(data);
+
+    }
+
+    private String getLeaseContractPdf(Map<String, Object> data) throws IOException {
+        AfUserAccountDo accountDo = getUserInfo(1, data, null);
+        long time = new Date().getTime();
+        boolean result = true;
+        byte[] stream = new byte[1024];
+        stream = borrowerCreateSeal(result,stream,data);//借款人签章
+
+        stream = aldCreateSeal(result,stream,data);//阿拉丁签章
+
+        String dstFile = String.valueOf(src + data.get("userName") + "lease" + time  + ".pdf");
+        File file = new File(dstFile);
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(stream);
+        outputStream.flush();
+        outputStream.close();
+        return ossFileUploadWithEdspaySeal(data,dstFile);//oss上传
 
     }
 
     private String getLeaseHtml(HashMap data,String pdfType) {
-
+        try {
+            String html = HttpUtil.doGet(pdfType,1);
+            return html;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("getLeaseHtml Exception",e);
+        }
         return null;
     }
 
