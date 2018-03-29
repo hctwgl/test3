@@ -12,14 +12,17 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfFacescoreImgService;
+import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfFacescoreImgDo;
+import com.ald.fanbei.api.dal.domain.AfFacescoreRedDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -44,6 +47,10 @@ public class GetUserShareInfoApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfFacescoreRedService afFacescoreRedService;
+	@Resource
+	AfFacescoreImgService afFacescoreImgService;
 	
 	
 	@Override
@@ -163,7 +170,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 				String image  = "";
 				image = jsonObject.getString("changeConfigure");
 				if("avatar".equals(image)){
-				        doChangeImage(userId);
+					if(afUserDo != null){
+				        doChangeImage(afUserDo.getRid(),jsonStr);
+					}else{
+						doChangeImage(null,jsonStr);
+					}
 				         changeImage = "Y";
 				}
 				if("noChange".equals(image)){
@@ -245,11 +256,46 @@ public class GetUserShareInfoApi implements ApiHandle {
 	}
 	
 
-	private int doChangeImage(Long userId) {
+	private int doChangeImage(Long userId,JSONObject jsonStr) {
 	    //获取数据库用户上传的最后一张图片。放入json 
-	    
-	    
-	    
+	   //AfFacescoreRedDo afFacescoreRedDo = new AfFacescoreRedDo();
+	 try{
+		AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
+	  String image = "";
+	  if(afFacescoreRedDo != null && userId != null ){
+		   image =  afFacescoreRedDo.getImageurl();
+	   }else{
+		   //随机一张图片
+		    
+		     AfFacescoreImgDo findFacescoreImg = new AfFacescoreImgDo();
+		     findFacescoreImg.setIsDelete(0);
+		     List<AfFacescoreImgDo> afFacescoreImglist = afFacescoreImgService.getListByCommonCondition(findFacescoreImg);
+		     int randomLenght = afFacescoreImglist.size();
+		     int num=(int)(Math.random() * randomLenght); 
+		      image = afFacescoreImglist.get(num).getUrl();
+	   }
+	   List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
+	     //获取该list(type = 'avatar')
+	     JSONArray ja= new JSONArray();
+	     for(JSONObject jso:list){
+		 if(jso.getString("type")!= null && "avatar".equals(jso.getString("type"))){
+		    //对该list加入头像，		 
+			 if(StringUtil.isNotEmpty(image)){
+			     jso.put("image", image);//JSONObject对象中添加键值对  
+			     jso.remove("type");
+			     ja.add(jso);
+			 }
+			
+		 }else{
+		     ja.add(jso);  
+		 }
+		 
+	     }
+	     jsonStr.put("imageList", ja);
+	 }catch(Exception e) {
+		 logger.error("doChangeImage error:"+e);
+	 }
+	   
 	    return 0;
 	}
 
