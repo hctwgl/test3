@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONArray;
@@ -82,7 +84,7 @@ public class ThirdController extends AbstractThird{
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( @RequestParam("audio") MultipartFile audio, @RequestParam("work_id")String   work_id, @RequestParam("job_id")String   job_id,@RequestParam("work_result")String work_result,@RequestParam("token")String token) throws Exception {
+    public String iagentReport(@RequestParam("audio") MultipartFile audio, @RequestParam("work_id") final String   work_id, @RequestParam("job_id")String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
@@ -104,8 +106,14 @@ public class ThirdController extends AbstractThird{
         sb.append("---audio name："+audio.getOriginalFilename());
         OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
         sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
-
         logger.info(sb.toString());
+        final String audioUrl = ossUploadResult.getUrl();
+        YFSmsUtil.pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                processIagentResult(audioUrl,work_id,work_result);
+            }
+        });
         JSONObject jsonObject=new JSONObject();
         JSONObject innerJsonObject=new JSONObject();
         innerJsonObject.put("receipt_id",System.currentTimeMillis());
@@ -129,6 +137,7 @@ public class ThirdController extends AbstractThird{
         afIagentResultDo.setWorkResult(work_result);
         afIagentResultDo.setCheckState(RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code));
         afIagentResultService.updateResultByWorkId(afIagentResultDo);
+        dealOrder(result,Long.parseLong(job_id));
     }
 
     /**
@@ -149,23 +158,32 @@ public class ThirdController extends AbstractThird{
         int min = Integer.parseInt(afResourceDo.getValue5());
         String checkstate = "";
         String iagentstate="";
+        String checkResult="";
         if (answers.get("baseW")>0){
             checkstate = "close";
             iagentstate="C";
+            checkResult="1";
         }else{
             if (answers.get("unbaseW")<=min){
                 checkstate = "success";
                 iagentstate="B";
+                checkResult="0";
             }else{
                 if (answers.get("unbaseW")>=max){
                     checkstate = "close";
                     iagentstate="C";
+                    checkResult="1";
                 }else{
                     checkstate = "review";
                     iagentstate="D";
+                    checkResult="2";
                 }
             }
         }
+        AfIagentResultDo resultDo = new AfIagentResultDo();
+        resultDo.setWorkId(job_id);
+        resultDo.setCheckResult(checkResult);
+        afIagentResultService.updateResultByWorkId(resultDo);
         AfOrderDo afOrderDo = null;
         AfIagentResultDo afIagentResultDo = afIagentResultService.getIagentByWorkId(job_id);
         if (afIagentResultDo != null){
@@ -184,8 +202,10 @@ public class ThirdController extends AbstractThird{
             if (!"DEF".equals(iagentStatus)){
                 afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
             }
-            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())){
-
+            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&!"E".equals(afOrderDo.getIagentStatus())){
+                Map<String,String> qmap = new HashMap<>();
+                qmap.put("orderNo",afOrderDo.getOrderNo());
+                HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
             }
         }
 
