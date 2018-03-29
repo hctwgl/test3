@@ -27,6 +27,6 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException;
 
-    void leaseProtocolPdf(HashMap data);
+    void leaseProtocolPdf(HashMap data) ;
 
 }
