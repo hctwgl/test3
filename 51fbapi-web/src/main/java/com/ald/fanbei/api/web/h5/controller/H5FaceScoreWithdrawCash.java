@@ -99,6 +99,10 @@ public class H5FaceScoreWithdrawCash extends BaseController {
 				if (redDo == null){
 					return H5CommonResponse.getNewInstance(false, "红包不存在,参数有误!", "", null).toString();
 				}
+				int withDrawCount = faceScoreRedService.findUserAndRedRelationRecordByRedId(redId);
+			    if (withDrawCount > 0){
+					return H5CommonResponse.getNewInstance(true, "提现成功 ！", "", redDo).toString();
+				}
 					// 2判断用户是否处于登陆状态
 					if (context.isLogin()) {
 						afUser = afUserService.getUserByUserName(context.getUserName());
