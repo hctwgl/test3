@@ -19,6 +19,7 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
 	private UpsBankStatusDto bankStatus;
 	
 	private String message;
+	private String payType;
 
 	public String getIsValid() {
 		return isValid;
@@ -58,9 +59,22 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
 	    this.message = message;
 	}
 
+	
+	public String getPayType() {
+		return payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
 	@Override
 	public String toString() {
-	    return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid=" + isValid + ", bankStatus=" + bankStatus + ", message=" + message + "]";
+		return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid="
+				+ isValid + ", bankStatus=" + bankStatus + ", message="
+				+ message + ", payType=" + payType + "]";
 	}
+
+	
 
 }
