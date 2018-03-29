@@ -1375,4 +1375,32 @@
 			AND d.level  = 2
 			AND a.id = #{orderId}
 	</select>
+
+	<select id="getLeaseProtocol" resultType="HashMap">
+		SELECT
+			a.real_name realName,
+			a.user_name userName,
+			a.monthly_rent monthlyRent,
+			a.`unique`,
+			a.gmt_start gmtStart,
+			a.gmt_end gmtEnd,
+			a.gmt_create gmtCreate,
+			b.goods_name goodsName,
+			b.goods_price_name goodsPriceName,
+			b.order_no orderNo,
+			b.price_amount priceAmount,
+			b.nper+1 nper,
+			CONCAT(
+				b.province,
+				b.city,
+				b.district,
+				b.address
+			) address,
+			c.id_number idNumber
+		FROM
+			af_order_lease AS a
+		INNER JOIN af_order AS b ON a.order_id = b.id
+		INNER JOIN af_user_account c ON a.user_id = c.user_id
+		WHERE a.order_id=#{orderId}
+	</select>
 </mapper>

@@ -3025,4 +3025,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     public int UpdateOrderLeaseShow(Long orderId,Long userId) {
         return orderDao.UpdateOrderLeaseShow(orderId,userId);
     }
+
+	@Override
+	public HashMap getLeaseProtocol(Long orderId) {
+		return orderDao.getLeaseProtocol(orderId);
+	}
 }

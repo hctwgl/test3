@@ -145,7 +145,7 @@ public class LeaseOrderApi implements ApiHandle {
         afOrder.setActualAmount(BigDecimal.ZERO);
 
         //新增下单时，记录ip和同盾设备指纹锁 cxk
-        afOrder.setIp(request.getRemoteAddr());//用户ip地址
+        afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址
         afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
         afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
 

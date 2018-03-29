@@ -929,6 +929,27 @@ public class AppH5LeaseController extends BaseController {
         }
     }
 
+    /**
+     *获取租赁协议
+     */
+    @ResponseBody
+    @RequestMapping(value = "getLeaseProtocol", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String getLeaseProtocol(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try{
+            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            HashMap data = afOrderService.getLeaseProtocol(orderId);
+            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
+            return resp.toString();
+        }
+        catch  (Exception e) {
+            logger.error("cancelLeaseOrder", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+    }
+
     private void addBorrowBill_1(AfOrderDo afOrderDo,AfUserDo afUser){
         AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
         if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {

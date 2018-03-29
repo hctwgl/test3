@@ -447,4 +447,10 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int UpdateOrderLeaseShow(Long orderId,Long userId);
+
+	/**
+	 * 获取租赁协议
+	 * @return
+	 */
+	HashMap getLeaseProtocol(Long orderId);
 }
