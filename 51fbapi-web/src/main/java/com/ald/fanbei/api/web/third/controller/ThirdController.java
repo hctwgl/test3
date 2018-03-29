@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONArray;
@@ -187,7 +188,9 @@ public class ThirdController extends AbstractThird{
                 afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
             }
             if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())){
-
+                Map<String,String> qmap = new HashMap<>();
+                qmap.put("orderNo",afOrderDo.getOrderNo());
+                HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
             }
         }
 
