@@ -166,7 +166,11 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 					Long userId = -1l;
 					AfUserDo afUser = null;
 					// 和登录有关的
-				//	context = doH5Check(request, true);
+					try{
+						context = doH5Check(request, true);
+					}catch (Exception e){
+						 logger.error("/fanbei_api/faceScore/H5withdrawCash", request,e.getMessage());
+					}
 					String userName = request.getParameter("userName");
 					if (userName != null){
 						context.setLogin(true);
@@ -217,6 +221,7 @@ public class AppH5FaceScoreWithdrawCashController extends BaseController {
 						resultStr =  H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 					    }else{
 					    resultStr = H5CommonResponse.getNewInstance(false, "提现失败！", "", e.getMessage()).toString();
+					    logger.error("/fanbei_api/faceScore/H5withdrawCash", request,e.getMessage());
 					    }
 				} catch (Exception e) {
 					status.setRollbackOnly();
