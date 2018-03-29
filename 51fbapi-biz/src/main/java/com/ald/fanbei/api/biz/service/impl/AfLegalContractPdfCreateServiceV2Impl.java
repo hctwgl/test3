@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1713,6 +1715,12 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         }
         System.out.println(temp);
         return temp;
+    }
+
+    @Override
+    public void leaseProtocolPdf(HashMap data) {
+	// TODO Auto-generated method stub
+	
     }
 
 }

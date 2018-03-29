@@ -536,7 +536,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	    }
 	}
-	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+	if (!isExist) {
 	    data.put("status", "F");
 	    data.put("title", "");
 	}
