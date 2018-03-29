@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -2979,7 +2980,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
         }
 		dataObj.put("freeze",freeze);
-		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100)));
+		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100), RoundingMode.DOWN));
         return dataObj;
     }
 
