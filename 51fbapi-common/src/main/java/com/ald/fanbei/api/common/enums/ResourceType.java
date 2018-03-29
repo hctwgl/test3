@@ -25,6 +25,7 @@ public enum ResourceType {
 	BRAND_SHOP("BRAND_SHOP", "品牌特卖,品牌"), 
 	SEARCH_HOT("SEARCH_HOT", "热门搜索"),
 	BORROW_RATE("BORROW_RATE","疯分期设置"),
+	AUTH_FUND("AUTH_FUND","公积金认证"),
 	
 	HOME_NAVIGATION_BACKGROUND("HOME_NAVIGATION_BACKGROUND","快速导航背景"),
 
@@ -54,13 +55,20 @@ public enum ResourceType {
 	HOT_BANK_BANNER("HOT_BANK_BANNER","热门银行"),
 	CREDIT_CARD_BANNER("CREDIT_CARD_BANNER","今日推荐"),
 	BORROW_CASH_COMPANY_NAME("BORROW_CASH_COMPANY_NAME","借款公司名称"),
+	
 
 	STAGE_MONEY_LIMIT_D("STAGE_MONEY_LIMIT_D","代买（自建）"),
 	STAGE_MONEY_LIMIT_Z("STAGE_MONEY_LIMIT_Z","自营"),
 	STAGE_MONEY_LIMIT_B("STAGE_MONEY_LIMIT_B","菠萝觅"),
-	STAGE_MONEY_LIMIT_S("STAGE_MONEY_LIMIT_S","商圈");
-	private String code;
+	STAGE_MONEY_LIMIT_S("STAGE_MONEY_LIMIT_S","商圈"),
+	MAX_THRESHOLD_OF_DOUBLE_EXCHANGE("MAX_THRESHOLD_OF_EXCHANGE","翻倍兑换最大阈值"),
 
+
+	;
+
+
+
+	private String code;
 	private String description;
 
 	private static Map<String, ResourceType> codeRoleTypeMap = null;

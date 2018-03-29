@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,20 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private List<String> goodsPics;
 	private Map<String,Object> nperMap;
 	private  Integer limitedPurchase;
+	private Long activityId;
+	private Integer activityType;
+	private String activityName;
+	private Long gmtStart;
+	private Long gmtEnd;
+	private Long gmtPstart;
+	private Long nowDate;
+	private Integer limitCount;
+	private Integer goodsLimitCount;
+	private String payType;
+	private Integer actSaleCount;
+	private String remark;
+	private BigDecimal specialPrice;
+	private List<Map<String, Object>> nperList;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -123,5 +138,117 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 
 	public void setLimitedPurchase(Integer limitedPurchase) {
 		this.limitedPurchase = limitedPurchase;
+	}
+
+	public Integer getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Integer activityType) {
+		this.activityType = activityType;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+
+	public Integer getLimitCount() {
+		return limitCount;
+	}
+
+	public void setLimitCount(Integer limitCount) {
+		this.limitCount = limitCount;
+	}
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+	public Integer getGoodsLimitCount() {
+		return goodsLimitCount;
+	}
+
+	public void setGoodsLimitCount(Integer goodsLimitCount) {
+		this.goodsLimitCount = goodsLimitCount;
+	}
+
+	public String getPayType() {
+		return payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public Integer getActSaleCount() {
+		return actSaleCount;
+	}
+
+	public void setActSaleCount(Integer actSaleCount) {
+		this.actSaleCount = actSaleCount;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public BigDecimal getSpecialPrice() {
+		return specialPrice;
+	}
+
+	public void setSpecialPrice(BigDecimal specialPrice) {
+		this.specialPrice = specialPrice;
+	}
+
+	public List<Map<String, Object>> getNperList() {
+		return nperList;
+	}
+
+	public void setNperList(List<Map<String, Object>> nperList) {
+		this.nperList = nperList;
+	}
+
+	public Long getGmtStart() {
+		return gmtStart;
+	}
+
+	public void setGmtStart(Long gmtStart) {
+		this.gmtStart = gmtStart;
+	}
+
+	public Long getGmtEnd() {
+		return gmtEnd;
+	}
+
+	public void setGmtEnd(Long gmtEnd) {
+		this.gmtEnd = gmtEnd;
+	}
+
+	public Long getGmtPstart() {
+		return gmtPstart;
+	}
+
+	public void setGmtPstart(Long gmtPstart) {
+		this.gmtPstart = gmtPstart;
+	}
+
+	public Long getNowDate() {
+		return nowDate;
+	}
+
+	public void setNowDate(Long nowDate) {
+		this.nowDate = nowDate;
 	}
 }

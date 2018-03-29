@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.SecondKillDateVo;
+
 
 
 /**
@@ -29,5 +31,8 @@ public interface AfActivityService {
 	AfActivityDo getHomeMoreActivity();
 
 	List<Date> getDateListByName(String tag);
+	
+	List<SecondKillDateVo> getDateVoListByName(String tag);
+
 
 }

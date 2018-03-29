@@ -37,8 +37,10 @@ import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.DredgeWhiteCollarLoanParam;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
+
 /**
  * 开通白领贷
+ * 
  * @author rongbo
  *
  */
@@ -52,27 +54,27 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 
 	@Resource
 	AfUserBankcardService afUserBankcardService;
-	
+
 	@Resource
 	AfUserService afUserService;
-	
+
 	@Resource
 	AfUserAccountService afUserAccountService;
-	
+
 	@Resource
 	AfUserAuthService afUserAuthService;
-	
-	@Resource
-	BizCacheUtil bizCacheUtil;
-	
+
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
-	
+
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
-	
+
 	@Resource
 	AfIdNumberService afIdNumberService;
+
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public H5HandleResponse process(Context context) {
@@ -82,78 +84,93 @@ public class DredgeWhiteCollarLoanApi implements H5Handle {
 		DredgeWhiteCollarLoanParam param = (DredgeWhiteCollarLoanParam) context.getParamEntity();
 		// 提交风控审核，获取白领贷额度
 		String clientIp = context.getClientIp();
-		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
-		if(mainCard == null) {
-			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
-		}
-		String cardNo = mainCard.getCardNumber();
-		String appName = context.getId().substring(context.getId().lastIndexOf("_") + 1, context.getId().length());
-		AfUserDo afUserDo = afUserService.getUserById(userId);
-		AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		// 验证所选认证是否通过
-		checkAuthStatus(afUserAuthDo,param);
 		
-		Object directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
-		String riskOrderNo = riskUtil.getOrderNo("loan", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-		
-		Map<String,Object> extUserInfo = getExtUserInfo(param);
-		
-		// 查询户籍地址
-		AfIdNumberDo idNumberInfo = afIdNumberService.getIdNumberInfoByUserId(userId);
-		String censusRegister = StringUtils.EMPTY;
-		if(idNumberInfo != null) {
-			censusRegister = idNumberInfo.getAddress();
-		}	
-		
-		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
-				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
-				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo,param.getSelectedType(),param.getAddress(),censusRegister);
-		
-		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
-		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
-		afUserAuthStatusDo.setUserId(userId);
-		AfUserAccountSenceDo bldSenceDo = afUserAccountSenceService.buildAccountScene(userId, LoanType.BLD_LOAN.getCode(), "0");
-		
-		if (!riskResp.isSuccess()) {
-			// 认证失败
-			afUserAuthStatusDo.setStatus("C");
-		} else {
-			// 认证中
-			afUserAuthStatusDo.setStatus("A");
-		}
-		// 新增或修改认证记录
-		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-		afUserAccountSenceService.saveOrUpdateAccountSence(bldSenceDo);
-		resp.setResponseData(data);
+		String lockKey = Constants.CACHEKEY_APPLY_BLD_RISK_LOCK + userId;
+    	if (bizCacheUtil.getObject(lockKey) == null) {
+    	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+    	} else {
+    	    throw new FanbeiException(FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
+    	}
+    	
+    	try {
+    		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
+    		if (mainCard == null) {
+    			throw new FanbeiException(FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
+    		}
+    		String cardNo = mainCard.getCardNumber();
+    		String appName = context.getId().startsWith("i") ? "alading_ios" : "alading_and";
+    		AfUserDo afUserDo = afUserService.getUserById(userId);
+    		AfUserAccountDto accountDo = afUserAccountService.getUserAndAccountByUserId(userId);
+    		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+    		// 验证所选认证是否通过
+    		checkAuthStatus(afUserAuthDo, param);
+
+    		Object directory = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
+    		String riskOrderNo = riskUtil.getOrderNo("loan", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+
+    		Map<String, Object> extUserInfo = getExtUserInfo(param);
+
+    		// 查询户籍地址
+    		AfIdNumberDo idNumberInfo = afIdNumberService.getIdNumberInfoByUserId(userId);
+    		String censusRegister = StringUtils.EMPTY;
+    		if (idNumberInfo != null) {
+    			censusRegister = idNumberInfo.getAddress();
+    		}
+
+    		RiskRespBo riskResp = riskUtil.dredgeWhiteCollarLoan(ObjectUtils.toString(userId), "ALL", afUserDo,
+    				afUserAuthDo, appName, clientIp, accountDo, param.getBlackBox(), cardNo, riskOrderNo,
+    				param.getBqsBlackBox(), "23", ObjectUtils.toString(directory), extUserInfo, param.getSelectedType(),
+    				param.getAddress(), censusRegister);
+
+    		AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+    		afUserAuthStatusDo.setScene(SceneType.BLD_LOAN.getName());
+    		afUserAuthStatusDo.setUserId(userId);
+    		AfUserAccountSenceDo bldSenceDo = afUserAccountSenceService.buildAccountScene(userId,
+    				LoanType.BLD_LOAN.getCode(), "0");
+
+    		if (!riskResp.isSuccess()) {
+    			// 认证失败
+    			afUserAuthStatusDo.setStatus("C");
+    			bizCacheUtil.delCache(lockKey);
+    		} else {
+    			// 认证中
+    			afUserAuthStatusDo.setStatus("A");
+    		}
+    		// 新增或修改认证记录
+    		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+    		afUserAccountSenceService.saveOrUpdateAccountSence(bldSenceDo);
+    		resp.setResponseData(data);
+    	} catch( Exception e) {
+    		bizCacheUtil.delCache(lockKey);
+    		throw e;
+    	}
+
 		return resp;
 	}
 
-	
 	private void checkAuthStatus(AfUserAuthDo afUserAuthDo, DredgeWhiteCollarLoanParam param) {
 		String selectedType = param.getSelectedType();
-		if(StringUtils.equals(selectedType, "fund")) {
+		if (StringUtils.equals(selectedType, "fund")) {
 			String fundStatus = afUserAuthDo.getFundStatus();
-			if(!StringUtils.equals("Y", fundStatus)) {
+			if (!StringUtils.equals("Y", fundStatus)) {
 				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
 			}
-		} else if(StringUtils.equals(selectedType, "socialsecurity")){
+		} else if (StringUtils.equals(selectedType, "socialsecurity")) {
 			String jinponStatus = afUserAuthDo.getJinpoStatus();
-			if(!StringUtils.equals("Y", jinponStatus)) {
+			if (!StringUtils.equals("Y", jinponStatus)) {
 				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
 			}
-		} else if(StringUtils.equals(selectedType, "ebank")) {
+		} else if (StringUtils.equals(selectedType, "ebank")) {
 			String onlinebankStatus = afUserAuthDo.getOnlinebankStatus();
-			if(!StringUtils.equals("Y", onlinebankStatus)) {
+			if (!StringUtils.equals("Y", onlinebankStatus)) {
 				throw new FanbeiException(FanbeiExceptionCode.SELECTED_AUTH_TYPE_NOT_PASS);
 			}
 		}
-		
+
 	}
 
-
 	private Map<String, Object> getExtUserInfo(DredgeWhiteCollarLoanParam param) {
-		Map<String,Object> extUserInfo = Maps.newHashMap();
+		Map<String, Object> extUserInfo = Maps.newHashMap();
 		extUserInfo.put("companyName", param.getCompany());
 		extUserInfo.put("jobPosition", param.getStation());
 		extUserInfo.put("companyContact", param.getPhone());

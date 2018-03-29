@@ -82,7 +82,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     public List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserId(Long userId) {
 	return afUserAuthStatusDao.selectAfUserAuthStatusByUserId(userId);
     }
-    
+
     @Override
     public boolean isPass(String scene, Long userId) {
     	AfUserAuthStatusDo uas = afUserAuthStatusDao.getAfUserAuthStatusByUserIdAndScene(userId, scene);
@@ -99,5 +99,16 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
 			return authStatus.getStatus();
 		}
 		return "N";
+	}
+
+	@Override
+	public int updateAfUserAuthStatusByUserId(Long userId, String scene,
+			String status) {
+		return afUserAuthStatusDao.updateAfUserAuthStatusByUserId(userId, scene, status);
+	}
+
+	@Override
+	public int updateAfUserAuthStatus(Long userId, String scene, String status) {
+		return afUserAuthStatusDao.insertAfUserAuthStatus(userId, scene, status);
 	}
 }

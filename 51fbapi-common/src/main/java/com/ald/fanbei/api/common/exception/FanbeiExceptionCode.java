@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.common.exception;
 
 /**
@@ -7,10 +8,10 @@ package com.ald.fanbei.api.common.exception;
  */
 public enum FanbeiExceptionCode {
 
-	SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
-
+    SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
+	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
-
+    RESUBMIT_ERROR("RESUBMIT_ERROR",11615,"RESUBMIT_ERROR","请勿重复确认收货"),
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
 
     VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
@@ -107,7 +108,7 @@ public enum FanbeiExceptionCode {
     USER_GET_SIGN_AWARD_ERROR("USER_GET_SIGN_AWARD_ERROR",1214,"user get sign award error ","签到奖励已领取"),
     USER_GET_TO_COUPON_CENTER("USER_GET_TO_COUPON_CENTER",1215,"user get coupon to my coupon center ","您已领取，可前往我的优惠券中查看~"),
     USER_SIGNIN_SUCCESS("USER_SIGNIN_SUCCESS", 1000, "success", "签到成功"),
-
+    REPLACE_MAIN_CARD_FAIL("REPLACE_MAIN_CARD_FAIL",1216,"replace main card fail","更换银行主副卡失败~"),
     // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
@@ -166,6 +167,7 @@ public enum FanbeiExceptionCode {
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
 
     UPS_REPEAT_NOTIFY("UPS_REPEAT_NOTIFY",1549,"ups repeat notify","重复UPS回调"),
+    COMPLETE_ORDER("COMPLETE_ORDER",1580,"complete order","确认收货"),
     UPS_AUTH_BF_SIGN_ERROR("UPS_AUTH_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
     UPS_AUTH_YSB_SIGN_ERROR("UPS_AUTH_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
     UPS_DELEGATE_PAY_ERROR("UPS_DELEGATE_PAY_ERROR",1552,"ups delegate pay error","单笔代付失败"),
@@ -234,7 +236,7 @@ public enum FanbeiExceptionCode {
 
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
-    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审批失败"),
+    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
     AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败，请稍后重试。若一直认证失败，请联系客服电话400-002-5151"),
@@ -262,6 +264,7 @@ public enum FanbeiExceptionCode {
     RISK_RAISE_CAPTIL_ERROR("RISK_RAISE_CAPTIL_ERROR",1923,"get captil error","风控应还本金获取失败"),
     RISK_FORBIDDEN_ERROR("RISK_FORBIDDEN_ERROR",1923,"get captil error","抱歉，无法续期"),
     RISK_RAISE_AMOUNT_ERROR("RISK_RAISE_AMOUNT_ERROR",1924,"risk raise amount error","提额异常"),
+    RISK_NEWFUND_NOTIFY_ERROR("RISK_NEWFUND_NOTIFY_ERROR",1925,"risk newfund notify error","51公积金信息通知风控异常"),
     RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
     UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
     //2000-2100
@@ -347,6 +350,7 @@ public enum FanbeiExceptionCode {
     ONLY_ONE_DOUBLE12GOODS_ACCEPTED("ONLY_ONE_DOUBLE12GOODS_ACCEPTED",4035,"only one double12Goods could be accepted","亲，每个账号限购1件，不要太贪心哦"),
     DOUBLE_EGGS_EXPIRE("DOUBLE_EGGS_EXPIRE",4038,"double eggs goods expired","亲，已经过了秒杀时间哦，请准备下一场秒杀吧！"),
     DOUBLE_EGGS_WITHOUT_START("DOUBLE_EGGS_WITHOUT_START",4039,"double eggs goods has not started yet","亲，此商品是秒杀商品，还未开始哟！"),
+    DOUBLE_EGGS_LIMIT_TIME("DOUBLE_EGGS_LIMIT_TIME",4040,"double eggs goods has limit time","亲，此商品是秒杀商品，只能指定时间购买哟！"),
     NO_DOUBLE12GOODS_ACCEPTED("NO_DOUBLE12GOODS_ACCEPTED",4036,"only one double12Goods could be accepted","秒杀商品已售空"),
     DOUBLE12ORDER_ERROR("DOUBLE12ORDER_ERROR",4037,"double12 activity order error","秒杀商品下单异常"),
     HAVE_BOUGHT_GOODS("HAVE_BOUGHT_GOODS",4039,"have bought goods","您已经购物过商品了哦"),
@@ -399,7 +403,7 @@ public enum FanbeiExceptionCode {
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 	//公信宝认证
     AUTH_GXB_GETTOKEN_ERROR("AUTH_GXB_GETTOKEN_ERROR",7008,"auth gxb gettoken error","认证公信宝获取token失败"),
-	
+
 
 	//用户现金流不存在
 
@@ -408,8 +412,18 @@ public enum FanbeiExceptionCode {
     //有过期数据
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用'提前结清'功能"),
     FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
+    TEMPORARY_AMOUNT_SWITH_EMPTY("TEMPORARY_AMOUNT_SWITH_EMPTY",7010,"TEMPORARY_AMOUNT_SWITH_EMPTY","临时额度开关没有设置"),
 
-    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过");
+    SELECTED_AUTH_TYPE_NOT_PASS("SELECTED_AUTH_TYPE_NOT_PASS", 7007, "SELECTED_AUTH_TYPE_NOT_PASS ", "所选认证不通过"),
+	//paypwd wrong less than specific times
+	PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_LESS_THAN_SPECIFIC_TIMES",8003,"paypwd wrong less than specific times","支付密码错误，您还有x次机会！"),
+	//paypwd wrong more than specific times
+	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
+	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！"),
+    SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
+    SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
+    SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
+    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
 
 
     /**
@@ -469,4 +483,21 @@ public enum FanbeiExceptionCode {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 }

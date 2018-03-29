@@ -26,7 +26,7 @@
         </tr>
         <tr style="text-align:center;">
             <td>大写金额</td>
-            <td>人民币$!{amountCapital}元</td>
+            <td>人民币$!{amountCapital}</td>
         </tr>
         <tr style="text-align:center;">
             <td>借款利率（年化）</td>
@@ -149,7 +149,7 @@
         </tr>
         #foreach($item in $!{edspaySealDoList})
             <tr>
-                <td>$!{item.edspayUserName}</td>
+                <td>$!{item.userName}</td>
                 <td>$!{item.edspayUserCardId}</td>
                 <td>#if($!{item.investorAmount})$!{item.investorAmount}元#end</td>
             </tr>

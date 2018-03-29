@@ -9,6 +9,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import org.bouncycastle.jce.provider.asymmetric.ec.KeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +41,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Xiaotianjian 2017年1月20日上午10:27:48
@@ -50,6 +60,8 @@ public class AfResourceServiceImpl implements AfResourceService {
     BizCacheUtil bizCacheUtil;
     @Resource
     AfResourceDao afResourceDao;
+    @Resource
+    private AfGoodsService afGoodsService;
     //	@Resource
 //	BizCacheUtil bizCacheUtil;
     private static Map<String, List<AfResourceDo>> localResource = null;
@@ -647,7 +659,66 @@ public class AfResourceServiceImpl implements AfResourceService {
         }
         return null;
     }
+    /**
+     * 获取品牌专有利率
+     *
+     * @param goodsId 用户名
+     * @return 利率相关详情
+     */
+    @Override
+    public AfResourceDo getBrandRate(long goodsId) {
+        if(goodsId<=0l){
+            return null;
+        }
+        AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
+        if (goods == null){
+            return null;
+        }
+        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME_VIP+goods.getBrandId());
 
+        return resource;
+    }
+    @Override
+    public boolean getBorrowCashCLosed() {
+
+        AfResourceDo resource = afResourceDao.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, AfResourceSecType.borrowCashSupuerSwitch.getCode());
+        if (resource != null && "N".equals(resource.getValue1())){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 获取黑名单
+     *
+     * @return 风控黑名单相关详情
+     */
+    @Override
+    public boolean getBlackList() {
+
+        try{
+            AfResourceDo resource = afResourceDao.getSingleResourceBytype(Constants.DEVICE_UUID_BLACK);
+            if (resource !=null && resource.getValue3() != null){
+                ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder
+                        .getRequestAttributes();
+                String uuid = "";
+                if (requestAttributes != null) {
+                    String id = requestAttributes.getRequest().getHeader(Constants.REQ_SYS_NODE_ID);
+                    String array[] = id == null ? null : id.split("_");
+                    uuid = array == null || array.length < 2 ? "" : array[1];
+                }
+                if (uuid != null && !"".equals(uuid)){
+                    if (resource.getValue3().contains(uuid)){
+                        return true;
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            logger.info("获取黑名单 失败{}",e);
+        }
+
+        return false;
+    }
 	@Override
 	public AfResourceDo getEcommerceFloorImgRes() {
 		return afResourceDao.getEcommerceFloorImgRes();
@@ -689,14 +760,18 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public AfResourceDo getConfigByTypesAndValue(String type, String value) {
 		return afResourceDao.getConfigByTypesAndValue(type,value);
 	}
-	
+
+	@Override
+	public int editResource(AfResourceDo assetPushResource) {
+		return afResourceDao.editResource(assetPushResource);
+	}
 	public BorrowLegalCfgBean getBorrowLegalCfgInfo() {
 		List<AfResourceDo> borrowHomeConfigList = this.newSelectBorrowHomeConfigByAllTypes();
 		BorrowLegalCfgBean cfgBean = new BorrowLegalCfgBean();
-		
+
 		for (AfResourceDo afResourceDo : borrowHomeConfigList) {
 			String secType = afResourceDo.getSecType();
-			
+
 			String v = afResourceDo.getValue();
 			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
 				if (StringUtils.equals(secType, AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
@@ -769,8 +844,24 @@ public class AfResourceServiceImpl implements AfResourceService {
 
 	@Override
 	public List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType) {
-		
+
 		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
 	}
+	
+	public List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType) {
+	    // TODO Auto-generated method stub
+	    return afResourceDao.getConfigsListByTypesAndSecType(type,secType);
+	}	
+
+
+    /**
+     * 获取新的专场信息(未出账单列表页|已出账单列表页)
+     * @param type
+     * @return
+     */
+	@Override
+   public List<AfResourceDo> getNewSpecialResource(String type){
+        return afResourceDao.getNewSpecialResource(type);
+    }
 
 }

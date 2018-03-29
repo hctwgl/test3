@@ -133,7 +133,7 @@ public class GetHomeGoodsListApi implements ApiHandle {
 				}
 			}
 			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 			if (nperList != null) {
 				Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
 				String isFree = (String) nperMap.get("isFree");

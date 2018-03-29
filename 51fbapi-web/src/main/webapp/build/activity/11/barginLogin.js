@@ -98,7 +98,8 @@ $(function() {
                     activityId: activityId,
                     refUserName: userName,
                     urlName: urlName,
-                    token: token
+                    token: token,
+                    bsqToken:token
 
                 },
                 success: function(data) {

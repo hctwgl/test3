@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
@@ -387,5 +388,12 @@ public interface AfOrderService {
 	int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount);
 
 	int addSceneAmount(List<AfOrderSceneAmountDo> list);
+	AfInterimAuDo getInterimAuDo(AfOrderDo orderInfo);
+	/**
+	 *  author chenqiwei
+	 *  获取商圈订单商户类型名
+	 * */
+
+	String getTradeBusinessNameByOrderId(Long orderid);
 
 }

@@ -25,6 +25,7 @@ public enum AfResourceSecType {
 
 		//活动相关
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
+	    ASSET_PUSH_RECEIVE("EDSPAY","债权实时债权接收方"),
 	    ASSET_PUSH_WHITE("ASSET_PUSH_WHITE","债权实时推送白名单"),
     
 	    //借钱模块
@@ -53,9 +54,11 @@ public enum AfResourceSecType {
 		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
 		BORROW_CASH_INFO_LEGAL_NEW("BORROW_CASH_INFO_LEGAL_NEW","新借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
+		AUTH_FUND_SWITCH("AUTH_FUND_SWITCH","公积金认证开关"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
 		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),
+		SMS_RISK_NEED_AUDIT("SMS_RISK_NEED_AUDIT","强风控需要人审短信"),
 		SMS_BORROW_RISK_QUALIFIED("SMS_BORROW_RISK_QUALIFIED","用户借钱风控审核中状态被技术干预后用户符合借钱条件"),
 		SMS_BORROW_RISK_NOT_QUALIFIED("SMS_BORROW_RISK_NOT_QUALIFIED","用户借钱风控审核中状态被技术干预后用户不符合借钱条件"),
 		SMS_BORROW_PAY_MONEY_FAIL("SMS_BORROW_PAY_MONEY_FAIL","借钱审核通过但是打款失败"),

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,21 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.*;
+import com.ald.fanbei.api.biz.rebate.RebateContext;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.*;
+import com.ald.fanbei.api.common.VersionCheckUitl;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
+
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
@@ -26,6 +42,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.auth.executor.AuthCallbackManager;
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
 import com.ald.fanbei.api.biz.bo.DredgeWhiteCollarLoanReqBo;
@@ -154,6 +174,9 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import com.google.common.collect.Maps;
 
 /**
@@ -256,6 +279,14 @@ public class RiskUtil extends AbstractThird {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfAssetSideInfoService afAssetSideInfoService;
 
 	@Resource
 	AuthCallbackManager authCallbackManager;
@@ -708,6 +739,10 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
+		boolean isblack = afResourceService.getBlackList();
+		if (isblack){
+			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		}
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setOrderNo(orderNo);
 		reqBo.setConsumerNo(consumerNo);
@@ -746,13 +781,28 @@ public class RiskUtil extends AbstractThird {
 		// 增加3个参数，配合风控策略的改变
 		String codeForSecond = null;
 		String codeForThird = null;
+		String codeForSecSceneBasis = null;
+		String codeForThirdSceneBasis = null;
 		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
 		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		//二级类型
+		codeForSecSceneBasis = SecSence;
+		//三级类型(区分逛逛和商圈)
+		
+		if(SecSence!=null && SecSence.equals("BOLUOME")){
+			codeForThirdSceneBasis = ThirdSence;
+		}
+		if(SecSence!=null &&SecSence.equals("TRADE")){
+			codeForThirdSceneBasis  =  afOrderService.getTradeBusinessNameByOrderId(orderid);
+		}
 
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo), SecSence);
 		eventObj.put("dealAmount", dealAmount);
 		eventObj.put("SecSence", codeForSecond == null ? "" : codeForSecond);
 		eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
+		
+		eventObj.put("secSceneBasis", codeForSecSceneBasis == null ? "" : codeForSecSceneBasis);
+		eventObj.put("thirdSceneBasis", codeForThirdSceneBasis == null ? "" : codeForThirdSceneBasis);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		// 12-13 弱风控加入用户借款信息
 		HashMap summaryData = riskDataMap.get("summaryData");
@@ -811,6 +861,8 @@ public class RiskUtil extends AbstractThird {
 			String result = dataObj.getString("result");
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
+			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) { riskResp.setPassWeakRisk(true); }
+			else {riskResp.setPassWeakRisk(false);}
 			riskResp.setConsumerNo(consumerNo);
 			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
 			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
@@ -1082,6 +1134,32 @@ public class RiskUtil extends AbstractThird {
 				afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
 						orderInfo.getOrderType());
+				
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				Boolean flag=true;
+				//新增白名单逻辑
+				AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+				if (pushWhiteResource != null) {
+					//白名单开启
+					String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
+					Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+					if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
+						//不在白名单不推送
+						flag=false;
+					}
+				}
+				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
+						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag) {
+					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
+					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
+					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+					//债权实时推送
+					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (resp) {
+						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+					}
+				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
 				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 			} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
@@ -1110,6 +1188,81 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+
+	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
+		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
+		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		//获取开户行信息
+		FanbeiBorrowBankInfoBo bankInfo = assetSideEdspayUtil.getAssetSideBankInfo(assetSideEdspayUtil.getAssetSideBankInfo());
+		//借款人平台逾期信息
+		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(borrow.getUserId());
+		//获取资产方的分润利率
+		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+		AfBorrowDto borrowDto = afBorrowService.getBorrowInfoById(borrow.getRid());
+		//消费分期的还款计划
+		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
+		List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrow.getRid());
+		Date lastBorrowBillGmtPayTime=null;
+		for (int i = 0; i < afBorrowBillDos.size(); i++) {
+			RepaymentPlan repaymentPlan = new RepaymentPlan();
+			repaymentPlan.setRepaymentNo(afBorrowBillDos.get(i).getRid()+"");
+			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(afBorrowBillDos.get(i).getGmtPayTime()));
+			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(borrowDto.getGmtCreate(), afBorrowBillDos.get(i).getGmtPayTime()));
+			repaymentPlan.setRepaymentAmount(afBorrowBillDos.get(i).getPrincipleAmount());
+			repaymentPlan.setRepaymentInterest(afBorrowBillDos.get(i).getInterestAmount());
+			repaymentPlan.setRepaymentPeriod(afBorrowBillDos.get(i).getBillNper()-1);
+			repaymentPlans.add(repaymentPlan);
+			if (i == afBorrowBillDos.size() - 1) {
+				lastBorrowBillGmtPayTime= afBorrowBillDos.get(i).getGmtPayTime();
+			}
+		}
+		Integer nper = borrowDto.getNper();//分期数
+		//获取消费分期协议年化利率配置
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
+		BigDecimal borrowRate=BigDecimal.ZERO;
+		JSONArray array= new JSONArray();
+		if (afResourceDo!=null&& afResourceDo.getValue3()!=null) {
+			array= JSONObject.parseArray(afResourceDo.getValue3());
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject jsonObject = array.getJSONObject(i);
+				Integer confNper= (Integer) jsonObject.get("nper");
+				if (nper == confNper) {
+					borrowRate=(BigDecimal) jsonObject.get("rate");
+					break;
+				}
+			}
+		}
+		creditRespBo.setOrderNo(borrow.getBorrowNo());
+		creditRespBo.setUserId(borrow.getUserId());
+		creditRespBo.setName(borrowDto.getRealName());
+		creditRespBo.setCardId(borrowDto.getIdNumber());
+		creditRespBo.setMobile(borrowDto.getUserName());
+		creditRespBo.setBankNo("");
+		creditRespBo.setAcctName(bankInfo.getAcctName());
+		creditRespBo.setMoney(borrowDto.getAmount());
+		creditRespBo.setApr(BigDecimalUtil.multiply(borrowRate, new BigDecimal(100)));
+		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(borrowDto.getGmtCreate(), lastBorrowBillGmtPayTime));
+		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(borrowDto.getGmtCreate()));
+		creditRespBo.setPurpose("个人消费");
+		creditRespBo.setRepaymentStatus(0);
+		creditRespBo.setRepayName(bankInfo.getRepayName());
+		creditRespBo.setRepayAcct(bankInfo.getRepayAcct());
+		creditRespBo.setRepayAcctBankNo(bankInfo.getRepayAcctBankNo());
+		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
+		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
+		creditRespBo.setManageFee(afAssetSideInfoDo.getAnnualRate());
+		creditRespBo.setRepaymentSource("工资收入");
+		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
+		creditRespBo.setIsPeriod(1);
+		creditRespBo.setTotalPeriod(borrowDto.getNper());
+		creditRespBo.setLoanerType(0);
+		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
+		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
+		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(0);
+		creditRespBos.add(creditRespBo);
+		return creditRespBos;
 	}
 
 	/**
@@ -1205,7 +1358,8 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtil.isNotBlank(respBo.getRespCode())) {
 				// 模版数据map处理
 				Map<String, String> replaceMapData = new HashMap<String, String>();
-				replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+				replaceMapData.put("errorMsg", errorMsg);
 				try {
 					AfUserDo userDo = afUserService.getUserById(userId);
 					smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
@@ -1213,6 +1367,8 @@ public class RiskUtil extends AbstractThird {
 				} catch (Exception e) {
 					logger.error("pay order rela bank pay error,userId=" + userId, e);
 				}
+				
+				throw new FanbeiException(errorMsg);
 			}
 			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
@@ -1580,7 +1736,9 @@ public class RiskUtil extends AbstractThird {
 				
 				jpushService.strongRiskFail(userAccountDo.getUserName());
 				smsUtil.sendRiskFail(userAccountDo.getUserName());
-			}
+			} /*else if (StringUtils.equals("20", result)) {//人审
+				smsUtil.sendRiskNeedAudit(userAccountDo.getUserName());
+			}*/
 		}
 		return 0;
 	}
@@ -1675,7 +1833,7 @@ public class RiskUtil extends AbstractThird {
 	 * @return 拼接后字符串
 	 */
 	public static String createLinkString(Map<String, String> params) {
-
+	
 		List<String> keys = new ArrayList<String>(params.keySet());
 		Collections.sort(keys);
 		String prestr = "";
@@ -3449,41 +3607,43 @@ public class RiskUtil extends AbstractThird {
 
 	/**
 	 * 推送公积金信息给风控
-	 * 
 	 * @param data
-	 *            51公积金返回的公积金信息
 	 * @param userId
-	 *            app端用户唯一标识
-	 * @param token
-	 *            51公积金交互的token
-	 * @param orderSn
-	 *            51公积金交互的订单号
 	 * @return
 	 */
-	public RiskRespBo FundNotifyRisk(String data, String userId, String token, String orderSn) {
-		RiskNotifyReqBo reqBo = new RiskNotifyReqBo();
-		reqBo.setUserId(userId);
-		reqBo.setToken(token);
-		reqBo.setOrderSn(orderSn);
-		reqBo.setData(data);
+	public RiskQuotaRespBo newFundInfoNotify(String data, String userId) {
+		RiskQuotaRespBo riskResp = null;
+		newFundNotifyReqBo reqBo = new newFundNotifyReqBo();
+		reqBo.setConsumerNo(userId);
+		Map<String, Object> detailsMap = Maps.newHashMap();
+		detailsMap.put("source", "51fund");
+		detailsMap.put("item", "fund");
+		detailsMap.put("data", data);
+		String details = JSONObject.toJSONString(detailsMap);
+		// 生成Base64编码
+		String detailsBase64 = Base64.encodeString(details);
+		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		System.out.println(reqBo.toString());
-		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/processData.htm", reqBo);
-		// String reqResult = requestProxy.post("http://192.168.117.20:8080" +
-		// "/modules/api/user/processData.htm",reqBo);
-		logThird(reqResult, "FundNotifyRisk", reqBo);
+		String url = getUrl() +  "/modules/api/thrid/receiveData.htm";
+//		String url = "http://122.224.88.51:18080" +  "/modules/api/thrid/receiveData.htm";
+		logger.info("newFundInfoNotify url = {},params = {}",url,JSONObject.toJSONString(reqBo));
+		String reqResult = requestProxy.post(url, reqBo);
+		logger.info("newFundInfoNotify result = {}", reqResult);
+		logThird(reqResult, "newFundInfoNotify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			logger.info("newFundInfoNotify fail ,result is null");
+			throw new FanbeiException(FanbeiExceptionCode.RISK_NEWFUND_NOTIFY_ERROR);
 		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskOperatorRespBo.class);
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			riskResp.setSuccess(true);
-			return riskResp;
-		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		try {
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
+			logger.info("newFundInfoNotify success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
+		return riskResp;
 	}
 
 	/**

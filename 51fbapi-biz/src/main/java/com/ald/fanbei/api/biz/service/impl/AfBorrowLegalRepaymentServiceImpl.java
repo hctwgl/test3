@@ -150,7 +150,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 
 	@Resource
 	CuiShouUtils cuiShouUtils;
-	
+
 	/**
 	 * 新版还钱函
 	 * 参考{@link com.ald.fanbei.api.biz.service.impl.AfRepaymentBorrowCashServiceImpl}.createRepayment()
@@ -211,8 +211,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.cardNo = repayCardNum;
 		generateRepayRecords(bo);
 
-		CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
-		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
+        CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
+		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
+
 	}
 
 

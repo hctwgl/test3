@@ -103,7 +103,8 @@ $(function(){
                     mobile: mobileNum,
                     token: token,
                     channelCode: channelCode,
-                    pointCode: pointCode
+                    pointCode: pointCode,
+                    bsqToken:token
                 },
                 success: function(returnData){
                     if (returnData.success) {
@@ -140,7 +141,7 @@ $(function(){
                 document.getElementById('register_codeBtn').addEventListener('click', function () {
                     var mobileNum = $("#register_mobile").val();
                     if (!(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
-                        requestMsg('请输入手机号')
+                        requestMsg('请输入正确的手机号')
                     }else{
                         $.ajax({
                             url:'/app/user/checkMobileRegistered',
@@ -212,7 +213,7 @@ $(function(){
                 if ( style=='8'||style=='9'||style=='10'||style=='11'||style=='12'||style=='13'||style=='14'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
                     if ($("#input_check").is(":checked") || (style=='12'||style=='13'||style=='14')) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
-                            _taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
+                            //_taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
                             $.ajax({ // 设置登录密码
                                 url: "/app/user/commitChannelRegister",
                                 type: 'POST',
@@ -223,7 +224,8 @@ $(function(){
                                     password: password_md5,
                                     channelCode: channelCode,
                                     pointCode: pointCode,
-                                    token:token
+                                    token:token,
+                                    bsqToken:token
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
@@ -235,6 +237,10 @@ $(function(){
                                             // setTimeout(function () {
                                             //     window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
                                             // },500)
+                                        }
+                                        //转化代码
+                                        if(style=='14'){
+                                            _taq.push({convert_id:"92097724391", event_type:"form"});
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {

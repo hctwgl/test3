@@ -149,8 +149,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "",afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
-				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+			    dealRenewalFail(payTradeNo, "",errorMsg);
+			    throw new FanbeiException(errorMsg);
 			}
 			map.put("resp", respBo);
 		} else if (cardId == -2) {// 余额支付
@@ -180,10 +181,11 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
-			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "",afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
-				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-			}
+            	    	if (!respBo.isSuccess()) {
+            	    	    String errowMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+            	    	    dealRenewalFail(payTradeNo, "", errowMsg);
+            	    	    throw new FanbeiException(errowMsg);
+            	    	}
 			map.put("resp", respBo);
 		} else if (cardId == -2) {// 余额支付
 			dealRenewalSucess(renewalDetail.getPayTradeNo(), "");

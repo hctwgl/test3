@@ -177,7 +177,7 @@ public class AppH5EncoreController extends BaseController {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-						activityGoodsDto.getSpecialPrice(), resource.getValue1(), resource.getValue2());
+						activityGoodsDto.getSpecialPrice(), resource.getValue1(), resource.getValue2(),goodsId);
 				
 				if(nperList!= null){
 					activityGoodsInfo.put("goodsType", "1");
@@ -220,7 +220,7 @@ public class AppH5EncoreController extends BaseController {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 				
 				if(nperList!= null){
 					recommendGoodsInfo.put("goodsType", "1");
@@ -337,7 +337,7 @@ public class AppH5EncoreController extends BaseController {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 				
 				if(nperList!= null){
 					goodsInfo.put("goodsType", "1");

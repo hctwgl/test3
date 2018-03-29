@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.domain.*;
@@ -100,7 +102,10 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
     @Resource
     AfUserCouponTigerMachineService afUserCouponTigerMachineService;
-    
+	@Resource
+	BizCacheUtil bizCacheUtil;
+    @Resource
+    AfSeckillActivityService afSeckillActivityService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -154,6 +159,16 @@ public class PayOrderV1Api implements ApiHandle {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
             }
         }
+        //秒杀逻辑
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+            AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
+            if(afSeckillActivityDo!=null&&afSeckillActivityDo.getGoodsLimitCount()!=null){
+                AfSeckillActivityOrderDo seckillActivityOrderInfo = afSeckillActivityService.getActivityOrderByGoodsIdAndActId(orderInfo.getGoodsId(),afSeckillActivityDo.getRid(),userId);
+                if(seckillActivityOrderInfo!=null){
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
+                }
+            }
+        }
         //双十一砍价添加
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
             AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
@@ -194,6 +209,15 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
+        
+	String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+	if (bizCacheUtil.getObject(lockKey) == null) {
+	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+	} else {
+	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	}
+        
+        
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
@@ -352,7 +376,7 @@ public class PayOrderV1Api implements ApiHandle {
             Object payStatus = result.get("status");
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
-                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+/*                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
                 	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
                 	if (resourceDo != null) {
                 		Date current = new Date();
@@ -364,7 +388,7 @@ public class PayOrderV1Api implements ApiHandle {
                 		
 					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
-                	
+*/                	
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {
@@ -412,14 +436,14 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
-    /**
+/*    *//**
 	 * 
 	 * @Title: double12GoodsCheck
 	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
 	 * @return  void  
 	 * @author yanghailong
 	 * @data  2017年11月21日
-	 */
+	 *//*
 	private void double12GoodsCheck(Long userId, Long goodsId){
 		
 		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
@@ -440,9 +464,9 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 	
-	/**
+/*	*//**
 	 * 
 	* @Title: doubleEggsGoodsCheck
 	* @author qiao
@@ -452,7 +476,7 @@ public class PayOrderV1Api implements ApiHandle {
 	* @param goodsId    
 	* @return void   
 	* @throws
-	 */
+	 *//*
 	private void doubleEggsGoodsCheck(Long userId, Long goodsId){
 		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 		if(doubleEggsDo != null){
@@ -472,5 +496,5 @@ public class PayOrderV1Api implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-	}
+	}*/
 }

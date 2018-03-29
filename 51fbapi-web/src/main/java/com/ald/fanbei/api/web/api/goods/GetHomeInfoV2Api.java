@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfCategoryService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -91,6 +93,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	
 	@Resource
 	Cache scheduledCache;
+	@Resource
+	AfAbtestDeviceNewService afAbtestDeviceNewService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -98,6 +102,26 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		data.put("homePageType", "NEW");
+		
+//		String userName = context.getUserName();
+//		Long userId = context.getUserId();
+//		if (userName != null && userId != null) {
+//		    try {
+//			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+//			if (StringUtils.isNotEmpty(deviceId)) {
+//			  //String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+//				AfAbtestDeviceNewDo abTestDeviceDo = new AfAbtestDeviceNewDo();
+//				abTestDeviceDo.setUserId(userId);
+//				abTestDeviceDo.setDeviceNum(deviceId);
+//				// 通过唯一组合索引控制数据不重复
+//				afAbtestDeviceNewService.addUserDeviceInfo(abTestDeviceDo);
+//			}
+//		}  catch (Exception e) {
+//			// ignore error.
+//		}
+//		}
+		
+		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
@@ -189,6 +213,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				
 				if (categoryGoodsInfo == null) {
 					categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+					logger.info("getHomeInfoV2 cfp categoryGoodsInfo = " + categoryGoodsInfo);
 					bizCacheUtil.saveListForever(cacheKey, categoryGoodsInfo);
 				}
 			} else if (StringUtils.equals(afResourceDo.getValue2(), "Y")) {
@@ -255,6 +280,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		if (!financialEntranceInfo.isEmpty()) {
 			data.put("financialEntranceInfo", financialEntranceInfo);
 		}
+		logger.info("getHomeInfoV2 cfp data = " + data);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -335,7 +361,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");
@@ -358,7 +384,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
 		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
 			Map<String, Object> categoryInfoMap = Maps.newHashMap();
-			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryId",modelH5ItemDo.getRid());
 			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
 			categoryInfoList.add(categoryInfoMap);
 		}
@@ -383,9 +409,9 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			List<AfGoodsDo> goodsDoList = null;
 			if (null != categoryInfoList.get(0)) {
 				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
-				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
-			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				goodsInfo.put("goodName", goodsDo.getName());
@@ -418,7 +444,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 					}
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
-						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 
 				if (nperList != null) {
 					goodsInfo.put("goodsType", "1");

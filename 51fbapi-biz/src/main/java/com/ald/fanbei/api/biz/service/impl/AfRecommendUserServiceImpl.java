@@ -384,8 +384,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				calendar.set(year, month - 1, day);
 				Date time = calendar.getTime();
 				Date falg = DateUtil.addMonths(new Date(), -240);
-				if (falg.getTime() < time.getTime()) {
-					// 说明小于20周岁，不发放奖励
+				Date falg2 = DateUtil.addMonths(new Date(), -540);
+				if (falg.getTime() < time.getTime() || falg2.getTime() > time.getTime()) {
+					// 说明小于20周岁，大于45岁,不发放奖励
 					return 1;
 				}
 				/********临时逻辑：被邀请人未满20周岁时不给邀请人发放奖励***************/

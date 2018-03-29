@@ -33,5 +33,5 @@ public interface AfUserAccountLogDao {
 	
 	BigDecimal getUserAmountByType(AfUserAccountLogDo userAccountLogDo);
 
-	AfUserAccountLogDo getByRefAndType(@Param("rid") Long rid,@Param("type")  String type);
+	AfUserAccountLogDo getByRefAndType(@Param("rid") String rid,@Param("type")  String type);
 }

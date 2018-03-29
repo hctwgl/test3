@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -63,8 +64,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	// AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
-	// @Resource
-	// JpushService jpushService;
+	@Resource
+	BaiQiShiUtils baiQiShiUtils;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
@@ -83,6 +84,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
+	@Resource
+	AfUserBankcardService afUserBankcardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -103,20 +106,26 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));// 验证码
-		/*
-		 * if (StringUtils.isBlank(inputPassSrc)) {
-		 * logger.error("inputPassSrc can't be empty"); return new
-		 * ApiHandleResponse(requestDataVo.getId(),
-		 * FanbeiExceptionCode.PARAM_ERROR); }
-		 */
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-		
+		AfUserLoginLogDo login = new AfUserLoginLogDo();
+		login.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
+		login.setLoginIp(ip);
+		login.setOsType(osType);
+		login.setPhoneType(phoneType);
+		login.setUserName(userName);
+		login.setUuid(uuid);
+		if (afUserDo == null){
+			login.setResult("quick register start");
+			afUserLoginLogService.addUserLoginLog(login);//埋点
+		}else {
+			login.setResult("quick login start");
+			afUserLoginLogService.addUserLoginLog(login);//埋点
+		}
+
 		smsUtil.checkSmsByMobileAndType(context.getUserName(), verifyCode, SmsType.QUICK_LOGIN);// 短信验证码判断
+
 		if (afUserDo == null) {
 			afUserDo = quickRegister(requestDataVo, context, request);
-			// return resp;
-			// return new ApiHandleResponse(requestDataVo.getId(),
-			// FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		Long userId = afUserDo.getRid();
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
@@ -128,18 +137,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			logger.error("sms record is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		// 判断验证码是否一致并且验证码是否已经做过验证
-		/*
-		 * String realCode = smsDo.getVerifyCode(); if
-		 * (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() ==
-		 * 0) { logger.error("verifyCode is invalid"); return new
-		 * ApiHandleResponse(requestDataVo.getId(),
-		 * FanbeiExceptionCode.PARAM_ERROR); } // 判断验证码是否过期 if
-		 * (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(),
-		 * Constants.MINITS_OF_HALF_HOUR))) { return new
-		 * ApiHandleResponse(requestDataVo.getId(),
-		 * FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE); }
-		 */
+
+
 		Integer failCount = afUserDo.getFailCount();
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
@@ -156,7 +155,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		if (DateUtil.afterDay(DateUtil.addHoures(afUserDo.getGmtModified(),
 				lockHourResource == null ? 2 : Integer.parseInt(lockHourResource.getValue())), new Date())) {
 			if (afUserDo.getFailCount() > 5) {
-				loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
+				loginDo.setResult("quick login false:err count too max" + afUserDo.getFailCount());
 				afUserLoginLogService.addUserLoginLog(loginDo);
 				return new ApiHandleResponse(requestDataVo.getId(),
 						FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5);
@@ -172,28 +171,6 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			afUserService.updateUser(temp);
 		}
 
-		// check password
-		// String inputPassword = UserUtil.getPassword(inputPassSrc,
-		// afUserDo.getSalt());
-		/*
-		 * if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) { //
-		 * fail count add 1 AfUserDo temp = new AfUserDo(); Integer errorCount =
-		 * afUserDo.getFailCount(); temp.setRid(afUserDo.getRid());
-		 * temp.setFailCount(errorCount + 1); temp.setUserName(userName);
-		 * afUserService.updateUser(temp);
-		 * loginDo.setResult("false:password error");
-		 * afUserLoginLogService.addUserLoginLog(loginDo); FanbeiExceptionCode
-		 * errorCode = getErrorCountCode(errorCount + 1); return new
-		 * ApiHandleResponse(requestDataVo.getId(), errorCode); }
-		 */
-		// if(afUserDo.getRecommendId() > 0l &&
-		// afUserLoginLogService.getCountByUserName(userName) == 0){
-		// afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-		// //向推荐人推送消息
-		// AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
-		// jpushService.gameShareSuccess(user.getUserName());
-		// }
-		// reset fail count to 0 and record login ip phone msg
 
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
@@ -205,32 +182,9 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 
 		boolean isNeedRisk = true;// 是否为手机号未验证注册的用户
-		/*
-		 * Date gmtCreateDate = afUserDo.getGmtCreate(); Date date = new Date();
-		 * long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
-		 * if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口 isNeedRisk = false; }
-		 * //调用风控可信接口 if (context.getAppVersion() >= 381 &&isNeedRisk
-		 * &&!isInWhiteList(userName)) {
-		 * 
-		 * boolean riskSucc = false; try { riskSucc =
-		 * riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(),
-		 * ""),userName,blackBox,uuid,
-		 * loginType,loginTime,ip,phoneType,networkType,osType); } catch
-		 * (Exception e) { if(e instanceof FanbeiException){
-		 * logger.error("用户登录调风控可信验证失败",e); throw e; }else{
-		 * logger.error("用户登录调风控可信验证发生预期外异常userName:"+userName,e); riskSucc =
-		 * false; } }
-		 * 
-		 * if(!riskSucc){ loginDo.setResult("false:需要验证登录短信");
-		 * afUserLoginLogService.addUserLoginLog(loginDo); JSONObject jo = new
-		 * JSONObject(); jo.put("needVerify","Y"); resp = new
-		 * ApiHandleResponse(requestDataVo.getId(),
-		 * FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
-		 * resp.setResponseData(jo); //失败了返回需要短信验证 return resp; } loginType =
-		 * "2"; //可信登录验证通过，变可信 }
-		 */
 
-		loginDo.setResult("true");
+
+		loginDo.setResult("quick login true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
@@ -268,6 +222,23 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
+			try {
+				AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+				String idNumber = "";
+				String openId = "";
+				String cardNumber = "";
+				if (accountDo != null){
+					idNumber = accountDo.getIdNumber();
+					openId = accountDo.getOpenId();
+				}
+				AfUserBankcardDo bank = afUserBankcardService.getUserMainBankcardByUserId(afUserDo.getRid());
+				if (bank != null){
+					cardNumber = bank.getCardNumber();
+				}
+				baiQiShiUtils.getLoginResult(requestDataVo.getId(),bqsBlackBox, ip, afUserDo.getMobile(),afUserDo.getRealName(),idNumber,cardNumber,openId);
+			}catch (Exception e){
+				logger.error("baiQiShiUtils getLoginResult error => {}",e);
+			}
 		}
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
@@ -330,8 +301,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		userDo.setUserName(userName);
 		userDo.setMobile(userName);
 		userDo.setNick(nick);
-		// userDo.setPassword(password);
-		// userDo.setRegisterChannelId(registerChannelId);
+
 		if (registerChannelPointId != null) {
 			AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod",
 					registerChannelPointId);
@@ -376,6 +346,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 								+ registerChannelPointId);
 			}
 		}
+
 		userDo.setRecommendId(0l);
 		userDo.setMajiabaoName(majiabaoName);
 		userDo.setPassword("");

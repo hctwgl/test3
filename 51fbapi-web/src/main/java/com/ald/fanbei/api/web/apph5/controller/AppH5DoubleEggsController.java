@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.HttpType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -65,6 +66,7 @@ import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -210,7 +212,7 @@ public class AppH5DoubleEggsController extends BaseController {
 							}
 						}
 						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 						if(nperList!= null){
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -322,7 +324,7 @@ public class AppH5DoubleEggsController extends BaseController {
 							}
 						}
 						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
 						if(nperList!= null){
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -631,6 +633,123 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
+	* @Title: getSecondKillGoodsListV1
+	* @author qiao
+	* @date 2018年3月2日 下午3:39:32
+	* @Description: 适合一天有多个场次
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/getSecondKillGoodsListV1",method = RequestMethod.POST)
+	public String getSecondKillGoodsListV1(HttpServletRequest request, HttpServletResponse response) {
+		String result = "";
+		
+		String httpType = request.getParameter("httpType");
+		
+		if (StringUtil.isBlank(httpType)) {
+			FanbeiException exception = new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+			result = H5CommonResponse.getNewInstance(false, "httpType is empty", "", exception.getMessage()).toString();
+			return result;
+		}
+		
+		//get tag from activityId then get goods from different tag
+		Long activityId = NumberUtil.objToLong(request.getParameter("meetingId"));
+		
+		if ( activityId == null) {
+			return H5CommonResponse.getNewInstance(false, "meetingId is empty ！").toString();
+		}
+		
+		String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
+		
+		List<GoodsForDate> goodsList = afGoodsDoubleEggsService.getGoodsListByActivityId(activityId);
+		
+		if (CollectionUtil.isNotEmpty(goodsList)) {
+			for(GoodsForDate goodsForDate : goodsList){
+				Integer alreadyCount = 0;
+		        alreadyCount = afGoodsDoubleEggsService.getAlreadyCount(goodsForDate.getGoodsId());
+		        Integer intstock= goodsForDate.getStockCount() - alreadyCount;
+		        goodsForDate.setCount(intstock<0?0:intstock);
+			}
+		}
+		
+		log = log + String.format("goodsList = %s",goodsList.toString());
+		logger.info(log);
+		
+		if (httpType.equals(HttpType.H5.getCode().toString())) {
+			
+			//like without login in AppH5
+			java.util.Map<String, Object> data = new HashMap<>();
+			
+			data.put("goodsList", goodsList);
+			data.put("serviceDate", new Date());
+			
+			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		}
+		
+		//if httpType is appH5 then judge if it is login or subscribed already 
+		FanbeiWebContext context = new FanbeiWebContext();
+		try{
+			context = doWebCheck(request, false);
+			
+			// if this user has already login in then add status to goods. goodsListForDate
+			String userName = context.getUserName();
+			
+			long userId = 0L;
+			if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
+				
+				if (CollectionUtil.isNotEmpty(goodsList)) {
+					
+					int status = goodsList.get(0).getStatus();
+					
+					if (status == 0 || status == 2) {
+						//check if already subscribed or if already bought 
+						
+						for(GoodsForDate goodsForDate :goodsList){
+							
+							userId = convertUserNameToUserId(userName);
+							
+							if (status == 0) {
+								//check if already subscribed
+								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,goodsForDate.getDoubleGoodsId());
+								
+								log = log + String.format("num = %s",num);
+								logger.info(log);
+								if (num > 0 ) {
+									goodsForDate.setStatus(1);
+								}
+							}
+						}
+					}
+					
+
+				}
+				
+
+			}
+			
+			
+			//like without login in AppH5
+			java.util.Map<String, Object> data = new HashMap<>();
+			
+			data.put("goodsList", goodsList);
+			data.put("serviceDate", new Date());
+			
+			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			
+		}catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+	
+		
+		}
+		return result;
+	}
+	/**
+	 * 
 	* @Title: subscribe
 	* @author qiao
 	* @date 2017年12月7日 下午2:26:48
@@ -654,21 +773,22 @@ public class AppH5DoubleEggsController extends BaseController {
 				Long userId = convertUserNameToUserId(context.getUserName());
 				java.util.Map<String, Object> data = new HashMap<>();
 
-				Long goodsId = NumberUtil.objToLong(request.getParameter("goodsId"));
+				Long doubleGoodsId = NumberUtil.objToLong(request.getParameter("doubleGoodsId"));
 				
-				log = log + String.format("goodsId = %s",goodsId);
+				log = log + String.format("doubleGoodsId = %s",doubleGoodsId);
 				logger.info(log);
 				
-			
-				
-				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
-
-				log = log + String.format("goodsDo = %s",goodsDo.toString());
+				AfGoodsDoubleEggsDo tempDo = afGoodsDoubleEggsService.getByDoubleGoodsId(doubleGoodsId);
+				if (tempDo == null ) {
+					result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
+				}
+		
+				log = log + String.format("AfGoodsDoubleEggsDo = %s",tempDo.toString());
 				logger.info(log);
 				
 				//根据goodsId查询商品信息
-				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-goodsDo.getAlreadyCount());//秒杀商品余量
+				AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(tempDo.getGoodsId());
+				int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-tempDo.getAlreadyCount());//秒杀商品余量
 				
 				log = log + String.format("goodsDouble12Count = %d",goodsDouble12Count);
 				logger.info(log);
@@ -678,27 +798,20 @@ public class AppH5DoubleEggsController extends BaseController {
 					throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 				}
 				
-				if (goodsDo != null) {
+				if (tempDo != null) {
 
 					//String time = "10";
 					//Integer.parseInt(time);
-					int preTime = 20;
+					int preTime = 10;
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
 					// error"time分钟内无需预约"
-					if (DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())) {
+					if (DateUtil.addMins(now, preTime).after(tempDo.getStartTime())) {
 						return  H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
 						
 					}
 
-					long doubleGoodsId = goodsDo.getRid();
-					AfGoodsDoubleEggsDo tempDo = new AfGoodsDoubleEggsDo();
-					tempDo.setGoodsId(goodsId);
-					tempDo = afGoodsDoubleEggsService.getByCommonCondition(tempDo);
-					if (tempDo == null ) {
-						result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
-					}
 					
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"

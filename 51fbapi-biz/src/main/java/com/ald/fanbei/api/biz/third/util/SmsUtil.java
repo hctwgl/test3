@@ -77,29 +77,53 @@ public class SmsUtil extends AbstractThird {
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
     private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
+    private static String RECYCLE_REBATE_SUCCESS = "您的回收订单已完成，账户到账返现%s元，其中包含回收订单金额%s元，订单返现%s元，快去我的账户中查看吧~";//回收业务成功返现
+    private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在51返呗回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
+
+
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
 
     private static final String sendHostAddress = "smtp.mxhichina.com";// 发送邮件使用的服务器的地址
-
     @Resource
     AfSmsRecordService afSmsRecordService;
-
     @Resource
     AfResourceService afResourceService;
-
     @Resource
     AfUserOutDayDao afUserOutDayDao;
-
     @Resource
     private  BizCacheUtil bizCacheUtil;
+
+
+    /**
+     * 发送回收业务订单成功短信
+     *
+     * @param mobile 手机号
+     * @param orderAmount 订单总额
+     * @param rebateAmount 返现总额
+     */
+    public void sendRecycleRebate(String mobile,BigDecimal orderAmount, BigDecimal rebateAmount) {
+        sendSmsToDhst(mobile, String.format(RECYCLE_REBATE_SUCCESS,rebateAmount,orderAmount.setScale(2,2),rebateAmount.subtract(orderAmount)));
+    }
+
+    /**
+     * 发送回收业务有得卖账号余额预警短信
+     *
+     * @param mobile 手机号
+     * @param remainAmount 账户总额
+     * @param remainAmount 账户总额
+     */
+    public void sendRecycleWarn(String mobile,BigDecimal remainAmount) {
+        sendSmsToDhst(mobile, String.format(RECYCLE_MIN_AMOUNT_WARN,remainAmount));
+    }
+
+
 
     /**
      * 发送注册短信验证码
      *
      * @param mobile
-     * @param content
      */
     public boolean sendRegistVerifyCode(String mobile) {
         if (!CommonUtil.isMobile(mobile)) {
@@ -123,7 +147,6 @@ public class SmsUtil extends AbstractThird {
      * 发送快捷注册短信验证码
      *
      * @param mobile
-     * @param content
      */
     public boolean sendQuickRegistVerifyCode(String mobile) {
         if (!CommonUtil.isMobile(mobile)) {
@@ -132,14 +155,14 @@ public class SmsUtil extends AbstractThird {
 
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
         if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
-            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_REGIST.getCode());
             if (countRegist >= Integer.valueOf(resourceDo.getValue()))
                 throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = switchSmsSend(mobile, content);
-        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
+        this.addSmsRecord(SmsType.QUICK_REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
     /**
@@ -194,7 +217,7 @@ public class SmsUtil extends AbstractThird {
      * 借款成功发送短信提醒用户
      *
      * @param mobile
-     * @param content
+     * @param bank
      */
     public boolean sendBorrowCashCode(String mobile, String bank) {
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BORROW_AUDIT.getCode());
@@ -210,8 +233,7 @@ public class SmsUtil extends AbstractThird {
      * 预约商品成功消息通知
      *
      * @param mobile
-     * @param goodsName
-     * @param rsvNo
+     * @param content
      * @return
      */
     public boolean sendGoodsReservationSuccessMsg(String mobile, String content) {
@@ -249,6 +271,17 @@ public class SmsUtil extends AbstractThird {
     public boolean sendRiskFail(String mobile) {
         return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode(), true);
     }
+
+    /**
+     * 强风控需要人审
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendRiskNeedAudit(String mobile) {
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_NEED_AUDIT.getCode(), false);
+    }
+
 
     /**
      * 强风控通过
@@ -356,8 +389,8 @@ public class SmsUtil extends AbstractThird {
     /**
      * 对单个手机号发送短消息，这里不验证手机号码有效性
      *
-     * @param mobile
-     * @param msg
+     * @param mobiles
+     * @param content
      */
     private static SmsResult sendMarketingSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
@@ -441,7 +474,6 @@ public class SmsUtil extends AbstractThird {
      * 绑定手机发送短信验证码
      *
      * @param mobile 用户绑定的手机号（注意：不是userName）
-     * @param userId 用户id
      * @return
      */
     public boolean sendMobileBindVerifyCode(String mobile,SmsType smsType,long userid) {
@@ -492,7 +524,7 @@ public class SmsUtil extends AbstractThird {
     /**
      * 设置邮箱验证码
      *
-     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @param email 用户绑定的手机号（注意：不是userName）
      * @param userId 用户id
      * @return
      */
@@ -537,7 +569,6 @@ public class SmsUtil extends AbstractThird {
      * resource配置统一短信发送
      * value:短信内容  value1:开关 1开 0关   value2:单日单个用户失败短信发送次数限制，防刷使用
      * @param mobile
-     * @param errorMsg
      * @param errorTimes
      * @param resourceType
      * @param resourceSecType
@@ -572,10 +603,7 @@ public class SmsUtil extends AbstractThird {
     /**
      * 续借成功给用户
      * @param mobile
-     * @param errorMsg
-     * @param errorTimes
-     * @param resourceType
-     * @param resourceSecType
+     * @param content
      * @return
      */
     public boolean sendMessageToMobile(String mobile,String content) {
@@ -664,7 +692,6 @@ public class SmsUtil extends AbstractThird {
      * 注册成功,发送注册成功短信
      *
      * @param mobile
-     * @param content
      */
     public void sendRegisterSuccessSms(String mobile) {
         if (!CommonUtil.isMobile(mobile)) {
@@ -677,7 +704,7 @@ public class SmsUtil extends AbstractThird {
      * 发送返利短信
      *
      * @param mobile
-     * @param content
+     * @param amount
      */
     public void sendRebate(String mobile, Date date, BigDecimal amount) {
 
@@ -690,7 +717,7 @@ public class SmsUtil extends AbstractThird {
      * 借款成功发送短信提醒用户(白领贷)
      *
      * @param mobile
-     * @param content
+     * @param bank
      */
     public boolean sendloanCashCode(String mobile, String bank) {
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_LOAN_AUDIT.getCode());
@@ -737,14 +764,13 @@ public class SmsUtil extends AbstractThird {
     /**
      * 对单个手机号发送短消息，这里不验证手机号码有效性
      *
-     * @param mobile
-     * @param msg
+     * @param mobiles
+     * @param content
      */
     public SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
-        if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-                Constants.INVELOMENT_TYPE_TEST)) {
+        if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)) {
             result.setSucc(true);
             result.setResultStr("test");
             return result;
