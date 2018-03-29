@@ -761,6 +761,18 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
+    @Override
+    public void leaseProtocolPdf(HashMap data){
+        String html = "";
+        html = getLeaseHtml(data,"protocolLegalCashLoanV2WithoutSealTemplate.vm");
+
+    }
+
+    private String getLeaseHtml(HashMap data,String pdfType) {
+
+        return null;
+    }
+
     private String getPdfInfo(String protocolUrl, Map<String, Object> map, Long userId, Long id, String type, String protocolCashType, List<EdspayInvestorInfoBo> investorList) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
         long time = new Date().getTime();
@@ -1332,6 +1344,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         model.put("lender", lenderDo.getValue());// 出借人
     }
 
+
+
     public Map protocolLegalCashLoan(String userName, Long borrowId, BigDecimal borrowAmount, BigDecimal poundage, String type,String pdfTemplate) throws IOException {
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
@@ -1385,6 +1399,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         logger.info(JSON.toJSONString(map));
         return map;
     }
+
+
 
     private String pdfCreateWithoutSeal(Map map) throws IOException {
         InputStream input = null;
