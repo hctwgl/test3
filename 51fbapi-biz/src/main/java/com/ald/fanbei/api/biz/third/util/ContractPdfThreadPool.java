@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,6 +67,11 @@ public class ContractPdfThreadPool{
     public void createGoodsInstalmentProtocolPdf(Long borrowId,String type,Long userId){
         GoodsInstalmentProtocolTask goodsInstalmentProtocolTask = new GoodsInstalmentProtocolTask(borrowId,type,userId);
         service.execute(goodsInstalmentProtocolTask);
+    }
+
+    public void LeaseProtocolPdf(HashMap data){
+        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data);
+        service.execute(leaseProtocolPdf);
     }
 
     class ProtocolCashLoanTask implements Runnable {
@@ -163,4 +170,15 @@ public class ContractPdfThreadPool{
         }
     }
 
+    class LeaseProtocolPdf implements Runnable {
+        private HashMap data;
+        public LeaseProtocolPdf(HashMap data) {
+            data = data;
+        }
+        @Override
+        public void run() {
+                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data);
+
+        }
+    }
 }
