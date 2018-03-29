@@ -658,7 +658,9 @@ public class AppH5LeaseController extends BaseController {
                         &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
                     data.put("action", "DO_SCAN_ID");
                 }
-                else if (StringUtil.equals(userAuth.getBankcardStatus(), "N") || StringUtil.equals(userAuth.getZmStatus(), "N") || StringUtil.equals(userAuth.getMobileStatus(), "N") || StringUtil.equals(userAuth.getTeldirStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N")) {
+                else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                        ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                        ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                     data.put("action", "DO_PROMOTE_BASIC");
                     if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
                         data.put("action", "DO_BIND_CARD");
