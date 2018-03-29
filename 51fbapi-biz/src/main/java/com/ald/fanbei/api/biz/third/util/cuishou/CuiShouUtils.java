@@ -354,7 +354,7 @@ public class CuiShouUtils {
                                 repayType, repayTime,
                                 NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
                                 NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
-                                isBalance);
+                                isBalance,"N");
                         if(!respCode.equals(FanbeiThirdRespCode.SUCCESS.getCode())){
                             cuiShouBackMoney.setCode(500);
                             return cuiShouBackMoney;
