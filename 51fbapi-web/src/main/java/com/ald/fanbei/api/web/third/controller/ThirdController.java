@@ -65,8 +65,6 @@ public class ThirdController extends AbstractThird{
         }
     };
     @Resource
-    AfOrderService afOrderService;
-    @Resource
     AfShopService afShopService;
     @Resource
     BoluomeUtil boluomeUtil;

@@ -1700,7 +1700,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
-
+					//TODO 回调方法
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
