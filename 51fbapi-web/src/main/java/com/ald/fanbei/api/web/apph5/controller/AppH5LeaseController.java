@@ -103,7 +103,7 @@ public class AppH5LeaseController extends BaseController {
      *获取租赁首页banner
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
     public String getHomeLeaseBanner(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
