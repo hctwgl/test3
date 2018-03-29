@@ -7,12 +7,14 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
 import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,9 +55,10 @@ public class APPH5BrandChannelController extends BaseController {
 	@ResponseBody
 	public String getBrandChannel(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
+		String tag = ObjectUtils.toString(request.getParameter("tag"), null);
 		Map<String,Object> data = new HashMap<String,Object>();
 		StringBuffer params = new StringBuffer();
-		List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus();
+		List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
 		for(AfResourceH5Dto afResourceH5Dto : list){
 			List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getRid());
 			for(AfResourceH5ItemDto afResourceH5ItemDto : itemList){

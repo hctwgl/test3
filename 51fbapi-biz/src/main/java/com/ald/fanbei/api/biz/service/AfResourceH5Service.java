@@ -15,6 +15,6 @@ import java.util.List;
  */
 public interface AfResourceH5Service {
 
-	List<AfResourceH5Dto> selectByStatus();
+	List<AfResourceH5Dto> selectByStatus(String tag);
 
 }

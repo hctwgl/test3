@@ -27,8 +27,8 @@ public class AfResourceH5ServiceImpl implements AfResourceH5Service {
 	 AfResourceH5Dao afResourceH5Dao;
 
 	@Override
-	public List<AfResourceH5Dto> selectByStatus(){
-		return afResourceH5Dao.selectByStatus();
+	public List<AfResourceH5Dto> selectByStatus(String tag){
+		return afResourceH5Dao.selectByStatus(tag);
 	}
 		
 

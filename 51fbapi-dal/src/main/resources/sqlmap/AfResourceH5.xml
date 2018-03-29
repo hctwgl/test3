@@ -13,7 +13,9 @@
           <include refid="queryFields"/>
         FROM
           af_resource_h5
-        where is_delete = 0 AND status = 0 order by sort desc
+        where is_delete = 0 AND status = 0
+        and tag = #{tag}
+        order by sort desc
     </select>
 
     

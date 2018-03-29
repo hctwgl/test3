@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface AfResourceH5Dao extends BaseDao<AfResourceH5Do, Long> {
 
-	List<AfResourceH5Dto> selectByStatus();
+	List<AfResourceH5Dto> selectByStatus(@Param("tag")String tag);
 
 }

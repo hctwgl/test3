@@ -61,6 +61,7 @@ import java.util.Date;
      * 启用状态 0启用 1关闭
      */
     private Long status;
+    private String tag;
 
 
 	
