@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -12,6 +15,8 @@ import java.math.BigDecimal;
  * @date 2018-03-07 10:25:58
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Getter
+@Setter
  public class AfSeckillActivityGoodsDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;

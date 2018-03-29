@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -188,7 +189,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		if(addressDo.getAddress()!=null){
 			//address=address.concat(addressDo.getAddress());			
 		}**/
-		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
+		afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
 		afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
 		

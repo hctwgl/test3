@@ -12,34 +12,16 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfActivityModelService;
-import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
-import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfShareGoodsService;
-import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
-import com.ald.fanbei.api.biz.service.AfSubjectService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.CouponCateGoryType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
-import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -78,7 +60,8 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	AfGoodsDouble12Service afGoodsDouble12Service;
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
-	
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -116,7 +99,29 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		list.addAll(subjectUserCouponList);
 		*/	
-		
+
+		//判断是否是秒杀活动
+		try{
+			AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getStartActivityByGoodsId(goodsId);
+			if(afSeckillActivityDo!=null&&afSeckillActivityDo.getType()==2){
+				logger.error("secKillActivity type=2 credit userCoupon ");
+				Map<String, Object> data = new HashMap<String, Object>();
+				data.put("couponList",null);
+				data.put("pageNo", 1);
+				data.put("totalCount", 0);
+				resp.setResponseData(data);
+				return resp;
+			}
+		}catch(Exception e){
+			logger.error("secKillActivity credit userCoupon error", e);
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("couponList",null);
+			data.put("pageNo", 1);
+			data.put("totalCount", 0);
+			resp.setResponseData(data);
+			return resp;
+		}
+
 		//新人专享--信用专享优惠券,特定商品
 		//——————————————
                 List<AfUserCouponDto>  cList = new ArrayList<AfUserCouponDto>(); 
