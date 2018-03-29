@@ -59,6 +59,15 @@ import java.math.BigDecimal;
     private String orderNo;
     private String orderType;
     private String checkState;
+    private String checkResult;
+
+    public String getCheckResult() {
+        return checkResult;
+    }
+
+    public void setCheckResult(String checkResult) {
+        this.checkResult = checkResult;
+    }
 
     public String getOrderNo() {
         return orderNo;

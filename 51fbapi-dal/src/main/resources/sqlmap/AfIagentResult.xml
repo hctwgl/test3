@@ -144,7 +144,20 @@
         <include refid="commonCondition"/>
     </select>
     <update id="updateResultByWorkId" parameterType="com.ald.fanbei.api.dal.domain.AfIagentResultDo">
-        UPDATE af_iagent_result SET gmt_modified=now(),work_result=#{workResult},audio_url=#{audioUrl},check_state=#{checkState} WHERE work_id=#{workId}
+        UPDATE af_iagent_result SET gmt_modified=now()
+        <if test="workResult != null and workResult != '' ">
+            ,work_result=#{workResult}
+        </if>
+        <if test="audioUrl != null and audioUrl != '' ">
+            ,audio_url=#{audioUrl}
+        </if>
+        <if test="checkState != null and checkState != '' ">
+            ,check_state=#{checkState}
+        </if>
+        <if test="checkResult != null and checkResult != '' ">
+            ,check_result=#{checkResult}
+        </if>
+        WHERE work_id=#{workId}
     </update>
     <select id="getIagentByWorkId">
         SELECT
