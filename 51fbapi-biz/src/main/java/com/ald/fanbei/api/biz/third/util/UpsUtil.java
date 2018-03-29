@@ -509,7 +509,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 */
 	public UpsCollectRespBo collect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv){
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){
 		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();

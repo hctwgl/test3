@@ -1283,7 +1283,7 @@ public class RiskUtil extends AbstractThird {
 	 */
 	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo,
 			String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap,
-			BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+			BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo,String bankPayType) {
 		String result = verybo.getResult();
 
 		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -1354,7 +1354,7 @@ public class RiskUtil extends AbstractThird {
 		// 银行卡支付 代收
 		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(),
 				cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
-				Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
+				Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType,bankPayType);
 		if (!respBo.isSuccess()) {
 			if (StringUtil.isNotBlank(respBo.getRespCode())) {
 				// 模版数据map处理

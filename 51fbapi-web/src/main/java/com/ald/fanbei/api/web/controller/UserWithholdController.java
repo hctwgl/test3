@@ -15,6 +15,7 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +82,7 @@ public class UserWithholdController extends BaseController {
         BigDecimal amountRate = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("amountRate")),BigDecimal.ZERO);
         int isAmount = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("isAmount")),1);
         String borrowStatus = ObjectUtils.toString(request.getParameter("borrowStatus"), null);
-
+		String bankPayType = ObjectUtils.toString(request.getParameter("payType"), null);
         BigDecimal repaymentAmount = BigDecimal.ZERO;
 
         Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("borrowId")), 0l);
@@ -245,7 +247,7 @@ public class UserWithholdController extends BaseController {
                 try{
                     map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
                             repaymentAmount, actualAmount, null, userAmount,
-                            borrowId, cardId, userId, "sysJob", userDto);
+                            borrowId, cardId, userId, "sysJob", userDto,bankPayType);
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
                 }
@@ -298,7 +300,7 @@ public class UserWithholdController extends BaseController {
                     try{
                         map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
                                 repaymentAmount, actualAmount, null, userAmount,
-                                borrowId, cardId, userId, "sysJob", userDto);
+                                borrowId, cardId, userId, "sysJob", userDto,bankPayType);
 
                     }catch (Exception e) {
                         logger.info("withholdCashJob error", e);
@@ -366,6 +368,7 @@ public class UserWithholdController extends BaseController {
         Long userId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("userId")),null);
         //最低代扣金额
         BigDecimal lowBillPrice = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("lowBillPrice")),BigDecimal.ZERO);
+        String bankPayType = ObjectUtils.toString(request.getParameter("payType"), null);
         if (userId == null) {
             logger.info("withhold for borrowbill fail for params is null");
             JSONObject returnjson = new JSONObject();
@@ -477,7 +480,7 @@ public class UserWithholdController extends BaseController {
                 Long cardId = -2l;
                 try{
                     map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
-                            cardId,userId,billDo,"sysJob",afUserAccountDo);
+                            cardId,userId,billDo,"sysJob",afUserAccountDo,bankPayType);
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
                 }
@@ -527,7 +530,7 @@ public class UserWithholdController extends BaseController {
                     }
                     try{
                         map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
-                                cardId,userId,billDo,"sysJob",afUserAccountDo);
+                                cardId,userId,billDo,"sysJob",afUserAccountDo,bankPayType);
                     }catch (Exception e) {
                         logger.info("withholdCashJob error", e);
                     }

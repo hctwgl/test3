@@ -102,7 +102,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(
 				ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
-
+		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
 		// 对402版本借钱，低版本还款情况做控制
 		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
 
@@ -215,7 +215,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 
 			if (cardId == -2) {// 余额支付
 				map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-						userAmount, borrowId, cardId, userId, "", userDto);
+						userAmount, borrowId, cardId, userId, "", userDto,null);
 				resp.addResponseData("refId", map.get("refId"));
 				resp.addResponseData("type", map.get("type"));
 			} else if (cardId == -1) {// 微信支付
@@ -228,7 +228,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 				// if (wxDo != null &&
 				// wxDo.getValue().toLowerCase().equals("true")) {
 				map = afRepaymentBorrowCashService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount,
-						coupon, userAmount, borrowId, cardId, userId, "", userDto);
+						coupon, userAmount, borrowId, cardId, userId, "", userDto,null);
 				map.put("userNo", userDto.getUserName());
 				map.put("userType", "USER_ID");
 				map.put("directPayType", "WX");
@@ -247,7 +247,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 				// if (zfbDo != null &&
 				// zfbDo.getValue().toLowerCase().equals("true")) {
 				map = afRepaymentBorrowCashService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount,
-						coupon, userAmount, borrowId, cardId, userId, "", userDto);
+						coupon, userAmount, borrowId, cardId, userId, "", userDto,null);
 				map.put("userNo", userDto.getUserName());
 				map.put("userType", "USER_ID");
 				map.put("directPayType", "ZFB");
@@ -274,7 +274,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 				}
 
 				map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-						userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+						userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto,bankPayType);
 
 				// 代收
 				UpsCollectRespBo upsResult = null;

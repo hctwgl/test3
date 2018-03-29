@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -76,11 +77,11 @@ public class LoanAllRepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
-		this.afLoanRepaymentService.repay(bo);
+		this.afLoanRepaymentService.repay(bo,bankPayType);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();

@@ -134,7 +134,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	 * 参考{@link com.ald.fanbei.api.biz.service.impl.AfRepaymentBorrowCashServiceImpl}.createRepayment()
 	 */
 	@Override
-	public void repay(RepayBo bo) {
+	public void repay(RepayBo bo,String bankPayType) {
 		
 		lockRepay(bo.userId);
 		
@@ -150,7 +150,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		
 		generateRepayRecords(bo);
 		
-		doRepay(bo, bo.borrowRepaymentDo);
+		doRepay(bo, bo.borrowRepaymentDo,bankPayType);
 		
 	}
 	
@@ -338,12 +338,12 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo));
     }
     
-    private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment) {
+    private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment,String bankPayType) {
 		if (bo.cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
+						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_CASH_LEGAL_V2.getCode(),bankPayType);
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {

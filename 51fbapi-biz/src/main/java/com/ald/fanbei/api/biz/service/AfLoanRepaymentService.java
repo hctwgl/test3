@@ -19,7 +19,7 @@ import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
  */
 public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo, Long>{
 	
-	void repay(LoanRepayBo bo);
+	void repay(LoanRepayBo bo,String bankPayType);
 	
 	void offlineRepay(AfLoanDo loanDo, String loanNo, 
 			String repayType, String repayTime, String repayAmount,

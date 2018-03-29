@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.StringUtil;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -70,7 +72,8 @@ public class RepayDoV2Api implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+    	RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
         bo.remoteIp = CommonUtil.getIpAddr(request);
 
         String borrowProcessingNO = afRepaymentService.getProcessingRepayNo(context.getUserId());
@@ -78,7 +81,7 @@ public class RepayDoV2Api implements ApiHandle {
             throw new FanbeiException("分期还款处理中,无法进行还款操作", true);
         }
 
-        this.afBorrowLegalRepaymentV2Service.repay(bo);
+        this.afBorrowLegalRepaymentV2Service.repay(bo,bankPayType);
 
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Map<String, Object> data = Maps.newHashMap();

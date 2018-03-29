@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -85,7 +86,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
 		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
-
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
 		// 对402版本借钱，低版本还款情况做控制
 		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
 		
@@ -190,7 +191,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 					
 			Map<String, Object> map;
 			if (cardId == -2) {// 余额支付
-				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null);
 
 				resp.addResponseData("refId", map.get("refId"));
 				resp.addResponseData("type", map.get("type"));
@@ -204,7 +205,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 				if (null == card) {
 					throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 				}
-				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
+				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(),bankPayType);
 
 				// 代收
 				UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

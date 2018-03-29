@@ -163,7 +163,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount, BigDecimal repaymentAmount,
                                                     final BigDecimal actualAmount, AfUserCouponDto coupon,
                                                     BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp,
-                                                    final AfUserAccountDo afUserAccountDo) {
+                                                    final AfUserAccountDo afUserAccountDo,final String bankPayType) {
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentNo(now);
         final String payTradeNo = repayNo;
@@ -205,7 +205,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
             UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
-                    Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENT.getCode());
+                    Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
 
             afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
             if (!respBo.isSuccess()) {
@@ -239,7 +239,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     public Map<String, Object> createRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount,
                                                final BigDecimal actualAmount, AfUserCouponDto coupon,
                                                BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp,
-                                               final AfUserAccountDo afUserAccountDo) {
+                                               final AfUserAccountDo afUserAccountDo,String bankPayType) {
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentNo(now);
         final String payTradeNo = repayNo;
@@ -278,7 +278,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
             UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
-                    Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
+                    Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
 
             afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
             if (!respBo.isSuccess()) {

@@ -140,7 +140,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private CollectionSystemUtil collectionSystemUtil;
 
 	@Override
-	public void repay(LoanRepayBo bo) {
+	public void repay(LoanRepayBo bo,String bankPayType) {
 		
 		lockRepay(bo.userId);
 		
@@ -174,7 +174,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		generateRepayRecords(bo);
 	
 		// 还款操作
-		doRepay(bo, bo.loanRepaymentDo);
+		doRepay(bo, bo.loanRepaymentDo,bankPayType);
 			
 	}
 	
@@ -266,7 +266,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      * @Description:  还款操作
      * @return  void
      */
-    private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment) {
+    private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment,String bankPayType) {
 		if (bo.cardId > 0) {// 银行卡支付
 			if(repayment != null) {
 				changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
@@ -274,7 +274,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
+						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode(),bankPayType);
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if (!respBo.isSuccess()) {

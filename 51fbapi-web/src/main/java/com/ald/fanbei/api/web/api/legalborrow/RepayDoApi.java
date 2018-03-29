@@ -90,13 +90,14 @@ public class RepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
 		// 405以下版本，检查是否有进行中V2借款数据
 		afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), bo.borrowId);
 		
-		this.afBorrowLegalRepaymentService.repay(bo);
+		this.afBorrowLegalRepaymentService.repay(bo, bankPayType);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();

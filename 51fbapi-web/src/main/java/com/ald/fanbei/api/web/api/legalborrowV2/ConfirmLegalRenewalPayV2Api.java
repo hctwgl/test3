@@ -94,7 +94,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
         String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"), "").toString();
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
-        
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
@@ -203,7 +203,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                     logger.info("empty address");
                     throw new FanbeiException("请先填写收货地址!", true);
                 }
-                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
+                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address, bankPayType);
 
                 // 代收
                 UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

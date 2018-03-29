@@ -204,7 +204,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Override
     public Map<String, Object> createRepayment(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                               final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
+                                               final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,String bankPayType) {
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
         final String payTradeNo = repayNo;
@@ -243,7 +243,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
                 AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
                 UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv);
+                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv,bankPayType);
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
                 	String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
@@ -286,7 +286,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 
     public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                                    final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
+                                                    final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,final String bankPayType) {
 
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
@@ -323,7 +323,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     } else if (cardId > 0) {// 银行卡支付
                         AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
                         UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                                bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+                                bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode(),bankPayType);
                         if (!respBo.isSuccess()) {
                             String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
                             dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);

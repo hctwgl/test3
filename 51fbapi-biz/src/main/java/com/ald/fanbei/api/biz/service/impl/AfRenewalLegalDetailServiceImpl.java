@@ -139,7 +139,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
     private AfTradeCodeInfoService afTradeCodeInfoService;
     
 	@Override
-	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
+	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address,String bankPayType) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
 		final String payTradeNo = repayNo;
@@ -195,7 +195,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
-			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode());
+			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode(),bankPayType);
 			if (!respBo.isSuccess()) {
 			    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 			    dealLegalRenewalFail(payTradeNo, repayNo,errorMsg);
