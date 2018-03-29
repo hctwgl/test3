@@ -144,4 +144,15 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="checkIfReduce" resultType="com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo">
+	    SELECT r.nper2,r.nper3,r.nper6,r.nper9,r.nper12 FROM af_interest_reduce_rules r 
+		INNER JOIN af_interest_reduce_scheme s on r.id = s.interest_reduce_id
+		INNER JOIN af_interest_reduce_goods g on g.interest_reduce_scheme_id = s.id
+		WHERE r.is_delete = 0 
+		AND g.is_delete = 0 
+		AND s.is_delete = 0 
+		AND s.rule_type = #{ruleType}
+		AND g.goods_id = #{goodsId}
+		AND s.is_open = 'Y';
+    </select>
 </mapper>

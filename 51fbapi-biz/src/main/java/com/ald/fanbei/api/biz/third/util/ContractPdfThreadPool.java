@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -176,7 +177,8 @@ public class ContractPdfThreadPool{
         }
         @Override
         public void run() {
-            afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data);
+                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data);
+
         }
     }
 }
