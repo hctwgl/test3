@@ -170,7 +170,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     if(interimExist){//有临时额度下的描述
                         onlineDesc="总额度"+onlineAuAmount.add(interimAmount)+"元";
                     }
-                    if(afUserAccountSenceOnline.getFreezeAmount().compareTo(BigDecimal.ZERO)>1){
+                    if(afUserAccountSenceOnline.getFreezeAmount().compareTo(BigDecimal.ZERO) == 1){
                         onlineDesc=onlineDesc + "（含冻结" + afUserAccountSenceOnline.getFreezeAmount() + "）";
                     }
                     map.put("onlineDesc",onlineDesc);//线上描述
