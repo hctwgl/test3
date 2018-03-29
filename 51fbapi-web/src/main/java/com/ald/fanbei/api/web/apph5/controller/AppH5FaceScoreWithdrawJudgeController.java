@@ -90,7 +90,7 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 								.getByUserId(userId);
 						if (shareCountDo == null) {
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完，分享五个群可再得一次拆红包的机会！", "", new Integer(2))
+									"拆红包的次数已经用完，分享5个群可再得一次拆红包的机会！", "", new Integer(2))
 									.toString();
 						}
 						Integer sharedCount = shareCountDo.getCount();
