@@ -1733,10 +1733,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return temp;
     }
 
-    @Override
-    public void leaseProtocolPdf(HashMap data) {
-	// TODO Auto-generated method stub
-	
-    }
+
 
 }

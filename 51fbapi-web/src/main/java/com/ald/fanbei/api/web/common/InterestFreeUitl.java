@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
+import com.ald.fanbei.api.biz.service.AfInterestReduceGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl;
 import com.ald.fanbei.api.common.Constants;
@@ -32,7 +33,8 @@ import java.util.Map;
  */
 public class InterestFreeUitl {
     public static AfResourceService afResourceService;
-
+    
+    public static AfInterestReduceGoodsService afInterestReduceGoodsService;
 
     /**
      * 计算分期、免息规则封装结果
@@ -49,10 +51,16 @@ public class InterestFreeUitl {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if (goodsid != null && goodsid >0l){
             afResourceService = (AfResourceService)SpringBeanContextUtil.getBean("afResourceService");
-            AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
+       /*     AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
             if(resource1!=null){
                 array = JSON.parseArray(resource1.getValue());
-            }
+            }*/
+            
+            JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
+            if (newArray != null) {
+            	array = newArray;
+			}
+            
         }
 
         if (array == null) {
