@@ -10,27 +10,20 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -58,6 +51,8 @@ public class GetHomeGoodsListApi implements ApiHandle {
 	@Resource
 	AfGoodsService afGoodsService;
 
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -103,8 +98,28 @@ public class GetHomeGoodsListApi implements ApiHandle {
 //				break;
 //			}
 //		}
+		//判断商品是否处于活动中
+		List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+		List<Long> goodsIdList = new ArrayList<>();
+		for (AfGoodsDo goodsDo : goodsDoList) {
+			goodsIdList.add(goodsDo.getRid());
+		}
+		logger.info("goodsIds111"+goodsIdList.toString());
+		if(goodsIdList!=null&&goodsIdList.size()>0){
+			activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+		}
 		for (AfGoodsDo goodsDo : goodsDoList) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+				if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+					goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate());
+					if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDo.setRebateAmount(secKillRebAmount);
+					}
+					break;
+				}
+			}
 			goodsInfo.put("goodName", goodsDo.getName());
 			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());

@@ -50,4 +50,6 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId);
 
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
+
+    List<AfSeckillActivityGoodsDo> getActivityGoodsByGoodsIds(List<Long> goodsIdList);
 }
