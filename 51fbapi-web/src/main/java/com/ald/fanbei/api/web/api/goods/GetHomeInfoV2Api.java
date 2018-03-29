@@ -329,6 +329,10 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
 					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
 						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate());
+						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+							goodsDo.setRebateAmount(secKillRebAmount);
+						}
 						break;
 					}
 				}
