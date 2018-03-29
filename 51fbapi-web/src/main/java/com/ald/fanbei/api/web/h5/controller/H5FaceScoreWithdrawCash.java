@@ -111,13 +111,13 @@ public class H5FaceScoreWithdrawCash extends BaseController {
 									.getConfigByTypes("USER_FACETEST");
 							if (CollectionUtil.isEmpty(configList)) {
 								return H5CommonResponse.getNewInstance(false,
-										"该活动已经结束！", "", null).toString();
+										"该活动已经结束！", "", redDo).toString();
 							}
 							Integer totalAllowedCount = Integer.valueOf(configList.get(
 									0).getValue1());
-							if (count >= totalAllowedCount) {
+							if (count >= totalAllowedCount -1 ) {
 								return H5CommonResponse.getNewInstance(false,
-										"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null)
+										"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", redDo)
 										.toString();
 							} 
 							AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
