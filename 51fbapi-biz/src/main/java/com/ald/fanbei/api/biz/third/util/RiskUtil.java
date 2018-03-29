@@ -1160,7 +1160,7 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-
+		//TODO 电核
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
@@ -1399,6 +1399,7 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
+		//TODO 电核
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
 		resultMap.put("success", true);
