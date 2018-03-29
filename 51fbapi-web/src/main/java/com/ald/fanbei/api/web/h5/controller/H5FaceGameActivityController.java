@@ -118,21 +118,18 @@ public class H5FaceGameActivityController extends BaseController {
 		    long userId = afUserService.addUser(userDo);
 
 		    String appDownLoadUrl = "";
-//		    AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
-//		    if (resourceCodeDo != null) {
-//			appDownLoadUrl = resourceCodeDo.getValue();
-//		    }
 		    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
 		    // save token to cache 记住登录状态
-	            String  newtoken = UserUtil.generateToken(moblie);
-		    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
+		    String userName = moblie;
+		    String newtoken = UserUtil.generateToken(userName);
+		    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + userName;
 		    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
 		    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
-		    bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
+		  //  bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
 		    //埋点
 		    //doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
-		    System.out.println(response.toString());
-		    return resultStr;
+		    bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_DAY);
+		    return H5CommonResponse.getNewInstance(true, "登录成功", "",newtoken).toString();
 
 		} catch (FanbeiException e) {
 		    logger.error("commitRegister fanbei exception" + e.getMessage());

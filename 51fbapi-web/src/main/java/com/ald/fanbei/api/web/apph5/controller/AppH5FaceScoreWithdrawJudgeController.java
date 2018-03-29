@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,11 +17,14 @@ import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfFacescoreShareCountService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfFacescoreShareCountDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -45,17 +50,17 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 	private AfFacescoreRedService faceScoreRedService;
 	@Resource
 	private AfResourceService afResourceService;
-
+	String opennative = "/fanbei-web/opennative?name=";
 	@ResponseBody
 	@RequestMapping(value = "/fanbei_api/withDraw/judge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String withDrawJudge(HttpServletRequest request,
 			HttpServletResponse response) {
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			FanbeiWebContext context = new FanbeiWebContext();
 			Long userId = -1l;
 			AfUserDo afUser = null;
 			// 和登录有关的
-			context = doWebCheck(request, false);
+			context = doWebCheck(request, true);
 			// 2判断用户是否处于登陆状态
 			if (context.isLogin()) {
 				afUser = afUserService.getUserByUserName(context.getUserName());
@@ -72,20 +77,20 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 							.getConfigByTypes("USER_FACETEST");
 					if (CollectionUtil.isEmpty(configList)) {
 						return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束！",
-								"", null).toString();
+								"", new Integer(2)).toString();
 					}
 					Integer totalAllowedCount = Integer.valueOf(configList.get(0)
 							.getValue1());
 					if (count >= totalAllowedCount) {
 						return H5CommonResponse.getNewInstance(false,
-								"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", null).toString();
+								"拆红包的次数已经用完 ,快去将您的颜值昭告天下吧！", "", new Integer(2) ).toString();
 					} else if (count == totalAllowedCount - 1) {
 						// 已经领取过一次，进行分享次数的判断
 						AfFacescoreShareCountDo shareCountDo = faceScoreShareCountService
 								.getByUserId(userId);
 						if (shareCountDo == null) {
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完，分享五个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完，分享五个群可再得一次拆红包的机会！", "", new Integer(2))
 									.toString();
 						}
 						Integer sharedCount = shareCountDo.getCount();
@@ -95,16 +100,26 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 						if (sharedCount < needSharedCount) {
 							int a = needSharedCount - sharedCount;
 							return H5CommonResponse.getNewInstance(false,
-									"拆红包的次数已经用完 ,分享"+ a +"个群可再得一次拆红包的机会！", "", null)
+									"拆红包的次数已经用完 ,分享"+ a +"个群可再得一次拆红包的机会！", "", new Integer(2))
 									.toString();
 						}
 					}
 					return H5CommonResponse.getNewInstance(true, "可以进行下一步的拆红包", "",
-							null).toString();
+							new Integer(1)).toString();
 				}
 			}
-			return H5CommonResponse.getNewInstance(true, "用户没有登陆，可以接着拆红包!", null,
-					null).toString();
+			return H5CommonResponse.getNewInstance(false, "请登陆或者注册!", null,
+					new Integer(3)).toString();
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				logger.error("/fanbei_api/faceScore/withdrawCash" + context + "login error ");
+				return  H5CommonResponse.getNewInstance(false, "请登陆或者注册!", loginUrl, new Integer(3)).toString();
+			    }else{
+			    return H5CommonResponse.getNewInstance(false, "请登陆或者注册!", "", new Integer(3)).toString();
+			    }
 		} catch (Exception exception) {
 			String result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
 			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
