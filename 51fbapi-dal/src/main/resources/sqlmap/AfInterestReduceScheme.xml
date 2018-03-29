@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_interest_reduce_scheme表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfInterestReduceSchemeDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,creator,modifier,name,is_open,interest_reduce_id,rule_type,tag,gmt_start,gmt_end,descr 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="isOpen != null and isOpen != ''">
+            AND is_open = #{isOpen,jdbcType=VARCHAR}
+        </if>
+        <if test="interestReduceId != null and interestReduceId != ''">
+            AND interest_reduce_id = #{interestReduceId,jdbcType=INTEGER}
+        </if>
+        <if test="ruleType != null and ruleType != ''">
+            AND rule_type = #{ruleType,jdbcType=INTEGER}
+        </if>
+        <if test="tag != null and tag != ''">
+            AND tag = #{tag,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtStart !=null">
+            AND gmt_start = #{gmtStart,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtEnd !=null">
+            AND gmt_end = #{gmtEnd,jdbcType=TIMESTAMP}
+        </if>
+        <if test="descr != null and descr != ''">
+            AND descr = #{descr,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_interest_reduce_scheme
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="isOpen != null">        
+	            is_open,
+	        </if>
+	        <if test="interestReduceId != null">        
+	            interest_reduce_id,
+	        </if>
+	        <if test="ruleType != null">        
+	            rule_type,
+	        </if>
+	        <if test="tag != null">        
+	            tag,
+	        </if>
+	        <if test="gmtStart != null">        
+	            gmt_start,
+	        </if>
+	        <if test="gmtEnd != null">        
+	            gmt_end,
+	        </if>
+	        <if test="descr != null">        
+	            descr,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="isOpen != null" >
+		       #{isOpen,jdbcType=VARCHAR},
+		    </if>
+		    <if test="interestReduceId != null" >
+		       #{interestReduceId,jdbcType=INTEGER},
+		    </if>
+		    <if test="ruleType != null" >
+		       #{ruleType,jdbcType=INTEGER},
+		    </if>
+		    <if test="tag != null" >
+		       #{tag,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtStart != null" >
+		       #{gmtStart,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtEnd != null" >
+		       #{gmtEnd,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="descr != null" >
+		       #{descr,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo">
+        UPDATE af_interest_reduce_scheme
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="isOpen != null and isOpen != '' ">        
+                is_open = #{isOpen,jdbcType=VARCHAR},                
+            </if>
+            <if test="interestReduceId != null and interestReduceId != '' ">        
+                interest_reduce_id = #{interestReduceId,jdbcType=INTEGER},                
+            </if>
+            <if test="ruleType != null and ruleType != '' ">        
+                rule_type = #{ruleType,jdbcType=INTEGER},                
+            </if>
+            <if test="tag != null and tag != '' ">        
+                tag = #{tag,jdbcType=VARCHAR},                
+            </if>
+            <if test="gmtStart != null and gmtStart != '' ">        
+                gmt_start = #{gmtStart,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtEnd != null and gmtEnd != '' ">        
+                gmt_end = #{gmtEnd,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="descr != null and descr != '' ">        
+                descr = #{descr,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_interest_reduce_scheme
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo" parameterType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_interest_reduce_scheme
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo" parameterType="com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_interest_reduce_scheme
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
