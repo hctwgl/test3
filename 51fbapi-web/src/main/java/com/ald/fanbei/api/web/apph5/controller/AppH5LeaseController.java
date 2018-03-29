@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -96,6 +97,8 @@ public class AppH5LeaseController extends BaseController {
     @Resource
     AfESdkService afESdkService;
 
+    @Resource
+    ContractPdfThreadPool contractPdfThreadPool;
     /**
      *获取租赁首页banner
      */
@@ -911,6 +914,9 @@ public class AppH5LeaseController extends BaseController {
             Date gmtStart = DateUtil.addDays(today,1);
             Date gmtEnd = DateUtil.addMonths(gmtStart,orderInfo.getNper() + 1);
             afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
+            //生成pdf
+            HashMap data = afOrderService.getLeaseProtocol(orderId);
+            contractPdfThreadPool.LeaseProtocolPdf(data);
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
         }

@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -25,5 +26,7 @@ public interface AfLegalContractPdfCreateServiceV2 {
     String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
 
     String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException;
+
+    void leaseProtocolPdf(HashMap data);
 
 }
