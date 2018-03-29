@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
@@ -65,6 +66,8 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Service("afRepaymentService")
 public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentService {
+    @Resource
+    CuiShouUtils cuiShouUtils;
 
     @Resource
     GeneratorClusterNo generatorClusterNo;
@@ -610,6 +613,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
             //还款成功同步逾期订单
             dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
+
+            cuiShouUtils.syncCuiShou(repayment);
             fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
         }
         if (result == 1 && isNeedNoticeMsg) {
@@ -728,7 +733,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                 logger.error("同步逾期订单失败", e);
             }
         }
-        riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+        try {
+            riskUtil.batchSychronizeOverdueBorrow(orderNo, boList);
+        }
+        catch (Exception e){
+            logger.error("sync cuishou error",e);
+        }
     }
 
     private RiskOverdueBorrowBo parseOverduedBorrowBo(String borrowNo, Integer overdueDay, Integer overduetimes) {
