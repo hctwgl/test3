@@ -28,6 +28,8 @@ public class AfBklDo extends AbstractSerial {
 	private String csvAmt;
 	private String csvPayWay;
 	private String csvProductCategory;
+	private Long orderId;
+	private Long userId;
 
 	
 

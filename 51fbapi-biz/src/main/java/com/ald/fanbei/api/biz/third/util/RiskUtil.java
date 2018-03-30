@@ -1218,6 +1218,8 @@ public class RiskUtil extends AbstractThird {
 			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
 			bklDo.setCsvSex(userDo.getGender());
 			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
+			bklDo.setOrderId(orderInfo.getRid());
+			bklDo.setUserId(orderInfo.getUserId());
 			bklUtils.submitJob(bklDo);
 		}catch (Exception e){
 			logger.error("submitBklInfo error = >{}",e);

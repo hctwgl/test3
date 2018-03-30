@@ -10,8 +10,12 @@ import com.ald.fanbei.api.biz.iagent.utils.AOSHttpClient;
 import com.ald.fanbei.api.biz.iagent.utils.AOSJson;
 import com.ald.fanbei.api.biz.iagent.utils.HttpRequestVO;
 import com.ald.fanbei.api.biz.iagent.utils.HttpResponseVO;
+import com.ald.fanbei.api.biz.service.AfIagentResultService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.domain.AfBklDo;
+import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -27,7 +31,8 @@ public class BklUtils {
 
     private static Logger logger = Logger.getLogger(BklUtils.class);
 
-
+    @Resource
+    AfIagentResultService iagentResultService;
     public  void submitJob(AfBklDo bklDo) {
         Map map=new HashMap();
         map.put("work_id", bklDo.getCsvArn()+ new Date().getTime());
@@ -58,8 +63,18 @@ public class BklUtils {
             HttpResponseVO httpResponseVO = AOSHttpClient.upload(httpRequestVO);
             httpResponseVO.getOut();
             httpResponseVO.getStatus();
+            JSONObject object = JSONObject.parseObject(httpResponseVO.getOut());
+            JSONObject object1 = (JSONObject) object.get("success");
+            object1.get("receipt_id");
             System.out.println(httpResponseVO.getOut());
             logger.info("bklUtils submitJob httpResponseVO success out =" + httpResponseVO.getOut());
+            AfIagentResultDo iagentResultDo = new AfIagentResultDo();
+            iagentResultDo.setWorkId(Long.parseLong(String.valueOf(object1.get("receipt_id"))));
+            iagentResultDo.setOrderId(bklDo.getOrderId());
+            iagentResultDo.setOrderNo(bklDo.getCsvArn());
+            iagentResultDo.setOrderType("0");
+            iagentResultDo.setUserId(bklDo.getUserId());
+            iagentResultService.saveRecord(iagentResultDo);
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("bklUtils submitJob httpResponseVO error =",e);
