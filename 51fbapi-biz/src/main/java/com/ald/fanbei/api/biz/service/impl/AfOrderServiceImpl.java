@@ -1766,6 +1766,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
+			String sex ;
+			if ("M".equals(userDo.getGender())){
+				sex = "男";
+			}else if ("F".equals(userDo.getGender())){
+				sex = "女";
+			}else {
+				sex = "未知";
+			}
 			AfBklDo bklDo = new AfBklDo();
 			bklDo.setCsvArn(orderInfo.getOrderNo());
 			bklDo.setCsvPhoneNum(userDo.getMobile());
@@ -1775,7 +1783,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			bklDo.setCsvName(userDo.getRealName());
 			bklDo.setCsvPayWay("组合支付");
 			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
-			bklDo.setCsvSex(userDo.getGender());
+			bklDo.setCsvSex(sex);
 			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
 			bklDo.setOrderId(orderInfo.getRid());
 			bklDo.setUserId(orderInfo.getUserId());
