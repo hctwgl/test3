@@ -45,13 +45,7 @@
     
         INSERT INTO af_iagent_result
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="workId != null">        
+            <if test="workId != null">
 	            work_id,
 	        </if>
 	        <if test="orderId != null">        
@@ -66,15 +60,12 @@
 	        <if test="audioUrl != null">        
 	            audio_url,
 	        </if>
+            gmt_create,
+            gmt_modified
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+
 		    <if test="workId != null" >
 		       #{workId,jdbcType=INTEGER},
 		    </if>
@@ -89,7 +80,9 @@
 		    </if>
 		    <if test="audioUrl != null" >
 		       #{audioUrl,jdbcType=VARCHAR},
-		    </if>
+            </if>
+            now(),
+            now()
         </trim>
     </insert>
     

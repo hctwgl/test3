@@ -66,6 +66,7 @@ public class BklUtils {
             logger.info("bklUtils submitJob httpResponseVO success out =" + httpResponseVO.getOut());
             JSONObject object = JSONObject.parseObject(httpResponseVO.getOut());
             JSONObject object1 = (JSONObject) object.get("success");
+            logger.info("bklUtils submitJob bklDo info =" +bklDo.getOrderId()+",csvArn=" +bklDo.getCsvArn()+",user ="+bklDo.getUserId() +",receipt_id"+Long.parseLong(String.valueOf(object1.get("receipt_id"))));
             if (object1 != null){
                 AfIagentResultDo iagentResultDo = new AfIagentResultDo();
                 iagentResultDo.setWorkId(Long.parseLong(String.valueOf(object1.get("receipt_id"))));
@@ -79,7 +80,7 @@ public class BklUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("bklUtils submitJob httpResponseVO error =",e);
+            logger.info("bklUtils submitJob httpResponseVO error =>{}",e);
         }
     }
 
