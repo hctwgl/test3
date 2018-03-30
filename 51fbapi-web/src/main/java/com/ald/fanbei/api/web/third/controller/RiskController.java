@@ -383,7 +383,7 @@ public class RiskController {
 	
 	
 	/**
-	 * 补充认证回调
+	 * 补充认证统一回调
 	 */
 	@RequestMapping(value = { "/supplementAuth" }, method = RequestMethod.POST)
 	@ResponseBody

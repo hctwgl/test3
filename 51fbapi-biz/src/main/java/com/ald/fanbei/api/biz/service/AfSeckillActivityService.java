@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 
 import java.util.List;
@@ -18,11 +17,11 @@ import java.util.List;
  */
 public interface AfSeckillActivityService extends ParentService<AfSeckillActivityDo, Long>{
 
-    AfSeckillActivityDto getActivityByGoodsId(Long goodsId);
+    AfSeckillActivityDo getActivityByGoodsId(Long goodsId);
 
     List<AfSeckillActivityGoodsDo> getActivityGoodsByGoodsId(Long goodsId);
 
-    AfSeckillActivityGoodsDto getActivityPriceByPriceId(Long goodsPriceId);
+    AfSeckillActivityGoodsDto getActivityPriceByPriceIdAndActId(Long goodsPriceId,Long activityId);
 
     int updateActivityGoodsById(AfSeckillActivityGoodsDo afSeckillActivityGoodsDo);
 
@@ -32,7 +31,23 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 
     int getSaleCountByActivityIdAndGoodsId(Long activityId, Long goodsId);
 
-    AfSeckillActivityGoodsDo getStartActivityPriceByPriceId(Long priceId);
-
     AfSeckillActivityOrderDo getActivityOrderByOrderId(Long orderId);
+
+    AfSeckillActivityGoodsDo getActivityGoodsByGoodsIdAndActId(Long activityId, Long goodsId);
+
+    AfSeckillActivityGoodsDto getActivityInfoByPriceIdAndActId(Long goodsPriceId, Long activityId);
+
+    AfSeckillActivityDo getActivityByOrderId(Long orderId);
+
+    List<AfSeckillActivityGoodsDto> getActivityPricesByGoodsIdAndActId(Long goodsId, Long activityId);
+
+    int getSumCountByGoodsId(Long goodsId);
+
+    AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(Long goodsId, Long activityId,Long userId);
+
+    AfSeckillActivityDo getActivityById(Long activityId);
+
+    AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId);
+
+    AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
 }

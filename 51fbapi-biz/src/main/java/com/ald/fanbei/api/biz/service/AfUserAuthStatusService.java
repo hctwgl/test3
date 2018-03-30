@@ -54,4 +54,13 @@ public interface AfUserAuthStatusService {
      * @return
      * **/
     int updateAfUserAuthStatusByUserId(Long userId, String scene, String status);
+    
+    /**
+     * 增加场景状态
+     * @Param userId
+     * @Param scene
+     * @Param status
+     * @return
+     * **/
+    int updateAfUserAuthStatus(Long userId, String scene, String status);
 }

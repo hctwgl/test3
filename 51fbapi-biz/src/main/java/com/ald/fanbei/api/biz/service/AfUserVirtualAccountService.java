@@ -31,5 +31,12 @@ public interface AfUserVirtualAccountService extends ParentService<AfUserVirtual
 	 */
 	BigDecimal getCurrentMonthLeftAmount(Long userId, String virtualCode, BigDecimal virtualTotalAmount, Integer virtualRecentDay);
 	
+	/**
+	 *  获取场景当日已使用额度
+	 * @param virtualCode
+	 * @return
+	 */
+	BigDecimal getCurrentDayUsedAmount(String virtualCode);
+	
 	
 }
