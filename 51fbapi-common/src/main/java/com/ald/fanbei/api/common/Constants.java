@@ -504,5 +504,5 @@ public class Constants {
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
-
+	public static final String 	FACE_GAME_RED_CONFIG = "face_game_red_config";
 }
