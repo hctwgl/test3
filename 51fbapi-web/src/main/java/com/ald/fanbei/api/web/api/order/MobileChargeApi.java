@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -80,7 +81,7 @@ public class MobileChargeApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		if(bankId<0){//微信支付
-			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"",afUserAccountDo,blackBox,bqsBlackBox,null);
+			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"",afUserAccountDo,blackBox,bqsBlackBox,"");
 			resp.setResponseData(map);
 		}else{//银行卡支付 代收
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bankId);

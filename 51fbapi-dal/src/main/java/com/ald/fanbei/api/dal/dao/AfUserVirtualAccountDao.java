@@ -18,5 +18,7 @@ public interface AfUserVirtualAccountDao extends BaseDao<AfUserVirtualAccountDo,
 
 	BigDecimal getCurrentMonthUsedAmount( @Param("userId")Long userId,
 			@Param("virtualCode")String virtualCode, @Param("virtualRecentDay") Integer virtualRecentDay);
+	
+	BigDecimal getCurrentDayUsedAmount(String virtualCode);
 
 }

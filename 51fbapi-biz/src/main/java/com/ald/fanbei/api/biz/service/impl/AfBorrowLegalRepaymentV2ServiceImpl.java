@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -119,7 +120,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-    
+
+    @Resource
+    CuiShouUtils cuiShouUtils;
+
     @Resource
     RedisTemplate<String, ?> redisTemplate;
     /* copy自 AfRepaymentBorrowCashServiceImpl */
@@ -160,7 +164,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
      * @param restAmount 
      */
 	@Override
-	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
+	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo,
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin) {
 		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
@@ -184,9 +188,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.cardNo = repayCardNum;
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
-
+        CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
 		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo,operator,cashDo,bo.isBalance);
-		
+
 	}
 	
 	/**
@@ -203,7 +207,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
             logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) );
             
             this.preCheck(repaymentDo, tradeNo);
-            
+
 			repaymentDo.setOperator(operator);
             final RepayDealBo repayDealBo = new RepayDealBo();
             repayDealBo.curTradeNo = tradeNo;
@@ -229,8 +233,13 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
             });
 
             if (resultValue == 1L) {
-            	notifyUserBySms(repayDealBo,isBalance);
-            	nofityRisk(repayDealBo,cashDo);
+            	try {
+	            	notifyUserBySms(repayDealBo,isBalance);
+	            	nofityRisk(repayDealBo,cashDo);
+            	} catch(Exception e) {
+            		logger.info("notifyUserBySms or nofityRisk has a Exception ,borrowNo = "+cashDo.getBorrowNo()+", e= "+e );
+            	}
+            	cuiShouUtils.syncCuiShou(repaymentDo);
             }
     		
     	}finally {
@@ -460,7 +469,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     }
     
     private void notifyUserBySms(RepayDealBo repayDealBo,String isBalance) {
-    	logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
+    	logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount+"Trade= "+repayDealBo.curTradeNo);
         try {
             AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
             if(repayDealBo.curName.equals("代扣付款")){
@@ -515,6 +524,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     }
     
     private void nofityRisk(RepayDealBo repayDealBo,AfBorrowCashDo cashDo) {
+    	logger.info("nofityRisk begin, borrowNo={}", cashDo.getBorrowNo());
     	String cardNo = repayDealBo.curCardNo;
     	cardNo = StringUtils.isNotBlank(cardNo)?cardNo:String.valueOf(System.currentTimeMillis());
 		Boolean isCashOverdueOld = false;

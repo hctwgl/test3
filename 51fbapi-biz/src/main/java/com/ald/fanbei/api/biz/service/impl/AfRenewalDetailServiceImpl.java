@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.*;
@@ -71,6 +72,8 @@ import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
  */
 @Service("afRenewalDetailService")
 public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewalDetailService {
+	@Resource
+	CuiShouUtils cuiShouUtils;
 	@Resource
 	UpsUtil upsUtil;
 	@Resource
@@ -351,6 +354,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 			AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());
 			AfUserDo userDo = afUserService.getUserById(currAfBorrowCashDo.getUserId());
+			cuiShouUtils.syncXuqi(currAfBorrowCashDo);//新催收
 			try {
 				pushService.repayRenewalSuccess(userDo.getUserName());
 				logger.info("续期成功，推送消息成功outTradeNo:"+outTradeNo);
