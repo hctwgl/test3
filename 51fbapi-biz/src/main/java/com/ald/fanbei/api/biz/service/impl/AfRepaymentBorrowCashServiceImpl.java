@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
@@ -76,6 +77,9 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Service("afRepaymentBorrowCashService")
 public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfRepaymentBorrowCashService {
+
+    @Resource
+    CuiShouUtils cuiShouUtils;
 
     @Resource
     AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
@@ -247,8 +251,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
                 	String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-                        dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);                        
-                        throw new FanbeiException(errorMsg); 
+                        dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);
+                        throw new FanbeiException(errorMsg);
                     } else {
                         dealRepaymentFail(payTradeNo, "", false, "", repayment);
                     }
@@ -664,6 +668,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             } else {
                 logger.info("collection consumerRepayment not push,borrowCashId=" + currAfBorrowCashDo.getRid());
             }
+            cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
         }
 
         return resultValue;
@@ -858,7 +863,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Override
     public String dealOfflineRepaymentSucess(final String repayNo, final String borrowNo, final String repayType, final String repayTime, final BigDecimal repayAmount, final BigDecimal restAmount, final String tradeNo, final String isBalance,final String isAdmin) {
-        return transactionTemplate.execute(new TransactionCallback<String>() {
+        Date currDate = new Date();
+        Date gmtCreate = DateUtil.parseDateTimeShortExpDefault(repayTime, currDate);
+        //还款方式解析
+        OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
+        //线下还款记录添加
+        final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNoV1(borrowNo);
+        final AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+                0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
+        String ret = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try {
@@ -960,6 +973,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                     }
                     afBorrowCashService.updateBorrowCash(bcashDo);
+
                     return FanbeiThirdRespCode.SUCCESS.getCode();
                 } catch (Exception e) {
                     status.setRollbackOnly();
@@ -968,6 +982,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             }
         });
+
+        if(ret.equals(FanbeiThirdRespCode.SUCCESS.getCode())){
+            CuiShouUtils.setAfRepaymentBorrowCashDo(repayment);
+            cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
+        }
+        return ret;
     }
 
     @Override

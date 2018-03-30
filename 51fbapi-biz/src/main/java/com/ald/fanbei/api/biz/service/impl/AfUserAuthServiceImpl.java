@@ -392,6 +392,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    if (appVersion < 411) {
 		data.put("showExtraTab", afResourceDoAuth.getValue());
 	    } 
+	    else {
+		//强风控通过则开启
+		data.put("showExtraTab", "0");
+	    }
 
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证

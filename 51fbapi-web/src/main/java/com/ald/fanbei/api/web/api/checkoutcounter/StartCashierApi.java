@@ -85,6 +85,7 @@ public class StartCashierApi implements ApiHandle {
     AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
     @Override

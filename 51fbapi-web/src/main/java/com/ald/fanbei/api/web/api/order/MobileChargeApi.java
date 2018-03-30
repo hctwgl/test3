@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -87,7 +88,7 @@ public class MobileChargeApi implements ApiHandle {
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,request.getRemoteAddr(),afUserAccountDo,blackBox,bqsBlackBox);
+			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId, CommonUtil.getIpAddr(request),afUserAccountDo,blackBox,bqsBlackBox);
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);

@@ -180,6 +180,10 @@ public class RepayDoV2Api implements ApiHandle {
                 if (null == card) {
                     throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
                 }
+                
+                //还款金额是否大于银行单笔限额
+		afUserBankcardService.checkUpsBankLimit(card.getBankCode(), bo.actualAmount);
+		
                 bo.cardName = card.getBankName();
                 bo.cardNo = card.getCardNumber();
             }
