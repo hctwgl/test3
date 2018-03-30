@@ -639,6 +639,7 @@ public class CollectionController {
                     afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((type-1), borrowNo);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    logger.error("getContractProtocolPdf error = >[}",e.getMessage());
                 }
             }else if ("V1".equals(version)){//v1版本
                 if (type == 1) {
