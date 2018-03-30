@@ -261,4 +261,6 @@ public interface AfResourceService {
 	List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType);
 
 	List<AfResourceDo> getNewSpecialResource(String type);//获取新的专场信息(未出账单列表页|已出账单列表页)
+	
+	String getCashProductName();
 }

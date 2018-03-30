@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
@@ -49,7 +50,9 @@ import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -98,9 +101,17 @@ public class UpsUtil extends AbstractThird {
 //	private static String PAY_CHANL_BF       = "07";   //报付
 	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
+    
+	//调用ups接口使用（单位：分）
+        private static int kuaijieExpireMinites = 15;
+        //存储redis使用（单位：秒）（数据缓存时间小于支付订单有效时间，防止订单支付失败（用户临界时间完成支付））
+        private static int kuaijieExpireSeconds = 14 * 60;
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
+	
+	@Autowired
+	BizCacheUtil bizCacheUtil;
 	
 	@Resource
 	AfUserAccountService afUserAccountService;
@@ -514,17 +525,15 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public Object collect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){
-		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
-		if(bankPayType != null && "KUIAJIE".equals(bankPayType)){
-			 return   quickPay(amount, userNo, realName, phone, bankCode,
-						 cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType, "", "");
+        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, 
+        			String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
+        	if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+        	    return quickPay(amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType, productName);
+        	}
+        	else {
+            	    return collectForDaifu(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
 		}
-			return collectForDaifu(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
-		
-		
-	}
+        }
 	
 	/**
 	 * 单笔代收(代付)
@@ -542,11 +551,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public UpsCollectRespBo collectForDaifu(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){
-		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
-	
-		
+	private UpsCollectRespBo collectForDaifu(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){		
 		amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
@@ -564,15 +570,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
-/*		reqBo.setRealName("王宝");宝付测试
-		reqBo.setPhone("18066542211");
-		reqBo.setBankCode("ABC");
-		reqBo.setCardNo("6228480444455553333");
-		reqBo.setUserNo("test88888");
-		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -609,8 +608,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public UpsQuickPayRespBo quickPay(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName,String expiredTime){
+	private UpsQuickPayRespBo quickPay(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName){
 		String orderNo = getOrderNo("qpay", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		amount = setActualAmount(amount);
 		UpsQuickPayReqBo reqBo = new UpsQuickPayReqBo();
@@ -623,18 +622,10 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
 		reqBo.setProductName(productName);
-		reqBo.setExpiredTime(expiredTime);
+		reqBo.setExpiredTime(String.valueOf( kuaijieExpireMinites));
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPay");
-		logger.info("bank quickPay notifyUrl = "+ getNotifyHost() + "/third/ups/quickPay");
-/*		reqBo.setRealName("王宝");宝付测试
-		reqBo.setPhone("18066542211");
-		reqBo.setBankCode("ABC");
-		reqBo.setCardNo("6228480444455553333");
-		reqBo.setUserNo("test88888");
-		reqBo.setCertNo("320301198502169142");*/
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -650,14 +641,6 @@ public class UpsUtil extends AbstractThird {
 			return authSignResp;
 		}
 	}
-	
-	
-//	public static void main(String[] args){
-//		System.out.println("start test");
-//		
-//		
-//		
-//	}
 	
 	/**
 	 * 短信重发
