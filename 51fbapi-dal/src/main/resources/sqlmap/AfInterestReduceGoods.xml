@@ -155,4 +155,15 @@
 		AND g.goods_id = #{goodsId}
 		AND s.is_open = 'Y';
     </select>
+    <select resultType ="java.lang.String">
+	    SELECT s.descr FROM af_interest_reduce_scheme s
+		INNER JOIN af_interest_reduce_goods g on g.interest_reduce_scheme_id = s.id
+		WHERE
+		g.is_delete = 0 
+		AND s.is_delete = 0 
+		AND s.rule_type = #{ruleType}
+		AND g.goods_id = #{goodsId}
+		AND s.is_open = 'Y';
+    </select>
+    
 </mapper>
