@@ -389,14 +389,6 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
-	    // 是否显示补充认证（兼容老版本）
-	    if (appVersion < 411) {
-		data.put("showExtraTab", afResourceDoAuth.getValue());
-	    } 
-	    else {
-		//强风控通过则开启
-		data.put("showExtraTab", "0");
-	    }
 
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
@@ -445,8 +437,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
 		data.put("title2", afResourceDo.getValue1());
 		data.put("sceneStatus", "4");// 认证成功
-		
-		data.put("showExtraTab", "1");
+
+		// 是否显示补充认证（兼容老版本）
+		if (appVersion < 411) {
+		    data.put("showExtraTab", afResourceDoAuth.getValue());
+		} else {
+		    // 强风控通过则开启
+		    data.put("showExtraTab", "1");
+		}
 	    } else {
 		data.put("basicStatus", "P");
 		data.put("riskStatus", "P");
