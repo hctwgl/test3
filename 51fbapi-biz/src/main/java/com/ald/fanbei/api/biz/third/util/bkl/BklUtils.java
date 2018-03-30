@@ -42,7 +42,7 @@ public class BklUtils {
         map.put("order_id", bklDo.getCsvArn() + new Date().getTime());
         String work_data = "{'csv_phone_num':'"+bklDo.getCsvPhoneNum()+"','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+bklDo.getCsvName()+"','csv_sex':'"+bklDo.getCsvSex()+
                 "','csv_digit_4':"+bklDo.getCsvDigit4()+",'csv_birth_date':'"+bklDo.getCsvBirthDate()+"','csv_staging':"+bklDo.getCsvStaging()+
-                ",'csv_amt':"+bklDo.getCsvAmt()+",'csv_pay_way':'"+bklDo.getCsvPayWay()+"','csv_product_category':'"+bklDo.getCsvProductCategory()+"' }";
+                ",'csv_amt':"+bklDo.getCsvAmt()+",'csv_pay_way':'"+bklDo.getCsvPayWay()+"','csv_product_category':'"+"手机通讯"+"' }";
         Map dtt=null;
         try {
             dtt = AOSJson.fromJson(work_data, HashMap.class);
@@ -66,7 +66,7 @@ public class BklUtils {
             logger.info("bklUtils submitJob httpResponseVO success out =" + httpResponseVO.getOut());
             JSONObject object = JSONObject.parseObject(httpResponseVO.getOut());
             JSONObject object1 = (JSONObject) object.get("success");
-            logger.info("bklUtils submitJob bklDo info =" +bklDo.getOrderId()+",csvArn=" +bklDo.getCsvArn()+",user ="+bklDo.getUserId() +",receipt_id"+Long.parseLong(String.valueOf(object1.get("receipt_id"))));
+            logger.info("bklUtils submitJob bklDo info =" +bklDo.getOrderId()+",csvArn=" +bklDo.getCsvArn()+",user ="+bklDo.getUserId() +",receipt_id ="+Long.parseLong(String.valueOf(object1.get("receipt_id"))));
             if (object1 != null){
                 AfIagentResultDo iagentResultDo = new AfIagentResultDo();
                 iagentResultDo.setWorkId(Long.parseLong(String.valueOf(object1.get("receipt_id"))));
