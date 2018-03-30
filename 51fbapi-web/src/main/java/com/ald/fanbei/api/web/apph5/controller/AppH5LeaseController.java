@@ -144,13 +144,11 @@ public class AppH5LeaseController extends BaseController {
         List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
         try{
             context = doWebCheck(request, false);
-            if(StringUtil.isNotEmpty(context.getUserName())){
+            if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-                if(afUser != null && afUser.getRid() > 0){
-                    if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
-                        riskUtil.updateRentScore(afUser.getRid().toString());
-                        bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
-                    }
+                if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
+                    riskUtil.updateRentScore(afUser.getRid().toString());
+                    bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
                 }
             }
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
