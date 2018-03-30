@@ -9,13 +9,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+
 import org.bouncycastle.jce.provider.asymmetric.ec.KeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -862,6 +865,18 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
    public List<AfResourceDo> getNewSpecialResource(String type){
         return afResourceDao.getNewSpecialResource(type);
+    }
+
+    @Override
+    public String getCashProductName() {
+	AfResourceDo afResourceDo = afResourceDao.getSingleResourceBytype("CASH_PRODUCT_NAME");
+	if(afResourceDo!=null)
+	{
+	    return afResourceDo.getValue();
+	}
+	else {
+	    return "网上购物商品";
+	}
     }
 
 }

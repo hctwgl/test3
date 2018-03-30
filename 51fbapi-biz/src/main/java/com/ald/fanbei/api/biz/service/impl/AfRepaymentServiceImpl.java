@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -151,6 +152,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     AfInterimDetailDao afInterimDetailDao;
     @Resource
     AfUserAccountSenceDao afUserAccountSenceDao;
+    @Resource
+    AfResourceService afResourceService;
 
     public void testbackDetail() {
         AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentById(94901l);
@@ -208,7 +211,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
             UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
-                    Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
+                    Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENT.getCode(),
+                    bankPayType,afResourceService.getCashProductName());
 
             afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
             if (!respBo.isSuccess()) {
@@ -285,7 +289,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
             UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
-                    Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
+                    Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(),
+                    bankPayType,afResourceService.getCashProductName());
 
             afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
             if (!respBo.isSuccess()) {
