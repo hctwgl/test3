@@ -1221,6 +1221,7 @@ public class RiskUtil extends AbstractThird {
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
+			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
 			String sex ;
 			if ("M".equals(userDo.getGender())){
 				sex = "男";
@@ -1234,7 +1235,7 @@ public class RiskUtil extends AbstractThird {
 			bklDo.setCsvPhoneNum(userDo.getMobile());
 			bklDo.setCsvAmt(String.valueOf(orderInfo.getActualAmount()));
 			bklDo.setCsvDigit4(csvDigit4);
-			bklDo.setCsvBirthDate(userDo.getBirthday());
+			bklDo.setCsvBirthDate(csvBirthDate);
 			bklDo.setCsvName(userDo.getRealName());
 			bklDo.setCsvPayWay("分期付款");
 			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
