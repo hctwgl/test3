@@ -5,6 +5,8 @@ import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -99,6 +101,12 @@ public class AppH5LeaseController extends BaseController {
 
     @Resource
     ContractPdfThreadPool contractPdfThreadPool;
+
+    @Resource
+    BizCacheUtil bizCacheUtil;
+
+    @Resource
+    RiskUtil riskUtil;
     /**
      *获取租赁首页banner
      */
@@ -135,6 +143,14 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
         try{
+            context = doWebCheck(request, false);
+            if(StringUtil.isNotEmpty(context.getUserName())){
+                AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+                if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
+                    riskUtil.updateRentScore(afUser.getRid().toString());
+                    bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
+                }
+            }
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
             Long pageSize = NumberUtil.objToLongDefault(request.getParameter("pageSize"), 50);
             List<LeaseGoods> list = afGoodsService.getHomeLeaseGoods(pageIndex,pageSize);
