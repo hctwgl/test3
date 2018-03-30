@@ -63,18 +63,20 @@ public class BklUtils {
             HttpResponseVO httpResponseVO = AOSHttpClient.upload(httpRequestVO);
             httpResponseVO.getOut();
             httpResponseVO.getStatus();
+            logger.info("bklUtils submitJob httpResponseVO success out =" + httpResponseVO.getOut());
             JSONObject object = JSONObject.parseObject(httpResponseVO.getOut());
             JSONObject object1 = (JSONObject) object.get("success");
-            object1.get("receipt_id");
-            System.out.println(httpResponseVO.getOut());
-            logger.info("bklUtils submitJob httpResponseVO success out =" + httpResponseVO.getOut());
-            AfIagentResultDo iagentResultDo = new AfIagentResultDo();
-            iagentResultDo.setWorkId(Long.parseLong(String.valueOf(object1.get("receipt_id"))));
-            iagentResultDo.setOrderId(bklDo.getOrderId());
-            iagentResultDo.setOrderNo(bklDo.getCsvArn());
-            iagentResultDo.setOrderType("0");
-            iagentResultDo.setUserId(bklDo.getUserId());
-            iagentResultService.saveRecord(iagentResultDo);
+            if (object1 != null){
+                AfIagentResultDo iagentResultDo = new AfIagentResultDo();
+                iagentResultDo.setWorkId(Long.parseLong(String.valueOf(object1.get("receipt_id"))));
+                iagentResultDo.setOrderId(bklDo.getOrderId());
+                iagentResultDo.setOrderNo(bklDo.getCsvArn());
+                iagentResultDo.setOrderType("0");
+                iagentResultDo.setUserId(bklDo.getUserId());
+                iagentResultDo.setGmtCreate(new Date());
+                iagentResultDo.setGmtModified(new Date());
+                iagentResultService.saveRecord(iagentResultDo);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("bklUtils submitJob httpResponseVO error =",e);
