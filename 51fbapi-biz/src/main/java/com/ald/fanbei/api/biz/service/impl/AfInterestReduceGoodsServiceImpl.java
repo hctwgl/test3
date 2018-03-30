@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -21,11 +20,6 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonArray;
-import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
-
-import net.bytebuddy.implementation.bind.annotation.Super;
 
 /**
  * 降息ServiceImpl
