@@ -62,15 +62,16 @@ public class AuthFundNewGiveBackApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String orderSn = ObjectUtils.toString(requestDataVo.getParams().get("orderSn"));
-		//String orderSn = request.getParameter("orderSn");
 		try {
-			auth51FundUtil.giveBack(orderSn,userId+"");
-			//保存认证的状态为认证中
-            AfUserAuthDo authDo = new AfUserAuthDo();
-            authDo.setUserId(NumberUtil.objToLongDefault(userId, 0l));
-            authDo.setGmtFund(new Date(System.currentTimeMillis()));
-            authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
-            afUserAuthService.updateUserAuth(authDo);
+			int result=auth51FundUtil.giveBack(orderSn,userId+"");
+			if (result == 1) {
+				//保存认证的状态为认证中
+				AfUserAuthDo authDo = new AfUserAuthDo();
+				authDo.setUserId(NumberUtil.objToLongDefault(userId, 0l));
+				authDo.setGmtFund(new Date(System.currentTimeMillis()));
+				authDo.setFundStatus(SupplyCertifyStatus.WAIT.getCode());
+				afUserAuthService.updateUserAuth(authDo);
+			}
         } catch (Exception e) {
 			logger.error("error = " + e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_SUBMIT_ERROR);

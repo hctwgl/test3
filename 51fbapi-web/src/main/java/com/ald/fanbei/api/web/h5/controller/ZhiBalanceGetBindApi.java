@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import com.ald.fanbei.api.biz.service.AfAlipayOfflineTradeNoService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserProfileService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -11,9 +12,8 @@ import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserProfileDo;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -25,12 +25,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +53,10 @@ public class ZhiBalanceGetBindApi extends H5Controller {
     AfSmsRecordService afSmsRecordService;
     @Resource
     SmsUtil smsUtil;
+    @Resource
+    AfAlipayOfflineTradeNoService afAlipayOfflineTradeNoService;
+    @Resource
+    private AfBorrowCashDao afBorrowCashDao;
 
     @RequestMapping(value = "/zhiBalanceGetBind", method = RequestMethod.POST)
     public String zhiBalanceGetBindApi(HttpServletRequest request, HttpServletResponse response) {
@@ -188,7 +195,76 @@ public class ZhiBalanceGetBindApi extends H5Controller {
         return H5CommonResponse.getNewInstance(false, resultStr, null, null).toString();
 
     }
+    @RequestMapping(value = "/zhiBalanceSaveTradeNo", method = RequestMethod.POST)
+    @ResponseBody
+    public String zhiBalanceSaveTradeNo(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            FanbeiWebContext context = new FanbeiWebContext();
+            context = doWebCheck(request, true);
+            String userName = context.getUserName();
+            logger.info("zhiBalanceSaveTradeNo current user info " + userName);
+            if (userName == null || "".equals(userName)) {
+                throw new FanbeiException("用户不存在");
+            }
+            AfUserDo user = afUserService.getUserByUserName(userName);
+            if (user == null) {
+                throw new FanbeiException("用户不存在");
+            }
+            String tradeNo = ObjectUtils.toString(request.getParameter("tradeNo"), null);
+            AfAlipayOfflineTradeNoDo afAlipayOfflineTradeNoDo = new AfAlipayOfflineTradeNoDo();
+            afAlipayOfflineTradeNoDo.setPayserialnum(tradeNo);
+            afAlipayOfflineTradeNoDo.setUserId(user.getRid());
+            AfAlipayOfflineTradeNoDo tradeNoDo = afAlipayOfflineTradeNoService.getByCommonCondition(afAlipayOfflineTradeNoDo);
+            if (tradeNoDo != null){
+                throw new FanbeiException("你已经保存过");
+            }
+            afAlipayOfflineTradeNoService.saveRecord(afAlipayOfflineTradeNoDo);
+            return H5CommonResponse.getNewInstance(true, "提交成功，您的还款已受理，请耐心等待！", null, null).toString();
+        }catch (Exception e){
+            logger.info("保存支付宝流水号失败" + e);
+            return H5CommonResponse.getNewInstance(true, "保存支付宝流水号失败", null, null).toString();
+        }
 
+    }
+    @RequestMapping(value = "/zhiBalanceGetTradeNos", method = RequestMethod.POST)
+    @ResponseBody
+    public String zhiBalanceGetTradeNos(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            FanbeiWebContext context = new FanbeiWebContext();
+            context = doWebCheck(request, true);
+            String userName = context.getUserName();
+            logger.info("zhiBalanceGetTradeNos current user info " + userName);
+            if (userName == null || "".equals(userName)) {
+                throw new FanbeiException("用户不存在");
+            }
+            AfUserDo user = afUserService.getUserByUserName(userName);
+            if (user == null) {
+                throw new FanbeiException("用户不存在");
+            }
+            AfAlipayOfflineTradeNoDo afAlipayOfflineTradeNoDo = new AfAlipayOfflineTradeNoDo();
+            afAlipayOfflineTradeNoDo.setUserId(user.getRid());
+            List<Map<String,Object>> tradeNoDosY =  new ArrayList<>();
+            List<Map<String,Object>> tradeNoDos =  new ArrayList<>();
+             AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(user.getRid());
+             String borrowCash = "0";
+            if (afBorrowCashDo != null){
+                borrowCash = "1";
+                tradeNoDosY = afAlipayOfflineTradeNoService.getTradeNosByUserId(user.getRid(),"Y");
+                tradeNoDos = afAlipayOfflineTradeNoService.getTradeNosByUserId(user.getRid(),"");
+            }
+            int tradeNoCount = (tradeNoDos==null?0:tradeNoDos.size()) - (tradeNoDosY==null?0:tradeNoDosY.size()) ;
+            Map<String,Object> result = new HashMap<>();
+            result.put("borrowCash",borrowCash);
+            result.put("tradeNoDos",tradeNoDos);
+            result.put("tradeNoCount",tradeNoCount);
+
+            return H5CommonResponse.getNewInstance(true, "查询转账列表成功", null, result).toString();
+        }catch (Exception e){
+            logger.info("查询转账列表失败" + e);
+            return H5CommonResponse.getNewInstance(true, "查询转账列表失败", null, null).toString();
+        }
+
+    }
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
         // TODO Auto-generated method stub

@@ -2896,6 +2896,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.updateAuAndUsed(orderId, auAmount, usedAmount);
 	}
 
+    @Override
+    public int addSceneAmount(List<AfOrderSceneAmountDo> list) {
+	return orderDao.addSceneAmount(list);
+    }
+
+    @Override
+    public String getTradeBusinessNameByOrderId(Long orderid) {
+	// TODO Auto-generated method stub
+	return orderDao.getTradeBusinessNameByOrderId(orderid);
+    }
 	@Override
 	public int addSceneAmount(List<AfOrderSceneAmountDo> list) {
 		return orderDao.addSceneAmount(list);

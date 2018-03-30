@@ -153,6 +153,7 @@
 		<property name="kafka.ssl.truststore.location" defaultValue="/home/ald/kafka_ssl_cert/kafka.client.truststore.jks"  description="阿里证书地址"/>
 		<property name="kafka.default.topic" defaultValue="PUBLIC_KAFKA_TEST1"  description="主题"/>
 
+		<property name="fbapi.cuishou.sycnurl" defaultValue="http://192.168.106.92:8280/report/repayment" description="新催收通知"></property>
 
 		<property name="mongo.host" defaultValue="192.168.106.26"  description="mongo服务器"/>
 		<property name="mongo.port" defaultValue="27017"  description="端口"/>
