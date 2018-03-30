@@ -1228,7 +1228,7 @@ public class RiskUtil extends AbstractThird {
 			bklDo.setCsvDigit4(csvDigit4);
 			bklDo.setCsvBirthDate(userDo.getBirthday());
 			bklDo.setCsvName(userDo.getRealName());
-//		bklDo.setCsvPayWay();
+			bklDo.setCsvPayWay("分期付款");
 			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
 			bklDo.setCsvSex(userDo.getGender());
 			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
