@@ -820,7 +820,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
 		try {
 			AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
-			sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount));
+			sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(),repayDealBo );
 		} catch (Exception e) {
 			logger.error("Sms notify user error, userId:" + repayDealBo.userId + ",nowRepayAmount:" + repayDealBo.curSumRepayAmount + ",notRepayMoney" + repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount), e);
 		}
@@ -842,20 +842,27 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	/**
 	 * 用户手动现金贷还款成功短信发送
 	 * @param mobile
-	 * @param repayMoney
+	 * @param
 	 */
-	private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
+	private boolean sendRepaymentBorrowCashWarnMsg(String mobile,LoanRepayDealBo repayDealBo){
 		//模版数据map处理
 		Map<String,String> replaceMapData = new HashMap<String, String>();
+		BigDecimal repayMoney = repayDealBo.curSumRepayAmount;
+		BigDecimal notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 		replaceMapData.put("repayMoney", repayMoney+"");
-		replaceMapData.put("remainAmount", notRepayMoney+"");
-		if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
+		if(repayDealBo.isAllRepay){
+			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount.add(repayDealBo.sumPoundage).add(repayDealBo.sumInterest));
+			replaceMapData.put("remainAmount", notRepayMoney+"");
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+		} else if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
+			replaceMapData.put("remainAmount", notRepayMoney+"");
 			String title = "恭喜您，借款已还清！";
 			String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
 			content = content.replace("&repayMoney",repayMoney.toString());
 			pushService.pushUtil(title,content,mobile);
 			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
 		} else {
+			replaceMapData.put("remainAmount", notRepayMoney+"");
 			String title = "部分还款成功！";
 			String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
 			content = content.replace("&repayMoney",repayMoney.toString());
