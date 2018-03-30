@@ -40,8 +40,8 @@ public class BklUtils {
         map.put("access_token", "xCGQF6wNeA1z6Cmz2UMW8F1as");
         map.put("job_code", "51FB-SP01");
         map.put("order_id", bklDo.getCsvArn() + new Date().getTime());
-        String work_data = "{'csv_phone_num':'"+bklDo.getCsvPhoneNum()+"','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+bklDo.getCsvName()+"','csv_sex':'"+bklDo.getCsvSex()+
-                "','csv_digit_4':"+bklDo.getCsvDigit4()+",'csv_birth_date':'"+bklDo.getCsvBirthDate()+"','csv_staging':"+bklDo.getCsvStaging()+
+        String work_data = "{'csv_phone_num':'"+"13018933980"+"','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+"郭帅强"+"','csv_sex':'"+bklDo.getCsvSex()+
+                "','csv_digit_4':"+"4817"+",'csv_birth_date':'"+"1992-11-25"+"','csv_staging':"+bklDo.getCsvStaging()+
                 ",'csv_amt':"+bklDo.getCsvAmt()+",'csv_pay_way':'"+bklDo.getCsvPayWay()+"','csv_product_category':'"+"手机通讯"+"' }";
         Map dtt=null;
         try {
@@ -77,6 +77,8 @@ public class BklUtils {
                 iagentResultDo.setGmtCreate(new Date());
                 iagentResultDo.setGmtModified(new Date());
                 iagentResultService.saveRecord(iagentResultDo);
+            }else {
+                logger.error("bklUtils submitJob httpResponseVO error out ="+httpResponseVO.getOut());
             }
         } catch (Exception e) {
             e.printStackTrace();
