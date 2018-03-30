@@ -205,7 +205,8 @@ public class ThirdController extends AbstractThird{
             if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&!"E".equals(afOrderDo.getIagentStatus())){
                 Map<String,String> qmap = new HashMap<>();
                 qmap.put("orderNo",afOrderDo.getOrderNo());
-                HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
             }
         }
 
