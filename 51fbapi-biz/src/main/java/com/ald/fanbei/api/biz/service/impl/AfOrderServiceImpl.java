@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,32 +32,6 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
-import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
-import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfCheckoutCounterService;
-import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfTradeOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAmountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
@@ -119,30 +96,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfCheckoutCounterDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
-import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
-import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
@@ -294,6 +247,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	AfUserAmountService afUserAmountService;
 	@Autowired
 	AfGoodsCategoryDao afGoodsCategoryDao;
+
+	@Resource
+	BklUtils bklUtils;
+
 
 	@Override
 	public int createOrderTrade(final String content) {
@@ -1684,7 +1641,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(),
 								BorrowBillStatus.NO.getCode());
-
 						// #region add by hongzhengpei
 						// afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new
 						// Date());
@@ -1701,6 +1657,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					//TODO 回调方法
+					submitBklInfo(orderInfo);
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -1814,6 +1771,32 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		}
 		return result;
+	}
+
+	public void submitBklInfo(AfOrderDo orderInfo){
+		try {
+			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
+			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
+			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
+			AfBklDo bklDo = new AfBklDo();
+			bklDo.setCsvArn(orderInfo.getOrderNo());
+			bklDo.setCsvPhoneNum(userDo.getMobile());
+			bklDo.setCsvAmt(String.valueOf(orderInfo.getBorrowAmount()));
+			bklDo.setCsvDigit4(csvDigit4);
+			bklDo.setCsvBirthDate(userDo.getBirthday());
+			bklDo.setCsvName(userDo.getRealName());
+//		bklDo.setCsvPayWay();
+			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
+			bklDo.setCsvSex(userDo.getGender());
+			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
+			bklUtils.submitJob(bklDo);
+		}catch (Exception e){
+			logger.error("submitBklInfo error = >{}",e);
+		}
+
+
 	}
 
 	@Override

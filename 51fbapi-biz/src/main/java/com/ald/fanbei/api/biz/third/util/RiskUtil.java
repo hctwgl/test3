@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
@@ -293,6 +294,15 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfAuthRaiseStatusService afAuthRaiseStatusService;
+
+	@Resource
+	BklUtils bklUtils;
+
+	@Resource
+	AfGoodsService afGoodsService;
+
+	@Resource
+	AfGoodsCategoryDao afGoodsCategoryDao;
 
 	public static String getUrl() {
 		if (url == null) {
@@ -1161,6 +1171,7 @@ public class RiskUtil extends AbstractThird {
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
 		//TODO 电核
+		submitBklInfo(orderInfo);
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
@@ -1174,6 +1185,32 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+
+	public void submitBklInfo(AfOrderDo orderInfo){
+		try {
+			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
+			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
+			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
+			AfBklDo bklDo = new AfBklDo();
+			bklDo.setCsvArn(orderInfo.getOrderNo());
+			bklDo.setCsvPhoneNum(userDo.getMobile());
+			bklDo.setCsvAmt(String.valueOf(orderInfo.getBorrowAmount()));
+			bklDo.setCsvDigit4(csvDigit4);
+			bklDo.setCsvBirthDate(userDo.getBirthday());
+			bklDo.setCsvName(userDo.getRealName());
+//		bklDo.setCsvPayWay();
+			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
+			bklDo.setCsvSex(userDo.getGender());
+			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
+			bklUtils.submitJob(bklDo);
+		}catch (Exception e){
+			logger.error("submitBklInfo error = >{}",e);
+		}
+
+
 	}
 
 	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
@@ -1399,7 +1436,6 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-		//TODO 电核
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
 		resultMap.put("success", true);
