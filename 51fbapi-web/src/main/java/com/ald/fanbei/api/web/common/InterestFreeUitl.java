@@ -55,11 +55,13 @@ public class InterestFreeUitl {
             if(resource1!=null){
                 array = JSON.parseArray(resource1.getValue());
             }*/
+          
+            	JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
+                if (newArray != null) {
+                	array = newArray;
+    			
+			}
             
-/*            JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
-            if (newArray != null) {
-            	array = newArray;
-			}*/
             
         }
 

@@ -155,7 +155,7 @@
 		AND g.goods_id = #{goodsId}
 		AND s.is_open = 'Y';
     </select>
-    <select resultType ="java.lang.String">
+    <select id = "getDescr" resultType ="java.lang.String">
 	    SELECT s.descr FROM af_interest_reduce_scheme s
 		INNER JOIN af_interest_reduce_goods g on g.interest_reduce_scheme_id = s.id
 		WHERE
