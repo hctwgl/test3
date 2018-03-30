@@ -1631,6 +1631,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					//TODO 回调方法
 					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+						submitBklInfo(orderInfo);
 						//新增白名单逻辑
 						AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
 						if (bklWhiteResource != null) {
@@ -1639,7 +1640,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 							if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
 								//不在白名单不推送
-								submitBklInfo(orderInfo);
+
 							}
 						}
 					}
