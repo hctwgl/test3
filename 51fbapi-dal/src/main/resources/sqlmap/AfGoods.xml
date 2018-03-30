@@ -408,15 +408,14 @@
 	</select>
 
 	<select id="getGoodsListByGoodsId" resultType="AfGoodsDo">
-		SELECT
+		<foreach collection="list" item="item" separator="UNION ALL" >
+			SELECT
 			<include refid="queryFields"/>
-		FROM
+			FROM
 			af_goods
-		WHERE is_delete = 0
-		AND status = 'PUBLISH'
-		AND id in
-		<foreach collection="list" item="item" separator="," open="(" close=")">
-			#{item}
+			WHERE is_delete = 0
+			AND status = 'PUBLISH'
+			AND id = #{item}
 		</foreach>
 	</select>
 
