@@ -260,11 +260,11 @@ public class GetUserShareInfoApi implements ApiHandle {
 	    //获取数据库用户上传的最后一张图片。放入json 
 	   //AfFacescoreRedDo afFacescoreRedDo = new AfFacescoreRedDo();
 	 try{
-		AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
-	  String image = "";
+		 String image = "";
+		/*AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
 	  if(afFacescoreRedDo != null && userId != null ){
 		   image =  afFacescoreRedDo.getImageurl();
-	   }else{
+	   }else{*/
 		   //随机一张图片
 		    
 		     AfFacescoreImgDo findFacescoreImg = new AfFacescoreImgDo();
@@ -273,7 +273,7 @@ public class GetUserShareInfoApi implements ApiHandle {
 		     int randomLenght = afFacescoreImglist.size();
 		     int num=(int)(Math.random() * randomLenght); 
 		      image = afFacescoreImglist.get(num).getUrl();
-	   }
+	  // }
 	   List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
 	     //获取该list(type = 'avatar')
 	     JSONArray ja= new JSONArray();
