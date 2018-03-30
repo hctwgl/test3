@@ -146,9 +146,11 @@ public class AppH5LeaseController extends BaseController {
             context = doWebCheck(request, false);
             if(StringUtil.isNotEmpty(context.getUserName())){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-                if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
-                    riskUtil.updateRentScore(afUser.getRid().toString());
-                    bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
+                if(afUser != null && afUser.getRid() > 0){
+                    if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
+                        riskUtil.updateRentScore(afUser.getRid().toString());
+                        bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
+                    }
                 }
             }
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
