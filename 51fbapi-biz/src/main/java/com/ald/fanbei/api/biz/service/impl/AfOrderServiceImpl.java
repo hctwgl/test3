@@ -1657,7 +1657,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					//TODO 回调方法
-					submitBklInfo(orderInfo);
+					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+						submitBklInfo(orderInfo);
+					}
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
