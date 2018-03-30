@@ -84,7 +84,7 @@ public class ThirdController extends AbstractThird{
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( @RequestParam("work_id") final String   work_id, @RequestParam("job_id")String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
+    public String iagentReport( @RequestParam("audio") MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
@@ -103,18 +103,18 @@ public class ThirdController extends AbstractThird{
             }
         }
         sb.append("---iagentReport end");
-        /*sb.append("---audio name："+audio.getOriginalFilename());
+        sb.append("---audio name："+audio.getOriginalFilename());
         OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
-        sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());*/
+        sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
         logger.info(sb.toString());
-        //final String audioUrl = ossUploadResult.getUrl();
-        /*YFSmsUtil.pool.execute(new Runnable() {
+        final String audioUrl = ossUploadResult.getUrl();
+        YFSmsUtil.pool.execute(new Runnable() {
             @Override
             public void run() {
                 processIagentResult("oooooo",job_id,work_result);
             }
-        });*/
-        processIagentResult("oooooo",job_id,work_result);
+        });
+        //processIagentResult("oooooo",job_id,work_result);
         JSONObject jsonObject=new JSONObject();
         JSONObject innerJsonObject=new JSONObject();
         innerJsonObject.put("receipt_id",System.currentTimeMillis());
