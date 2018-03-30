@@ -102,7 +102,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(
 				ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
-		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
+		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		// 对402版本借钱，低版本还款情况做控制
 		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
 

@@ -94,7 +94,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
         String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"), "").toString();
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
-    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
