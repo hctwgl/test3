@@ -28,6 +28,6 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException;
 
-    String leaseProtocolPdf(Map<String,Object> data,Long userId,String url) throws IOException;
+    String leaseProtocolPdf(Map<String,Object> data,Long userId ,Long orderId) throws IOException;
 
 }

@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -10,6 +11,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -769,9 +771,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     @Override
-    public String leaseProtocolPdf(Map<String,Object> data,Long userId,String url)throws IOException{
+    public String leaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId)throws IOException{
         long time = new Date().getTime();
-        String html = HttpUtil.doGet(url+"/h5/hire/protocol.html?showTitle=false",1);
+        String html = HttpUtil.doGet(ConfigProperties.get(Constants.H5_REQUEST_URI)+"/h5/hire/protocol.html?showTitle=false&orderId="+orderId,1);
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         return getLeaseContractPdf(data,userId);

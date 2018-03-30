@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +142,8 @@ public class PayRoutController {
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
 	@Resource
 	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-
+	@Resource
+	ContractPdfThreadPool contractPdfThreadPool;
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
 
@@ -926,6 +928,9 @@ public class PayRoutController {
 				Date gmtStart = DateUtil.addDays(today,1);
 				Date gmtEnd = DateUtil.addMonths(gmtStart,afOrder.getNper() + 1);
 				afOrderDao.UpdateOrderLeaseTime(gmtStart,gmtEnd,afOrder.getRid());
+				//生成pdf
+				Map<String,Object> leaseData = afOrderService.getLeaseProtocol(orderId);
+				contractPdfThreadPool.LeaseProtocolPdf(leaseData,afOrder.getUserId(),orderId);
 			}
 			return "success";
 		}

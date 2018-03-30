@@ -70,8 +70,8 @@ public class ContractPdfThreadPool{
         service.execute(goodsInstalmentProtocolTask);
     }
 
-    public void LeaseProtocolPdf(Map<String,Object> data,Long userId,String url){
-        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data, userId,url);
+    public void LeaseProtocolPdf(Map<String,Object> data,Long userId ,Long orderId){
+        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data, userId,orderId);
         service.execute(leaseProtocolPdf);
     }
 
@@ -174,16 +174,16 @@ public class ContractPdfThreadPool{
     class LeaseProtocolPdf implements Runnable {
         private Map<String,Object> data;
         private Long userId;
-        private String url;
-        public LeaseProtocolPdf(Map<String,Object> data,Long userId,String url) {
+        private Long orderId;
+        public LeaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId) {
             data = data;
             userId=userId;
-            url=url;
+            orderId=orderId;
         }
         @Override
         public void run() {
             try {
-                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data, userId,url);
+                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data, userId,orderId);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -926,7 +926,7 @@ public class AppH5LeaseController extends BaseController {
             afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
             //生成pdf
             Map<String,Object> data = afOrderService.getLeaseProtocol(orderId);
-            contractPdfThreadPool.LeaseProtocolPdf(data,afUser.getRid(),request.getRequestURI());
+            contractPdfThreadPool.LeaseProtocolPdf(data,afUser.getRid(),orderId);
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
         }
