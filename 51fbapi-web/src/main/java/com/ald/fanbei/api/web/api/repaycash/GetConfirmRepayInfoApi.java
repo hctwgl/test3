@@ -95,7 +95,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
-		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
+		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		// 对402版本借钱，低版本还款情况做控制
 		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
 		

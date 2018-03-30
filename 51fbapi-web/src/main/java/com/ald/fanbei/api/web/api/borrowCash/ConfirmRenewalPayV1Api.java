@@ -97,7 +97,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
     	BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-        String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
+        String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 //        if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 //        }

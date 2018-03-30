@@ -89,7 +89,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
         String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"), "").toString();
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
-        String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
+        String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
         // 对405版本借钱，在低版本续期情况做控制
      	afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
         
