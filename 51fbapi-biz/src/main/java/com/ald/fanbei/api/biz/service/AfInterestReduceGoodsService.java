@@ -13,4 +13,6 @@ import com.alibaba.fastjson.JSONArray;
  */
 public interface AfInterestReduceGoodsService extends ParentService<AfInterestReduceGoodsDo, Long>{
 	public JSONArray checkIfReduce(Long goodsId);
+
+	public String getInterestFreeDesc(Long goodsId);
 }

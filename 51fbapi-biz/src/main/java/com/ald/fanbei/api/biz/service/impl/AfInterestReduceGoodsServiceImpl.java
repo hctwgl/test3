@@ -143,4 +143,44 @@ public class AfInterestReduceGoodsServiceImpl extends ParentServiceImpl<AfIntere
 
 		
 	}
+
+
+	@Override
+	public String getInterestFreeDesc(Long goodsId) {
+		String result = null;
+
+		AfGoodsDo goodsDo = afGoodsDao.getGoodsById(goodsId);
+		if (goodsDo != null) {
+
+			// check goodsId
+			result = this.getDescr(0, goodsId);
+			if (StringUtil.isNotBlank(result)) {
+				return result;
+
+			}
+
+			// get brandId due to goodsId
+			Long brandId = goodsDo.getBrandId();
+			result = this.getDescr(1, brandId);
+			if (StringUtil.isNotBlank(result)) {
+				return result;
+
+			}
+
+			// get categoryId due to goodsId
+			Long categoryId = goodsDo.getCategoryId();
+			result = this.getDescr(2, categoryId);
+			if (StringUtil.isNotBlank(result)) {
+				return result;
+
+			}
+		}
+		return result;
+	}
+	
+	private String getDescr(int ruleType,Long goodsId){
+		String result = "";
+		result = afInterestReduceGoodsDao.getDescr(ruleType,goodsId);
+		return result;
+	}
 }
