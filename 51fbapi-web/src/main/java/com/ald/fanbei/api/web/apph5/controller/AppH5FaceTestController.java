@@ -67,7 +67,7 @@ public class AppH5FaceTestController extends BaseController {
 			List<AfFacescoreRedConfigDo> redConfigList =  bizCacheUtil.getObjectList(Constants.FACE_GAME_RED_CONFIG);
 			if (redConfigList == null){
 				redConfigList = afFacescoreRedConfigService.findAll();
-				bizCacheUtil.saveObjectListExpire(Constants.FACE_GAME_RED_CONFIG, redConfigList, Constants.SECOND_OF_AN_HOUR);
+				bizCacheUtil.saveObjectListExpire(Constants.FACE_GAME_RED_CONFIG, redConfigList, Constants.MINITS_OF_FIVE);
 			}
 			if (imgList == null){
 				imgList = afFacescoreRedService.findRedImg();
