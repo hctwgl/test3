@@ -175,13 +175,13 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankPayType);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
+	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress, String bankPayType);
 	
 	/**
 	 * 处理菠萝觅回调订单 成功
@@ -395,5 +395,6 @@ public interface AfOrderService {
 	 * */
 
 	String getTradeBusinessNameByOrderId(Long orderid);
+
 
 }

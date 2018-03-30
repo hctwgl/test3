@@ -720,7 +720,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId, AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId, String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox) {
+    public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId, AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId, String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox,String bankPayType) {
 	final Date now = new Date();
 	final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 	final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
@@ -731,7 +731,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	    map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount, PayOrderSource.ORDER.getCode());
 	} else {// 银行卡支付 代收
 	    map = new HashMap<String, Object>();
-	    UpsCollectRespBo respBo = upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(), card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode());
+	    UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(), card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode(),bankPayType);
 	    if (!respBo.isSuccess()) {
 		if (StringUtil.isNotBlank(respBo.getRespCode())) {
 		    // 模版数据map处理
@@ -1023,7 +1023,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     // }
 
     @Override
-    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress) {
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress,final String bankPayType) {
 	final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 	final HashMap<String, HashMap> riskDataMap = new HashMap();
 
@@ -1181,7 +1181,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			    }
 			    logger.info("combination_pay orderInfo = {}", orderInfo);
 
-			    Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+			    Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo,bankPayType);
 			    result.put("status", PayStatus.DEALING.getCode());
 			    return result;
 			}
@@ -1211,7 +1211,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			    logger.info("payBrandOrder orderInfo = {}", orderInfo);
 			    orderDao.updateOrder(orderInfo);
 			    // 银行卡支付 代收
-			    UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
+			    UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode(),bankPayType);
 			    if (!respBo.isSuccess()) {
 				if (StringUtil.isNotBlank(respBo.getRespCode())) {
 				    // 模版数据map处理
@@ -1399,7 +1399,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress) {
+    public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress,final String bankPayType) {
 	return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 	    @Override
 	    public Map<String, Object> doInTransaction(TransactionStatus status) {
@@ -1477,7 +1477,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			logger.info("payBrandOrder orderInfo = {}", orderInfo);
 			orderDao.updateOrder(orderInfo);
 			// 银行卡支付 代收
-			UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02", OrderType.BOLUOME.getCode());
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, "品牌订单支付", "02", OrderType.BOLUOME.getCode(),bankPayType);
 			if (!respBo.isSuccess()) {
 			    if (StringUtil.isNotBlank(respBo.getRespCode())) {
 				// 模版数据map处理
