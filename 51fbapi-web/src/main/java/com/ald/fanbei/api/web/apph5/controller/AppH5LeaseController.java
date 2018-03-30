@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
@@ -7,6 +8,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -974,8 +976,12 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         try{
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
             if(orderId != 0){
                 HashMap data = afOrderService.getLeaseProtocol(orderId);
+                //拿到日利率快照Bo
+                BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(data.get("borrowRate").toString());
+                data.put("overdueRate",borrowRateBo.getOverdueRate());
                 AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
                 if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
                     data.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
@@ -1001,6 +1007,9 @@ public class AppH5LeaseController extends BaseController {
                 if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
                     data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
                 }
+                // 保存手续费信息
+                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
+                data.put("overdueRate",borrowRate.getOverdueRate());
                 data.put("realName",accountDo.getRealName());
                 data.put("userName",accountDo.getUserName());
                 data.put("idNumber",accountDo.getIdNumber());
