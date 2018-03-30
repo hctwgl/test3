@@ -68,16 +68,14 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 					return H5CommonResponse.getNewInstance(false, "用户非法", null,
 							null).toString();
 				}
-				if (afUser != null) {
 					userId = afUser.getRid();
 					// 1先查询有没有测试过，是否对红包进行了提现
 					int count = faceScoreRedService
 							.findUserAndRedRelationRecordByUserId(userId);
-					List<AfResourceDo> configList = afResourceService
-							.getConfigByTypes("USER_FACETEST");
-					if (CollectionUtil.isEmpty(configList)) {
-						return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束！",
-								"", new Integer(2)).toString();
+					List<AfResourceDo> configList = afResourceService.getConfigByTypes("USER_FACETEST");
+					if (CollectionUtil.isEmpty(configList)){
+							return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束！",
+									"", new Integer(2)).toString();
 					}
 					Integer totalAllowedCount = Integer.valueOf(configList.get(0)
 							.getValue1());
@@ -106,7 +104,7 @@ public class AppH5FaceScoreWithdrawJudgeController extends BaseController {
 					}
 					return H5CommonResponse.getNewInstance(true, "可以进行下一步的拆红包", "",
 							new Integer(1)).toString();
-				}
+				
 			}
 			return H5CommonResponse.getNewInstance(false, "请登陆或者注册!", null,
 					new Integer(3)).toString();

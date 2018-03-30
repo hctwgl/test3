@@ -4,11 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedConfigService;
 import com.ald.fanbei.api.biz.service.AfFacescoreRedService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -37,7 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * @类描述:
+ * @类描述: 颜值测试接口
  * @author :liutengyuan
  * @version :2018年3月12日 下午4:58:43
  * @注意：本内本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -53,49 +52,50 @@ public class AppH5FaceTestController extends BaseController {
 
 	@Resource
 	private AfUserService afUserService;
+	@Resource
+	private BizCacheUtil bizCacheUtil;
 
-	private ConcurrentHashMap<ArrayList<Integer>, Long> map;
-
+	private List<AfFacescoreImgDo> imgList;// 分享图片列表
 	
-
 	@ResponseBody
 	@RequestMapping(value = "/fanbei_api/faceScore", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String faceScore(HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
 			AfFacescoreRedDo redDo = new AfFacescoreRedDo();
-			// FanbeiWebContext context = new FanbeiWebContext();
-			// 和登录有关的
-			// context = doWebCheck(request, false);
 			logger.info("/fanbeiapi/faceScore params: ");
-			List<AfFacescoreRedConfigDo> redConfigList = afFacescoreRedConfigService.findAll();
+			List<AfFacescoreRedConfigDo> redConfigList =  bizCacheUtil.getObjectList(Constants.FACE_GAME_RED_CONFIG);
+			if (redConfigList == null){
+				redConfigList = afFacescoreRedConfigService.findAll();
+				bizCacheUtil.saveObjectListExpire(Constants.FACE_GAME_RED_CONFIG, redConfigList, Constants.SECOND_OF_AN_HOUR);
+			}
+			if (imgList == null){
+				imgList = afFacescoreRedService.findRedImg();
+			}
 			if (redConfigList == null || redConfigList.size() == 0) {
 				return H5CommonResponse.getNewInstance(false, "颜值测试活动已经结束", "", null).toString();
 			} else {
 				Random random = new Random();
 				int a = random.nextInt(100);
 				// 根据随机概率获取对应等级红包的配置对象
-				AfFacescoreRedConfigDo redConfig = generateRedDegree(a,
+				AfFacescoreRedConfigDo redConfigVo = generateRedDegree(a,
 						redConfigList);
-				Long redConfigId = redConfig.getRid();
-				AfFacescoreRedConfigDo redConfigDo = afFacescoreRedConfigService.getById(redConfigId);
-				if (redConfigDo != null) {
-					BigDecimal maxmoney = redConfigDo.getMaxmoney();
-					BigDecimal minmoney = redConfigDo.getMinmoney();
+				if (redConfigVo != null) {
+					BigDecimal maxmoney = redConfigVo.getMaxmoney();
+					BigDecimal minmoney = redConfigVo.getMinmoney();
 					// 确定红包的金额
 					int value = random.nextInt((maxmoney.intValue() - minmoney.intValue()) * 100);
 					BigDecimal bigDecimal = new BigDecimal(value * 0.01).setScale(2, BigDecimal.ROUND_DOWN);
 					BigDecimal amout = minmoney.add(bigDecimal);
 					redDo.setAmount(amout);
-					redDo.setConfigId(redConfigId);
-					List<AfFacescoreImgDo> imgList = afFacescoreRedService.findRedImg();
+					redDo.setConfigId(redConfigVo.getRid());
 					if (CollectionUtil.isNotEmpty(imgList)){
 						int index = random.nextInt(imgList.size());
 						String imgUrl = imgList.get(index).getUrl();
 						redDo.setImageurl(imgUrl);
 					}
 				} else {
-					logger.error("颜值测试红包配置信息类异常...", redConfigId);
+					logger.error("颜值测试红包配置信息类异常...", redConfigVo==null? "" : redConfigVo.getRid());
 					return H5CommonResponse.getNewInstance(false, "红包结果初始化失败..", "", null).toString();
 				}
 				// 保存红包到颜值红包表
@@ -122,21 +122,11 @@ public class AppH5FaceTestController extends BaseController {
 			List<AfFacescoreRedConfigDo> redConfigList) {
 		AfFacescoreRedConfigDo configDo = new AfFacescoreRedConfigDo();
 		try {
-			if (map == null) {
-				map = new ConcurrentHashMap<ArrayList<Integer>, Long>();
-				if (CollectionUtil.isNotEmpty(redConfigList)) {
-					for (AfFacescoreRedConfigDo facescoreRedConfigDo : redConfigList) {
-						ArrayList<Integer> list = new ArrayList<Integer>();
-						list.add(facescoreRedConfigDo.getProbabilityAreaStart());
-						list.add(facescoreRedConfigDo.getProbabilityAreaEnd());
-						map.put(list, facescoreRedConfigDo.getRid());
-					}
-				}
-			}
-			Set<ArrayList<Integer>> set = map.keySet();
-			for (ArrayList<Integer> scopeList : set) {
-				if (a >= scopeList.get(0) && a < scopeList.get(1)) {
-					configDo.setRid(map.get(scopeList));
+			for (AfFacescoreRedConfigDo redConfigDo : redConfigList) {
+				if (redConfigDo.getProbabilityAreaStart() <= a && a < redConfigDo.getProbabilityAreaEnd()){
+					configDo.setRid(redConfigDo.getRid());
+					configDo.setMaxmoney(redConfigDo.getMaxmoney());
+					configDo.setMinmoney(redConfigDo.getMinmoney());
 				}
 			}
 		} catch (Exception e) {
