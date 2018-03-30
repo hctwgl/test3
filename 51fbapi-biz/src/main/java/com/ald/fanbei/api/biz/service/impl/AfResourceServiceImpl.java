@@ -875,12 +875,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GOODS_IS_SHOW", "SHOW_BRAND_LIST");
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		
-		if (resourceDo != null && goodsDo != null && goodsDo.getBrandId() != null) {
+		if (resourceDo != null && goodsDo != null && goodsDo.getCategoryId() != null) {
 			String brandListStr = resourceDo.getValue1();
 			if (StringUtil.isNotBlank(brandListStr)) {
 				String[] brandArray = brandListStr.split(";");
 				for(String string : brandArray){
-					if (string.equals(goodsId.toString())) {
+					if (string.equals(goodsDo.getCategoryId().toString())) {
 						return 1;
 					}
 				}
