@@ -32,7 +32,11 @@ import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryTradeReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
+import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
+import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
@@ -552,7 +556,98 @@ public class UpsUtil extends AbstractThird {
 			return authSignResp;
 		}
 	}
+//	public static void main(String[] args){
+//		System.out.println("start test");
+//		
+//		
+//		
+//	}
 	
+	/**
+	 * 短信重发
+	 * 
+	 * @param userNo --用户唯一标识
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param orderNo -- 订单编号  
+	 * @param returnUrl
+	 * @param notifyUrl
+	 * @param clientType  客户端类型
+	 */
+	public UpsResendSmsRespBo resendSms(String orderNo,String clientType,String userNo,String bankCode,String cardNo,String merPriv){
+		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		//amount = setActualAmount(amount);
+		UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
+		setPubParam(reqBo,"quickPayResendCode",orderNo,clientType);
+		//reqBo.setMerPriv(merPriv);
+		reqBo.setOldOrderNo(orderNo);
+		reqBo.setTradeType("pay_order");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayResendCode");
+		logger.info("bank quickPayResendCode = "+ getNotifyHost() + "/third/ups/quickPayResendCode");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPayResendCode", orderNo, "", merPriv, userNo));
+//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		logThird(reqResult, "quickPayResendCode", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
+		}
+		UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult,UpsResendSmsRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
+				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
+	
+	
+	
+	/**
+	 * 快捷支付确认支付
+	 * 
+	 * @param userNo --用户唯一标识
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param orderNo -- 订单编号  
+	 * @param returnUrl
+	 * @param notifyUrl
+	 * @param clientType  客户端类型
+	 */
+	public UpsQuickPayConfirmRespBo quickPayConfirm(String tradeNo,String orderNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
+		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		//amount = setActualAmount(amount);
+		UpsQuickPayConfirmReqBo reqBo = new UpsQuickPayConfirmReqBo();
+		setPubParam(reqBo,"quickPayConfirm",tradeNo,clientType);
+		//reqBo.setMerPriv(merPriv);
+		reqBo.setTradeNo(tradeNo);
+		reqBo.setSmsCode(smsCode);
+		reqBo.setUserNo(userNo);
+		reqBo.setCardNo(cardNo);
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayConfirm");
+		logger.info("bank quickPayConfirm = "+ getNotifyHost() + "/third/ups/quickPayConfirm");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPayConfirm", orderNo, "", merPriv, userNo));
+//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		logThird(reqResult, "quickPayConfirm", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.UPS_QUICK_PAY_CONFIRM_ERROR);
+		}
+		UpsQuickPayConfirmRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQuickPayConfirmRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
+				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
+
+
 	/**
 	 * 批量代付
 	 * 

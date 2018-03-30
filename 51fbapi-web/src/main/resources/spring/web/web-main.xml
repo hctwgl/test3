@@ -558,8 +558,10 @@
 				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
 				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
-
-
+				
+				<!-- 支付相关接口 -->
+				<entry key="/pay/quickPaymentResendCode" value-ref="quickPaymentResendCodeApi" />
+				<entry key="/pay/confirmPayment" value-ref="confirmPaymentApi" />
 
 			</map>
 		</constructor-arg>
