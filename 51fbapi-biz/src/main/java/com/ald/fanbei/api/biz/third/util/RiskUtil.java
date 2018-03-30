@@ -1174,7 +1174,7 @@ public class RiskUtil extends AbstractThird {
 		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 			submitBklInfo(orderInfo);
 			//新增白名单逻辑
-			AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+			AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 			if (bklWhiteResource != null) {
 				//白名单开启
 				String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");

@@ -27,7 +27,7 @@ public enum AfResourceSecType {
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
 	    ASSET_PUSH_RECEIVE("EDSPAY","债权实时债权接收方"),
 	    ASSET_PUSH_WHITE("ASSET_PUSH_WHITE","债权实时推送白名单"),
-    
+		BKL_WHITE_LIST_CONF("BKL_WHITE_LIST_CONF","百可录电核白名单配置"),
 	    //借钱模块
 		BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
 		BorrowCashRange("BORROW_CASH_RANGE", "借款金额"),
