@@ -540,11 +540,12 @@ private int doChangeImage(Long userId,JSONObject jsonStr) {
     //获取数据库用户上传的最后一张图片。放入json 
    //AfFacescoreRedDo afFacescoreRedDo = new AfFacescoreRedDo();
  try{
-	AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
-  String image = "";
-   if(afFacescoreRedDo != null && userId != null ){
-	   image =  afFacescoreRedDo.getImageurl();
-   }else{
+	 
+	 String image = "";
+//   AfFacescoreRedDo  afFacescoreRedDo =   afFacescoreRedService.getImageUrlByUserId(userId);
+//   if(afFacescoreRedDo != null && userId != null ){
+//	   image =  afFacescoreRedDo.getImageurl();
+//   }else{
 	   //随机一张图片
 	    
 	     AfFacescoreImgDo findFacescoreImg = new AfFacescoreImgDo();
@@ -553,7 +554,7 @@ private int doChangeImage(Long userId,JSONObject jsonStr) {
 	     int randomLenght = afFacescoreImglist.size();
 	     int num=(int)(Math.random() * randomLenght); 
 	      image = afFacescoreImglist.get(num).getUrl();
-   }
+  // }
    
    List<JSONObject>   list =  JSONObject.parseArray(jsonStr.getJSONArray("imageList").toString(), JSONObject.class); 
      //获取该list(type = 'avatar')
