@@ -62,9 +62,12 @@ public class AuthFundNewApi implements ApiHandle {
 		        resultSortedMap.put("sign",sign);
 		        resultSortedMap.put("params",paramSortedMap);
 		        String postParams=JSON.toJSONString(resultSortedMap);
-		        String respResult=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", postParams);
+		        String url="https://t.51gjj.com/gjj/getToken";
+		        logger.info("getToken url  = {} params = {} ", url,postParams);
+		        String respResult=HttpUtil.doHttpPostJsonParam(url, postParams);
+		        logger.info("getToken result  = {}", respResult);
 				if (StringUtil.isBlank(respResult)) {
-					logger.error("getToken req success,respResult is null");
+					logger.error("getToken fail,result is null");
 					return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETTOKEN_ERROR );
 				}else {
 					Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
@@ -72,11 +75,11 @@ public class AuthFundNewApi implements ApiHandle {
 						JSONObject data = JSON.parseObject(respInfo.getData());
 						token=data.getString("token");
 						bizCacheUtil.saveObject(Constants.AUTH_51FUND_TOKEN, token, Constants.SECOND_OF_ONE_HALF_HOUR);
-						logger.info("getToken req success,resp success, token="+token+",respInfo"+respInfo.getMessage());
+						logger.info("getToken fail,token="+token+",respInfo"+respInfo.getMessage());
 					}else {
 						//三方处理错误
 						Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
-						logger.error("getToken req success,resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+						logger.error("getToken fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
 						return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETTOKEN_ERROR);
 					}
 				}
@@ -99,20 +102,23 @@ public class AuthFundNewApi implements ApiHandle {
 	        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
 	        resultSortedMap.put("sign",sign);
 	        resultSortedMap.put("params",paramSortedMap);
-	        String respResult = HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getOrderSn", JSON.toJSONString(resultSortedMap));
+	        String url="https://t.51gjj.com/gjj/getOrderSn";
+	        logger.info("getOrderSn url  = {} params = {} ", url,JSON.toJSONString(resultSortedMap));
+	        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(resultSortedMap));
+	        logger.info("getOrderSn result  = {}", respResult);
 	        if (StringUtil.isBlank(respResult)) {
-	        	logger.error("getOrderSn req success,respResult is null");
+	        	logger.error("getOrderSn fail,result is null");
 				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETORDERSN_ERROR );
 			}else {
 				Auth51FundRespBo respInfo = JSONObject.parseObject(respResult, Auth51FundRespBo.class);
 				if (Auth51FundRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 					JSONObject data = JSON.parseObject(respInfo.getData());
 					orderSn=data.getString("orderSn");
-					logger.info("getOrderSn req success,resp success,token=" + token + " orderSn="+orderSn+",respInfo"+respInfo.getMessage());
+					logger.info("getOrderSn  success,token=" + token + " orderSn="+orderSn+",respInfo"+respInfo.getMessage());
 				}else {
 					//三方处理错误
 					Auth51FundRespCode failResp = Auth51FundRespCode.findByCode(respInfo.getCode());
-					logger.error("getOrderSn req success,resp fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
+					logger.error("getOrderSn fail,errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
 					return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETORDERSN_ERROR);
 				}
 			}
@@ -121,7 +127,7 @@ public class AuthFundNewApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_FUND_GETORDERSN_ERROR );
 		}
 		
-		//拼接前端url调用51公积金H5页面
+		//拼接客户端url调用51公积金H5
 		try {
 			TreeMap<String, String> paramSortedMap = new TreeMap<>();
 		    paramSortedMap.put("appKey", appKey);
@@ -132,7 +138,7 @@ public class AuthFundNewApi implements ApiHandle {
 		    String newStr = mapStr + "&appSecret=" + secret;
 		    String sign = AuthFundSecret.signToHexStr(AuthFundSecret.ALGORITHMS_MD5, newStr).toUpperCase();
 		    paramSortedMap.put("sign", sign);
-		    String redirectUrl = "https://testapp.51fanbei.com/third/newFund/giveBack";
+		    String redirectUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+"/third/newFund/giveBack";
 		    paramSortedMap.put("redirectUrl", redirectUrl);
 		    paramSortedMap.put("userId", userId+"");
 		    String urlParams=AuthFundSecret.paramTreeMapToString(paramSortedMap);
@@ -140,8 +146,6 @@ public class AuthFundNewApi implements ApiHandle {
 		    logger.info("token=" + token + " orderSn="+orderSn+"url=" + urlFull+"redirectUrl="+redirectUrl+"userId="+userId);
 		    resp.addResponseData("url", urlFull);
 		} catch (Exception e) {
-			
-			
 			logger.error("error = " + e);
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 		}

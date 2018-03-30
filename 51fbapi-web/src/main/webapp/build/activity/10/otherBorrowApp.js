@@ -1,7 +1,7 @@
 /**
  * Created by nizhiwei-labtop on 2017/7/18.
  */
-
+var type=getUrl('type')||'pv';
 let vue=new Vue({
     el:'#vueCon',
     data:{
@@ -20,7 +20,7 @@ let vue=new Vue({
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:window.location.pathname+'?type=pv'},
+            data:{maidianInfo:window.location.pathname+'?type='+type},
             success:function (data) {
                 console.log(data)
             }

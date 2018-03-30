@@ -202,6 +202,21 @@ id,gmt_create,gmt_modified,user_id,order_id,status,order_no,code,year,month,amou
         AND
             gmt_create >= DATE_ADD(CURDATE(),INTERVAL -#{virtualRecentDay}+1 DAY)
        	LIMIT 1
+    </select>    
+    
+    <select id="getCurrentDayUsedAmount" resultType="java.math.BigDecimal" >
+        SELECT
+        	IFNULL(sum(amount),0)
+       	FROM 
+       		af_user_virtual_account
+        WHERE
+        	is_delete = 0
+        and 
+        	status='Y'
+        AND
+        	code = #{virtualCode}
+        AND
+            gmt_create >= DATE(CURDATE())
     </select>
     
 </mapper>

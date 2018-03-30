@@ -106,4 +106,9 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
 			String status) {
 		return afUserAuthStatusDao.updateAfUserAuthStatusByUserId(userId, scene, status);
 	}
+
+	@Override
+	public int updateAfUserAuthStatus(Long userId, String scene, String status) {
+		return afUserAuthStatusDao.insertAfUserAuthStatus(userId, scene, status);
+	}
 }

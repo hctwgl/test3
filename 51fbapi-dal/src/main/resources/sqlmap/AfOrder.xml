@@ -1282,6 +1282,17 @@
 		WHERE
 		order_id = #{orderId}
 	</select>
+
+	<select id="getTradeBusinessNameByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
+			SELECT
+			 d.name
+			FROM af_order  a INNER JOIN af_trade_order b ON b.order_id = a.id
+			INNER JOIN af_trade_business_info c ON c.business_id= b.business_id
+			INNER JOIN af_business_type d ON d.id = c.type
+			AND a.order_type = 'TRADE' AND d.`code` = 'TRAIN'
+			AND d.level  = 2
+			AND a.id = #{orderId}
+	</select>
 	<update id="updateIagentStatusByOrderId">
 		UPDATE af_order SET iagent_status=#{iagentStatus} ,gmt_modified=NOW() WHERE id=#{orderId}
 	</update>
