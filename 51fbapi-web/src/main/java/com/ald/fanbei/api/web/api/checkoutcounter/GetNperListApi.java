@@ -132,10 +132,10 @@ public class GetNperListApi implements ApiHandle {
                 }
             }*/
             
-            JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(orderInfo.getGoodsId());
+          /*  JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(orderInfo.getGoodsId());
             if (newArray != null) {
             	array = newArray;
-			}
+			}*/
             
             //removeSecondNper(array);
 
