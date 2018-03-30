@@ -95,12 +95,15 @@ public class AppH5LeaseController extends BaseController {
     AfBorrowBillService afBorrowBillService;
 
     @Resource
+    AfESdkService afESdkService;
+
+    @Resource
     ContractPdfThreadPool contractPdfThreadPool;
     /**
      *获取租赁首页banner
      */
     @ResponseBody
-    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "getHomeLeaseBanner", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
     public String getHomeLeaseBanner(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
@@ -646,15 +649,25 @@ public class AppH5LeaseController extends BaseController {
                 }
                 else {
                     data.put("riskStatus","N");
-                    data.put("action","DO_PROMOTE_BASIC");
                 }
             }else {
                 data.put("riskStatus","N");
-                data.put("action", "DO_SCAN_ID");
-                if (StringUtil.equals(userAuth.getBankcardStatus(), "N") || StringUtil.equals(userAuth.getZmStatus(), "N") || StringUtil.equals(userAuth.getMobileStatus(), "N") || StringUtil.equals(userAuth.getTeldirStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N") || StringUtil.equals(userAuth.getFacesStatus(), "N")) {
+            }
+            if(data.get("riskStatus").toString().equals("N")){
+                if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
+                        &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                        &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
+                    data.put("action", "DO_SCAN_ID");
+                }
+                else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                        ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                        ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
                     data.put("action", "DO_PROMOTE_BASIC");
                     if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
                         data.put("action", "DO_BIND_CARD");
+                    }
+                    if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                        data.put("action", "DO_SCAN_ID");
                     }
                 }
             }
@@ -945,8 +958,49 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         try{
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
-            HashMap data = afOrderService.getLeaseProtocol(orderId);
-            resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
+            if(orderId != 0){
+                HashMap data = afOrderService.getLeaseProtocol(orderId);
+                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+                if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+                    data.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                }
+                AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
+                AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+                AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+                if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+                    data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+                }
+                resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
+            }
+            else {
+                context = doWebCheck(request, true);
+                HashMap data =new HashMap();
+                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+                if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+                    data.put("companyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                }
+                AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+                AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+                AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+                if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+                    data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+                }
+                data.put("realName",accountDo.getRealName());
+                data.put("userName",accountDo.getUserName());
+                data.put("idNumber",accountDo.getIdNumber());
+                resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
+            }
+            return resp.toString();
+        }
+        catch (FanbeiException e){
+            logger.error("getLeaseProtocol", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null);
+            }
+            else {
+                resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            }
             return resp.toString();
         }
         catch  (Exception e) {

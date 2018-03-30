@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1237,7 +1238,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 
 						// 银行卡需要支付的金额
-						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
+						BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
@@ -1296,7 +1297,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					} else {
 						orderInfo.setPayType(PayType.BANK.getCode());
 						Map<String, Object> newMap = new HashMap<String, Object>();
-						if (saleAmount.compareTo(BigDecimal.ZERO) <= 0) {
+						if (actualAmount.compareTo(BigDecimal.ZERO) <= 0) {
 							orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 							orderInfo.setStatus(OrderStatus.PAID.getCode());
 							logger.info("payBrandOrder orderInfo = {}", orderInfo);
@@ -2979,7 +2980,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             }
         }
 		dataObj.put("freeze",freeze);
-		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100)));
+		dataObj.put("freezeAmount",goodsPrice.multiply(new BigDecimal(freeze)).divide(new BigDecimal(100),0 ,RoundingMode.DOWN));
         return dataObj;
     }
 

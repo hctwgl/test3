@@ -1284,7 +1284,7 @@
 	</select>
 
 	<select id="checkLeaseOrder" resultType="HashMap">
-		SELECT b.`status`,b.id FROM af_order_lease a INNER JOIN af_order b ON a.order_id=b.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED'
+		SELECT b.`status`,b.id FROM af_order_lease a INNER JOIN af_order b ON a.order_id=b.id WHERE a.user_id=#{userId} AND a.lease_status NOT IN ('FINISHED','BUYOUT') AND b.goods_id=#{goodsId} AND b.`status` != 'CLOSED' AND a.is_delete=0
 	</select>
 
 	<insert id="addOrderLease" parameterType="AfOrderLeaseDo">
