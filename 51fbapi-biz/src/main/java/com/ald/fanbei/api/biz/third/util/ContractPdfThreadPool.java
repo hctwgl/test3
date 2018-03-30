@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -69,8 +70,8 @@ public class ContractPdfThreadPool{
         service.execute(goodsInstalmentProtocolTask);
     }
 
-    public void LeaseProtocolPdf(HashMap data){
-        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data);
+    public void LeaseProtocolPdf(Map<String,Object> data,Long userId,String url){
+        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data, userId,url);
         service.execute(leaseProtocolPdf);
     }
 
@@ -171,14 +172,18 @@ public class ContractPdfThreadPool{
     }
 
     class LeaseProtocolPdf implements Runnable {
-        private HashMap data;
-        public LeaseProtocolPdf(HashMap data) {
+        private Map<String,Object> data;
+        private Long userId;
+        private String url;
+        public LeaseProtocolPdf(Map<String,Object> data,Long userId,String url) {
             data = data;
+            userId=userId;
+            url=url;
         }
         @Override
         public void run() {
             try {
-                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data);
+                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data, userId,url);
             } catch (IOException e) {
                 e.printStackTrace();
             }

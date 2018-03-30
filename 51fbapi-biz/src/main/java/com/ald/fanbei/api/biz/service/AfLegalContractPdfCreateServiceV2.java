@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -27,6 +28,6 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException;
 
-    String leaseProtocolPdf(HashMap data) throws IOException;
+    String leaseProtocolPdf(Map<String,Object> data,Long userId,String url) throws IOException;
 
 }

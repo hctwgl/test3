@@ -769,19 +769,17 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     @Override
-    public String leaseProtocolPdf(HashMap data)throws IOException{
+    public String leaseProtocolPdf(Map<String,Object> data,Long userId,String url)throws IOException{
         long time = new Date().getTime();
-        String html = "";
-        html = getLeaseHtml(data,"https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false");
+        String html = HttpUtil.doGet(url+"/h5/hire/protocol.html?showTitle=false",1);
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
-        data.put("outFilePath",outFilePath);
-        return getLeaseContractPdf(data);
+        return getLeaseContractPdf(data,userId);
 
     }
 
-    private String getLeaseContractPdf(Map<String, Object> data) throws IOException {
-        AfUserAccountDo accountDo = getUserInfo(1, data, null);
+    private String getLeaseContractPdf(Map<String, Object> data,Long userId) throws IOException {
+        AfUserAccountDo accountDo = getUserInfo(userId, data, null);
         long time = new Date().getTime();
         boolean result = true;
         byte[] stream = new byte[1024];
@@ -789,7 +787,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
         stream = aldCreateSeal(result,stream,data);//阿拉丁签章
 
-        String dstFile = String.valueOf(src + data.get("userName") + "lease" + time  + ".pdf");
+        String dstFile = String.valueOf(src + data.get("userName") + "leaseProtocol" + time  + ".pdf");
         File file = new File(dstFile);
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(stream);
@@ -799,16 +797,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     }
 
-    private String getLeaseHtml(HashMap data,String pdfType) {
-        try {
-            String html = HttpUtil.doGet(pdfType,1);
-            return html;
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("getLeaseHtml Exception",e);
-        }
-        return null;
-    }
 
     private String getPdfInfo(String protocolUrl, Map<String, Object> map, Long userId, Long id, String type, String protocolCashType, List<EdspayInvestorInfoBo> investorList) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
