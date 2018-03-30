@@ -537,6 +537,127 @@ public class PayRoutController {
 		}
 	}
 
+	@RequestMapping(value = { "/resendSms" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String resendSms(HttpServletRequest request, HttpServletResponse response) {
+		for (String paramKey : request.getParameterMap().keySet()) {
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+		}
+		return "succ";
+	}
+
+	@RequestMapping(value = { "/quickPay" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String quickPay(HttpServletRequest request, HttpServletResponse response) {
+		for (String paramKey : request.getParameterMap().keySet()) {
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+		}
+		return "succ";
+	}
+	
+	@RequestMapping(value = { "/quickPayConfirm" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String quickPayConfirm(HttpServletRequest request, HttpServletResponse response) {
+		String outTradeNo = request.getParameter("orderNo");
+		String merPriv = request.getParameter("merPriv");
+		String tradeNo = request.getParameter("tradeNo");
+		String tradeState = request.getParameter("tradeState");
+		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
+		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
+		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+
+		logger.info("quickPayConfirm begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
+				+ respDesc);
+		try {
+			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
+				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
+					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
+				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
+					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
+					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
+							PayType.COMBINATION_PAY.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
+				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)
+						|| OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
+					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo,
+							PayType.COMBINATION_PAY.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
+				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
+					try{
+						long result =  afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+						if (result <= 0) {
+							return "ERROR";
+						}
+					}catch (Exception e){
+						logger.info("repayment cash error:merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+								+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
+								+ respDesc,e);
+						return "ERROR";
+					}
+
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
+					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款
+					afBorrowLegalRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
+				} else if (PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期
+					afRenewalLegalDetailService.dealLegalRenewalSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.REPAY_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规还款V2
+					afBorrowLegalRepaymentV2Service.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
+				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2
+					afRenewalLegalDetailV2Service.dealLegalRenewalSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
+					afLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				}
+			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
+				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg,null);
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
+					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
+				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
+					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
+				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)
+						|| OrderType.SELFSUPPORTCP.getCode().equals(merPriv)
+						|| OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
+					int result = afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo,
+							PayType.COMBINATION_PAY.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
+				} else if (PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款失败
+					afBorrowLegalRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+				} else if (PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期失败
+					afRenewalLegalDetailService.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
+				} else if (PayOrderSource.REPAY_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规还款V2失败
+					afBorrowLegalRepaymentV2Service.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg); // ourTradeNo 为我方还款交易流水号
+				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2失败
+					afRenewalLegalDetailV2Service.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
+				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
+					afLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+				}
+			}
+			return "SUCCESS";
+		} catch (Exception e) {
+			logger.error("quickPayConfirm", e);
+			return "ERROR";
+		}
+	}
+	
 	/**
 	 * 易宝订单回调
 	 *

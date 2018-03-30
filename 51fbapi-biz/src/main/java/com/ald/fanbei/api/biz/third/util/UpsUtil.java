@@ -531,12 +531,12 @@ public class UpsUtil extends AbstractThird {
         	    return quickPay(amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType, productName);
         	}
         	else {
-            	    return collectForDaifu(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
+            	    return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
 		}
         }
 	
 	/**
-	 * 单笔代收(代付)
+	 * 单笔代收(代扣)
 	 * 
 	 * @param amount --交易金额
 	 * @param userNo --用户唯一标识
@@ -551,7 +551,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	private UpsCollectRespBo collectForDaifu(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+	private UpsCollectRespBo replaceCollect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
 			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){		
 		amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
