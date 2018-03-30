@@ -144,7 +144,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
-			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType);
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType);
 			if (!respBo.isSuccess()) {
 			    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 			    dealRenewalFail(payTradeNo, "",errorMsg);
@@ -177,7 +177,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		} else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
-			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType);
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType);
             	    	if (!respBo.isSuccess()) {
             	    	    String errowMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
             	    	    dealRenewalFail(payTradeNo, "", errowMsg);

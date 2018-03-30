@@ -1352,7 +1352,7 @@ public class RiskUtil extends AbstractThird {
 		}
 
 		// 银行卡支付 代收
-		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(),
+		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(),
 				cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
 				Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType,bankPayType);
 		if (!respBo.isSuccess()) {

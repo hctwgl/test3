@@ -44,12 +44,12 @@ public class QuickPaymentResendCodeApi implements ApiHandle {
 	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 	
 	//String clientType = ObjectUtils.toString(requestDataVo.getParams().get("clientType"),null);
-	String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),null);
+	//String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),null);
     Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
   //  Map<String, Object> params = requestDataVo.getParams();
     
-    if (cardId == null || orderNo == null) {
-        logger.error("cardId is empty or orderNo is empty");
+    if (cardId == null ) {
+        logger.error("cardId is empty");
         return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
     }
 //    if(payId <= 0 ){
@@ -61,7 +61,7 @@ public class QuickPaymentResendCodeApi implements ApiHandle {
     	 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST);
     }
     
-	UpsResendSmsRespBo respBo = upsUtil.resendSms(orderNo, "02", context.getUserId().toString(), bank.getBankCode(),  bank.getCardNumber(),"REPEAT_SMS_CODE");
+	UpsResendSmsRespBo respBo = upsUtil.resendSms( "02", context.getUserId().toString(), bank.getBankCode(),  bank.getCardNumber(),"REPEAT_SMS_CODE");
 
 
 		if (!respBo.isSuccess()) {

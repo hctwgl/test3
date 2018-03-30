@@ -341,7 +341,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment,String bankPayType) {
 		if (bo.cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_CASH_LEGAL_V2.getCode(),bankPayType);
 			

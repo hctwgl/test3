@@ -34,6 +34,8 @@ import com.ald.fanbei.api.biz.bo.UpsQueryTradeReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
@@ -512,9 +514,39 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public UpsCollectRespBo collect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+	public Object collect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
 			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){
 		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		if(bankPayType != null && "KUIAJIE".equals(bankPayType)){
+			 return   quickPay(amount, userNo, realName, phone, bankCode,
+						 cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType, "", "");
+		}
+			return collectForDaifu(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
+		
+		
+	}
+	
+	/**
+	 * 单笔代收(代付)
+	 * 
+	 * @param amount --交易金额
+	 * @param userNo --用户唯一标识
+	 * @param realName --真实姓名
+	 * @param phone  --预留手机号
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param certNo --身份证号
+	 * @param purpose --用途
+	 * @param remark --
+	 * @param returnUrl
+	 * @param notifyUrl
+	 * @param clientType
+	 */
+	public UpsCollectRespBo collectForDaifu(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){
+		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+	
+		
 		amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
@@ -555,7 +587,71 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(false);
 			return authSignResp;
 		}
+		
 	}
+	
+	
+	
+	
+	/**
+	 * 快捷支付
+	 * 
+	 * @param amount --交易金额
+	 * @param userNo --用户唯一标识
+	 * @param realName --真实姓名
+	 * @param phone  --预留手机号
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param certNo --身份证号
+	 * @param purpose --用途
+	 * @param remark --
+	 * @param returnUrl
+	 * @param notifyUrl
+	 * @param clientType
+	 */
+	public UpsQuickPayRespBo quickPay(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName,String expiredTime){
+		String orderNo = getOrderNo("qpay", cardNo.substring(cardNo.length()-4,cardNo.length()));
+		amount = setActualAmount(amount);
+		UpsQuickPayReqBo reqBo = new UpsQuickPayReqBo();
+		setPubParam(reqBo,"quickPay",orderNo,clientType);
+		reqBo.setMerPriv(merPriv);
+		reqBo.setAmount(amount.toString());
+		reqBo.setUserNo(userNo);
+		reqBo.setRealName(realName);
+		reqBo.setCardNo(cardNo);
+		reqBo.setCertType(DEFAULT_CERT_TYPE);
+		reqBo.setCertNo(certNo);
+		reqBo.setProductName(productName);
+		reqBo.setExpiredTime(expiredTime);
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPay");
+		logger.info("bank quickPay notifyUrl = "+ getNotifyHost() + "/third/ups/quickPay");
+/*		reqBo.setRealName("王宝");宝付测试
+		reqBo.setPhone("18066542211");
+		reqBo.setBankCode("ABC");
+		reqBo.setCardNo("6228480444455553333");
+		reqBo.setUserNo("test88888");
+		reqBo.setCertNo("320301198502169142");*/
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
+//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		logThird(reqResult, "quickPay", reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
+		}
+		UpsQuickPayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQuickPayRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
+				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
+	
+	
 //	public static void main(String[] args){
 //		System.out.println("start test");
 //		
@@ -574,8 +670,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-	public UpsResendSmsRespBo resendSms(String orderNo,String clientType,String userNo,String bankCode,String cardNo,String merPriv){
-		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+	public UpsResendSmsRespBo resendSms(String clientType,String userNo,String bankCode,String cardNo,String merPriv){
+		String orderNo = getOrderNo("rsms", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		//amount = setActualAmount(amount);
 		UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
 		setPubParam(reqBo,"quickPayResendCode",orderNo,clientType);
@@ -616,8 +712,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-	public UpsQuickPayConfirmRespBo quickPayConfirm(String tradeNo,String orderNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
-		//String orderNo = getOrderNo("coll", cardNo.substring(cardNo.length()-4,cardNo.length()));
+	public UpsQuickPayConfirmRespBo quickPayConfirm(String tradeNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
+		String orderNo = getOrderNo("qpco", cardNo.substring(tradeNo.length()-4,tradeNo.length()));
 		//amount = setActualAmount(amount);
 		UpsQuickPayConfirmReqBo reqBo = new UpsQuickPayConfirmReqBo();
 		setPubParam(reqBo,"quickPayConfirm",tradeNo,clientType);

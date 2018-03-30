@@ -802,7 +802,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					PayOrderSource.ORDER.getCode());
 		} else {// 银行卡支付 代收
 			map = new HashMap<String, Object>();
-			UpsCollectRespBo respBo = upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(),
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(orderNo, actualAmount, userId + "", afUserAccountDo.getRealName(),
 					card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(),
 					Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode(),bankPayType);
 			if (!respBo.isSuccess()) {
@@ -1324,7 +1324,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							orderDao.updateOrder(orderInfo);
 							// 银行卡支付 代收
 							//增加快捷支付
-							UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
+							UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, saleAmount, userId + "",
 									userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
 									cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
 									Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02",
@@ -1619,7 +1619,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						logger.info("payBrandOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
 						// 银行卡支付 代收
-						UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "",
+						UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, saleAmount, userId + "",
 								userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
 								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
 								"品牌订单支付", "02", OrderType.BOLUOME.getCode(),bankPayType);

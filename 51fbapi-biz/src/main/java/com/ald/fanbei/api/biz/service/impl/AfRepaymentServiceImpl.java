@@ -203,7 +203,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afRepaymentDao.addRepayment(repayment);
             afUserAmountService.addUseAmountDetail(repayment);
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
-            UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
+            UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
                     Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
 
@@ -276,7 +276,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afRepaymentDao.addRepayment(repayment);
             afUserAmountService.addUseAmountDetail(repayment);
             afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
-            UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
+            UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
                     bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
                     Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(),bankPayType);
 

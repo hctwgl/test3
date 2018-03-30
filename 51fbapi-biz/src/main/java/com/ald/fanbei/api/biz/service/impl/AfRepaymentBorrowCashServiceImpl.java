@@ -242,7 +242,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
                 }
                 AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
+                UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
                         bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv,bankPayType);
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
@@ -322,7 +322,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
                     } else if (cardId > 0) {// 银行卡支付
                         AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                        UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
+                        UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
                                 bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode(),bankPayType);
                         if (!respBo.isSuccess()) {
                             String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());

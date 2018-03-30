@@ -272,7 +272,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
 			}
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
+			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode(),bankPayType);
 			
