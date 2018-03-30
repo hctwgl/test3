@@ -17,6 +17,8 @@ public interface AfInterestReduceGoodsDao extends BaseDao<AfInterestReduceGoodsD
 
 	AfInterestReduceRulesDo checkIfReduce(@Param("ruleType")int i, @Param("goodsId")Long goodsId);
 
+	String getDescr(@Param("ruleType")int ruleType, @Param("goodsId")Long goodsId);
+
     
 
 }

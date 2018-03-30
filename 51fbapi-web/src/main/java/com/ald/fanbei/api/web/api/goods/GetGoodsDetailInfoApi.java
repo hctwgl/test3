@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,9 +60,15 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
+	
+	@Resource
+	AfSchemeService afSchemeService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
+	@Resource
+	AfInterestReduceGoodsService afInterestReduceGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -179,6 +186,35 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
+		
+		//qiao : begin add interestCutDesc interestFreeDesc isShow Field
+		
+		String interestCutDesc ="";
+		String interestFreeDesc ="";
+		int isShow =0;
+		
+		AfSchemeGoodsDo schemeGoodsDo2 =  afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+		if (schemeGoodsDo2 != null) {
+			AfSchemeDo schemeDo = afSchemeService.getSchemeById(schemeGoodsDo2.getSchemeId());
+			if (schemeDo != null && schemeDo.getIsOpen() == "Y" && DateUtil.isBetweenDateRange(new Date(), schemeDo.getGmtStart(), schemeDo.getGmtEnd()) ) {
+				
+				interestFreeDesc = schemeDo.getDescr();
+			}
+		}
+		
+		interestFreeDesc = afInterestReduceGoodsService.getInterestFreeDesc(goodsId);
+		
+		int temp = afResourceService.getIsShow(goodsId);
+		if (temp == 1) {
+			isShow = 1;
+		}
+		
+		
+		vo.setInterestCutDesc(interestCutDesc);
+		vo.setInterestFreeDesc(interestFreeDesc);
+		vo.setIsShow(isShow);
+		
+		//qiao : begin add interestCutDesc interestFreeDesc isShow Field
 		resp.setResponseData(vo);
 		return resp;
 	}

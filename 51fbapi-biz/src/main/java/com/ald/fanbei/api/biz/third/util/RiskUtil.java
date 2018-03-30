@@ -297,7 +297,6 @@ public class RiskUtil extends AbstractThird {
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
-//			url = "http://btestarc.51fanbei.com";
 			return url;
 		}
 		return url;
@@ -1834,7 +1833,7 @@ public class RiskUtil extends AbstractThird {
 	 * @return 拼接后字符串
 	 */
 	public static String createLinkString(Map<String, String> params) {
-
+	
 		List<String> keys = new ArrayList<String>(params.keySet());
 		Collections.sort(keys);
 		String prestr = "";
@@ -3681,41 +3680,43 @@ public class RiskUtil extends AbstractThird {
 
 	/**
 	 * 推送公积金信息给风控
-	 * 
 	 * @param data
-	 *            51公积金返回的公积金信息
 	 * @param userId
-	 *            app端用户唯一标识
-	 * @param token
-	 *            51公积金交互的token
-	 * @param orderSn
-	 *            51公积金交互的订单号
 	 * @return
 	 */
-	public RiskRespBo FundNotifyRisk(String data, String userId, String token, String orderSn) {
-		RiskNotifyReqBo reqBo = new RiskNotifyReqBo();
-		reqBo.setUserId(userId);
-		reqBo.setToken(token);
-		reqBo.setOrderSn(orderSn);
-		reqBo.setData(data);
+	public RiskQuotaRespBo newFundInfoNotify(String data, String userId) {
+		RiskQuotaRespBo riskResp = null;
+		newFundNotifyReqBo reqBo = new newFundNotifyReqBo();
+		reqBo.setConsumerNo(userId);
+		Map<String, Object> detailsMap = Maps.newHashMap();
+		detailsMap.put("source", "51fund");
+		detailsMap.put("item", "fund");
+		detailsMap.put("data", data);
+		String details = JSONObject.toJSONString(detailsMap);
+		// 生成Base64编码
+		String detailsBase64 = Base64.encodeString(details);
+		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		System.out.println(reqBo.toString());
-		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/processData.htm", reqBo);
-		// String reqResult = requestProxy.post("http://192.168.117.20:8080" +
-		// "/modules/api/user/processData.htm",reqBo);
-		logThird(reqResult, "FundNotifyRisk", reqBo);
+		String url = getUrl() +  "/modules/api/thrid/receiveData.htm";
+//		String url = "http://122.224.88.51:18080" +  "/modules/api/thrid/receiveData.htm";
+		logger.info("newFundInfoNotify url = {},params = {}",url,JSONObject.toJSONString(reqBo));
+		String reqResult = requestProxy.post(url, reqBo);
+		logger.info("newFundInfoNotify result = {}", reqResult);
+		logThird(reqResult, "newFundInfoNotify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			logger.info("newFundInfoNotify fail ,result is null");
+			throw new FanbeiException(FanbeiExceptionCode.RISK_NEWFUND_NOTIFY_ERROR);
 		}
-		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskOperatorRespBo.class);
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			riskResp.setSuccess(true);
-			return riskResp;
-		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+		try {
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
+			logger.info("newFundInfoNotify success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
+		return riskResp;
 	}
 
 	/**

@@ -649,10 +649,11 @@ public class AppH5LeaseController extends BaseController {
                 }
                 else {
                     data.put("riskStatus","N");
-                    data.put("action","DO_PROMOTE_BASIC");
                 }
             }else {
                 data.put("riskStatus","N");
+            }
+            if(data.get("riskStatus").toString().equals("N")){
                 if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
                         &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
                         &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
