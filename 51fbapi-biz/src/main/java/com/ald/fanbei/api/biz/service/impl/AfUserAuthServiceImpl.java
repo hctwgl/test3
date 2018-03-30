@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @类现描述：
@@ -523,28 +524,37 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		} else if (between == 1) {
 		    data.put("title", "明天可以重新认证");
 		} else {
-		    day = 0;
-		    JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
-		    for (int i = 0; i < userAuthDayArray.size(); i++) {
-			JSONObject obj = userAuthDayArray.getJSONObject(i);
-			if (obj.getString("type").equals(auth_type)) {
-			    day = obj.getInteger("day");
-			}
-		    }
-		    afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
-		    between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
-		    if (between < 0) {
-			data.put("status", "N");
-		    }
-		    data.put("title", "");
+		    checkUserAuthDay(data,userAuthDay,auth_type,authDate);
 		}
 	    }
 	}
-	if (!isExist  && !scene.equals(UserAccountSceneType.CASH.getCode())) {
-	    data.put("status", "F");
-	    data.put("title", "");
+	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
+		data.put("status", "F");
+		data.put("title", "");
+	    }
 	}
 	return data;
+    }
+
+    private boolean checkUserAuthDay(Map<String, Object> data, AfResourceDo userAuthDay, String auth_type, Date authDate) {
+	Integer day = 0;
+	JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
+	for (int i = 0; i < userAuthDayArray.size(); i++) {
+	    JSONObject obj = userAuthDayArray.getJSONObject(i);
+	    if (obj.getString("type").equals(auth_type)) {
+		day = obj.getInteger("day");
+		break;
+	    }
+	}
+	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
+	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+	data.put("title", "");
+	if (between < 0) {
+	    data.put("status", "N");
+	    return false;
+	}
+	return true;
     }
 
     private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo) {
