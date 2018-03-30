@@ -51,7 +51,7 @@ public class APPH5BrandChannelController extends BaseController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = "/getBrandChannel", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/getBrandChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getBrandChannel(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
@@ -63,7 +63,12 @@ public class APPH5BrandChannelController extends BaseController {
 			List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(afResourceH5Dto.getRid());
 			for(AfResourceH5ItemDto afResourceH5ItemDto : itemList){
 				if(!StringUtils.isBlank(afResourceH5ItemDto.getValue2())){
-					List<AfGoodsDo> goodslist = afGoodsService.getGoodsListByGoodsId(afResourceH5ItemDto.getValue2());
+					List ids = new ArrayList();
+					String[] array = afResourceH5ItemDto.getValue2().split(",");
+					for(int i=0;i<array.length;i++){
+						ids.add(array[i]);
+					}
+					List<AfGoodsDo> goodslist = afGoodsService.getGoodsListByGoodsId(ids);
 					afResourceH5ItemDto.setGoodsList(getGoodsList(goodslist));
 				}
 			}

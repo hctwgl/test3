@@ -414,7 +414,10 @@
 			af_goods
 		WHERE is_delete = 0
 		AND status = 'PUBLISH'
-		AND id in (#{goodsId})
+		AND id in
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
 	</select>
 
 	<select id="getGoodsDoByGoodsId" resultType="AfActivityGoodsDto">

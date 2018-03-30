@@ -169,7 +169,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByItem(categoryId);
 	}
 	@Override
-	public List<AfGoodsDo> getGoodsListByGoodsId(String goodsId){
+	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
 		return afGoodsDao.getGoodsListByGoodsId(goodsId);
 	}
 
