@@ -943,6 +943,8 @@ public class AppH5LeaseController extends BaseController {
             if(orderInfo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
+            orderInfo.setStatus(OrderStatus.FINISHED.getCode());
+            afOrderService.updateOrder(orderInfo);
             rebateContext.rebate(orderInfo);
 
             addBorrowBill_1(orderInfo,afUser);
