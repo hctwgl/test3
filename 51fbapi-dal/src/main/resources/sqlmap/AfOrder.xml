@@ -1333,7 +1333,7 @@
 		id = #{id} AND user_id=#{userId}
 	</update>
 
-	<update id="rebateOrderLease" parameterType="java.lang.Long" >
+	<update id="rebateOrderLease">
 		UPDATE af_order_lease SET rebate_status = 'Y' WHERE order_id=#{orderId}
 	</update>
 
@@ -1360,7 +1360,7 @@
 		UPDATE af_order_lease SET gmt_start = #{gmtStart},gmt_end=#{gmtEnd} WHERE order_id=#{orderId}
 	</update>
 
-    <update id="UpdateOrderLeaseShow" parameterType="java.lang.Long" >
+    <update id="UpdateOrderLeaseShow">
         UPDATE af_order_lease SET is_show = 1,gmt_modified=NOW() WHERE order_id=#{orderId} AND user_id=#{userId}
     </update>
 
