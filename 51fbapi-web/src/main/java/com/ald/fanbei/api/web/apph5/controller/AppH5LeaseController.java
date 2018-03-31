@@ -112,7 +112,7 @@ public class AppH5LeaseController extends BaseController {
     RiskUtil riskUtil;
 
     @Resource
-    AfBorrowLegalOrderLogisticsService afBorrowLegalOrderLogisticsService;
+    AfOrderLogisticsService afOrderLogisticsService;
 
     /**
      *获取租赁首页banner
@@ -793,7 +793,7 @@ public class AppH5LeaseController extends BaseController {
             if(StringUtils.isNotBlank(lease.getLogisticsNo())){
                 //有物流单号就显示物流信息
                 lease.setShowLogistics("Y");
-                AfOrderLogisticsBo afOrderLogisticsBo = afBorrowLegalOrderLogisticsService.getLegalOrderLogisticsBo(orderId,
+                AfOrderLogisticsBo afOrderLogisticsBo = afOrderLogisticsService.getOrderLogisticsBo(orderId,
                         0);
                 lease.setLogisticsInfo(afOrderLogisticsBo.getNewestInfo().getAcceptStation());
                 lease.setGmtDeliver(afOrderLogisticsBo.getNewestInfo().getAcceptTime());
