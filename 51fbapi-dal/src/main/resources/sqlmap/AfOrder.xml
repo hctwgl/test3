@@ -1333,7 +1333,7 @@
 		id = #{id} AND user_id=#{userId}
 	</update>
 
-	<update id="rebateOrderLease" parameterType="java.lang.Long" >
+	<update id="rebateOrderLease">
 		UPDATE af_order_lease SET rebate_status = 'Y' WHERE order_id=#{orderId}
 	</update>
 
@@ -1352,15 +1352,15 @@
 	</select>
 
 	<select id="getAllOrderLeaseByOrderId" resultType="LeaseOrderDto">
-		SELECT b.*,a.monthly_rent,a.lease_status,a.rebate_status,a.gmt_end,a.policy_number,a.unique,a.cash_deposit,a.gmt_start,a.quota_deposit,a.richie_amount FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
+		SELECT b.*,a.monthly_rent,a.lease_status,a.rebate_status,a.gmt_end,a.policy_number,a.unique,a.cash_deposit,a.gmt_start,a.quota_deposit,a.richie_amount,a.freeze_amount FROM af_order_lease as a INNER JOIN af_order as b ON a.order_id=b.id
 		WHERE a.is_delete=0 AND b.is_delete=0 AND a.order_id = #{orderId} AND a.user_id=#{userId}
 	</select>
 
-	<update id="UpdateOrderLeaseTime" parameterType="java.lang.Long" >
+	<update id="UpdateOrderLeaseTime">
 		UPDATE af_order_lease SET gmt_start = #{gmtStart},gmt_end=#{gmtEnd} WHERE order_id=#{orderId}
 	</update>
 
-    <update id="UpdateOrderLeaseShow" parameterType="java.lang.Long" >
+    <update id="UpdateOrderLeaseShow">
         UPDATE af_order_lease SET is_show = 1,gmt_modified=NOW() WHERE order_id=#{orderId} AND user_id=#{userId}
     </update>
 
@@ -1393,6 +1393,7 @@
 			b.order_no orderNo,
 			b.price_amount priceAmount,
 			b.nper+1 nper,
+			b.borrow_rate,
 			CONCAT(
 				b.province,
 				b.city,

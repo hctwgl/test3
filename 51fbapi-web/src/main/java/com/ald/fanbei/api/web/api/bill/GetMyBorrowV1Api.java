@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.domain.*;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import jodd.util.ObjectUtil;
+
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -29,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.timevale.tgtext.text.af;
 
 /**
  * @author yuyue
@@ -59,6 +63,12 @@ public class GetMyBorrowV1Api implements ApiHandle {
 
     @Resource
     AfUserAuthStatusService afUserAuthStatusService;
+    
+    @Resource
+    AfBorrowCashDao afBorrowCashDao;
+    
+    @Resource
+    AfLoanDao afLoanDao;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -228,24 +238,35 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 // 可用额度
                 BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
 
-                map.put("borrowStatus","4");
-                map.put("desc", "总额度"+auAmount+"元");
-                if(context.getAppVersion() >= 406){
-                	
-                	// FIXME
-    				AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
-    				if(loanTotalSenceDo != null) {
-    					if(BigDecimal.ZERO.compareTo(auAmount) != 0) {
-    						auAmount = loanTotalSenceDo.getAuAmount();
-    					}
-    				}
-                    map.put("auAmount", auAmount);
-                    map.put("amount", amount);
-                }
-                else {
-                    map.put("auAmount", auAmount.add(interimAmount).add(onlineAuAmount));
-                    map.put("amount", amount.add(usableAmount).add(onlineAmount));
-                }
+		map.put("borrowStatus", "4");
+		if (context.getAppVersion() >= 406) {
+		    BigDecimal cashUsedAmount=BigDecimal.ZERO;
+		    AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(userId);
+		    List<AfLoanDo> listLoan = afLoanDao.listDealingLoansByUserId(userId);
+		    if(listLoan != null && listLoan.size()>0){
+			for (AfLoanDo afLoanDo : listLoan) {
+				cashUsedAmount = cashUsedAmount.add(afLoanDo.getAmount());
+			}
+		    }
+		    if(afBorrowCashDo!=null)
+		    {
+			cashUsedAmount = cashUsedAmount.add(afBorrowCashDo.getAmount());
+		    }		    
+		    
+		    AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+		    if (loanTotalSenceDo != null) {
+			if (BigDecimal.ZERO.compareTo(auAmount) != 0) {
+			    auAmount = loanTotalSenceDo.getAuAmount();
+			}
+		    }
+		    map.put("auAmount", auAmount);
+		    map.put("amount", auAmount.subtract(cashUsedAmount));
+		    map.put("desc", "总额度" + auAmount + "元");
+		} else {
+		    map.put("auAmount", auAmount.add(interimAmount).add(onlineAuAmount));
+		    map.put("amount", amount.add(usableAmount).add(onlineAmount));
+		    map.put("desc", "总额度" + amount.add(usableAmount).add(onlineAmount) + "元");
+		}
             }
             //if (afUserAuthStatusDo != null && StringUtil.equals(afUserAuthStatusDo.getStatus(), RiskStatus.YES.getCode())) {
                 // 获取逾期账单月数量
