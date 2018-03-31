@@ -1407,4 +1407,8 @@
 		INNER JOIN af_user_account c ON a.user_id = c.user_id
 		WHERE a.order_id=#{orderId}
 	</select>
+
+	<update id="updatepdfUrlByOrderId">
+		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
+	</update>
 </mapper>

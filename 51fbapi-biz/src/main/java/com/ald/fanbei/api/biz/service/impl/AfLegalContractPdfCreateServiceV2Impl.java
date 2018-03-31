@@ -95,6 +95,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     AfUserOutDayDao afUserOutDayDao;
     @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfOrderDao afOrderDao;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -776,11 +778,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         String html = HttpUtil.doGet("https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false&orderId="+orderId,1);
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
-        return getLeaseContractPdf(data,userId);
+        return getLeaseContractPdf(data,userId,orderId);
 
     }
 
-    private String getLeaseContractPdf(Map<String, Object> data,Long userId) throws IOException {
+    private String getLeaseContractPdf(Map<String, Object> data,Long userId,Long orderId) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId, data, null);
         long time = new Date().getTime();
         boolean result = true;
@@ -790,6 +792,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         stream = aldCreateSeal(result,stream,data);//阿拉丁签章
 
         String dstFile = String.valueOf(src + data.get("userName") + "leaseProtocol" + time  + ".pdf");
+        afOrderDao.updatepdfUrlByOrderId(orderId,dstFile);
         File file = new File(dstFile);
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(stream);
