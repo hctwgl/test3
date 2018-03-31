@@ -773,7 +773,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Override
     public String leaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId)throws IOException{
         long time = new Date().getTime();
-        String html = HttpUtil.doGet(ConfigProperties.get(Constants.H5_REQUEST_URI)+"/h5/hire/protocol.html?showTitle=false&orderId="+orderId,1);
+        String html = HttpUtil.doGet("https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false&orderId="+orderId,1);
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         return getLeaseContractPdf(data,userId);

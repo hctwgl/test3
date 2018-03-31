@@ -909,8 +909,9 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
-            context = doWebCheck(request, true);
+            context = doWebCheck(request, false);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+            String userName = ObjectUtils.toString(request.getParameter("userName"), null);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
             //用户订单检查
             AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
