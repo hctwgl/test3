@@ -219,11 +219,9 @@ public class AppH5LeaseController extends BaseController {
 
             List<AfLeaseGoodsPriceVo> priceData = new ArrayList<>();
             List<AfPropertyVo> propertyData = new ArrayList<>();
-            AfGoodsPriceDo goodsPriceDo = new AfGoodsPriceDo();
             AfGoodsPropertyDo propertyDo = new AfGoodsPropertyDo();
 
-            goodsPriceDo.setGoodsId(goodsId);
-            List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getListByCommonCondition(goodsPriceDo);
+            List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getLeaseListByGoodsId(goodsId);
             priceData = convertListForPrice(priceDos);
             data.put("priceData",priceData);
 
@@ -943,6 +941,9 @@ public class AppH5LeaseController extends BaseController {
             AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
             if(orderInfo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+            }
+            if(!orderInfo.getStatus().equals(OrderStatus.DELIVERED.getCode())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.RESUBMIT_ERROR.getDesc(), "", null).toString();
             }
             orderInfo.setStatus(OrderStatus.FINISHED.getCode());
             afOrderService.updateOrder(orderInfo);
