@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
@@ -109,6 +110,10 @@ public class AppH5LeaseController extends BaseController {
 
     @Resource
     RiskUtil riskUtil;
+
+    @Resource
+    AfBorrowLegalOrderLogisticsService afBorrowLegalOrderLogisticsService;
+
     /**
      *获取租赁首页banner
      */
@@ -790,11 +795,14 @@ public class AppH5LeaseController extends BaseController {
             if(StringUtils.isNotBlank(lease.getLogisticsNo())){
                 //有物流单号就显示物流信息
                 lease.setShowLogistics("Y");
+                AfOrderLogisticsBo afOrderLogisticsBo = afBorrowLegalOrderLogisticsService.getLegalOrderLogisticsBo(orderId,
+                        0);
+                lease.setLogisticsInfo(afOrderLogisticsBo.getNewestInfo().getAcceptStation());
+                lease.setGmtDeliver(afOrderLogisticsBo.getNewestInfo().getAcceptTime());
             }
             else {
                 lease.setShowLogistics("N");
             }
-            lease.setLogisticsInfo(StringUtil.logisticsInfoDeal(lease.getLogisticsInfo()));
             //待收货
             if(lease.getStatus().equals("AUDITSUCCESS")){
                 lease.setStatus("PAID");
