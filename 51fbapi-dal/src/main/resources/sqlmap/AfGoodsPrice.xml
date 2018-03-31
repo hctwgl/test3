@@ -259,7 +259,7 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
 
     <select id="getLeaseListByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
         SELECT
-        *
+        <include refid="queryFields" />
         FROM af_goods_price
         WHERE goods_id=#{goodsId} AND lease_sale='Y'
     </select>

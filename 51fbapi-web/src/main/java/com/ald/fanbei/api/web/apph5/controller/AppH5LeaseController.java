@@ -996,7 +996,7 @@ public class AppH5LeaseController extends BaseController {
                 data.put("overdueRate",borrowRateBo.getOverdueRate());
                 AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
                 if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
-                    data.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                    data.put("companyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
                 }
                 AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
                 AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
