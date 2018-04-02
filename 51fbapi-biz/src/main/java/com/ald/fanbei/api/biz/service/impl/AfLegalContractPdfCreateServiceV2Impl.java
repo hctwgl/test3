@@ -777,8 +777,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         long time = new Date().getTime();
         String html = null;
         try {
-            html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseV2WithoutSealTemplate.vm"));
-            logger.info("lease cfp html="+html);
+            html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseWithoutSealTemplate.vm"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -810,8 +809,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         int day = c.get(Calendar.DATE);
         int year = c.get(Calendar.YEAR);
         data.put("gmtLeaseCreate",year+"年"+month+"月"+day+"日");
-        data.put("rentAmount",new BigDecimal(data.get("monthlyRent").toString()).multiply(new BigDecimal(12)));
-        data.put("overdueRate",new BigDecimal(data.get("overdueRate").toString()).multiply(new BigDecimal(100)));
+        data.put("rentAmount",new BigDecimal(data.get("monthlyRent").toString()).multiply(new BigDecimal(12).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        data.put("overdueRate",new BigDecimal(data.get("overdueRate").toString()).multiply(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_HALF_UP));
         c.setTime((Date) data.get("gmtStart"));
         data.put("gmtLeaseStart",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
         c.setTime((Date) data.get("gmtEnd"));
@@ -837,8 +836,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         outputStream.write(stream);
         outputStream.flush();
         outputStream.close();
-        File fileName = new File(dstFile);
-        InputStream input = new FileInputStream(fileName);
+        InputStream input = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
         OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
         logger.info("ossUploadResult="+ossUploadResult.getUrl());
