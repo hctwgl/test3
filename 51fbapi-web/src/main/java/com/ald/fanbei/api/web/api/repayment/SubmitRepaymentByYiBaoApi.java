@@ -232,8 +232,6 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                 resp.setResponseData(map);
             } else if (cardId.longValue() > 0) {//银行卡支付
         	
-        	
-        	
                 AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
                 if (null == card) {
                     throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);

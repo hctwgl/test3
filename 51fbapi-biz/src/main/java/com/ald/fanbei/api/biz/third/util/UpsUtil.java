@@ -103,9 +103,9 @@ public class UpsUtil extends AbstractThird {
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
     
 	//调用ups接口使用（单位：分）
-        private static int kuaijieExpireMinites = 15;
+        public static int KUAIJIE_EXPIRE_MINITES = 15;
         //存储redis使用（单位：秒）（数据缓存时间小于支付订单有效时间，防止订单支付失败（用户临界时间完成支付））
-        private static int kuaijieExpireSeconds = 14 * 60;
+        public static int KUAIJIE_EXPIRE_SECONDS = 14 * 60;
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
@@ -525,14 +525,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, 
-        			String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
-        	if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-        	    return quickPay(amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType, productName);
-        	}
-        	else {
-            	    return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
-		}
+        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
+            return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
         }
 	
 	/**
@@ -608,7 +602,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	private UpsQuickPayRespBo quickPay(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+	public UpsQuickPayRespBo quickPaySendSms(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
 			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName){
 		String orderNo = getOrderNo("qpay", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		amount = setActualAmount(amount);
@@ -622,7 +616,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
 		reqBo.setProductName(productName);
-		reqBo.setExpiredTime(String.valueOf( kuaijieExpireMinites));
+		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
@@ -653,7 +647,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-	public UpsResendSmsRespBo resendSms(String clientType,String userNo,String bankCode,String cardNo,String merPriv){
+	public UpsResendSmsRespBo quickPayResendSms(String clientType,String userNo,String bankCode,String cardNo,String merPriv){
 		String orderNo = getOrderNo("rsms", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		//amount = setActualAmount(amount);
 		UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
