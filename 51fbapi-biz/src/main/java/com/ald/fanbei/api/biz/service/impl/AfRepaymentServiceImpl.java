@@ -10,20 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
-import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
-import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
-import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
-
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -31,37 +19,82 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayRespBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.AfUserAmountProcessStatus;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
+import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDetalDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
+import com.ald.fanbei.api.dal.dao.AfUserAmountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAmountDetailDao;
+import com.ald.fanbei.api.dal.dao.AfUserAmountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDetalDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-import com.timevale.esign.sdk.tech.service.impl.i;
 
 /**
  * @author hexin 2017年2月22日下午14:48:49
@@ -122,6 +155,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     @Resource
     AfYibaoOrderDao afYibaoOrderDao;
 
+    @Autowired
+    BizCacheUtil bizCacheUtil;
+    
     @Resource
     RedisTemplate redisTemplate;
 
@@ -169,7 +205,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
     public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, final String bankPayType) {
 	Date now = new Date();
-	String repayNo = generatorClusterNo.getRepaymentNo(now);
+	String repayNo = generatorClusterNo.getRepaymentNo(now,bankPayType);
 	final String payTradeNo = repayNo;
 	// 新增还款记录
 	String name = Constants.DEFAULT_REPAYMENT_NAME + billDo.getName();
@@ -237,7 +273,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     @Override
     public Map<String, Object> createRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, String bankPayType) {
 	Date now = new Date();
-	String repayNo = generatorClusterNo.getRepaymentNo(now);
+	String repayNo = generatorClusterNo.getRepaymentNo(now, bankPayType);
 	final String payTradeNo = repayNo;
 
 	// 新增还款记录
@@ -264,12 +300,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    // 修改账单状态
 	    map = UpsUtil.buildWxpayTradeOrderRepayment(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENT.getCode(), true);
 	} else if (cardId > 0) {// 银行卡支付
+	    //增加快捷支付
 	    if(BankPayChannel.DAIKOU.getCode().equals(bankPayType))
 	    {
-		return doUpsPay(bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
+		doUpsPay(map , bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
 	    } else {
-		return sendUpsKuaiJieSms(bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
-	    }	    
+		sendUpsKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
+	    }
 	} else if (cardId == -2) {// 余额支付
 	    afRepaymentDao.addRepayment(repayment);
 	    // addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
@@ -292,7 +329,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	return map;
     }
 
-    public Map<String, Object> doUpsPay(String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList, String payTradeNo, 
+    public void doUpsPay(Map<String, Object> map ,String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList, String payTradeNo, 
 	    BigDecimal actualAmount, Long userId, String realName, String idNumber) {
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	// 还款金额是否大于银行单笔限额
@@ -326,33 +363,32 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    throw new FanbeiException(errorMsg);
 	}
 	
-	Map<String, Object> map = new HashMap<String, Object>();
 	map.put("resp", respBo);	
-	return  map;
     }
-    public Map<String, Object> sendUpsKuaiJieSms(String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList, String payTradeNo, 
-	    BigDecimal actualAmount, Long userId, String realName, String idNumber) {
+    
+    public void sendUpsKuaiJieSms(Map<String, Object> map ,String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList, 
+	    				String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber) {
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	// 还款金额是否大于银行单笔限额
 	// afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
-	
-	UpsQuickPayRespBo respBo = (UpsQuickPayRespBo) upsUtil.quickPaySendSms(actualAmount, userId + "", realName, 
-		bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款",
-		"02", UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
+	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPaySendSms(payTradeNo, actualAmount, userId + "", realName, 
+		bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
+		UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
 
-	if (!respBo.isSuccess()) {	    
+	if (!respBo.isSuccess()) {
 	    logger.info("sendUpsKuaiJieSms fail,payTradeNo:" + payTradeNo + ",respBo:" + respBo.toString());
 	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-	    
+
 	    throw new FanbeiException(errorMsg);
 	}
-	
-	//添加数据到redis
-	//upsUtil.KUAIJIE_EXPIRE_SECONDS
-	
-	Map<String, Object> map = new HashMap<String, Object>();
-	map.put("resp", respBo);	
-	return  map;
+
+	// 添加数据到redis
+	UpsCollectBo upsCollectBo = new UpsCollectBo(payTradeNo, actualAmount, userId + "", realName, 
+		bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
+		UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
+	bizCacheUtil.saveObject(UpsUtil.KUAIJIE_HEADER + payTradeNo, upsCollectBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+
+	map.put("resp", respBo);
     }
 
     /**

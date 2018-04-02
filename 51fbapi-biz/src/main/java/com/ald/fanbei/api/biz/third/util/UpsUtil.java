@@ -36,7 +36,6 @@ import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
@@ -52,7 +51,6 @@ import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -103,9 +101,11 @@ public class UpsUtil extends AbstractThird {
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
     
 	//调用ups接口使用（单位：分）
-        public static int KUAIJIE_EXPIRE_MINITES = 15;
+        public static final int KUAIJIE_EXPIRE_MINITES = 15;
         //存储redis使用（单位：秒）（数据缓存时间小于支付订单有效时间，防止订单支付失败（用户临界时间完成支付））
-        public static int KUAIJIE_EXPIRE_SECONDS = 14 * 60;
+        public static final int KUAIJIE_EXPIRE_SECONDS = 14 * 60;
+        
+        public static final String KUAIJIE_HEADER = "kuaijie:";
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
@@ -602,9 +602,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public UpsQuickPayRespBo quickPaySendSms(BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName){
-		String orderNo = getOrderNo("qpay", cardNo.substring(cardNo.length()-4,cardNo.length()));
+	public UpsCollectRespBo quickPaySendSms(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName){		
 		amount = setActualAmount(amount);
 		UpsQuickPayReqBo reqBo = new UpsQuickPayReqBo();
 		setPubParam(reqBo,"quickPay",orderNo,clientType);
@@ -625,7 +624,7 @@ public class UpsUtil extends AbstractThird {
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 		}
-		UpsQuickPayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQuickPayRespBo.class);
+		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
 				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
 			authSignResp.setSuccess(true);

@@ -6,7 +6,7 @@ package com.ald.fanbei.api.biz.bo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UpsQuickPayRespBo extends UpsRespBo {
+public class UpsQuickPayRespBo_del extends UpsRespBo {
 	private String amount			;   //交易金额
 	private String userNo			;   //用户唯一标识
 	private String realName			;	//真实姓名
