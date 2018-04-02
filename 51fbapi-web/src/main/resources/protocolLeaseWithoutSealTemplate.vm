@@ -1,10 +1,305 @@
-<body style="background-color: #fff;font-family: SimSun;">
-<html lang="en">
 <head>
     <title>租赁</title>
     <link rel="stylesheet" href="protocol.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background: #f5f5f5;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        html #main,
+        body #main {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+        html .header_bar,
+        body .header_bar {
+            position: absolute;
+        }
+        html .view,
+        body .view {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 1.28rem;
+            overflow: scroll;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+        .header_bar {
+            height: 1.28rem;
+            width: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-wrap: nowrap;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+            padding: 0 0.3rem;
+            padding-top: 0.4rem;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            background: #fff;
+            position: relative;
+        }
+        .header_bar::after {
+            content: ' ';
+            display: block;
+            height: 1px;
+            -webkit-transform: scaleY(0.5);
+            -ms-transform: scaleY(0.5);
+            transform: scaleY(0.5);
+            background: #e5e8ed;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+        .header_bar .back {
+            -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            width: 1.2rem;
+        }
+        .header_bar .back .icon-back {
+            display: block;
+            width: 0.18rem;
+            height: 0.32rem;
+            background: url("https://f.51fanbei.com/h5/app/activity/2018/hire/back.png") 0 0 no-repeat;
+            background-size: 100% 100%;
+        }
+        .header_bar .title {
+            font-size: 0.32rem;
+            overflow: hidden;
+            -o-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+        .header_bar .assit {
+            font-size: 0.28rem;
+            -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            width: 1.2rem;
+            text-align: right;
+        }
+        a,
+        li,
+        ul,
+        ol,
+        input,
+        textarea {
+            border: 0 !important;
+            padding: 0 !important;
+        }
+        .loading_only {
+            width: 1.5rem;
+            height: 1.5rem;
+            background-image: url("https://img.51fanbei.com/h5/common/icon/loading.gif");
+            background-size: cover;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        .mui-poppicker .mui-poppicker-header {
+            background: #f5f5f5;
+        }
+        .mui-poppicker .mui-poppicker-header .mui-poppicker-btn-cancel {
+            color: #666;
+            background: none;
+            border: none;
+        }
+        .mui-poppicker .mui-poppicker-header .mui-poppicker-btn-ok {
+            color: #0076ff;
+            background: none;
+            border: none;
+        }
+        .mui-poppicker .mui-poppicker-body .mui-picker .mui-picker-inner {
+            background: #fff;
+            -webkit-mask-box-image: none;
+        }
+        .view .info {
+            background: #fff;
+            margin-top: 0.22rem;
+            margin-bottom: 0.26rem;
+            height: 2.12rem;
+            padding: 0.42rem 0.32rem;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .view .info > div {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            font-size: 0.26rem;
+            color: #999;
+            margin-bottom: 0.02rem;
+        }
+        .view .info > div:first-child {
+            font-size: 0.34rem;
+            color: #565656;
+        }
+        .view .info > div:first-child > div:last-child {
+            color: #ff8833;
+            margin-left: 0.2rem;
+        }
+        .view .line {
+            background: #fff;
+        }
+        .view .line .be {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+        .view .line .be.la .left div:nth-child(1) {
+            position: absolute;
+            top: 0;
+            left: 0.48rem;
+            width: 1px;
+            background: #e5e8ed;
+            -webkit-transform: scaleX(0.5);
+            -ms-transform: scaleX(0.5);
+            transform: scaleX(0.5);
+            height: 0;
+        }
+        .view .line .be.la .left div:nth-child(2) {
+            position: absolute;
+            width: 0.32rem;
+            height: 0.32rem;
+            background: rgba(255, 136, 51, 0.15);
+            border-radius: 0.16rem;
+            top: 0.40rem;
+            left: 0.32rem;
+        }
+        .view .line .be.la .left div:nth-child(2)::after {
+            width: 0.22rem;
+            height: 0.22rem;
+            background: #ff8833;
+            border-radius: 0.11rem;
+            content: '';
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-top: -0.11rem;
+            margin-left: -0.11rem;
+        }
+        .view .line .be.la .left div:nth-child(3) {
+            position: absolute;
+            top: 0.78rem;
+            bottom: 0;
+            left: 0.48rem;
+            width: 1px;
+            background: #e5e8ed;
+            -webkit-transform: scaleX(0.5);
+            -ms-transform: scaleX(0.5);
+            transform: scaleX(0.5);
+        }
+        .view .line .be:last-child .right::after {
+            height: 0;
+        }
+        .view .line .be .left {
+            width: 0.94rem;
+            -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .view .line .be .left div:nth-child(1) {
+            position: absolute;
+            top: 0;
+            left: 0.48rem;
+            width: 1px;
+            background: #e5e8ed;
+            -webkit-transform: scaleX(0.5);
+            -ms-transform: scaleX(0.5);
+            transform: scaleX(0.5);
+            height: 0.38rem;
+        }
+        .view .line .be .left div:nth-child(2) {
+            position: absolute;
+            width: 0.14rem;
+            height: 0.14rem;
+            background: #e5e8ed;
+            border-radius: 0.07rem;
+            top: 0.48rem;
+            left: 0.41rem;
+        }
+        .view .line .be .left div:nth-child(3) {
+            position: absolute;
+            top: 0.70rem;
+            bottom: 0;
+            left: 0.48rem;
+            width: 1px;
+            background: #e5e8ed;
+            -webkit-transform: scaleX(0.5);
+            -ms-transform: scaleX(0.5);
+            transform: scaleX(0.5);
+        }
+        .view .line .be .right {
+            width: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            position: relative;
+            padding: 0.34rem 0;
+            padding-right: 0.3rem;
+        }
+        .view .line .be .right::after {
+            display: block;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            content: ' ';
+            width: 100%;
+            height: 1px;
+            -webkit-transform: scaleY(0.5);
+            -ms-transform: scaleY(0.5);
+            transform: scaleY(0.5);
+            background: #e5e8ed;
+        }
+        .view .line .be .right > div:first-child {
+            font-size: 0.28rem;
+            color: #565656;
+            line-height: 0.42rem;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+        .view .line .be .right > div:last-child {
+            font-size: 0.24rem;
+            color: #999;
+            line-height: 0.34rem;
+            margin-top: 0.1rem;
+        }
+    </style>
 </head>
-<body>
+<body style="background-color: #fff;font-family: SimSun;">
 <div id="main">
     <div class="loadingMask"><i class="loading"></i></div>
     <header class="header_bar">
@@ -17,7 +312,7 @@
     <div class="view">
         <div class="content">
             <h2 class="mid">用户租赁及服务协议</h2>
-            <h5 class="asr">协议编号{{data.orderNo || '/'}}</h5>
+            <h5 class="asr">协议编号${orderNo}</h5>
             <p>特别提醒：在承租方（本协议中称乙方）确认同意本合同之前，承租方应已清楚知悉并充分理解本产品的所有信息，同意向浙江阿拉丁电子商务股份有限公司申请租赁本协议。一旦承租方在网站、客户端或其他与本租赁相关的客户端接受本合同，即视为承租方已阅读本合同所有条款，并对本合同条款的含义及相应的法律后果已全部通晓并充分理解，同意接受本合同约束。</p>
             <p>甲乙方就乙方向甲方申请租赁产品,甲方负责对乙方的申请核实审批，并为租赁产品提供意外保障服务（详见意外保障服务条款）及咨询等客户服务事宜，经友好协商一致，签署本《用户租赁及服务协议》（下称“本协议”）。</p>
             <div class="block">
@@ -26,10 +321,10 @@
                 <h5>联系方式： 400-002-5151</h5>
             </div>
             <div class="block">
-                <p>乙方： {{data.realName}}</p>
-                <p>身份证号： {{data.idNumber}}</p>
-                <p>收货地址： {{data.address}}</p>
-                <p>联系电话： {{data.userName}}</p>
+                <p>乙方： ${realName}</p>
+                <p>身份证号： ${idNumber}</p>
+                <p>收货地址： ${address}</p>
+                <p>联系电话： ${userName}</p>
             </div>
             <div class="block">
                 <p>乙方确认并承诺：</p>
@@ -46,19 +341,19 @@
                     <tbody>
                     <tr>
                         <td>产品名字</td>
-                        <td>{{data.goodsName || goodname}}</td>
+                        <td>${goodsName}</td>
                     </tr>
                     <tr>
                         <td>产品及配件价值</td>
-                        <td>¥ {{data.priceAmount || zongjia}}元</td>
+                        <td>¥ ${priceAmount}元</td>
                     </tr>
                     <tr>
                         <td>产品签约价格</td>
-                        <td>¥ {{(Number(data.monthlyRent) || monthlyRent)*12}}元</td>
+                        <td>¥ ${monthlyRent}元</td>
                     </tr>
                     <tr>
                         <td>IMEI/SN</td>
-                        <td>{{data.unique || '/'}}</td>
+                        <td>${unique}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -75,18 +370,18 @@
                     </tr>
                     <tr>
                         <td>充电头</td>
-                        <td>{{1}}</td>
-                        <td>{{'/'}}</td>
+                        <td>1</td>
+                        <td>/</td>
                     </tr>
                     <tr>
                         <td>电源线</td>
-                        <td>{{1}}</td>
-                        <td>{{'/'}}</td>
+                        <td>1</td>
+                        <td>/</td>
                     </tr>
                     <tr>
                         <td>耳机</td>
-                        <td>{{1}}</td>
-                        <td>{{'/'}}</td>
+                        <td>1</td>
+                        <td>/</td>
                     </tr>
                     </tbody>
                 </table>
@@ -101,15 +396,15 @@
                     <tbody>
                     <tr>
                         <td>产品签约价格</td>
-                        <td>¥{{(Number(data.monthlyRent) || monthlyRent)*12}}元</td>
+                        <td>¥${monthlyRent}元</td>
                     </tr>
                     <tr>
                         <td>租用日期</td>
-                        <td>{{data.gmtStart ? new Date(data.gmtStart).getFullYear() : '/'}}年{{data.gmtStart ? new Date(data.gmtStart).getMonth() : '/'}}月{{data.gmtStart ? new Date(data.gmtStart).getDate() : '/'}}日至{{data.gmtEnd ? new Date(data.gmtEnd).getFullYear() : '/'}}年{{data.gmtEnd ? new Date(data.gmtEnd).getMonth() : '/'}}月{{data.gmtEnd ? new Date(data.gmtEnd).getDate() : '/'}}日</td>
+                        <td>#if($!{gmtArrival})$!{gmtArrival} 至 $!{repaymentDay}#end</td>
                     </tr>
                     <tr>
                         <td>产品租金/月</td>
-                        <td>¥{{(Number(data.monthlyRent) || monthlyRent)*12}}元</td>
+                        <td>${monthlyRent}元}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -175,9 +470,9 @@
             </div>
             <div class="block">
                 <p class="tit">违约责任：</p>
-                <p>1、若乙方未按约足额支付租金的，自还款日后第 1天起计收逾期费用，乙方需向甲方支付按本协议租赁物签约价为基数按日{{data.overdueRate * 100}}% 计算的逾期费用。</p>
+                <p>1、若乙方未按约足额支付租金的，自还款日后第 1天起计收逾期费用，乙方需向甲方支付按本协议租赁物签约价为基数按日${overdueRate}% 计算的逾期费用。</p>
                 <p>2、若乙方未按约足额支付当期租金超过15日的，需支付逾期费用外，租期不变。</p>
-                <p>3、若乙方逾期未支付买断购机款项的，则需向甲方支付按本协议租赁物签约价日{{data.overdueRate * 100}}%   计算的逾期费用。</p>
+                <p>3、若乙方逾期未支付买断购机款项的，则需向甲方支付按本协议租赁物签约价日${overdueRate}%   计算的逾期费用。</p>
                 <p>4、到期后乙方未按时归还符合本协议约定的租赁物，期间乙方需向甲方支付按本协议租赁物签约价日{{data.overdueRate * 100}}%  计算的逾期费用。</p>
                 <p>5、甲方有权通过乙方在签订本协议时指定的银行账号扣除乙方应承担的所有费用（包括但不限于租金、借款、买断款、逾期费用等）。乙方了解上述违约信息可能影响乙方在征信机构处的信用状况，并可能影响乙方申请或办理相关服务（包括但不限于贷款等）。</p>
                 <p>6、乙方涉及违约情形的，甲方有权单方面宣布本协议提前到期。</p>
@@ -187,7 +482,7 @@
                 <p>1、保障服务指：租赁期间租赁物发生非人为原因（经甲方及甲方合作的第三方鉴定）造成的意外损坏，符合保障服务理赔范围的，由甲方提供一次性理赔的保障服务。</p>
                 <p>2、本条款仅适用于乙方通过本协议租赁的在租期内的租赁设备。</p>
                 <p>3、保障服务费及支付方式</p>
-                <p>根据租赁物型号及配置，乙方需向甲方支付{{data.richieAmount || '/'}}元购买意外保障服务费，在乙方签署租赁协议的同时一次性支付。退租及租赁到期时无论意外保障服务是否启动，该意外保障服务费均不予退还。</p>
+                <p>根据租赁物型号及配置，乙方需向甲方支付${richieAmount}元购买意外保障服务费}，在乙方签署租赁协议的同时一次性支付。退租及租赁到期时无论意外保障服务是否启动，该意外保障服务费均不予退还。</p>
                 <p>4、保障服务理赔范围及实施</p>
                 <p>租期内，租赁物经甲方工程师检测确认后属于非人为原因造成的产品意外损坏且该损坏属于意外保障服务范围内的，可申请启动意外保障服务（服务专线：400-002-5151/13682107336）。由甲方及甲方合作的第三方负责维修，维修完成后将租赁物送还给乙方。甲乙双方约定该保障服务在租赁期间仅享受一次免费修理，修理完成后，视为本次意外保障服务结束。乙方若需要续保，则须重新向甲方购买该服务。</p>
                 <p>5、保障服务范围</p>
@@ -237,21 +532,20 @@
             </div>
             <div class="block">
                 <div class="flex">
-                    <div>甲方：</div><img src="data.companyUserSeal">
+                    <p style="margin-bottom: 30px;">丙方：<em>浙江阿拉丁电子商务股份有限公司</em><p style="color: white">ald</p></p>
                 </div>
             </div>
 
             <div class="block">
                 <div class="flex">
-                    <div>乙方：</div><img src="data.personUserSeal">
+                    <div>乙方：</div><img src="$!{personUserSeal}">
                 </div>
             </div>
             <div class="block">
-                <p>签署时间：{{data.gmtCreate ? new Date(data.gmtCreate).getFullYear() : '/'}}年{{data.gmtCreate ? new Date(data.gmtCreate).getMonth() : '/'}}月{{data.gmtCreate ? new Date(data.gmtCreate).getDate() : '/'}}日</p>
+                <p style="margin-bottom: 30px;">甲方 （借款人）：<em><em style="color: white">leaser</em>${realName}</em></p>
             </div>
         </div>
     </div>
 </div>
 </body>
-<script src="protocol.js"></script>
-</html>
+

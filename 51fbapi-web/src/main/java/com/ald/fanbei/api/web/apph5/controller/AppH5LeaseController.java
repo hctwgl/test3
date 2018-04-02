@@ -927,36 +927,36 @@ public class AppH5LeaseController extends BaseController {
      *确认收货
      */
     @ResponseBody
-    @RequestMapping(value = "completedLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "completedLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
     public String completedLeaseOrder(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
 //            context = doWebCheck(request, false);
-            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
-            String userName = ObjectUtils.toString(request.getParameter("userName"), null);
-            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-            //用户订单检查
-            AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
-            if(orderInfo == null){
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
-            }
-            if(!orderInfo.getStatus().equals(OrderStatus.DELIVERED.getCode())){
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.RESUBMIT_ERROR.getDesc(), "", null).toString();
-            }
-            orderInfo.setStatus(OrderStatus.FINISHED.getCode());
-            afOrderService.updateOrder(orderInfo);
-            rebateContext.rebate(orderInfo);
-
-            addBorrowBill_1(orderInfo,afUser);
-            Date today = new Date();
-            Date gmtStart = DateUtil.addDays(today,1);
-            Date gmtEnd = DateUtil.addMonths(gmtStart,orderInfo.getNper() + 1);
-            afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
+//            Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
+//            String userName = ObjectUtils.toString(request.getParameter("userName"), null);
+//            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+//            //用户订单检查
+//            AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
+//            if(orderInfo == null){
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
+//            }
+//            if(!orderInfo.getStatus().equals(OrderStatus.DELIVERED.getCode())){
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.RESUBMIT_ERROR.getDesc(), "", null).toString();
+//            }
+//            orderInfo.setStatus(OrderStatus.FINISHED.getCode());
+//            afOrderService.updateOrder(orderInfo);
+//            rebateContext.rebate(orderInfo);
+//
+//            addBorrowBill_1(orderInfo,afUser);
+//            Date today = new Date();
+//            Date gmtStart = DateUtil.addDays(today,1);
+//            Date gmtEnd = DateUtil.addMonths(gmtStart,orderInfo.getNper() + 1);
+//            afOrderService.UpdateOrderLeaseTime(gmtStart,gmtEnd,orderInfo.getRid());
             //生成pdf
-            Map<String,Object> data = afOrderService.getLeaseProtocol(orderId);
-            contractPdfThreadPool.LeaseProtocolPdf(data,afUser.getRid(),orderId);
+            Map<String,Object> data = afOrderService.getLeaseProtocol(282971l);
+            contractPdfThreadPool.LeaseProtocolPdf(data,13989455696l,282971l);
             resp = H5CommonResponse.getNewInstance(true, "请求成功", "", lease);
             return resp.toString();
         }

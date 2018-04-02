@@ -775,11 +775,40 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Override
     public String leaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId)throws IOException{
         long time = new Date().getTime();
-        String html = HttpUtil.doGet("https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false&orderId="+orderId,1);
+        String html = null;
+        try {
+            html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseV2WithoutSealTemplate.vm"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         return getLeaseContractPdf(data,userId,orderId);
 
+    }
+
+    public Map protocolLease(Map<String,Object> data,String pdfTemplate) throws IOException {
+        AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
+        if (afUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Map<String, Object> map = new HashMap();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        map.put("templateSrc",pdfTemplate);
+        map.put("idNumber", accountDo.getIdNumber());
+        map.put("realName", accountDo.getRealName());
+        map.put("email", afUserDo.getEmail());//电子邮箱
+        map.put("mobile", afUserDo.getUserName());// 联系电话
+        map.put("personKey","leaser");
+        logger.info(JSON.toJSONString(map));
+        return map;
     }
 
     private String getLeaseContractPdf(Map<String, Object> data,Long userId,Long orderId) throws IOException {
