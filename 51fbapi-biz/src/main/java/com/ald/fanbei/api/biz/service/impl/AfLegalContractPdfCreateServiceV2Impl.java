@@ -98,7 +98,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Resource
     AfOrderDao afOrderDao;
 
-    private static final String src = "/home/aladin/project/app_contract";
+    private static final String src = "C:/Users/chefeipeng/Documents/pdf";
 
     private AfUserAccountDo getUserInfo(long userId, Map<String, Object> map, List<EdspayInvestorInfoBo> investorList) {
         AfUserDo afUserDo = afUserService.getUserById(userId);
@@ -781,9 +781,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
+        String outFilePath = src + data.get("userName") + "lease" + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
-        return getLeaseContractPdf(data,userId,orderId);
+        return getLeaseContractPdf(data,userId,outFilePath,orderId);
 
     }
 
@@ -799,36 +799,49 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
-        Map<String, Object> map = new HashMap();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        map.put("templateSrc",pdfTemplate);
-        map.put("idNumber", accountDo.getIdNumber());
-        map.put("realName", accountDo.getRealName());
-        map.put("email", afUserDo.getEmail());//电子邮箱
-        map.put("mobile", afUserDo.getUserName());// 联系电话
-        map.put("personKey","leaser");
-        logger.info(JSON.toJSONString(map));
-        return map;
+        data.put("templateSrc",pdfTemplate);
+        data.put("personKey","leaser");
+        data.put("selfKey","ald");
+        Calendar c = Calendar.getInstance();
+        c.setTime((Date) data.get("gmtCreate"));
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DATE);
+        int year = c.get(Calendar.YEAR);
+        data.put("gmtLeaseCreate",year+"年"+month+"月"+day+"日");
+        data.put("rentAmount",new BigDecimal(data.get("monthlyRent").toString()).multiply(new BigDecimal(12)));
+        data.put("overdueRate",new BigDecimal(data.get("overdueRate").toString()).multiply(new BigDecimal(100)));
+        c.setTime((Date) data.get("gmtStart"));
+        data.put("gmtLeaseStart",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
+        c.setTime((Date) data.get("gmtEnd"));
+        data.put("gmtLeaseEnd",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
+        logger.info(JSON.toJSONString(data));
+        return data;
     }
 
-    private String getLeaseContractPdf(Map<String, Object> data,Long userId,Long orderId) throws IOException {
-        AfUserAccountDo accountDo = getUserInfo(userId, data, null);
+    private String getLeaseContractPdf(Map<String, Object> data,Long userId,String outFilePath,Long orderId) throws IOException {
         long time = new Date().getTime();
+        AfUserAccountDo accountDo = getUserInfo(userId, data, null);
+        data.put("PDFPath", outFilePath);
+        String dstFile = String.valueOf(src + data.get("userName") + "lease" + time + 2 + ".pdf");
+        data.put("userPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
         stream = borrowerCreateSeal(result,stream,data);//借款人签章
+//
+        stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
 
-        stream = aldCreateSeal(result,stream,data);//阿拉丁签章
-
-        String dstFile = String.valueOf(src + data.get("userName") + "leaseProtocol" + time  + ".pdf");
-        afOrderDao.updatepdfUrlByOrderId(orderId,dstFile);
-        File file = new File(dstFile);
+        File file = new File(src + data.get("userName") + "lease" + time +3 + ".pdf");
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(stream);
         outputStream.flush();
         outputStream.close();
-        return ossFileUploadWithEdspaySeal(data,dstFile);//oss上传
-
+        File fileName = new File(dstFile);
+        InputStream input = new FileInputStream(fileName);
+        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
+        OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+        afOrderDao.updatepdfUrlByOrderId(orderId,ossUploadResult.getUrl());
+        return null;
     }
 
 
@@ -1645,6 +1658,28 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             file1.delete();
         }
         return true;
+    }
+
+    private byte[] aldLeaseCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            FileDigestSignResult fileDigestSignResult = afESdkService.leaseSelfStreamSign(map, stream);//阿拉丁盖章
+            if (fileDigestSignResult.getErrCode() != 0) {
+                result = false;
+                logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                return null;
+            }
+            map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
+            return fileDigestSignResult.getStream();
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+            return null;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
     }
 
     private String eviPdf(Map map) {
