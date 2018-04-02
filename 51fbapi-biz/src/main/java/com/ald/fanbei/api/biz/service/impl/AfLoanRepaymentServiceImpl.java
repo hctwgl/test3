@@ -278,7 +278,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02",
-						PayOrderSource.REPAY_LOAN.getCode(), bankPayType, afResourceService.getCashProductName() );
+						PayOrderSource.REPAY_LOAN.getCode());
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if (!respBo.isSuccess()) {

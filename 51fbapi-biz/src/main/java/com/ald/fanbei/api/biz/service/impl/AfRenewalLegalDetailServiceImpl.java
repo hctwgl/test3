@@ -198,7 +198,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
 				bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", 
-				PayOrderSource.RENEW_CASH_LEGAL.getCode(),bankPayType,afResourceService.getCashProductName());
+				PayOrderSource.RENEW_CASH_LEGAL.getCode());
 			if (!respBo.isSuccess()) {
 			    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 			    dealLegalRenewalFail(payTradeNo, repayNo,errorMsg);

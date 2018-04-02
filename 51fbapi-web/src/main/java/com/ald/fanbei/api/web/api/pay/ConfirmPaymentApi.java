@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -61,7 +62,8 @@ public class ConfirmPaymentApi implements ApiHandle {
     	 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST);
     }
    // UpsQuickPayConfirmRespBo quickPayConfirm(String tradeNo,String orderNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
-    	UpsQuickPayConfirmRespBo respBo = upsUtil.quickPayConfirm(tradeNo, context.getUserId().toString(),smsCode, bank.getCardNumber(),bank.getBankCode(),"02" ,"QUICK_PAY_CONFIRM");
+    UpsCollectRespBo respBo = upsUtil.quickPayConfirm(tradeNo, context.getUserId().toString(),smsCode, bank.getCardNumber(),
+    		bank.getBankCode(),"02" ,"QUICK_PAY_CONFIRM");
 
 
 		if (!respBo.isSuccess()) {

@@ -525,8 +525,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
-            return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv, bankPayType);
+        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
+            return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv);
         }
 	
 	/**
@@ -546,7 +546,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 */
 	private UpsCollectRespBo replaceCollect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType){		
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv){		
 		amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
@@ -602,8 +602,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-	public UpsCollectRespBo quickPaySendSms(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String bankPayType,String productName){		
+	public UpsCollectRespBo quickPay(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String productName){		
 		amount = setActualAmount(amount);
 		UpsQuickPayReqBo reqBo = new UpsQuickPayReqBo();
 		setPubParam(reqBo,"quickPay",orderNo,clientType);
@@ -688,7 +688,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-	public UpsQuickPayConfirmRespBo quickPayConfirm(String tradeNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
+	public UpsCollectRespBo quickPayConfirm(String tradeNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
 		String orderNo = getOrderNo("qpco", cardNo.substring(tradeNo.length()-4,tradeNo.length()));
 		//amount = setActualAmount(amount);
 		UpsQuickPayConfirmReqBo reqBo = new UpsQuickPayConfirmReqBo();
@@ -708,7 +708,7 @@ public class UpsUtil extends AbstractThird {
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_QUICK_PAY_CONFIRM_ERROR);
 		}
-		UpsQuickPayConfirmRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQuickPayConfirmRespBo.class);
+		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
 				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
 			authSignResp.setSuccess(true);

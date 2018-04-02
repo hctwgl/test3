@@ -149,7 +149,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), 
 				bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", 
-				UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType,afResourceService.getCashProductName());
+				UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
 			    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 			    dealRenewalFail(payTradeNo, "",errorMsg);
@@ -184,7 +184,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(),
 				bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", 
-				UserAccountLogType.RENEWAL_PAY.getCode(),bankPayType,afResourceService.getCashProductName());
+				UserAccountLogType.RENEWAL_PAY.getCode());
             	    	if (!respBo.isSuccess()) {
             	    	    String errowMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
             	    	    dealRenewalFail(payTradeNo, "", errowMsg);

@@ -61,7 +61,7 @@ public class QuickPaymentResendCodeApi implements ApiHandle {
     	 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST);
     }
     
-	UpsResendSmsRespBo respBo = upsUtil.resendSms( "02", context.getUserId().toString(), bank.getBankCode(),  bank.getCardNumber(),"REPEAT_SMS_CODE");
+	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms( "02", context.getUserId().toString(), bank.getBankCode(),  bank.getCardNumber(),"REPEAT_SMS_CODE");
 
 
 		if (!respBo.isSuccess()) {

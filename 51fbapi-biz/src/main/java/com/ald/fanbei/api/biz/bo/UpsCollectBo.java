@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.bo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 
 /**
  * 
@@ -19,7 +22,7 @@ public class UpsCollectBo implements Serializable {
 
     }
 
-    public UpsCollectBo(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
+    public UpsCollectBo(AfRepaymentDo repayment,List<Long> billIdList, Long cardId,String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
 	this.orderNo = orderNo;
 	this.amount = amount;
 	this.userNo = userNo;
@@ -34,6 +37,9 @@ public class UpsCollectBo implements Serializable {
 	this.merPriv = merPriv;
 	this.bankPayType = bankPayType;
 	this.productName = productName;
+	this.cardId = cardId;
+	this.repayment = repayment;
+	this.billIdList = billIdList;
     }
 
     String orderNo;
@@ -50,6 +56,18 @@ public class UpsCollectBo implements Serializable {
     String merPriv;
     String bankPayType;
     String productName;
+    Long cardId;
+    AfRepaymentDo repayment;
+    List<Long> billIdList;
+
+    
+    public List<Long> getBillIdList() {
+        return billIdList;
+    }
+
+    public void setBillIdList(List<Long> billIdList) {
+        this.billIdList = billIdList;
+    }
 
     public String getOrderNo() {
 	return orderNo;
@@ -163,9 +181,21 @@ public class UpsCollectBo implements Serializable {
 	this.productName = productName;
     }
 
-    @Override
-    public String toString() {
-	return "UpsCollectBo [orderNo=" + orderNo + ", amount=" + amount + ", userNo=" + userNo + ", realName=" + realName + ", phone=" + phone + ", bankCode=" + bankCode + ", cardNo=" + cardNo + ", certNo=" + certNo + ", purpose=" + purpose + ", remark=" + remark + ", clientType=" + clientType + ", merPriv=" + merPriv + ", bankPayType=" + bankPayType + ", productName=" + productName + "]";
+    public Long getCardId() {
+	return cardId;
     }
 
+    public void setCardId(Long cardId) {
+	this.cardId = cardId;
+    }
+
+    public AfRepaymentDo getRepayment() {
+        return repayment;
+    }
+
+    public void setRepayment(AfRepaymentDo repayment) {
+        this.repayment = repayment;
+    }
+
+    
 }
