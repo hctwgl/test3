@@ -111,7 +111,7 @@ public class ThirdController extends AbstractThird{
         YFSmsUtil.pool.execute(new Runnable() {
             @Override
             public void run() {
-                processIagentResult("oooooo",job_id,work_result);
+                processIagentResult(audioUrl,job_id,work_result);
             }
         });
         //processIagentResult("oooooo",job_id,work_result);
