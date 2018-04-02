@@ -931,15 +931,14 @@ public class AppH5LeaseController extends BaseController {
      *确认收货
      */
     @ResponseBody
-    @RequestMapping(value = "completedLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.GET)
+    @RequestMapping(value = "completedLeaseOrder", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String completedLeaseOrder(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
-            context = doWebCheck(request, false);
+            context = doWebCheck(request, true);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
-            String userName = ObjectUtils.toString(request.getParameter("userName"), null);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
             //用户订单检查
             AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,afUser.getRid());
