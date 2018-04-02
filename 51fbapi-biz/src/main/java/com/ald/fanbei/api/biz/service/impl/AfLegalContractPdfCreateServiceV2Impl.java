@@ -841,6 +841,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
         OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
         afOrderDao.updatepdfUrlByOrderId(orderId,ossUploadResult.getUrl());
+        logger.info("lease url="+ossUploadResult.getUrl());
         return null;
     }
 
