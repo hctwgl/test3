@@ -92,7 +92,7 @@ public class BklUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("bklUtils submitJob httpResponseVO error =>{}",e);
+            logger.error("bklUtils submitJob httpResponseVO error =>{}",e);
         }
     }
 

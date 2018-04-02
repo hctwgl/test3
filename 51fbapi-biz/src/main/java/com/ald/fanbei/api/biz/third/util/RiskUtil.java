@@ -26,10 +26,7 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
@@ -170,7 +167,6 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -268,7 +264,8 @@ public class RiskUtil extends AbstractThird {
 	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
-
+	@Resource
+	AfIagentResultDao iagentResultDao;
 	@Resource
 	AfInterimAuDao afInterimAuDao;
 	@Resource
@@ -1191,17 +1188,9 @@ public class RiskUtil extends AbstractThird {
 		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 			submitBklInfo(orderInfo);
 			//新增白名单逻辑
-			AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
-			if (bklWhiteResource != null) {
-				//白名单开启
-				String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
-				Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-				logger.info("payOrder bklUtils submitBklInfo whiteUserIds = "+whiteUserIds.toString());
-				if(Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
-					//不在白名单不推送
-
-				}
-			}
+			/*if (isBklResult(orderInfo)){
+			submitBklInfo(orderInfo);
+			}*/
 		}
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
@@ -1216,6 +1205,50 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+
+	private boolean isBklResult(AfOrderDo orderInfo) {
+		boolean result = true;
+		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
+		if (bklWhiteResource != null) {
+			//白名单开启
+			String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds));
+			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
+				result = false;
+				return result;
+			}
+		}
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
+		if (afResourceDo != null){
+			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
+				result = false;
+				return result;
+			}
+			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
+			iagentResultDo.setUserId(orderInfo.getUserId());
+			iagentResultDo.setCheckState("5");//通过审核
+			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
+			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
+			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
+				result = false;
+				return result;
+			}
+			AfIagentResultDto resultDto = new AfIagentResultDto();
+			iagentResultDo.setUserId(orderInfo.getUserId());
+			iagentResultDo.setCheckState("4");
+			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
+			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
+			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
+				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
+					//直接拒绝
+				}else {
+					result = true;//需电核
+				}
+			}
+		}
+		return result;
 	}
 
 	public void submitBklInfo(AfOrderDo orderInfo){

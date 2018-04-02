@@ -170,4 +170,17 @@
         FROM af_iagent_result
         WHERE work_id=#{workId}
     </select>
+
+    <select id="getIagentByUserIdAndStatusTime"  resultType="com.ald.fanbei.api.dal.domain.AfIagentResultDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_iagent_result
+        WHERE user_id=#{userId} and is_delete=0
+        <if test="checkState != null and checkState !=''">
+            and check_state = #{checkState}
+        </if>
+        <if test="dayNum != null">
+            and TIMESTAMPDIFF(DAY,gmt_create,now()) &lt; #{dayNum}
+        </if>
+    </select>
 </mapper>
