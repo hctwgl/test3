@@ -107,7 +107,10 @@ public class UpsUtil extends AbstractThird {
         //存储redis使用（单位：秒）（数据缓存时间小于支付订单有效时间，防止订单支付失败（用户临界时间完成支付））
         public static final int KUAIJIE_EXPIRE_SECONDS = 14 * 60;
         
-        public static final String KUAIJIE_HEADER = "kuaijie:";
+        public static final int KUAIJIE_ONE_MINITE_SECONDS = 60;
+        
+        public static final String KUAIJIE_TRADE_HEADER = "kuaijie:tradeno:";
+        public static final String KUAIJIE_REPAYMENT_RESPONSE_HEADER = "kuaijie:repayment:resp:";
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
@@ -624,7 +627,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType  客户端类型
 	 */
         public UpsResendSmsRespBo quickPayResendSms(String payTradeNo) {
-        	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_HEADER + payTradeNo);
+        	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
         	if (cacheObject != null) {
         	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
         	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();

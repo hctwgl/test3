@@ -3,11 +3,10 @@
  */
 package com.ald.fanbei.api.web.api.pay;
 
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
@@ -16,9 +15,7 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -31,43 +28,28 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("quickPaymentResendCodeApi")
 public class QuickPaymentResendCodeApi implements ApiHandle {
-	@Resource
-	UpsUtil upsUtil;
-	@Resource
-	AfUserBankcardDao afUserBankcardDao;
-	@Resource
-	AfTradeCodeInfoService afTradeCodeInfoService;
-	
+    @Resource
+    UpsUtil upsUtil;
+    @Resource
+    AfUserBankcardDao afUserBankcardDao;
+    @Resource
+    AfTradeCodeInfoService afTradeCodeInfoService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-	
-	//String clientType = ObjectUtils.toString(requestDataVo.getParams().get("clientType"),null);
-	//String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"),null);
-    Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
-  //  Map<String, Object> params = requestDataVo.getParams();
-    
-    if (cardId == null ) {
-        logger.error("cardId is empty");
-        return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-    }
-//    if(payId <= 0 ){
-//    	  logger.info("choose bank card pay orderNo = "+orderNo);
-//          return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHOOSE_BANK_CARD_PAY);
-//    }
-    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-    if(bank == null ){
-    	 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST);
-    }
-    
-	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms( "02", context.getUserId().toString(), bank.getBankCode(),  bank.getCardNumber(),"REPEAT_SMS_CODE");
 
+	String payTradeNo = requestDataVo.getParams().get("payTradeNo").toString();
+	if (StringUtils.isBlank(payTradeNo)) {
+	    logger.error("quickPaymentResendCodeApi payTradeNo is empty");
+	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+	}
+	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(payTradeNo);
 
-		if (!respBo.isSuccess()) {
-		    throw new FanbeiException(respBo.getRespDesc());
-		}
-		resp.addResponseData("data", respBo);
+	if (!respBo.isSuccess()) {
+	    throw new FanbeiException(respBo.getRespDesc());
+	}
+	resp.addResponseData("data", respBo);
 
 	return resp;
     }

@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -308,12 +309,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 	    afRepaymentDao.addRepayment(repayment);
 	    afUserAmountService.addUseAmountDetail(repayment);
-	    afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
-	    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 	    
 	    //增加快捷支付
 	    if(BankPayChannel.DAIKOU.getCode().equals(bankPayType))
 	    {
+		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
+		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		doUpsPay(map , bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
 	    } else {
 		sendKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
@@ -349,7 +350,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
      * @param payTradeNo
      */
     public void doUpsPay(Map<String, Object> map, String payTradeNo,String smsCode) {
-	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_HEADER + payTradeNo);
+	//获取缓存中的支付信息
+	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
 	if (cacheObject != null) {
 	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
 	    doUpsPay(map, BankPayChannel.KUAIJIE.getCode(), upsCollectBo.getCardId(), upsCollectBo.getRepayment(), upsCollectBo.getBillIdList(), 
@@ -422,6 +424,23 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
      */
     public void sendKuaiJieSms(Map<String, Object> map, String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList,
 	    String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber) {
+	//获取缓存中的还款信息
+	String repaymentHash = String.valueOf(repayment.toString().hashCode());
+	Object upsCollectRespBoObject =  bizCacheUtil.getObject(repaymentHash);
+	if (upsCollectRespBoObject != null) {
+	    UpsCollectRespBo upsCollectResp = (UpsCollectRespBo) upsCollectRespBoObject;
+	    if ((new Date().getTime() - upsCollectResp.getTradeTime())/1000 <= UpsUtil.KUAIJIE_ONE_MINITE_SECONDS) {
+		// 一分钟内存在，则直接返回上次响应
+		map.put("resp", upsCollectResp);
+		return;
+	    }
+	    else{
+		//重新发送验证码
+		upsUtil.quickPayResendSms(upsCollectResp.getTradeNo());
+	    }
+	}
+	
+	//缓存中不存在记录，则申请发送短信
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, 
 		bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
@@ -436,9 +455,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    UpsCollectBo upsCollectBo = new UpsCollectBo(repayment, billIdList, cardId, payTradeNo, actualAmount, userId + "", realName,
 		    bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
 		    UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
-	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_HEADER + payTradeNo, upsCollectBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
-
-	    map.put("resp", respBo);
+	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo, upsCollectBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);    
+	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_REPAYMENT_RESPONSE_HEADER + repaymentHash, respBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+	    //返回结果
+	    map.put("resp", respBo);	
 	}
     }
     
