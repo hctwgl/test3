@@ -148,7 +148,7 @@ public class JpushUtilV2 extends AbstractThird {
             thirdLog.info(StringUtil.appendStrs("pushNotifyByAlias title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result));
         } catch (APIConnectionException | APIRequestException e) {
             e.printStackTrace();
-            thirdLog.error(StringUtil.appendStrs("pushNotifyByRegistIds error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result), e);
+            thirdLog.info(StringUtil.appendStrs("pushNotifyByRegistIds error title=", title, ",msgContent=", msgContent, ",extras=", extras, "alias=", StringUtil.turnArrayToStr(null, alias), ";result=", result), e);
             throw new FanbeiException("pushNotifyByRegistIds error", FanbeiExceptionCode.JPUSH_ERROR);
         }
     }

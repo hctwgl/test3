@@ -482,4 +482,7 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int getOnRepaymentCountByUserId(@Param("userId")Long userId);
+
+
+	List<AfBorrowBillDo> getBorrowBillListByStatus(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
 }
