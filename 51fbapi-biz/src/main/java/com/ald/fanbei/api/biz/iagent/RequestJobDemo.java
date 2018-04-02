@@ -27,7 +27,7 @@ public class RequestJobDemo {
 		map.put("corp_code", "51返呗");
 		map.put("access_token", "xCGQF6wNeA1z6Cmz2UMW8F1as");
 		map.put("job_code", "51FB-SP01");
-		map.put("order_id", "11111111");
+		map.put("order_id", "111311111");
 		String work_data = "{'csv_phone_num':'13613317541','csv_arn':'SG18033003238','csv_name':'谢强','csv_sex':'男','csv_digit_4':8755,'csv_birth_date':'19890610','csv_staging':9,'csv_amt':1500,'csv_pay_way':'分期付款','csv_product_category':'手机通讯' }";
 		Map dtt=null;
 		try {

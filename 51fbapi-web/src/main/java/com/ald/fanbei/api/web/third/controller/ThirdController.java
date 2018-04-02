@@ -130,6 +130,7 @@ public class ThirdController extends AbstractThird{
      * @param work_result
      */
     private void processIagentResult(String audioUrl,String job_id,String work_result){
+        logger.info("智能电核处理返回结果");
         JSONObject result = JSONObject.parseObject(work_result);
         String result_code= result.getString("result_code");
         AfIagentResultDo afIagentResultDo = new AfIagentResultDo();
