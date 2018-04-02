@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.iagent.utils.AOSJson;
 import com.ald.fanbei.api.biz.iagent.utils.HttpRequestVO;
 import com.ald.fanbei.api.biz.iagent.utils.HttpResponseVO;
 import com.ald.fanbei.api.biz.service.AfIagentResultService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
@@ -34,6 +35,8 @@ public class BklUtils {
 
     @Resource
     AfIagentResultService iagentResultService;
+    @Resource
+    AfOrderService afOrderService;
 
     @Resource
     SmsUtil smsUtil;
@@ -81,6 +84,7 @@ public class BklUtils {
                 iagentResultDo.setGmtCreate(new Date());
                 iagentResultDo.setGmtModified(new Date());
                 iagentResultService.saveRecord(iagentResultDo);
+                afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),"A");
                 String content = "【阿拉丁电商】尊敬的用户，您的订单将在60分钟内进行审核，请您保持电话畅通，感谢您对51返呗的支持，祝您生活愉快";
                 smsUtil.sendSmsToDhst(bklDo.getCsvPhoneNum(),content);
             }else {
