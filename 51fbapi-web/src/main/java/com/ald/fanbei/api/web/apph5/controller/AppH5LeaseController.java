@@ -273,6 +273,10 @@ public class AppH5LeaseController extends BaseController {
         try{
             data.put("status",0);
             context = doWebCheck(request, true);
+            if(context.getAppVersion() < 411) {
+                resp = H5CommonResponse.getNewInstance(false, "请更新到最新版本", "", null);
+                return resp.toString();
+            }
             Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("goodsId")), 0l);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
             HashMap result = afOrderService.checkLeaseOrder(afUser.getRid(),goodsId);
