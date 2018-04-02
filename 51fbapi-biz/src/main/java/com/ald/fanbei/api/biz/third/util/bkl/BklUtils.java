@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.iagent.utils.AOSJson;
 import com.ald.fanbei.api.biz.iagent.utils.HttpRequestVO;
 import com.ald.fanbei.api.biz.iagent.utils.HttpResponseVO;
 import com.ald.fanbei.api.biz.service.AfIagentResultService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
@@ -34,6 +35,8 @@ public class BklUtils {
 
     @Resource
     AfIagentResultService iagentResultService;
+    @Resource
+    AfOrderService afOrderService;
 
     @Resource
     SmsUtil smsUtil;
@@ -81,6 +84,7 @@ public class BklUtils {
                 iagentResultDo.setGmtCreate(new Date());
                 iagentResultDo.setGmtModified(new Date());
                 iagentResultService.saveRecord(iagentResultDo);
+                afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),"A");
             }else {
                 logger.error("bklUtils submitJob httpResponseVO error out ="+httpResponseVO.getOut());
             }
