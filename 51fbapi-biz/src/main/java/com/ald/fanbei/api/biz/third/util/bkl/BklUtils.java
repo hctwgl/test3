@@ -85,12 +85,14 @@ public class BklUtils {
                 iagentResultDo.setGmtModified(new Date());
                 iagentResultService.saveRecord(iagentResultDo);
                 afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),"A");
+                String content = "【阿拉丁电商】尊敬的用户，您的订单将在60分钟内进行审核，请您保持电话畅通，感谢您对51返呗的支持，祝您生活愉快";
+                smsUtil.sendSmsToDhst(bklDo.getCsvPhoneNum(),content);
             }else {
                 logger.error("bklUtils submitJob httpResponseVO error out ="+httpResponseVO.getOut());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("bklUtils submitJob httpResponseVO error =>{}",e);
+            logger.error("bklUtils submitJob httpResponseVO error =>{}",e);
         }
     }
 
