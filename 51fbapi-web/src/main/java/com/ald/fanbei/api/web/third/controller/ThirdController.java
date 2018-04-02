@@ -138,6 +138,11 @@ public class ThirdController extends AbstractThird{
         afIagentResultDo.setWorkId(Long.parseLong(job_id));
         afIagentResultDo.setWorkResult(work_result);
         afIagentResultDo.setCheckState(RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code));
+        AfIagentResultDo aresultDo  = afIagentResultService.getIagentByWorkId(Long.parseLong(job_id));
+        //处理过不再处理
+        if (aresultDo != null && aresultDo.getCheckState() != null){
+            return;
+        }
         afIagentResultService.updateResultByWorkId(afIagentResultDo);
         dealOrder(result,Long.parseLong(job_id));
     }
