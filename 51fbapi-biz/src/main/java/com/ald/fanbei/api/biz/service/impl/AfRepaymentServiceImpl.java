@@ -306,17 +306,20 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	} else if (cardId > 0) {// 银行卡支付
 	    // 还款金额是否大于银行单笔限额
 	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
-	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
-	    afRepaymentDao.addRepayment(repayment);
-	    afUserAmountService.addUseAmountDetail(repayment);
 	    
 	    //增加快捷支付
 	    if(BankPayChannel.DAIKOU.getCode().equals(bankPayType))
 	    {
+		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+		afRepaymentDao.addRepayment(repayment);
+		afUserAmountService.addUseAmountDetail(repayment);
+		
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		doUpsPay(map , bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
 	    } else {
+		repayment.setStatus(RepaymentStatus.SMS.getCode());
+		afRepaymentDao.addRepayment(repayment);
 		sendKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
 	    }
 	} else if (cardId == -2) {// 余额支付
@@ -386,7 +389,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	if (BankPayChannel.DAIKOU.getCode().equals(bankPayType)) { //代付
 	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), 
 		    bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
-	} else { // 快捷支付    
+	} else { // 快捷支付  
+	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+	    afRepaymentDao.updateRepaymentByAfRepaymentDo(repayment);
+	    afUserAmountService.addUseAmountDetail(repayment);
 	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, bank.getCardNumber(), bank.getBankCode(),
 		    			"02", UserAccountLogType.REPAYMENT.getCode());
 	}
