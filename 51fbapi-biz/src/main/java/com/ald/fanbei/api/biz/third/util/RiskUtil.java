@@ -1243,6 +1243,9 @@ public class RiskUtil extends AbstractThird {
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
 				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
+					Map<String,String> qmap = new HashMap<>();
+					qmap.put("orderNo",orderInfo.getOrderNo());
+					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
 				}else {
 					result = true;//需电核
 				}
