@@ -84,7 +84,7 @@ public class ThirdController extends AbstractThird{
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport(@RequestParam("audio") MultipartFile audio, @RequestParam("work_id") final String   work_id, @RequestParam("job_id")String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
+    public String iagentReport( @RequestParam("audio") MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
@@ -111,9 +111,10 @@ public class ThirdController extends AbstractThird{
         YFSmsUtil.pool.execute(new Runnable() {
             @Override
             public void run() {
-                processIagentResult(audioUrl,work_id,work_result);
+                processIagentResult("oooooo",job_id,work_result);
             }
         });
+        //processIagentResult("oooooo",job_id,work_result);
         JSONObject jsonObject=new JSONObject();
         JSONObject innerJsonObject=new JSONObject();
         innerJsonObject.put("receipt_id",System.currentTimeMillis());
@@ -129,6 +130,7 @@ public class ThirdController extends AbstractThird{
      * @param work_result
      */
     private void processIagentResult(String audioUrl,String job_id,String work_result){
+        logger.info("智能电核处理返回结果");
         JSONObject result = JSONObject.parseObject(work_result);
         String result_code= result.getString("result_code");
         AfIagentResultDo afIagentResultDo = new AfIagentResultDo();

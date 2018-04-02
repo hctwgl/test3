@@ -164,7 +164,7 @@
         </if>
         WHERE work_id=#{workId}
     </update>
-    <select id="getIagentByWorkId">
+    <select id="getIagentByWorkId" resultType="com.ald.fanbei.api.dal.domain.AfIagentResultDo">
         SELECT
         <include refid="queryFields" />
         FROM af_iagent_result
