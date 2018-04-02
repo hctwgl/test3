@@ -1394,6 +1394,7 @@
 			b.price_amount priceAmount,
 			b.nper+1 nper,
 			b.borrow_rate borrowRate,
+			a.richie_amount richieAmount,
 			CONCAT(
 				b.province,
 				b.city,
