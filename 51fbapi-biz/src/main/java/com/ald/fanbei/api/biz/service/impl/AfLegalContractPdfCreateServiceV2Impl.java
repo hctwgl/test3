@@ -778,6 +778,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         String html = null;
         try {
             html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseV2WithoutSealTemplate.vm"));
+            logger.info("lease cfp html="+html);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -840,6 +841,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         InputStream input = new FileInputStream(fileName);
         MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
         OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+        logger.info("ossUploadResult="+ossUploadResult.getUrl());
         afOrderDao.updatepdfUrlByOrderId(orderId,ossUploadResult.getUrl());
         logger.info("lease url="+ossUploadResult.getUrl());
         return null;
