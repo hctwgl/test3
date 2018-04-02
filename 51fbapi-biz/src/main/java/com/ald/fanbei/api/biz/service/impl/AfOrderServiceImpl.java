@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,25 +51,6 @@ import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
-import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
-import com.ald.fanbei.api.dal.dao.AfGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
-import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfShopDao;
-import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
@@ -223,6 +205,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	@Resource
 	BklUtils bklUtils;
+
+	@Resource
+	AfIdNumberDao idNumberDao;
 
 
 	@Override
@@ -1638,7 +1623,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							//白名单开启
 							String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
 							Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-							if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
+							logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+whiteUserIds.toString());
+							if(Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
 								//不在白名单不推送
 
 							}
@@ -1764,16 +1750,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
 			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
 			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
 			String sex ;
-			if ("M".equals(userDo.getGender())){
-				sex = "男";
-			}else if ("F".equals(userDo.getGender())){
-				sex = "女";
+			if (idNumberDo != null){
+				sex = idNumberDo.getGender();
 			}else {
-				sex = "未知";
+				sex = "";
 			}
 			AfBklDo bklDo = new AfBklDo();
 			bklDo.setCsvArn(orderInfo.getOrderNo());

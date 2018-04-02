@@ -304,6 +304,9 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfGoodsCategoryDao afGoodsCategoryDao;
 
+	@Resource
+	AfIdNumberDao idNumberDao;
+
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -1193,7 +1196,8 @@ public class RiskUtil extends AbstractThird {
 				//白名单开启
 				String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
 				Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-				if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
+				logger.info("payOrder bklUtils submitBklInfo whiteUserIds = "+whiteUserIds.toString());
+				if(Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){
 					//不在白名单不推送
 
 				}
@@ -1219,16 +1223,15 @@ public class RiskUtil extends AbstractThird {
 			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
 			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
 			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
 			String sex ;
-			if ("M".equals(userDo.getGender())){
-				sex = "男";
-			}else if ("F".equals(userDo.getGender())){
-				sex = "女";
+			if (idNumberDo != null){
+				sex = idNumberDo.getGender();
 			}else {
-				sex = "未知";
+				sex = "";
 			}
 			AfBklDo bklDo = new AfBklDo();
 			bklDo.setCsvArn(orderInfo.getOrderNo());
