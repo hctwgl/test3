@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.bo.UpsAuthSignValidReqBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectReqBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayReqBo;
@@ -51,6 +52,7 @@ import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -525,29 +527,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType
 	 */
-        public Object collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
-            return replaceCollect(orderNo, amount, userNo, realName, phone, bankCode, cardNo, certNo, purpose, remark, clientType, merPriv);
-        }
-	
-	/**
-	 * 单笔代收(代扣)
-	 * 
-	 * @param amount --交易金额
-	 * @param userNo --用户唯一标识
-	 * @param realName --真实姓名
-	 * @param phone  --预留手机号
-	 * @param bankCode --银行代码
-	 * @param cardNo --银行卡号
-	 * @param certNo --身份证号
-	 * @param purpose --用途
-	 * @param remark --
-	 * @param returnUrl
-	 * @param notifyUrl
-	 * @param clientType
-	 */
-	private UpsCollectRespBo replaceCollect(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv){		
-		amount = setActualAmount(amount);
+        public UpsCollectRespBo collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
+            amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
@@ -580,12 +561,8 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(false);
 			return authSignResp;
 		}
+        }
 		
-	}
-	
-	
-	
-	
 	/**
 	 * 快捷支付
 	 * 
@@ -646,34 +623,35 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-	public UpsResendSmsRespBo quickPayResendSms(String clientType,String userNo,String bankCode,String cardNo,String merPriv){
-		String orderNo = getOrderNo("rsms", cardNo.substring(cardNo.length()-4,cardNo.length()));
-		//amount = setActualAmount(amount);
-		UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
-		setPubParam(reqBo,"quickPayResendCode",orderNo,clientType);
-		//reqBo.setMerPriv(merPriv);
-		reqBo.setOldOrderNo(orderNo);
-		reqBo.setTradeType("pay_order");
-		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayResendCode");
-		logger.info("bank quickPayResendCode = "+ getNotifyHost() + "/third/ups/quickPayResendCode");
-		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPayResendCode", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
-		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-		logThird(reqResult, "quickPayResendCode", reqBo);
-		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
-		}
-		UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult,UpsResendSmsRespBo.class);
-		if(authSignResp != null && authSignResp.getTradeState()!=null && (
-				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
-			authSignResp.setSuccess(true);
-			return authSignResp;
-		} else {
-			authSignResp.setSuccess(false);
-			return authSignResp;
-		}
-	}
+        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo) {
+        	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_HEADER + payTradeNo);
+        	if (cacheObject != null) {
+        	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
+        	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
+        	    setPubParam(reqBo, "quickPayResendCode", payTradeNo, upsCollectBo.getClientType());
+        	    reqBo.setOldOrderNo(payTradeNo);
+        	    reqBo.setTradeType("pay_order");
+        	    reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayResendCode");
+        	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");
+        	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        	    afUpsLogDao.addUpsLog(buildUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
+        	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+        	    logThird(reqResult, "quickPayResendCode", reqBo);
+        	    if (StringUtil.isBlank(reqResult)) {
+        		throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
+        	    }
+        	    UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult, UpsResendSmsRespBo.class);
+        	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
+        		authSignResp.setSuccess(true);
+        		return authSignResp;
+        	    } else {
+        		authSignResp.setSuccess(false);
+        		return authSignResp;
+        	    }
+        	} else {
+        	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+        	}
+        }
 	
 	
 	

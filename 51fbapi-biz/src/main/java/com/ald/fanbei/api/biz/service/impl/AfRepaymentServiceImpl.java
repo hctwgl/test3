@@ -57,6 +57,7 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
@@ -355,7 +356,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		    payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()), upsCollectBo.getRealName(), upsCollectBo.getCertNo(),smsCode);
 
 	} else {
-	    throw new FanbeiException("订单支付超时,请重新获取短信验证码");
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
 	}
     }
     
@@ -381,7 +382,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	
 	UpsCollectRespBo respBo;
 	if (BankPayChannel.DAIKOU.getCode().equals(bankPayType)) { //代付
-	    respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), 
+	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), 
 		    bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
 	} else { // 快捷支付    
 	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, bank.getCardNumber(), bank.getBankCode(),
@@ -441,6 +442,15 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
     }
     
+    /**
+     * 
+     * TODO 恢复账单相关状态
+     * @author gaojb
+     * @Time 2018年4月2日 下午6:08:35
+     * @param payTradeNo
+     * @param repayment
+     * @param billIdList
+     */
     private void roolbackRepamentStatus(String payTradeNo, AfRepaymentDo repayment, List<Long> billIdList) {
 	AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(repayment.getRid());
 	if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
