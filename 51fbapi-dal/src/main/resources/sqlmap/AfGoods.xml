@@ -407,8 +407,29 @@
 		
 	</select>
 
-	<select id="">
+	<select id="getGoodsListByGoodsId" resultType="AfGoodsDo">
+		<foreach collection="list" item="item" separator="UNION ALL" >
+			SELECT
+			<include refid="queryFields"/>
+			FROM
+			af_goods
+			WHERE is_delete = 0
+			AND status = 'PUBLISH'
+			AND id = #{item}
+		</foreach>
+	</select>
 
+	<select id="getGoodsDoByGoodsId" resultType="AfActivityGoodsDto">
+		SELECT
+			g.id rid,g.name,g.goods_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
+			g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
+			(g.sale_amount-g.rebate_amount) real_amount,g.goods_detail,sum(p.sale_count) count
+		FROM
+		af_goods g
+		LEFT JOIN af_goods_price p ON p.is_delete = 0 AND p.is_sale = 'Y' AND p.goods_id = g.id
+		where g.is_delete = 0
+		AND g.status = 'PUBLISH'
+		AND g.id in (#{goodsId})
 	</select>
 
 </mapper>
