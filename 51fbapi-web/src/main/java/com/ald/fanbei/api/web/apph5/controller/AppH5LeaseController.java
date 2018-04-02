@@ -933,7 +933,7 @@ public class AppH5LeaseController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         LeaseOrderDto lease = new LeaseOrderDto();
         try{
-            context = doWebCheck(request, false);
+//            context = doWebCheck(request, false);
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
             String userName = ObjectUtils.toString(request.getParameter("userName"), null);
             AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());

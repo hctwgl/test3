@@ -175,10 +175,10 @@ public class ContractPdfThreadPool{
         private Map<String,Object> data;
         private Long userId;
         private Long orderId;
-        public LeaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId) {
-            data = data;
-            userId=userId;
-            orderId=orderId;
+        public LeaseProtocolPdf(Map<String,Object> idata,Long uId,Long oId) {
+            data = idata;
+            userId=uId;
+            orderId=oId;
         }
         @Override
         public void run() {
