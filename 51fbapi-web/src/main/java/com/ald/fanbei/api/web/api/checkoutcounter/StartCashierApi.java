@@ -488,8 +488,9 @@ public class StartCashierApi implements ApiHandle {
      */
     private Map<String, Object> riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
 	// 风控逾期订单处理
-	RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
-	String rejectCode = resp.getRejectCode();
+//	RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
+	Long userId = orderInfo.getUserId();
+	String rejectCode = "";
 	// region 测试借钱逾期白名单
 	List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
 	if (afResourceList.size() > 0) {
@@ -514,16 +515,17 @@ public class StartCashierApi implements ApiHandle {
 	}
 	// endregion
 
-	if (StringUtil.isNotBlank(rejectCode)) {
+//	if (StringUtil.isNotBlank(rejectCode)) {
 	    RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
-
+	    
 	    switch (erorrCode) {
 	    case OVERDUE_BORROW:
-		String borrowNo = resp.getBorrowNo();
+//		String borrowNo = resp.getBorrowNo();
 		// if(userDto.getUserName().equals("17710378476")){
 		// borrowNo="jk2017111218003479890";
 		// }
-		AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+//		AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+	    AfBorrowDo borrowInfo = afBorrowService.getOverdueBorrowInfoByUserId(userId);
 		if (borrowInfo != null) {
 		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
 		    cashierTypeVo.setBillId(billId);
@@ -532,7 +534,7 @@ public class StartCashierApi implements ApiHandle {
 		    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
 		    return null;
 		} else {
-		    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + borrowNo);
+		    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
 		}
 		break;
 	    case OVERDUE_BORROW_CASH:
@@ -556,7 +558,7 @@ public class StartCashierApi implements ApiHandle {
 		cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
 		cashierTypeVo.setReasonType("未知原因：" + rejectCode);
 		return null;
-	    }
+//	    }
 	}
 
 	// 专项额度控制
