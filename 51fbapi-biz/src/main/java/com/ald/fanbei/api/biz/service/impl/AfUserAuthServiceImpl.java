@@ -389,7 +389,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
-
+	    data.put("showExtraTab", "0");
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
 		data.put("basicStatus", "A");
