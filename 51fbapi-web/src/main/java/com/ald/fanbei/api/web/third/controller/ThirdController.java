@@ -103,15 +103,22 @@ public class ThirdController extends AbstractThird{
             }
         }
         sb.append("---iagentReport end");
-        sb.append("---audio name："+audio.getOriginalFilename());
-        OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
-        sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
+         String audioUrl = null;
+        if (audio != null){
+            sb.append("---audio name："+audio.getOriginalFilename());
+            OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
+            sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
+            audioUrl = ossUploadResult.getUrl();
+        }else {
+            sb.append("---audio name：null"  );
+            sb.append("---ossUploadResult url：null" );
+        }
         logger.info(sb.toString());
-        final String audioUrl = ossUploadResult.getUrl();
+         final String audiourl = audioUrl;
         YFSmsUtil.pool.execute(new Runnable() {
             @Override
             public void run() {
-                processIagentResult(audioUrl,job_id,work_result);
+                processIagentResult(audiourl,job_id,work_result);
             }
         });
         //processIagentResult("oooooo",job_id,work_result);
