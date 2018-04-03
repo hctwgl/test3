@@ -109,8 +109,9 @@ public class UpsUtil extends AbstractThird {
         
         public static final int KUAIJIE_ONE_MINITE_SECONDS = 60;
         
-        public static final String KUAIJIE_TRADE_HEADER = "kuaijie:tradeno:";
-        public static final String KUAIJIE_REPAYMENT_RESPONSE_HEADER = "kuaijie:repayment:resp:";
+        public static final String KUAIJIE_TRADE_HEADER = "kuaijie:tradeno:req:";
+        public static final String KUAIJIE_TRADE_RESPONSE_HEADER = "kuaijie:tradeno:resp:";
+        public static final String KUAIJIE_TRADE_OBJECT_HEADER = "kuaijie:tradeno:resp:";
 	
 	@Resource
 	AfUpsLogDao afUpsLogDao;
@@ -626,7 +627,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo) {
+        public UpsCollectRespBo quickPayResendSms(String payTradeNo) {
         	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
         	if (cacheObject != null) {
         	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
@@ -643,7 +644,8 @@ public class UpsUtil extends AbstractThird {
         	    if (StringUtil.isBlank(reqResult)) {
         		throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
         	    }
-        	    UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult, UpsResendSmsRespBo.class);
+        	    
+        	    UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult, UpsCollectRespBo.class);
         	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
         		authSignResp.setSuccess(true);
         		return authSignResp;

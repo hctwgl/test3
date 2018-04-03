@@ -18,10 +18,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.KuaijieRepaymentBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -104,7 +105,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afRepaymentService")
-public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentService {
+public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract implements AfRepaymentService {
     @Resource
     CuiShouUtils cuiShouUtils;
 
@@ -272,23 +273,24 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 	if (cardId > 0) {// 银行卡支付
 	    // 还款金额是否大于银行单笔限额
-	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
-	    
-	    //增加快捷支付
-	    if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);	    
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {//快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 
-		sendKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
-
-	    } else {
+		//构造业务数据，为后续接口使用
+		KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment , billIdList);
+		sendKuaiJieSms(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+			afUserAccountDo.getIdNumber(),JSON.toJSONString(bizObject));
+	    } else {//代扣
+		//更新状态
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 		afUserAmountService.addUseAmountDetail(repayment);
-
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
-		doUpsPay(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
+		//调用ups支付
+		doUpsPay(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
 	    }
 	} else if (cardId == -2) {// 余额支付
 	    afRepaymentDao.addRepayment(repayment);
@@ -312,173 +314,50 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	return map;
     }
 
-    /**
-     * 
-     * TODO 快捷支付确认付款
-     * @author gaojb
-     * @Time 2018年4月2日 下午2:49:58
-     * @param map
-     * @param payTradeNo
-     */
-    public void doUpsPay(Map<String, Object> map, String payTradeNo,String smsCode) {
-	//获取缓存中的支付信息
-	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
-	if (cacheObject != null) {
-	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
-	    doUpsPay(map, BankPayChannel.KUAIJIE.getCode(), upsCollectBo.getCardId(), upsCollectBo.getRepayment(), upsCollectBo.getBillIdList(), 
-		    payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()), upsCollectBo.getRealName(), upsCollectBo.getCertNo(),smsCode);
+    @Override
+    protected void quickPayConfirmPre(String payTradeNo) {
+	//处理业务数据
+	KuaijieRepaymentBo kuaijieRepaymentBo =getPayBizObject(payTradeNo, KuaijieRepaymentBo.class);	
+	kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
+	afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
+	afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+    }
 
-	} else {
-	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
-	}
-    }
-    
-    /**
-     * 
-     * TODO 调用ups支付方法（代扣和快捷）
-     * @author gaojb
-     * @Time 2018年4月2日 下午2:50:24
-     * @param map
-     * @param bankPayType
-     * @param cardId
-     * @param repayment
-     * @param billIdList
-     * @param payTradeNo
-     * @param actualAmount
-     * @param userId
-     * @param realName
-     * @param idNumber
-     */
-    public void doUpsPay(Map<String, Object> map ,String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList, String payTradeNo, 
-	    BigDecimal actualAmount, Long userId, String realName, String idNumber,String smsCode) {
-	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+    @Override
+    protected void roolbackRepamentStatus(String payTradeNo) {
 	
-	UpsCollectRespBo respBo;
-	if (BankPayChannel.DAIKOU.getCode().equals(bankPayType)) { //代付
-	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), 
-		    bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
-	} else { // 快捷支付	    
-	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
-	    afRepaymentDao.updateRepaymentByAfRepaymentDo(repayment);
-	    afUserAmountService.addUseAmountDetail(repayment);
-	    
-	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, bank.getCardNumber(), bank.getBankCode(),
-		    			"02", UserAccountLogType.REPAYMENT.getCode());
-	}
-
-	if (!respBo.isSuccess()) {
-	    roolbackRepamentStatus(payTradeNo, repayment, billIdList);
-	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-	    try {
-		// 还款失败短信通知
-		sendFailMessage(userId, errorMsg, repayment.getName());
-	    } catch (Exception e) {
-		logger.error("BorrowCash sendMessage but addMsg error for:" + e);
-	    }
-	    throw new FanbeiException(errorMsg);
-	}
-	
-	map.put("resp", respBo);	
-    }
-    
-    /**
-     * 
-     * TODO 进行快捷支付，获取验证短息码
-     * @author gaojb
-     * @Time 2018年4月2日 下午2:50:58
-     * @param map
-     * @param bankPayType
-     * @param cardId
-     * @param repayment
-     * @param billIdList
-     * @param payTradeNo
-     * @param actualAmount
-     * @param userId
-     * @param realName
-     * @param idNumber
-     */
-    public void sendKuaiJieSms(Map<String, Object> map, String bankPayType, Long cardId, AfRepaymentDo repayment, List<Long> billIdList,
-	    String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber) {
-	//获取缓存中的还款信息
-	String repaymentHash = String.valueOf(repayment.toString().hashCode());
-	Object upsCollectRespBoObject =  bizCacheUtil.getObject(repaymentHash);
-	if (upsCollectRespBoObject != null) {
-	    UpsCollectRespBo upsCollectResp = (UpsCollectRespBo) upsCollectRespBoObject;
-	    if ((new Date().getTime() - upsCollectResp.getTradeTime())/1000 <= UpsUtil.KUAIJIE_ONE_MINITE_SECONDS) {
-		// 一分钟内存在，则直接返回上次响应
-		map.put("resp", upsCollectResp);
-		return;
-	    }
-	    else{
-		//重新发送验证码
-		upsUtil.quickPayResendSms(upsCollectResp.getTradeNo());
-	    }
-	}
-	
-	//缓存中不存在记录，则申请发送短信
-	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, 
-		bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
-		UserAccountLogType.REPAYMENT.getCode(), afResourceService.getCashProductName());
-
-	if (!respBo.isSuccess()) {
-	    roolbackRepamentStatus(payTradeNo, repayment, billIdList);
-	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-	    throw new FanbeiException(errorMsg);
-	} else {
-	    // 添加数据到redis
-	    UpsCollectBo upsCollectBo = new UpsCollectBo(repayment, billIdList, cardId, payTradeNo, actualAmount, userId + "", realName,
-		    bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", 
-		    UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
-	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo, upsCollectBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);    
-	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_REPAYMENT_RESPONSE_HEADER + repaymentHash, respBo, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
-	    //返回结果
-	    map.put("resp", respBo);	
-	}
-    }
-    
-    /**
-     * 
-     * TODO 恢复账单相关状态
-     * @author gaojb
-     * @Time 2018年4月2日 下午6:08:35
-     * @param payTradeNo
-     * @param repayment
-     * @param billIdList
-     */
-    private void roolbackRepamentStatus(String payTradeNo, AfRepaymentDo repayment, List<Long> billIdList) {
-	AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(repayment.getRid());
-	if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
-	    afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
-	    afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
-	    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
-	} else {
-	    logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + repayment.getRid());
-	}
-    }
+//	AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(repayment.getRid());
+//	if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
+//	    afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
+//	    afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
+//	    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
+//	} else {
+//	    logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + repayment.getRid());
+//	}
+    }  
 
     /**
      * 消费分期还款失败短信通知
      */
-    private boolean sendFailMessage(Long userId, String errorMsg, String payType) {
+    @Override
+    protected void sendFailMessage(String payTradeNo, Long userId, String errorMsg) {
 	AfUserDo afUserDo = afUserService.getUserById(userId);
 	int errorTimes = 0;
 	// 模版数据map处理
 	Map<String, String> replaceMapData = new HashMap<String, String>();
 	replaceMapData.put("errorMsg", errorMsg);
 	try {
-	    if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
-		// 代扣还款失败短信通知
-		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_FAIL.getCode());
-	    } else {
-		errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
-		// 用户手动还款失败短信通知
-		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_FAIL.getCode());
-	    }
+//	    if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
+//		// 代扣还款失败短信通知
+//		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_FAIL.getCode());
+//	    } else {
+//		errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
+//		// 用户手动还款失败短信通知
+//		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_FAIL.getCode());
+//	    }
 	} catch (Exception e) {
 	    logger.error("sendRepaymentBorrowBillFail exception:" + e);
 	}
-	return true;
     }
 
     /**
@@ -977,5 +856,4 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     public String getProcessingRepayNo(Long userId) {
 	return afRepaymentDao.getProcessingRepayNo(userId);
     }
-
 }
