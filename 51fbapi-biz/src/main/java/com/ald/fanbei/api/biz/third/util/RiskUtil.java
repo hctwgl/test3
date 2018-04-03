@@ -1113,9 +1113,9 @@ public class RiskUtil extends AbstractThird {
 			// 增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
 		}
-		if (borrow.getNper() == 1) {
-			borrow.setNperAmount(borrow.getAmount());
-		}
+//		if (borrow.getNper() == 1) {
+//			borrow.setNperAmount(borrow.getAmount());
+//		}
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 

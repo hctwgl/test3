@@ -68,12 +68,12 @@ public class GetNperListApi implements ApiHandle {
         AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 
         if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-            AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());
+            AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());// 商圈商户提现记录实体
             AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
 
             //region 没有配置就采用默认值
             JSONArray rebateModels = new JSONArray();
-            //#endregion
+            //#endregion  
             String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
             if (StringUtils.isNotBlank(configRebateModel)) {
                 try {
@@ -116,7 +116,7 @@ public class GetNperListApi implements ApiHandle {
             //11.29修改专有利率
             //AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());//资源配置中的利率
             AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-            JSONArray array = JSON.parseArray(resource.getValue());
+            JSONArray array = JSON.parseArray(resource.getValue()); 
             //删除2分期
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
@@ -168,7 +168,7 @@ public class GetNperListApi implements ApiHandle {
         if (null == afSchemeGoodsDo) {
             return null;
         }
-        Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+        Long interestFreeId = afSchemeGoodsDo.getInterestFreeId(); // 免息规则的ID
         AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
         if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
             interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
@@ -227,7 +227,7 @@ public class GetNperListApi implements ApiHandle {
                                 String down = obj.getString("min");
                                 if("0".equals(up) && "0".equals(down)){
                                     continue;
-                                }
+                                }// 一期的最小金额大于总金额，则不分期
                                 if (new BigDecimal(down).compareTo(totalamount)>0) {
                                     oneNper = "0";
                                 }

@@ -89,7 +89,7 @@ public class InterestFreeUitl {
             if (interestFreeArray != null&&interestFreeArray.size()>0) {
                 for (int j=0;j<interestFreeArray.size();j++) {
                     JSONObject item = interestFreeArray.getJSONObject(j);
-                    if(item.getString(Constants.DEFAULT_NPER).equals(key)){
+                    if(item.getString(Constants.DEFAULT_NPER).equals(key)){ // 免息规则有这样的分期数
                         interestFreeObject = item;
                         break;
                     }
@@ -191,7 +191,7 @@ public class InterestFreeUitl {
         //本金/总期数
         BigDecimal b1 = BigDecimalUtil.divHalfDown(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
 
-        //本金*每期利率
+        //本金*每期利率   每一期利息
         BigDecimal b2 = BigDecimalUtil.multiply(totalGoodsAmount,mouthRate);
 
         //总手续费
@@ -201,7 +201,7 @@ public class InterestFreeUitl {
         //每期手续费
         BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
 
-
+        // 每一期应还的总钱数
         BigDecimal amount = b1.add(b2).add(b3);
         //借款总金额
         BigDecimal totalAmount = amount.multiply(nPer);

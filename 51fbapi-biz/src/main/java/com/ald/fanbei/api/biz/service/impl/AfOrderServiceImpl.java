@@ -1081,16 +1081,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 			orderInfo.setNper(nper);
 			BorrowRateBo bo = null;
-			if (nper == 1) {
-			    // 信用支付
-			    bo = afResourceService.borrowRateWithResourceCredit(nper);
-			} else {
+//			if (nper == 1) {
+//			    // 信用支付
+//			    bo = afResourceService.borrowRateWithResourceCredit(nper);
+//			} else {
 			    if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
 				bo = afResourceService.borrowRateWithResourceForTrade(nper);
 			    } else {
 				bo = afResourceService.borrowRateWithResource(nper, userName);
 			    }
-			}
+//			}
 			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 			orderInfo.setBorrowRate(boStr);
 			logger.info("updateOrder orderInfo = {}", orderInfo);
@@ -1346,21 +1346,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	BigDecimal perAmount = null;
 	for (Map<String, Object> nperMap : nperList) {
 
-	    Object nperObj = nperMap.get("nper");
-	    int nperTemp = 0;
-	    if (nperObj instanceof BigDecimal) {
-		nperTemp = ((BigDecimal) nperObj).intValue();
-	    } else {
-		nperTemp = Integer.parseInt((String) nperObj);
-	    }
-	    if (nper == nperTemp) {
-		String isFree = (String) nperMap.get("isFree");
-		if ("1".equals(isFree)) {
-		    perAmount = (BigDecimal) nperMap.get("freeAmount");
-		} else if ("0".equals(isFree) || "2".equals(isFree)) {
-		    perAmount = (BigDecimal) nperMap.get("amount");
-		}
-	    }
+			Object nperObj = nperMap.get("nper");
+			int nperTemp = 0;
+			if (nperObj instanceof BigDecimal) {
+				nperTemp = ((BigDecimal) nperObj).intValue();
+			} else {
+				nperTemp = Integer.parseInt((String) nperObj);
+			}
+			if (nper == nperTemp) {
+				String isFree = (String) nperMap.get("isFree");
+				if ("1".equals(isFree)) {
+					perAmount = (BigDecimal) nperMap.get("freeAmount");
+				} else if ("0".equals(isFree) || "2".equals(isFree)) {
+					perAmount = (BigDecimal) nperMap.get("amount");
+				}
+			}
 	}
 	Date currDate = new Date();
 	AfBorrowDo borrow = new AfBorrowDo();
