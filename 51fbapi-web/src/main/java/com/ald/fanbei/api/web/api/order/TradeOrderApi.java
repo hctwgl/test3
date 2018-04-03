@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -164,7 +165,7 @@ public class TradeOrderApi implements ApiHandle {
         afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
 		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		//新增下单时记录 IP 、设备指纹 2017年12月12日13:21:39 cxk
-		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
+		afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
         afOrder.setBqsBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox")));//加入白骑士设备指纹
         afOrderService.createOrder(afOrder);

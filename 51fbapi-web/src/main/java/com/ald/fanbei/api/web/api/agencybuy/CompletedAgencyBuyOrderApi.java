@@ -239,8 +239,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrderDo.getUserId());
 				}
 			}
-			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_PAYED,true);
 		}
 	}
 

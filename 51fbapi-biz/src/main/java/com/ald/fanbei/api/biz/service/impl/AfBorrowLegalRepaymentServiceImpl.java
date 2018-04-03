@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +147,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 
 	@Autowired
 	private AfBorrowLegalOrderService afBorrowLegalOrderService;
-	
+
+	@Resource
+	CuiShouUtils cuiShouUtils;
+
 	/**
 	 * 新版还钱函
 	 * 参考{@link com.ald.fanbei.api.biz.service.impl.AfRepaymentBorrowCashServiceImpl}.createRepayment()
@@ -207,9 +211,12 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.cardNo = repayCardNum;
 		generateRepayRecords(bo);
 
+        CuiShouUtils.setAfRepaymentBorrowCashDo(bo.borrowRepaymentDo);
 		dealRepaymentSucess(bo.tradeNo, bo.outTradeNo, bo.borrowRepaymentDo, bo.orderRepaymentDo,operator,bo.isBalance);
+
 	}
-	
+
+
 	/**
 	 * 还款成功后调用
 	 * @param tradeNo 我方交易流水
@@ -253,6 +260,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
             if (resultValue == 1L) {
 				notifyUserBySms(repayDealBo,isBalance);
             	nofityRisk(repayDealBo);
+				cuiShouUtils.syncCuiShou(repaymentDo);
             }
     		
     	}finally {

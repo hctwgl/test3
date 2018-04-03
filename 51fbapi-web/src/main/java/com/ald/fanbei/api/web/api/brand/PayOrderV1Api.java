@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;

@@ -306,20 +306,20 @@ public class FanBeiSecret {
     public static void main(String[] args) throws Exception {
 
         //region 获取token
-        TreeMap<String, String> paramSortedMap = new TreeMap<>();
-        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
-        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()) );
-
-        String mapStr = paramTreeMapToString(paramSortedMap);
-        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
-        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
-        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
-        resultSortedMap.put("sign",sign);
-        resultSortedMap.put("params",paramSortedMap);
-        String postParams=JSON.toJSONString(resultSortedMap);
-        System.out.println(postParams);
-
-        String data=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", JSON.toJSONString(resultSortedMap));
+//        TreeMap<String, String> paramSortedMap = new TreeMap<>();
+//        paramSortedMap.put("appKey", "1DE714C387E641E987078EC625666D92");
+//        paramSortedMap.put("timestamp", String.valueOf(new Date().getTime()) );
+//
+//        String mapStr = paramTreeMapToString(paramSortedMap);
+//        String newStr = mapStr + "&appSecret=6658179F17D844E093635571F41A337AC99CD26B";
+//        String sign = signToHexStr(ALGORITHMS_MD5, newStr).toUpperCase();
+//        TreeMap<String, Object> resultSortedMap = new TreeMap<>();
+//        resultSortedMap.put("sign",sign);
+//        resultSortedMap.put("params",paramSortedMap);
+//        String postParams=JSON.toJSONString(resultSortedMap);
+//        System.out.println(postParams);
+//
+//        String data=HttpUtil.doHttpPostJsonParam("https://t.51gjj.com/gjj/getToken", JSON.toJSONString(resultSortedMap));
 
 
         //endregion  获取token
@@ -393,12 +393,21 @@ public class FanBeiSecret {
         map.put("idcard",idcard);
 
 
-        String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
+       // String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON("https://prod.gxb.io/crawler/auth/v2/get_auth_token", JSON.toJSONString(map));
 
+        map=new HashMap();
+        map.put("appId",appId);
+        map.put("sign", DigestUtils.md5Hex(appId+appSecurity+timestamp));
+        map.put("token",authItem);
+        map.put("timestamp",timestamp);
+//00263002230001OHMwF61rRV2V7m3XdY
+//
+
+        String reqResult1 = HttpUtil.doHttpsPostIgnoreCert("https://prod.gxb.io/crawler/data/zmcredit/0026300223000n6QWBoWHH2lyfa2fsSO?appId="+map.get("appId")+"&"+"sign="+map.get("sign")+"&"+"timestamp="+map.get("timestamp"),"");
 
         //endregion
-        System.out.println(reqResult);
-
+        System.out.println(reqResult1);
+        //https://prod.gxb.io/crawler/data/zmcredit/0000000000000BAQjgp0phPML2IOX6v9?appId=gxb12344321abcdcba&timestamp=1508914833123&sign=c28263a02db537a6cd4f4f83b1f67123
 
 //        String orderSn = "379d607d-0e30-462c-ac3c-31bc4de683f1";
 //        String token = "3c63ba17146645f793d679c96fb6b735";
