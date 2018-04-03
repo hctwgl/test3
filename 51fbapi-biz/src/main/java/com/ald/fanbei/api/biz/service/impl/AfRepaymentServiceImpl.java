@@ -308,20 +308,20 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
 	    
 	    //增加快捷支付
-	    if(BankPayChannel.DAIKOU.getCode().equals(bankPayType))
-	    {
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+		repayment.setStatus(RepaymentStatus.SMS.getCode());
+		afRepaymentDao.addRepayment(repayment);
+
+		sendKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
+
+	    } else {
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 		afUserAmountService.addUseAmountDetail(repayment);
-		
+
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
-		doUpsPay(map , bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
-	    } else {
-		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		afRepaymentDao.addRepayment(repayment);
-		
-		sendKuaiJieSms(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber());
+		doUpsPay(map, bankPayType, cardId, repayment, billIdList, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
 	    }
 	} else if (cardId == -2) {// 余额支付
 	    afRepaymentDao.addRepayment(repayment);
