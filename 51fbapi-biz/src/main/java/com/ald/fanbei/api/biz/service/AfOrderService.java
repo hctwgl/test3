@@ -8,11 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.alibaba.fastjson.JSONArray;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -396,4 +405,63 @@ public interface AfOrderService {
 
 	String getTradeBusinessNameByOrderId(Long orderid);
 
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	HashMap checkLeaseOrder(Long userId, Long goodsId);
+
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	JSONObject getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId);
+
+	/**
+	 * 添加租赁订单
+	 * @return
+	 */
+	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId);
+
+	/**
+	 * 关闭订单
+	 * @return
+	 */
+	int closeOrder(String closedReason,String closedDetail,Long id,Long userId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId,Long userId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type,Long userId);
+
+	/**
+	 * 修改租赁订单租期开始时间和结束时间
+	 * @return
+	 */
+	int UpdateOrderLeaseTime(Date gmtStart,Date gmtEnd,Long orderId);
+
+	/**
+	 * h5删除订单
+	 * @return
+	 */
+	int UpdateOrderLeaseShow(Long orderId,Long userId);
+
+	/**
+	 * 获取租赁协议
+	 * @return
+	 */
+	HashMap getLeaseProtocol(Long orderId);
 }

@@ -7,6 +7,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -32,6 +36,12 @@ public class GetFlowFlayerResourceConfigApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
 
+	@Resource
+	BizCacheUtil bizCacheUtil;
+
+	@Resource
+	RiskUtil riskUtil;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -41,7 +51,12 @@ public class GetFlowFlayerResourceConfigApi implements ApiHandle{
   		if(StringUtils.isBlank(resourceType) || StringUtils.isBlank(secType)){
   			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
   		}
-  		
+  		if(context.getUserId() != null && context.getUserId() > 0){
+			if(StringUtil.isEmpty( bizCacheUtil.hget("Lease_Score",context.getUserId().toString()))){
+				riskUtil.updateRentScore(context.getUserId().toString());
+				bizCacheUtil.hset("Lease_Score",context.getUserId().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
+			}
+		}
   		Map<String,Object> map = new HashMap<String,Object>();
   		List<AfResourceDo> batchAfResourceDo =  afResourceService.getFlowFlayerResourceConfig(resourceType,secType);
   		logger.info("getFlowFlayerResourceConfigApi result = {}",batchAfResourceDo == null ? "" :batchAfResourceDo.toString());

@@ -176,6 +176,10 @@ public class InsuranceAuthCallbackExecutor implements Executor{
 					logger.error("raise amount fail =>{}", e.getMessage());
 				}
 			}
+			
+			// 线上分期提额
+			afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.INSURANCE_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.INSURANCE.getCode());
+			
 		} else {
 			// 更新认证状态为失败
 			afUserAuthDo.setJinpoStatus("N");

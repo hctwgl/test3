@@ -127,6 +127,16 @@
         ON DUPLICATE KEY UPDATE au_amount=#{auAmount,jdbcType=DECIMAL},gmt_modified = NOW(); 
     </update>
 
+    <update id="updateFreezeAmount">
+        UPDATE
+        af_user_account_sence
+        SET
+        gmt_modified = NOW(),
+        freeze_amount = freeze_amount + #{freezeAmount}
+        WHERE
+        user_id = #{userId} AND scene = #{scene}
+    </update>
+
     <update id="updateUsedAmount">
         UPDATE
         af_user_account_sence

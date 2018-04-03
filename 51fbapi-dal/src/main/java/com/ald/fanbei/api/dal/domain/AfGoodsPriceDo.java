@@ -99,7 +99,18 @@ import java.util.Date;
      */
     private String isSale;
 
-
+   /**
+    * 租赁  每期的参数(月租，回收折扣，保费价格)，规格原价
+    */
+   private String leaseParam;
+    /**
+     * 租赁商品规格的上下架
+     */
+    private String leaseSale;
+    /**
+     * 租赁原价
+     */
+    private BigDecimal leaseAmount;
 
 	/**
      * 获取创建时间
@@ -317,4 +328,27 @@ import java.util.Date;
       this.isSale = isSale;
     }
 
+   public String getLeaseParam() {
+      return leaseParam;
+   }
+
+   public void setLeaseParam(String leaseParam) {
+      this.leaseParam = leaseParam;
+   }
+
+    public String getLeaseSale() {
+        return leaseSale;
+    }
+
+    public void setLeaseSale(String leaseSale) {
+        this.leaseSale = leaseSale;
+    }
+
+    public BigDecimal getLeaseAmount() {
+        return leaseAmount;
+    }
+
+    public void setLeaseAmount(BigDecimal leaseAmount) {
+        this.leaseAmount = leaseAmount;
+    }
 }

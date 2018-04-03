@@ -392,9 +392,10 @@ public class RiskController {
 		String data = request.getParameter("data");
 		String msg = request.getParameter("msg");
 		String signInfo = request.getParameter("signInfo");
+		String scene = request.getParameter("scene");
 		logger.info("deal supplementAuth begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.supplementAuthNotify(code, data, msg, signInfo);
+			riskUtil.supplementAuthNotify(code, data, msg, signInfo,scene);
 			return "SUCCESS";
 		} else {
 			return "ERROR";
