@@ -616,50 +616,48 @@ public class UpsUtil extends AbstractThird {
 		}
 	}
 	
-    /**
-     * 短信重发
-     * 
-     * @param userNo
-     *            --用户唯一标识
-     * @param bankCode
-     *            --银行代码
-     * @param cardNo
-     *            --银行卡号
-     * @param orderNo
-     *            -- 订单编号
-     * @param returnUrl
-     * @param notifyUrl
-     * @param clientType
-     *            客户端类型
-     */
-    public UpsCollectRespBo quickPayResendSms(UpsCollectBo upsCollectBo) {
-	if (upsCollectBo != null) {
-	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
-	    setPubParam(reqBo, "quickPayResendCode", upsCollectBo.getOrderNo(), upsCollectBo.getClientType());
-	    reqBo.setOldOrderNo(upsCollectBo.getOrderNo());
-	    reqBo.setTradeType("pay_order");
-	    reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayResendCode");
-	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");
-	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-	    afUpsLogDao.addUpsLog(buildUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", upsCollectBo.getOrderNo(), "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
-	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-	    logThird(reqResult, "quickPayResendCode", reqBo);
-	    if (StringUtil.isBlank(reqResult)) {
-		throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
-	    }
-
-	    UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult, UpsCollectRespBo.class);
-	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
-		authSignResp.setSuccess(true);
-		return authSignResp;
-	    } else {
-		authSignResp.setSuccess(false);
-		return authSignResp;
-	    }
-	} else {
-	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
-	}
-    }	
+	/**
+	 * 短信重发
+	 * 
+	 * @param userNo --用户唯一标识
+	 * @param bankCode --银行代码
+	 * @param cardNo --银行卡号
+	 * @param orderNo -- 订单编号  
+	 * @param returnUrl
+	 * @param notifyUrl
+	 * @param clientType  客户端类型
+	 */
+        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo) {
+        	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
+        	if (cacheObject != null) {
+        	    UpsCollectBo upsCollectBo = (UpsCollectBo) cacheObject;
+        	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
+        	    setPubParam(reqBo, "quickPayResendCode", payTradeNo, upsCollectBo.getClientType());
+        	    reqBo.setOldOrderNo(payTradeNo);
+        	    reqBo.setTradeType("pay_order");
+        	    reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayResendCode");
+        	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");
+        	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        	    afUpsLogDao.addUpsLog(buildUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
+        	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+        	    logThird(reqResult, "quickPayResendCode", reqBo);
+        	    if (StringUtil.isBlank(reqResult)) {
+        		throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
+        	    }
+        	    
+        	    UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult, UpsResendSmsRespBo.class);
+        	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
+        		authSignResp.setSuccess(true);
+        		return authSignResp;
+        	    } else {
+        		authSignResp.setSuccess(false);
+        		return authSignResp;
+        	    }
+        	} else {
+        	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+        	}
+        }
+	
 	
 	
 	/**

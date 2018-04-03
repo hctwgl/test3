@@ -156,33 +156,6 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
     }
 
     /**
-     * 短信重发
-     * 
-     * @param userNo
-     *            --用户唯一标识
-     * @param bankCode
-     *            --银行代码
-     * @param cardNo
-     *            --银行卡号
-     * @param orderNo
-     *            -- 订单编号
-     * @param returnUrl
-     * @param notifyUrl
-     * @param clientType
-     *            客户端类型
-     */
-    protected UpsCollectRespBo quickPayResendSms(String payTradeNo) {
-	//从缓存中获取数据
-	UpsCollectBo upsCollectBo = getTradeCollectBo(payTradeNo);
-	//调用ups接口
-	if (upsCollectBo != null) {
-	    return upsUtil.quickPayResendSms(upsCollectBo);
-	} else {
-	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
-	}
-    }
-
-    /**
      * 
      * 获取缓存的支付相关信息
      * 
