@@ -84,7 +84,7 @@ public class ThirdController extends AbstractThird{
     HttpServletRequest request;
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
-    public String iagentReport( @RequestParam("audio") MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
+    public String iagentReport( @RequestParam(value = "audio",required = false) MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
         FileOutputStream fos = null;
         InputStream in = null;
