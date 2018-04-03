@@ -8,14 +8,17 @@ var vue=new Vue({
 	},
 	created:function(){
 		var u = navigator.userAgent;
+		
         var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
-        if(isAndroid){
-        	this.systemType = 1;
-        }
-        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
         if(isAndroid){
         	this.systemType = 2;
         }
+        
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        if(isiOS){
+        	this.systemType = 1;
+        }
+        
 		this.logData(this.systemType)
 	},
 	methods:{
