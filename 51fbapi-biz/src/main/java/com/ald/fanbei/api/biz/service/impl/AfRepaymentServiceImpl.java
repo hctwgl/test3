@@ -273,13 +273,14 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 
 	if (cardId > 0) {// 银行卡支付
 	    // 还款金额是否大于银行单笔限额
-	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);	    
+	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
+	    
+	    //构造业务数据，为后续接口使用
+	    KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment , billIdList);	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {//快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
-
-		//构造业务数据，为后续接口使用
-		KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment , billIdList);
+		
 		sendKuaiJieSms(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
 			afUserAccountDo.getIdNumber(),JSON.toJSONString(bizObject));
 	    } else {//代扣
@@ -290,7 +291,8 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		//调用ups支付
-		doUpsPay(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "");
+		doUpsPay(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+			afUserAccountDo.getIdNumber(), "",JSON.toJSONString(bizObject));
 	    }
 	} else if (cardId == -2) {// 余额支付
 	    afRepaymentDao.addRepayment(repayment);
@@ -315,46 +317,58 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    protected void quickPayConfirmPre(String payTradeNo) {
-	//处理业务数据
-	KuaijieRepaymentBo kuaijieRepaymentBo =getPayBizObject(payTradeNo, KuaijieRepaymentBo.class);	
-	kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
-	afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
-	afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+    protected void quickPayConfirmPre(String payTradeNo, String payBizObject) {
+	if (StringUtils.isNotBlank(payBizObject)) {
+	    // 处理业务数据
+	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
+	    kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
+	    afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
+	    afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+	}
+	else {
+	    // 未获取到缓存数据，支付订单过期
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);	    
+	}
     }
 
     @Override
-    protected void roolbackRepamentStatus(String payTradeNo) {
-	
-//	AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(repayment.getRid());
-//	if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
-//	    afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
-//	    afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
-//	    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
-//	} else {
-//	    logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + repayment.getRid());
-//	}
+    protected void roolbackBizData(String payTradeNo, String payBizObject) {
+	if (StringUtils.isNotBlank(payBizObject)) {
+	    // 处理业务数据
+	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
+
+	    AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(kuaijieRepaymentBo.getRepayment().getRid());
+	    if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
+		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(kuaijieRepaymentBo.getBills(), BorrowBillStatus.NO.getCode());
+		afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, kuaijieRepaymentBo.getRepayment().getRid());
+		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, kuaijieRepaymentBo.getRepayment());
+	    } else {
+		logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + kuaijieRepaymentBo.getRepayment().getRid());
+	    }
+	} else {
+	    // 未获取到缓存数据，支付订单过期
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+	}
     }  
 
     /**
      * 消费分期还款失败短信通知
      */
-    @Override
-    protected void sendFailMessage(String payTradeNo, Long userId, String errorMsg) {
+    protected void sendFailMessage( Long userId, String errorMsg, String payType) {
 	AfUserDo afUserDo = afUserService.getUserById(userId);
 	int errorTimes = 0;
 	// 模版数据map处理
 	Map<String, String> replaceMapData = new HashMap<String, String>();
 	replaceMapData.put("errorMsg", errorMsg);
 	try {
-//	    if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
-//		// 代扣还款失败短信通知
-//		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_FAIL.getCode());
-//	    } else {
-//		errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
-//		// 用户手动还款失败短信通知
-//		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_FAIL.getCode());
-//	    }
+	    if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
+		// 代扣还款失败短信通知
+		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_FAIL.getCode());
+	    } else {
+		errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
+		// 用户手动还款失败短信通知
+		smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_FAIL.getCode());
+	    }
 	} catch (Exception e) {
 	    logger.error("sendRepaymentBorrowBillFail exception:" + e);
 	}
