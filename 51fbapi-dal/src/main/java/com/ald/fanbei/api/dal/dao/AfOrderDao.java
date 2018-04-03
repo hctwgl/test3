@@ -246,4 +246,5 @@ public interface AfOrderDao {
 
 	String getTradeBusinessNameByOrderId(@Param("orderId")Long orderid);
 
+	void updateIagentStatusByOrderId(@Param("orderId")Long orderId, @Param("iagentStatus")String iagentStatus);
 }

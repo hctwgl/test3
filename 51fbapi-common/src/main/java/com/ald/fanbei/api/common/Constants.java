@@ -506,4 +506,9 @@ public class Constants {
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
 	public static final String 	FACE_GAME_RED_CONFIG = "face_game_red_config";
+	public static final String ORDER_MOBILE_VERIFY_SET = "ORDER_MOBILE_VERIFY_SET";
+
+	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
+
+
 }

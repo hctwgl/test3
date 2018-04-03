@@ -19,16 +19,14 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
@@ -169,7 +167,6 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -267,7 +264,8 @@ public class RiskUtil extends AbstractThird {
 	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
-
+	@Resource
+	AfIagentResultDao iagentResultDao;
 	@Resource
 	AfInterimAuDao afInterimAuDao;
 	@Resource
@@ -293,6 +291,18 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfAuthRaiseStatusService afAuthRaiseStatusService;
+
+	@Resource
+	BklUtils bklUtils;
+
+	@Resource
+	AfGoodsService afGoodsService;
+
+	@Resource
+	AfGoodsCategoryDao afGoodsCategoryDao;
+
+	@Resource
+	AfIdNumberDao idNumberDao;
 
 	public static String getUrl() {
 		if (url == null) {
@@ -1174,7 +1184,14 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-
+		//TODO 电核
+		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+			submitBklInfo(orderInfo);
+			//新增白名单逻辑
+			/*if (isBklResult(orderInfo)){
+			submitBklInfo(orderInfo);
+			}*/
+		}
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
@@ -1188,6 +1205,89 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+
+	private boolean isBklResult(AfOrderDo orderInfo) {
+		boolean result = true;
+		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
+		if (bklWhiteResource != null) {
+			//白名单开启
+			String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds));
+			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
+				result = false;
+				return result;
+			}
+		}
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
+		if (afResourceDo != null){
+			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
+				result = false;
+				return result;
+			}
+			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
+			iagentResultDo.setUserId(orderInfo.getUserId());
+			iagentResultDo.setCheckState("5");//通过审核
+			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
+			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
+			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
+				result = false;
+				return result;
+			}
+			AfIagentResultDto resultDto = new AfIagentResultDto();
+			iagentResultDo.setUserId(orderInfo.getUserId());
+			iagentResultDo.setCheckState("4");
+			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
+			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
+			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
+				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
+					//直接拒绝
+					Map<String,String> qmap = new HashMap<>();
+					qmap.put("orderNo",orderInfo.getOrderNo());
+					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));
+				}else {
+					result = true;//需电核
+				}
+			}
+		}
+		return result;
+	}
+
+	public void submitBklInfo(AfOrderDo orderInfo){
+		try {
+			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
+			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
+			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
+			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
+			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
+			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
+			String sex ;
+			if (idNumberDo != null){
+				sex = idNumberDo.getGender();
+			}else {
+				sex = "";
+			}
+			AfBklDo bklDo = new AfBklDo();
+			bklDo.setCsvArn(orderInfo.getOrderNo());
+			bklDo.setCsvPhoneNum(userDo.getMobile());
+			bklDo.setCsvAmt(String.valueOf(orderInfo.getActualAmount()));
+			bklDo.setCsvDigit4(csvDigit4);
+			bklDo.setCsvBirthDate(csvBirthDate);
+			bklDo.setCsvName(userDo.getRealName());
+			bklDo.setCsvPayWay("分期付款");
+			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
+			bklDo.setCsvSex(sex);
+			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
+			bklDo.setOrderId(orderInfo.getRid());
+			bklDo.setUserId(orderInfo.getUserId());
+			bklUtils.submitJob(bklDo);
+		}catch (Exception e){
+			logger.error("submitBklInfo error = >{}",e);
+		}
+
+
 	}
 
 	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {

@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
@@ -396,4 +395,5 @@ public interface AfOrderService {
 
 	String getTradeBusinessNameByOrderId(Long orderid);
 
+	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 }
