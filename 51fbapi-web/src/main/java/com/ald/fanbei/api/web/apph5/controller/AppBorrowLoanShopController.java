@@ -156,7 +156,6 @@ public class AppBorrowLoanShopController extends BaseController {
 					for(AfLoanSupermarketDo oldShop :sourceSupermarketList){
 						AfLoanShopVo newShop = new AfLoanShopVo();
 						newShop.setIconUrl(oldShop.getIconUrl());
-						newShop.setSystemType(oldShop.getSystemType());
 						newShop.setLabel(oldShop.getLabel());
 						newShop.setLinkUrl(oldShop.getLinkUrl());
 						newShop.setLsmIntro(oldShop.getLsmIntro());

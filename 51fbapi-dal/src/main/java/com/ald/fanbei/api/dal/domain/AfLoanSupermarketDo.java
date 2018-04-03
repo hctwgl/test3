@@ -32,23 +32,6 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	private String marketPoint;
 	private int isUnionLogin;
 	private String lsmSecretKey;
-	private String systemType;
-	
-	
-	/**
-	 * @return the systemType
-	 */
-	public String getSystemType() {
-		return systemType;
-	}
-
-	/**
-	 * @param systemType the systemType to set
-	 */
-	public void setSystemType(String systemType) {
-		this.systemType = systemType;
-	}
-
 	/**
 	 * 额度范围下限
 	 */
