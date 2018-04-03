@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.supplier.AfSearchItemService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -38,6 +40,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
+import com.ald.fanbei.api.dal.domain.supplier.AfSearchItemDo;
+import com.ald.fanbei.api.dal.domain.supplier.AfSolrSearchResultDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -77,6 +81,9 @@ public class AppH5AllSearchController extends BaseController {
 
 	@Resource
 	AfUserService afUserService;
+	
+	@Resource
+	private AfSearchItemService afSearchItemService;
 
 	@RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
 	public String get(HttpServletRequest request, HttpServletResponse response) {
@@ -126,21 +133,28 @@ public class AppH5AllSearchController extends BaseController {
 			}
 
 			query.setFull(true);
-			query.setPageNo(pageNo);
+//			query.setPageNo(pageNo);
 			query.setPageSize(20);
 
 			List<AfSearchGoodsVo> goodsList = new ArrayList<>();
 
 			// get selfSupport goods
-			List<AfGoodsDo> orgSelfGoodlist = afGoodsService.getAvaliableSelfGoods(query);
+			Integer pageSize = 20;
+			AfSolrSearchResultDo solrSearchResult = afSearchItemService.getSearchList(keyword,pageNo,pageSize);
+			query.setGoodsIds(solrSearchResult.getGoodsIds());
+			List<AfGoodsDo> orgSelfGoodlist = afGoodsService.getAvaliableSelfGoodsBySolr(query);
+			
 			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
-			int totalCount = query.getTotalCount();
-			int totalPage = query.getTotalPage();
+			//int totalCount = query.getTotalCount();
+			//int totalPage = query.getTotalPage();
 
 			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
 				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
 				goodsList.add(vo);
 			}
+			Integer totalCount = solrSearchResult.getTotalCount();
+			Integer totalPage = solrSearchResult.getTotalPage();
+			
 			data.put("goodsList", goodsList);
 			data.put("totalCount", totalCount);
 			data.put("totalPage", totalPage);

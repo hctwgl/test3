@@ -406,9 +406,29 @@
 		</if>
 		
 	</select>
-
-	<select id="">
-
+	
+	<select id="getAvaliableSelfGoodsBySolr" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete = 0
+		AND `status` = 'PUBLISH'
+		AND source = 'SELFSUPPORT'		
+		<if test="goodsIds != null and goodsIds.size() > 0">  
+            AND id IN  
+            <foreach item="item" index="index" collection="goodsIds" open="(" separator="," close=")">  
+                #{goodsIds[${index}],jdbcType=BIGINT}
+            </foreach>  
+  		</if>
+		<if test="sortword != null and sortword != ''">
+		order by ${sortword}
+		</if>
+		<if test="sort != null and sort != ''">
+		${sort}
+		</if>		
 	</select>
+	
 
 </mapper>

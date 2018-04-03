@@ -48,7 +48,12 @@ public class InterestFreeUitl {
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if (goodsid != null && goodsid >0l){
-            afResourceService = (AfResourceService)SpringBeanContextUtil.getBean("afResourceService");
+        	Object obj = SpringBeanContextUtil.getBean("afResourceService");
+        	if(null != obj && obj instanceof AfResourceService){
+        		afResourceService = (AfResourceService)obj;
+        	}else{
+        		System.out.println();
+        	}
             AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
             if(resource1!=null){
                 array = JSON.parseArray(resource1.getValue());

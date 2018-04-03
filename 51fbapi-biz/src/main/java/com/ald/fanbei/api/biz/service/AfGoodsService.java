@@ -112,5 +112,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 
 	List<AfGoodsDo> getGoodsByItem(Long categoryId);
+
+	List<AfGoodsDo> getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query);
 }
 
