@@ -114,6 +114,9 @@ public class AppH5LeaseController extends BaseController {
     @Resource
     AfOrderLogisticsService afOrderLogisticsService;
 
+    @Resource
+    AfGoodsPriceService afgoodsPriceService;
+
     /**
      *获取租赁首页banner
      */
@@ -674,9 +677,11 @@ public class AppH5LeaseController extends BaseController {
                 }
                 else {
                     data.put("riskStatus","N");
+                    data.put("action", "DO_PROMOTE_BASIC");
                 }
             }else {
                 data.put("riskStatus","N");
+                data.put("action", "DO_SCAN_ID");
             }
             if(data.get("riskStatus").toString().equals("N")){
                 if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
@@ -866,6 +871,7 @@ public class AppH5LeaseController extends BaseController {
             if(orderInfo == null){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.ORDER_NOT_EXIST.getDesc(), "", null).toString();
             }
+            afgoodsPriceService.updateStockAndSaleByPriceId(orderInfo.getGoodsPriceId(), orderInfo, false);
             afOrderService.closeOrder(closedReason,"",orderId,afUser.getRid());
             resp = H5CommonResponse.getNewInstance(true, "取消成功", "", null);
             return resp.toString();

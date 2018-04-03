@@ -433,7 +433,7 @@
 		FROM
 		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
 		WHERE
-		a.is_delete = 0 AND a.`status` = 'PUBLISH'
+		a.is_delete = 0
 		AND b.is_sale = 'Y'
 		AND b.is_delete = 0
 		AND b.goods_id=#{goodsId}
