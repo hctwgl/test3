@@ -19,6 +19,15 @@ public  class KafkaConstants {
      */
     public static final String  SYNC_CASH_LOAN = "sync_cash_loan";
     /**
+     * 每天首次登入
+     */
+    public static final String SYNC_FIRST_LOGIN= "sync_first_login";
+
+    /**
+     * 下单完成
+     */
+    public static final String SYNC_PAYED= "sync_payed";
+    /**
      * 现金贷逾期
      */
     public static final String SYNV_CASH_LOAN_OVERDUE = "sync_cash_loan_overdue";
