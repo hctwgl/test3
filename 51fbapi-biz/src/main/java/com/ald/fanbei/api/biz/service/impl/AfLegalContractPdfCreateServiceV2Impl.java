@@ -827,6 +827,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         data.put("userPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
+        logger.info("lease data ="+data);
         stream = borrowerCreateSeal(result,stream,data);//借款人签章
 //
         stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
@@ -1024,6 +1025,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     private byte[] borrowerCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
         try {
+            logger.info("map lease = "+map);
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
