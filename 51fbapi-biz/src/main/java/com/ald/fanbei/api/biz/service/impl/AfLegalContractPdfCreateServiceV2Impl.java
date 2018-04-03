@@ -778,6 +778,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         String html = null;
         try {
             html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseWithoutSealTemplate.vm"));
+            logger.info("lease html ="+html);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
