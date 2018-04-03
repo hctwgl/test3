@@ -475,11 +475,11 @@ public class UserWithholdController extends BaseController {
             afWithholdLogDo.setBorrowType(2);
             afWithholdLogDo.setGmtCreate(new Date());
             afWithholdLogDo.setUserId(userId);
-            //判断是否需要银行卡还款
+            //判断是否额度支付
             if(useBalance==1&&actualAmount.compareTo(BigDecimal.ZERO)==0){
                 Long cardId = -2l;
                 try{
-                    map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
+                    map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
                             cardId,userId,billDo,"sysJob",afUserAccountDo,bankPayType);
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
@@ -529,7 +529,7 @@ public class UserWithholdController extends BaseController {
                         continue;
                     }
                     try{
-                        map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
+                        map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
                                 cardId,userId,billDo,"sysJob",afUserAccountDo,bankPayType);
                     }catch (Exception e) {
                         logger.info("withholdCashJob error", e);

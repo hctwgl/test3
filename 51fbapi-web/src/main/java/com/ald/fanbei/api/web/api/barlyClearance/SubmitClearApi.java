@@ -157,7 +157,7 @@ public class SubmitClearApi implements ApiHandle {
                 if (afUserAccountDo.getRebateAmount().compareTo(showAmount) < 0) {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
                 }
-                map = afRepaymentService.createRepayment(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentByZfbOrWechat(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo,null);
                 resp.addResponseData("refId", map.get("refId"));
                 resp.addResponseData("type", map.get("type"));
@@ -170,7 +170,7 @@ public class SubmitClearApi implements ApiHandle {
                 }
 
 
-                map = afRepaymentService.createRepaymentYiBao(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
+                map = afRepaymentService.createRepaymentByZfbOrWechat(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "WX");
@@ -184,7 +184,7 @@ public class SubmitClearApi implements ApiHandle {
                     throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
                 }
 
-                map = afRepaymentService.createRepaymentYiBao(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
+                map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "ZFB");
@@ -194,7 +194,7 @@ public class SubmitClearApi implements ApiHandle {
                 if (null == card) {
                     throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
                 }
-                map = afRepaymentService.createRepayment(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo,bankPayType);
                 //代收
                 UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

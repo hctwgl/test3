@@ -18,7 +18,7 @@ public interface AfRepaymentService {
 
 	void testbackDetail();
 
-	Map<String,Object> createRepaymentYiBao( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	Map<String,Object> createRepaymentByZfbOrWechat( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 									   BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo,String bankPayType);
 	/**
 	 * 新增还款记录
@@ -31,7 +31,7 @@ public interface AfRepaymentService {
 	 * @param cardId
 	 * @return
 	 */
-	Map<String,Object> createRepayment( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+	Map<String,Object> createRepaymentByBankOrRebate( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo,String bankPayType);
 	
 	long dealRepaymentSucess(String outTradeNo,String tradeNo,boolean isNeedNoticeMsg);
