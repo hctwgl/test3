@@ -551,7 +551,7 @@ public class StartCashierApi implements ApiHandle {
 		    return null;
 		} else {
 			AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-			if (cashInfo != null) {
+			if (cashInfo != null  && !"Y".equals(cashInfo.getOverdueStatus())) {
 			    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW_CASH.getCode());
 			    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
 			    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
