@@ -136,13 +136,25 @@ public class AppH5AllSearchController extends BaseController {
 //			query.setPageNo(pageNo);
 			query.setPageSize(20);
 
-			List<AfSearchGoodsVo> goodsList = new ArrayList<>();
+			List<AfSearchGoodsVo> goodsList = new ArrayList<AfSearchGoodsVo>();
 
 			// get selfSupport goods
 			Integer pageSize = 20;
 			AfSolrSearchResultDo solrSearchResult = afSearchItemService.getSearchList(keyword,pageNo,pageSize);
-			query.setGoodsIds(solrSearchResult.getGoodsIds());
-			List<AfGoodsDo> orgSelfGoodlist = afGoodsService.getAvaliableSelfGoodsBySolr(query);
+			List<AfGoodsDo> orgSelfGoodlist = new ArrayList<AfGoodsDo>();
+			Integer totalCount = null;
+			Integer totalPage = null;
+			if (solrSearchResult == null) {
+				query.setPageNo(pageNo);
+				orgSelfGoodlist = afGoodsService.getAvaliableSelfGoods(query);
+				totalCount = query.getTotalCount();
+				totalPage = query.getTotalPage();
+			}else {
+				query.setGoodsIds(solrSearchResult.getGoodsIds());
+				orgSelfGoodlist = afGoodsService.getAvaliableSelfGoodsBySolr(query);
+				totalCount = solrSearchResult.getTotalCount();
+				totalPage = solrSearchResult.getTotalPage();
+			}
 			
 			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
 			//int totalCount = query.getTotalCount();
@@ -151,9 +163,7 @@ public class AppH5AllSearchController extends BaseController {
 			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
 				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
 				goodsList.add(vo);
-			}
-			Integer totalCount = solrSearchResult.getTotalCount();
-			Integer totalPage = solrSearchResult.getTotalPage();
+			}			 
 			
 			data.put("goodsList", goodsList);
 			data.put("totalCount", totalCount);
