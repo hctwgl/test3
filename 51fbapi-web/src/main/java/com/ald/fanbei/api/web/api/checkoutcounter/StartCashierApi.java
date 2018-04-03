@@ -503,14 +503,14 @@ public class StartCashierApi implements ApiHandle {
 	// 风控逾期订单处理
 //	RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
 	Long userId = orderInfo.getUserId();
-	String rejectCode = "";
+//	String rejectCode = "";
 	// region 测试借钱逾期白名单
-	List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
-	if (afResourceList.size() > 0) {
-	    if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-		rejectCode = RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
-	    }
-	}
+//	List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
+//	if (afResourceList.size() > 0) {
+//	    if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+//		rejectCode = RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+//	    }
+//	}
 	// if(userDto.getUserName().equals("13656648524")){
 	// rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
 	// }
@@ -520,19 +520,19 @@ public class StartCashierApi implements ApiHandle {
 	// endregion
 
 	// region 测试分期逾期白名单
-	List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
-	if (afResourceList1.size() > 0) {
-	    if (afResourceList1.get(0).getValue() != null && afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-		rejectCode = RiskErrorCode.OVERDUE_BORROW.getCode();
-	    }
-	}
+//	List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
+//	if (afResourceList1.size() > 0) {
+//	    if (afResourceList1.get(0).getValue() != null && afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+//		rejectCode = RiskErrorCode.OVERDUE_BORROW.getCode();
+//	    }
+//	}
 	// endregion
 
 //	if (StringUtil.isNotBlank(rejectCode)) {
-	    RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+//	    RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
 	    
-	    switch (erorrCode) {
-	    case OVERDUE_BORROW:
+//	    switch (erorrCode) {
+//	    case OVERDUE_BORROW:
 //		String borrowNo = resp.getBorrowNo();
 		// if(userDto.getUserName().equals("17710378476")){
 		// borrowNo="jk2017111218003479890";
@@ -542,37 +542,38 @@ public class StartCashierApi implements ApiHandle {
 		if (borrowInfo != null) {
 		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
 		    cashierTypeVo.setBillId(billId);
-		    cashierTypeVo.setOverduedCode(erorrCode.getCode());
+		    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW.getCode());
 		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
 		    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
 		    return null;
 		} else {
-		    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
+			AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
+			if (cashInfo != null) {
+			    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW_CASH.getCode());
+			    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
+			    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
+			    BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
+			    BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
+			    cashierTypeVo.setRepaymentAmount(repaymentAmount);
+			    cashierTypeVo.setBorrowId(cashInfo.getRid());
+			    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+			    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
+			    return null;
+			} else {
+			    logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
+			    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
+			}
+			
 		}
-		break;
-	    case OVERDUE_BORROW_CASH:
-		AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-		if (cashInfo != null) {
-		    cashierTypeVo.setOverduedCode(erorrCode.getCode());
-		    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
-		    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
-		    BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
-		    BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
-		    cashierTypeVo.setRepaymentAmount(repaymentAmount);
-		    cashierTypeVo.setBorrowId(cashInfo.getRid());
-		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-		    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
-		    return null;
-		} else {
-		    logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
-		}
-		break;
-	    default:
-		cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-		cashierTypeVo.setReasonType("未知原因：" + rejectCode);
-		return null;
+		
+//		
+//		break;
+//	    default:
+//		cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+//		cashierTypeVo.setReasonType("未知原因：" + rejectCode);
+//		return null;
 //	    }
-	}
+	//}
 
 	// 专项额度控制
 	Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
