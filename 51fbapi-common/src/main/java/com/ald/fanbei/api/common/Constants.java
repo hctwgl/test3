@@ -505,8 +505,7 @@ public class Constants {
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
-	//访问H5域名
-	public static final String H5_REQUEST_URI = "H5_REQUEST_URI";
+
 
 
 }
