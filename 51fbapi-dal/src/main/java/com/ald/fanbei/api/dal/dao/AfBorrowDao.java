@@ -125,4 +125,8 @@ public interface AfBorrowDao {
 	HashMap getUserSummaryForCapital(@Param("userId")Long userId);
 
 	AfBorrowDto getBorrowInfoById(@Param("borrowId") Long borrowId);
+
+	AfBorrowDo queryOverdueOrder(@Param("userId")Long userId);
+
+	AfBorrowDo getOverdueBorrowInfoByUserId(@Param("userId")Long userId);
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
@@ -168,6 +169,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> getGoodsByItem(Long categoryId){
 		return afGoodsDao.getGoodsByItem(categoryId);
 	}
+	@Override
+	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
+		return afGoodsDao.getGoodsListByGoodsId(goodsId);
+	}
 
 	@Override
 	public List<LeaseGoods> getHomeLeaseGoods(Long pageIndex,Long pageSize) {
@@ -178,6 +183,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public LeaseGoods getLeaseGoodsByGoodsId(Long goodsId) {
 		return afGoodsDao.getLeaseGoodsByGoodsId(goodsId);
+	}
+
+	public List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId){
+		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
 	}
 
 }

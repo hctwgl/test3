@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
@@ -108,7 +109,14 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getGoodsByItem(@Param("categoryId") Long categoryId);
 
+
 	List<LeaseGoods> getHomeLeaseGoods(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize);
 
 	LeaseGoods getLeaseGoodsByGoodsId(@Param("goodsId")Long goodsId);
+
+	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
+
+	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
+
+
 }
