@@ -582,8 +582,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_PAYED,true);
-
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
 	}
 
 	/**
@@ -956,7 +956,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_PAYED,true);
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
 	}
 
 	@Override
@@ -1258,7 +1258,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		}*/
 		if (0l !=resultValue){
-			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_PAYED,true);
+			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
 			afBorrowDao.updateBorrowVersion(borrow.getRid(),1);
 //			contractPdfThreadPool.protocolInstalmentPdf(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 		}
