@@ -90,11 +90,11 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
 	// 调用ups进行支付
 	UpsCollectRespBo respBo;
-	if (BankPayChannel.DAIKOU.getCode().equals(bankPayType)) { // 代扣
-	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
-	} else { // 确认快捷支付
+	if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) { // 确认快捷支付
 	    quickPayConfirmPre(payTradeNo, payBizObject);
 	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, bank.getCardNumber(), bank.getBankCode(), "02", UserAccountLogType.REPAYMENT.getCode());
+	} else { // 代扣
+	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
 	}
 
 	// 处理支付结果
