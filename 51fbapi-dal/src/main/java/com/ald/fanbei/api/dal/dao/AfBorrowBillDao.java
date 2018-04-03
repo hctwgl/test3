@@ -493,4 +493,6 @@ public interface AfBorrowBillDao {
 
 
 	List<AfBorrowBillDo> getBorrowBillListByStatus(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
+
+	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(@Param("userId")Long userId);
 }
