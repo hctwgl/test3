@@ -376,7 +376,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				}
 				return resp;
 			} catch (Exception e) {
-				logger.error("apply legal borrow cash error,error msg=>{}", e.getMessage());
+				logger.error("apply legal borrow cash error", e);
 				AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 				delegateBorrowCashDo.setRid(borrowId);
 				// 关闭借款

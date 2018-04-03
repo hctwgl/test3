@@ -19,10 +19,10 @@ public class Constants {
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
 	public static final long SECOND_OF_HALF_DAY = 12 * 60 * 60l;
-	
 	public static final int SECOND_OF_HALF_HOUR_INT = 30 * 60;
 	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
 
+	public static final long MINITS_OF_FIVE = 5 * 60l; // 5分钟
 	public static final long SECOND_OF_ONE_WEEK = 7 * 24 * 60 * 60l;
 	public static final long SECOND_OF_ONE_MONTH = 30 * 24 * 60 * 60l;
 
@@ -365,6 +365,7 @@ public class Constants {
 	public static final String VIRTUAL_RECENT_DAY = "recentDay";
 	public static final String VIRTUAL_CHECK = "virtualCheck";
 	public static final String VIRTUAL_CHECK_NAME = "virtualCheckName";
+	public static final String VIRTUAL_DAY_AMOUNT = "dayAmount";
 
 	// 商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
@@ -504,5 +505,5 @@ public class Constants {
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
-
+	public static final String 	FACE_GAME_RED_CONFIG = "face_game_red_config";
 }

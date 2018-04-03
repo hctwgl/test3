@@ -244,4 +244,6 @@ public interface AfOrderDao {
 
 	List<AfOrderSceneAmountDto> getSceneAmountByOrderId(@Param("orderId")Long orderId);
 
+	String getTradeBusinessNameByOrderId(@Param("orderId")Long orderid);
+
 }

@@ -292,13 +292,13 @@ public class CollectionSystemUtil extends AbstractThird {
 								repayType, repayTime,
 								NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
 								NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
-								isBalance);
+								isBalance,isAdmin);
 						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.findByCode(respCode));					}
 				} else {
 					notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
 				}
 			} else {
-				logger.info("offlineRepaymentNotify sign is invalid",FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
+				logger.info("offlineRepaymentNotify sign is invalid", FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
 				notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
 			}
 		} catch(FanbeiException e) {

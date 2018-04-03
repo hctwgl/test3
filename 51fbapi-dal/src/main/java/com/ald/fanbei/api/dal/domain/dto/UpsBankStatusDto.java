@@ -19,12 +19,14 @@ public class UpsBankStatusDto implements Serializable {
     // 维护结束时间"yyyy-MM-dd HH:mm:ss"
     private String maintainEndtime = "";
 
+    private int scale = 10000;
+
     public Double getLimitDown() {
 	return limitDown;
     }
 
     public void setLimitDown(Double limitDown) {
-	this.limitDown = limitDown;
+	this.limitDown = limitDown * scale;
     }
 
     public Double getLimitUp() {
@@ -32,7 +34,7 @@ public class UpsBankStatusDto implements Serializable {
     }
 
     public void setLimitUp(Double limitUp) {
-	this.limitUp = limitUp;
+	this.limitUp = limitUp * scale;
     }
 
     public Double getDailyLimit() {
@@ -40,7 +42,7 @@ public class UpsBankStatusDto implements Serializable {
     }
 
     public void setDailyLimit(Double dailyLimit) {
-	this.dailyLimit = dailyLimit;
+	this.dailyLimit = dailyLimit * scale;
     }
 
     public Integer getIsMaintain() {
