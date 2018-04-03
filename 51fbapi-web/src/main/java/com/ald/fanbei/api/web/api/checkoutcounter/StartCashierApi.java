@@ -538,9 +538,12 @@ public class StartCashierApi implements ApiHandle {
 		// borrowNo="jk2017111218003479890";
 		// }
 //		AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-	    AfBorrowDo borrowInfo = afBorrowService.getOverdueBorrowInfoByUserId(userId);
-		if (borrowInfo != null) {
-		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+//	    AfBorrowDo borrowInfo = afBorrowService.getOverdueBorrowInfoByUserId(userId);
+//		if (borrowInfo != null) {
+//		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+	       AfBorrowBillDo borrowBillInfo = afBorrowBillService.getOverdueBorrowBillInfoByUserId(userId);
+       	if(borrowBillInfo != null ){
+	        Long billId = borrowBillInfo.getRid();
 		    cashierTypeVo.setBillId(billId);
 		    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW.getCode());
 		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
@@ -548,7 +551,7 @@ public class StartCashierApi implements ApiHandle {
 		    return null;
 		} else {
 			AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-			if (cashInfo != null) {
+			if (cashInfo != null  && "Y".equals(cashInfo.getOverdueStatus())) {
 			    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW_CASH.getCode());
 			    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
 			    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
@@ -561,7 +564,8 @@ public class StartCashierApi implements ApiHandle {
 			    return null;
 			} else {
 			    logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
-			    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
+			  //  logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
+			    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBillBo:" + JSONObject.toJSONString(borrowBillInfo));
 			}
 			
 		}

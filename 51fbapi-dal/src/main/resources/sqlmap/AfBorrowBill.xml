@@ -872,4 +872,17 @@
 		</foreach>
 		)
 	</select>
+	
+	<select id="getOverdueBorrowBillInfoByUserId" resultType="AfBorrowBillDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_bill 
+		WHERE is_delete = 0
+		AND user_id = #{userId} 
+		AND overdue_status = 'Y'
+		AND status in('N','D')
+		LIMIT 1
+	</select>
+	
 </mapper>
