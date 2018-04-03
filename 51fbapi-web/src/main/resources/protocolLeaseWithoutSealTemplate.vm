@@ -182,7 +182,7 @@
                 </tr>
                 <tr>
                     <td>产品租金/月</td>
-                    <td>${rentAmount}元</td>
+                    <td>${monthlyRent}元</td>
                 </tr>
                 </tbody>
             </table>
