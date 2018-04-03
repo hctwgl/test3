@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.*;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
@@ -304,6 +307,8 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfIdNumberDao idNumberDao;
 
+	@Autowired
+	KafkaSync kafkaSync;
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -858,6 +863,11 @@ public class RiskUtil extends AbstractThird {
 		// String url = "http://192.168.110.16:8080" +
 		// "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = requestProxy.post(url, reqBo);
+		try{
+			kafkaSync.syncEvent(consumerNo, KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+		}catch (Exception e){
+
+		}
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
