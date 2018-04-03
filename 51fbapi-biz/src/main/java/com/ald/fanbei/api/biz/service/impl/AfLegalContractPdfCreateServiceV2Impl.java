@@ -98,7 +98,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Resource
     AfOrderDao afOrderDao;
 
-    private static final String src = "/home/aladin/project/app_contract";
+    private static final String src = "/home/aladin/project/app_contract/";
 
     private AfUserAccountDo getUserInfo(long userId, Map<String, Object> map, List<EdspayInvestorInfoBo> investorList) {
         AfUserDo afUserDo = afUserService.getUserById(userId);
