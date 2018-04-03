@@ -91,6 +91,7 @@ public class ThirdController extends AbstractThird{
         String fileUrl = null;
         StringBuilder sb = new StringBuilder();
         sb.append("---work_id:"+work_id);
+        sb.append("---job_id:"+job_id);
         sb.append("---work_result:"+work_result);
         sb.append("---token:"+token);
 
