@@ -1594,4 +1594,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	public AfBorrowDto getBorrowInfoById(Long borrowId) {
 		return afBorrowDao.getBorrowInfoById(borrowId);
 	}
+	
+	@Override
+	public AfBorrowDo getOverdueBorrowInfoByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return afBorrowDao.getOverdueBorrowInfoByUserId(userId);
+	}
 }

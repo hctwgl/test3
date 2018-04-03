@@ -13,8 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -122,6 +120,38 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.domain.AfCheckoutCounterDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -2291,14 +2321,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// 当前可用额度为虚拟限额额度（后面逻辑再与用户账户可用额度判断）
 		leftAmount = virtualAmount;
 	    }
-	    logger.info("1 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
+	    //logger.info("1 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
 
 	    if (dayLeftAmount.compareTo(BigDecimal.ZERO) >= 0 && leftAmount.compareTo(BigDecimal.ZERO) >= 0) {
 		leftAmount = dayLeftAmount.compareTo(leftAmount) > 0 ? leftAmount : dayLeftAmount;
 	    } else if (dayLeftAmount.compareTo(BigDecimal.ZERO) >= 0) {
 		leftAmount = dayLeftAmount;
 	    }
-	    logger.info("2 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
+	    //logger.info("2 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
 	    // else if(leftAmount.compareTo(BigDecimal.ZERO) >= 0)
 	    // {
 	    // leftAmount = leftAmount;
@@ -2318,12 +2348,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	    // 虚拟剩余额度大于信用可用额度 则为可用额度
 	    leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
 
-	    logger.info("3 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
+	    //logger.info("3 dayLeftAmount :" + dayLeftAmount + ",leftAmount:" + leftAmount);
 	    return leftAmount;
 	} else {
 	    BigDecimal useableAmount = getUseableAmount(orderInfo, userAccountInfo, afInterimAuDo);
-
 	    logger.info("1 useableAmount :" + useableAmount);
+	    //logger.info("1 useableAmount :" + useableAmount);
 	    return useableAmount;
 	}
     }

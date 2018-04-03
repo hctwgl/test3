@@ -324,4 +324,8 @@ public interface AfBorrowService {
 
 	AfBorrowDto getBorrowInfoById(Long borrowId);
 
+	
+
+	AfBorrowDo getOverdueBorrowInfoByUserId(Long userId);
+
 }
