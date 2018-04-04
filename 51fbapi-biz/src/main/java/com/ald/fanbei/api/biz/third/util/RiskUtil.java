@@ -1209,6 +1209,7 @@ public class RiskUtil extends AbstractThird {
 					orderInfo.setIagentStatus("C");
 				}else {
 					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 					orderInfo.setIagentStatus("A");
 				}
 			}catch (Exception e){
