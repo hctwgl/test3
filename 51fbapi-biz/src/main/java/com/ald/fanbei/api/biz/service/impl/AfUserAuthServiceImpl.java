@@ -26,12 +26,15 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.ald.fanbei.api.web.common.ApiHandle;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
@@ -44,6 +47,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 @Service("afUserAuthService")
 public class AfUserAuthServiceImpl implements AfUserAuthService {
 
+	Logger logger = LoggerFactory.getLogger(AfUserAuthServiceImpl.class);
     @Resource
     AfUserAuthDao afUserAuthDao;
     @Resource
@@ -566,6 +570,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 		Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afAuthRaiseStatusDo.getGmtFinish()), day);
 		long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+		logger.info("验证禁止期:" + scene+",afterTenDay:"+afterTenDay+",between:"+between);
 		// 验证有效期
 		if (between < 0) {
 		    return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
@@ -591,6 +596,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
 	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 	data.put("title", "");
+	logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
 	if (between < 0) {
 	    data.put("status", "N");
 	    return false;
