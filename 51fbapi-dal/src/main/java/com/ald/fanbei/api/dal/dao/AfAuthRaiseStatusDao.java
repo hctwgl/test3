@@ -16,6 +16,4 @@ public interface AfAuthRaiseStatusDao extends BaseDao<AfAuthRaiseStatusDo, Long>
 
 	AfAuthRaiseStatusDo getByPrdTypeAndAuthType(@Param("prdType")String prdType, @Param("authType")String authType,@Param("userId") Long userId);
 
-	AfAuthRaiseStatusDo getByPrdTypeAndUserId(@Param("prdType")String prdType,@Param("userId") Long userId);
-
 }
