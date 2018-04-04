@@ -573,9 +573,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		logger.info("验证禁止期:" + scene+",afterTenDay:"+afterTenDay+",between:"+between);
 		// 验证有效期
 		if (between < 0) {
-		    return true;
-		} else {
 		    return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
+		} else {
+		    return false;
 		}
 	    }
 	}
