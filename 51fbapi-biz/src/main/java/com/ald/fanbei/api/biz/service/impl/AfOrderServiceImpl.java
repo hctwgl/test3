@@ -1740,18 +1740,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 //TODO 回调方法
-                    if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-//						submitBklInfo(orderInfo);
-                        //新增白名单逻辑
-                        if (isBklResult(orderInfo)){
-                            logger.info("dealBrandOrderSucc bklUtils submitBklInfo result true");
-                            submitBklInfo(orderInfo);
-                            orderInfo.setIagentStatus("C");
-                        }else {
-                            logger.info("dealBrandOrderSucc bklUtils submitBklInfo result false");
-                            orderInfo.setIagentStatus("A");
-                        }
-                    }
+					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+						//新增白名单逻辑
+						try {
+							if (isBklResult(orderInfo)){
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
+								submitBklInfo(orderInfo);
+							}else {
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+							}
+						}catch (Exception e){
+							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+						}
+					}
 		    return 1;
 		} catch (Exception e) {
 		    status.setRollbackOnly();
@@ -1874,6 +1876,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			result = false;
 			return result;
 		}*/
+		AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
+		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
+			result = false;
+			return result;
+		}
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启
@@ -1894,7 +1901,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
 			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckState("5");//通过审核
+			iagentResultDo.setCheckResult("0");//通过审核
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
 			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+iagentResultDoList);
@@ -1905,16 +1912,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
 			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckState("4");
+			iagentResultDo.setCheckResult("1");
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+resultDoList);
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
-				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
+				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
 					Map<String,String> qmap = new HashMap<>();
 					qmap.put("orderNo",orderInfo.getOrderNo());
+					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));
 				}else {
 					result = true;//需电核

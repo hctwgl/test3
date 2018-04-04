@@ -179,6 +179,9 @@
         <if test="checkState != null and checkState !=''">
             and check_state = #{checkState}
         </if>
+        <if test="checkResult != null and checkResult !=''">
+            and check_result = #{checkResult}
+        </if>
         <if test="dayNum != null">
             and TIMESTAMPDIFF(DAY,gmt_create,now()) &lt; #{dayNum}
         </if>
