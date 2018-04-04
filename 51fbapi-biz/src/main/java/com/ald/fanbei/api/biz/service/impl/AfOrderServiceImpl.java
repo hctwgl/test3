@@ -1636,11 +1636,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 					//TODO 回调方法
 					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-						submitBklInfo(orderInfo);
+//						submitBklInfo(orderInfo);
 						//新增白名单逻辑
-						/*if (isBklResult(orderInfo)){
+						if (isBklResult(orderInfo)){
+							orderInfo.setIagentStatus("C");
 							submitBklInfo(orderInfo);
-						}*/
+						}else {
+							orderInfo.setIagentStatus("A");
+						}
 					}
 					return 1;
 				} catch (Exception e) {
@@ -1759,6 +1762,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	private boolean isBklResult(AfOrderDo orderInfo) {
 		boolean result = true;
+		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
+		if (userSeedDo != null){
+			result = false;
+			return result;
+		}*/
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
             //白名单开启

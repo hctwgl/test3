@@ -176,21 +176,21 @@ public class ThirdController extends AbstractThird{
         String checkResult="";
         if (answers.get("baseW")>0){
             checkstate = "close";
-            iagentstate="C";
+            iagentstate="E";
             checkResult="1";
         }else{
             if (answers.get("unbaseW")<=min){
                 checkstate = "success";
-                iagentstate="B";
+                iagentstate="D";
                 checkResult="0";
             }else{
-                if (answers.get("unbaseW")>=max){
+                if (answers.get("unbaseW")>max){
                     checkstate = "close";
-                    iagentstate="C";
+                    iagentstate="E";
                     checkResult="1";
                 }else{
                     checkstate = "review";
-                    iagentstate="D";
+                    iagentstate="C";
                     checkResult="2";
                 }
             }
@@ -214,10 +214,10 @@ public class ThirdController extends AbstractThird{
 
         if (afOrderDo !=null){
             String iagentStatus = afOrderDo.getIagentStatus();
-            if (!"DEF".equals(iagentStatus)){
+            if ("C".equals(iagentStatus)){
                 afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
             }
-            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&!"E".equals(afOrderDo.getIagentStatus())){
+            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
                 Map<String,String> qmap = new HashMap<>();
                 qmap.put("orderNo",afOrderDo.getOrderNo());
                 //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
