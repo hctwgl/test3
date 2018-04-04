@@ -1293,7 +1293,7 @@ public class RiskUtil extends AbstractThird {
 					YFSmsUtil.pool.execute(new Runnable() {
 						@Override
 						public void run() {
-							HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+							HttpUtil.doHttpPost("https://yadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
 						}
 					});
 
