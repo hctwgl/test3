@@ -482,7 +482,7 @@ public abstract class BaseController {
 			String methodString = requestDataVo.getMethod();
 			if (userInfo == null && StringUtils.equals(borrowMethodName, methodString)) {
 				throw new FanbeiException(requestDataVo.getId() + "user don't exist",
-						FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);
+						FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR);// 用户未登陆
 
 			} else if (userInfo == null) {
 

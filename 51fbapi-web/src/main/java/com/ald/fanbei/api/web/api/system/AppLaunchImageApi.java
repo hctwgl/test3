@@ -97,6 +97,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		try {
 			String userName = context.getUserName();
 			String id = ObjectUtils.toString(requestDataVo.getId(), "");
+			String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"),"");
 			String phoneType =  "";
 			if(id.startsWith("i")){
 				phoneType = "ios";
@@ -109,6 +110,7 @@ public class AppLaunchImageApi implements ApiHandle{
 			appOpenLogDo.setPhoneType(phoneType);
 			appOpenLogDo.setUserName(userName);
 			appOpenLogDo.setGmtCreate(new Date());
+			appOpenLogDo.setUuid(uuid);
 			appOpenLogService.saveRecord(appOpenLogDo);
 		}catch (Exception e){
 			logger.error("addAppOpenLog:catch error",e);

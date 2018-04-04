@@ -176,8 +176,11 @@ public class H5BoluomeActivityController extends BaseController {
 	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + userName;
 	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, userName, Constants.SECOND_OF_HALF_HOUR_INT);
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
-	    bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
- 
+	    bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_DAY);
+	    
+	    /*response.addHeader("userName", userName);
+	    response.addHeader("token", token);*/
+	    return H5CommonResponse.getNewInstance(true, "登录成功", "",token).toString();
 	} else {
 	    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
 	}

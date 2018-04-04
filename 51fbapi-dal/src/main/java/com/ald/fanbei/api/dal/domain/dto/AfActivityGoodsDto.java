@@ -24,6 +24,7 @@ public class AfActivityGoodsDto extends AfGoodsDo {
 	private String validEnd;
 	private Long goodsCount;
 	private Long limitCount;
+	private Integer count;
 	
 	public Long getId() {
 		return id;
@@ -67,5 +68,12 @@ public class AfActivityGoodsDto extends AfGoodsDo {
 	public void setLimitCount(Long limitCount) {
 		this.limitCount = limitCount;
 	}
-	
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 }
