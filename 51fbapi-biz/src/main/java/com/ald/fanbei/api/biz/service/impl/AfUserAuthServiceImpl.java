@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.ald.fanbei.api.web.common.ApiHandle;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
