@@ -71,8 +71,6 @@ public class FundAuthCallbackExecutor implements Executor {
 	AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 	afUserAuthDo.setUserId(userId);
 	if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
-	    // 首先初始化提额状态
-	    afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.FUND.getCode());
 	    // 认证通过，更新支付宝认证状态
 	    afUserAuthDo.setFundStatus("Y");
 	    afUserAuthDo.setRiskStatus("Y");
@@ -80,6 +78,8 @@ public class FundAuthCallbackExecutor implements Executor {
 	    afUserAuthService.updateUserAuth(afUserAuthDo);
 	    AfAuthRaiseStatusDo afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.CASH.getName(), AuthType.FUND.getCode(), userId);
 	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.FUND.getCode(), afUserAuthDo.getGmtFund())) {
+		// 首先初始化提额状态
+		afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.FUND.getCode());
 		// 认证成功,向风控发起提额申请
 		AfUserAuthDo afUserAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		String basicStatus = afUserAuthInfo.getBasicStatus();

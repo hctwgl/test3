@@ -64,16 +64,15 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 	AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 	afUserAuthDo.setUserId(userId);
 	if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
-	    // 初始化提额状态
-	    afAuthRaiseStatusService.initCreditRaiseStatus(userId, AuthType.CARDEMAIL.getCode());
-
 	    afUserAuthDo.setCreditStatus("Y");
 	    afUserAuthDo.setRiskStatus("Y");
 	    afUserAuthDo.setGmtCredit(new Date());
 	    afUserAuthService.updateUserAuth(afUserAuthDo);
-	    
+
 	    AfAuthRaiseStatusDo afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.CASH.getName(), AuthType.CARDEMAIL.getCode(), userId);
 	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.CARDEMAIL.getCode(), afUserAuthDo.getGmtCredit())) {
+		// 初始化提额状态
+		afAuthRaiseStatusService.initCreditRaiseStatus(userId, AuthType.CARDEMAIL.getCode());
 		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.CARDMAIL_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 		// 提额成功
 		if (respBo != null && respBo.isSuccess()) {
@@ -100,7 +99,7 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 		    }
 		}
 	    }
-	    
+
 	    afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.ONLINE.getName(), AuthType.CARDEMAIL.getCode(), userId);
 	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.CARDEMAIL.getCode(), afUserAuthDo.getGmtCredit())) {
 		// 线上分期提额
