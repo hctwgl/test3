@@ -139,8 +139,14 @@ public class AppH5AllSearchController extends BaseController {
 			List<AfSearchGoodsVo> goodsList = new ArrayList<AfSearchGoodsVo>();
 
 			// get selfSupport goods
-			Integer pageSize = 20;
-			AfSolrSearchResultDo solrSearchResult = afSearchItemService.getSearchList(keyword,pageNo,pageSize);
+			//查询分词搜索开关
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SOLR_SERVER_KEY", "SOLR_SERVER_KEY");
+			AfSolrSearchResultDo solrSearchResult = null;
+			if (StringUtils.equals(resourceDo.getValue(), "Y")) {
+				Integer pageSize = 20;
+				solrSearchResult = afSearchItemService.getSearchList(keyword,pageNo,pageSize);
+				logger.info("/appH5Goods/searchGoods from solrServer with resultData = {}", solrSearchResult);
+			}
 			List<AfGoodsDo> orgSelfGoodlist = new ArrayList<AfGoodsDo>();
 			Integer totalCount = null;
 			Integer totalPage = null;
