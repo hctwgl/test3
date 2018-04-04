@@ -661,4 +661,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
     
     		return afBorrowBillDao.getMaxOverdueCountByBorrowId(borrowId);
         }
+
+	@Override
+	public AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		     return afBorrowBillDao.getOverdueBorrowBillInfoByUserId(userId);
+	}
 }

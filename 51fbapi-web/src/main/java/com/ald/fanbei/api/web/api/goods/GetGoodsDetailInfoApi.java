@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,9 +60,13 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
+	
+	@Resource
+	AfSchemeService afSchemeService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -179,6 +184,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
+		
+
 		resp.setResponseData(vo);
 		return resp;
 	}

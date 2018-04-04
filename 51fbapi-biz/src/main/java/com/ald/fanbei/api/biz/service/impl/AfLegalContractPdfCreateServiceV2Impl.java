@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -10,7 +11,9 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfContractPdfEdspaySealDto;
@@ -19,14 +22,20 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -86,6 +95,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     AfUserOutDayDao afUserOutDayDao;
     @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfOrderDao afOrderDao;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -761,6 +772,82 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
+    @Override
+    public String leaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId)throws IOException{
+        long time = new Date().getTime();
+        String html = null;
+        try {
+            html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseWithoutSealTemplate.vm"));
+            logger.info("lease html ="+html);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        String outFilePath = src + data.get("userName") + "lease" + time + 1 + ".pdf";
+        HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
+        return getLeaseContractPdf(data,userId,outFilePath,orderId);
+
+    }
+
+    public Map protocolLease(Map<String,Object> data,String pdfTemplate) throws IOException {
+        AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
+        if (afUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        data.put("templateSrc",pdfTemplate);
+        data.put("personKey","leaser");
+        data.put("selfKey","ald");
+        Calendar c = Calendar.getInstance();
+        c.setTime((Date) data.get("gmtCreate"));
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DATE);
+        int year = c.get(Calendar.YEAR);
+        data.put("gmtLeaseCreate",year+"年"+month+"月"+day+"日");
+        data.put("rentAmount",new BigDecimal(data.get("monthlyRent").toString()).multiply(new BigDecimal(12).setScale(2,BigDecimal.ROUND_HALF_UP)));
+        data.put("overdueRate",new BigDecimal(data.get("overdueRate").toString()).multiply(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_HALF_UP));
+        c.setTime((Date) data.get("gmtStart"));
+        data.put("gmtLeaseStart",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
+        c.setTime((Date) data.get("gmtEnd"));
+        data.put("gmtLeaseEnd",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
+        logger.info(JSON.toJSONString(data));
+        return data;
+    }
+
+    private String getLeaseContractPdf(Map<String, Object> data,Long userId,String outFilePath,Long orderId) throws IOException {
+        long time = new Date().getTime();
+        AfUserAccountDo accountDo = getUserInfo(userId, data, null);
+        data.put("PDFPath", outFilePath);
+        String dstFile = String.valueOf(src + data.get("userName") + "lease" + time + 2 + ".pdf");
+        data.put("userPath", dstFile);
+        boolean result = true;
+        byte[] stream = new byte[1024];
+        logger.info("lease data ="+data);
+        stream = borrowerCreateSeal(result,stream,data);//借款人签章
+//
+        stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
+
+        File file = new File(src + data.get("userName") + "lease" + time +3 + ".pdf");
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(stream);
+        outputStream.flush();
+        outputStream.close();
+        InputStream input = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
+        OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+        logger.info("ossUploadResult="+ossUploadResult.getUrl());
+        afOrderDao.updatepdfUrlByOrderId(orderId,ossUploadResult.getUrl());
+        logger.info("lease url="+ossUploadResult.getUrl());
+        return null;
+    }
+
+
     private String getPdfInfo(String protocolUrl, Map<String, Object> map, Long userId, Long id, String type, String protocolCashType, List<EdspayInvestorInfoBo> investorList) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
         long time = new Date().getTime();
@@ -939,6 +1026,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     private byte[] borrowerCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
         try {
+            logger.info("map lease = "+map);
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
@@ -1332,6 +1420,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         model.put("lender", lenderDo.getValue());// 出借人
     }
 
+
+
     public Map protocolLegalCashLoan(String userName, Long borrowId, BigDecimal borrowAmount, BigDecimal poundage, String type,String pdfTemplate) throws IOException {
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
@@ -1385,6 +1475,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         logger.info(JSON.toJSONString(map));
         return map;
     }
+
+
 
     private String pdfCreateWithoutSeal(Map map) throws IOException {
         InputStream input = null;
@@ -1572,6 +1664,28 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return true;
     }
 
+    private byte[] aldLeaseCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
+        try {
+            FileDigestSignResult fileDigestSignResult = afESdkService.leaseSelfStreamSign(map, stream);//阿拉丁盖章
+            if (fileDigestSignResult.getErrCode() != 0) {
+                result = false;
+                logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", fileDigestSignResult.getMsg() + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+                return null;
+            }
+            map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
+            return fileDigestSignResult.getStream();
+        } catch (Exception e) {
+            logger.error("getLegalContractPdf 丙方盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
+            result = false;
+            return null;
+        } finally {
+            if (!result) {
+                File file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
+        }
+    }
+
     private String eviPdf(Map map) {
         String filePath = map.get("secondPath").toString();
         String fileName = map.get("fileName").toString();
@@ -1714,5 +1828,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         System.out.println(temp);
         return temp;
     }
+
+
 
 }

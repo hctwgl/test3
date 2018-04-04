@@ -483,6 +483,16 @@ public interface AfBorrowBillDao {
 	 */
 	int getOnRepaymentCountByUserId(@Param("userId")Long userId);
 
+	/**
+	 * 获取租赁账单
+	 *
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillLeaseAmountByIds(@Param("ids") List<String> ids);
+
 
 	List<AfBorrowBillDo> getBorrowBillListByStatus(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
+
+	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(@Param("userId")Long userId);
 }

@@ -183,6 +183,10 @@ public class FundAuthCallbackExecutor implements Executor {
 					logger.error("raise amount fail =>{}", e.getMessage());
 				}
 			}
+			
+			// 线上分期提额
+			afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.FUND_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.FUND.getCode());
+			
 		} else {
 			// 更新认证状态为失败
 			afUserAuthDo.setFundStatus("N");

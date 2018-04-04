@@ -1855,7 +1855,7 @@ public class RiskUtil extends AbstractThird {
 				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
 				// 处理已认证，未提额的补充认证
-				processAuthedNotRaiseAuth(consumerNo);
+				processAuthedNotRaiseAuth(consumerNo,LoanType.BLD_LOAN.getCode());
 
 				jpushService.strongRiskSuccess(userAccountDo.getUserName());
 				smsUtil.sendRiskSuccess(userAccountDo.getUserName());
@@ -1872,7 +1872,7 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 
-	private void processAuthedNotRaiseAuth(Long userId) {
+	private void processAuthedNotRaiseAuth(Long userId,String scene) {
 		AfUserAuthDo userAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String, String> authInfoMap = Maps.newHashMap();
 		authInfoMap.put(AuthType.ALIPAY.getCode(), userAuthInfo.getAlipayStatus());
@@ -1887,12 +1887,12 @@ public class RiskUtil extends AbstractThird {
 			if (StringUtils.equals(authStatus, "Y")) {
 				AfAuthRaiseStatusDo authRaiseStatusDo = new AfAuthRaiseStatusDo();
 				authRaiseStatusDo.setAuthType(authType);
-				authRaiseStatusDo.setPrdType(LoanType.BLD_LOAN.getCode());
+				authRaiseStatusDo.setPrdType(scene);
 				authRaiseStatusDo.setUserId(userId);
 				authRaiseStatusDo = afAuthRaiseStatusService.getByCommonCondition(authRaiseStatusDo);
 				if(authRaiseStatusDo == null || !StringUtils.equals("Y", authRaiseStatusDo.getRaiseStatus())) {
 					AuthCallbackBo authCallbackBo = new AuthCallbackBo("", ObjectUtils.toString(userId), authType,
-							RiskAuthStatus.SUCCESS.getCode());
+							RiskAuthStatus.SUCCESS.getCode(),scene);
 					authCallbackManager.execute(authCallbackBo);
 				}
 			}
@@ -3014,6 +3014,79 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
+	 * 获取租赁用户分层得分
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public Integer getRentScore(String consumerNo, JSONObject params) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		if (params != null) {
+			AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+			JSONObject eventObj = new JSONObject();
+			eventObj.put("appName", params.get("appName") + "");
+			eventObj.put("cardNo", card == null ? "" : card.getCardNumber());
+			eventObj.put("blackBox", params.get("blackBox") == null ? "" : params.get("blackBox"));
+			eventObj.put("ipAddress", params.get("ipAddress") == null ? "" : params.get("ipAddress"));
+			String riskOrderNo = riskUtil.getOrderNo("rent", card.getCardNumber().substring(card.getCardNumber().length() - 4, card.getCardNumber().length()));
+			reqBo.setOrderNo(riskOrderNo);
+			reqBo.setEventInfo(JSONObject.toJSONString(eventObj));
+		}
+		HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
+		reqBo.setSummaryData(JSON.toJSONString(summaryData));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/getRentScore.htm";
+		// String url =
+		// "http://192.168.110.22:80/modules/api/risk/getRentScore.htm";
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "getRentScore", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			return 0;
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject dataObj = JSON.parseObject(riskResp.getData());
+			Integer result = dataObj.getInteger("score");
+			return result;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * 更新租赁用户分层得分
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public boolean updateRentScore(String consumerNo) {
+		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl() + "/modules/api/risk/updateRentScore.htm";
+		// String url =
+		// "http://192.168.110.22:80/modules/api/risk/updateRentScore.htm";
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "updateRentScore", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			return false;
+		}
+
+		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 登录可信验证码
 	 *
 	 * @param consumerNo
@@ -3810,7 +3883,7 @@ public class RiskUtil extends AbstractThird {
 		return 0;
 	}
 
-	public int supplementAuthNotify(String code, String data, String msg, String signInfo) {
+	public int supplementAuthNotify(String code, String data, String msg, String signInfo,String scene) {
 
 		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
 		reqBo.setCode(code);
@@ -3829,7 +3902,7 @@ public class RiskUtil extends AbstractThird {
 			String authItem = obj.getString("authItem");
 			String orderNo = obj.getString("orderNo");
 			String result = obj.getString("result");
-			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result);
+			AuthCallbackBo callbackBo = new AuthCallbackBo(orderNo, consumerNo, authItem, result,scene);
 			authCallbackManager.execute(callbackBo);
 		}
 		return 0;
