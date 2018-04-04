@@ -1232,7 +1232,7 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	private String  isBklResult(AfOrderDo orderInfo) {
-		String result = "v1";
+		String result = "v2";
 		//种子名单
 		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
 		if (userSeedDo != null){
