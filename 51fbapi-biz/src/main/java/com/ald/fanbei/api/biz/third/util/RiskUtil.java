@@ -1275,11 +1275,11 @@ public class RiskUtil extends AbstractThird {
 				return result;
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
-			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckResult("1");
-			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
+			resultDto.setUserId(orderInfo.getUserId());
+			resultDto.setCheckResult("1");
+			resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList));
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
 				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){

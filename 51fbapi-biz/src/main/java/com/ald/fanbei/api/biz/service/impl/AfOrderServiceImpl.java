@@ -1912,9 +1912,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 				return result;
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
-			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckResult("1");
-			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
+			resultDto.setUserId(orderInfo.getUserId());
+			resultDto.setCheckResult("1");
+			resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList));
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
