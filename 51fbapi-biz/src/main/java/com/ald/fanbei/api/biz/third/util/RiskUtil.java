@@ -1268,7 +1268,7 @@ public class RiskUtil extends AbstractThird {
 			iagentResultDo.setCheckResult("0");//通过审核
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
 			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+iagentResultDoList);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
 			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
 				result = false;
@@ -1279,10 +1279,10 @@ public class RiskUtil extends AbstractThird {
 			iagentResultDo.setCheckResult("1");
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+resultDoList);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList));
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
-				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
+				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
 					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					Map<String,String> qmap = new HashMap<>();
