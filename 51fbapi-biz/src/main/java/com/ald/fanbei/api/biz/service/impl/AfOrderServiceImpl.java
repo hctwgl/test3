@@ -1639,9 +1639,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 //						submitBklInfo(orderInfo);
 						//新增白名单逻辑
 						if (isBklResult(orderInfo)){
-							orderInfo.setIagentStatus("C");
+							logger.info("dealBrandOrderSucc bklUtils submitBklInfo result true");
 							submitBklInfo(orderInfo);
+							orderInfo.setIagentStatus("C");
 						}else {
+							logger.info("dealBrandOrderSucc bklUtils submitBklInfo result false");
 							orderInfo.setIagentStatus("A");
 						}
 					}
@@ -1769,27 +1771,30 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		}*/
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
-            //白名单开启
-            String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
-            Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-            logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds));
-            if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
+			//白名单开启
+			String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
+			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
 				result = false;
 				return result;
-            }
-        }
+			}
+		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
 		if (afResourceDo != null){
-            if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
+			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
 				result = false;
 				return result;
-            }
+			}
 			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
 			iagentResultDo.setUserId(orderInfo.getUserId());
 			iagentResultDo.setCheckState("5");//通过审核
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
 			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+iagentResultDoList);
 			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
+				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
 				result = false;
 				return result;
 			}
@@ -1798,7 +1803,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			iagentResultDo.setCheckState("4");
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+resultDoList);
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
+				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
 				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
 					Map<String,String> qmap = new HashMap<>();
@@ -1808,8 +1815,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					result = true;//需电核
 				}
 			}
-        }
-        return result;
+		}
+		return result;
 	}
 
 	public void submitBklInfo(AfOrderDo orderInfo){
