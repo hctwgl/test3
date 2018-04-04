@@ -867,6 +867,7 @@ public class RiskUtil extends AbstractThird {
 		// "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = requestProxy.post(url, reqBo);
 		try{
+			logger.info("sync kafka data consumerNo:"+consumerNo);
 			kafkaSync.syncEvent(consumerNo, KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
 			kafkaSync.syncEvent(consumerNo, KafkaConstants.SYNC_CASH_LOAN,true);
 		}catch (Exception e){
