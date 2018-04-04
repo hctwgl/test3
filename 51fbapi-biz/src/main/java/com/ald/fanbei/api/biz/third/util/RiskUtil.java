@@ -1283,6 +1283,7 @@ public class RiskUtil extends AbstractThird {
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
 				if (resultDoList.size() > Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
+					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					Map<String,String> qmap = new HashMap<>();
 					qmap.put("orderNo",orderInfo.getOrderNo());
 					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));

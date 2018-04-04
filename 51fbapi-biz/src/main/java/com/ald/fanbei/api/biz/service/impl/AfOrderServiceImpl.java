@@ -1746,10 +1746,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							if (isBklResult(orderInfo)){
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
-								orderInfo.setIagentStatus("C");
 							}else {
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
-								orderInfo.setIagentStatus("A");
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 							}
 						}catch (Exception e){
 							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
@@ -1923,6 +1922,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					//直接拒绝
 					Map<String,String> qmap = new HashMap<>();
 					qmap.put("orderNo",orderInfo.getOrderNo());
+					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));
 				}else {
 					result = true;//需电核
