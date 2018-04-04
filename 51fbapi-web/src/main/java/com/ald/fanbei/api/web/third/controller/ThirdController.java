@@ -169,8 +169,8 @@ public class ThirdController extends AbstractThird{
         //审核结果统计
         checkAnswers(answers,result);
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.ORDER_MOBILE_VERIFY_SET,Constants.ORDER_MOBILE_VERIFY_SET);
-        int max = Integer.parseInt(afResourceDo.getValue4());
-        int min = Integer.parseInt(afResourceDo.getValue5());
+        int max = Integer.parseInt(afResourceDo.getValue5());
+        int min = Integer.parseInt(afResourceDo.getValue4());
         String checkstate = "";
         String iagentstate="";
         String checkResult="";
