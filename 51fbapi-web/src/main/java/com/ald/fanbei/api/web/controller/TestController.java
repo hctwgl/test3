@@ -6,12 +6,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
@@ -59,19 +55,6 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAuthContactsService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfContactsOldService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.biz.service.RiskTrackerService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
@@ -171,7 +154,8 @@ public class TestController {
     private MongoTemplate mongoTemplate;
     @Autowired
     private KafkaSync kafkaSync;
-
+    @Autowired
+    private AppOpenLogService appOpenLogService;
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
@@ -392,6 +376,26 @@ public class TestController {
 
         return reqResult;*/
 	    return "fail";
+    }
+    public void testTrans(){
+        transactionTemplate.execute(new TransactionCallback<String>() {
+
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                AppOpenLogDo appOpenLogDo=new AppOpenLogDo();
+                appOpenLogDo.setUuid("test");
+                appOpenLogDo.setAppVersion("403");
+                appOpenLogDo.setGmtCreate(new Date());
+                appOpenLogDo.setPhoneType("ios");
+                appOpenLogDo.setUserName("renchunlei");
+                appOpenLogService.saveRecord(appOpenLogDo);
+                AppOpenLogDo query=new AppOpenLogDo();
+                query.setAppVersion("403");
+                List<AppOpenLogDo> appOpenLogDos= appOpenLogService.getListByCommonCondition(query);
+
+                return "";
+            }
+        });
     }
     @RequestMapping("/address")
     @ResponseBody

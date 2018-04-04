@@ -209,15 +209,15 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
-        
+
 	String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
 	if (bizCacheUtil.getObject(lockKey) == null) {
 	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
 	} else {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 	}
-        
-        
+
+
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
@@ -328,10 +328,10 @@ public class PayOrderV1Api implements ApiHandle {
 
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
-            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
+            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode()) || StringUtils.equals(type, OrderType.LEASE.getCode())) {
                 saleAmount = orderInfo.getActualAmount();
             }
-            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || nper == null)) {
+            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.LEASE.getCode()) || nper == null)) {
                 nper = orderInfo.getNper();
             }
 
@@ -388,7 +388,7 @@ public class PayOrderV1Api implements ApiHandle {
                 		
 					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
-*/                	
+*/
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {

@@ -3,7 +3,7 @@ package com.ald.fanbei.api.common;
 import java.math.BigDecimal;
 
 /**
- * 
+ *
  * @类Constants.java 的实现描述：常量累
  * @author 陈金虎 2017年1月16日 下午11:17:10
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -30,10 +30,10 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
-	
+
 	//51公积金token失效时间
 	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
-	
+
 	// 商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
 	// 自营商品超时支付时间-小时
@@ -153,7 +153,7 @@ public class Constants {
 	public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX = "real_auth_citizen_card$";
 	public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX = "real_auth_real_name$";
 	public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX = "real_auth_pass$";
-    public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
+	public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
 
 	// 查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -306,11 +306,11 @@ public class Constants {
 	public static final String RESERVATION_IPHONEX_COUPON_STATUS = "coupon_status_";
 	public static final String RESERVATION_IPHONEX_COUPON_ID = "coupon_id";
 	public static final String RESERVATION_IPHONEX_SUM_COUNT = "sum_coupon_count_";
-	
+
 	//wrong paypwd times and the previous wrong time.
 	public static final String CACHKEY_WRONG_INPUT_PAYPWD_TIMES = "wrong_input_paypwd_times";
 	public static final String CACHKEY_THE_LAST_WRONG_PAYPWD_TIME = "the_last_wrong_paypwd_time";
-	
+
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
@@ -335,7 +335,7 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
 	public static final String CONFKEY_BOLUOME_COUPON_URL = "fbapi.boluome.coupon.url";
 	public static final String CONFKEY_BOLUOME_ORDER_URL = "fbapi.boluome.api.order.url";
-	
+
 	public static final String CONFKEY_BOLUOME_API_ORDER_URL = "fbapi.boluome.api.order.url";
 
 	// 依图
@@ -408,7 +408,7 @@ public class Constants {
 	// 借贷超市签到领奖锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
-	
+
 
 	// 借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR = "BORROWCASH_ TO_DRAW";
@@ -428,12 +428,12 @@ public class Constants {
 	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
-	  //逛逛惊喜返礼金
-	  public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
-	  public static final String GG_COUPON_LOCK = "gg_coupon_lock";
+	//逛逛惊喜返礼金
+	public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
+	public static final String GG_COUPON_LOCK = "gg_coupon_lock";
 	//自营商城返利
-	  public static final String SELFSUPPORT_REBATE = "selfsupport_rebate";
-	  
+	public static final String SELFSUPPORT_REBATE = "selfsupport_rebate";
+
 	// 双十二秒杀抢券活动
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
 	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
@@ -454,56 +454,63 @@ public class Constants {
 	// 宜信阿福RC4秘钥
 	public static final String YIXIN_AFU_PASSWORD = "fbapi.yixinafu.password";
 	// 宜信阿福查询用户逾期信息redis中的key前缀
-	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";	  
+	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";
 
 	//	sup游戏充值
 	public static final String CONFKEY_SUP_BUSINESS_ID = "fbapi.sup.business.id";
 	public static final String CONFKEY_SUP_BUSINESS_KEY = "fbapi.sup.business.key";
-	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
+	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";
 
 	public static final int ONE_YEAY_DAYS = 360;
 	//返呗与资产方对接时的平台标识
-	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
-	  public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
-	  //资产方查询用户借款及逾期信息redis中的key前缀
-	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
-	  //资产包
-	  public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
-	  public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
-	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
-	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
-	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
-	  
-	  public static final String CACHEKEY_COMPLETEORDER_LOCK = "cachekey_completeorder_lock";
-	  public static final String CACHEKEY_COMPLETEORDER_LOCK_VALUE = "cachekey_completeorder_lock_value";
-	  
-	  //公信宝认证的密钥
-	  public static final String AUTH_GXB_APPID = "auth.gxb.appid";
-	  public static final String AUTH_GXB_APPSECURITY = "auth.gxb.appsecurity";
-	  //51公积金认证
-	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
-	  public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
-	  public static final String CONFKEY_NEWFUND_SECRET = "fbapi.newfund.secret";
+	public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
+	public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
+	//资产方查询用户借款及逾期信息redis中的key前缀
+	public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
+	//资产包
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+	public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
+	public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
+	public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+
+	public static final String CACHEKEY_COMPLETEORDER_LOCK = "cachekey_completeorder_lock";
+	public static final String CACHEKEY_COMPLETEORDER_LOCK_VALUE = "cachekey_completeorder_lock_value";
+
+	//公信宝认证的密钥
+	public static final String AUTH_GXB_APPID = "auth.gxb.appid";
+	public static final String AUTH_GXB_APPSECURITY = "auth.gxb.appsecurity";
+	//51公积金认证
+	public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
+	public static final String CONFKEY_NEWFUND_APPKEY = "fbapi.newfund.appkey";
+	public static final String CONFKEY_NEWFUND_SECRET = "fbapi.newfund.secret";
 
 	//快递鸟配置
 	public static final String KDNIAO_BUSINESSID = "fbadmin.kdniao.businessid";
 	public static final String KDNIAO_APIKEY = "fbadmin.kdniao.apikey";
-	
+
 
 	public static final String ORDER_PAY_ORDER_ID = "order_pay_orderId:";
 
 	//resource 类型
 	public static final String USER_SHARE_INFO = "USER_SHARE_INFO";
-	
+
 	public static final String USER_SHARE_INFO_CONFIGURE = "USER_SHARE_INFO_CONFIGURE";
 	//resource 类型
 	public static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
-	
+
 	//轮播图
 	public static final String PERSONAL_CENTER_BANNER = "PERSONAL_CENTER_BANNER";
 
 	//设备黑名单
 	public static final String DEVICE_UUID_BLACK = "DEVICE_UUID_BLACK";
 
+
+	//访问H5域名
+	public static final String H5_REQUEST_URI = "H5_REQUEST_URI";
+
+
+
 	public static final String 	FACE_GAME_RED_CONFIG = "face_game_red_config";
+
 }

@@ -9,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,6 +68,11 @@ public class ContractPdfThreadPool{
     public void createGoodsInstalmentProtocolPdf(Long borrowId,String type,Long userId){
         GoodsInstalmentProtocolTask goodsInstalmentProtocolTask = new GoodsInstalmentProtocolTask(borrowId,type,userId);
         service.execute(goodsInstalmentProtocolTask);
+    }
+
+    public void LeaseProtocolPdf(Map<String,Object> data,Long userId ,Long orderId){
+        LeaseProtocolPdf leaseProtocolPdf = new LeaseProtocolPdf(data, userId,orderId);
+        service.execute(leaseProtocolPdf);
     }
 
     class ProtocolCashLoanTask implements Runnable {
@@ -163,4 +171,23 @@ public class ContractPdfThreadPool{
         }
     }
 
+    class LeaseProtocolPdf implements Runnable {
+        private Map<String,Object> data;
+        private Long userId;
+        private Long orderId;
+        public LeaseProtocolPdf(Map<String,Object> idata,Long uId,Long oId) {
+            data = idata;
+            userId=uId;
+            orderId=oId;
+        }
+        @Override
+        public void run() {
+            try {
+                afLegalContractPdfCreateServiceV2.leaseProtocolPdf(data, userId,orderId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 }

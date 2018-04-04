@@ -342,4 +342,16 @@ FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no
 	   left join `af_user_account` `aua` on`au`.`id`= `aua`.`user_id`
 	   where ab.id=#{borrowId}
 	</select>
+	
+	<select id="getOverdueBorrowInfoByUserId" resultType="AfBorrowDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_borrow 
+		WHERE is_delete = 0
+		AND user_id = #{userId}
+		AND overdue_num <![CDATA[ > ]]> 0 
+		order by id desc 
+		limit 1
+    </select>
+	
 </mapper>

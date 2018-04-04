@@ -57,6 +57,7 @@ public class GetNperListApi implements ApiHandle {
     AfSchemeGoodsService afSchemeGoodsService;
     @Resource
     AfGoodsService afGoodsService;
+    
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -128,6 +129,12 @@ public class GetNperListApi implements ApiHandle {
                     array = JSON.parseArray(value);
                 }
             }
+            
+           /* JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(orderInfo.getGoodsId());
+            if (newArray != null) {
+            	array = newArray;
+			}*/
+            
             //removeSecondNper(array);
 
             //分期金额限制

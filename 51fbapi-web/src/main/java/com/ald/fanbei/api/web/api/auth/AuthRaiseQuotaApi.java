@@ -24,19 +24,18 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("authRaiseQuotaApi")
 public class AuthRaiseQuotaApi implements ApiHandle {
 
-	@Resource
-	AuthCallbackManager authCallbackManager;
+    @Resource
+    AuthCallbackManager authCallbackManager;
 
-	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
-		String authItem = ObjectUtils.toString(requestDataVo.getParams().get("authItem"));
-		// 复用认证回调提额逻辑
-		AuthCallbackBo authCallbackBo = new AuthCallbackBo("", ObjectUtils.toString(userId), authItem,
-				RiskAuthStatus.SUCCESS.getCode());
-		authCallbackManager.execute(authCallbackBo);
-		return resp;
-	}
+    @Override
+    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	Long userId = context.getUserId();
+	String authItem = ObjectUtils.toString(requestDataVo.getParams().get("authItem"));
+	// 复用认证回调提额逻辑
+	AuthCallbackBo authCallbackBo = new AuthCallbackBo("", ObjectUtils.toString(userId), authItem, RiskAuthStatus.SUCCESS.getCode(), requestDataVo.getParams().get("authItem").toString());
+	authCallbackManager.execute(authCallbackBo);
+	return resp;
+    }
 
 }

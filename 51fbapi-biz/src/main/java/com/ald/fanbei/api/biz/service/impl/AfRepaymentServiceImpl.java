@@ -482,6 +482,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
                     //获取培训账单
                     AfBorrowBillDo trainBill = afBorrowBillDao.getBillTrainAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
+                    //获取租赁账单
+                   AfBorrowBillDo leaseBill = afBorrowBillDao.getBillLeaseAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
+
                     AfUserDo userDo = afUserService.getUserById(repayment.getUserId());
                     // 变更账单 借款表状态
                     afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(), repayment.getRid(),
@@ -515,6 +518,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     BigDecimal houseAmount = houseBill == null ? BigDecimal.ZERO : houseBill.getPrincipleAmount();
                     BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
                     BigDecimal trainAmount = trainBill.getPrincipleAmount() == null ? BigDecimal.ZERO : trainBill.getPrincipleAmount();
+                    BigDecimal leaseAmount = leaseBill == null ? BigDecimal.ZERO : leaseBill.getPrincipleAmount();
                     //还培训额度
                     if(trainAmount.compareTo(BigDecimal.ZERO) == 1) {
                         //减少培训使用额度
@@ -528,8 +532,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                             }
                         }
                     }
-                    //线上账单金额（总金额-培训金额）
-                    BigDecimal onlineAmount = backAmount.subtract(trainAmount);
+                    //线上账单金额（总金额-培训金额-租赁金额）
+                    BigDecimal onlineAmount = backAmount.subtract(trainAmount).subtract(leaseAmount);
                     //还线上额度
                     if(onlineAmount.compareTo(BigDecimal.ZERO) == 1) {
                         //获取临时额度
