@@ -572,7 +572,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 		logger.info("验证禁止期:" + scene+",afterTenDay:"+afterTenDay+",between:"+between);
 		// 验证有效期
-		if (between < 0) {
+		if (between <= 0) {
 		    return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
 		} else {
 		    return false;
