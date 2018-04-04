@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
@@ -61,11 +62,6 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.third.util.KaixinUtil;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
-import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
@@ -1744,12 +1740,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						//新增白名单逻辑
 						try {
 							logger.info("dealBrandOrderSucc bklUtils submitBklInfo result  orderInfo ="+JSON.toJSONString(orderInfo));
-							if (isBklResult(orderInfo)){
+							if (isBklResult(orderInfo).equals("v2")){
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
-							}else {
+								orderInfo.setIagentStatus("C");
+							}else if (isBklResult(orderInfo).equals("v1")){
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+								orderInfo.setIagentStatus("A");
 							}
 						}catch (Exception e){
 							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
@@ -1870,13 +1868,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return result;
 	}
 
-	private boolean isBklResult(AfOrderDo orderInfo) {
-		boolean result = true;
+	private String  isBklResult(AfOrderDo orderInfo) {
+		String result = "v1";
+		//种子名单
 		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
 		if (userSeedDo != null){
 			result = false;
 			return result;
 		}*/
+		//开关
 		/*AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
 		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
 			result = false;
@@ -1889,7 +1889,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = false;
+				result = "v1";
 				return result;
 			}
 		}
@@ -1897,7 +1897,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		if (afResourceDo != null){
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
 			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
-				result = false;
+				result = "v1";
 				return result;
 			}
 			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
@@ -1908,7 +1908,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
 			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
-				result = false;
+				result = "v1";
 				return result;
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
@@ -1916,17 +1916,25 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			resultDto.setCheckResult("1");
 			resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList));
+			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
 			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
 				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
 					//直接拒绝
+					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					Map<String,String> qmap = new HashMap<>();
 					qmap.put("orderNo",orderInfo.getOrderNo());
-					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
-					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));
+					result = "v3";
+					final String  orderNo = orderInfo.getOrderNo();
+					final String json = JSONObject.toJSONString(qmap);
+					YFSmsUtil.pool.execute(new Runnable() {
+						@Override
+						public void run() {
+							HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+						}
+					});
 				}else {
-					result = true;//需电核
+					result = "v2";//需电核
 				}
 			}
 		}

@@ -1203,11 +1203,11 @@ public class RiskUtil extends AbstractThird {
 		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 			//新增白名单逻辑
 			try {
-				if (isBklResult(orderInfo)){
+				if (isBklResult(orderInfo).equals("v2")){
 					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 					submitBklInfo(orderInfo);
 					orderInfo.setIagentStatus("C");
-				}else {
+				}else if (isBklResult(orderInfo).equals("v1")){
 					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 					orderInfo.setIagentStatus("A");
@@ -1231,8 +1231,8 @@ public class RiskUtil extends AbstractThird {
 		return resultMap;
 	}
 
-	private boolean isBklResult(AfOrderDo orderInfo) {
-		boolean result = true;
+	private String  isBklResult(AfOrderDo orderInfo) {
+		String result = "v1";
 		//种子名单
 		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
 		if (userSeedDo != null){
@@ -1252,7 +1252,7 @@ public class RiskUtil extends AbstractThird {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = false;
+				result = "v1";
 				return result;
 			}
 		}
@@ -1260,7 +1260,7 @@ public class RiskUtil extends AbstractThird {
 		if (afResourceDo != null){
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
 			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
-				result = false;
+				result = "v1";
 				return result;
 			}
 			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
@@ -1271,7 +1271,7 @@ public class RiskUtil extends AbstractThird {
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
 			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
 				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
-				result = false;
+				result = "v1";
 				return result;
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
@@ -1287,9 +1287,18 @@ public class RiskUtil extends AbstractThird {
 					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
 					Map<String,String> qmap = new HashMap<>();
 					qmap.put("orderNo",orderInfo.getOrderNo());
-					HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderInfo.getOrderNo(),JSONObject.toJSONString(qmap));
+					result = "v3";
+					final String  orderNo = orderInfo.getOrderNo();
+					final String json = JSONObject.toJSONString(qmap);
+					YFSmsUtil.pool.execute(new Runnable() {
+						@Override
+						public void run() {
+							HttpUtil.doHttpPost("http://ctestadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+						}
+					});
+
 				}else {
-					result = true;//需电核
+					result = "v2";//需电核
 				}
 			}
 		}
