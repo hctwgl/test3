@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.third.util;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
@@ -51,6 +53,7 @@ import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -112,7 +115,9 @@ public class UpsUtil extends AbstractThird {
         public static final String KUAIJIE_TRADE_HEADER = "kuaijie:tradeno:req:";
         public static final String KUAIJIE_TRADE_RESPONSE_HEADER = "kuaijie:tradeno:resp:";
         public static final String KUAIJIE_TRADE_OBJECT_HEADER = "kuaijie:tradeno:resp:";
-	
+
+        @Resource
+        GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AfUpsLogDao afUpsLogDao;
 	
@@ -591,13 +596,14 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
 		reqBo.setUserNo(userNo);
+		reqBo.setPhone(phone);
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
 		reqBo.setProductName(productName);
-		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));
-		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPay");
+		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));		
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
@@ -659,33 +665,18 @@ public class UpsUtil extends AbstractThird {
         }
 	
 	
-	
 	/**
 	 * 快捷支付确认支付
 	 * 
-	 * @param userNo --用户唯一标识
-	 * @param bankCode --银行代码
-	 * @param cardNo --银行卡号
-	 * @param orderNo -- 订单编号  
-	 * @param returnUrl
-	 * @param notifyUrl
-	 * @param clientType  客户端类型
 	 */
-	public UpsCollectRespBo quickPayConfirm(String tradeNo,String userNo,String smsCode,String cardNo,String bankCode,String clientType, String merPriv){
-		String orderNo = getOrderNo("qpco", cardNo.substring(tradeNo.length()-4,tradeNo.length()));
-		//amount = setActualAmount(amount);
+	public UpsCollectRespBo quickPayConfirm(String oldTradeNo,String userNo,String smsCode,String clientType, String merPriv){
+		String tradeNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
 		UpsQuickPayConfirmReqBo reqBo = new UpsQuickPayConfirmReqBo();
 		setPubParam(reqBo,"quickPayConfirm",tradeNo,clientType);
-		//reqBo.setMerPriv(merPriv);
-		reqBo.setTradeNo(tradeNo);
+		reqBo.setOldOrderNo(oldTradeNo);
 		reqBo.setSmsCode(smsCode);
-		reqBo.setUserNo(userNo);
-		reqBo.setCardNo(cardNo);
-		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/quickPayConfirm");
-		logger.info("bank quickPayConfirm = "+ getNotifyHost() + "/third/ups/quickPayConfirm");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPayConfirm", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post("http://192.168.96.93:8080/ups/main.html", reqBo);
+		afUpsLogDao.addUpsLog(buildUpsLog("", "", "quickPayConfirm", tradeNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPayConfirm", reqBo);
 		if(StringUtil.isBlank(reqResult)){

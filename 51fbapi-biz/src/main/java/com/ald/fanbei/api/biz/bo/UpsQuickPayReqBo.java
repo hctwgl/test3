@@ -18,10 +18,6 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	private String cardNo			;	//卡号
 	private String certType			;	//证件类型
 	private String certNo			;	//证件号
-	//private String purpose		;   //用途
-	//private String remark			;   //备注
-	//private String returnUrl		;   //同步通知地址
-	//private String bankCode			;   //银行编号
 	private String notifyUrl		;   //异步通知地址
 	private String expiredTime      ;   //交易过期时间
 	private String productName      ;   //商品名称    

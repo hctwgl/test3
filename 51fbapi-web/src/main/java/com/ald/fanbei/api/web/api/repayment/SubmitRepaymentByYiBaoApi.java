@@ -79,7 +79,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
-		String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 
 
