@@ -1265,7 +1265,7 @@ public class RiskUtil extends AbstractThird {
 			}
 			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
 			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckState("5");//通过审核
+			iagentResultDo.setCheckResult("0");//通过审核
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
 			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+iagentResultDoList);
@@ -1276,7 +1276,7 @@ public class RiskUtil extends AbstractThird {
 			}
 			AfIagentResultDto resultDto = new AfIagentResultDto();
 			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckState("4");
+			iagentResultDo.setCheckResult("1");
 			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
 			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+resultDoList);
