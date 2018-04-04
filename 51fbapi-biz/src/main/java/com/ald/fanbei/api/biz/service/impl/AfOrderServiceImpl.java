@@ -1740,18 +1740,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 //TODO 回调方法
-                    if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-//						submitBklInfo(orderInfo);
-                        //新增白名单逻辑
-                        if (isBklResult(orderInfo)){
-                            logger.info("dealBrandOrderSucc bklUtils submitBklInfo result true");
-                            submitBklInfo(orderInfo);
-                            orderInfo.setIagentStatus("C");
-                        }else {
-                            logger.info("dealBrandOrderSucc bklUtils submitBklInfo result false");
-                            orderInfo.setIagentStatus("A");
-                        }
-                    }
+					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+						//新增白名单逻辑
+						try {
+							if (isBklResult(orderInfo)){
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
+								submitBklInfo(orderInfo);
+								orderInfo.setIagentStatus("C");
+							}else {
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+								orderInfo.setIagentStatus("A");
+							}
+						}catch (Exception e){
+							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+						}
+					}
 		    return 1;
 		} catch (Exception e) {
 		    status.setRollbackOnly();
@@ -1874,6 +1877,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			result = false;
 			return result;
 		}*/
+		AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
+		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
+			result = false;
+			return result;
+		}
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启

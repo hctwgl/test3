@@ -1201,15 +1201,18 @@ public class RiskUtil extends AbstractThird {
 		updateUsedAmount(orderInfo, borrow);
 		//TODO 电核
 		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-//			submitBklInfo(orderInfo);
 			//新增白名单逻辑
-			if (isBklResult(orderInfo)){
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo result true");
-				submitBklInfo(orderInfo);
-				orderInfo.setIagentStatus("C");
-			}else {
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo result false");
-				orderInfo.setIagentStatus("A");
+			try {
+				if (isBklResult(orderInfo)){
+					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
+					submitBklInfo(orderInfo);
+					orderInfo.setIagentStatus("C");
+				}else {
+					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+					orderInfo.setIagentStatus("A");
+				}
+			}catch (Exception e){
+				logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
 			}
 		}
 		logger.info("updateOrder orderInfo = {}", orderInfo);
@@ -1229,11 +1232,18 @@ public class RiskUtil extends AbstractThird {
 
 	private boolean isBklResult(AfOrderDo orderInfo) {
 		boolean result = true;
+		//种子名单
 		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
 		if (userSeedDo != null){
 			result = false;
 			return result;
 		}*/
+		//开关
+		AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
+		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
+			result = false;
+			return result;
+		}
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启
