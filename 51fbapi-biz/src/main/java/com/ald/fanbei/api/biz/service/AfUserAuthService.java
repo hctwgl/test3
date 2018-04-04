@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
@@ -77,4 +78,6 @@ public interface AfUserAuthService {
 	 * @return
 	 */
 	boolean passWhiteList(String userName);
+	
+	boolean getAuthRaiseStatus(AfAuthRaiseStatusDo afAuthRaiseStatusDo, String scene, String auth_type, Date authDate);
 }
