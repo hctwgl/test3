@@ -105,4 +105,10 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
 
 	}
+
+	@Override
+	public AfAuthRaiseStatusDo getByPrdTypeAndAuthType(String prdType, String authType, Long userId) {
+        
+        	return afAuthRaiseStatusDao.getByPrdTypeAndAuthType(prdType, authType, userId);
+	}
 }
