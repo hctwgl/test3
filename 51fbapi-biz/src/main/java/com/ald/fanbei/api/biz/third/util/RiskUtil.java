@@ -1239,11 +1239,11 @@ public class RiskUtil extends AbstractThird {
 			return result;
 		}*/
 		//开关
-		AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
+		/*AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
 		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
 			result = false;
 			return result;
-		}
+		}*/
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启
