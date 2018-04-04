@@ -493,7 +493,10 @@
 		</if>	
 		<if test="lng != null">
 		    ,lng=#{lng}
-		</if>	
+		</if>
+		<if test="iagentStatus != null">
+			,iagent_status=#{iagentStatus}
+		</if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
@@ -953,6 +956,9 @@
 			</if>
 			<if test="gpsAddress != null">
 				,gps_address=#{gpsAddress}
+			</if>
+			<if test="iagentStatus != null">
+				,iagent_status=#{iagentStatus}
 			</if>
 		WHERE id = #{rid}
 	</update>
