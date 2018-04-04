@@ -7,15 +7,18 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RaiseStatus;
 import com.ald.fanbei.api.dal.dao.AfAuthRaiseStatusDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.timevale.tgtext.text.pdf.bi;
 
 /**
  * 贷款业务ServiceImpl
@@ -29,6 +32,9 @@ import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseStatusDo, Long> implements AfAuthRaiseStatusService {
 
     private static final Logger logger = LoggerFactory.getLogger(AfAuthRaiseStatusServiceImpl.class);
+
+    @Autowired
+    BizCacheUtil bizCacheUtil;
 
     @Resource
     private AfAuthRaiseStatusDao afAuthRaiseStatusDao;
@@ -60,9 +66,9 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 	delegateRaiseStatus.setAuthType(raiseStatus.getAuthType());
 	delegateRaiseStatus.setPrdType(raiseStatus.getPrdType());
 	delegateRaiseStatus.setUserId(raiseStatus.getUserId());
-	AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByPrdTypeAndAuthType(raiseStatus.getPrdType(),raiseStatus.getAuthType(),raiseStatus.getUserId());
 	delegateRaiseStatus.setRaiseStatus(raiseStatus.getRaiseStatus());
 	delegateRaiseStatus.setGmtFinish(raiseStatus.getGmtFinish());
+	AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByPrdTypeAndAuthType(raiseStatus.getPrdType(), raiseStatus.getAuthType(), raiseStatus.getUserId());
 	if (existRaiseStatusDo != null) {
 	    logger.info("saveOrUpdateRaiseStatus exist:" + existRaiseStatusDo.toString() + ",isUpdate:" + isUpdate);
 	    if (isUpdate) {
@@ -70,8 +76,12 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 		afAuthRaiseStatusDao.updateById(delegateRaiseStatus);
 	    }
 	} else {
-	    logger.info("saveOrUpdateRaiseStatus save:" + delegateRaiseStatus.toString());
-	    afAuthRaiseStatusDao.saveRecord(delegateRaiseStatus);
+	    String raiseKey = raiseStatus.getPrdType() + raiseStatus.getAuthType() + raiseStatus.getUserId();
+	    if (bizCacheUtil.getObject(raiseKey) == null) {
+		bizCacheUtil.saveObject(raiseKey, raiseStatus.getAuthType(), 5);
+		logger.info("saveOrUpdateRaiseStatus save:" + delegateRaiseStatus.toString());
+		afAuthRaiseStatusDao.saveRecord(delegateRaiseStatus);
+	    }
 	}
     }
 

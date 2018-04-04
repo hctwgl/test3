@@ -30,11 +30,6 @@ public class AuthCallbackManager implements Executor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    private Logger logger = LoggerFactory.getLogger(AuthCallbackManager.class);
-
-    @Autowired
-    private BizCacheUtil bizCacheUtil;
-
     @PostConstruct
     public void init() {
 	register(AuthType.ALIPAY.getCode(), getExecutor("alipayAuthCallbackExecutor"));
@@ -50,19 +45,7 @@ public class AuthCallbackManager implements Executor, ApplicationContextAware {
 	String authItem = authCallbackBo.getAuthItem();
 	Executor executor = this.lookup(authItem);
 
-	logger.info("AuthCallbackManager authCallbackBo：" + authCallbackBo);
-	// 防止并发调用
-	try {
-	    Thread.sleep(50);
-	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	Object cacheObject = bizCacheUtil.getObject(authCallbackBo.getOrderNo());
-	if (cacheObject == null) {
-	    bizCacheUtil.saveObject(authCallbackBo.getOrderNo(), authCallbackBo.getOrderNo(), 10);
-	    executor.execute(authCallbackBo);
-	}
+	executor.execute(authCallbackBo);
     }
 
     private Executor getExecutor(String excutorName) {
