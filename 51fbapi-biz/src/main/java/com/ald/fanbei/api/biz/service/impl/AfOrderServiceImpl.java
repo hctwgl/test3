@@ -1739,12 +1739,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 						//新增白名单逻辑
 						try {
-							logger.info("dealBrandOrderSucc bklUtils submitBklInfo result  orderInfo ="+JSON.toJSONString(orderInfo));
-							if (isBklResult(orderInfo).equals("v2")){
+							String bklResult = isBklResult(orderInfo);
+							if (bklResult.equals("v2")){//需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
 								orderInfo.setIagentStatus("C");
-							}else if (isBklResult(orderInfo).equals("v1")){
+							}else if (bklResult.equals("v1")){//不需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 								orderInfo.setIagentStatus("A");
