@@ -553,6 +553,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 
 	if (afAuthRaiseStatusDo != null) {
+	    logger.info("afAuthRaiseStatusDo:" +afAuthRaiseStatusDo.toString());
 	    if ("N".equals(afAuthRaiseStatusDo.getRaiseStatus())) {
 		// 验证有效期
 		return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
