@@ -868,8 +868,8 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = requestProxy.post(url, reqBo);
 		try{
 			logger.info("sync kafka data consumerNo:"+consumerNo);
-			kafkaSync.syncEvent(consumerNo, KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(consumerNo, KafkaConstants.SYNC_CASH_LOAN,true);
+			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CASH_LOAN,true);
 		}catch (Exception e){
 
 		}
