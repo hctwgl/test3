@@ -138,7 +138,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
             }
             if(afUserAccountSenceTrain!=null){
                 trainAuAmount=afUserAccountSenceTrain.getAuAmount();
-                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
+                trainAmount=BigDecimalUtil.subtract(trainAuAmount, afUserAccountSenceTrain.getUsedAmount()).subtract(afUserAccountSenceTrain.getFreezeAmount());
             }
 
             //信用描述
