@@ -54,6 +54,10 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 
 	@Override
 	public void saveOrUpdateRaiseStatus(AfAuthRaiseStatusDo raiseStatus) {
+		saveOrUpdateRaiseStatus(raiseStatus, true);
+	}
+
+	private void saveOrUpdateRaiseStatus(AfAuthRaiseStatusDo raiseStatus,boolean isUpdate) {
 		AfAuthRaiseStatusDo delegateRaiseStatus = new AfAuthRaiseStatusDo();
 		delegateRaiseStatus.setAuthType(raiseStatus.getAuthType());
 		delegateRaiseStatus.setPrdType(raiseStatus.getPrdType());
@@ -61,22 +65,22 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 		AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByPrdTypeAndAuthType(raiseStatus.getPrdType(),raiseStatus.getAuthType(),raiseStatus.getUserId());
 		delegateRaiseStatus.setRaiseStatus(raiseStatus.getRaiseStatus());
 		delegateRaiseStatus.setGmtFinish(raiseStatus.getGmtFinish());
-		if (existRaiseStatusDo != null) {
+		if (existRaiseStatusDo != null&&isUpdate) {
 			delegateRaiseStatus.setRid(existRaiseStatusDo.getRid());
 			afAuthRaiseStatusDao.updateById(delegateRaiseStatus);
 		} else {
 			afAuthRaiseStatusDao.saveRecord(delegateRaiseStatus);
 		}
 	}
-
+	
 	@Override
 	public void initRaiseStatus(Long userId, String authType) {
 		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
 				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
+		this.saveOrUpdateRaiseStatus(bldRaiseStatus,false);
 		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
 				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
+		this.saveOrUpdateRaiseStatus(xjdRaiseStatus,false);
 
 	}
 
@@ -84,10 +88,10 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 	public void initCreditRaiseStatus(Long userId, String authType) {
 		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
 				RaiseStatus.Y.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
+		this.saveOrUpdateRaiseStatus(bldRaiseStatus,false);
 		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
 				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
+		this.saveOrUpdateRaiseStatus(xjdRaiseStatus,false);
 	}
 
 	@Override
@@ -99,10 +103,10 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 	public void initOnlinebankRaiseStatus(Long userId, String authType) {
 		AfAuthRaiseStatusDo bldRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.BLD_LOAN.getCode(),
 				RaiseStatus.N.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(bldRaiseStatus);
+		this.saveOrUpdateRaiseStatus(bldRaiseStatus,false);
 		AfAuthRaiseStatusDo xjdRaiseStatus = this.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(),
 				RaiseStatus.Y.getCode(), BigDecimal.ZERO, new Date());
-		this.saveOrUpdateRaiseStatus(xjdRaiseStatus);
+		this.saveOrUpdateRaiseStatus(xjdRaiseStatus,false);
 
 	}
 

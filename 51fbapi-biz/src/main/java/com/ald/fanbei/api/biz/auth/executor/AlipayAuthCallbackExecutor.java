@@ -70,6 +70,8 @@ public class AlipayAuthCallbackExecutor implements Executor {
 	AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 	afUserAuthDo.setUserId(userId);
 	if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
+	    // 首先初始化提额状态
+	    afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.ALIPAY.getCode());
 	    // 认证通过，更新支付宝认证状态
 	    afUserAuthDo.setAlipayStatus("Y");
 	    afUserAuthDo.setRiskStatus("Y");
@@ -81,8 +83,6 @@ public class AlipayAuthCallbackExecutor implements Executor {
 	    // 根据强风控状态判断提额场景
 	    AfAuthRaiseStatusDo afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.CASH.getName(), AuthType.ALIPAY.getCode(), userId);
 	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.ALIPAY.getCode(), afUserAuthDo.getGmtAlipay())) {
-		// 首先初始化提额状态
-		afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.ALIPAY.getCode());
 		if (StringUtils.equals("Y", basicStatus)) {
 		    RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.ALIPAY_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
 		    // 提额成功
