@@ -323,6 +323,10 @@ public class Constants {
 	public static final String CONFKEY_RISK_URL = "fbapi.risk.url";
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
 
+	public static final String CONFKEY_BKL_URL = "fbapi.bkl.url";
+	public static final String CONFKEY_ADMIN_URL = "fbapi.admin.url";
+	public static final String CONFKEY_BKL_ACCESS_TOKEN = "fbapi.bkl.access.token";
+
 	// 菠萝觅
 	public static final String CONFKEY_BOLUOME_APPKEY = "fbapi.boluome.appkey";
 	public static final String CONFKEY_BOLUOME_SECRET = "fbapi.boluome.secret";

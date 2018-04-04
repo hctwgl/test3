@@ -14,6 +14,8 @@ import com.ald.fanbei.api.biz.service.AfIagentResultService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.domain.AfBklDo;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
@@ -44,7 +46,7 @@ public class BklUtils {
         Map map=new HashMap();
         map.put("work_id", bklDo.getCsvArn()+ new Date().getTime());
         map.put("corp_code", "51返呗");
-        map.put("access_token", "xCGQF6wNeA1z6Cmz2UMW8F1as");
+        map.put("access_token", ConfigProperties.get(Constants.CONFKEY_BKL_ACCESS_TOKEN));
         map.put("job_code", "51FB-SP01");
         map.put("order_id", bklDo.getCsvArn() + new Date().getTime());
         String work_data = "{'csv_phone_num':'"+bklDo.getCsvPhoneNum()+"','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+bklDo.getCsvName()+"','csv_sex':'"+bklDo.getCsvSex()+
@@ -64,7 +66,7 @@ public class BklUtils {
         map.put("work_data", dtt);
         mdata.put("mdata", AOSJson.toJson(map));
 
-        HttpRequestVO httpRequestVO = new HttpRequestVO("http://221.133.225.245:18080/worksheetAPI/requestJob", mdata);
+        HttpRequestVO httpRequestVO = new HttpRequestVO(ConfigProperties.get(Constants.CONFKEY_BKL_URL), mdata);
 
         try {
             HttpResponseVO httpResponseVO = AOSHttpClient.upload(httpRequestVO);
