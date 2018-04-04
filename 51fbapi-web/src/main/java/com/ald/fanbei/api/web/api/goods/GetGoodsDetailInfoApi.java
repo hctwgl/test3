@@ -169,7 +169,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setSpecialPrice(BigDecimal.ZERO);
 		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
+				saleAmount, resource.getValue1(), resource.getValue2(),goodsId,"0");
 
 		if(nperList!= null){
 			Map nperMap = nperList.get(nperList.size() - 1);
