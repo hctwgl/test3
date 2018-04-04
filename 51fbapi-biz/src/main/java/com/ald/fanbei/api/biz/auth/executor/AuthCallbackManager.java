@@ -4,12 +4,16 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.AuthCallbackBo;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.AuthType;
 import com.google.common.collect.Maps;
 
@@ -22,49 +26,67 @@ import com.google.common.collect.Maps;
 @Component("authCallbackManager")
 public class AuthCallbackManager implements Executor, ApplicationContextAware {
 
-	private Map<String, Executor> executors = Maps.newConcurrentMap();
+    private Map<String, Executor> executors = Maps.newConcurrentMap();
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	@PostConstruct
-	public void init() {
-		register(AuthType.ALIPAY.getCode(), getExecutor("alipayAuthCallbackExecutor"));
-		register(AuthType.BANK.getCode(), getExecutor("bankAuthCallbackExecutor"));
-		register(AuthType.CARDEMAIL.getCode(), getExecutor("cardEmailAuthCallbackExecutor"));
-		register(AuthType.FUND.getCode(), getExecutor("fundAuthCallbackExecutor"));
-		register(AuthType.INSURANCE.getCode(), getExecutor("insuranceAuthCallbackExecutor"));
-		register(AuthType.ZHENGXIN.getCode(), getExecutor("zhengxinAuthCallbackExecutor"));
+    private Logger logger = LoggerFactory.getLogger(AuthCallbackManager.class);
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
+
+    @PostConstruct
+    public void init() {
+	register(AuthType.ALIPAY.getCode(), getExecutor("alipayAuthCallbackExecutor"));
+	register(AuthType.BANK.getCode(), getExecutor("bankAuthCallbackExecutor"));
+	register(AuthType.CARDEMAIL.getCode(), getExecutor("cardEmailAuthCallbackExecutor"));
+	register(AuthType.FUND.getCode(), getExecutor("fundAuthCallbackExecutor"));
+	register(AuthType.INSURANCE.getCode(), getExecutor("insuranceAuthCallbackExecutor"));
+	register(AuthType.ZHENGXIN.getCode(), getExecutor("zhengxinAuthCallbackExecutor"));
+    }
+
+    @Override
+    public void execute(AuthCallbackBo authCallbackBo) {
+	String authItem = authCallbackBo.getAuthItem();
+	Executor executor = this.lookup(authItem);
+
+	logger.info("AuthCallbackManager authCallbackBo：" + authCallbackBo);
+	// 防止并发调用
+	try {
+	    Thread.sleep(50);
+	} catch (InterruptedException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
-
-	@Override
-	public void execute(AuthCallbackBo authCallbackBo) {
-		String authItem = authCallbackBo.getAuthItem();
-		Executor executor = this.lookup(authItem);
-		executor.execute(authCallbackBo);
+	Object cacheObject = bizCacheUtil.getObject(authCallbackBo.getOrderNo());
+	if (cacheObject == null) {
+	    bizCacheUtil.saveObject(authCallbackBo.getOrderNo(), authCallbackBo.getOrderNo(), 10);
+	    executor.execute(authCallbackBo);
 	}
+    }
 
-	private Executor getExecutor(String excutorName) {
-		return (Executor) applicationContext.getBean(excutorName);
-	}
+    private Executor getExecutor(String excutorName) {
+	return (Executor) applicationContext.getBean(excutorName);
+    }
 
-	public Map<String, Executor> getExecutors() {
-		return executors;
-	}
+    public Map<String, Executor> getExecutors() {
+	return executors;
+    }
 
-	public void register(String name, Executor executor) {
-		executors.put(name, executor);
-	}
+    public void register(String name, Executor executor) {
+	executors.put(name, executor);
+    }
 
-	public void unregister(String name) {
-		executors.remove(name);
-	}
+    public void unregister(String name) {
+	executors.remove(name);
+    }
 
-	public Executor lookup(String name) {
-		return executors.get(name);
-	}
+    public Executor lookup(String name) {
+	return executors.get(name);
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	this.applicationContext = applicationContext;
+    }
 }
