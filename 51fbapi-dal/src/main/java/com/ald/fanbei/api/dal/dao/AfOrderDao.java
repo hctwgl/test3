@@ -308,6 +308,7 @@ public interface AfOrderDao {
 	int UpdateOrderLeaseShow(@Param("orderId")Long orderId,@Param("userId")Long userId);
 	String getTradeBusinessNameByOrderId(@Param("orderId")Long orderid);
 
+	void updateIagentStatusByOrderId(@Param("orderId")Long orderId, @Param("iagentStatus")String iagentStatus);
 	/**
 	 * 获取租赁协议
 	 * @return

@@ -72,7 +72,7 @@ public class GetTradeNperInfoApi implements ApiHandle {
 
 
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array,  rebateModels, BigDecimal.ONE.intValue(),
-                amount, resource.getValue1(), resource.getValue2(),0l);
+                amount, resource.getValue1(), resource.getValue2(),0l,"0");
 
         resp.addResponseData("nperList", nperList);
 
