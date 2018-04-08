@@ -1820,10 +1820,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		    } else {
 			failMsg = Constants.PAY_ORDER_UPS_FAIL;
 		    }
-//			if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-//				AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
-//				afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit().multiply(new BigDecimal(-1)));
-//			}
+			if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+				AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+				afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit().multiply(new BigDecimal(-1)));
+			}
 		    orderInfo.setPayTradeNo(payOrderNo);
 		    orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 		    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
