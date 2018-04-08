@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +77,7 @@ public class AppBorrowLoanShopController extends BaseController {
 	public String getInfoForBorrowLaonShop(HttpServletRequest request, HttpServletResponse response) {
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+		String systemType = ObjectUtils.toString(request.getParameter("systemType"), null);
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			AfResourceDo resourceDo = afResourceService.getScrollbarByType();
@@ -86,7 +88,7 @@ public class AppBorrowLoanShopController extends BaseController {
 			List<AfLoanTapsAndShops> list = new ArrayList<>();
 			List<AfLoanSupermarketTabDo> tabList = afLoanSupermarketTabService.getTabList();
 			if (tabList != null && tabList.size() > 0 ) {
-				list =  convertList(tabList);
+				list =  convertList(tabList, systemType);
 			}
 			
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -139,7 +141,7 @@ public class AppBorrowLoanShopController extends BaseController {
 
 	}
 	
-	public List<AfLoanTapsAndShops> convertList(List<AfLoanSupermarketTabDo> OldList){
+	public List<AfLoanTapsAndShops> convertList(List<AfLoanSupermarketTabDo> OldList, String systemType){
 		List<AfLoanTapsAndShops> list = new ArrayList<>();
 		if (OldList != null && OldList.size() > 0 ) {
 			for(AfLoanSupermarketTabDo old : OldList){
@@ -147,9 +149,9 @@ public class AppBorrowLoanShopController extends BaseController {
 				tapsAndShops.setAlias(old.getAlias());
 				tapsAndShops.setName(old.getName());
 				tapsAndShops.setSort(old.getSort());
-				
 				List<AfLoanShopVo> shopList = new ArrayList<>();
-				List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(old.getAlias(),null);
+				
+				List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(old.getAlias(),systemType);
 				if (sourceSupermarketList != null && sourceSupermarketList.size() > 0 ) {
 					for(AfLoanSupermarketDo oldShop :sourceSupermarketList){
 						AfLoanShopVo newShop = new AfLoanShopVo();
@@ -160,7 +162,6 @@ public class AppBorrowLoanShopController extends BaseController {
 						newShop.setLsmName(oldShop.getLsmName());
 						newShop.setLsmNo(oldShop.getLsmNo());
 						newShop.setMarketPoint(oldShop.getMarketPoint());
-						
 						shopList.add(newShop);
 					}
 				}

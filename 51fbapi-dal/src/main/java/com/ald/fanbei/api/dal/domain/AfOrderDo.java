@@ -90,6 +90,15 @@ public class AfOrderDo extends AbstractSerial{
 
 	private String lc;//订单来源地址
 
+	private String iagentStatus;//智能电核状态
+
+	public String getIagentStatus() {
+		return iagentStatus;
+	}
+
+	public void setIagentStatus(String iagentStatus) {
+		this.iagentStatus = iagentStatus;
+	}
 
 	public String getBqsBlackBox() {
 		return bqsBlackBox;

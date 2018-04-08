@@ -16,6 +16,7 @@ import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -55,8 +56,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         String label = ObjectUtils.toString(requestDataVo.getParams().get("label"), null);
         String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"), null);
-
-        Integer systemType=3;
+        int systemType=3;
         if(StringUtil.isNotEmpty(osType)){
             if(StringUtil.equals("iOS",osType)){
                 systemType=1;
@@ -65,7 +65,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
             }
         }
         List<AfLoanSupermarketDto> afLoanSupermarketDtoList = new ArrayList<AfLoanSupermarketDto>();
-        List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
+        List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType+"");
         AfResourceDo afResourceDo = new AfResourceDo();
         afResourceDo = afResourceDao.getSingleResourceBytype("unionregister");
         String unionRegisterUrl = afResourceDo.getValue();
