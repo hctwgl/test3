@@ -1363,11 +1363,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									String result = verybo.getResult();
 									if (!result.equals("10")) {
 										canPay = false;
-										afOrderService.closeOrder("风控审批不通过","",orderId,userId);
-										resultMap.put("success", false);
-										resultMap.put("verifybo", JSONObject.toJSONString(verybo));
-										resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 									}
+								}
+								if(!canPay){
+									afOrderService.closeOrder("风控审批不通过","",orderId,userId);
+									resultMap.put("success", false);
+									resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+									resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 								}
                             }
 							orderDao.updateOrder(orderInfo);
