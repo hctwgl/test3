@@ -464,4 +464,5 @@ public interface AfOrderService {
 	 * @return
 	 */
 	HashMap getLeaseProtocol(Long orderId);
+	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 }

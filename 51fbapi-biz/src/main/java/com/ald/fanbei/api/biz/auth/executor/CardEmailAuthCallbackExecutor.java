@@ -66,40 +66,45 @@ public class CardEmailAuthCallbackExecutor implements Executor {
 	if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
 	    // 初始化提额状态
 	    afAuthRaiseStatusService.initCreditRaiseStatus(userId, AuthType.CARDEMAIL.getCode());
-
 	    afUserAuthDo.setCreditStatus("Y");
 	    afUserAuthDo.setRiskStatus("Y");
 	    afUserAuthDo.setGmtCredit(new Date());
 	    afUserAuthService.updateUserAuth(afUserAuthDo);
-	    RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.CARDMAIL_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
-	    // 提额成功
-	    if (respBo != null && respBo.isSuccess()) {
-		String raiseStatus = respBo.getData().getResults()[0].getResult();
-		if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-		    String amount = respBo.getData().getAmount();
-		    String totalAmount = respBo.getData().getTotalAmount();
-		    // 更新小贷额度
-		    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-		    afUserAccountDo.setUserId(userId);
-		    afUserAccountDo.setAuAmount(new BigDecimal(amount));
-		    afUserAccountService.updateUserAccount(afUserAccountDo);
-		    // 更新总额度
-		    AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
-		    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
-		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.CARDEMAIL.getCode(), LoanType.CASH.getCode(), "Y", new BigDecimal(amount), new Date());
-		    // 提额成功，记录提额状态
-		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
 
-		} else {
-		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.CARDEMAIL.getCode(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
-		    // 提额失败，记录提额状态
-		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+	    AfAuthRaiseStatusDo afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.CASH.getName(), AuthType.CARDEMAIL.getCode(), userId);
+	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.CARDEMAIL.getCode(), afUserAuthDo.getGmtCredit())) {
+		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.CARDMAIL_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
+		// 提额成功
+		if (respBo != null && respBo.isSuccess()) {
+		    String raiseStatus = respBo.getData().getResults()[0].getResult();
+		    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+			String amount = respBo.getData().getAmount();
+			String totalAmount = respBo.getData().getTotalAmount();
+			// 更新小贷额度
+			AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+			afUserAccountDo.setUserId(userId);
+			afUserAccountDo.setAuAmount(new BigDecimal(amount));
+			afUserAccountService.updateUserAccount(afUserAccountDo);
+			// 更新总额度
+			AfUserAccountSenceDo totalAccountSenceDo = buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
+			afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.CARDEMAIL.getCode(), LoanType.CASH.getCode(), "Y", new BigDecimal(amount), new Date());
+			// 提额成功，记录提额状态
+			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+
+		    } else {
+			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.CARDEMAIL.getCode(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
+			// 提额失败，记录提额状态
+			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+		    }
 		}
 	    }
 
-	    // 线上分期提额
-	    afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.CARDMAIL_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.CARDEMAIL.getCode());
-
+	    afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.ONLINE.getName(), AuthType.CARDEMAIL.getCode(), userId);
+	    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.CARDEMAIL.getCode(), afUserAuthDo.getGmtCredit())) {
+		// 线上分期提额
+		afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.CARDMAIL_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.CARDEMAIL.getCode());
+	    }
 	} else {
 	    afUserAuthDo.setCreditStatus("N");
 	    afUserAuthService.updateUserAuth(afUserAuthDo);
