@@ -100,6 +100,7 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.AsyLoginService;
@@ -139,6 +140,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -177,6 +179,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.google.common.collect.Maps;
 
 /**
@@ -855,7 +858,33 @@ public class RiskUtil extends AbstractThird {
 			summaryOrderData.put("bankAmount", orderDo.getBankAmount());
 			summaryOrderData.put("borrowAmount", orderDo.getBorrowAmount());
 			summaryOrderData.put("actualAmount", orderDo.getActualAmount());
+			summaryOrderData.put("saleAmount", orderDo.getSaleAmount());
+			summaryOrderData.put("priceAmount", orderDo.getPriceAmount());
 
+			logger.info("summaryOrderData.get(\"orderType\")) value is :" + summaryOrderData.get("orderType"));
+			if(OrderType.BOLUOME.getCode().equals(summaryOrderData.get("orderType")))
+			{
+			    // 构造查询参数
+			    Map<String, String> params = new HashMap<String, String>();
+			    params.put(BoluomeCore.ORDER_ID, summaryOrderData.get("thirdOrderNo").toString());
+			    params.put(BoluomeCore.TIME_STAMP, String.valueOf(System.currentTimeMillis() / 1000));
+			    String detailsUrl;
+			    BoluomeOrderResponseDto orderResponse=null;
+			    try {
+				detailsUrl = BoluomeCore.buildOrderDetailsQueryUrl(params);
+    				// 查询订单详情
+    				String response = HttpUtil.doGet(detailsUrl, 100);
+    				orderResponse = JSON.parseObject(response, BoluomeOrderResponseDto.class);
+			    } catch (UnsupportedEncodingException e) {
+				logger.error("weakRisk boluome order details error:",e);
+			    }
+				//获取菠萝觅订单详情
+			    if(orderResponse!=null)
+			    summaryOrderData.put("boluomeDetails", orderResponse.getData());
+			    else {
+				    summaryOrderData.put("boluomeDetails", "");
+			    }
+			}
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
 		reqBo.setReqExt("");
@@ -1138,9 +1167,9 @@ public class RiskUtil extends AbstractThird {
 			// 增加虚拟商品记录
 			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
 		}
-		if (borrow.getNper() == 1) {
-			borrow.setNperAmount(borrow.getAmount());
-		}
+//		if (borrow.getNper() == 1) {
+//			borrow.setNperAmount(borrow.getAmount());
+//		}
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 
