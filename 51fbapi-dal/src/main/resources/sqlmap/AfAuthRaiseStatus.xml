@@ -167,5 +167,13 @@
         LIMIT 1
     </select>
     
-    
+     <select id="getByPrdTypeAndUserId" resultType="com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_auth_raise_status
+        where prd_type= #{prdType}
+        AND user_id = #{userId}
+        AND is_delete = 0
+        LIMIT 1
+    </select>
 </mapper>

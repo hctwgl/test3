@@ -24,6 +24,8 @@ import com.alibaba.fastjson.JSONArray;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +62,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("payOrderV1Api")
 public class PayOrderV1Api implements ApiHandle {
 
+	Logger logger = LoggerFactory.getLogger(ApiHandle.class);
     @Resource
     AfUserCouponService afUserCouponService;
     @Resource
