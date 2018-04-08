@@ -516,5 +516,7 @@ public class Constants {
 
 	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
 
+	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
+
 
 }
