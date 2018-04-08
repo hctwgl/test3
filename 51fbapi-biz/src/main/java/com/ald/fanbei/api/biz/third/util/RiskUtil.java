@@ -867,17 +867,21 @@ public class RiskUtil extends AbstractThird {
 			    params.put(BoluomeCore.ORDER_ID, summaryOrderData.get("thirdOrderNo").toString());
 			    params.put(BoluomeCore.TIME_STAMP, String.valueOf(System.currentTimeMillis() / 1000));
 			    String detailsUrl;
-			    String response="";
+			    BoluomeOrderResponseDto orderResponse=null;
 			    try {
 				detailsUrl = BoluomeCore.buildOrderDetailsQueryUrl(params);
     				// 查询订单详情
-    				response = HttpUtil.doGet(detailsUrl, 100);
+    				String response = HttpUtil.doGet(detailsUrl, 100);
+    				orderResponse = JSON.parseObject(response, BoluomeOrderResponseDto.class);
 			    } catch (UnsupportedEncodingException e) {
 				logger.error("weakRisk boluome order details error:",e);
 			    }
-			    
-			    //获取菠萝觅订单详情
-			    summaryOrderData.put("boluomeDetails", response);
+				//获取菠萝觅订单详情
+			    if(orderResponse!=null)
+			    summaryOrderData.put("boluomeDetails", orderResponse.getData());
+			    else {
+				    summaryOrderData.put("boluomeDetails", "");
+			    }
 			}
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
