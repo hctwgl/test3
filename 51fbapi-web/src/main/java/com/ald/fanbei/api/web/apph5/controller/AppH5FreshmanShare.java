@@ -160,7 +160,7 @@ public class AppH5FreshmanShare extends BaseController{
 			
 			for (AfFreshmanGoodsVo goodsInfo : list) {
                           List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
-                          new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2(),goodsInfo.getGoodsId());
+                          new BigDecimal(goodsInfo.getSaleAmount()), resource.getValue1(), resource.getValue2(),goodsInfo.getGoodsId(),"0");
                           if (nperList != null) {
                           Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
                          goodsInfo.setNperMap(nperMap);
@@ -358,7 +358,7 @@ public class AppH5FreshmanShare extends BaseController{
 						}
 					        //商品展示信息要去掉最大的可用优惠券金额，getSaleAmount() - 优惠券金额 = afterUseCouponAmount
 						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							afterUseCouponAmount, resource.getValue1(), resource.getValue2(),goodsId);
+							afterUseCouponAmount, resource.getValue1(), resource.getValue2(),goodsId,"0");
 						if(nperList!= null){
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);

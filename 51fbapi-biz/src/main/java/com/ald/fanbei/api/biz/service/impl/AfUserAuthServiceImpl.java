@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -25,6 +26,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +46,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 @Service("afUserAuthService")
 public class AfUserAuthServiceImpl implements AfUserAuthService {
 
+	Logger logger = LoggerFactory.getLogger(AfUserAuthServiceImpl.class);
     @Resource
     AfUserAuthDao afUserAuthDao;
     @Resource
@@ -534,6 +538,50 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 	return data;
     }
+    
+    public boolean getAuthRaiseStatus(AfAuthRaiseStatusDo afAuthRaiseStatusDo, String scene, String auth_type, Date authDate) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	AfResourceDo authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY");
+	AfResourceDo userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY");
+	if (scene.equals(UserAccountSceneType.ONLINE.getCode())) {
+	    authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY_ONLINE");
+	}
+	
+	if (afAuthRaiseStatusDo == null && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+	    // 分期场景可以继续验证有效期（现金场景未老用户情况，已经提额不再需要提额）
+	    return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
+	}
+
+	if (afAuthRaiseStatusDo != null) {
+	    logger.info("afAuthRaiseStatusDo:" +afAuthRaiseStatusDo.toString());
+	    if ("N".equals(afAuthRaiseStatusDo.getRaiseStatus())) {
+		// 验证有效期
+		return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
+	    }
+	    if ("F".equals(afAuthRaiseStatusDo.getRaiseStatus())) {
+		// 验证禁止期
+		Integer day = 0;
+		JSONArray jsonArray = JSON.parseArray(authDay.getValue());
+		for (int i = 0; i < jsonArray.size(); i++) {
+		    JSONObject obj = jsonArray.getJSONObject(i);
+		    if (obj.getString("type").equals(auth_type)) {
+			day = obj.getInteger("day");
+		    }
+		}
+		Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afAuthRaiseStatusDo.getGmtFinish()), day);
+		long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+		logger.info("验证禁止期:" + scene+",afterTenDay:"+afterTenDay+",between:"+between);
+		// 验证有效期
+		if (between <= 0) {
+		    return checkUserAuthDay(data, userAuthDay, auth_type, authDate);
+		} else {
+		    return false;
+		}
+	    }
+	}
+	
+	return false;
+    }
 
     private boolean checkUserAuthDay(Map<String, Object> data, AfResourceDo userAuthDay, String auth_type, Date authDate) {
 	Integer day = 0;
@@ -548,6 +596,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
 	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 	data.put("title", "");
+	logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
 	if (between < 0) {
 	    data.put("status", "N");
 	    return false;
