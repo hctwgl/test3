@@ -1,13 +1,24 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
+import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.BoluomeService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
@@ -34,6 +42,9 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
  * 提供给第三方调用接口 @类描述：
@@ -45,15 +56,211 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping("/thirdApi")
 public class ThirdController extends AbstractThird{
 
-    @Resource
-    AfOrderService afOrderService;
+    private static Map<String,String> RESULT_CODE = new HashMap<String, String>() {
+        {
+            put("未接通", "1");
+            put("非本人", "2");
+            put("未完成", "3");
+            put("拒绝", "4");
+            put("通过", "5");
+        }
+    };
     @Resource
     AfShopService afShopService;
     @Resource
     BoluomeUtil boluomeUtil;
     @Resource
     BoluomeService boluomeService;
+    @Resource
+    OssFileUploadService ossFileUploadService;
+    @Resource
+    AfIagentResultService afIagentResultService;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfOrderService afOrderService;
 
+    @Resource
+    HttpServletRequest request;
+    @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
+    @ResponseBody
+    public String iagentReport( @RequestParam(value = "audio",required = false) MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+        FileOutputStream fos = null;
+        InputStream in = null;
+        String fileUrl = null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("---work_id:"+work_id);
+        sb.append("---job_id:"+job_id);
+        sb.append("---work_result:"+work_result);
+        sb.append("---token:"+token);
+
+        sb.append("---iagentReport begin:");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        for (String key : paramMap.keySet()) {
+            String[] values = paramMap.get(key);
+            for (String value : values) {
+                sb.append("键:" + key + ",值:" + value);
+            }
+        }
+        sb.append("---iagentReport end");
+         String audioUrl = null;
+        if (audio != null){
+            sb.append("---audio name："+audio.getOriginalFilename());
+            OssUploadResult ossUploadResult= ossFileUploadService.uploadFileToOss(audio);
+            sb.append("---ossUploadResult url："+   ossUploadResult.getUrl());
+            audioUrl = ossUploadResult.getUrl();
+        }else {
+            sb.append("---audio name：null"  );
+            sb.append("---ossUploadResult url：null" );
+        }
+        logger.info(sb.toString());
+         final String audiourl = audioUrl;
+        YFSmsUtil.pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                processIagentResult(audiourl,job_id,work_result);
+            }
+        });
+        //processIagentResult("oooooo",job_id,work_result);
+        JSONObject jsonObject=new JSONObject();
+        JSONObject innerJsonObject=new JSONObject();
+        innerJsonObject.put("receipt_id",System.currentTimeMillis());
+        innerJsonObject.put("received_time",simpleDateFormat.format(new Date()));
+        jsonObject.put("success",innerJsonObject);
+        return JSON.toJSONString(jsonObject);
+    }
+
+    /**
+     * 处理返回结果
+     * @param audioUrl
+     * @param job_id
+     * @param work_result
+     */
+    private void processIagentResult(String audioUrl,String job_id,String work_result){
+        logger.info("智能电核处理返回结果");
+        JSONObject result = JSONObject.parseObject(work_result);
+        String result_code= result.getString("result_code");
+        AfIagentResultDo afIagentResultDo = new AfIagentResultDo();
+        afIagentResultDo.setAudioUrl(audioUrl);
+        afIagentResultDo.setWorkId(Long.parseLong(job_id));
+        afIagentResultDo.setWorkResult(work_result);
+        afIagentResultDo.setCheckState(RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code));
+        AfIagentResultDo aresultDo  = afIagentResultService.getIagentByWorkId(Long.parseLong(job_id));
+        //处理过不再处理
+        if (aresultDo != null && aresultDo.getCheckState() != null){
+            return;
+        }
+        afIagentResultService.updateResultByWorkId(afIagentResultDo);
+        dealOrder(result,Long.parseLong(job_id));
+    }
+
+    /**
+     * 处理订单
+     * @param result
+     */
+    private void dealOrder(JSONObject result,long job_id){
+
+        Map<String,Integer> answers = new HashMap<>();
+        answers.put("baseR",0);
+        answers.put("baseW",0);
+        answers.put("unbaseR",0);
+        answers.put("unbaseW",0);
+        //审核结果统计
+        checkAnswers(answers,result);
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.ORDER_MOBILE_VERIFY_SET,Constants.ORDER_MOBILE_VERIFY_SET);
+        int max = Integer.parseInt(afResourceDo.getValue5());
+        int min = Integer.parseInt(afResourceDo.getValue4());
+        String checkstate = "";
+        String iagentstate="";
+        String checkResult="";
+        if (answers.get("baseW")>0){
+            checkstate = "close";
+            iagentstate="E";
+            checkResult="1";
+        }else{
+            if (answers.get("unbaseW")<=min){
+                checkstate = "success";
+                iagentstate="D";
+                checkResult="0";
+            }else{
+                if (answers.get("unbaseW")>max){
+                    checkstate = "close";
+                    iagentstate="E";
+                    checkResult="1";
+                }else{
+                    checkstate = "review";
+                    iagentstate="C";
+                    checkResult="2";
+                }
+            }
+        }
+        AfIagentResultDo resultDo = new AfIagentResultDo();
+        resultDo.setWorkId(job_id);
+        resultDo.setCheckResult(checkResult);
+        afIagentResultService.updateResultByWorkId(resultDo);
+        AfOrderDo afOrderDo = null;
+        AfIagentResultDo afIagentResultDo = afIagentResultService.getIagentByWorkId(job_id);
+        if (afIagentResultDo != null){
+            String ordertype = afIagentResultDo.getOrderType();
+            //订单类型0自营订单1白领带
+            if ("0".equals(ordertype)){
+                afOrderDo = afOrderService.getOrderById(afIagentResultDo.getOrderId());
+            }else{
+
+            }
+
+        }
+
+        if (afOrderDo !=null){
+            String iagentStatus = afOrderDo.getIagentStatus();
+            if ("C".equals(iagentStatus)){
+                afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
+            }
+            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
+                Map<String,String> qmap = new HashMap<>();
+                qmap.put("orderNo",afOrderDo.getOrderNo());
+                //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                HttpUtil.doHttpPost("https://yadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
+            }
+        }
+
+    }
+
+    /**
+     * 电核结果统计
+     * @param answers
+     * @param result
+     */
+    private void checkAnswers(Map<String,Integer> answers ,JSONObject result){
+        List<AfResourceDo> questions = afResourceService.getConfigByTypes(Constants.ORDER_MOBILE_VERIFY_QUESTION_SET);
+        Map<String,String> qmap = new HashMap<>();
+        for (AfResourceDo temp:questions){
+            qmap.put(temp.getName(),temp.getValue());
+        }
+        JSONArray detail = result.getJSONArray("result_details");
+        if (detail != null){
+            for (Object temp:detail){
+                JSONObject tempj = (JSONObject)temp;
+                String Q_TXT = tempj.getString("Q_TXT");
+                String Q_ANS = tempj.getString("Q_ANS");
+                String baseFlag = qmap.get(Q_TXT);
+                if ("Y".equals(baseFlag)){
+                    if ("正确".equals(Q_ANS)){
+                        answers.put("baseR",answers.get("baseR").intValue()+1);
+                    }else{
+                        answers.put("baseW",answers.get("baseW").intValue()+1);
+                    }
+                }else{
+                    if ("正确".equals(Q_ANS)){
+                        answers.put("unbaseR",answers.get("unbaseR").intValue()+1);
+                    }else{
+                        answers.put("unbaseW",answers.get("unbaseW").intValue()+1);
+                    }
+                }
+            }
+        }
+    }
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String orderRefund(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception {
