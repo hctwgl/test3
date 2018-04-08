@@ -1086,11 +1086,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_NOFINISH_CANNOT_DELETE);
 		}
 	}
-	
-	if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-	    //添加第三方订单
-	    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
-	}
 
 	@Override
 	public AfOrderDo getOrderById(Long id) {
@@ -1123,6 +1118,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			riskDataMap.put("summaryOrderData", summaryOrderData);
 		} else {
 			riskDataMap.put("summaryOrderData", new HashMap<>());
+		}
+		
+		if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+		    //添加第三方订单
+		    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
 		}
 
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
