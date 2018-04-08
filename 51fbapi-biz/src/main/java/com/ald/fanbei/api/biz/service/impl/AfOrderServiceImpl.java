@@ -1739,12 +1739,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 						//新增白名单逻辑
 						try {
-							logger.info("dealBrandOrderSucc bklUtils submitBklInfo result  orderInfo ="+JSON.toJSONString(orderInfo));
-							if (isBklResult(orderInfo).equals("v2")){
+							String bklResult = isBklResult(orderInfo);
+							if (bklResult.equals("v2")){//需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
 								orderInfo.setIagentStatus("C");
-							}else if (isBklResult(orderInfo).equals("v1")){
+							}else if (bklResult.equals("v1")){//不需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 								orderInfo.setIagentStatus("A");
@@ -1870,18 +1870,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	private String  isBklResult(AfOrderDo orderInfo) {
 		String result = "v2";
-		//种子名单
-		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
-		if (userSeedDo != null){
-			result = false;
-			return result;
-		}*/
-		//开关
-		/*AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
-		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
-			result = false;
-			return result;
-		}*/
+
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启
@@ -1889,7 +1878,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v1";
+				result = "v0";
 				return result;
 			}
 		}
@@ -1930,7 +1919,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					YFSmsUtil.pool.execute(new Runnable() {
 						@Override
 						public void run() {
-							HttpUtil.doHttpPost("https://yadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+							HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
 						}
 					});
 				}else {

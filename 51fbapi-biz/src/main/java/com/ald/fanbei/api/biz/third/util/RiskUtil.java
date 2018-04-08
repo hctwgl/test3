@@ -1203,14 +1203,19 @@ public class RiskUtil extends AbstractThird {
 		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 			//新增白名单逻辑
 			try {
-				if (isBklResult(orderInfo).equals("v2")){
-					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
-					submitBklInfo(orderInfo);
-					orderInfo.setIagentStatus("C");
-				}else if (isBklResult(orderInfo).equals("v1")){
-					logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
-					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-					orderInfo.setIagentStatus("A");
+				try {
+					String bklResult = isBklResult(orderInfo);
+					if (bklResult.equals("v2")){//需电核
+						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
+						submitBklInfo(orderInfo);
+						orderInfo.setIagentStatus("C");
+					}else if (bklResult.equals("v1")){//不需电核
+						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+						orderInfo.setIagentStatus("A");
+					}
+				}catch (Exception e){
+					logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
 				}
 			}catch (Exception e){
 				logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
@@ -1252,7 +1257,7 @@ public class RiskUtil extends AbstractThird {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v1";
+				result = "v0";
 				return result;
 			}
 		}
@@ -1293,7 +1298,7 @@ public class RiskUtil extends AbstractThird {
 					YFSmsUtil.pool.execute(new Runnable() {
 						@Override
 						public void run() {
-							HttpUtil.doHttpPost("https://yadmin.51fanbei.com/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+							HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
 						}
 					});
 
