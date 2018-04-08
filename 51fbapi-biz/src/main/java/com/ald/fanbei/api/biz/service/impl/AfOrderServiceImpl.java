@@ -1047,6 +1047,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	} else {
 	    riskDataMap.put("summaryOrderData", new HashMap<>());
 	}
+	
+	if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+	    //添加第三方订单
+	    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
+	}
 
 	return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 	    @Override
