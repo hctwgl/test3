@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
@@ -32,15 +33,19 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.druid.sql.visitor.functions.Char;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.esign.sdk.tech.service.impl.a;
+
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -863,5 +868,25 @@ public class AfResourceServiceImpl implements AfResourceService {
    public List<AfResourceDo> getNewSpecialResource(String type){
         return afResourceDao.getNewSpecialResource(type);
     }
+
+	@Override
+	public int getIsShow(Long goodsId) {
+		int result = 0 ;
+		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GOODS_IS_SHOW", "SHOW_BRAND_LIST");
+		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
+		
+		if (resourceDo != null && goodsDo != null && goodsDo.getCategoryId() != null) {
+			String brandListStr = resourceDo.getValue1();
+			if (StringUtil.isNotBlank(brandListStr)) {
+				String[] brandArray = brandListStr.split(";");
+				for(String string : brandArray){
+					if (string.equals(goodsDo.getCategoryId().toString())) {
+						return 1;
+					}
+				}
+			}
+		}
+		return result;
+	}
 
 }

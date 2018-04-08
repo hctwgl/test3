@@ -58,6 +58,7 @@ public class GetNperListApi implements ApiHandle {
     @Resource
     AfGoodsService afGoodsService;
 
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -91,7 +92,7 @@ public class GetNperListApi implements ApiHandle {
             String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
 
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, rebateModels, BigDecimal.ONE.intValue(),
-                    nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
+                    nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId(),"1");
             resp.addResponseData("nperList", nperList);
             return resp;
         } else {
@@ -128,6 +129,12 @@ public class GetNperListApi implements ApiHandle {
                     array = JSON.parseArray(value);
                 }
             }
+
+           /* JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(orderInfo.getGoodsId());
+            if (newArray != null) {
+            	array = newArray;
+			}*/
+
             //removeSecondNper(array);
 
             //分期金额限制
@@ -135,7 +142,7 @@ public class GetNperListApi implements ApiHandle {
 
             try{
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
+                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId(),"1");
                 resp.addResponseData("nperList", nperList);
             }catch (Exception e){
                 logger.error("get nperList error:",e);

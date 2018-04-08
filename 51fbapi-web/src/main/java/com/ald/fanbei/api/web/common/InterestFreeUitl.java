@@ -1,12 +1,22 @@
 package com.ald.fanbei.api.web.common;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -20,10 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 分期业务封装处理工具类
@@ -45,14 +52,43 @@ public class InterestFreeUitl {
      * @param value2            手续费上下限预设值
      * @return
      */
-    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid) {
+    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if (goodsid != null && goodsid >0l){
             afResourceService = (AfResourceService)SpringBeanContextUtil.getBean("afResourceService");
             AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
             if(resource1!=null){
-                array = JSON.parseArray(resource1.getValue());
+
+                if ("1".equals(method)){
+                    Set<String> set = new HashSet<>();
+                    JSONArray temparray = JSON.parseArray(resource1.getValue());
+                    for (Object temp1:array){
+                        JSONObject tempobj1 = (JSONObject)temp1;
+                        set.add(tempobj1.getString("nper"));
+                    }
+                    JSONArray arr = new JSONArray();
+                    for (Object temp:temparray){
+                        JSONObject tempobj = (JSONObject)temp;
+                        String nper = tempobj.getString("nper");
+                        if (set.contains(nper)){
+                            arr.add(tempobj);
+                        }
+                    }
+                    array = arr;
+                }else{
+                    array = JSON.parseArray(resource1.getValue());
+                }
+
             }
+        /*    afInterestReduceGoodsService = (AfInterestReduceGoodsService)SpringBeanContextUtil.getBean("afInterestReduceGoodsService");
+
+            	JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
+                if (newArray != null) {
+                	array = newArray;
+
+			}*/
+
+
         }
 
         if (array == null) {
