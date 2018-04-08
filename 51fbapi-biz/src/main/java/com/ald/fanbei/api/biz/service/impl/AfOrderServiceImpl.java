@@ -1086,6 +1086,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_NOFINISH_CANNOT_DELETE);
 		}
 	}
+	
+	if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+	    //添加第三方订单
+	    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
+	}
 
 	@Override
 	public AfOrderDo getOrderById(Long id) {
