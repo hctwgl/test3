@@ -858,7 +858,9 @@ public class RiskUtil extends AbstractThird {
 			summaryOrderData.put("bankAmount", orderDo.getBankAmount());
 			summaryOrderData.put("borrowAmount", orderDo.getBorrowAmount());
 			summaryOrderData.put("actualAmount", orderDo.getActualAmount());
-			
+			summaryOrderData.put("saleAmount", orderDo.getSaleAmount());
+			summaryOrderData.put("priceAmount", orderDo.getPriceAmount());
+
 			logger.info("summaryOrderData.get(\"orderType\")) value is :" + summaryOrderData.get("orderType"));
 			if(OrderType.BOLUOME.getCode().equals(summaryOrderData.get("orderType")))
 			{
