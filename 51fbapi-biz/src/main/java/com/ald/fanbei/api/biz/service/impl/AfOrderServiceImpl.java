@@ -1870,18 +1870,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	private String  isBklResult(AfOrderDo orderInfo) {
 		String result = "v2";
-		//种子名单
-		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
-		if (userSeedDo != null){
-			result = false;
-			return result;
-		}*/
-		//开关
-		/*AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
-		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
-			result = false;
-			return result;
-		}*/
+
 		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
 		if (bklWhiteResource != null) {
 			//白名单开启
@@ -1889,7 +1878,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v1";
+				result = "v0";
 				return result;
 			}
 		}

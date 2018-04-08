@@ -1257,7 +1257,7 @@ public class RiskUtil extends AbstractThird {
 			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
 			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
 			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v1";
+				result = "v0";
 				return result;
 			}
 		}
