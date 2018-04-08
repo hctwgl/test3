@@ -27,60 +27,70 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	}
 	public void setAmount(String amount) {
 		this.amount = amount;
+		this.put("amount", amount);
 	}
 	public String getUserNo() {
 		return userNo;
 	}
 	public void setUserNo(String userNo) {
 		this.userNo = userNo;
+		this.put("userNo", userNo);
 	}
 	public String getRealName() {
 		return realName;
 	}
 	public void setRealName(String realName) {
 		this.realName = realName;
+		this.put("realName", realName);
 	}
 	public String getPhone() {
 		return phone;
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+		this.put("phone", phone);
 	}
 	public String getCardNo() {
 		return cardNo;
 	}
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
+		this.put("cardNo", cardNo);
 	}
 	public String getCertType() {
 		return certType;
 	}
 	public void setCertType(String certType) {
 		this.certType = certType;
+		this.put("certType", certType);
 	}
 	public String getCertNo() {
 		return certNo;
 	}
 	public void setCertNo(String certNo) {
 		this.certNo = certNo;
+		this.put("certNo", certNo);
 	}
 	public String getNotifyUrl() {
 		return notifyUrl;
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+		this.put("notifyUrl", notifyUrl);
 	}
 	public String getExpiredTime() {
 		return expiredTime;
 	}
 	public void setExpiredTime(String expiredTime) {
 		this.expiredTime = expiredTime;
+		this.put("expiredTime", expiredTime);
 	}
 	public String getProductName() {
 		return productName;
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+		this.put("productName", productName);
 	}
 	
 	

@@ -12,69 +12,66 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
  */
 public class AfBankUserBankDto extends AfUserBankcardDo {
 
-	private static final long serialVersionUID = 1L;
-	
-	private String bankIcon;
-	private String isValid;	
-	private UpsBankStatusDto bankStatus;
-	
-	private String message;
-	private String payType;
+    private static final long serialVersionUID = 1L;
 
-	public String getIsValid() {
-		return isValid;
-	}
+    private String bankIcon;
+    private String isValid;
+    private UpsBankStatusDto bankStatus;
 
-	public void setIsValid(String isValid) {
-		this.isValid = isValid;
-	}
+    private String message;
 
-	/**
-	 * @return the bankIcon
-	 */
-	public String getBankIcon() {
-		return bankIcon;
-	}
-	/**
-	 * @param bankIcon the bankIcon to set
-	 */
-	public void setBankIcon(String bankIcon) {
-		this.bankIcon = bankIcon;
-	}
+    private String bankChannel;
 
-	public UpsBankStatusDto getBankStatus() {
-	    return bankStatus;
-	}
+    public String getIsValid() {
+	return isValid;
+    }
 
-	public void setBankStatus(UpsBankStatusDto bankStatus) {
-	    this.bankStatus = bankStatus;
-	}
+    public void setIsValid(String isValid) {
+	this.isValid = isValid;
+    }
 
-	
-	public String getMessage() {
-	    return message;
-	}
+    /**
+     * @return the bankIcon
+     */
+    public String getBankIcon() {
+	return bankIcon;
+    }
 
-	public void setMessage(String message) {
-	    this.message = message;
-	}
+    /**
+     * @param bankIcon
+     *            the bankIcon to set
+     */
+    public void setBankIcon(String bankIcon) {
+	this.bankIcon = bankIcon;
+    }
 
-	
-	public String getPayType() {
-		return payType;
-	}
+    public UpsBankStatusDto getBankStatus() {
+	return bankStatus;
+    }
 
-	public void setPayType(String payType) {
-		this.payType = payType;
-	}
+    public void setBankStatus(UpsBankStatusDto bankStatus) {
+	this.bankStatus = bankStatus;
+    }
 
-	@Override
-	public String toString() {
-		return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid="
-				+ isValid + ", bankStatus=" + bankStatus + ", message="
-				+ message + ", payType=" + payType + "]";
-	}
+    public String getMessage() {
+	return message;
+    }
 
-	
+    public void setMessage(String message) {
+	this.message = message;
+    }
+
+    public String getBankChannel() {
+	return bankChannel;
+    }
+
+    public void setBankChannel(String bankChannel) {
+	this.bankChannel = bankChannel;
+    }
+
+    @Override
+    public String toString() {
+	return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid=" + isValid + ", bankStatus=" + bankStatus + ", message=" + message + ", bankChannel=" + bankChannel + "]";
+    }
 
 }
