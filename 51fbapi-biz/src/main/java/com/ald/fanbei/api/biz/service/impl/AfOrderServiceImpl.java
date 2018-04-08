@@ -1345,6 +1345,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							AfBorrowDo borrow = new AfBorrowDo();
                             //租赁逻辑
                             if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+                                orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+                                orderInfo.setStatus(OrderStatus.NEW.getCode());
                                 merPriv = OrderType.LEASE.getCode();
                                 remark = "租赁商品订单支付";
 
@@ -1371,6 +1373,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 									resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 								}
+								else {
+                                    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+                                    orderInfo.setStatus(OrderStatus.DEALING.getCode());
+                                }
                             }
 							orderDao.updateOrder(orderInfo);
                             // 银行卡支付 代收
