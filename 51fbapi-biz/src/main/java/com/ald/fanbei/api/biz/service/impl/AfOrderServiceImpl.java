@@ -1265,6 +1265,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								String borrowTime = sdf.format(borrow.getGmtCreate());
 								RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								canPay = verybo.isSuccess();
+								if(canPay){
+									String result = verybo.getResult();
+									if (!result.equals("10")) {
+										canPay = false;
+										afOrderService.closeOrder("风控审批不通过","",orderId,userId);
+										resultMap.put("success", false);
+										resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+										resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+									}
+								}
                             }
 							orderDao.updateOrder(orderInfo);
                             // 银行卡支付 代收
@@ -1810,10 +1820,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		    } else {
 			failMsg = Constants.PAY_ORDER_UPS_FAIL;
 		    }
-			if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-				AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
-				afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit().multiply(new BigDecimal(-1)));
-			}
+//			if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
+//				AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+//				afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit().multiply(new BigDecimal(-1)));
+//			}
 		    orderInfo.setPayTradeNo(payOrderNo);
 		    orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 		    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
