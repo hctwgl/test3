@@ -1096,7 +1096,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	// public int deleteOrder(Long id) {
 	// return orderDao.deleteOrder(id);
 	// }
-
 	@Override
 	public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType,
 			final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo,
@@ -1119,6 +1118,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			riskDataMap.put("summaryOrderData", summaryOrderData);
 		} else {
 			riskDataMap.put("summaryOrderData", new HashMap<>());
+		}
+		
+		if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+		    //添加第三方订单
+		    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
 		}
 
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
@@ -1182,16 +1186,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = null;
-						if (nper == 1) {
-							// 信用支付
-							bo = afResourceService.borrowRateWithResourceCredit(nper);
-						} else {
+//						if (nper == 1) {
+//							// 信用支付
+//							bo = afResourceService.borrowRateWithResourceCredit(nper);
+//						} else {
 							if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
 								bo = afResourceService.borrowRateWithResourceForTrade(nper);
 							} else {
 								bo = afResourceService.borrowRateWithResource(nper, userName);
 							}
-						}
+//						}
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
 						logger.info("updateOrder orderInfo = {}", orderInfo);
@@ -1415,7 +1419,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	public JSONObject borrowRateWithOrder(Long orderId, Integer nper) {
 		AfOrderDo order = afOrderService.getOrderById(orderId);
-
 		JSONObject borrowRate = null;
 		if (StringUtils.equals(order.getOrderType(), OrderType.AGENTBUY.getCode()) && order.getNper() > 0) {
 			AfAgentOrderDo agentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
