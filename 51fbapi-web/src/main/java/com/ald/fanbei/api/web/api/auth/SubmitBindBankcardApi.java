@@ -21,7 +21,7 @@ import com.ald.fanbei.api.web.validator.bean.SubmitBindBankcardParam;
 /**
  *@类现描述：绑卡并支付订单
  *@author ZJF 2018年4月09日
- *@since 4.1.2以后替换类{@link }
+ *@since 4.1.2
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
