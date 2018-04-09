@@ -3,13 +3,20 @@
  */
 package com.ald.fanbei.api.web.api.pay;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.KuaijieRepaymentBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
+import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -20,6 +27,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.twitter.conversions.string;
 
 /**
  * 
@@ -32,8 +40,8 @@ public class ConfirmPaymentApi implements ApiHandle {
 
     @Resource
     AfUserBankcardDao afUserBankcardDao;
-    @Resource
-    UpsUtil upsUtil;
+    @Autowired
+    UpsPayKuaijieServiceAbstract kuaijieRepaymentServiceAbstract;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -45,13 +53,16 @@ public class ConfirmPaymentApi implements ApiHandle {
 	if (tradeNo == null || smsCode == null) {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	}
-	
-	UpsCollectRespBo respBo = upsUtil.quickPayConfirm(tradeNo, context.getUserId().toString(), smsCode, "02", "QUICK_PAY_CONFIRM");
 
-	if (!respBo.isSuccess()) {
-	    throw new FanbeiException(respBo.getRespDesc());
+	Map<String, Object> map = new HashMap<String, Object>();
+	kuaijieRepaymentServiceAbstract.doUpsPay(map, tradeNo, smsCode);
+
+	if (map.get("resp") == null ||
+		(map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 	}
-	resp.addResponseData("data", respBo);
+	
+	resp.addResponseData("data", map);
 
 	return resp;
     }

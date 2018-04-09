@@ -22,6 +22,7 @@ public class UpsQuickPayConfirmReqBo extends UpsReqBo {
 
     public void setSmsCode(String smsCode) {
 	this.smsCode = smsCode;
+	this.put("smsCode", smsCode);
     }
 
     public String getOldOrderNo() {
@@ -30,6 +31,7 @@ public class UpsQuickPayConfirmReqBo extends UpsReqBo {
 
     public void setOldOrderNo(String oldOrderNo) {
 	this.oldOrderNo = oldOrderNo;
+	this.put("oldOrderNo", oldOrderNo);
     }
 
 }

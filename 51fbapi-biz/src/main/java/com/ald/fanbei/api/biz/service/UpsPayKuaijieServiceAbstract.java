@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -16,14 +16,11 @@ import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
+@Service
 public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
     @Autowired
@@ -53,7 +50,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * @param map
      * @param payTradeNo
      */
-    protected void doUpsPay(Map<String, Object> map, String payTradeNo, String smsCode) {
+    public void doUpsPay(Map<String, Object> map, String payTradeNo, String smsCode) {
 	// 获取缓存中的支付信息
 	UpsCollectBo upsCollectBo = getTradeCollectBo(payTradeNo);
 	String payBizObject = getPayBizObject(payTradeNo);
@@ -104,12 +101,12 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
 	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 	    throw new FanbeiException(errorMsg);
-	} else {
-	    // 移除缓存数据
-	    bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
-	    bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo);
-	    bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo);
 	}
+
+	// 移除缓存数据(确认后则清空缓存无论调用ups是否成功)
+	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
+	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo);
+	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo);
 
 	map.put("resp", respBo);
     }
