@@ -245,7 +245,6 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				}
 			}
 			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
 		}
 	}
 

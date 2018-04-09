@@ -193,7 +193,7 @@ public class AppH5SubjectController  extends BaseController{
 						}
 					}
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
+							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId,"0");
 					
 					if(nperList!= null){
 						qualityGoodsInfo.put("goodsType", "1");
@@ -367,7 +367,7 @@ public class AppH5SubjectController  extends BaseController{
 						
 					}
 			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid());
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 					
 					if(nperList!= null){
 						activityGoodsInfo.put("goodsType", "1");
@@ -419,7 +419,7 @@ public class AppH5SubjectController  extends BaseController{
 					}
 				}
 		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),qualityGoods.getRid());
+		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),qualityGoods.getRid(),"0");
 				
 				if(nperList!= null){
 					qualityGoodsInfo.put("goodsType", "1");
@@ -573,7 +573,7 @@ public class AppH5SubjectController  extends BaseController{
 						
 					}
 			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid());
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 					
 					if(nperList!= null){
 						activityGoodsInfo.put("goodsType", "1");
@@ -625,7 +625,7 @@ public class AppH5SubjectController  extends BaseController{
 					}
 				}
 		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),qualityGoods.getRid());
+		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(),qualityGoods.getRid(),"0");
 				
 				if(nperList!= null){
 					qualityGoodsInfo.put("goodsType", "1");
@@ -715,7 +715,7 @@ public class AppH5SubjectController  extends BaseController{
 						}
 					}
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId,"0");
 					
 					if(nperList!= null){
 						subjectGoodsInfo.put("goodsType", "1");

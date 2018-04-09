@@ -142,6 +142,7 @@ public class AfESdkServiceImpl implements AfESdkService {
     @Override
     public FileDigestSignResult userSign(Map<String, Object> map) {
         // 待签署文 档路径
+        logger.info("map lease = " + map);
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
@@ -180,6 +181,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         fileBean.setDstPdfFile(dstFile);
         fileBean.setFileName(fileName);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
+        logger.info("r cfp = " + r);
         // 使用用户印章签名
         return r;
     }
@@ -683,6 +685,48 @@ public class AfESdkServiceImpl implements AfESdkService {
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "商务股份有限公司";
+        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
+        logger.info("sdk selfStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
+        fileName = "反呗合同";
+        posPage = "6";
+        PosBean pos = new PosBean();
+        pos.setPosType(posType);
+        pos.setWidth(width);
+        pos.setKey(key);
+        pos.setQrcodeSign(isQrcodeSign);
+        SignPDFStreamBean streamBean = new SignPDFStreamBean();
+        streamBean.setStream(stream);
+        FileDigestSignResult r = selfSign.localSignPdf(streamBean, pos, sealId, signType);
+        return r;
+    }
+
+    @Override
+    public FileDigestSignResult leaseSelfStreamSign(Map<String, Object> map, byte[] stream) {//阿拉丁字节流签章
+        // 签章标识
+        // int sealId = Integer.valueOf(map.get("sealId"));//签署印章的标识，为0表示用默认印章签署
+        int sealId = 0;
+        // 待签署文档路径
+        String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
+        logger.info("sign doc: " + srcFile);
+        String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();
+        SignType signType = null;
+        String type = ObjectUtils.toString(map.get("signType"), "").toString();
+        type = "Key";
+        if ("Single".equalsIgnoreCase(type)) {
+            signType = SignType.Single;
+        } else if ("Multi".equalsIgnoreCase(type)) {
+            signType = SignType.Multi;
+        } else if ("Edges".equalsIgnoreCase(type)) {
+            signType = SignType.Edges;
+        } else if ("Key".equalsIgnoreCase(type)) {
+            signType = SignType.Key;
+        }
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = 1;
+        int width = 70;
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("selfKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk selfStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         fileName = "反呗合同";

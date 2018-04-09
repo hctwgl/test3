@@ -7,6 +7,7 @@ package com.ald.fanbei.api.biz.bo.thirdpay;
  */
 public enum ThirdPayTypeEnum {
     WXPAY( "微信","WX"),
+    XXHK("线下还款","XXHK"),
     ZFBPAY( "支付宝","ZFB");
 
     private String name;

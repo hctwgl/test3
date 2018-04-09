@@ -141,7 +141,7 @@ public class CommonUtil {
     	if(StringUtil.isBlank(str)){
     		return b;
     	}
-        Pattern p = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$"); // 验证手机号
+        Pattern p = Pattern.compile("^[1][3,4,5,7,8,9][0-9]{9}$"); // 验证手机号
         Matcher m = p.matcher(str);
         b = m.matches(); 
         return b;

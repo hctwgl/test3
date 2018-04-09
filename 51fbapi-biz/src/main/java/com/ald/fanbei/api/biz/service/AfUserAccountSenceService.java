@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.alibaba.druid.support.logging.Log;
 
 /**
  * 额度拆分多场景分期额度记录Service
@@ -104,4 +105,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
      */
     AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo);
     AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo);
+    
+    void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType);
 }
