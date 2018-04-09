@@ -1269,29 +1269,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             map.put("protocolCashType","1");
             map.put("borrowId", String.valueOf(afBorrowCashDo.getRid()));
         }else if (type.equals("instalment")){
-            html = getInstalmentVelocityHtml(afUserDo.getUserName(),afBorrowDo.getRid(),afBorrowDo.getNper(),afBorrowDo.getAmount(),BigDecimal.ZERO,"protocolLegalInstalmentV2WithoutSealTemplate.vm");
+            html = getInstalmentVelocityHtml(afUserDo.getUserName(),afBorrowDo.getRid(),afBorrowDo.getNper(),afBorrowDo.getAmount(),"protocolLegalInstalmentV2WithoutSealTemplate.vm");
             map.put("protocolCashType","2");
             map.put("borrowId", String.valueOf(afBorrowDo.getRid()));
         }
-        /*if (type.equals("instalment")) {
-            url += ("/fanbei-web/app/protocolLegalInstalmentV2WithoutSeal?");
-            url += ("userName=" + afUserDo.getUserName());
-            url += ("&borrowId=" + afBorrowDo.getRid());
-            url += ("&amount=" + afBorrowDo.getAmount());
-            url += ("&poundage=" + 0);
-            map.put("protocolCashType", "2");
-            map.put("borrowId", afBorrowDo.getRid().toString());
-        } else if (type.equals("cashLoan")) {
-            url += ("/fanbei-web/app/protocolLegalCashLoanV2WithoutSeal?");
-            url += ("userName=" + afUserDo.getUserName());
-            url += ("&borrowId=" + afBorrowCashDo.getRid());
-            url += ("&borrowAmount=" + afBorrowCashDo.getAmount());
-            url += ("&type=" + afBorrowCashDo.getType());
-            map.put("protocolCashType", "1");
-            map.put("borrowId", afBorrowCashDo.getRid().toString());
-        }
-        html = HttpUtil.doGet(String.valueOf(url), 10);*/
-
         String outFilePath = src + accountDo.getUserName() + type + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         map.put("personKey", "borrower");//借款人印章定位关键字
@@ -1322,9 +1303,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
-    private String getInstalmentVelocityHtml(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,BigDecimal poundage,String pdfTemplate) {
+    private String getInstalmentVelocityHtml(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,String pdfTemplate) {
         try {
-            String html = VelocityUtil.getHtml(protocolLegalInstalmentV2WithoutSeal(userName,borrowId,nper,borrowAmount,poundage,pdfTemplate));
+            String html = VelocityUtil.getHtml(protocolLegalInstalmentV2WithoutSeal(userName,borrowId,nper,borrowAmount,pdfTemplate));
             return html;
         } catch (IOException e) {
             e.printStackTrace();
@@ -1336,7 +1317,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
-    public Map protocolLegalInstalmentV2WithoutSeal(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,BigDecimal poundage,String pdfTemplate){
+    public Map<String,Object> protocolLegalInstalmentV2WithoutSeal(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,String pdfTemplate){
         AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         Long userId = afUserDo.getRid();
@@ -1347,7 +1328,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
-
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         map.put("idNumber", accountDo.getIdNumber());
         map.put("realName", accountDo.getRealName());
         AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
@@ -1373,8 +1354,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             Date date = afBorrowDo.getGmtCreate();
             BigDecimal nperAmount = afBorrowDo.getNperAmount();
             map.put("nperAmount", nperAmount);
-            map.put("gmtStart", date);
-            map.put("gmtEnd", DateUtil.addMonths(date, nper));
+            map.put("gmtStart", format.format(date));
+            map.put("gmtEnd", format.format(DateUtil.addMonths(date, nper)));
             map.put("borrowNo", afBorrowDo.getBorrowNo());
             nper = afBorrowDo.getNper();
             String borrowRate = afBorrowDo.getBorrowRate();
@@ -1389,7 +1370,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 int num = 1;
                 for (AfBorrowBillDo bill:afBorrowBillDos) {
                     AfBorrowDo borrowDo = new AfBorrowDo();
-                    borrowDo.setGmtCreate(bill.getGmtPayTime());
+                    borrowDo.setType(format.format(bill.getGmtPayTime()));
                     borrowDo.setNperAmount(bill.getInterestAmount());
                     borrowDo.setAmount(bill.getPrincipleAmount());
                     borrowDo.setNper(num);
@@ -1404,14 +1385,20 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                         repayDay = billDo.getGmtPayTime();
                     }
                 }
-                map.put("repayDay", repayDay);
+                map.put("repayDay", format.format(repayDay));
+                Calendar cal = GregorianCalendar.getInstance();
+                cal.setTime(repayDay);
+                cal.set(Calendar.HOUR_OF_DAY, -1);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                map.put("gmtEnd", format.format(cal.getTime()));
                 map.put("repayPlan", repayPlan);
             }
         }
 
         map.put("amountCapital", toCapital(borrowAmount.doubleValue()));
         map.put("amountLower", borrowAmount);
-        map.put("poundage", poundage);
         return map;
     }
 

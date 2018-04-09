@@ -37,7 +37,7 @@ public final class VelocityUtil {
             //添加数据到上下文中
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey().toString();
-                String value = entry.getValue().toString();
+                Object value = entry.getValue();
                 context.put(key,value);
             }
             StringWriter writer = new StringWriter();
