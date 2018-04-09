@@ -52,6 +52,8 @@ public interface AfESdkService {
 
     FileDigestSignResult selfStreamSign(Map<String,Object> map,byte[] stream);//签章
 
+    FileDigestSignResult leaseSelfStreamSign(Map<String,Object> map,byte[] stream);//签章
+
     AddAccountResult addPerson(Map<String,String> map);//创建个人账户
 
     GetAccountProfileResult getPerson(Map<String,String> map);//创建个人账户

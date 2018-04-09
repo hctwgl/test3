@@ -93,7 +93,7 @@
 		LIMIT 1
 	</select>
 
-	<select id="getLoanSupermarketByLabel" resultType="AfLoanSupermarketDo" parameterType="java.lang.String">
+	<select id="getLoanSupermarketByLabel" resultType="AfLoanSupermarketDo" >
 		SELECT
 		<include refid="queryFields" />
 		FROM

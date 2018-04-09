@@ -63,7 +63,11 @@
 		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
-		
+
+		<property name="fbapi.bkl.url" defaultValue="http://221.133.225.245:18080/worksheetAPI/requestJob" description="bkl url" />
+		<property name="fbapi.admin.url" defaultValue="http://ctestadmin.51fanbei.com" description="admin url"/>
+		<property name="fbapi.bkl.access.token" defaultValue="xCGQF6wNeA1z6Cmz2UMW8F1as" description="bkl token"/>
+
 		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
 		
 		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 

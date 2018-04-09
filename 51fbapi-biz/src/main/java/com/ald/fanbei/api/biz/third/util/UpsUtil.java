@@ -633,12 +633,12 @@ public class UpsUtil extends AbstractThird {
 	 * @param notifyUrl
 	 * @param clientType  客户端类型
 	 */
-        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo) {
+        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo,String orderNo) {
         	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
         	if (cacheObject != null) {
         	    UpsCollectBo upsCollectBo =  JSON.parseObject(cacheObject.toString(), UpsCollectBo.class);;
         	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
-        	    setPubParam(reqBo, "quickPayResendCode", payTradeNo, upsCollectBo.getClientType());
+        	    setPubParam(reqBo, "quickPayResendCode", orderNo, upsCollectBo.getClientType());
         	    reqBo.setOldOrderNo(payTradeNo);
         	    reqBo.setTradeType("pay_order");
         	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");

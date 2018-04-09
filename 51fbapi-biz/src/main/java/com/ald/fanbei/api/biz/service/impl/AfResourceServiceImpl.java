@@ -9,24 +9,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-
-import org.bouncycastle.jce.provider.asymmetric.ec.KeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -38,14 +32,11 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Xiaotianjian 2017年1月20日上午10:27:48
@@ -878,5 +869,25 @@ public class AfResourceServiceImpl implements AfResourceService {
 	    return "网上购物商品";
 	}
     }
+    
+	@Override
+	public int getIsShow(Long goodsId) {
+		int result = 0 ;
+		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GOODS_IS_SHOW", "SHOW_BRAND_LIST");
+		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
+		
+		if (resourceDo != null && goodsDo != null && goodsDo.getCategoryId() != null) {
+			String brandListStr = resourceDo.getValue1();
+			if (StringUtil.isNotBlank(brandListStr)) {
+				String[] brandArray = brandListStr.split(";");
+				for(String string : brandArray){
+					if (string.equals(goodsDo.getCategoryId().toString())) {
+						return 1;
+					}
+				}
+			}
+		}
+		return result;
+	}
 
 }

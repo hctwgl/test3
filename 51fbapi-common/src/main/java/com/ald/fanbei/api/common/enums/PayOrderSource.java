@@ -11,6 +11,7 @@ public enum PayOrderSource {
 	ORDER("ORDER","订单"),
 	BRAND_ORDER("BRAND_ORDER","品牌订单"),
 	SELFSUPPORT_ORDER("SELFSUPPORT_ORDER","自营商品订单"),
+	LEASE_ORDER("LEASE_ORDER","租赁商品订单"),
 
 	BORROW("BORROW","借款"),
 	BORROWCASH("BORROWCASH","借钱"),

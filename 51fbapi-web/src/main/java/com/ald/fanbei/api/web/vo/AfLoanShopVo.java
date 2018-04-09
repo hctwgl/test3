@@ -23,7 +23,23 @@ public class AfLoanShopVo extends AbstractSerial {
 	private String label;
 	private String iconUrl;
 	private String marketPoint;
+	private String systemType;
 	
+	
+	/**
+	 * @return the systemType
+	 */
+	public String getSystemType() {
+		return systemType;
+	}
+
+	/**
+	 * @param systemType the systemType to set
+	 */
+	public void setSystemType(String systemType) {
+		this.systemType = systemType;
+	}
+
 	public String getMarketPoint() {
 		return marketPoint;
 	}

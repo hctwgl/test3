@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.enums.SupplierOrderSettlementStatus;
 import com.ald.fanbei.api.common.enums.SupplierSettlementOrderPayStatus;
 import com.ald.fanbei.api.dal.dao.AfSupplierOrderSettlementDao;
 import com.ald.fanbei.api.dal.domain.AfSupplierOrderSettlementDo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -40,6 +41,28 @@ public class AfSupplierOrderSettlementServiceImpl implements AfSupplierOrderSett
                     afSupplierOrderSettlementDao.updateBatchOrderSettlementStatus(afSupDo);//修改结算订单为已结算
                     afSupDo.setStatus(SupplierSettlementOrderPayStatus.PAY_SUCCESS.getStatus());
                     afSupplierOrderSettlementDao.updateSettlementOrderPayStatus(afSupDo);
+
+                    //处理轧差的结算单
+                    String offsetNo = afSupplierOrderSettlementDao.selectSettlementNoById(afSupDo.getRid());//查找当前结算单是否包含轧差的结算单
+                    if(StringUtils.isNotBlank(offsetNo)){
+                        String[] offsetNoArray = offsetNo.split(",");
+                        for(int i = 0; i < offsetNoArray.length; i++){
+                            if(StringUtils.isNotBlank(offsetNoArray[i])){
+                                //更新结算单的状态
+                                afSupDo.setSettlementNo(offsetNoArray[i]);
+                                afSupDo.setStatus(SupplierSettlementOrderPayStatus.PAY_SUCCESS.getStatus());
+                                afSupplierOrderSettlementDao.updateSettlementOrderPayStatusBySettleNo(afSupDo);
+
+                                //更新结算订单的状态
+                                Long rid = afSupplierOrderSettlementDao.selectSettlementNoBySettleNo(offsetNoArray[i]);
+                                if(null != rid){
+                                    afSupDo.setRid(rid);
+                                    afSupDo.setStatus(SupplierOrderSettlementStatus.SETTLEMENT_SUCCESS.getStatus());
+                                    afSupplierOrderSettlementDao.updateBatchOrderSettlementStatus(afSupDo);//修改结算订单为已结算
+                                }
+                            }
+                        }
+                    }
                 }else{//记录错误日志
                     //logger.error("dealPayCallback, tradeState=" + tradeState);
                     afSupDo.setStatus(SupplierOrderSettlementStatus.SETTLEMENT_FAILED.getStatus());

@@ -98,7 +98,7 @@ public class StartCashierApi implements ApiHandle {
 	String plantform = ObjectUtils.toString(params.get("plantform"), null);
 	String thirdOrderNo = orderType.equals(OrderType.BOLUOME.getCode()) ? ObjectUtils.toString(params.get("orderId"), null) : "";
 	AfOrderDo orderInfo = null;
-	if (orderType.equals(OrderType.AGENTBUY.getCode()) || orderType.equals(OrderType.SELFSUPPORT.getCode()) || orderType.equals(OrderType.TRADE.getCode())) {
+	if (orderType.equals(OrderType.AGENTBUY.getCode()) || orderType.equals(OrderType.SELFSUPPORT.getCode()) || orderType.equals(OrderType.TRADE.getCode()) || orderType.equals(OrderType.LEASE.getCode())) {
 	    orderInfo = afOrderService.getOrderById(orderId);
 	} else if (orderType.equals(OrderType.BOLUOME.getCode())) {
 	    // region 菠萝蜜独立逻辑
@@ -146,7 +146,20 @@ public class StartCashierApi implements ApiHandle {
 	cashierVo.setAmount(orderInfo.getActualAmount());
 	cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
 	cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter, afInterimAuDo, context));
-
+	//租赁计算支付金额
+	if(orderType.equals(OrderType.LEASE.getCode())){
+		if(orderInfo.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
+			BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+			AfOrderLeaseDo afOrderLeaseDo = afOrderService.getOrderLeaseByOrderId(orderInfo.getRid());
+			if(useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0){
+				cashierVo.setAmount(afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount()));
+			}
+			else {
+				cashierVo.setAmount(afOrderLeaseDo.getFreezeAmount().subtract(useableAmount).add(afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount())));
+			}
+		}
+	}
 	if (cashierVo.getAp().getTotalVirtualAmount() == null) {
 	    cashierVo.getAp().setTotalVirtualAmount(BigDecimal.ZERO);
 	}
@@ -355,7 +368,7 @@ public class StartCashierApi implements ApiHandle {
 	// 跟据测试核对产品设计原型要求，在不满足限制条件的情况下需要显示当前可用额度，所以下面逻辑提前到限额验证前执行。
 	// 获取可使用额度+临时额度
 	BigDecimal userabledAmount = getUseableAmount(orderInfo, userDto, afInterimAuDo);
-	if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
+	if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode()) || orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
 	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
 	    cashierTypeVo.setUseableAmount(userabledAmount);
 
@@ -412,26 +425,27 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private CashierTypeVo canCredit(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
-	if (StringUtil.isEmpty(checkoutCounter.getCreditStatus()) || checkoutCounter.getCreditStatus().equals(YesNoStatus.NO.getCode())) {
-	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
-	}
-	// 分期金额限制
-	String nper = getNperListApi.checkMoneyLimit(new JSONArray(), orderInfo.getOrderType(), orderInfo.getActualAmount());
-	if ("0".equals(nper)) {
-	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
-	}
-	AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
-	String cardNo = card.getCardNumber();
-	String riskOrderNo = riskUtil.getOrderNo("crep", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-	String state = riskUtil.creditPayment(userDto.getUserId().toString(), riskOrderNo);
-	if (state.equals(YesNoStatus.YES.getCode())) {
-	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-	    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
-	    return cashierTypeVo;
-	} else {
-	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
-	    return cashierTypeVo;
-	}
+	//关闭信用支付
+//	if (StringUtil.isEmpty(checkoutCounter.getCreditStatus()) || checkoutCounter.getCreditStatus().equals(YesNoStatus.NO.getCode())) {
+	return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+//	}
+//	// 分期金额限制
+//	String nper = getNperListApi.checkMoneyLimit(new JSONArray(), orderInfo.getOrderType(), orderInfo.getActualAmount());
+//	if ("0".equals(nper)) {
+//	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+//	}
+//	AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
+//	String cardNo = card.getCardNumber();
+//	String riskOrderNo = riskUtil.getOrderNo("crep", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+//	String state = riskUtil.creditPayment(userDto.getUserId().toString(), riskOrderNo);
+//	if (state.equals(YesNoStatus.YES.getCode())) {
+//	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
+//	    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
+//	    return cashierTypeVo;
+//	} else {
+//	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
+//	    return cashierTypeVo;
+//	}
 
     }
 
@@ -488,15 +502,16 @@ public class StartCashierApi implements ApiHandle {
      */
     private Map<String, Object> riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
 	// 风控逾期订单处理
-	RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
-	String rejectCode = resp.getRejectCode();
+//	RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
+	Long userId = orderInfo.getUserId();
+//	String rejectCode = "";
 	// region 测试借钱逾期白名单
-	List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
-	if (afResourceList.size() > 0) {
-	    if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-		rejectCode = RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
-	    }
-	}
+//	List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
+//	if (afResourceList.size() > 0) {
+//	    if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+//		rejectCode = RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+//	    }
+//	}
 	// if(userDto.getUserName().equals("13656648524")){
 	// rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
 	// }
@@ -506,58 +521,64 @@ public class StartCashierApi implements ApiHandle {
 	// endregion
 
 	// region 测试分期逾期白名单
-	List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
-	if (afResourceList1.size() > 0) {
-	    if (afResourceList1.get(0).getValue() != null && afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-		rejectCode = RiskErrorCode.OVERDUE_BORROW.getCode();
-	    }
-	}
+//	List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
+//	if (afResourceList1.size() > 0) {
+//	    if (afResourceList1.get(0).getValue() != null && afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+//		rejectCode = RiskErrorCode.OVERDUE_BORROW.getCode();
+//	    }
+//	}
 	// endregion
 
-	if (StringUtil.isNotBlank(rejectCode)) {
-	    RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
-
-	    switch (erorrCode) {
-	    case OVERDUE_BORROW:
-		String borrowNo = resp.getBorrowNo();
+//	if (StringUtil.isNotBlank(rejectCode)) {
+//	    RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+	    
+//	    switch (erorrCode) {
+//	    case OVERDUE_BORROW:
+//		String borrowNo = resp.getBorrowNo();
 		// if(userDto.getUserName().equals("17710378476")){
 		// borrowNo="jk2017111218003479890";
 		// }
-		AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-		if (borrowInfo != null) {
-		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+//		AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+//	    AfBorrowDo borrowInfo = afBorrowService.getOverdueBorrowInfoByUserId(userId);
+//		if (borrowInfo != null) {
+//		    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+	       AfBorrowBillDo borrowBillInfo = afBorrowBillService.getOverdueBorrowBillInfoByUserId(userId);
+       	if(borrowBillInfo != null ){
+	        Long billId = borrowBillInfo.getRid();
 		    cashierTypeVo.setBillId(billId);
-		    cashierTypeVo.setOverduedCode(erorrCode.getCode());
+		    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW.getCode());
 		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
 		    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
 		    return null;
 		} else {
-		    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + borrowNo);
+			AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
+			if (cashInfo != null  && "Y".equals(cashInfo.getOverdueStatus())) {
+			    cashierTypeVo.setOverduedCode(RiskErrorCode.OVERDUE_BORROW_CASH.getCode());
+			    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
+			    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
+			    BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
+			    BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
+			    cashierTypeVo.setRepaymentAmount(repaymentAmount);
+			    cashierTypeVo.setBorrowId(cashInfo.getRid());
+			    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+			    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
+			    return null;
+			} else {
+			    logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
+			  //  logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:" + JSONObject.toJSONString(borrowInfo));
+			    logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBillBo:" + JSONObject.toJSONString(borrowBillInfo));
+			}
+			
 		}
-		break;
-	    case OVERDUE_BORROW_CASH:
-		AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-		if (cashInfo != null) {
-		    cashierTypeVo.setOverduedCode(erorrCode.getCode());
-		    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
-		    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
-		    BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
-		    BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
-		    cashierTypeVo.setRepaymentAmount(repaymentAmount);
-		    cashierTypeVo.setBorrowId(cashInfo.getRid());
-		    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-		    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
-		    return null;
-		} else {
-		    logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:" + userDto.getUserId());
-		}
-		break;
-	    default:
-		cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-		cashierTypeVo.setReasonType("未知原因：" + rejectCode);
-		return null;
-	    }
-	}
+		
+//		
+//		break;
+//	    default:
+//		cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+//		cashierTypeVo.setReasonType("未知原因：" + rejectCode);
+//		return null;
+//	    }
+	//}
 
 	// 专项额度控制
 	Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);

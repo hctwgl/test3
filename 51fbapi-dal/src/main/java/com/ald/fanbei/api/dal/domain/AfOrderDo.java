@@ -89,7 +89,18 @@ public class AfOrderDo extends AbstractSerial{
 	private String bqsBlackBox;//白骑士设备指纹
 
 	private String lc;//订单来源地址
+	//addtime 2108年3月22日 scd
+    private Integer isHide;//前端是否隐藏
 
+	private String iagentStatus;//智能电核状态
+
+	public String getIagentStatus() {
+		return iagentStatus;
+	}
+
+	public void setIagentStatus(String iagentStatus) {
+		this.iagentStatus = iagentStatus;
+	}
 
 	public String getBqsBlackBox() {
 		return bqsBlackBox;
@@ -623,6 +634,14 @@ public class AfOrderDo extends AbstractSerial{
 
 	public void setLc(String lc) {
 		this.lc = lc;
+	}
+
+	public Integer getIsHide() {
+		return isHide;
+	}
+
+	public void setIsHide(Integer isHide) {
+		this.isHide = isHide;
 	}
 }
 

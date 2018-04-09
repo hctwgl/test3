@@ -168,7 +168,7 @@ public class AppGoodsControler extends BaseController {
 				//removeSecondNper(array);
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
-						resource.getValue2(),Long.parseLong(goodsId));
+						resource.getValue2(),Long.parseLong(goodsId),"0");
 				if (nperList != null) {
 					goodsInfoMap.put("goodsType", "1");
 					Map nperMap = nperList.get(nperList.size() - 1);
@@ -257,7 +257,7 @@ public class AppGoodsControler extends BaseController {
 
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 							BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
-							resource.getValue2(),Long.parseLong(goodsId));
+							resource.getValue2(),Long.parseLong(goodsId),"0");
 					if (nperList != null) {
 						goodsInfoMap.put("goodsType", "1");
 						Map nperMap = nperList.get(nperList.size() - 1);

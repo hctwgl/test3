@@ -168,6 +168,7 @@ public final class HtmlToPdfUtil {
             }else {
                 fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             }
+
             // 解析html生成pdf
             render.setDocumentFromString(content);
             //解决图片相对路径的问题

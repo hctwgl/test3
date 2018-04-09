@@ -99,6 +99,11 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 		return result;
 	}
 
+	@Override
+	public List<AfGoodsPriceDo> getLeaseListByGoodsId(Long goodsId) {
+		return afGoodsPriceDao.getLeaseListByGoodsId(goodsId);
+	}
+
 
 	@Override
 	public List<AfGoodsPriceDo> getByGoodsId(Long goodsId) {

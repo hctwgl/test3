@@ -988,6 +988,45 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             CuiShouUtils.setAfRepaymentBorrowCashDo(repayment);
             cuiShouUtils.syncCuiShou(repayment);  //新催收线下还款
         }
+        
+        //---------------------------------begin----------------------------------------------
+        //马甲包老借款同步数据   会对逾期的借款还款，向催收平台同步还款信息
+        logger.info("向催收平台同步还款信息失败,borrowNo= "+afBorrowCashDo.getBorrowNo());
+        Boolean isCashOverdueOld = false;
+        try{
+            Date gmtPlanTime = afBorrowCashDo.getGmtPlanRepayment();
+            gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
+            Date newDate = new Date();
+            newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
+            if (StringUtils.equals("代扣付款",repayment.getName())&&gmtPlanTime.getTime() < newDate.getTime()) {
+                isCashOverdueOld = true;
+            }
+        }catch(Exception ex){
+            logger.info("dealRepaymentSucess isCashOverdue error", ex);
+        }
+        AfBorrowCashDo currAfBorrowCashDo = afBorrowCashDo;
+        try {
+        	if (DateUtil.compareDate(new Date(), afBorrowCashDo.getGmtPlanRepayment())) {
+                CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(repayment.getRepayNo(),
+                        currAfBorrowCashDo.getBorrowNo(),
+                        repayment.getCardNumber(),
+                        repayment.getCardName(),
+                        DateUtil.formatDateTime(new Date()),
+                        tradeNo,
+                        repayment.getRepaymentAmount(),
+                        (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).subtract(currAfBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)),
+                        (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)),
+                        currAfBorrowCashDo.getOverdueAmount(),
+                        currAfBorrowCashDo.getRepayAmount(),
+                        currAfBorrowCashDo.getRateAmount(),isCashOverdueOld);
+	                logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
+	        } else {
+	            logger.info("collection consumerRepayment not push,borrowCashId=" + currAfBorrowCashDo.getRid());
+	        }
+        } catch (Exception e) {
+        	logger.error("向催收平台同步还款信息失败,borrowNo= "+currAfBorrowCashDo.getBorrowNo(), e);
+        }
+        //---------------------------------end----------------------------------------------
         return ret;
     }
 

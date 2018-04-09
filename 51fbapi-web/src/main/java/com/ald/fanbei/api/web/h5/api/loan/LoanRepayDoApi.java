@@ -2,9 +2,7 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -14,11 +12,14 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -75,6 +76,8 @@ public class LoanRepayDoApi implements ApiHandle {
 	AfLoanService afLoanService;
 	@Resource
 	AfLoanPeriodsService afLoanPeriodsService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -134,10 +137,20 @@ public class LoanRepayDoApi implements ApiHandle {
 			
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
-			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+			//
+			if (!afResourceService.checkThirdPayByType(ThirdBizType.LOAN_REPAYMENT, ThirdPayTypeEnum.WXPAY)) {
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+			
+			//throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 		}
 		if (bo.cardId == -3) {// -3支付宝支付
-			throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+			
+			if (!afResourceService.checkThirdPayByType(ThirdBizType.LOAN_REPAYMENT, ThirdPayTypeEnum.ZFBPAY)) {
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+			
+			//throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
 		}
 		
 		checkPwdAndCard(bo);

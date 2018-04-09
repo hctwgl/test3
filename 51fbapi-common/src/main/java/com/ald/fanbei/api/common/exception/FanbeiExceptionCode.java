@@ -205,6 +205,7 @@ public enum FanbeiExceptionCode {
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
+    GOODS_NOT_LEASE_ERROR("GOODS_NOT_LEASE_ERROR",1610,"goods not exist error","不可重复租赁"),
     GOODS_COLLECTION_ALREADY_EXIST_ERROR("GOODS_COLLECTION_ALREADY_EXIST_ERROR",1602,"goods not exist error","商品已经收藏"),
     ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
     GOODS_HAVE_CANCEL("GOODS_HAVE_CANCEL",1604,"goods have cancel","商品已下架"),
@@ -367,7 +368,7 @@ public enum FanbeiExceptionCode {
     //订单
     ORDER_NOT_EXIST("ORDER_NOT_EXIST",6001,"order_not_exist","订单不存在"),
     AMOUNT_IS_LESS("AMOUNT_IS_LESS",6002,"amount_is_less","还款金额过少"),
-
+    LEASE_NOT_BUY("LEASE_NOT_BUY",6007,"order_not_exist","分层得分过低不能租赁"),
 
 
     CUT_PRICE_ISBUY("CUT_PRICE_ISBUY",6003,"cut_price_isbut","砍价商品已购买"),
@@ -425,6 +426,8 @@ public enum FanbeiExceptionCode {
 	//paypwd wrong more than specific times
 	PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES("PAYPWD_ERROR_MORE_THAN_SPECIFIC_TIMES",8004,"paypwd wrong more than specific times","您已多次尝试失败，暂时被锁定，请x小时y分后再试或更改密码！"),
 	PAYPWD_ERROR_SETTING_EMPTY("PAYPWD_ERROR_SETTING_EMPTY",8005,"paypwd error setting is empty ","支付密码次数和冻结时间未配置，请联系客服，谢谢！"),
+//
+    RESOURCE_NOT_FOUND_CONFIGURATION("RESOURCE_NOT_FOUND_CONFIGURATION",9000,"RESOURCE_NOT_FOUND_CONFIGURATION","未找到配置信息"),
     SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
     SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
