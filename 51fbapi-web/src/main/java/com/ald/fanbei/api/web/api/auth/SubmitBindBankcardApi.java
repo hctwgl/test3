@@ -29,7 +29,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
- *@类现描述：签约银行卡时短信验证
+ *@类现描述：绑卡并支付订单
  *@author hexin 2017年2月28日 下午4:03:21
  *@since 4.1.2以后替换类{@link }
  *@version 
