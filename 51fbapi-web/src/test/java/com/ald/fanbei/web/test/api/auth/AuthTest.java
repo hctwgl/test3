@@ -39,10 +39,10 @@ public class AuthTest  extends BaseTest{
 	 *  绑卡业务 start
 	 *---------------- */
 	/**
-	 * 发起贷款申请
+	 * 提交 银行卡绑卡
 	 */
 	@Test
-	public void applyLoan() {
+	public void submitBindBankcard() {
 		String url = urlBase + "/auth//submitBindBankcard";
 		Map<String,String> params = new HashMap<>();
 		params.put("orderId", "65656565");
