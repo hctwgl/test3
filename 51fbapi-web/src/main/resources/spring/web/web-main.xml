@@ -344,6 +344,9 @@
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
+				<entry key="/auth/submitBindBankcard" value-ref="submitBindBankcardApi"/>
+				
+				
 
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
