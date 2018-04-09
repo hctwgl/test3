@@ -10,6 +10,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.log4j.Logger;
 
 /**
  * @author guoshuaiqiang
@@ -18,6 +19,7 @@ import java.util.Properties;
  */
 public final class VelocityUtil {
 
+    private static Logger logger = Logger.getLogger(VelocityUtil.class);
     /**
      * 创建html文件
      *
@@ -47,15 +49,19 @@ public final class VelocityUtil {
             return writer.toString();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            logger.error("VelocityUtil FileNotFoundException =>{}",e);
         } catch (ResourceNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            logger.error("VelocityUtil ResourceNotFoundException =>{}",e);
         } catch (ParseErrorException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            logger.error("VelocityUtil ParseErrorException =>{}",e);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            logger.error("VelocityUtil Exception =>{}",e);
         }
         return null;
     }
