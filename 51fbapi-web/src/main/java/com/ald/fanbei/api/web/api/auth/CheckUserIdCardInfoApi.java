@@ -15,8 +15,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ *@类现描述：身份证信息是否已经被绑定过
+ *@author  2017年2月28日 下午4:03:21
+ *@since 4.1.2以后替换类{@link }
+ *@version
+ *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
 @Component("checkUserIdCardInfoApi")
-public class checkUserIdCardInfoApi implements ApiHandle {
+public class CheckUserIdCardInfoApi implements ApiHandle {
 
     @Resource
     private AfUserAccountService afUserAccountService;
