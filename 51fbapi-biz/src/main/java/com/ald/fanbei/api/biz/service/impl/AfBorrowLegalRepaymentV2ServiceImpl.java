@@ -37,6 +37,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -70,7 +71,7 @@ import com.alibaba.fastjson.JSONObject;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowLegalRepaymentV2Service")
-public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRepaymentBorrowCashDo, Long>  implements AfBorrowLegalRepaymentV2Service {
+public class AfBorrowLegalRepaymentV2ServiceImpl implements AfBorrowLegalRepaymentV2Service {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -139,9 +140,11 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	 */
 	@Override
 	public void repay(RepayBo bo,String bankPayType) {
-		
-		lockRepay(bo.userId);
-		
+	    //非快捷支付才会锁定还款
+	    if (BankPayChannel.KUAIJIE.getClass().equals(bankPayType)) {
+        	lockRepay(bo.userId);
+	    }
+        	
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
@@ -157,6 +160,18 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		doRepay(bo, bo.borrowRepaymentDo,bankPayType);
 		
 	}
+
+//	@Override
+//	protected void quickPayConfirmPre(String payTradeNo, String payBizObject) {
+//	    // TODO Auto-generated method stub
+//	    
+//	}
+//
+//	@Override
+//	protected void roolbackBizData(String payTradeNo, String payBizObject) {
+//	    // TODO Auto-generated method stub
+//	    
+//	}
 	
 	/**
      * 线下还款
@@ -867,9 +882,5 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     	Long userId ;									//目标用户id
 	}
 
-	@Override
-	public BaseDao<AfRepaymentBorrowCashDo, Long> getDao() {
-		return null;
-	}
 
 }

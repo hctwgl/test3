@@ -40,6 +40,7 @@ import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
+import com.twitter.conversions.string;
 
 /**
  * @author zjf
@@ -72,7 +73,7 @@ public class RepayDoV2Api implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);    	
     	RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
         bo.remoteIp = CommonUtil.getIpAddr(request);
 
