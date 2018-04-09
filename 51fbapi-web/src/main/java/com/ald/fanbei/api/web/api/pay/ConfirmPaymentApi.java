@@ -41,16 +41,9 @@ public class ConfirmPaymentApi implements ApiHandle {
 
 	String smsCode = ObjectUtils.toString(requestDataVo.getParams().get("smsCode"), null);
 	String tradeNo = ObjectUtils.toString(requestDataVo.getParams().get("tradeNo"), null);
-	Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
 
-	if (cardId == null || tradeNo == null || smsCode == null) {
-	    logger.error("cardId is empty or smsCode is empty or tradeNo is empty");
+	if (tradeNo == null || smsCode == null) {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-	}
-	
-	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-	if (bank == null) {
-	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST);
 	}
 	
 	UpsCollectRespBo respBo = upsUtil.quickPayConfirm(tradeNo, context.getUserId().toString(), smsCode, "02", "QUICK_PAY_CONFIRM");
