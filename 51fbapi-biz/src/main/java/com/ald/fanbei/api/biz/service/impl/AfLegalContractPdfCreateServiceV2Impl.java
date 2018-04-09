@@ -1026,7 +1026,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     private byte[] borrowerCreateSeal(boolean result,byte[] stream,Map<String, Object> map){
         try {
-            logger.info("map lease = "+map);
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
@@ -1273,6 +1272,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             map.put("protocolCashType","2");
             map.put("borrowId", String.valueOf(afBorrowDo.getRid()));
         }
+        logger.info("getPdfInfoWithOutSeal html ="+html);
         String outFilePath = src + accountDo.getUserName() + type + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         map.put("personKey", "borrower");//借款人印章定位关键字

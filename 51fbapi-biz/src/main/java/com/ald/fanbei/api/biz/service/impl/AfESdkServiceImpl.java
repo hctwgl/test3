@@ -8,6 +8,7 @@ import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserSealDo;
+import com.alibaba.fastjson.JSON;
 import com.timevale.esign.sdk.tech.bean.PersonBean;
 import com.timevale.esign.sdk.tech.bean.PosBean;
 import com.timevale.esign.sdk.tech.bean.SignPDFFileBean;
@@ -142,7 +143,6 @@ public class AfESdkServiceImpl implements AfESdkService {
     @Override
     public FileDigestSignResult userSign(Map<String, Object> map) {
         // 待签署文 档路径
-        logger.info("map lease = " + map);
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
@@ -169,7 +169,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("personKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
-        logger.info("sdk userSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
+        logger.info("sdk userSign sign account id = " + accountId+",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
@@ -181,7 +181,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         fileBean.setDstPdfFile(dstFile);
         fileBean.setFileName(fileName);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
-        logger.info("r cfp = " + r);
+        logger.info("r cfp = " + JSON.toJSONString(r));
         // 使用用户印章签名
         return r;
     }
