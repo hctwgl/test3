@@ -349,6 +349,9 @@
 				
 
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
+
+				<entry key="/auth/checkUserBasicInfo" value-ref="checkUserBasicInfoApi"/>
+				<entry key="/auth/checkUserIdCardInfo" value-ref="checkUserIdCardInfoApi"/>
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
