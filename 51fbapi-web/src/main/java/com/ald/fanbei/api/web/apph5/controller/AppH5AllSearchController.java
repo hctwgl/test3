@@ -164,7 +164,11 @@ public class AppH5AllSearchController extends BaseController {
 		if (goodsDo != null) {
 			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
 				if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
-					goodsVo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate());
+					if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDo.setRebateAmount(secKillRebAmount);
+					}
 					break;
 				}
 			}
