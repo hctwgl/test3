@@ -39,12 +39,11 @@ public class QuickPaymentResendCodeApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
-	String payTradeNo = requestDataVo.getParams().get("payTradeNo").toString();
-	if (StringUtils.isBlank(payTradeNo)) {
-	    logger.error("quickPaymentResendCodeApi payTradeNo is empty");
+	String tradeNo = requestDataVo.getParams().get("tradeNo").toString();
+	if (StringUtils.isBlank(tradeNo)) {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	}
-	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(payTradeNo);
+	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(tradeNo);
 
 	if (!respBo.isSuccess()) {
 	    throw new FanbeiException(respBo.getRespDesc());
