@@ -30,7 +30,7 @@ public interface AfUserBankcardService {
      * @param userId
      * @return
      */
-    List<AfBankUserBankDto> getUserBankcardByUserId(Long userId);
+    List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion);
 
     /**
      * 删除银行卡

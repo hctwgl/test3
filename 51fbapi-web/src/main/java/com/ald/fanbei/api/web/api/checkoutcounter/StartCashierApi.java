@@ -227,7 +227,7 @@ public class StartCashierApi implements ApiHandle {
 
 	// 查询银行卡信息
 	if (YesNoStatus.YES.getCode().equals(cashierVo.getBank().getStatus())) {
-	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId));
+	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion()));
 	}
 	//判断是不是活动订单
 	AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
