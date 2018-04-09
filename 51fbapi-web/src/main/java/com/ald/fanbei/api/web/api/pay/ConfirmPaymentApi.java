@@ -13,21 +13,15 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.KuaijieRepaymentBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.twitter.conversions.string;
 
 /**
  * 

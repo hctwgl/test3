@@ -8,13 +8,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.util.StringUtil;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.RepayBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -25,6 +29,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -40,7 +45,6 @@ import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
-import com.twitter.conversions.string;
 
 /**
  * @author zjf
