@@ -237,6 +237,6 @@
         a.id rid,min(a.special_price) special_price,a.limit_count,a.goods_id,a.price_id,b.name goodsName
         FROM af_seckill_activity_goods a LEFT JOIN af_goods b ON (a.goods_id=b.id)
         WHERE a.is_delete=0 AND a.type=2 AND b.is_delete=0
-        AND a.activity_id=#{activityId} GROUP BY b.goods_id
+        AND a.activity_id=#{activityId} GROUP BY a.goods_id
     </select>
 </mapper>

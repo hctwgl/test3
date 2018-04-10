@@ -167,7 +167,9 @@ public class AppH5EnjoyLifeController extends BaseController {
                 // 一级缓存获取不到，则从数据库获取
                 activityInfoList = getActivityList();
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);            }
+                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+            }
+            jsonObj.put("activityInfoList", activityInfoList);
             // 查询会场下所有二级会场
             final List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
             //List<Map> activityList = new ArrayList<Map>();
@@ -227,7 +229,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
 
 
-            //jsonObj.put("activityList", activityList);
+            //jsonObj.put("activityPartList", activityList);
             resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
         }catch(FanbeiException e){
             resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
@@ -251,6 +253,9 @@ public class AppH5EnjoyLifeController extends BaseController {
             String actName = afSeckillActivityDo.getName();
             secActivityInfoMap.put("activityId",activityId);
             secActivityInfoMap.put("actName",actName);
+            secActivityInfoMap.put("gmtStart",afSeckillActivityDo.getGmtStart());
+            secActivityInfoMap.put("gmtEnd",afSeckillActivityDo.getGmtEnd());
+            secActivityInfoMap.put("gmtPStart",afSeckillActivityDo.getGmtPStart());
             //取出该活动所有商品
             List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityGoodsByActivityId(activityId);
             secActivityInfoMap.put("afSeckillActivityGoodsDtos",afSeckillActivityGoodsDtos);
