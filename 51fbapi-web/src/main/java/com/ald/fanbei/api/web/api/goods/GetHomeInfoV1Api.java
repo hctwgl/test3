@@ -420,9 +420,29 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			// 获取活动商品
 			List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService
 					.listHomeActivityGoodsByActivityId(afActivityDo.getId());
+			//判断商品是否处于活动中
+			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+			List<Long> goodsIdList = new ArrayList<>();
+			for (AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
+				goodsIdList.add(goodsDo.getRid());
+			}
+			if(goodsIdList!=null&&goodsIdList.size()>0){
+				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+			}
 			for (AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			try{
+				//改变活动价格
+				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+							goodsDo.setRebateAmount(secKillRebAmount);
+						}
+						break;
+					}
+				}
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
