@@ -54,8 +54,8 @@ public class GetGoodsListApi implements ApiHandle {
         AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
         AfGoodsQuery goodsQuery = getCheckParams(requestDataVo);
 
-        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
-        List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery);
+        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);// 按照三级类目查到的商品信息
+        List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery); // 自营商品审核信息
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -112,7 +112,7 @@ public class GetGoodsListApi implements ApiHandle {
                 AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
                 String interestFreeJson = interestFreeRulesDo.getRuleJson();
                 if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                    interestFreeArray = JSON.parseArray(interestFreeJson);
+                    interestFreeArray = JSON.parseArray(interestFreeJson);// 免息规则
                 }
             }
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),

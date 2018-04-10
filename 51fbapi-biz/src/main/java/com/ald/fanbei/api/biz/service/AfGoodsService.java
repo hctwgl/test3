@@ -1,11 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.Date;
 import java.util.List;
 
-
-
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -122,5 +118,18 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+	/**
+	 * 爱上街根据品牌id查询销量前五的商品
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId);
+	/**
+	 * 爱尚街根据品牌id查询出所有的商品
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsListByBrandId(Long brandId);
+	
 }
 

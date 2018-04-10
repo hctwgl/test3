@@ -6,8 +6,8 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -117,6 +117,18 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
+	/**
+	 * 爱上街根据品牌id查询销量前五的商品
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId);
+	/**
+	 * 爱尚街根据品牌id查询出该品牌下所有的商品
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsListByBrandId(Long brandId);
 
 
 }
