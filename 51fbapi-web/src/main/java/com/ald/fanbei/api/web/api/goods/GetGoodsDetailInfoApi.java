@@ -124,7 +124,11 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 				Date gmtPStart = afSeckillActivityDo.getGmtPStart();
 				//返利金额
-				vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
+				BigDecimal secKillRebAmount = BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+				if(goods.getRebateAmount().compareTo(secKillRebAmount)>0){
+					vo.setRebateAmount(secKillRebAmount+"");
+				}
+				//vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
 				vo.setActivityId(activityId);
 				vo.setActivityType(afSeckillActivityDo.getType());
 				vo.setActivityName(afSeckillActivityDo.getName());
