@@ -20,7 +20,7 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_interest_reduce_goods,af_interest_reduce_rules,af_interest_reduce_scheme";
+		String tables = "af_loan_push";
 
 		// 配置作者及Domain说明
 		String classAuthor = "qiao";
