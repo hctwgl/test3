@@ -466,7 +466,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
     }
 
     @Override
-    protected void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 	if (kuaijieRepaymentBo.getLegalOrderRepayment() != null) {
 	    // 更新状态
@@ -475,10 +475,14 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
     }
 
     @Override
-    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg) {
+    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
-	    dealRepaymentFail(payTradeNo, "", true, errorMsg);
+	    if (StringUtil.isNotBlank(respBo.getRespCode())) {
+		dealRepaymentFail(payTradeNo, "", true, errorMsg);
+	    } else {
+		dealRepaymentFail(payTradeNo, "", false, "");
+	    }
 	} else {
 	    // 未获取到缓存数据，支付订单过期
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);

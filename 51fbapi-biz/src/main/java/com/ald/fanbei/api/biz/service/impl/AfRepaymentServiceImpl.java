@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.KuaijieRepaymentBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -322,7 +323,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    protected void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
@@ -336,7 +337,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg) {
+    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg,UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);

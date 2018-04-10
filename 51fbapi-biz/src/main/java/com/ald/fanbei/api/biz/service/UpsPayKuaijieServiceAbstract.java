@@ -38,9 +38,9 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
     protected abstract void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject);
 
-    protected abstract void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject);
+    protected abstract void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject);
 
-    protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg);
+    protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo);
 
     /**
      * 
@@ -105,12 +105,12 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	if (!respBo.isSuccess()) {
 	    // 调用ups接口失败，回滚业务数据
 	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-	    roolbackBizData(payTradeNo, payBizObject, errorMsg);
+	    roolbackBizData(payTradeNo, payBizObject, errorMsg,respBo);
 	    clearCache(payTradeNo);
 	    throw new FanbeiException(errorMsg);
 	} else {
+	    upsPaySuccess(payTradeNo, bankPayType, payBizObject);
 	    clearCache(payTradeNo);
-	    quickPayConfirmSuccess(payTradeNo, bankPayType, payBizObject);
 	}
 
 	return respBo;
