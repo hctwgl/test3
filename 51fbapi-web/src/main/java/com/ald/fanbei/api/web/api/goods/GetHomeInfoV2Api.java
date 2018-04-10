@@ -329,7 +329,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
 					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
 						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
-						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
 						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
 							goodsDo.setRebateAmount(secKillRebAmount);
 						}
@@ -431,7 +431,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
 					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
 						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
-						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
 						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
 							goodsDo.setRebateAmount(secKillRebAmount);
 						}
