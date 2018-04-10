@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo.ReqParam;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
+import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
@@ -29,7 +35,9 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -39,6 +47,7 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.Documents;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.AfLoanRejectType;
@@ -46,7 +55,10 @@ import com.ald.fanbei.api.common.enums.AfLoanReviewStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.LoanType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
@@ -54,10 +66,12 @@ import com.ald.fanbei.api.common.enums.WeakRiskSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
@@ -68,9 +82,12 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -78,6 +95,13 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
+import com.ald.fanbei.api.dal.domain.dto.AfLoanDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 
@@ -146,6 +170,16 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	private RedisTemplate<String, ?> redisTemplate;
 	@Resource
 	ContractPdfThreadPool contractPdfThreadPool;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfBorrowCashDo afBorrowCashDo;
+	@Resource
+	AfLoanService afLoanService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfAssetSideInfoService afAssetSideInfoService;
 	
 	@Override
 	public List<LoanHomeInfoBo> getHomeInfo(Long userId){
@@ -188,24 +222,54 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				// 弱风控
 				this.weakRiskCheck(bo, loanDo);
 				
-				// 调用UPS打款
-				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
-						userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
-						bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-						UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
-				loanDo.setTradeNoOut(upsResult.getOrderNo());
-				if (!upsResult.isSuccess()) {
-					dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
-					//审核通过，ups打款失败
-					String title = "本次还款支付失败";
-					String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
-					String bankNumber = bankCard.getCardNumber();
-					String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
-					content = content.replace("&cardLastNo",lastBankCode);
-					content = content.replace("&bankName",bankCard.getBankName());
-					jpushService.pushUtil(title,bo.userName,content);
-					smsUtil.sendBorrowPayMoneyFail(bo.userName);
-					throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+				final int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+				AfUserDo afUserDo = afUserService.getUserById(userId);
+				Date currDate = new Date();
+				//风控审核通过,根据开关判断是否推送钱包打款
+				Boolean flag=true;
+				//新增白名单逻辑
+				AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+				if (pushWhiteResource != null) {
+					//白名单开启
+					String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
+					Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+					if(!Arrays.asList(whiteUserIds).contains(userId)){
+						//不在白名单不推送
+						flag=false;
+					}
+				}
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
+					&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
+					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
+					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+					List<EdspayGetCreditRespBo> whiteCollarBorrowInfo = assetSideEdspayUtil.buildWhiteCollarBorrowInfo(loanDo);
+					//债权实时推送
+					boolean result = assetSideEdspayUtil.borrowCashCurPush(whiteCollarBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("borrowCashCurPush suceess,orderNo="+whiteCollarBorrowInfo.get(0).getOrderNo());
+					}
+				}else{
+					// 调用UPS打款
+					UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
+							userAccount.getRealName(), bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
+							bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+							UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+					loanDo.setTradeNoOut(upsResult.getOrderNo());
+					if (!upsResult.isSuccess()) {
+						dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
+						//审核通过，ups打款失败
+						String title = "本次还款支付失败";
+						String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
+						String bankNumber = bankCard.getCardNumber();
+						String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
+						content = content.replace("&cardLastNo",lastBankCode);
+						content = content.replace("&bankName",bankCard.getBankName());
+						jpushService.pushUtil(title,bo.userName,content);
+						smsUtil.sendBorrowPayMoneyFail(bo.userName);
+						throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+					}
 				}
 				loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
 				afLoanDao.updateById(loanDo);

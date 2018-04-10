@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGiveBackPayResultReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashPushService;
@@ -36,15 +37,19 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfAssetPackageBusiType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
@@ -63,6 +68,7 @@ import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -71,20 +77,31 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashPushDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.dto.AfLoanDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -134,6 +151,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	AfLoanDao afLoanDao;
+	@Resource
+	AfLoanPeriodsDao afLoanPeriodsDao;
+	@Resource
+	JpushService jpushService;
+	@Resource
+	AfUserService afUserService;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -488,8 +515,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			map.put("sendTime", sendTime+"");
 			map.put("sign", sign);
 			map.put("appId", assetSideFanbeiFlag);
-			//发送前数据打印
-			logger.info("borrowCashCurPush originBorrowerJson = {},request = {}",borrowerJson,JSONObject.toJSONString(map));
+			logger.info("borrowCashCurPush originBorrowerJson = {}",borrowerJson);
+			logger.info("borrowCashCurPush request = {}",JSONObject.toJSONString(map));
 			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
@@ -878,6 +905,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
 				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 				AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+				AfUserDo afUserDo = afUserService.getUserById(borrowCashDo.getUserId());
 				AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
@@ -893,6 +921,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					afBorrowLegalOrderDo.setClosedDetail("推送钱包最大失败次数关闭");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+					jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), now);
 				}else{
 					//调ups打款
 					applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
@@ -916,5 +945,77 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			return 1;
 		}
 		return 0;
+	}
+
+	public List<EdspayGetCreditRespBo> buildWhiteCollarBorrowInfo(AfLoanDo loanDo) {
+		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
+		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		//获取开户行信息
+		FanbeiBorrowBankInfoBo bankInfo = assetSideEdspayUtil.getAssetSideBankInfo(assetSideEdspayUtil.getAssetSideBankInfo());
+		//借款人平台逾期信息
+		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(loanDo.getUserId());
+		//获取资产方的分润利率
+		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+		AfLoanDto afLoanDto = afLoanDao.getBorrowInfoById(loanDo);
+		//白领贷的还款计划
+		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
+		List<AfLoanPeriodsDo> afLoanPeriods = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+		Date lastBorrowBillGmtPayTime=null;
+		for (int i = 0; i < afLoanPeriods.size(); i++) {
+			RepaymentPlan repaymentPlan = new RepaymentPlan();
+			repaymentPlan.setRepaymentNo(afLoanPeriods.get(i).getRid()+"");
+			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(afLoanPeriods.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(afLoanDto.getLoanStartTime(), afLoanPeriods.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentAmount(afLoanPeriods.get(i).getAmount());
+			repaymentPlan.setRepaymentInterest(afLoanPeriods.get(i).getInterestFee());
+			repaymentPlan.setRepaymentPeriod(afLoanPeriods.get(i).getNper()-1);
+			repaymentPlans.add(repaymentPlan);
+			if (i == afLoanPeriods.size() - 1) {
+				lastBorrowBillGmtPayTime= afLoanPeriods.get(i).getGmtPlanRepay();
+			}
+		}
+		creditRespBo.setOrderNo(afLoanDto.getOrderNo());
+		creditRespBo.setUserId(loanDo.getUserId());
+		creditRespBo.setName(afLoanDto.getName());
+		creditRespBo.setCardId(afLoanDto.getCardId());
+		creditRespBo.setMobile(afLoanDto.getMobile());
+		creditRespBo.setBankNo(afLoanDto.getBankNo());
+		creditRespBo.setAcctName(bankInfo.getAcctName());
+		creditRespBo.setMoney(afLoanDto.getAmount());
+		creditRespBo.setApr(BigDecimalUtil.multiply(loanDo.getInterestRate(), new BigDecimal(100)));
+		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afLoanDto.getLoanStartTime(), lastBorrowBillGmtPayTime));
+		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afLoanDto.getLoanStartTime()));
+		if (StringUtil.isNotBlank(afLoanDto.getLoanRemark())) {
+			creditRespBo.setPurpose(afLoanDto.getLoanRemark());
+		}else {
+			creditRespBo.setPurpose("个人消费");
+		}
+		creditRespBo.setPurpose("个人消费");
+		creditRespBo.setRepaymentStatus(0);
+		creditRespBo.setRepayName(afLoanDto.getName());
+		creditRespBo.setRepayAcct(afLoanDto.getBankNo());
+		creditRespBo.setRepayAcctBankNo("");
+		creditRespBo.setRepayAcctType(0);
+		if (StringUtil.equals(afLoanDto.getCardName(),"浙商银行")) {
+			creditRespBo.setIsRepayAcctOtherBank(0);
+		}else{
+			creditRespBo.setIsRepayAcctOtherBank(1);
+		}
+		creditRespBo.setManageFee(afAssetSideInfoDo.getAnnualRate());
+		if (StringUtil.isNotBlank(afLoanDto.getRepayRemark())) {
+			creditRespBo.setRepaymentSource(afLoanDto.getRepayRemark());
+		}else {
+			creditRespBo.setRepaymentSource("工资收入");
+		}
+		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
+		creditRespBo.setIsPeriod(1);
+		creditRespBo.setTotalPeriod(afLoanDto.getPeriods());
+		creditRespBo.setLoanerType(0);
+		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
+		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
+		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(0);
+		creditRespBos.add(creditRespBo);
+		return creditRespBos;
 	}
 }
