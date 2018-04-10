@@ -87,7 +87,7 @@ public class SubmitClearApi implements ApiHandle {
         Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
-	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
 
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         AfUserCouponDto coupon = afUserCouponService.getUserCouponById(couponId);

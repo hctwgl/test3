@@ -306,7 +306,10 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 
     @Override
     protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
-	
+	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
+	if (kuaijieLoanBo.getRepayment() != null) {
+	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
+	}
     }
 
     @Override

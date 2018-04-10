@@ -82,7 +82,7 @@ public class LoanAllRepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		

@@ -28,6 +28,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
 /**
  * 
  * @类描述：快捷支付确认支付
@@ -39,22 +40,30 @@ public class ConfirmPaymentApi implements ApiHandle {
 
     @Resource
     AfUserBankcardDao afUserBankcardDao;
-    
+
     @Autowired
     @Qualifier("afRepaymentService")
     UpsPayKuaijieServiceAbstract afRepaymentAbstract;
-    
+
     @Autowired
     @Qualifier("afBorrowLegalRepaymentV2Service")
     UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentV2Abstract;
-    
+
     @Autowired
     @Qualifier("afBorrowLegalRepaymentService")
     UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentService;
-    
+
     @Autowired
     @Qualifier("afLoanRepaymentService")
-    UpsPayKuaijieServiceAbstract  afLoanRepaymentService;
+    UpsPayKuaijieServiceAbstract afLoanRepaymentService;
+
+    @Autowired
+    @Qualifier("loanAllRepayDoApi")
+    UpsPayKuaijieServiceAbstract loanAllRepayDoApi;
+
+    @Autowired
+    @Qualifier("afRenewalLegalDetailV2Service")
+    UpsPayKuaijieServiceAbstract afRenewalLegalDetailV2Service;
     
     @Autowired
     BizCacheUtil bizCacheUtil;
@@ -71,38 +80,41 @@ public class ConfirmPaymentApi implements ApiHandle {
 	}
 
 	Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + tradeNo);
-	if(beanName == null){
+	if (beanName == null) {
 	    // 未获取到缓存数据，支付订单过期
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
 	}
-	
-	
+
 	Map<String, Object> map = new HashMap<String, Object>();
 	switch (beanName.toString()) {
 	case "afRepaymentService":
-	    afRepaymentAbstract.doUpsPay(map, tradeNo, smsCode);	    
+	    afRepaymentAbstract.doUpsPay(map, tradeNo, smsCode);
 	    break;
 	case "afBorrowLegalRepaymentV2Service":
-	    afBorrowLegalRepaymentV2Abstract.doUpsPay(map, tradeNo, smsCode);	    
+	    afBorrowLegalRepaymentV2Abstract.doUpsPay(map, tradeNo, smsCode);
 	    break;
 	case "afBorrowLegalRepaymentService":
 	    afBorrowLegalRepaymentService.doUpsPay(map, tradeNo, smsCode);
 	    break;
 	case "afLoanRepaymentService":
-	    afLoanRepaymentService.doUpsPay(map,tradeNo,smsCode);
+	    afLoanRepaymentService.doUpsPay(map, tradeNo, smsCode);
+	    break;
+	case "loanAllRepayDoApi":
+	    loanAllRepayDoApi.doUpsPay(map, tradeNo, smsCode);
+	    break;
+	case "afRenewalLegalDetailV2Service":
+	    afRenewalLegalDetailV2Service.doUpsPay(map, tradeNo, smsCode);
 	    break;
 	default:
 	    break;
 	}
 
-	if (map.get("resp") == null ||
-		(map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {
+	if (map.get("resp") == null || (map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 	}
-	
+
 	resp.addResponseData("data", map);
 
 	return resp;
     }
-
 }

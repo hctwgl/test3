@@ -2,13 +2,15 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
-
-import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
-import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -28,23 +31,24 @@ import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailV2Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -71,6 +75,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -81,7 +86,7 @@ import com.alibaba.fastjson.JSONObject;
  * @date 2017年12月11日
  */
 @Service("afRenewalLegalDetailV2Service")
-public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements AfRenewalLegalDetailV2Service {
+public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstract implements AfRenewalLegalDetailV2Service {
     @Resource
     UpsUtil upsUtil;
     @Resource
@@ -140,7 +145,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
     SmartAddressEngine smartAddressEngine;
 
     @Override
-    public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address, String bankPayType) {
+    public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address, String bankChannel) {
 	Date now = new Date();
 	String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
 	final String payTradeNo = repayNo;
@@ -178,25 +183,57 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	}
 	if (cardId > 0) {// 银行卡支付
 	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-	    dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
-	    UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", 
-		    afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), 
-		    afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
-
-	    if (!respBo.isSuccess()) {
-		String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-		dealLegalRenewalFail(payTradeNo, repayNo, errorMsg);
-		throw new FanbeiException(errorMsg);
+	    KuaijieRenewalPayBo bizObject = new KuaijieRenewalPayBo(renewalDetail);
+	    UpsCollectRespBo respBo;
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+		respBo = sendKuaiJieSms(bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+			afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRenewalLegalDetailV2Service", name, 
+			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
+	    } else {// 代扣
+		respBo = doUpsPay(bankChannel, bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
+			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), name, 
+			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 	    }
+	
 	    map.put("resp", respBo);
+	    map.put("refId", renewalDetail.getRid());
+	    map.put("refOrderId", borrowLegalOrder.getRid());
+	    map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
 	} else {
 	    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 	}
-	map.put("refId", renewalDetail.getRid());
-	map.put("refOrderId", borrowLegalOrder.getRid());
-	map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
-
+	
 	return map;
+    }
+
+    @Override
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
+	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
+	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
+	}
+    }
+
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
+	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
+	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
+	}	
+    }
+
+    @Override
+    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
+	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
+	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
+	}	
+    }
+
+    @Override
+    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
+	
+	    dealLegalRenewalFail(payTradeNo, payTradeNo, errorMsg);
     }
 
     long dealChangStatus(final String outTradeNo, final String tradeNo, final String status, final Long renewalDetailId) {
