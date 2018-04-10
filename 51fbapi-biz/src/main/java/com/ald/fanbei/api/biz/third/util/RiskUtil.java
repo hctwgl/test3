@@ -897,6 +897,7 @@ public class RiskUtil extends AbstractThird {
         //临时测试
         try{
             AfUserDo userDo= afUserService.getUserById( Long.parseLong(consumerNo));
+            logger.info("current koudaixianjin username:"+userDo.getUserName());
             Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+userDo.getUserName()+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
             if(data>0){
                 logger.info("loan on koudaixianjin username:"+userDo.getUserName());
