@@ -35,7 +35,9 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
     protected AfTradeCodeInfoService afTradeCodeInfoService;
 
     protected abstract void quickPaySendSmmSuccess(String payTradeNo, String payBizObject);
-    
+
+    protected abstract void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject);
+
     protected abstract void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject);
 
     protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg);
@@ -55,7 +57,8 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	String payBizObject = getPayBizObject(payTradeNo);
 	if (upsCollectBo != null && StringUtils.isNotBlank(payBizObject)) {
 	    // 调用支付业务
-	    doUpsPay(map, BankPayChannel.KUAIJIE.getCode(), upsCollectBo.getCardId(), payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()), upsCollectBo.getRealName(), upsCollectBo.getCertNo(), smsCode, payBizObject);
+	    doUpsPay(map, BankPayChannel.KUAIJIE.getCode(), upsCollectBo.getCardId(), payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()),
+		    upsCollectBo.getRealName(), upsCollectBo.getCertNo(), smsCode, payBizObject, upsCollectBo.getRemark(), upsCollectBo.getMerPriv());
 
 	} else {
 	    // 未获取到缓存数据，支付订单过期
@@ -80,12 +83,12 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * @param realName
      * @param idNumber
      */
-    protected void doUpsPay(Map<String, Object> map, String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject) {
-	UpsCollectRespBo respBo = doUpsPay(bankPayType, cardId, payTradeNo, actualAmount, userId, realName, idNumber, smsCode, payBizObject);
+    protected void doUpsPay(Map<String, Object> map, String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject, String remark, String merPriv) {
+	UpsCollectRespBo respBo = doUpsPay(bankPayType, cardId, payTradeNo, actualAmount, userId, realName, idNumber, smsCode, payBizObject, remark, merPriv);
 	map.put("resp", respBo);
     }
 
-    protected UpsCollectRespBo doUpsPay(String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject) {
+    protected UpsCollectRespBo doUpsPay(String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject, String remark, String merPriv) {
 	// 获取用户绑定银行卡信息
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 
@@ -94,7 +97,8 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) { // 确认快捷支付
 	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", UserAccountLogType.REPAYMENT.getCode());
 	} else { // 代扣
-	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
+	    daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
+	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv);
 	}
 
 	// 处理支付结果
@@ -138,16 +142,16 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * @param realName
      * @param idNumber
      */
-    protected void sendKuaiJieSms(Map<String, Object> map, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName) {
-	UpsCollectRespBo respBo = sendKuaiJieSms(cardId, payTradeNo, actualAmount, userId, realName, idNumber, payBizObject, beanName);
+    protected void sendKuaiJieSms(Map<String, Object> map, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName, String remark, String merPriv) {
+	UpsCollectRespBo respBo = sendKuaiJieSms(cardId, payTradeNo, actualAmount, userId, realName, idNumber, payBizObject, beanName, remark, merPriv);
 	// 返回结果
 	map.put("resp", respBo);
     }
 
-    protected UpsCollectRespBo sendKuaiJieSms(Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName) {
+    protected UpsCollectRespBo sendKuaiJieSms(Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName, String remark, String merPriv) {
 	// 申请发送支付确认短信
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(), afResourceService.getCashProductName());
+	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, afResourceService.getCashProductName());
 
 	// 处理支付结果
 	if (!respBo.isSuccess()) {
@@ -156,7 +160,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    throw new FanbeiException(errorMsg);
 	} else {
 	    // 添加数据到redis缓存
-	    UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(), BankPayChannel.KUAIJIE.getCode(), afResourceService.getCashProductName());
+	    UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(), afResourceService.getCashProductName());
 	    // 支付请求对应的处理bean
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付请求数据
@@ -165,7 +169,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo, JSON.toJSONString(respBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付相关业务数据（由子类业务处理）
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo, payBizObject, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
-	    
+
 	    quickPaySendSmmSuccess(payTradeNo, payBizObject);
 	}
 

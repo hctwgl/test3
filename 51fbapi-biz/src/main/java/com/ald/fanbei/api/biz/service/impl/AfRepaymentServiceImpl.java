@@ -276,7 +276,8 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 
-		sendKuaiJieSms(map, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRepaymentService");
+		sendKuaiJieSms(map, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), 
+			JSON.toJSONString(bizObject), "afRepaymentService", name, UserAccountLogType.REPAYMENT.getCode());
 	    } else {// 代扣
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 		afRepaymentDao.addRepayment(repayment);
@@ -284,7 +285,8 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		// 调用ups支付
-		doUpsPay(map, bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject));
+		doUpsPay(map, bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), name, UserAccountLogType.REPAYMENT.getCode());
 	    }
 	} else if (cardId == -2) {// 余额支付
 	    afRepaymentDao.addRepayment(repayment);
@@ -311,6 +313,12 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     @Override
     protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
 	//do nothing
+    }
+
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	// TODO Auto-generated method stub
+	
     }
 
     @Override

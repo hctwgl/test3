@@ -46,6 +46,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -364,9 +365,11 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	    KuaijieRepayV2Bo bizObject = new KuaijieRepayV2Bo(repayment);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service");
+		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
+			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service", bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 	    } else {// 代扣
-		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject));
+		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 		bo.outTradeNo = respBo.getTradeNo();
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
@@ -380,7 +383,13 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	afRepaymentBorrowCashDao.status2ProcessKuaijie(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
 
     }
+    
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	// TODO Auto-generated method stub
 
+    }
+    
     @Override
     protected void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject) {
 	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);

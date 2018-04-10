@@ -48,6 +48,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -440,9 +441,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	    KuaijieRepayBo bizObject = new KuaijieRepayBo(repayment, legalOrderRepayment);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService");
+		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), 
+			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 	    } else {// 代扣
-		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject));
+		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject),bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 		bo.outTradeNo = respBo.getTradeNo();
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
@@ -454,6 +457,12 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
     protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 	changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
+    }
+
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	// TODO Auto-generated method stub
+
     }
 
     @Override
