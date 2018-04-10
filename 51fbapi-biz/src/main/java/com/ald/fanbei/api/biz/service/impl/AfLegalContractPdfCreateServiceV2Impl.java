@@ -184,7 +184,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             }
 
 
-            companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技有限公司");
+            companyUserSealDo = afUserSealDao.selectByUserId(-4l);//浙江楚橡信息科技有限公司
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
                 map.put("thirdSeal", companyUserSealDo.getUserSeal());
                 map.put("thirdAccoundId", companyUserSealDo.getUserAccountId());
@@ -616,7 +616,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                     Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
                     map.put("gmtTime", dateFormat.format(afBorrowCashDo.getGmtArrival())+"至"+dateFormat.format(repaymentDay));//到账时间
                     map.put("gmtPlanRepayment", dateFormat.format(afBorrowCashDo.getGmtPlanRepayment()));//还款日
-                    AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName("金泰嘉鼎（深圳）资产管理有限公司");
+                    AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserId(-5l);
+
                     map.put("thirdSeal",companyUserSealDo.getUserSeal());
                     map.put("thirdAccoundId",companyUserSealDo.getUserAccountId());
                 }
