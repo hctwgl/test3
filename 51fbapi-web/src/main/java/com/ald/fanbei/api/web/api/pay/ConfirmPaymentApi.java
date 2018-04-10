@@ -11,10 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -22,7 +25,6 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-
 /**
  * 
  * @类描述：快捷支付确认支付
@@ -34,8 +36,17 @@ public class ConfirmPaymentApi implements ApiHandle {
 
     @Resource
     AfUserBankcardDao afUserBankcardDao;
+    
     @Autowired
-    UpsPayKuaijieServiceAbstract kuaijieRepaymentServiceAbstract;
+    @Qualifier("afRepaymentService")
+    UpsPayKuaijieServiceAbstract afRepaymentAbstract;
+    
+    @Autowired
+    @Qualifier("afBorrowLegalRepaymentV2Service")
+    UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentV2Abstract;
+    
+    @Autowired
+    BizCacheUtil bizCacheUtil;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -48,8 +59,24 @@ public class ConfirmPaymentApi implements ApiHandle {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	}
 
+	Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + tradeNo);
+	if(beanName == null){
+	    // 未获取到缓存数据，支付订单过期
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+	}
+	
+	
 	Map<String, Object> map = new HashMap<String, Object>();
-	kuaijieRepaymentServiceAbstract.doUpsPay(map, tradeNo, smsCode);
+	switch (beanName.toString()) {
+	case "afRepaymentService":
+	    afRepaymentAbstract.doUpsPay(map, tradeNo, smsCode);	    
+	    break;
+	case "afBorrowLegalRepaymentV2Service":
+	    afBorrowLegalRepaymentV2Abstract.doUpsPay(map, tradeNo, smsCode);	    
+	    break;
+	default:
+	    break;
+	}
 
 	if (map.get("resp") == null ||
 		(map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {

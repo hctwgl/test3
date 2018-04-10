@@ -39,7 +39,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
     // protected abstract void sendFailMessage(String payTradeNo, Long userId,
     // String errorMsg);
 
-    protected abstract void roolbackBizData(String payTradeNo, String payBizObject);
+    protected abstract void roolbackBizData(String payTradeNo, String payBizObject,String errorMsg);
 
     /**
      * 
@@ -82,6 +82,11 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * @param idNumber
      */
     protected void doUpsPay(Map<String, Object> map, String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject) {
+	UpsCollectRespBo respBo = doUpsPay(bankPayType, cardId, payTradeNo, actualAmount, userId, realName, idNumber, smsCode, payBizObject);
+	map.put("resp", respBo);
+    }
+
+    protected UpsCollectRespBo doUpsPay(String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String smsCode, String payBizObject) {
 	// 获取用户绑定银行卡信息
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 
@@ -97,9 +102,9 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	// 处理支付结果
 	if (!respBo.isSuccess()) {
 	    // 调用ups接口失败，回滚业务数据
-	    roolbackBizData(payTradeNo, payBizObject);
-
 	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+	    roolbackBizData(payTradeNo, payBizObject,errorMsg);
+
 	    throw new FanbeiException(errorMsg);
 	}
 
@@ -107,8 +112,9 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo);
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo);
+	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo);
 
-	map.put("resp", respBo);
+	return respBo;
     }
 
     /**
@@ -128,7 +134,13 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * @param realName
      * @param idNumber
      */
-    protected void sendKuaiJieSms(Map<String, Object> map, String bankPayType, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject) {
+    protected void sendKuaiJieSms(Map<String, Object> map, Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName) {
+	UpsCollectRespBo respBo = sendKuaiJieSms(cardId, payTradeNo, actualAmount, userId, realName, idNumber, payBizObject, beanName);
+	// 返回结果
+	map.put("resp", respBo);
+    }
+
+    protected UpsCollectRespBo sendKuaiJieSms(Long cardId, String payTradeNo, BigDecimal actualAmount, Long userId, String realName, String idNumber, String payBizObject, String beanName) {
 	// 申请发送支付确认短信
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(), afResourceService.getCashProductName());
@@ -140,16 +152,18 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    throw new FanbeiException(errorMsg);
 	} else {
 	    // 添加数据到redis缓存
-	    UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(), bankPayType, afResourceService.getCashProductName());
+	    UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode(), BankPayChannel.KUAIJIE.getCode(), afResourceService.getCashProductName());
+	    // 支付请求对应的处理bean
+	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付请求数据
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo, JSON.toJSONString(upsCollectBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付响应数据
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo, JSON.toJSONString(respBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付相关业务数据（由子类业务处理）
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo, payBizObject, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
-	    // 返回结果
-	    map.put("resp", respBo);
 	}
+
+	return respBo;
     }
 
     /**

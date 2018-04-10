@@ -115,6 +115,7 @@ public class UpsUtil extends AbstractThird {
         public static final String KUAIJIE_TRADE_HEADER = "kuaijie:tradeno:req:";
         public static final String KUAIJIE_TRADE_RESPONSE_HEADER = "kuaijie:tradeno:resp:";
         public static final String KUAIJIE_TRADE_OBJECT_HEADER = "kuaijie:tradeno:resp:";
+        public static final String KUAIJIE_TRADE_BEAN_ID = "kuaijie:tradeno:beanId:";
 
         @Resource
         GeneratorClusterNo generatorClusterNo;

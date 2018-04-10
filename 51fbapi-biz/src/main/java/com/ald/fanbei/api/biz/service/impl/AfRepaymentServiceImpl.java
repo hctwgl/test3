@@ -247,9 +247,9 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    public Map<String, Object> createRepaymentByBankOrRebate(BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, String bankPayType) {
+    public Map<String, Object> createRepaymentByBankOrRebate(BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, String bankChannel) {
 	Date now = new Date();
-	String repayNo = generatorClusterNo.getRepaymentNo(now, bankPayType);
+	String repayNo = generatorClusterNo.getRepaymentNo(now, bankChannel);
 	final String payTradeNo = repayNo;
 
 	// 新增还款记录
@@ -277,12 +277,12 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    
 	    //构造业务数据，为后续接口使用
 	    KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment , billIdList);	    
-	    if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {//快捷支付
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {//快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 		
-		sendKuaiJieSms(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
-			afUserAccountDo.getIdNumber(),JSON.toJSONString(bizObject));
+		sendKuaiJieSms(map, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+			afUserAccountDo.getIdNumber(),JSON.toJSONString(bizObject), "afRepaymentService");
 	    } else {//代扣
 		//更新状态
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
@@ -291,7 +291,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		//调用ups支付
-		doUpsPay(map, bankPayType, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+		doUpsPay(map, bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
 			afUserAccountDo.getIdNumber(), "",JSON.toJSONString(bizObject));
 	    }
 	} else if (cardId == -2) {// 余额支付
@@ -321,9 +321,10 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
-	    kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
-	    afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
-	    afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+	    AfRepaymentDo repayment  = (AfRepaymentDo)kuaijieRepaymentBo.getRepayment();
+	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+	    afRepaymentDao.updateRepaymentByAfRepaymentDo(repayment);
+	    afUserAmountService.addUseAmountDetail(repayment);
 	}
 	else {
 	    // 未获取到缓存数据，支付订单过期
@@ -332,18 +333,21 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    protected void roolbackBizData(String payTradeNo, String payBizObject) {
+    protected void roolbackBizData(String payTradeNo, String payBizObject,String errorMsg) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
+	    AfRepaymentDo repayment  = (AfRepaymentDo)kuaijieRepaymentBo.getRepayment();
+	    @SuppressWarnings("unchecked")
+	    List<Long> billIdList = (List<Long>)kuaijieRepaymentBo.getBills();
 
-	    AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(kuaijieRepaymentBo.getRepayment().getRid());
+	    AfRepaymentDo currRepayment = afRepaymentDao.getRepaymentById(repayment.getRid());
 	    if (!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())) {
-		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(kuaijieRepaymentBo.getBills(), BorrowBillStatus.NO.getCode());
-		afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, kuaijieRepaymentBo.getRepayment().getRid());
-		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, kuaijieRepaymentBo.getRepayment());
+		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
+		afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null,repayment.getRid());
+		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
 	    } else {
-		logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + kuaijieRepaymentBo.getRepayment().getRid());
+		logger.info("createRepayment ups response fail.repayNo:" + payTradeNo + ",repaymentId:" + repayment.getRid());
 	    }
 	} else {
 	    // 未获取到缓存数据，支付订单过期

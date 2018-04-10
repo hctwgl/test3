@@ -181,7 +181,24 @@ public class GeneratorClusterNo {
 			return orderSb.toString();
 		}
 	}
-
+	/**
+	 * 获取现金还款编号
+	 * 
+	 * @param currDate
+	 * @return
+	 */
+	public String getRepaymentBorrowCashNo(Date currDate, String bankChannel) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		synchronized (this){
+			String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+			StringBuffer orderSb = new StringBuffer("hq");
+			if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
+			    orderSb.append("kj");
+			}
+			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
+			return orderSb.toString();
+		}
+	}
+	
 	/**
 	 * 获取现金还款编号
 	 *
