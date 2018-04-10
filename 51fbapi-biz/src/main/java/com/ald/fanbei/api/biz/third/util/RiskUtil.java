@@ -918,15 +918,25 @@ public class RiskUtil extends AbstractThird {
 			String result = dataObj.getString("result");
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
+			riskResp.setConsumerNo(consumerNo);
+			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
+			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
+			riskResp.setRejectCode(dataObj.getString("rejectCode"));
+			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
 			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) {
 				riskResp.setPassWeakRisk(true);
 				try{
-					AfUserDo userDo= afUserService.getUserById( Long.parseLong(consumerNo));
-					Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+userDo.getUserName()+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
-					if(data>0){
-						logger.info("loan on koudaixianjin username:"+userDo.getUserName());
-						riskResp.setPassWeakRisk(false);
+					if(scene.equals("50")){//借钱才走这个逻辑
+						AfUserDo userDo= afUserService.getUserById( Long.parseLong(consumerNo));
+						Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+userDo.getUserName()+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
+						if(data>0){
+							logger.info("loan on koudaixianjin username:"+userDo.getUserName());
+							riskResp.setPassWeakRisk(false);
+							riskResp.setResult("30");
+							riskResp.setRejectCode("104");
+						}
 					}
+
 				}catch (Exception e){
 					logger.info("loan on koudaixianjin error:",e);
 				}
@@ -935,11 +945,7 @@ public class RiskUtil extends AbstractThird {
 			else {
 				riskResp.setPassWeakRisk(false);
 			}
-			riskResp.setConsumerNo(consumerNo);
-			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
-			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
-			riskResp.setRejectCode(dataObj.getString("rejectCode"));
-			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
+
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
