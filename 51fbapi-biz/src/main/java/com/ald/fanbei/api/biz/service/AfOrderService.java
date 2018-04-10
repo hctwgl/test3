@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -465,4 +466,17 @@ public interface AfOrderService {
 	 */
 	HashMap getLeaseProtocol(Long orderId);
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
+	
+	/**
+	 * 检查order是否生效
+	 * @param orderId
+	 */
+	void checkOrderValidity(AfOrderDo order);
+	
+	/**
+	 * 根据上送卡号解析出 PayType类型
+	 * @param bankcardId
+	 */
+	PayType resolvePayType(Long bankcardId, String isCombinationPay);
+	
 }
