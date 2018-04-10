@@ -269,9 +269,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 
 	if (cardId > 0) {// 银行卡支付
 	    // 还款金额是否大于银行单笔限额
-	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(),
-	    // actualAmount);
-
+	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
 	    // 构造业务数据，为后续接口使用
 	    KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment, billIdList);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
@@ -280,7 +278,6 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 
 		sendKuaiJieSms(map, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRepaymentService");
 	    } else {// 代扣
-		    // 更新状态
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 		afUserAmountService.addUseAmountDetail(repayment);
@@ -312,7 +309,12 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    protected void quickPayConfirmPre(String payTradeNo, String payBizObject) {
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+	//do nothing
+    }
+
+    @Override
+    protected void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);

@@ -34,10 +34,9 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
     @Autowired
     protected AfTradeCodeInfoService afTradeCodeInfoService;
 
-    protected abstract void quickPayConfirmPre(String payTradeNo, String payBizObject);
-
-    // protected abstract void sendFailMessage(String payTradeNo, Long userId,
-    // String errorMsg);
+    protected abstract void quickPaySendSmmSuccess(String payTradeNo, String payBizObject);
+    
+    protected abstract void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject);
 
     protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg);
 
@@ -93,7 +92,6 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	// 调用ups进行支付
 	UpsCollectRespBo respBo;
 	if (BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) { // 确认快捷支付
-	    quickPayConfirmPre(payTradeNo, payBizObject);
 	    respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", UserAccountLogType.REPAYMENT.getCode());
 	} else { // 代扣
 	    respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, "还款", "02", UserAccountLogType.REPAYMENT.getCode());
@@ -108,6 +106,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    throw new FanbeiException(errorMsg);
 	} else {
 	    clearCache(payTradeNo);
+	    quickPayConfirmSuccess(payTradeNo, bankPayType, payBizObject);
 	}
 
 	return respBo;
@@ -166,6 +165,8 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo, JSON.toJSONString(respBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 	    // 支付相关业务数据（由子类业务处理）
 	    bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo, payBizObject, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+	    
+	    quickPaySendSmmSuccess(payTradeNo, payBizObject);
 	}
 
 	return respBo;

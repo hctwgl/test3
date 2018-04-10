@@ -156,7 +156,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     @Override
     public void repay(RepayBo bo, String bankChannel) {
 	// 非快捷支付才会锁定还款
-	if (BankPayChannel.KUAIJIE.getClass().equals(bankChannel)) {
+	if (!BankPayChannel.KUAIJIE.getClass().equals(bankChannel)) {
 	    lockRepay(bo.userId);
 	}
 
@@ -361,41 +361,38 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment, String bankChannel) {
 	if (bo.cardId > 0) {// 银行卡支付
 	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-
 	    KuaijieRepayV2Bo bizObject = new KuaijieRepayV2Bo(repayment);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-
-		UpsCollectRespBo respBo = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service");
-
-		afRepaymentBorrowCashDao.status2ProcessKuaijie(respBo.getTradeNo(), repayment.getRid());
+		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service");
 	    } else {// 代扣
-		    // 调用ups支付
 		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject));
-		// 更新状态
-		if (repayment != null) {
-		    afRepaymentBorrowCashDao.status2Process(respBo.getTradeNo(), repayment.getRid());
-		}
 		bo.outTradeNo = respBo.getTradeNo();
 	    }
-
 	} else if (bo.cardId == -2) {// 余额支付
 	    dealRepaymentSucess(bo.tradeNo, "");
 	}
+    }
+
+    @Override
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
+	afRepaymentBorrowCashDao.status2ProcessKuaijie(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
 
     }
 
     @Override
-    protected void quickPayConfirmPre(String payTradeNo, String payBizObject) {
-
+    protected void quickPayConfirmSuccess(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
+	// 更新状态
+	afRepaymentBorrowCashDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
     }
 
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
-	    KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
-	    dealRepaymentFail(kuaijieRepaymentBo.getRepayment().getRepayNo(), "", true, errorMsg);
+	    dealRepaymentFail(payTradeNo, "", true, errorMsg);
 	} else {
 	    // 未获取到缓存数据，支付订单过期
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
