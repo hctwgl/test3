@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
@@ -118,5 +119,5 @@ public interface AfGoodsDao {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
 
-
+	List<HashMap> getVisualGoodsByGoodsPriceId(@Param("ids")List<String> ids);
 }

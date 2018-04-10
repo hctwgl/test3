@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -122,5 +123,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+
+	List<HashMap> getVisualGoodsByGoodsPriceId(List<String> ids);
 }
 

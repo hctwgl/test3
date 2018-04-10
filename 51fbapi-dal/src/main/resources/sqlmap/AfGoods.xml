@@ -472,4 +472,14 @@
 
 	</select>
 
+	<select id="getVisualGoodsByGoodsPriceId" resultType="HashMap">
+		SELECT a.actual_amount,b.name,b.rebate_amount,b.goods_icon,b.id FROM af_goods_price as a INNER JOIN af_goods as b ON a.goods_id=b.id
+		WHERE a.is_delete = 0 AND a.is_sale = 'Y' AND b.is_delete = 0 AND b.status = 'PUBLISH'
+		AND a.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+
 </mapper>

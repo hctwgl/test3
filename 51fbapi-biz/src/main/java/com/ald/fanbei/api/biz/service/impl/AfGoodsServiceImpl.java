@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -187,6 +188,11 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	public List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId){
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
+	}
+
+	@Override
+	public List<HashMap> getVisualGoodsByGoodsPriceId(List<String> ids) {
+		return afGoodsDao.getVisualGoodsByGoodsPriceId(ids);
 	}
 
 }
