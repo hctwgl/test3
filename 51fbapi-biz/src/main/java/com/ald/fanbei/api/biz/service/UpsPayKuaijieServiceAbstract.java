@@ -39,7 +39,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
     // protected abstract void sendFailMessage(String payTradeNo, Long userId,
     // String errorMsg);
 
-    protected abstract void roolbackBizData(String payTradeNo, String payBizObject,String errorMsg);
+    protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg);
 
     /**
      * 
@@ -103,18 +103,23 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	if (!respBo.isSuccess()) {
 	    // 调用ups接口失败，回滚业务数据
 	    String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-	    roolbackBizData(payTradeNo, payBizObject,errorMsg);
-
+	    roolbackBizData(payTradeNo, payBizObject, errorMsg);
+	    clearCache(payTradeNo);
 	    throw new FanbeiException(errorMsg);
+	} else {
+	    clearCache(payTradeNo);
 	}
 
+	return respBo;
+    }
+
+    private void clearCache(String payTradeNo) {
 	// 移除缓存数据(确认后则清空缓存无论调用ups是否成功)
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo);
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo);
 	bizCacheUtil.delCache(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo);
 
-	return respBo;
     }
 
     /**

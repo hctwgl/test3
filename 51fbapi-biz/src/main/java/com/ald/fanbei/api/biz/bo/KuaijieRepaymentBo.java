@@ -13,27 +13,27 @@ public class KuaijieRepaymentBo implements Serializable {
 
     }
 
-    public KuaijieRepaymentBo(Object repayment, Object bills) {
+    public KuaijieRepaymentBo(AfRepaymentDo repayment, List<Long> bills) {
 	this.repayment = repayment;
 	this.bills = bills;
     }
 
-    private Object repayment;
-    private Object bills;
+    private AfRepaymentDo repayment;
+    private List<Long> bills;
 
-    public Object getRepayment() {
+    public AfRepaymentDo getRepayment() {
 	return repayment;
     }
 
-    public void setRepayment(Object repayment) {
+    public void setRepayment(AfRepaymentDo repayment) {
 	this.repayment = repayment;
     }
 
-    public Object getBills() {
+    public List<Long> getBills() {
 	return bills;
     }
 
-    public void setBills(Object bills) {
+    public void setBills(List<Long> bills) {
 	this.bills = bills;
     }
 
@@ -41,5 +41,4 @@ public class KuaijieRepaymentBo implements Serializable {
     public String toString() {
 	return "KuaijieRepaymentBo [repayment=" + repayment + ", bills=" + bills + "]";
     }
-
 }
