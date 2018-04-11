@@ -442,10 +442,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), 
-			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
+			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 	    } else {// 代扣
 		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
-			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject),bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 		bo.outTradeNo = respBo.getTradeNo();
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
@@ -461,10 +461,14 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	// TODO Auto-generated method stub
 
     }
 
+    @Override
+    protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	
+    }
+    
     @Override
     protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);

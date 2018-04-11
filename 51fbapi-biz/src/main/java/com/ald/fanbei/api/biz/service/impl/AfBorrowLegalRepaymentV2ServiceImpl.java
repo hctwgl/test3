@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRepayV2Bo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -366,10 +367,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
-			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service", bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
+			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service",Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 	    } else {// 代扣
 		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
-			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 		bo.outTradeNo = respBo.getTradeNo();
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
@@ -385,8 +386,12 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     }
     
     @Override
+    protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	
+    }
+    
+    @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	// TODO Auto-generated method stub
 
     }
     

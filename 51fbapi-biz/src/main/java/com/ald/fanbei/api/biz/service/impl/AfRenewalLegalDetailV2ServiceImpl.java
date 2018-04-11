@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
@@ -187,11 +188,11 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
 	    UpsCollectRespBo respBo;
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		respBo = sendKuaiJieSms(bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
-			afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRenewalLegalDetailV2Service", name, 
+			afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRenewalLegalDetailV2Service",Constants.DEFAULT_PAY_PURPOSE, name, 
 			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 	    } else {// 代扣
 		respBo = doUpsPay(bankChannel, bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
-			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), name, 
+			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, 
 			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 	    }
 	
@@ -213,7 +214,11 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
 	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
 	}
     }
-
+    
+    @Override
+    protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+    }
+    
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);

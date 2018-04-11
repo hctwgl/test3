@@ -16,6 +16,7 @@ import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -30,6 +31,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
+import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
+import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
@@ -140,7 +143,7 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
  */
 
 @Service("afOrderService")
-public class AfOrderServiceImpl extends BaseService implements AfOrderService {
+public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements AfOrderService {
 
 	@Resource
 	private AfOrderDao orderDao;
@@ -1097,7 +1100,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	// return orderDao.deleteOrder(id);
 	// }
     @Override
-    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, String bankChannel) {
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, final String bankChannel) {
 	final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 	final HashMap<String, HashMap> riskDataMap = new HashMap();
 
@@ -1355,40 +1358,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 				    orderInfo.setStatus(OrderStatus.DEALING.getCode());
 				}
 			    }
-			    orderDao.updateOrder(orderInfo);
+
 			    // 银行卡支付 代收
 			    // 租赁弱风控判断（除租赁外银行卡不需要判断弱风控 canPay=true）
 			    if (canPay) {
-				UpsCollectRespBo respBo = upsUtil.collect(tradeNo, actualAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, remark, "02", merPriv);
-				if (!respBo.isSuccess()) {
-				    if (StringUtil.isNotBlank(respBo.getRespCode())) {
-					// 模版数据map处理
-					Map<String, String> replaceMapData = new HashMap<String, String>();
-					String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-					replaceMapData.put("errorMsg", errorMsg);
-					try {
-					    AfUserDo userDo = afUserService.getUserById(userId);
-					    smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-					} catch (Exception e) {
-					    logger.error("pay order rela bank pay error,userId=" + userId, e);
+				KuaijieOrderPayBo bizObject = new KuaijieOrderPayBo(orderInfo, borrow, afOrderLeaseDo);
+				UpsCollectRespBo respBo;
+				if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+				    respBo = sendKuaiJieSms(cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
+					    userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
+				} else {// 代扣
+				    respBo = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
+					    userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
+				}
 
-					}
-					throw new FanbeiException(errorMsg);
-				    }
-				    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-				}
-				// 租赁逻辑
-				if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
-				    // 新增借款信息
-				    afBorrowDao.addBorrow(borrow); // 冻结状态
-				    // 在风控审批通过后额度不变生成账单
-				    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-				    afBorrowExtendDo.setId(borrow.getRid());
-				    afBorrowExtendDo.setInBill(0);
-				    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-				    afBorrowService.updateBorrowStatus(borrow, afOrderLeaseDo.getUserName(), orderInfo.getUserId());
-				    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId(), afOrderLeaseDo.getQuotaDeposit());
-				}
 				newMap.put("outTradeNo", respBo.getOrderNo());
 				newMap.put("tradeNo", respBo.getTradeNo());
 				newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
@@ -1402,24 +1385,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		    return resultMap;
 		} catch (FanbeiException exception) {
 		    logger.error("payBrandOrder faied e = {}", exception);
-		    // 自营,代买或商圈记录支付失败信息，然后返回客户端提示
-		    if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
-			String payFailMsg = "";
-			if (FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())) {
-			    payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
-			} else if (FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode().equals(exception.getErrorCode().getCode())) {
-			    payFailMsg = exception.getErrorCode().getDesc();
-			} else if (FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())) {
-			    payFailMsg = FanbeiExceptionCode.BANK_CARD_PAY_ERR.getDesc();
-			}
-			AfOrderDo currUpdateOrder = new AfOrderDo();
-			currUpdateOrder.setRid(orderInfo.getRid());
-			currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
-			currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
-			currUpdateOrder.setStatusRemark(payFailMsg);
-			orderDao.updateOrder(currUpdateOrder);
-			logger.info("ap pay order fail,reason is useamount is too less orderId=" + orderInfo.getRid());
-		    }
 		    throw exception;
 		} catch (Exception e) {
 		    status.setRollbackOnly();
@@ -1429,6 +1394,65 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	    }
 
 	});
+    }
+
+    @Override
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+
+    }
+
+    @Override
+    protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+	}
+    }
+
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+	}
+    }
+
+    @Override
+    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+	// 租赁逻辑
+	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+	    if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
+		if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
+		    // 新增借款信息
+		    afBorrowDao.addBorrow(kuaijieOrderPayBo.getBorrow()); // 冻结状态
+		    // 在风控审批通过后额度不变生成账单
+		    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+		    afBorrowExtendDo.setId(kuaijieOrderPayBo.getBorrow().getRid());
+		    afBorrowExtendDo.setInBill(0);
+		    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+		    afBorrowService.updateBorrowStatus(kuaijieOrderPayBo.getBorrow(), kuaijieOrderPayBo.getAfOrderLeaseDo().getUserName(), kuaijieOrderPayBo.getOrderInfo().getUserId());
+		    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
+		}
+	    }
+	}
+    }
+
+    @Override
+    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
+	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+	    if (OrderType.getNeedRecordPayFailCodes().contains(kuaijieOrderPayBo.getOrderInfo().getOrderType())) {
+		String payFailMsg = "";
+		AfOrderDo currUpdateOrder = new AfOrderDo();
+		currUpdateOrder.setRid(kuaijieOrderPayBo.getOrderInfo().getRid());
+		currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+		currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+		currUpdateOrder.setStatusRemark(payFailMsg);
+		orderDao.updateOrder(currUpdateOrder);
+		logger.info("ap pay order fail,reason is useamount is too less orderId=" + kuaijieOrderPayBo.getOrderInfo().getRid());
+	    }
+	}
     }
 
 	public JSONObject borrowRateWithOrder(Long orderId, Integer nper) {
