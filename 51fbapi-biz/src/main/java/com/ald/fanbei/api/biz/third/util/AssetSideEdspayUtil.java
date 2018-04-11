@@ -43,6 +43,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfLoanPushService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.biz.service.AfRecordMaxService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
@@ -99,6 +100,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
+import com.ald.fanbei.api.dal.domain.AfRecordMaxDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
@@ -179,6 +181,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	SmsUtil smsUtil;
 	@Resource
 	UpsUtil upsUtil;
+	@Resource
+	AfRecordMaxService afRecordMaxService;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -799,6 +803,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						}
 					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 						//打款成功
+						removeRecordMax(PayResultReqBo);
 						//记录拓展表
 						AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
 						Date now = new Date();
@@ -861,6 +866,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							//记录拓展表
 						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 							//打款成功
+							removeRecordMax(PayResultReqBo);
 							borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
 							//记录拓展表
 						}
@@ -918,6 +924,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 								}
 							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 								//打款成功
+								removeRecordMax(PayResultReqBo);
 								AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
 								afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
 								afLoanService.dealLoanSucc(loanDo.getRid(),"");
@@ -930,6 +937,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			logger.error("borrowCashCurPush exception"+e);
 		}
 		return notifyRespBo;
+	}
+
+	private void removeRecordMax(EdspayGiveBackPayResultReqBo PayResultReqBo) {
+		//移出record_max表
+		AfRecordMaxDo recordMaxDo = afRecordMaxService.getByBusIdAndEventype(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
+		if (null != recordMaxDo) {
+			afRecordMaxService.deleteById(recordMaxDo.getRid());
+		}
 	}
 
 	
