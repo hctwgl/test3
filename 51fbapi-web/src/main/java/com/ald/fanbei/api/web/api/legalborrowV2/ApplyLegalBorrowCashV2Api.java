@@ -372,7 +372,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-
+                    logger.info("test2 ");
 					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
 					if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
 						jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
