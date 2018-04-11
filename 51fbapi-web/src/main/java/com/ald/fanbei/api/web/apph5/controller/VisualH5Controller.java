@@ -15,6 +15,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -162,7 +164,7 @@ public class VisualH5Controller  extends BaseController {
     @RequestMapping(value = "/getCategoryGoods", method = RequestMethod.POST)
     public String getCategoryGoods(HttpServletRequest request, HttpServletResponse response) {
         Long id = NumberUtil.objToLongDefault(request.getParameter("id"),0);
-        Long categoryId = NumberUtil.objToLongDefault(request.getParameter("categoryId"),0);
+        String categorynName = ObjectUtils.toString(request.getParameter("categorynName"));
         Integer pageIndex = NumberUtil.objToIntDefault(request.getParameter("pageIndex"),1);
         Integer pageSize = NumberUtil.objToIntDefault(request.getParameter("pageSize"),10);
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
@@ -176,16 +178,13 @@ public class VisualH5Controller  extends BaseController {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         AfVisualH5ItemDo afVisualH5ItemDo = afVisualH5ItemService.getById(id);
-        String value = afVisualH5ItemDo.getValue4();
+        JSONArray value = JSON.parseArray(afVisualH5ItemDo.getValue4());
         List<String> selectIds = new ArrayList<>();
-        if(StringUtil.isNotBlank(value)){
-            String[] skuIds = value.split(",");
-            Integer current = (pageIndex - 1) * pageSize;
-            if(current < skuIds.length){
-                for (int i = current ; i < skuIds.length; i++){
-                    if(i - current <= pageSize){
-                        selectIds.add(skuIds[i]);
-                    }
+        if(array != null){
+            for (int j=0;j<value.size();j++) {
+                JSONObject item = value.getJSONObject(j);
+                if(item.getString("categorynName").equals(categorynName)){
+                    selectIds = StringUtil.splitToList(item.getString("skuId"), ",");
                 }
             }
         }
