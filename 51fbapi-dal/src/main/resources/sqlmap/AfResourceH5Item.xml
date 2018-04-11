@@ -17,5 +17,11 @@
         AND model_id = #{modelId}
         order by sort desc
     </select>
-    
+
+    <select id="findListByModelTagAndSort" resultType="AfResourceH5ItemDto">
+        SELECT hi.id, hi.value1, hi.value2, hi.value3, hi.value4, hi.sort
+        FROM af_resource_h5_item hi, af_resource_h5 h
+        WHERE hi.model_id = h.id AND hi.is_delete = 0 AND h.is_delete = 0 AND h.tag = #{tag} AND h.sort = #{sort}
+        ORDER BY hi.sort DESC
+    </select>
 </mapper>

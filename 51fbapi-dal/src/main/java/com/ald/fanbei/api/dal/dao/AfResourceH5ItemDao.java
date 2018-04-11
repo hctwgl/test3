@@ -16,5 +16,14 @@ import java.util.List;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfResourceH5ItemDao extends BaseDao<AfResourceH5ItemDo, Long> {
-	List<AfResourceH5ItemDto> selectByModelId(@Param("modelId") Long modelId);
+
+    List<AfResourceH5ItemDto> selectByModelId(@Param("modelId") Long modelId);
+
+    /**
+     * 根据页面tag和sort查找
+     *
+     * @author wangli
+     * @date 2018/4/11 14:02
+     */
+    List<AfResourceH5ItemDo> findListByModelTagAndSort(@Param("tag") String tag, @Param("sort") Integer sort);
 }

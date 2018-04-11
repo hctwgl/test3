@@ -22,4 +22,5 @@ public interface AfBottomGoodsService extends ParentService<AfBottomGoodsDo, Lon
      * @date 2018/4/11 10:25
      */
     List<AfBottomGoodsDto> findGoodsByPageFlag(AfBottomGoodsQuery query);
+
 }

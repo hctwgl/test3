@@ -1,12 +1,12 @@
 package com.ald.fanbei.api.ioc.start;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import com.ald.fanbei.api.server.webapp.JettyServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 /**
  * 启动类
  * @author rongbo
@@ -35,7 +35,7 @@ public class Bootstrap4Jetty {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new JettyServerStart(webPath, 8080, "/", 2, true).start();
+		new JettyServerStart(webPath, 8080, "/", 0, true).start();
 
 	}
 }

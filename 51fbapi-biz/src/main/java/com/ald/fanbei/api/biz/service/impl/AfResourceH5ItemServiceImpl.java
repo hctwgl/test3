@@ -31,6 +31,9 @@ public class AfResourceH5ItemServiceImpl implements AfResourceH5ItemService {
 		return afResourceH5ItemDao.selectByModelId(modelId);
 	}
 
-
+	@Override
+	public List<AfResourceH5ItemDo> findListByModelTagAndSort(String tag, Integer sort) {
+		return afResourceH5ItemDao.findListByModelTagAndSort(tag, sort);
+	}
 
 }
