@@ -374,12 +374,17 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
                     logger.info("test2 ");
 					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
-					if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
-						jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
-						smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
-					}else{
-						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+					try{
+						if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")&&afResourceDo.getValue4().contains(appType)){
+							jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
+							smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
+						}else{
+							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+						}
+					}catch (Exception e){
+						logger.error("push legal borrow cash error", e);
 					}
+
 					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 				}
 				return resp;
