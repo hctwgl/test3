@@ -3,19 +3,17 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.*;
-import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.*;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -62,16 +60,49 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
+import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.MobileStatus;
+import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderSecType;
+import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.PushStatus;
+import com.ald.fanbei.api.common.enums.RefundSource;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
@@ -81,6 +112,8 @@ import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
+import com.ald.fanbei.api.dal.dao.AfIdNumberDao;
 import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
 import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
@@ -96,6 +129,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBklDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
@@ -104,6 +138,8 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -123,6 +159,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfIagentResultDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
@@ -3197,5 +3234,37 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	@Override
 	public HashMap getLeaseProtocol(Long orderId) {
 		return orderDao.getLeaseProtocol(orderId);
+	}
+
+	@Override
+	public void checkOrderValidity(AfOrderDo order) {
+		if (order.getStatus().equals(OrderStatus.DEALING.getCode())) {
+			throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_DEALING);
+        }
+
+        if (order.getStatus().equals(OrderStatus.PAID.getCode())) {
+        	throw new FanbeiException(FanbeiExceptionCode.ORDER_HAS_PAID);
+        }
+
+        if (order.getStatus().equals(OrderStatus.CLOSED.getCode())) {
+        	throw new FanbeiException(FanbeiExceptionCode.ORDER_HAS_CLOSED);
+        }
+	}
+
+	@Override
+	public PayType resolvePayType(Long bankcardId, String isCombinationPay) {
+		PayType payType = PayType.AGENT_PAY;
+		
+        if (bankcardId < 0) {
+            payType = PayType.WECHAT;
+            throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+        } else if (bankcardId > 0) {
+            payType = PayType.BANK;
+            if(StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
+            	payType = PayType.COMBINATION_PAY;
+            }
+        }
+
+        return payType;
 	}
 }

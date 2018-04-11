@@ -1,36 +1,25 @@
 package com.ald.fanbei.api.web.validator.bean;
 
-import java.math.BigDecimal;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
 @Component("submitBindBankcardParam")
 public class SubmitBindBankcardParam {
+	public Long orderId;
 	
-	public String orderId;
-	public BigDecimal amount;
-	public String pauPwd;
+	public String isCombinationPay;
+	public String orderType;
+	public Integer orderNper;
+	public String lat;
+	public String lng;
 	
-	@NotNull
+	public String payPwd;
 	public String realName;
-	
-	@NotNull
 	public String idNumber;
 	
 	@NotNull
-	public String cardNumber;
-	
-	@NotNull
-	public String mobile;
-	
-	@NotNull
-	public String bankCode;
-	
-	@NotNull
-	public String bankName;
-	
+	public Long bankCardId;
 	@NotNull
 	public String smsCode;
 	
