@@ -630,17 +630,46 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
 			}
 		}else{
-			//分期
-			//维护拓展表
 			AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowCashInfo.getOrderNo());
-			AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-			Date now = new Date();
-			borrowPushDo.setGmtCreate(now);
-			borrowPushDo.setGmtModified(now);
-			borrowPushDo.setBorrowId(borrowDo.getRid());
-			borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-			borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-			afBorrowPushService.saveRecord(borrowPushDo);
+			if (null != borrowDo) {
+				//分期
+				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+				Date now = new Date();
+				borrowPushDo.setGmtCreate(now);
+				borrowPushDo.setGmtModified(now);
+				borrowPushDo.setBorrowId(borrowDo.getRid());
+				borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
+				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowPushService.saveRecord(borrowPushDo);
+			}else{
+				AfLoanDo loanDo = afLoanService.getByLoanNo(borrowCashInfo.getOrderNo());
+				if (null != loanDo) {
+					//白领贷
+					AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+					afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+					AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
+					AfUserBankcardDo bankCard = afUserBankcardService.getUserMainBankcardByUserId(loanDo.getUserId());
+					List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+					if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
+						//直接关闭
+						dealLoanFail(loanDo, periodDos,"推送失败关闭");
+						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+						smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+					}else{
+						// 调用UPS打款
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
+								afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+								bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+								UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+						loanDo.setTradeNoOut(upsResult.getOrderNo());
+						if (!upsResult.isSuccess()) {
+							dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+							smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+						}
+					}
+				}
+			}
 		}
 	}
 
