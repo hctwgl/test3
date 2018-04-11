@@ -79,9 +79,11 @@ public class GeneratorClusterNo {
 	 * @param currDate
 	 * @return
 	 */
-	public String getOrderPayNo(Date currDate) {// 支付号规则：14位日期_5位订单序号
+	public String getOrderPayNo(Date currDate,String bankChannel) {// 支付号规则：14位日期_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("fk");
+		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel))
+		    orderSb.append("kj");
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getOrderPaySequenceNum(currDate)));
 		return orderSb.toString();
 	}

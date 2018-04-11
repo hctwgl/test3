@@ -159,7 +159,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     @Override
     public Map<String, Object> repay(RepayBo bo, String bankChannel) {
 	// 非快捷支付才会锁定还款
-	if (!BankPayChannel.KUAIJIE.getClass().equals(bankChannel)) {
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
 	    lockRepay(bo.userId);
 	}
 
@@ -384,8 +384,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     @Override
     protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
-	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
-	afRepaymentBorrowCashDao.status2ProcessKuaijie(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
+//	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
+//	afRepaymentBorrowCashDao.status2ProcessKuaijie(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
 
     }
     
@@ -400,7 +400,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     }
     
     @Override
-    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
 	// 更新状态
 	afRepaymentBorrowCashDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());

@@ -459,8 +459,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 
     @Override
     protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
-	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-	changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
+//	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+//	changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
     }
 
     @Override
@@ -474,7 +474,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
     }
     
     @Override
-    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 	if (kuaijieRepaymentBo.getLegalOrderRepayment() != null) {
 	    // 更新状态

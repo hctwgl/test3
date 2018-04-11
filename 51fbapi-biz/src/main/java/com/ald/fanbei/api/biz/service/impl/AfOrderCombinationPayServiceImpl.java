@@ -93,6 +93,9 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
     AfBorrowService afBorrowService;
 
     @Autowired
+    AfOrderDao afOrderDao;
+
+    @Autowired
     RiskUtil riskUtil;
 
     /**
@@ -205,12 +208,19 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
     }
 
     @Override
-    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	// 租赁逻辑
 	KuaijieOrderCombinationPayBo kuaijieOrderCombinationPayBo = JSON.parseObject(payBizObject, KuaijieOrderCombinationPayBo.class);
 	if (kuaijieOrderCombinationPayBo.getOrderInfo() != null) {
 
 	    AfOrderDo orderInfo = kuaijieOrderCombinationPayBo.getOrderInfo();
+
+	    AfOrderDo afOrder = new AfOrderDo();
+	    afOrder.setRid(orderInfo.getRid());
+	    afOrder.setPayStatus(PayStatus.DEALING.getCode());
+	    afOrder.setStatus(OrderStatus.DEALING.getCode());
+	    afOrderDao.updateOrder(afOrder);
+
 	    AfBorrowDo borrow = kuaijieOrderCombinationPayBo.getBorrow();
 	    AfUserAccountDo userAccountInfo = kuaijieOrderCombinationPayBo.getUserAccountInfo();
 	    Map<String, Object> virtualMap = kuaijieOrderCombinationPayBo.getVirtualMap();

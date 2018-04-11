@@ -42,7 +42,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
     protected abstract void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject);
 
-    protected abstract Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo);
+    protected abstract Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo);
 
     protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo);
 
@@ -111,7 +111,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	    clearCache(payTradeNo);
 	    throw new FanbeiException(errorMsg);
 	} else {
-	    Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo);
+	    Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.getCardNumber());
 	    clearCache(payTradeNo);
 	    return resultMap;
 	}
@@ -173,6 +173,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 
 	Map<String, Object> resultMap = new HashMap<String, Object>();
 	resultMap.put("resp", respBo);
+	resultMap.put("orderNo", respBo.getOrderNo());
 	return resultMap;
     }
 

@@ -1132,7 +1132,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	    @Override
 	    public Map<String, Object> doInTransaction(TransactionStatus status) {
 		Date currentDate = new Date();
-		String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+		String tradeNo = generatorClusterNo.getOrderPayNo(currentDate,bankChannel);
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 
 		try {
@@ -1284,8 +1284,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (verybo.isSuccess()) {
 			    logger.info("combination_pay result is true");
 			    orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
-			    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-			    orderInfo.setStatus(OrderStatus.DEALING.getCode());
 			    orderDao.updateOrder(orderInfo);
 			    AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
@@ -1414,7 +1412,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
     }
 
     @Override
-    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	// 租赁逻辑
 	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
 	Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -1436,7 +1434,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	    Map<String, Object> newMap = new HashMap<String, Object>();
 	    newMap.put("outTradeNo", respBo.getOrderNo());
 	    newMap.put("tradeNo", respBo.getTradeNo());
-	    newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+	    newMap.put("cardNo", Base64.encodeString(cardNo));
 	    resultMap.put("resp", newMap);
 	    resultMap.put("status", PayStatus.DEALING.getCode());
 	    resultMap.put("success", true);
@@ -1601,13 +1599,13 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId,
 			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
-			final Integer nper, final String appName, final String ipAddress, String bankChannel) {
+			final Integer nper, final String appName, final String ipAddress,final String bankChannel) {
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
 					Date currentDate = new Date();
-					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+					String tradeNo = generatorClusterNo.getOrderPayNo(currentDate,bankChannel);
 					Map<String, Object> resultMap = new HashMap<String, Object>();
 					AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);// new
 					// AfOrderDo();
