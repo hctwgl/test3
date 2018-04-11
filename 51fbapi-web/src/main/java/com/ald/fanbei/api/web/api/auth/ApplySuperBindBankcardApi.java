@@ -33,9 +33,9 @@ import com.ald.fanbei.api.web.validator.bean.ApplyBindBankcardParam;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("applyBindBankcardApi")
-@Validator("applyBindBankcardParam")
-public class ApplyBindBankcardApi implements ApiHandle {
+@Component("applySuperBindBankcardApi")
+@Validator("applySuperBindBankcardParam")
+public class ApplySuperBindBankcardApi implements ApiHandle {
 
 	@Resource
 	private AfUserAccountService afUserAccountService;
@@ -66,6 +66,7 @@ public class ApplyBindBankcardApi implements ApiHandle {
 			param.idNumber = userAccount.getIdNumber();
 		}
 		
+		// TODO upsUtil.super authSign
 		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02", param.bankCode);
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
@@ -97,5 +98,9 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		bank.setUserId(userId);
 		return bank;
 	}
+
+
+
+
 
 }

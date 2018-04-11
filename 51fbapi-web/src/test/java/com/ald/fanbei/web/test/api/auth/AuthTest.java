@@ -13,7 +13,7 @@ public class AuthTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-//	String urlBase = "https://atestapp.51fanbei.com";
+//	String urlBase = "https://testapp.51fanbei.com";
 	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
@@ -52,22 +52,46 @@ public class AuthTest  extends BaseTest{
 	 *  绑卡业务 start
 	 *---------------- */
 	/**
-	 * 提交 银行卡绑卡
+	 * 提交 超级绑卡
 	 */
 	@Test
-	public void submitBindBankcard() {
+	public void submitSuperBindBankcard() {
 		String url = urlBase + "/auth//submitBindBankcard";
 		Map<String,String> params = new HashMap<>();
 		params.put("orderId", "65656565");
-		params.put("amount", 1000+"");
+		params.put("isCombinationPay", 1000+"");
+		params.put("orderType", 1000+"");
+		params.put("orderNper", 1000+"");
+		params.put("lat", 1000+"");
+		params.put("lng", 1000+"");
 		params.put("payPwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
 		params.put("realname", "王卿");
 		
 		params.put("idNumber", "3203265648764614");
-		params.put("cardNumber", "62398656789");
-		params.put("mobile", "13765482698");
-		params.put("bankCode", "CBD");
-		params.put("bankName", "中国银行");
+		params.put("bankCardId", "中国银行");
+		params.put("smsCode", "65888");
+		
+		testApi(url, params, userName, true);
+	}
+	
+	/**
+	 * 申请 超级绑卡 短信
+	 */
+	@Test
+	public void applyBindBankcard() {
+		String url = urlBase + "/auth//applyBindBankcard";
+		Map<String,String> params = new HashMap<>();
+		params.put("orderId", "65656565");
+		params.put("isCombinationPay", 1000+"");
+		params.put("orderType", 1000+"");
+		params.put("orderNper", 1000+"");
+		params.put("lat", 1000+"");
+		params.put("lng", 1000+"");
+		params.put("payPwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
+		params.put("realname", "王卿");
+		
+		params.put("idNumber", "3203265648764614");
+		params.put("bankCardId", "中国银行");
 		params.put("smsCode", "65888");
 		
 		testApi(url, params, userName, true);

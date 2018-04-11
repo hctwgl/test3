@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component("submitSuperBindBankcardParam")
-public class SubmitBindBankcardParam {
+public class SubmitSuperBindBankcardParam {
 	public Long orderId;
 	
 	public String isCombinationPay;

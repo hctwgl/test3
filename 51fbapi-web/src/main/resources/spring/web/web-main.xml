@@ -344,7 +344,12 @@
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
+				
+				<!-- 4.1.2及以上绑卡 -->
+				<entry key="/auth/applyBindBankcard" value-ref="applyBindBankcardApi"/>
 				<entry key="/auth/submitBindBankcard" value-ref="submitBindBankcardApi"/>
+                <entry key="/auth/applySuperBindBankcard" value-ref="applySuperBindBankcardApi"/>
+				<entry key="/auth/submitSuperBindBankcard" value-ref="submitSuperBindBankcardApi"/>
 				
 				
 
