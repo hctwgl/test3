@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.h5.controller;
+package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
