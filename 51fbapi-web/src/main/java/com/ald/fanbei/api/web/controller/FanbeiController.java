@@ -55,7 +55,7 @@ public class FanbeiController extends BaseController {
 	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
             "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getHomeGoodsList","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
-	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
+	"/category/getAllGoodsCategory","/category/getGoodsList","/category/getGoodsList1", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

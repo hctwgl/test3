@@ -196,5 +196,24 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> getGoodsListByBrandId(Long brandId) {
 		return afGoodsDao.getGoodsListByBrandId(brandId);
 	}
+	@Override
+	public List<AfGoodsDo> getGoodsVerifyByCategoryIdAndVolume(
+			AfGoodsQuery goodsQuery) {
+		return afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
+	}
+	@Override
+	public List<AfGoodsDo> getGoodsByCategoryIdAndPriceAsc(
+			AfGoodsQuery goodsQuery) {
+		return afGoodsDao.getGoodsByCategoryIdAndPriceAsc(goodsQuery);
+	}
+	@Override
+	public List<AfGoodsDo> getGoodsByCategoryIdAndPriceDesc(
+			AfGoodsQuery goodsQuery) {
+		return afGoodsDao.getGoodsByCategoryIdAndPriceDesc(goodsQuery);
+	}
+	@Override
+	public List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId) {
+		return afGoodsDao.getAllByBrandIdAndVolume(brandId);
+	}
 
 }

@@ -28,14 +28,13 @@ import java.util.Map;
  * @author chefeipeng 2017年10月25日下午2:03:35
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("getAllGoodsCategoryApi")
-public class GetAllGoodsCategoryApi implements ApiHandle {
+@Component("getAllGoodsCategoryV1Api")
+public class GetAllGoodsCategoryV1Api implements ApiHandle {
 
     @Resource
     AfGoodsCategoryService afGoodsCategoryService;
     @Resource
     private AfCategoryOprationService afCategoryOprationService;
-
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -61,7 +60,7 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                 rid = oneList.get(x).getId();
                 name = oneList.get(x).getName();
                 // 查询分类运营位配置信息
-                AfCategoryOprationDo categoryRunData =  afCategoryOprationService.getByCategoryId(rid);
+               AfCategoryOprationDo categoryRunData =  afCategoryOprationService.getByCategoryId(rid);
                 secondList = afGoodsCategoryService.selectSecondLevel(rid);
                 //查出三级
                 if(null != secondList && secondList.size()>0){

@@ -129,6 +129,30 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	List<AfGoodsDo> getGoodsListByBrandId(Long brandId);
+	/**
+	 * 爱上街根据三级类目id查询所有商品 销量降序
+	 * @param goodsQuery 
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+	/**
+	 * 爱尚街根据分类ID和价格查询商品 升序 
+	 * @param goodsQuery
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
+	/**
+	 * 爱尚街根据分类ID和价格查询商品 降序
+	 * @param goodsQuery
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
+	/**
+	 * 查询出该品牌下的所有商品 按照销量进行降序
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId);
 
 
 }
