@@ -586,6 +586,7 @@
 				<!-- 生活首页接口 -->
 				<entry key="/h5/life/categoryAndBanner" value-ref="categoryAndBannerApi" />
 				<entry key="/h5/life/h5ResourceListApi" value-ref="h5ResourceListApi" />
+				<entry key="/h5/life/goods" value-ref="bottomGoodsApi" />
 			</map>
 		</constructor-arg>
 	</bean>

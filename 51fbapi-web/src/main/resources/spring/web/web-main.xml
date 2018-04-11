@@ -585,7 +585,10 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
-
+				<!-- 生活首页接口 -->
+				<entry key="/h5/life/categoryAndBanner" value-ref="categoryAndBannerApi" />
+				<entry key="/h5/life/h5ResourceListApi" value-ref="h5ResourceListApi" />
+				<entry key="/h5/life/goods" value-ref="bottomGoodsApi" />
 			</map>
 		</constructor-arg>
 	</bean>
