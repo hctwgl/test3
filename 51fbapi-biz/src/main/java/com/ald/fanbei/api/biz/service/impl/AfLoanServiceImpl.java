@@ -258,15 +258,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 							UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
 					loanDo.setTradeNoOut(upsResult.getOrderNo());
 					if (!upsResult.isSuccess()) {
-						dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
 						//审核通过，ups打款失败
-						String title = "本次还款支付失败";
-						String content = "您&bankName（&cardLastNo）未能成功接收款项，请添加其他银行卡后，联系客服进行更换4000025151";
-						String bankNumber = bankCard.getCardNumber();
-						String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
-						content = content.replace("&cardLastNo",lastBankCode);
-						content = content.replace("&bankName",bankCard.getBankName());
-						jpushService.pushUtil(title,bo.userName,content);
+						dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
+						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
 						smsUtil.sendBorrowPayMoneyFail(bo.userName);
 						throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
 					}
@@ -282,7 +276,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				afLoanDao.updateById(loanDo);
 				throw e;
 			}
-			
 			
 			//贷款成功 通知用户
 			try {
