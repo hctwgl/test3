@@ -255,6 +255,11 @@ public class TestController {
     @RequestMapping("/loanTest")
     @ResponseBody
     public String loanTest() {
+        try{
+            Thread.sleep(50000);
+        }catch (Exception e){
+
+        }
 
        Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+"13165995223"+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
         return String.valueOf(data) ;
