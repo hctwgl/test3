@@ -136,14 +136,15 @@ public class BottomGoodsApi implements H5Handle {
                     .getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                             saleAmount, borrowConfig.getValue1(), borrowConfig.getValue2(),
                             goodsId,"0");
-            /*if (nperList != null) {
+            if (nperList != null) {
                 Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-                String isFree = (String) nperMap.get("isFree");
+                /*String isFree = (String) nperMap.get("isFree");
                 if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
                     nperMap.put("freeAmount", nperMap.get("amount"));
-                }
-                goodsInfo.put("nperMap", nperMap);
-            }*/
+                }*/
+                e.put("price", nperMap.get("amount"));
+                e.put("nperNum", nperMap.get("nper"));
+            }
         }
     }
 }
