@@ -211,21 +211,10 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                     logger.info("empty address");
                     throw new FanbeiException("请先填写收货地址!", true);
                 }
-                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address, bankPayType);
+                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, 
+                	context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address, bankPayType);
 
-                // 代收
-                UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
-                if (!upsResult.isSuccess()) {
-                    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                }
-                Map<String, Object> newMap = new HashMap<String, Object>();
-                newMap.put("outTradeNo", upsResult.getOrderNo());
-                newMap.put("tradeNo", upsResult.getTradeNo());
-                newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
-                newMap.put("refId", map.get("refId"));
-                newMap.put("type", map.get("type"));
-
-                resp.setResponseData(newMap);
+                resp.setResponseData(map);
                 logger.info("confirmLegalRenewalPayV2Api result = {}" ,resp);
             }
 

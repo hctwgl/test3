@@ -82,6 +82,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 /**
  * 借款合规订单的还款service
@@ -167,7 +168,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	 * @return
 	 */
 	@Override
-	public void repay(RepayBo bo,String bankPayType) {
+	public Map<String, Object> repay(RepayBo bo,String bankPayType) {
 		
         	if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
         	    lockRepay(bo.userId);
@@ -186,7 +187,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	
 		generateRepayRecords(bo);
 	
-		doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo,bankPayType);
+		return doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo,bankPayType);
 		
 	}
 	
@@ -435,26 +436,29 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ",legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
     }
     
-    private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment, AfBorrowLegalOrderRepaymentDo legalOrderRepayment, String bankChannel) {
+    private Map<String, Object> doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment, AfBorrowLegalOrderRepaymentDo legalOrderRepayment, String bankChannel) {
+	Map<String, Object> resultMap = new HashMap<String, Object>();
 	if (bo.cardId > 0) {// 银行卡支付
 	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-	    KuaijieRepayBo bizObject = new KuaijieRepayBo(repayment, legalOrderRepayment);
+	    KuaijieRepayBo bizObject = new KuaijieRepayBo(repayment, legalOrderRepayment, bo);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), 
+		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), 
 			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 	    } else {// 代扣
-		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
+		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
 			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
-		bo.outTradeNo = respBo.getTradeNo();
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
 	    dealRepaymentSucess(bo.tradeNo, "", repayment, legalOrderRepayment, null, null);
+	    resultMap = getResultMap(bo, null);
 	}
+	
+	return resultMap;
     }
 
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 	changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
     }
@@ -470,14 +474,43 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
     }
     
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 	if (kuaijieRepaymentBo.getLegalOrderRepayment() != null) {
 	    // 更新状态
 	    changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
 	}
+	
+	return getResultMap(kuaijieRepaymentBo.getBo(), respBo);
     }
 
+    private Map<String, Object> getResultMap(RepayBo bo,UpsCollectRespBo respBo)
+    {
+	Map<String, Object> data = Maps.newHashMap();
+	data.put("rid", bo.borrowId);
+	data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+	data.put("gmtCreate", new Date());
+	data.put("status", AfBorrowLegalRepaymentStatus.YES.getCode());
+	if(bo.userCouponDto != null) {
+		data.put("couponAmount", bo.userCouponDto.getAmount());
+	}
+	if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
+		data.put("userAmount", bo.rebateAmount);
+	}
+	data.put("actualAmount", bo.actualAmount);
+	data.put("cardName", bo.cardName);
+	data.put("cardNumber", bo.cardNo);
+	data.put("repayNo", bo.tradeNo);
+	data.put("jfbAmount", BigDecimal.ZERO);
+	if(respBo!=null)
+	{
+	    data.put("resp", respBo);
+	    data.put("outTradeNo", respBo.getTradeNo());
+	}
+	
+	return data;
+    }
+    
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {

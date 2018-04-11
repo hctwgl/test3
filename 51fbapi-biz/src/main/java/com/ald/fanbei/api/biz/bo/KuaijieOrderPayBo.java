@@ -16,6 +16,8 @@ public class KuaijieOrderPayBo implements Serializable {
 
     public KuaijieOrderPayBo(AfOrderDo orderInfo, AfBorrowDo borrow, AfOrderLeaseDo afOrderLeaseDo) {
 	this.orderInfo = orderInfo;
+	this.borrow = borrow;
+	this.afOrderLeaseDo = afOrderLeaseDo;
     }
 
     private AfOrderDo orderInfo;

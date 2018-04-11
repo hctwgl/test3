@@ -86,26 +86,8 @@ public class RepayDoV2Api implements ApiHandle {
             throw new FanbeiException("分期还款处理中,无法进行还款操作", true);
         }
 
-        this.afBorrowLegalRepaymentV2Service.repay(bo,bankPayType);
-
+        Map<String, Object> data = this.afBorrowLegalRepaymentV2Service.repay(bo,bankPayType);
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Map<String, Object> data = Maps.newHashMap();
-        data.put("rid", bo.borrowId);
-        data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-        data.put("gmtCreate", new Date());
-        data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
-        if (bo.userCouponDto != null) {
-            data.put("couponAmount", bo.userCouponDto.getAmount());
-        }
-        if (bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-            data.put("userAmount", bo.rebateAmount);
-        }
-        data.put("actualAmount", bo.actualAmount);
-        data.put("cardName", bo.cardName);
-        data.put("cardNumber", bo.cardNo);
-        data.put("repayNo", bo.tradeNo);
-        data.put("jfbAmount", BigDecimal.ZERO);
-
         resp.setResponseData(data);
 
         return resp;

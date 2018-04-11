@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -76,6 +77,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 
 
@@ -143,47 +145,46 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
     @Resource
     private AfResourceService afResourceService;
 
-	@Override
-	public void repay(LoanRepayBo bo,String bankPayType) {
-		
-	    if(!BankPayChannel.KUAIJIE.getCode().equals(bankPayType))
-	    {
-		lockRepay(bo.userId);
-	    }
-		
-		if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
-			// 未出账时拦截按期还款
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-		}
-		
-		Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-		}
-		
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-		
-		// 根据 还款金额  更新期数信息
-		if(!bo.isAllRepay) {	// 非提前结清
-			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-			bo.loanPeriodsIds.clear();
-			bo.loanPeriodsDoList.clear();
-			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
-			}
-		}
+    @Override
+    public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
 
-		// 增加还款记录
-		generateRepayRecords(bo);
-	
-		// 还款操作
-		doRepay(bo, bo.loanRepaymentDo,bankPayType);
-			
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+	    lockRepay(bo.userId);
 	}
+
+	if (!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))) {
+	    // 未出账时拦截按期还款
+	    throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+	}
+
+	Date now = new Date();
+	String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+	if (StringUtil.equals("sysJob", bo.remoteIp)) {
+	    name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+	}
+
+	String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
+	bo.tradeNo = tradeNo;
+	bo.name = name;
+
+	// 根据 还款金额 更新期数信息
+	if (!bo.isAllRepay) { // 非提前结清
+	    List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+	    bo.loanPeriodsIds.clear();
+	    bo.loanPeriodsDoList.clear();
+	    for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+		bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+		bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+	    }
+	}
+
+	// 增加还款记录
+	generateRepayRecords(bo);
+
+	// 还款操作
+	return doRepay(bo, bo.loanRepaymentDo, bankPayType);
+
+    }
 	
 	/**
 	 * @Description:  增加还款记录
@@ -273,22 +274,25 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
      * @Description:  还款操作
      * @return  void
      */
-    private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment,String bankChannel) {
+    private Map<String, Object> doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment, String bankChannel) {
+	Map<String, Object> resultMap = new HashMap<String, Object>();
 	if (bo.cardId > 0) {// 银行卡支付
 	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-	    KuaijieLoanBo bizObject = new KuaijieLoanBo(repayment);
+	    KuaijieLoanBo bizObject = new KuaijieLoanBo(repayment, bo);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afLoanRepaymentService"
-			,Constants.DEFAULT_PAY_PURPOSE,bo.name,PayOrderSource.REPAY_LOAN.getCode());
+		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
+			bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afLoanRepaymentService", Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
 	    } else {// 代扣
-		UpsCollectRespBo respBo = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject),
-			Constants.DEFAULT_PAY_PURPOSE,bo.name,PayOrderSource.REPAY_LOAN.getCode());
-		bo.outTradeNo = respBo.getTradeNo();
+		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
-		dealRepaymentSucess(bo.tradeNo, "");
+	    dealRepaymentSucess(bo.tradeNo, "");
+	    resultMap = getResultMap(bo, null);
 	}
+	
+	return resultMap;
     }
 
     @Override
@@ -305,18 +309,21 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
     }
     
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo)
+    {
+	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
 	if (kuaijieLoanBo.getRepayment() != null) {
 	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.SMS.name(), kuaijieLoanBo.getRepayment().getRid());
 	}
     }
 
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
 	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
 	if (kuaijieLoanBo.getRepayment() != null) {
 	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
 	}
+	return getResultMap(kuaijieLoanBo.getBo(),respBo);
     }
 
     @Override
@@ -332,6 +339,33 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 	    // 未获取到缓存数据，支付订单过期
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
 	}
+    }
+    
+    private Map<String, Object> getResultMap(LoanRepayBo bo, UpsCollectRespBo respBo)
+    {
+	Map<String, Object> data = Maps.newHashMap();
+	data.put("rid", bo.loanId);
+	data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+	data.put("gmtCreate", new Date());
+	data.put("status", AfLoanRepaymentStatus.SUCC.name());
+	if(bo.userCouponDto != null) {
+		data.put("couponAmount", bo.userCouponDto.getAmount());
+	}
+	if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
+		data.put("userAmount", bo.rebateAmount);
+	}
+	data.put("actualAmount", bo.actualAmount);
+	data.put("cardName", bo.cardName);
+	data.put("cardNumber", bo.cardNo);
+	data.put("repayNo", bo.tradeNo);
+	data.put("jfbAmount", BigDecimal.ZERO);	
+	if(respBo!=null)
+	{
+	    data.put("resp", respBo);
+	    data.put("outTradeNo", respBo.getTradeNo());
+	}
+	
+	return data;
     }
     
    	/**

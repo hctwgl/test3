@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -79,6 +80,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @Description:
@@ -185,21 +187,16 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
 	if (cardId > 0) {// 银行卡支付
 	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	    KuaijieRenewalPayBo bizObject = new KuaijieRenewalPayBo(renewalDetail);
-	    UpsCollectRespBo respBo;
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-		respBo = sendKuaiJieSms(bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+		map = sendKuaiJieSms(bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
 			afUserAccountDo.getIdNumber(), JSON.toJSONString(bizObject), "afRenewalLegalDetailV2Service",Constants.DEFAULT_PAY_PURPOSE, name, 
 			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 	    } else {// 代扣
-		respBo = doUpsPay(bankChannel, bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
+		map = doUpsPay(bankChannel, bank.getRid(), payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
 			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, 
 			PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 	    }
-	
-	    map.put("resp", respBo);
-	    map.put("refId", renewalDetail.getRid());
-	    map.put("refOrderId", borrowLegalOrder.getRid());
-	    map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
+	    
 	} else {
 	    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 	}
@@ -208,7 +205,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
     }
 
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
 	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
 	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.SMS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
@@ -228,11 +225,20 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
     }
 
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
 	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
 	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
 	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
-	}	
+	}
+
+        Map<String, Object> resulMap = new HashMap<String, Object>();
+        resulMap.put("outTradeNo", respBo.getOrderNo());
+        resulMap.put("tradeNo", respBo.getTradeNo());
+        resulMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+        resulMap.put("refId", kuaijieRenewalPayBo.getRenewalDetail().getRid());
+        resulMap.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
+        
+        return resulMap;
     }
 
     @Override

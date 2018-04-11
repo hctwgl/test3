@@ -90,24 +90,26 @@ public class ConfirmPaymentApi implements ApiHandle {
 	Map<String, Object> map = new HashMap<String, Object>();
 	switch (beanName.toString()) {
 	case "afRepaymentService":
-	    afRepaymentAbstract.doUpsPay(map, tradeNo, smsCode);
+	    map = afRepaymentAbstract.doUpsPay(tradeNo, smsCode);
 	    break;
 	case "afBorrowLegalRepaymentV2Service":
-	    afBorrowLegalRepaymentV2Abstract.doUpsPay(map, tradeNo, smsCode);
+	    map = afBorrowLegalRepaymentV2Abstract.doUpsPay( tradeNo, smsCode);
 	    break;
 	case "afBorrowLegalRepaymentService":
-	    afBorrowLegalRepaymentService.doUpsPay(map, tradeNo, smsCode);
+	    map = afBorrowLegalRepaymentService.doUpsPay(tradeNo, smsCode);
 	    break;
 	case "afLoanRepaymentService":
-	    afLoanRepaymentService.doUpsPay(map, tradeNo, smsCode);
+	    map = afLoanRepaymentService.doUpsPay(tradeNo, smsCode);
 	    break;
 	case "afRenewalLegalDetailV2Service":
-	    afRenewalLegalDetailV2Service.doUpsPay(map, tradeNo, smsCode);
+	    map = afRenewalLegalDetailV2Service.doUpsPay(tradeNo, smsCode);
 	    break;
 	case "afOrderService":
-	    afOrderService.doUpsPay(map, tradeNo, smsCode);
+	    map = afOrderService.doUpsPay(tradeNo, smsCode);
+	    break;
 	case "afOrderCombinationPayService":
-	    afOrderCombinationPayService.doUpsPay(map, tradeNo, smsCode);
+	    map = afOrderCombinationPayService.doUpsPay(tradeNo, smsCode);
+	    break;
 	default:
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	}

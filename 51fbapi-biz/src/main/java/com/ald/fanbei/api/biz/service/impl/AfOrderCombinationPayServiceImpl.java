@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.KuaijieOrderCombinationPayBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
@@ -28,14 +29,12 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.VersionCheckUitl;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
@@ -48,8 +47,8 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 @Service("afOrderCombinationPayService")
@@ -63,39 +62,39 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
     @Autowired
     AfOrderDao orderDao;
-    
+
     @Autowired
     AfAgentOrderService afAgentOrderService;
-    
+
     @Autowired
     AfUserCouponService afUserCouponService;
-    
+
     @Autowired
     JpushService jpushService;
-    
+
     @Autowired
     AfUserService afUserService;
-    
+
     @Autowired
     SmsUtil smsUtil;
-    
+
     @Autowired
     AfOrderService afOrderService;
     @Autowired
     AfUserVirtualAccountService afUserVirtualAccountService;
-    
+
     @Autowired
     AfBorrowDao afBorrowDao;
-    
+
     @Autowired
     AfBorrowExtendDao afBorrowExtendDao;
-    
+
     @Autowired
     AfBorrowService afBorrowService;
-    
+
     @Autowired
     RiskUtil riskUtil;
-    
+
     /**
      * 风控通过后组合支付
      *
@@ -111,7 +110,7 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
      * @param cardInfo
      * @return
      */
-    public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
+    public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo, String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap, BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo, String bankChannel) {
 	String result = verybo.getResult();
 
 	logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
@@ -178,92 +177,92 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	    orderType = OrderType.SELFSUPPORTCP.getCode();
 	}
 
-	// 银行卡支付 代收
-	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
-	if (!respBo.isSuccess()) {
-	    if (StringUtil.isNotBlank(respBo.getRespCode())) {
-		// 模版数据map处理
-		Map<String, String> replaceMapData = new HashMap<String, String>();
-		String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-		replaceMapData.put("errorMsg", errorMsg);
-		try {
-		    AfUserDo userDo = afUserService.getUserById(userId);
-		    smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-		} catch (Exception e) {
-		    logger.error("pay order rela bank pay error,userId=" + userId, e);
-		}
-
-		throw new FanbeiException(errorMsg);
-	    }
-	    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-	}
-	String virtualCode = afOrderService.getVirtualCode(virtualMap);
-	// 是虚拟商品
-	if (StringUtils.isNotBlank(virtualCode)) {
-	    AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), afOrderService.getVirtualAmount(virtualMap), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
-	    // 增加虚拟商品记录
-	    afUserVirtualAccountService.saveRecord(virtualAccountInfo);
+	// 银行卡支付
+	KuaijieOrderCombinationPayBo bizObject = new KuaijieOrderCombinationPayBo(orderInfo, borrow, userAccountInfo, virtualMap);
+	String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
+	if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+	    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
+	} else {// 代扣
+	    resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 	}
 
-	// 新增借款信息
-	afBorrowDao.addBorrow(borrow); // 冻结状态
-	// 在风控审批通过后额度不变生成账单
-	AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-	afBorrowExtendDo.setId(borrow.getRid());
-	afBorrowExtendDo.setInBill(0);
-	afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-
-	/**
-	 * modify by hongzhengpei
-	 */
-	if (VersionCheckUitl.getVersion() >= VersionCheckUitl.VersionZhangDanSecond) {
-	    if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode()) || orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
-		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
-	    } else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
-		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-	    } else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-	    }
-	} else {
-	    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-	    afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
-	}
-	// 更新拆分场景使用额度
-	riskUtil.updateUsedAmount(orderInfo, borrow);
-	logger.info("updateOrder orderInfo = {}", orderInfo);
-	orderDao.updateOrder(orderInfo);
-	resultMap.put("success", true);
 	return resultMap;
     }
 
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
-	// TODO Auto-generated method stub
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 
     }
 
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	// TODO Auto-generated method stub
 
     }
 
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	// TODO Auto-generated method stub
 
     }
 
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
-	// TODO Auto-generated method stub
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
+	// 租赁逻辑
+	KuaijieOrderCombinationPayBo kuaijieOrderCombinationPayBo = JSON.parseObject(payBizObject, KuaijieOrderCombinationPayBo.class);
+	if (kuaijieOrderCombinationPayBo.getOrderInfo() != null) {
 
+	    AfOrderDo orderInfo = kuaijieOrderCombinationPayBo.getOrderInfo();
+	    AfBorrowDo borrow = kuaijieOrderCombinationPayBo.getBorrow();
+	    AfUserAccountDo userAccountInfo = kuaijieOrderCombinationPayBo.getUserAccountInfo();
+	    Map<String, Object> virtualMap = kuaijieOrderCombinationPayBo.getVirtualMap();
+
+	    String virtualCode = afOrderService.getVirtualCode(virtualMap);
+	    // 是虚拟商品
+	    if (StringUtils.isNotBlank(virtualCode)) {
+		AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(), orderInfo.getBorrowAmount(), afOrderService.getVirtualAmount(virtualMap), orderInfo.getRid(), orderInfo.getOrderNo(), virtualCode);
+		// 增加虚拟商品记录
+		afUserVirtualAccountService.saveRecord(virtualAccountInfo);
+	    }
+
+	    // 新增借款信息
+	    afBorrowDao.addBorrow(borrow); // 冻结状态
+	    // 在风控审批通过后额度不变生成账单
+	    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+	    afBorrowExtendDo.setId(borrow.getRid());
+	    afBorrowExtendDo.setInBill(0);
+	    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+
+	    /**
+	     * modify by hongzhengpei
+	     */
+	    if (VersionCheckUitl.getVersion() >= VersionCheckUitl.VersionZhangDanSecond) {
+		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode()) || orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
+		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
+		    afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
+		} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
+		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
+		} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
+		}
+	    } else {
+		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
+	    }
+
+	    // 更新拆分场景使用额度
+	    riskUtil.updateUsedAmount(orderInfo, borrow);
+	    logger.info("updateOrder orderInfo = {}", orderInfo);
+	    orderDao.updateOrder(orderInfo);
+	}
+
+	Map<String, Object> resultMap = new HashMap<String, Object>();
+	resultMap.put("status", PayStatus.DEALING.getCode());
+	resultMap.put("success", true);
+
+	return resultMap;
     }
 
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
-	// TODO Auto-generated method stub
 
     }
 }

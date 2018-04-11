@@ -37,6 +37,7 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -1296,8 +1297,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    logger.info("combination_pay orderInfo = {}", orderInfo);
 
 			    Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, 
-				    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
-			    result.put("status", PayStatus.DEALING.getCode());
+				    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
 			    return result;
 			}
 		    } else {
@@ -1368,19 +1368,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				KuaijieOrderPayBo bizObject = new KuaijieOrderPayBo(orderInfo, borrow, afOrderLeaseDo);
 				UpsCollectRespBo respBo;
 				if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-				    respBo = sendKuaiJieSms(cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
+				    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
 					    userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
 				} else {// 代扣
-				    respBo = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
+				    resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(), 
 					    userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
 				}
-
-				newMap.put("outTradeNo", respBo.getOrderNo());
-				newMap.put("tradeNo", respBo.getTradeNo());
-				newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-				resultMap.put("resp", newMap);
-				resultMap.put("status", PayStatus.DEALING.getCode());
-				resultMap.put("success", true);
 			    }
 			}
 			// 活动返利
@@ -1400,7 +1393,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
     }
 
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 
     }
 
@@ -1421,9 +1414,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
     }
 
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
 	// 租赁逻辑
 	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+	Map<String, Object> resultMap = new HashMap<String, Object>();
 	if (kuaijieOrderPayBo.getOrderInfo() != null) {
 	    if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
 		if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
@@ -1438,7 +1432,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
 		}
 	    }
+
+	    Map<String, Object> newMap = new HashMap<String, Object>();
+	    newMap.put("outTradeNo", respBo.getOrderNo());
+	    newMap.put("tradeNo", respBo.getTradeNo());
+	    newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+	    resultMap.put("resp", newMap);
+	    resultMap.put("status", PayStatus.DEALING.getCode());
+	    resultMap.put("success", true);
 	}
+
+	return resultMap;
     }
 
     @Override

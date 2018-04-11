@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.KuaijieRepaymentBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -277,7 +278,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
 
-		sendKuaiJieSms(map, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), 
+		map = sendKuaiJieSms( cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(), 
 			JSON.toJSONString(bizObject), "afRepaymentService", Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
 	    } else {// 代扣
 		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
@@ -286,7 +287,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 		// 调用ups支付
-		doUpsPay(map, bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
+		map = doUpsPay(bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), 
 			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
 	    }
 	} else if (cardId == -2) {// 余额支付
@@ -306,13 +307,11 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    }
 	    dealRepaymentSucess(repayment.getPayTradeNo(), "", true);
 	}
-	map.put("refId", repayment.getRid());
-	map.put("type", UserAccountLogType.REPAYMENT.getCode());
 	return map;
     }
 
     @Override
-    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject) {
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 
     }
 
@@ -327,13 +326,18 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
     
     @Override
-    protected void upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject) {
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
 	    kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
 	    afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
 	    afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+	    
+	    HashMap<String, Object> map = new HashMap<String, Object>();
+	    map.put("refId", kuaijieRepaymentBo.getRepayment().getRid());
+	    map.put("type", UserAccountLogType.REPAYMENT.getCode());
+	    return map;
 	} else {
 	    // 未获取到缓存数据，支付订单过期
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);

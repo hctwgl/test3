@@ -11,5 +11,6 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 public interface AfOrderCombinationPayService {
     Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo,
 		String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap,
-		BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo);
+		BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo, 
+		String bankChannel);
 }

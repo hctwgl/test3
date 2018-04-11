@@ -1,10 +1,9 @@
 package com.ald.fanbei.api.biz.bo;
 
 import java.io.Serializable;
-import java.util.List;
 
+import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.RepayBo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 
 public class KuaijieRepayV2Bo implements Serializable {
 
@@ -14,11 +13,13 @@ public class KuaijieRepayV2Bo implements Serializable {
 
     }
 
-    public KuaijieRepayV2Bo(AfRepaymentBorrowCashDo repayment) {
+    public KuaijieRepayV2Bo(AfRepaymentBorrowCashDo repayment, RepayBo bo) {
 	this.repayment = repayment;
+	this.bo = bo;
     }
 
     private AfRepaymentBorrowCashDo repayment;
+    private RepayBo bo;
 
     public AfRepaymentBorrowCashDo getRepayment() {
 	return repayment;
@@ -28,9 +29,17 @@ public class KuaijieRepayV2Bo implements Serializable {
 	this.repayment = repayment;
     }
 
+    public RepayBo getBo() {
+	return bo;
+    }
+
+    public void setBo(RepayBo bo) {
+	this.bo = bo;
+    }
+
     @Override
     public String toString() {
-	return "KuaijieRepayV2Bo [repayment=" + repayment + "]";
+	return "KuaijieRepayV2Bo [repayment=" + repayment + ", bo=" + bo + "]";
     }
 
 }
