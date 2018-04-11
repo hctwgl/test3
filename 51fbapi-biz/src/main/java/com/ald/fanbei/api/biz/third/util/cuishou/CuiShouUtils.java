@@ -443,6 +443,31 @@ public class CuiShouUtils {
     }
 
     /**
+     * 白领贷
+     * @param afLoanRepaymentDo
+     */
+    public void syncCuiShou(AfLoanRepaymentDo afLoanRepaymentDo){
+        try {
+            thirdLog.info("cuishouhuankuan bailingdai:" + afLoanRepaymentDo.toString());
+            if (CuiShouUtils.getIsXianXiaHuangKuang() != null && CuiShouUtils.getIsXianXiaHuangKuang()) {
+                return;
+            }
+            setAfLoanRepaymentDo(afLoanRepaymentDo);
+            CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
+            cuiShouBackMoney.setCode(200);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ref_id", afLoanRepaymentDo.getRid());
+            jsonObject.put("id", afLoanRepaymentDo.getRemark());
+            jsonObject.put("type", CuiShouType.WITH_BORROW.getCode());
+            cuiShouBackMoney.setData(jsonObject);
+            sycnSuccessAndError(cuiShouBackMoney, 1);
+        }
+        catch (Exception e){
+            thirdLog.error("cuishouhuankuan xianjinjie error:" ,e);
+        }
+    }
+
+    /**
      * 分期还款同步
      * @param afRepaymentDo
      */
@@ -584,6 +609,16 @@ public class CuiShouUtils {
     }
 
     private static ThreadLocal<AfRepaymentDo> afRepaymentDoThreadLocal = new ThreadLocal<AfRepaymentDo>();
+
+    private static ThreadLocal<AfLoanRepaymentDo> afLoanRepaymentDoThreadLocal = new ThreadLocal<AfLoanRepaymentDo>();
+
+    public static void  setAfLoanRepaymentDo(AfLoanRepaymentDo afLoanRepaymentDo){
+        afLoanRepaymentDoThreadLocal.set(afLoanRepaymentDo);
+    }
+
+    public static AfLoanRepaymentDo getAfLoanRepaymentDo(){
+        return afLoanRepaymentDoThreadLocal.get();
+    }
 
     private static void setAfRepaymentDo(AfRepaymentDo afRepaymentDo){
         afRepaymentDoThreadLocal.set(afRepaymentDo);

@@ -23,14 +23,10 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	
 	void offlineRepay(AfLoanDo loanDo, String loanNo, 
 			String repayType, String repayTime, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
+			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin,boolean isAllRepay,Long repaymentId);
 
-	void offlineAllRepay(AfLoanDo loanDo, String loanNo, 
-			String repayType, String repayTime, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
-	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
-	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator,Long collectionRepaymentId);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	
@@ -45,6 +41,8 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * @return
 	 */
 	BigDecimal calculateAllRestAmount(Long rid);
+
+	BigDecimal calculateBillRestAmount(Long rid);
 
 	/**
 	 * 判断当前分期是否可以还款（是否已出账）
