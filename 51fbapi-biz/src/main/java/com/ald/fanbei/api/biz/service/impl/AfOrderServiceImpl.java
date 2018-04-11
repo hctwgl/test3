@@ -1096,223 +1096,199 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	// public int deleteOrder(Long id) {
 	// return orderDao.deleteOrder(id);
 	// }
-	@Override
-	public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType,
-			final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo,
-			final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName,
-			final String ipAddress, String bankChannel) {
-		final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
-		final HashMap<String, HashMap> riskDataMap = new HashMap();
+    @Override
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, String bankChannel) {
+	final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
+	final HashMap<String, HashMap> riskDataMap = new HashMap();
 
-		final HashMap summaryData = afBorrowDao.getUserSummary(userId);
-		riskDataMap.put("summaryData", summaryData);
+	final HashMap summaryData = afBorrowDao.getUserSummary(userId);
+	riskDataMap.put("summaryData", summaryData);
 
-		if (orderId > 0) {
-			HashMap summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderId);
-			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-				HashMap bolume = afBorrowDao.getBolumeSumDataById(orderId);
-				if (bolume != null) {
-					summaryOrderData.putAll(bolume);
-				}
+	if (orderId > 0) {
+	    HashMap summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderId);
+	    if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+		HashMap bolume = afBorrowDao.getBolumeSumDataById(orderId);
+		if (bolume != null) {
+		    summaryOrderData.putAll(bolume);
+		}
+	    }
+	    riskDataMap.put("summaryOrderData", summaryOrderData);
+	} else {
+	    riskDataMap.put("summaryOrderData", new HashMap<>());
+	}
+
+	if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+	    // 添加第三方订单
+	    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
+	}
+
+	return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+	    @Override
+	    public Map<String, Object> doInTransaction(TransactionStatus status) {
+		Date currentDate = new Date();
+		String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		    // 查卡号，用于调用风控接口
+		    AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+
+		    Boolean isSelf = StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode());
+		    orderInfo.setRid(orderId);
+		    orderInfo.setPayTradeNo(tradeNo);
+		    orderInfo.setGmtPay(currentDate);
+		    orderInfo.setActualAmount(saleAmount);
+		    orderInfo.setBankId(payId);
+		    // 租赁逻辑
+		    BigDecimal actualAmount = saleAmount;
+		    AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
+		    if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+			if (saleAmount.compareTo(BigDecimal.ZERO) == 0) {
+			    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
+			    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+			    if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0) {
+				afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
+				afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
+				actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
+			    } else {
+				afOrderLeaseDo.setQuotaDeposit(useableAmount);
+				afOrderLeaseDo.setCashDeposit(afOrderLeaseDo.getFreezeAmount().subtract(useableAmount));
+				actualAmount = afOrderLeaseDo.getCashDeposit().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
+			    }
 			}
-			riskDataMap.put("summaryOrderData", summaryOrderData);
-		} else {
-			riskDataMap.put("summaryOrderData", new HashMap<>());
-		}
-		
-		if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-		    //添加第三方订单
-		    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
-		}
+			orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(), afOrderLeaseDo.getQuotaDeposit(), afOrderLeaseDo.getId());
+			HashMap leaseMap = riskDataMap.get("summaryOrderData");
+			leaseMap.put("cashDeposit", afOrderLeaseDo.getCashDeposit());
+			leaseMap.put("quotaDeposit", afOrderLeaseDo.getQuotaDeposit());
+			leaseMap.put("freezeAmount", afOrderLeaseDo.getFreezeAmount());
+			leaseMap.put("monthlyRent", afOrderLeaseDo.getMonthlyRent());
+			leaseMap.put("totalRent", afOrderLeaseDo.getMonthlyRent().multiply(new BigDecimal(orderInfo.getNper())));
+			riskDataMap.put("summaryOrderData", leaseMap);
+		    }
+		    if (payType.equals(PayType.WECHAT.getCode())) {
+			orderInfo.setPayType(PayType.WECHAT.getCode());
+			logger.info("payBrandOrder orderInfo = {}", orderInfo);
+			orderDao.updateOrder(orderInfo);
+			String attach = isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode();
+			if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+			    attach = PayOrderSource.LEASE_ORDER.getCode();
+			}// 微信支付
+			resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, actualAmount, attach);
+			resultMap.put("success", true);
+			// 活动返利
+			return resultMap;
+		    } else if (payType.equals(PayType.AGENT_PAY.getCode())) {
+			// 先做判断
+			AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);// afUserAccountService.getUserAccountByUserId(userId);
+			Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+			// 判断使用额度
+			BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+			if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
+			    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
+			}
 
-		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
-			@Override
-			public Map<String, Object> doInTransaction(TransactionStatus status) {
-				Date currentDate = new Date();
-				String tradeNo = generatorClusterNo.getOrderPayNo(currentDate);
-				Map<String, Object> resultMap = new HashMap<String, Object>();
+			orderInfo.setNper(nper);
+			BorrowRateBo bo = null;
+			// if (nper == 1) {
+			// // 信用支付
+			// bo =
+			// afResourceService.borrowRateWithResourceCredit(nper);
+			// } else {
+			if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+			    bo = afResourceService.borrowRateWithResourceForTrade(nper);
+			} else {
+			    bo = afResourceService.borrowRateWithResource(nper, userName);
+			}
+			// }
+			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+			orderInfo.setBorrowRate(boStr);
+			logger.info("updateOrder orderInfo = {}", orderInfo);
 
-				try {
-					// 查卡号，用于调用风控接口
-					AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+			String cardNo = card.getCardNumber();
+			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			orderInfo.setRiskOrderNo(riskOrderNo);
+			orderDao.updateOrder(orderInfo);
 
-					Boolean isSelf = StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode());
-					orderInfo.setRid(orderId);
-					orderInfo.setPayTradeNo(tradeNo);
-					orderInfo.setGmtPay(currentDate);
-					orderInfo.setActualAmount(saleAmount);
-					orderInfo.setBankId(payId);
-					//租赁逻辑
-                    BigDecimal actualAmount = saleAmount;
-                    AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
-                    if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                    	if(saleAmount.compareTo(BigDecimal.ZERO) == 0){
-							AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),userId);
-							BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
-							if(useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0){
-								afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
-								afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
-								actualAmount = afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount());
-							}
-							else {
-								afOrderLeaseDo.setQuotaDeposit(useableAmount);
-								afOrderLeaseDo.setCashDeposit(afOrderLeaseDo.getFreezeAmount().subtract(useableAmount));
-								actualAmount = afOrderLeaseDo.getCashDeposit().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getRichieAmount());
-							}
-						}
-                        orderDao.updateOrderLeaseByPay(afOrderLeaseDo.getCashDeposit(),afOrderLeaseDo.getQuotaDeposit(),afOrderLeaseDo.getId());
-						HashMap leaseMap = riskDataMap.get("summaryOrderData");
-						leaseMap.put("cashDeposit",afOrderLeaseDo.getCashDeposit());
-						leaseMap.put("quotaDeposit",afOrderLeaseDo.getQuotaDeposit());
-						leaseMap.put("freezeAmount",afOrderLeaseDo.getFreezeAmount());
-						leaseMap.put("monthlyRent",afOrderLeaseDo.getMonthlyRent());
-						leaseMap.put("totalRent",afOrderLeaseDo.getMonthlyRent().multiply(new BigDecimal(orderInfo.getNper())));
-						riskDataMap.put("summaryOrderData", leaseMap);
-                    }if (payType.equals(PayType.WECHAT.getCode())) {
-						orderInfo.setPayType(PayType.WECHAT.getCode());
-						logger.info("payBrandOrder orderInfo = {}", orderInfo);
-						orderDao.updateOrder(orderInfo);
-						String attach = isSelf ? PayOrderSource.SELFSUPPORT_ORDER.getCode() : PayOrderSource.BRAND_ORDER.getCode();
-                        if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                            attach = PayOrderSource.LEASE_ORDER.getCode();
-                        }// 微信支付
-						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, actualAmount, attach);
-						resultMap.put("success", true);
-						// 活动返利
-						return resultMap;
-					} else if (payType.equals(PayType.AGENT_PAY.getCode())) {
-						// 先做判断
-						AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao
-								.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);// afUserAccountService.getUserAccountByUserId(userId);
-						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-						// 判断使用额度
-						BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
-						if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
-							throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
-						}
+			String name = orderInfo.getGoodsName();
+			if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+			    name = orderInfo.getShopName();
+			}
+			AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+			borrow.setVersion(1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String borrowTime = sdf.format(borrow.getGmtCreate());
+			// 最后调用风控控制
+			String _vcode = getVirtualCode(virtualMap);
+			String str = orderInfo.getGoodsName();
+			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+			    str = OrderType.BOLUOME.getCode();
+			}
+			if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+			    AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
+			    afTradeOrderDo.setOrderId(orderInfo.getRid());
+			    AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
+			    str = String.valueOf(result.getBusinessId());
+			    _vcode = "99";
+			}
+			logger.info("verify userId" + userId);
+			RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+			logger.info("verybo=" + verybo);
+			if (verybo.isSuccess()) {
+			    logger.info("pay result is true");
+			    // #region add by honghzengpei
+			    // afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
+			    // #endregion
+			    return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
+			}
 
-						orderInfo.setNper(nper);
-						BorrowRateBo bo = null;
-//						if (nper == 1) {
-//							// 信用支付
-//							bo = afResourceService.borrowRateWithResourceCredit(nper);
-//						} else {
-							if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-								bo = afResourceService.borrowRateWithResourceForTrade(nper);
-							} else {
-								bo = afResourceService.borrowRateWithResource(nper, userName);
-							}
-//						}
-						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
-						orderInfo.setBorrowRate(boStr);
-						logger.info("updateOrder orderInfo = {}", orderInfo);
-
-						String cardNo = card.getCardNumber();
-						String riskOrderNo = riskUtil.getOrderNo("vefy",
-								cardNo.substring(cardNo.length() - 4, cardNo.length()));
-						orderInfo.setRiskOrderNo(riskOrderNo);
-						orderDao.updateOrder(orderInfo);
-
-						String name = orderInfo.getGoodsName();
-						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-							name = orderInfo.getShopName();
-						}
-						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
-								orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-						borrow.setVersion(1);
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String borrowTime = sdf.format(borrow.getGmtCreate());
-						// 最后调用风控控制
-						String _vcode = getVirtualCode(virtualMap);
-						String str = orderInfo.getGoodsName();
-						if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-							str = OrderType.BOLUOME.getCode();
-						}
-						if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-							AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
-							afTradeOrderDo.setOrderId(orderInfo.getRid());
-							AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
-							str = String.valueOf(result.getBusinessId());
-							_vcode = "99";
-						}
-						logger.info("verify userId" + userId);
-						RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
-								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(),
-								BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(),
-								orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType,
-								riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-						logger.info("verybo=" + verybo);
-						if (verybo.isSuccess()) {
-							logger.info("pay result is true");
-							// #region add by honghzengpei
-							// afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
-							// #endregion
-							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap,
-									orderInfo);
-						}
-
-						// verybo.getResult()=10,则成功，活动返利
-					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {// 组合支付
-						// 先做判断
-						AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao
-								.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);// afUserAccountService.getUserAccountByUserId(userId);
-						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-						// 判断使用额度
-						BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
+			// verybo.getResult()=10,则成功，活动返利
+		    } else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {// 组合支付
+			// 先做判断
+			AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);// afUserAccountService.getUserAccountByUserId(userId);
+			Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+			// 判断使用额度
+			BigDecimal leftAmount = checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
 
 			// 银行卡需要支付的金额
 			BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
-						orderInfo.setNper(nper);
-						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
-						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
-						orderInfo.setBorrowRate(boStr);
+			orderInfo.setNper(nper);
+			BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
+			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+			orderInfo.setBorrowRate(boStr);
 
-						String cardNo = card.getCardNumber();
-						String riskOrderNo = riskUtil.getOrderNo("vefy",
-								cardNo.substring(cardNo.length() - 4, cardNo.length()));
-						orderInfo.setRiskOrderNo(riskOrderNo);
-						orderInfo.setBorrowAmount(leftAmount);
-						orderInfo.setBankAmount(bankAmount);
-						orderDao.updateOrder(orderInfo);
+			String cardNo = card.getCardNumber();
+			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+			orderInfo.setRiskOrderNo(riskOrderNo);
+			orderInfo.setBorrowAmount(leftAmount);
+			orderInfo.setBankAmount(bankAmount);
+			orderDao.updateOrder(orderInfo);
 
-						// 用额度进行分期
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
-								leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-						borrow.setVersion(1);
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String borrowTime = sdf.format(borrow.getGmtCreate());
-						String codeForSecond = null;
-						String codeForThird = null;
-						codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
-						codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
-						// 通过弱风控后才进行后续操作
-						RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""),
-								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO,
-								borrowTime,
-								OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
-										? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
-								getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(),
-								orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap,
-								orderInfo.getBqsBlackBox(), orderInfo);
-						if (verybo.isSuccess()) {
-							logger.info("combination_pay result is true");
-							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
-							orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-							orderInfo.setStatus(OrderStatus.DEALING.getCode());
-							orderDao.updateOrder(orderInfo);
-							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+			// 用额度进行分期
+			AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+			borrow.setVersion(1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String borrowTime = sdf.format(borrow.getGmtCreate());
+			String codeForSecond = null;
+			String codeForThird = null;
+			codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
+			codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
+			// 通过弱风控后才进行后续操作
+			RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+			if (verybo.isSuccess()) {
+			    logger.info("combination_pay result is true");
+			    orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
+			    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+			    orderInfo.setStatus(OrderStatus.DEALING.getCode());
+			    orderDao.updateOrder(orderInfo);
+			    AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
-							resultMap = new HashMap<String, Object>();
+			    resultMap = new HashMap<String, Object>();
 
-							if (null == cardInfo) {
-								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-							}
-							logger.info("combination_pay orderInfo = {}", orderInfo);
+			    if (null == cardInfo) {
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+			    }
+			    logger.info("combination_pay orderInfo = {}", orderInfo);
 
 			    Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 			    result.put("status", PayStatus.DEALING.getCode());
@@ -1334,144 +1310,126 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			    orderInfo.setStatus(OrderStatus.DEALING.getCode());
 			    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
-							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+			    AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
-							resultMap = new HashMap<String, Object>();
+			    resultMap = new HashMap<String, Object>();
 
-							if (null == cardInfo) {
-								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-							}
-							logger.info("payBrandOrder orderInfo = {}", orderInfo);
-							String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
-                            String merPriv = isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode();
-                            //默认true（租赁会随着弱风控状态修改）
-                            boolean canPay = true;
-							AfBorrowDo borrow = new AfBorrowDo();
-                            //租赁逻辑
-                            if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                                orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-                                orderInfo.setStatus(OrderStatus.NEW.getCode());
-                                merPriv = OrderType.LEASE.getCode();
-                                remark = "租赁商品订单支付";
+			    if (null == cardInfo) {
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+			    }
+			    logger.info("payBrandOrder orderInfo = {}", orderInfo);
+			    String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
+			    String merPriv = isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode();
+			    // 默认true（租赁会随着弱风控状态修改）
+			    boolean canPay = true;
+			    AfBorrowDo borrow = new AfBorrowDo();
+			    // 租赁逻辑
+			    if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+				orderInfo.setStatus(OrderStatus.NEW.getCode());
+				merPriv = OrderType.LEASE.getCode();
+				remark = "租赁商品订单支付";
 
-								String cardNo = card.getCardNumber();
-								String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-								orderInfo.setRiskOrderNo(riskOrderNo);
-								borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
-										afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
-										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
-								borrow.setVersion(1);
-								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-								String borrowTime = sdf.format(borrow.getGmtCreate());
-								RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-								canPay = verybo.isSuccess();
-								if(canPay){
-									String result = verybo.getResult();
-									if (!result.equals("10")) {
-										canPay = false;
-									}
-								}
-								if(!canPay){
-									afOrderService.closeOrder("风控审批不通过","",orderId,userId);
-									resultMap.put("success", false);
-									resultMap.put("verifybo", JSONObject.toJSONString(verybo));
-									resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-								}
-								else {
-                                    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-                                    orderInfo.setStatus(OrderStatus.DEALING.getCode());
-                                }
-                            }
-							orderDao.updateOrder(orderInfo);
-                            // 银行卡支付 代收
-							//租赁弱风控判断（除租赁外银行卡不需要判断弱风控 canPay=true）
-							if(canPay){
-								UpsCollectRespBo respBo = upsUtil.collect(tradeNo, actualAmount, userId + "",
-										userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(),
-										cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
-										Constants.DEFAULT_BRAND_SHOP, remark, "02",
-										merPriv);
-								if (!respBo.isSuccess()) {
-									if (StringUtil.isNotBlank(respBo.getRespCode())) {
-										// 模版数据map处理
-										Map<String, String> replaceMapData = new HashMap<String, String>();
-										String errorMsg = afTradeCodeInfoService
-												.getRecordDescByTradeCode(respBo.getRespCode());
-										replaceMapData.put("errorMsg", errorMsg);
-										try {
-											AfUserDo userDo = afUserService.getUserById(userId);
-											smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
-													AfResourceType.SMS_TEMPLATE.getCode(),
-													AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-										} catch (Exception e) {
-											logger.error("pay order rela bank pay error,userId=" + userId, e);
-
-										}throw new FanbeiException(errorMsg);
-									}
-									throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-								}
-								//租赁逻辑
-								if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
-									// 新增借款信息
-									afBorrowDao.addBorrow(borrow); // 冻结状态
-									// 在风控审批通过后额度不变生成账单
-									AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-									afBorrowExtendDo.setId(borrow.getRid());
-									afBorrowExtendDo.setInBill(0);
-									afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-									afBorrowService.updateBorrowStatus(borrow, afOrderLeaseDo.getUserName(), orderInfo.getUserId());
-									afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),afOrderLeaseDo.getQuotaDeposit());
-								}
-								newMap.put("outTradeNo", respBo.getOrderNo());
-								newMap.put("tradeNo", respBo.getTradeNo());
-								newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-								resultMap.put("resp", newMap);
-								resultMap.put("status", PayStatus.DEALING.getCode());
-								resultMap.put("success", true);
-							}
-						}
-						// 活动返利
-					}
-					return resultMap;
-				} catch (FanbeiException exception) {
-					logger.error("payBrandOrder faied e = {}", exception);
-					// 自营,代买或商圈记录支付失败信息，然后返回客户端提示
-					if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
-						String payFailMsg = "";
-						if (FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode()
-								.equals(exception.getErrorCode().getCode())) {
-							payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
-						} else if (FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode()
-								.equals(exception.getErrorCode().getCode())
-								|| FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode()
-										.equals(exception.getErrorCode().getCode())
-								|| FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode()
-										.equals(exception.getErrorCode().getCode())
-								|| FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode()
-										.equals(exception.getErrorCode().getCode())) {
-							payFailMsg = exception.getErrorCode().getDesc();
-						} else if (FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode()
-								.equals(exception.getErrorCode().getCode())) {
-							payFailMsg = FanbeiExceptionCode.BANK_CARD_PAY_ERR.getDesc();
-						}
-						AfOrderDo currUpdateOrder = new AfOrderDo();
-						currUpdateOrder.setRid(orderInfo.getRid());
-						currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
-						currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
-						currUpdateOrder.setStatusRemark(payFailMsg);
-						orderDao.updateOrder(currUpdateOrder);
-						logger.info("ap pay order fail,reason is useamount is too less orderId=" + orderInfo.getRid());
-					}
-					throw exception;
-				} catch (Exception e) {
-					status.setRollbackOnly();
-					logger.error("payBrandOrder faied e = {}", e);
-					throw e;
+				String cardNo = card.getCardNumber();
+				String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+				orderInfo.setRiskOrderNo(riskOrderNo);
+				borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(), afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+				borrow.setVersion(1);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String borrowTime = sdf.format(borrow.getGmtCreate());
+				RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+				canPay = verybo.isSuccess();
+				if (canPay) {
+				    String result = verybo.getResult();
+				    if (!result.equals("10")) {
+					canPay = false;
+				    }
 				}
-			}
+				if (!canPay) {
+				    afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+				    resultMap.put("success", false);
+				    resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+				    resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+				} else {
+				    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+				    orderInfo.setStatus(OrderStatus.DEALING.getCode());
+				}
+			    }
+			    orderDao.updateOrder(orderInfo);
+			    // 银行卡支付 代收
+			    // 租赁弱风控判断（除租赁外银行卡不需要判断弱风控 canPay=true）
+			    if (canPay) {
+				UpsCollectRespBo respBo = upsUtil.collect(tradeNo, actualAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, remark, "02", merPriv);
+				if (!respBo.isSuccess()) {
+				    if (StringUtil.isNotBlank(respBo.getRespCode())) {
+					// 模版数据map处理
+					Map<String, String> replaceMapData = new HashMap<String, String>();
+					String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
+					replaceMapData.put("errorMsg", errorMsg);
+					try {
+					    AfUserDo userDo = afUserService.getUserById(userId);
+					    smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+					} catch (Exception e) {
+					    logger.error("pay order rela bank pay error,userId=" + userId, e);
 
-		});
-	}
+					}
+					throw new FanbeiException(errorMsg);
+				    }
+				    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				}
+				// 租赁逻辑
+				if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+				    // 新增借款信息
+				    afBorrowDao.addBorrow(borrow); // 冻结状态
+				    // 在风控审批通过后额度不变生成账单
+				    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+				    afBorrowExtendDo.setId(borrow.getRid());
+				    afBorrowExtendDo.setInBill(0);
+				    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+				    afBorrowService.updateBorrowStatus(borrow, afOrderLeaseDo.getUserName(), orderInfo.getUserId());
+				    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId(), afOrderLeaseDo.getQuotaDeposit());
+				}
+				newMap.put("outTradeNo", respBo.getOrderNo());
+				newMap.put("tradeNo", respBo.getTradeNo());
+				newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+				resultMap.put("resp", newMap);
+				resultMap.put("status", PayStatus.DEALING.getCode());
+				resultMap.put("success", true);
+			    }
+			}
+			// 活动返利
+		    }
+		    return resultMap;
+		} catch (FanbeiException exception) {
+		    logger.error("payBrandOrder faied e = {}", exception);
+		    // 自营,代买或商圈记录支付失败信息，然后返回客户端提示
+		    if (OrderType.getNeedRecordPayFailCodes().contains(orderInfo.getOrderType())) {
+			String payFailMsg = "";
+			if (FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR.getCode().equals(exception.getErrorCode().getCode())) {
+			    payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
+			} else if (FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode()) || FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode().equals(exception.getErrorCode().getCode())) {
+			    payFailMsg = exception.getErrorCode().getDesc();
+			} else if (FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())) {
+			    payFailMsg = FanbeiExceptionCode.BANK_CARD_PAY_ERR.getDesc();
+			}
+			AfOrderDo currUpdateOrder = new AfOrderDo();
+			currUpdateOrder.setRid(orderInfo.getRid());
+			currUpdateOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+			currUpdateOrder.setStatus(OrderStatus.PAYFAIL.getCode());
+			currUpdateOrder.setStatusRemark(payFailMsg);
+			orderDao.updateOrder(currUpdateOrder);
+			logger.info("ap pay order fail,reason is useamount is too less orderId=" + orderInfo.getRid());
+		    }
+		    throw exception;
+		} catch (Exception e) {
+		    status.setRollbackOnly();
+		    logger.error("payBrandOrder faied e = {}", e);
+		    throw e;
+		}
+	    }
+
+	});
+    }
 
 	public JSONObject borrowRateWithOrder(Long orderId, Integer nper) {
 		AfOrderDo order = afOrderService.getOrderById(orderId);
