@@ -18,10 +18,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
@@ -53,18 +50,23 @@ public class ConfirmPaymentApi implements ApiHandle {
     @Qualifier("afBorrowLegalRepaymentService")
     UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentService;
 
+    //loanAllRepayDoApi 相同逻辑处理（业务数据不同，从redis获取）
     @Autowired
     @Qualifier("afLoanRepaymentService")
     UpsPayKuaijieServiceAbstract afLoanRepaymentService;
 
     @Autowired
-    @Qualifier("loanAllRepayDoApi")
-    UpsPayKuaijieServiceAbstract loanAllRepayDoApi;
-
-    @Autowired
     @Qualifier("afRenewalLegalDetailV2Service")
     UpsPayKuaijieServiceAbstract afRenewalLegalDetailV2Service;
-    
+
+    @Autowired
+    @Qualifier("afOrderService")
+    UpsPayKuaijieServiceAbstract afOrderService;
+
+    @Autowired
+    @Qualifier("afOrderCombinationPayService")
+    UpsPayKuaijieServiceAbstract afOrderCombinationPayService;
+
     @Autowired
     BizCacheUtil bizCacheUtil;
 
@@ -99,14 +101,15 @@ public class ConfirmPaymentApi implements ApiHandle {
 	case "afLoanRepaymentService":
 	    afLoanRepaymentService.doUpsPay(map, tradeNo, smsCode);
 	    break;
-	case "loanAllRepayDoApi":
-	    loanAllRepayDoApi.doUpsPay(map, tradeNo, smsCode);
-	    break;
 	case "afRenewalLegalDetailV2Service":
 	    afRenewalLegalDetailV2Service.doUpsPay(map, tradeNo, smsCode);
 	    break;
+	case "afOrderService":
+	    afOrderService.doUpsPay(map, tradeNo, smsCode);
+	case "afOrderCombinationPayService":
+	    afOrderCombinationPayService.doUpsPay(map, tradeNo, smsCode);
 	default:
-	    break;
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	}
 
 	if (map.get("resp") == null || (map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {

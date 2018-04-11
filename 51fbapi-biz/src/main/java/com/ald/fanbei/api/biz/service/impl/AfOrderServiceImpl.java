@@ -287,6 +287,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Resource
 	AfIagentResultDao iagentResultDao;
 
+	@Autowired
+	AfOrderCombinationPayService afOrderCombinationPayService;
 
 	@Override
 	public int createOrderTrade(final String content) {
@@ -1293,7 +1295,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    }
 			    logger.info("combination_pay orderInfo = {}", orderInfo);
 
-			    Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
+			    Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, 
+				    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 			    result.put("status", PayStatus.DEALING.getCode());
 			    return result;
 			}
