@@ -191,8 +191,8 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 
 	@Override
-	public List<HashMap> getVisualGoodsByGoodsPriceId(List<String> ids) {
-		return afGoodsDao.getVisualGoodsByGoodsPriceId(ids);
+	public List<HashMap> getVisualGoodsByGoodsId(List<String> ids) {
+		return afGoodsDao.getVisualGoodsByGoodsId(ids);
 	}
 
 }

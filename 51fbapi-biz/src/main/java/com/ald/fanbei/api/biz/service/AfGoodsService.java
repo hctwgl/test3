@@ -124,6 +124,6 @@ public interface AfGoodsService {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
 
-	List<HashMap> getVisualGoodsByGoodsPriceId(List<String> ids);
+	List<HashMap> getVisualGoodsByGoodsId(List<String> ids);
 }
 

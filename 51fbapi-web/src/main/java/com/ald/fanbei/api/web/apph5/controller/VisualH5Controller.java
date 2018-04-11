@@ -119,12 +119,13 @@ public class VisualH5Controller  extends BaseController {
                 }
             }
         }
-        List<HashMap> list = afGoodsService.getVisualGoodsByGoodsPriceId(selectIds);
+        List<HashMap> list = afGoodsService.getVisualGoodsByGoodsId(selectIds);
         for(HashMap goods : list) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             goodsInfo.put("goodName",goods.get("name"));
             goodsInfo.put("rebateAmount", goods.get("rebate_amount"));
-            goodsInfo.put("priceAmount", goods.get("actual_amount"));
+            goodsInfo.put("priceAmount", goods.get("price_amount"));
+            goodsInfo.put("saleAmount", goods.get("sale_amount"));
             goodsInfo.put("goodsIcon", goods.get("goods_icon"));
             goodsInfo.put("goodsId", goods.get("id"));
             // 如果是分期免息商品，则计算分期
@@ -188,12 +189,13 @@ public class VisualH5Controller  extends BaseController {
                 }
             }
         }
-        List<HashMap> list = afGoodsService.getVisualGoodsByGoodsPriceId(selectIds);
+        List<HashMap> list = afGoodsService.getVisualGoodsByGoodsId(selectIds);
         for(HashMap goods : list) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             goodsInfo.put("goodName",goods.get("name"));
             goodsInfo.put("rebateAmount", goods.get("rebate_amount"));
-            goodsInfo.put("priceAmount", goods.get("actual_amount"));
+            goodsInfo.put("priceAmount", goods.get("price_amount"));
+            goodsInfo.put("saleAmount", goods.get("sale_amount"));
             goodsInfo.put("goodsIcon", goods.get("goods_icon"));
             goodsInfo.put("goodsId", goods.get("id"));
             // 如果是分期免息商品，则计算分期
