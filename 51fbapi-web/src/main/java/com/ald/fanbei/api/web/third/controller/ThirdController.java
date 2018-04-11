@@ -161,69 +161,79 @@ public class ThirdController extends AbstractThird{
      */
     private void dealOrder(JSONObject result,long job_id){
 
-        Map<String,Integer> answers = new HashMap<>();
-        answers.put("baseR",0);
-        answers.put("baseW",0);
-        answers.put("unbaseR",0);
-        answers.put("unbaseW",0);
-        //审核结果统计
-        checkAnswers(answers,result);
-        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.ORDER_MOBILE_VERIFY_SET,Constants.ORDER_MOBILE_VERIFY_SET);
-        int max = Integer.parseInt(afResourceDo.getValue5());
-        int min = Integer.parseInt(afResourceDo.getValue4());
-        String checkstate = "";
-        String iagentstate="";
-        String checkResult="";
-        if (answers.get("baseW")>0){
-            checkstate = "close";
-            iagentstate="E";
-            checkResult="1";
-        }else{
-            if (answers.get("unbaseW")<=min){
-                checkstate = "success";
-                iagentstate="D";
-                checkResult="0";
+        String result_code= result.getString("result_code");
+        String wr = RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code);
+        if ("45".contains(wr)){
+            Map<String,Integer> answers = new HashMap<>();
+            answers.put("baseR",0);
+            answers.put("baseW",0);
+            answers.put("unbaseR",0);
+            answers.put("unbaseW",0);
+            //审核结果统计
+            checkAnswers(answers,result);
+            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.ORDER_MOBILE_VERIFY_SET,Constants.ORDER_MOBILE_VERIFY_SET);
+            int max = Integer.parseInt(afResourceDo.getValue5());
+            int min = Integer.parseInt(afResourceDo.getValue4());
+            String checkstate = "";
+            String iagentstate="";
+            String checkResult="";
+            if (answers.get("baseW")>0){
+                checkstate = "close";
+                iagentstate="E";
+                checkResult="1";
             }else{
-                if (answers.get("unbaseW")>max){
-                    checkstate = "close";
-                    iagentstate="E";
-                    checkResult="1";
+                if (answers.get("unbaseW")<=min){
+                    checkstate = "success";
+                    iagentstate="D";
+                    checkResult="0";
                 }else{
-                    checkstate = "review";
-                    iagentstate="C";
-                    checkResult="2";
+                    if (answers.get("unbaseW")>max){
+                        checkstate = "close";
+                        iagentstate="E";
+                        checkResult="1";
+                    }else{
+                        checkstate = "review";
+                        iagentstate="C";
+                        checkResult="2";
+                    }
                 }
             }
-        }
-        AfIagentResultDo resultDo = new AfIagentResultDo();
-        resultDo.setWorkId(job_id);
-        resultDo.setCheckResult(checkResult);
-        afIagentResultService.updateResultByWorkId(resultDo);
-        AfOrderDo afOrderDo = null;
-        AfIagentResultDo afIagentResultDo = afIagentResultService.getIagentByWorkId(job_id);
-        if (afIagentResultDo != null){
-            String ordertype = afIagentResultDo.getOrderType();
-            //订单类型0自营订单1白领带
-            if ("0".equals(ordertype)){
-                afOrderDo = afOrderService.getOrderById(afIagentResultDo.getOrderId());
-            }else{
+            AfIagentResultDo resultDo = new AfIagentResultDo();
+            resultDo.setWorkId(job_id);
+            resultDo.setCheckResult(checkResult);
+            afIagentResultService.updateResultByWorkId(resultDo);
+            AfOrderDo afOrderDo = null;
+            AfIagentResultDo afIagentResultDo = afIagentResultService.getIagentByWorkId(job_id);
+            if (afIagentResultDo != null){
+                String ordertype = afIagentResultDo.getOrderType();
+                //订单类型0自营订单1白领带
+                if ("0".equals(ordertype)){
+                    afOrderDo = afOrderService.getOrderById(afIagentResultDo.getOrderId());
+                }else{
+
+                }
 
             }
 
+            if (afOrderDo !=null){
+                String iagentStatus = afOrderDo.getIagentStatus();
+                if ("C".equals(iagentStatus)){
+                    afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
+                }
+                if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
+                    Map<String,String> qmap = new HashMap<>();
+                    qmap.put("orderNo",afOrderDo.getOrderNo());
+                    //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                    HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
+                }
+            }
+        }else{
+            AfIagentResultDo resultDo = new AfIagentResultDo();
+            resultDo.setWorkId(job_id);
+            resultDo.setCheckResult("2");
+            afIagentResultService.updateResultByWorkId(resultDo);
         }
 
-        if (afOrderDo !=null){
-            String iagentStatus = afOrderDo.getIagentStatus();
-            if ("C".equals(iagentStatus)){
-                afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
-            }
-            if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
-                Map<String,String> qmap = new HashMap<>();
-                qmap.put("orderNo",afOrderDo.getOrderNo());
-                //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
-                HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
-            }
-        }
 
     }
 

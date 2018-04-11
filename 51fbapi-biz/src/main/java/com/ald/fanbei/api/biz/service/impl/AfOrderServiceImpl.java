@@ -1985,11 +1985,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
 			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
-			String sex ;
+			String sex = "男";
 			if (idNumberDo != null){
-				sex = idNumberDo.getGender();
-			}else {
-				sex = "";
+				String citizenId = idNumberDo.getCitizenId();
+				int mod = 0;
+				if (citizenId.length()==18){
+					mod = citizenId.charAt(16)%2;
+				}else if(citizenId.length()==15){
+					mod = citizenId.charAt(14)%2;
+				}
+				sex = mod==0?"女":"男";
 			}
 			AfBklDo bklDo = new AfBklDo();
 			bklDo.setCsvArn(orderInfo.getOrderNo());
@@ -3231,4 +3236,5 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public HashMap getLeaseProtocol(Long orderId) {
 		return orderDao.getLeaseProtocol(orderId);
 	}
+
 }
