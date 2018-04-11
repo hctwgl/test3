@@ -357,7 +357,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 					//百度智能地址
 					try {
-						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
+						//smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
 					}catch (Exception e){
 						logger.info("smart address {}",e);
 					}
@@ -372,7 +372,14 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-					jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+
+					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
+					if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+					}else{
+						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+					}
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 				}
 				return resp;
 			} catch (Exception e) {
