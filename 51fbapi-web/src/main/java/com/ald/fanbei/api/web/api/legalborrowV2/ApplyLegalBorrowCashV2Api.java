@@ -374,7 +374,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
                     logger.info("test2 ");
 					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
-					if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+					if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")&&afResourceDo.getValue4().contains(appType)){
 						jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
 						smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
 					}else{
