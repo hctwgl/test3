@@ -62,6 +62,11 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         }else {
             checkResult.put("isIdCard", true);
         }
+        if(afUserAccountDo==null || StringUtil.equals(afUserAccountDo.getBindCard(),"Y")){
+            checkResult.put("isBindIcCard", false);
+        }else {
+            checkResult.put("isBindIcCard", true);
+        }
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("result", checkResult);
         resp.setResponseData(map);
