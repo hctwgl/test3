@@ -198,9 +198,11 @@ public enum FanbeiExceptionCode {
     AFTERSALE_APPLY_NOT_EXIST("AFTERSALE_APPLY_NOT_EXIST",1577,"aftersale apply not exist","售后申请记录不存在"),
     FUNCTION_REPAIRING_ERROR("FUNCTION_REPAIRING_ERROR",1578,"function repairing error","此功能正在维护中，请耐心等待！"),
     ORDER_HAS_CLOSED("ORDER_HAS_CLOSED",1579,"order has closed","订单已经关闭,请重新下单"),
-    ORDER_PAY_FAIL("ORDER_PAY_FAIL",1580,"ORDER_PAY_FAIL","订单支付失败"),
-    BINDCARD_PAY_PWD_MISS("BINDCARD_PAY_PWD_MISS",1581,"BINDCARD_PAY_PWD_MISS","绑卡时缺失支付密码"),
-    BINDCARD_REALINFO_MISS("BINDCARD_REALINFO_MISS",1582,"BINDCARD_REALINFO_MISS","绑卡时缺失实名信息"),
+    UPS_CACHE_EXPIRE("UPS_CACHE_EXPIRE",1580,"order has closed","支付请求已经关闭,请重新支付"),
+    UPS_KUAIJIE_NOT_SUPPORT("UPS_KUAIJIE_NOT_SUPPORT",1581,"ups kuaijie not support","当前业务，未支持快捷支付"),
+    ORDER_PAY_FAIL("ORDER_PAY_FAIL",1582,"ORDER_PAY_FAIL","订单支付失败"),
+    BINDCARD_PAY_PWD_MISS("BINDCARD_PAY_PWD_MISS",1583,"BINDCARD_PAY_PWD_MISS","绑卡时缺失支付密码"),
+    BINDCARD_REALINFO_MISS("BINDCARD_REALINFO_MISS",1584,"BINDCARD_REALINFO_MISS","绑卡时缺失实名信息"),
 
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),

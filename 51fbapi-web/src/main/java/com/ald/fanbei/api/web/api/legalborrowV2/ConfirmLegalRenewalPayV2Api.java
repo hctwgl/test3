@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -94,7 +95,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
         String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"), "").toString();
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
-        
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
@@ -109,12 +110,15 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
         	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_GOOD_NOT_EXIST_ERROR);
         }
 
-        String lockKey = Constants.CACHEKEY_APPLY_RENEWAL_LOCK + userId;
-        boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
+	String lockKey = Constants.CACHEKEY_APPLY_RENEWAL_LOCK + userId;
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+	    boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
 
-        if (!isGetLock) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
-        }
+	    if (!isGetLock) {
+		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+	    }
+	}
+	
         try {
         	//获取最近一次还款记录
             AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
@@ -207,21 +211,10 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                     logger.info("empty address");
                     throw new FanbeiException("请先填写收货地址!", true);
                 }
-                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
+                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, 
+                	context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address, bankPayType);
 
-                // 代收
-                UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
-                if (!upsResult.isSuccess()) {
-                    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                }
-                Map<String, Object> newMap = new HashMap<String, Object>();
-                newMap.put("outTradeNo", upsResult.getOrderNo());
-                newMap.put("tradeNo", upsResult.getTradeNo());
-                newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
-                newMap.put("refId", map.get("refId"));
-                newMap.put("type", map.get("type"));
-
-                resp.setResponseData(newMap);
+                resp.setResponseData(map);
                 logger.info("confirmLegalRenewalPayV2Api result = {}" ,resp);
             }
 

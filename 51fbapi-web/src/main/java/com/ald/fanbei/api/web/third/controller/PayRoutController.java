@@ -53,6 +53,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -189,6 +190,9 @@ public class PayRoutController {
 	private AfBorrowExtendDao afBorrowExtendDao;
 
 	@Autowired
+	private UpsUtil upsUtil;
+	
+	@Autowired
 	KafkaSync kafkaSync;
 
 	private static String TRADE_STATUE_SUCC = "00";
@@ -317,7 +321,7 @@ public class PayRoutController {
 					afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
-				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
                     AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
                     afSupDo.setRid(result);
                     afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
@@ -460,7 +464,10 @@ public class PayRoutController {
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
-					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
 				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
 					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
 							PayType.COMBINATION_PAY.getCode());
@@ -509,7 +516,7 @@ public class PayRoutController {
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
 					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
-						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
 					if (result <= 0) {
 						return "ERROR";
@@ -540,7 +547,7 @@ public class PayRoutController {
 			return "ERROR";
 		}
 	}
-
+	
 	/**
 	 * 易宝订单回调
 	 *

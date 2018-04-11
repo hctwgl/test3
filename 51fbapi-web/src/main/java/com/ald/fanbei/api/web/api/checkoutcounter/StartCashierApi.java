@@ -240,7 +240,7 @@ public class StartCashierApi implements ApiHandle {
 
 	// 查询银行卡信息
 	if (YesNoStatus.YES.getCode().equals(cashierVo.getBank().getStatus())) {
-	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId));
+	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion()));
 	}
 	//判断是不是活动订单
 	AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
@@ -425,26 +425,27 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private CashierTypeVo canCredit(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
-	if (StringUtil.isEmpty(checkoutCounter.getCreditStatus()) || checkoutCounter.getCreditStatus().equals(YesNoStatus.NO.getCode())) {
-	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
-	}
-	// 分期金额限制
-	String nper = getNperListApi.checkMoneyLimit(new JSONArray(), orderInfo.getOrderType(), orderInfo.getActualAmount());
-	if ("0".equals(nper)) {
-	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
-	}
-	AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
-	String cardNo = card.getCardNumber();
-	String riskOrderNo = riskUtil.getOrderNo("crep", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-	String state = riskUtil.creditPayment(userDto.getUserId().toString(), riskOrderNo);
-	if (state.equals(YesNoStatus.YES.getCode())) {
-	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-	    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
-	    return cashierTypeVo;
-	} else {
-	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
-	    return cashierTypeVo;
-	}
+	//关闭信用支付
+//	if (StringUtil.isEmpty(checkoutCounter.getCreditStatus()) || checkoutCounter.getCreditStatus().equals(YesNoStatus.NO.getCode())) {
+	return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+//	}
+//	// 分期金额限制
+//	String nper = getNperListApi.checkMoneyLimit(new JSONArray(), orderInfo.getOrderType(), orderInfo.getActualAmount());
+//	if ("0".equals(nper)) {
+//	    return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+//	}
+//	AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
+//	String cardNo = card.getCardNumber();
+//	String riskOrderNo = riskUtil.getOrderNo("crep", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+//	String state = riskUtil.creditPayment(userDto.getUserId().toString(), riskOrderNo);
+//	if (state.equals(YesNoStatus.YES.getCode())) {
+//	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
+//	    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
+//	    return cashierTypeVo;
+//	} else {
+//	    CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
+//	    return cashierTypeVo;
+//	}
 
     }
 

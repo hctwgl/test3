@@ -7,6 +7,9 @@
 	</sql>
 	
 	<insert id="addRepayment" parameterType="AfRepaymentDo" useGeneratedKeys="true" keyProperty="rid">
+		<selectKey keyProperty="rid" resultType="long">
+            select LAST_INSERT_ID()
+        </selectKey>		
 		INSERT INTO af_repayment(
 		gmt_create , 
 		gmt_modified , 
