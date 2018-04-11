@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -20,12 +19,16 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -63,79 +66,83 @@ public class SubmitBindBankcardApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, final FanbeiContext context, final HttpServletRequest request) {
 		final SubmitBindBankcardParam param = (SubmitBindBankcardParam) requestDataVo.getParamObj();
-		final Map<String, Object> result = new HashMap<String, Object>();
 		
-		final AfOrderDo order;
-		/* 请求包含订单 */
-		if(param.orderId != null && (order = afOrderService.getOrderById(param.orderId)) != null) { 
-			try {
-				afOrderService.checkOrderValidity(order);
-			}catch (FanbeiException e) {
-				logger.warn("afOrderService.checkOrderValidity, result=" + e.getErrorCode().getErrorMsg());
-				result.put("isOrderPaySucc", false);
-				result.put("orderPayTipMsg", e.getErrorCode().getErrorMsg());
+		final AfOrderDo order = afOrderService.getOrderById(param.orderId);
+		afOrderService.checkOrderValidity(order);
+		
+		// 快捷支付 = 签约 + 支付
+		final PayType payType = afOrderService.resolvePayType(param.bankCardId, param.isCombinationPay);
+		final String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+		final BigDecimal finalSaleAmount;
+        if (StringUtils.equals(param.orderType, OrderType.AGENTBUY.getCode()) 
+    		|| StringUtils.equals(param.orderType, OrderType.SELFSUPPORT.getCode()) 
+    		|| StringUtils.equals(param.orderType, OrderType.TRADE.getCode()) 
+    		|| StringUtils.equals(param.orderType, OrderType.LEASE.getCode())) {
+        	finalSaleAmount = order.getActualAmount();
+        }else {
+        	finalSaleAmount = order.getSaleAmount();
+        }
+        
+        transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				AfUserAccountDo userAccDB = afUserAccountService.getUserAccountByUserId(context.getUserId());
+				AfUserAccountDo userAccForUpdate = new AfUserAccountDo();
 				
-				// TODO UPS 绑卡
-				// TODO DB绑卡
-			}
-			
-			// 快捷支付 = 签约 + 支付
-			try {
-				final PayType payType = afOrderService.resolvePayType(param.bankCardId, param.isCombinationPay);
-				final String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-				final BigDecimal finalSaleAmount;
-	            if (StringUtils.equals(param.orderType, OrderType.AGENTBUY.getCode()) 
-	        		|| StringUtils.equals(param.orderType, OrderType.SELFSUPPORT.getCode()) 
-	        		|| StringUtils.equals(param.orderType, OrderType.TRADE.getCode()) 
-	        		|| StringUtils.equals(param.orderType, OrderType.LEASE.getCode())) {
-	            	finalSaleAmount = order.getActualAmount();
-	            }else {
-	            	finalSaleAmount = order.getSaleAmount();
-	            }
-	            
-	            transactionTemplate.execute(new TransactionCallback<Integer>() {
-					@Override
-					public Integer doInTransaction(TransactionStatus status) {
-						Map<String, Object> payResult = afOrderService.payBrandOrder(
-								context.getUserName(), 
-								param.bankCardId,
-								payType.getCode(), 
-								param.orderId,
-								context.getUserId(), 
-								order.getOrderNo(), 
-								order.getThirdOrderNo(), 
-								order.getGoodsName(),
-								finalSaleAmount, 
-								param.orderNper,
-								appName, 
-								CommonUtil.getIpAddr(request));
-			            
-						if(!Boolean.parseBoolean(payResult.get("success").toString())) {
-							logger.error("afOrderService.payBrandOrder error,res = ", JSON.toJSONString(payResult));
-							throw new FanbeiException("afOrderService.payBrandOrder error");
-						}
-						return 1;
+				if(userAccDB.getPassword() == null) { //支付密码为空，则此次请求需设置支付密码
+					if(StringUtils.isEmpty(param.payPwd)) {
+						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_PAY_PWD_MISS);
+					} else {
+						String salt = UserUtil.getSalt();
+						String newPwd = UserUtil.getPassword(param.payPwd, salt);
+						userAccForUpdate.setUserId(context.getUserId());
+						userAccForUpdate.setSalt(salt);
+						userAccForUpdate.setPassword(newPwd);
 					}
-				});
+				}
+				
+				if(userAccDB.getRealName() == null) { //真实姓名为空，则此次请求需存入身份证信息
+					if(StringUtils.isEmpty(param.realName)) {
+						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_REALINFO_MISS);
+					} else {
+						userAccForUpdate.setUserId(context.getUserId());
+						userAccForUpdate.setRealName(param.realName);
+						userAccForUpdate.setIdNumber(param.idNumber);
+					}
+				}
+				
+				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
+					afUserAccountService.updateUserAccount(userAccForUpdate);
+				}
+				
+				// 设置卡状态为可用
+				AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(param.bankCardId);
+				bank.setStatus(BankcardStatus.BIND.getCode());
+				afUserBankcardService.updateUserBankcard(bank);
+				
+				Map<String, Object> payResult = afOrderService.payBrandOrder(
+						context.getUserName(), 
+						param.bankCardId,
+						payType.getCode(), 
+						param.orderId,
+						context.getUserId(), 
+						order.getOrderNo(), 
+						order.getThirdOrderNo(), 
+						order.getGoodsName(),
+						finalSaleAmount, 
+						param.orderNper,
+						appName, 
+						CommonUtil.getIpAddr(request));
 	            
-			}catch (Exception e) {
-				throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_FAIL, e);
+				if(!Boolean.parseBoolean(payResult.get("success").toString())) {
+					logger.error("afOrderService.payBrandOrder error,res = ", JSON.toJSONString(payResult));
+					throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_FAIL);
+				}
+				return 1;
 			}
-			
-			result.put("isOrderPaySucc", true);
-			result.put("orderPayTipMsg", "支付成功");
-			
-			// TODO DB绑卡
-		} 
-		/* 无订单，只绑卡 */
-		else {
-			// TODO UPS 绑卡
-			// TODO DB绑卡
-		}
+		});
 		
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		resp.setResponseData(result);
-
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		return resp;
 	}
 
