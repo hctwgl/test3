@@ -141,7 +141,7 @@ public class AppGoodsControler extends BaseController {
 		for (AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
 			//改变活动价格
 			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
-				if(activityGoodsDo.getGoodsId().equals(goodsDto.getRid())){
+				if(activityGoodsDo.getGoodsId().toString().equals(goodsDto.getGoodsId())){
 					goodsDto.setSaleAmount(activityGoodsDo.getSpecialPrice());
 					BigDecimal secKillRebAmount = goodsDto.getSaleAmount().multiply(goodsDto.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
 					if(goodsDto.getRebateAmount().compareTo(secKillRebAmount)>0){
