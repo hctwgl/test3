@@ -179,6 +179,8 @@ public enum FanbeiExceptionCode {
     UPS_QUERY_AUTH_SIGN_ERROR("UPS_QUERY_AUTH_SIGN_ERROR",1558,"ups query auth sign error","查询签约验证失败"),
     UPS_SIGN_DELAY_ERROR("UPS_SIGN_DELAY_ERROR",1559,"ups sign delay error","协议延期失败"),
     UPS_COLLECT_ERROR("UPS_COLLECT_ERROR",1560,"ups collect error","单笔代收失败"),
+    UPS_QUICK_PAY_CONFIRM_ERROR("UPS_QUICK_PAY_CONFIRM_ERROR",1760,"ups quick pay confirm error","快捷支付确认支付失败"),
+    UPS_QUICKPAY_RESEND_CODE_ERROR("UPS_QUICKPAY_RESEND_CODE_ERROR",1660,"ups quickpay recend code error","快捷支付发送验证码失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
     REQ_WXPAY_ERR("REQ_WXPAY_ERR",1562,"request wx error","微信app支付失败"),
     BANK_CARD_PAY_ERR("BANK_CARD_PAY_ERR",1563,"bank card pay error","银行卡支付失败"),
@@ -385,6 +387,8 @@ public enum FanbeiExceptionCode {
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     //7000
     BANKCARD_NOT_EXIST("BANKCARD_NOT_EXIST",7000,"bankcard is null","该用户没绑定银行卡"),
+    
+    USER_BANKCARD_NOT_EXIST("USER_BANKCARD_NOT_EXIST",7100,"user bankcard is null","未绑定此卡"),
 
     //物流信息不存在
     LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在"),
@@ -431,7 +435,9 @@ public enum FanbeiExceptionCode {
     SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
     SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
-    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
+    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！"),
+    
+    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9006,"choose bank card pay","请您选择银行卡付款方式");
 
 
     /**
