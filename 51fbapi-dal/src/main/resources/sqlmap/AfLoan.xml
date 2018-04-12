@@ -615,7 +615,7 @@
 			au.user_name mobile,
 			al.card_no bankNo,
 			al.card_name cardName,
-			al.arrival_amount money,
+			al.amount money,
 			al.loan_remark ,
 			al.repay_remark,
 			al.gmt_create loanStartTime,

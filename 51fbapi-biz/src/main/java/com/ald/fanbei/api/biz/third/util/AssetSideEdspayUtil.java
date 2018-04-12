@@ -1164,8 +1164,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		creditRespBo.setCardId(afLoanDto.getCardId());
 		creditRespBo.setMobile(afLoanDto.getMobile());
 		creditRespBo.setBankNo(afLoanDto.getBankNo());
-		creditRespBo.setAcctName(bankInfo.getAcctName());
-		creditRespBo.setMoney(afLoanDto.getAmount());
+		creditRespBo.setAcctName("");
+		creditRespBo.setMoney(afLoanDto.getMoney());
 		creditRespBo.setApr(BigDecimalUtil.multiply(loanDo.getInterestRate(), new BigDecimal(100)));
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afLoanDto.getLoanStartTime(), lastBorrowBillGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afLoanDto.getLoanStartTime()));
@@ -1198,7 +1198,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
 		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
 		creditRespBo.setRepaymentPlans(repaymentPlans);
-		creditRespBo.setIsCur(1);
+		creditRespBo.setIsCur(0);
 		creditRespBos.add(creditRespBo);
 		return creditRespBos;
 	}
