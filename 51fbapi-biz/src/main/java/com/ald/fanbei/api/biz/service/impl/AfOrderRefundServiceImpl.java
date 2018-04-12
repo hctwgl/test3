@@ -12,9 +12,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
+import com.ald.fanbei.api.biz.service.AfTradeSettleOrderService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
+import com.ald.fanbei.api.common.enums.AfTradeSettleOrderStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -25,6 +27,7 @@ import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.AfTradeSettleOrderDo;
 
 /**
  *@类描述：
@@ -48,6 +51,9 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 	AfTradeOrderDao afTradeOrderDao;
 	@Resource
 	AfSupplierOrderSettlementDao afSupplierOrderSettlementDao;
+	
+	@Resource
+	AfTradeSettleOrderService afTradeSettleOrderService;
 	
 	@Override
 	public int addOrderRefund(AfOrderRefundDo orderRefundInfo) {
@@ -191,11 +197,20 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
 					
-					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
-					tradeOrderDo.setOrderId(orderInfo.getRid());
-					tradeOrderDo.setStatus(TradeOrderStatus.REFUND.getCode());
-					tradeOrderDo.setGmtModified(new Date());
-					afTradeOrderDao.updateById(tradeOrderDo);
+					// modify luoxiao 结算单状态变更，退款不包含租房业务 ，只会有一条结算单 on 2018-04-10
+//					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
+//					tradeOrderDo.setOrderId(orderInfo.getRid());
+//					tradeOrderDo.setStatus(TradeOrderStatus.REFUND.getCode());
+//					tradeOrderDo.setGmtModified(new Date());
+//					afTradeOrderDao.updateById(tradeOrderDo);
+					
+					AfTradeSettleOrderDo afTradeSettleOrderDo = new AfTradeSettleOrderDo();
+	                afTradeSettleOrderDo.setOrderId(orderInfo.getRid());
+	                afTradeSettleOrderDo.setStatus(AfTradeSettleOrderStatus.CANCER.getCode());
+	                afTradeSettleOrderDo.setModifier("SYSTEM");
+	                afTradeSettleOrderDo.setGmtModified(new Date());
+	                afTradeSettleOrderService.updateSettleOrder(afTradeSettleOrderDo);
+	                // end by luoxiao on 2018-04-10
 				} catch (Exception e) {
 					logger.error("dealWithTradeOrderRefund  error: {}",e);
 					status.setRollbackOnly();
@@ -218,11 +233,20 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					updateOrderRefund(orderRefundInfo);
 					afOrderDao.updateOrder(orderInfo);
 					
-					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
-					tradeOrderDo.setOrderId(orderInfo.getRid());
-					tradeOrderDo.setStatus(TradeOrderStatus.NEW.getCode());
-					tradeOrderDo.setGmtModified(new Date());
-					afTradeOrderDao.updateById(tradeOrderDo);
+					// modify luoxiao 结算单状态变更，退款不包含租房业务 ，只会有一条结算单 on 2018-04-10
+//					AfTradeOrderDo tradeOrderDo = new AfTradeOrderDo();
+//					tradeOrderDo.setOrderId(orderInfo.getRid());
+//					tradeOrderDo.setStatus(TradeOrderStatus.NEW.getCode());
+//					tradeOrderDo.setGmtModified(new Date());
+//					afTradeOrderDao.updateById(tradeOrderDo);
+					
+					AfTradeSettleOrderDo afTradeSettleOrderDo = new AfTradeSettleOrderDo();
+	                afTradeSettleOrderDo.setOrderId(orderInfo.getRid());
+	                afTradeSettleOrderDo.setStatus(AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
+	                afTradeSettleOrderDo.setModifier("SYSTEM");
+	                afTradeSettleOrderDo.setGmtModified(new Date());
+	                afTradeSettleOrderService.updateSettleOrder(afTradeSettleOrderDo);
+	                // end by luoxiao on 2018-04-10
 					
 				} catch (Exception e) {
 					logger.error("dealWithTradeRefundFail  error: {}",e);
