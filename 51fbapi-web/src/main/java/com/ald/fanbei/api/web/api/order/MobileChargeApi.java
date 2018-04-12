@@ -81,14 +81,14 @@ public class MobileChargeApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		if(bankId<0){//微信支付
-			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"",afUserAccountDo,blackBox,bqsBlackBox);
+			map = afOrderService.createMobileChargeOrder(null,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,"",afUserAccountDo,blackBox,bqsBlackBox,"");
 			resp.setResponseData(map);
 		}else{//银行卡支付 代收
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bankId);
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId, CommonUtil.getIpAddr(request),afUserAccountDo,blackBox,bqsBlackBox);
+			map = afOrderService.createMobileChargeOrder(card,context.getUserName(),userId, coupon, money, mobile, rebateAmount,bankId,request.getRemoteAddr(),afUserAccountDo,blackBox,bqsBlackBox,null);
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
 			if(!upsResult.isSuccess()){
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);

@@ -15,7 +15,8 @@ public enum RepaymentStatus {
 	NEW("N", "新建状态"), 
 	PROCESS("P","处理中"),
 	YES("Y", "还款成功"),
-	FAIL("F", "还款失败");
+	FAIL("F", "还款失败"),
+	SMS("S","获取快捷支付验证码");
     
     private String code;
     private String name;

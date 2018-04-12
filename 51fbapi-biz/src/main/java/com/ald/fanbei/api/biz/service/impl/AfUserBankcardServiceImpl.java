@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -46,7 +47,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 
-    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);    
+    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
 
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
@@ -54,17 +55,23 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     }
 
     @Override
-    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
+    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion) {
 	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
 	if (CollectionUtil.isNotEmpty(list)) {
+	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 	    for (AfBankUserBankDto item : list) {
 		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode());
 		item.setBankStatus(bankStatus);
 
 		if (bankStatus.getIsMaintain() == 1) {
-		    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 		    item.setMessage(afResourceDo.getValue1());
 		    item.setIsValid("N");
+		}
+		if (appVersion < 412) {
+		    if (BankPayChannel.KUAIJIE.getCode().equals(item.getBankChannel())) {
+			item.setMessage(afResourceDo.getValue1());
+			item.setIsValid("N");
+		    }
 		}
 	    }
 

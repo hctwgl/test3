@@ -346,8 +346,16 @@
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<entry key="/auth/authGxb" value-ref="authGxbApi"/>
+				
+				<!-- 4.1.2及以上绑卡 -->
+				<entry key="/auth/applyBindBankcard" value-ref="applyBindBankcardApi"/>
+				<entry key="/auth/submitBindBankcard" value-ref="submitBindBankcardApi"/>
+				
 
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
+
+				<entry key="/auth/checkUserBasicInfo" value-ref="checkUserBasicInfoApi"/>
+				<entry key="/auth/checkUserIdCardInfo" value-ref="checkUserIdCardInfoApi"/>
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
@@ -562,8 +570,10 @@
 				<entry key="/loan/loanRepayDo" value-ref="loanRepayDoApi" />
 				<entry key="/loan/loanAllRepayDo" value-ref="loanAllRepayDoApi" />
 				<entry key="/auth/authRaiseQuota" value-ref="authRaiseQuotaApi" />
-
-
+				
+				<!-- 支付相关接口 -->
+				<entry key="/pay/quickPaymentResendCode" value-ref="quickPaymentResendCodeApi" />
+				<entry key="/pay/confirmPayment" value-ref="confirmPaymentApi" />
 
 			</map>
 		</constructor-arg>
