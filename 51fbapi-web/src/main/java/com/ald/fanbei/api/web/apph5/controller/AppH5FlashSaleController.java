@@ -1,6 +1,32 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import com.ald.fanbei.api.biz.service.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserGoodsSmsService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -12,28 +38,25 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserGoodsSmsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
-import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @类描述：
@@ -90,9 +113,11 @@ public class AppH5FlashSaleController extends BaseController {
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
 		}
 		data.put("BannerList",topBannerList);
+		
 		//商品展示
 		AfGoodsQuery query = getCheckParam(request);
 		List<AfEncoreGoodsDto> list = afGoodsService.selectFlashSaleGoods(query);
+		
 		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 		//获取借款分期配置信息
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
