@@ -231,7 +231,7 @@ public class ThirdController extends AbstractThird{
                     for (AfOrderDo temp:orderList){
                         afOrderService.updateIagentStatusByOrderId(temp.getRid(),iagentstate);
                         if ("PAID".equals(temp.getStatus())&&"E".equals(iagentstate)){
-                            HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(new HashMap<>()));
+                            HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+temp.getOrderNo(),JSONObject.toJSONString(new HashMap<>()));
 
                         }
                     }
