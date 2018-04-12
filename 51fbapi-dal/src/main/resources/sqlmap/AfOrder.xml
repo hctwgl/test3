@@ -1421,9 +1421,9 @@
 	<update id="updatepdfUrlByOrderId">
 		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
 	</update>
-	<select id="selectTodayIagentStatus" >
+	<select id="selectTodayIagentStatus" resultType="AfOrderDo" >
 		SELECT
-		<include refid="queryAllFields"/>
+		<include refid="queryAllFields" />
         FROM af_order
         WHERE user_id=#{userId} and is_delete=0
         and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
