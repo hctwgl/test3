@@ -149,6 +149,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 							//没推送过
 							AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 							AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+							//浙商维护中逻辑
+//							Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 							if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())&&flag){
 								//未满额且自营开关开启
 								List<EdspayGetCreditRespBo>  pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
@@ -282,5 +284,19 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	    String key = tradeNo + "_completeOrder";
 	    redisTemplate.delete(key);
 	  }
+	  
+	 /* private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+			Boolean bankIsMaintaining=false;
+			if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+				String[] split = assetPushResource.getValue4().split(",");
+				String maintainStart = split[0];
+				String maintainEnd = split[1];
+				Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+				Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+				 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+				
+			}
+	 return bankIsMaintaining;
+	}*/
 
 }
