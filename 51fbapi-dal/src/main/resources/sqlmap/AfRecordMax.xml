@@ -108,7 +108,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getByBusIdAndEventype" parameterType="java.lang.String" resultType="com.ald.fanbei.admin.dal.domain.AfRecordMaxDo">
+    <select id="getByBusIdAndEventype" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.AfRecordMaxDo">
     	SELECT
 		<include refid="queryFields" />
 		FROM af_record_max
