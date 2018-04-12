@@ -56,7 +56,8 @@ public class SmsUtil extends AbstractThird {
     private final static String ACCOUNT = "dh15433";
     private final static String MARKETING_ACCOUNT = "dh15434";
     private final static String MARKETING_ACCOUNT_PASSWORD = "aSZqA6Ub";
-
+    private final static String MARKET_ACCOUNT_EC = "dh15437";
+    private final static String MARKET_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
     private final static String SIGN = "【51返呗】";
     private static String password = null;
     private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
@@ -795,6 +796,35 @@ public class SmsUtil extends AbstractThird {
         }
         return result;
     }
+    /**
+     * 对电商类营销短信 chennel dh15437
+     *
+     * @param mobiles 号码
+     * @param content 内容
+     */
+    public  SmsResult sendMarketingSmsToDhstForEC(String mobiles, String content) {
+        SmsResult result = new SmsResult();
+        Map<String, String> paramsMap = new HashMap<String, String>();
+        paramsMap.put("account", MARKET_ACCOUNT_EC);
+        paramsMap.put("password", DigestUtil.MD5(MARKET_ACCOUNT_PASSWORD_EC).toLowerCase());
+        paramsMap.put("phones", mobiles);
+        paramsMap.put("content", content);
+        paramsMap.put("sign", SIGN);
+        String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
+
+        logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
+
+        JSONObject json = JSON.parseObject(reqResult);
+        if (json.getInteger("result") == 0) {
+            result.setSucc(true);
+            result.setResultStr(json.getString("desc"));
+        } else {
+            result.setSucc(false);
+            result.setResultStr(json.getString("desc"));
+        }
+        return result;
+    }
+
 
     private static void sendEmailToDhst(String email, String content) throws Exception {
 
