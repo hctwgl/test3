@@ -128,8 +128,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					zmReAuthDatetime = DateUtil.getStartDate();
 				}
 				if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) 
-						&& (YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
-						&& (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())) ){
+						&& ((YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
+								|| (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())))){
 						//将数据存入缓存
 					bizCacheUtil.saveObject(Constants.ZM_AUTH_POP_GUIDE_CACHE_KEY+type+context.getUserId(), System.currentTimeMillis(), Constants.SECOND_OF_ONE_DAY);
 				}
