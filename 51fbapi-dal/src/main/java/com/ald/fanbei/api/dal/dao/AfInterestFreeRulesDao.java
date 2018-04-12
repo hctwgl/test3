@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,6 +22,6 @@ public interface AfInterestFreeRulesDao {
 
 	AfInterestReduceSchemeDo getReduceSchemeByGoodId(@Param("goodsId")Long goodsId,@Param("brandId")Long brandId,@Param("catogeryId")Long catogeryId);
 
-	AfInterestFreeRulesDo getById(@Param("id")Long id);
+	AfInterestReduceRulesDo getReduceRuleById(@Param("rid")Long id);
 	    
 }

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -37,31 +38,31 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
     /**
      * 降息比例
      */
-    private Double nper1;
+    private BigDecimal nper1;
     /**
      * 降息比例
      */
-    private Double nper2;
+    private BigDecimal nper2;
 
     /**
      * 降息比例
      */
-    private Double nper3;
+    private BigDecimal nper3;
 
     /**
      * 降息比例
      */
-    private Double nper6;
+    private BigDecimal nper6;
 
     /**
      * 降息比例
      */
-    private Double nper9;
+    private BigDecimal nper9;
 
     /**
      * 降息比例
      */
-    private Double nper12;
+    private BigDecimal nper12;
 
 
     /**
@@ -139,7 +140,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @return 降息比例
      */
-    public Double getNper2(){
+    public BigDecimal getNper2(){
         return nper2;
     }
 
@@ -148,7 +149,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @param nper2 要设置的降息比例
      */
-    public void setNper2(Double nper2){
+    public void setNper2(BigDecimal nper2){
         this.nper2 = nper2;
     }
 
@@ -157,7 +158,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @return 降息比例
      */
-    public Double getNper3(){
+    public BigDecimal getNper3(){
         return nper3;
     }
 
@@ -166,7 +167,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @param nper3 要设置的降息比例
      */
-    public void setNper3(Double nper3){
+    public void setNper3(BigDecimal nper3){
         this.nper3 = nper3;
     }
 
@@ -175,7 +176,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @return 降息比例
      */
-    public Double getNper6(){
+    public BigDecimal getNper6(){
         return nper6;
     }
 
@@ -184,7 +185,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @param nper6 要设置的降息比例
      */
-    public void setNper6(Double nper6){
+    public void setNper6(BigDecimal nper6){
         this.nper6 = nper6;
     }
 
@@ -193,7 +194,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @return 降息比例
      */
-    public Double getNper9(){
+    public BigDecimal getNper9(){
         return nper9;
     }
 
@@ -202,7 +203,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @param nper9 要设置的降息比例
      */
-    public void setNper9(Double nper9){
+    public void setNper9(BigDecimal nper9){
         this.nper9 = nper9;
     }
 
@@ -211,7 +212,7 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @return 降息比例
      */
-    public Double getNper12(){
+    public BigDecimal getNper12(){
         return nper12;
     }
 
@@ -220,15 +221,15 @@ public class AfInterestReduceRulesDo extends AbstractSerial {
      *
      * @param nper12 要设置的降息比例
      */
-    public void setNper12(Double nper12){
+    public void setNper12(BigDecimal nper12){
         this.nper12 = nper12;
     }
 
-    public Double getNper1() {
+    public BigDecimal getNper1() {
         return nper1;
     }
 
-    public void setNper1(Double nper1) {
+    public void setNper1(BigDecimal nper1) {
         this.nper1 = nper1;
     }
 }
