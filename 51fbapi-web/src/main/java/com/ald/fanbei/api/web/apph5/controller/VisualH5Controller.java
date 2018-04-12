@@ -249,49 +249,50 @@ public class VisualH5Controller extends BaseController {
                     }
                 }
             }
-            List<HashMap> list = afGoodsService.getVisualGoodsByGoodsId(selectIds);
-            for (HashMap goods : list) {
-                Map<String, Object> goodsInfo = new HashMap<String, Object>();
-                goodsInfo.put("goodName", goods.get("name"));
-                goodsInfo.put("rebateAmount", goods.get("rebate_amount"));
-                goodsInfo.put("priceAmount", goods.get("price_amount"));
-                goodsInfo.put("saleAmount", goods.get("sale_amount"));
-                goodsInfo.put("goodsIcon", goods.get("goods_icon"));
-                goodsInfo.put("goodsId", goods.get("id"));
-                // 如果是分期免息商品，则计算分期
-                Long goodsId = Long.parseLong(goods.get("id").toString());
-                HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
-                if (afActivityGoods != null) {
-                    goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
-                }
-                AfSchemeGoodsDo schemeGoodsDo = null;
-                try {
-                    schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-                } catch (Exception e) {
-                    logger.error(e.toString());
-                }
-                JSONArray interestFreeArray = null;
-                if (schemeGoodsDo != null) {
-                    AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-                    String interestFreeJson = interestFreeRulesDo.getRuleJson();
-                    if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                        interestFreeArray = JSON.parseArray(interestFreeJson);
+            if (selectIds.size() > 0) {
+                List<HashMap> list = afGoodsService.getVisualGoodsByGoodsId(selectIds);
+                for (HashMap goods : list) {
+                    Map<String, Object> goodsInfo = new HashMap<String, Object>();
+                    goodsInfo.put("goodName", goods.get("name"));
+                    goodsInfo.put("rebateAmount", goods.get("rebate_amount"));
+                    goodsInfo.put("priceAmount", goods.get("price_amount"));
+                    goodsInfo.put("saleAmount", goods.get("sale_amount"));
+                    goodsInfo.put("goodsIcon", goods.get("goods_icon"));
+                    goodsInfo.put("goodsId", goods.get("id"));
+                    // 如果是分期免息商品，则计算分期
+                    Long goodsId = Long.parseLong(goods.get("id").toString());
+                    HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
+                    if (afActivityGoods != null) {
+                        goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
                     }
-                }
-                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        new BigDecimal(goodsInfo.get("priceAmount").toString()), resource.getValue1(), resource.getValue2(), goodsId, "0");
-                if (nperList != null) {
-                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-                    String isFree = (String) nperMap.get("isFree");
-                    if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-                        nperMap.put("freeAmount", nperMap.get("amount"));
+                    AfSchemeGoodsDo schemeGoodsDo = null;
+                    try {
+                        schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                    } catch (Exception e) {
+                        logger.error(e.toString());
                     }
-                    goodsInfo.put("nperMap", nperMap);
-                }
+                    JSONArray interestFreeArray = null;
+                    if (schemeGoodsDo != null) {
+                        AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+                        String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                        if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                            interestFreeArray = JSON.parseArray(interestFreeJson);
+                        }
+                    }
+                    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                            new BigDecimal(goodsInfo.get("priceAmount").toString()), resource.getValue1(), resource.getValue2(), goodsId, "0");
+                    if (nperList != null) {
+                        Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                        String isFree = (String) nperMap.get("isFree");
+                        if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+                            nperMap.put("freeAmount", nperMap.get("amount"));
+                        }
+                        goodsInfo.put("nperMap", nperMap);
+                    }
 
-                goodsList.add(goodsInfo);
+                    goodsList.add(goodsInfo);
+                }
             }
-
             return H5CommonResponse.getNewInstance(true, "", "", goodsList).toString();
         } catch (Exception e) {
             logger.error("changeUserAddress", e);
@@ -340,9 +341,9 @@ public class VisualH5Controller extends BaseController {
                         item.put("Status", "N");
                     }
                     context = doWebCheck(request, false);
-                    if(context.isLogin()) {
+                    if (context.isLogin()) {
                         AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-                        if(afUserCouponService.getUserCouponByUserIdAndCouponId(afUser.getRid(),afCouponDo.getRid()) > 0){
+                        if (afUserCouponService.getUserCouponByUserIdAndCouponId(afUser.getRid(), afCouponDo.getRid()) > 0) {
                             item.put("Status", "G");
                         }
                     }
