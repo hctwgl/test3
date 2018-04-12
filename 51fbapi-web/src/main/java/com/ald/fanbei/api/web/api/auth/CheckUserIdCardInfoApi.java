@@ -36,9 +36,8 @@ public class CheckUserIdCardInfoApi implements ApiHandle {
             throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
         }
         Map<String,Object> params=requestDataVo.getParams();
-        int result=afUserAccountService.getCountByIdNumer(ObjectUtils.identityToString(params.get("idNumber")),userId);
-        if(result>0){
-            return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+        if(afUserAccountService.getCountByIdNumer(ObjectUtils.identityToString(params.get("idNumber")),userId)>0){
+            return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ID_CARD_EXIST_ERROR);
         }
         return resp;
     }
