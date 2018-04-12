@@ -737,6 +737,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			if (null != retryTemplDo) {
 				//钱包主动通知之后移除主动查询表，不再主动查询
 				afRetryTemplService.deleteByBusidAndEventType(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
+				//移出record_max表
+				removeRecordMax(PayResultReqBo);
 				//回传区别现金贷和分期不同处理
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
@@ -803,7 +805,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						}
 					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 						//打款成功
-						removeRecordMax(PayResultReqBo);
 						//记录拓展表
 						AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
 						Date now = new Date();
@@ -866,7 +867,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							//记录拓展表
 						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 							//打款成功
-							removeRecordMax(PayResultReqBo);
 							borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
 							//记录拓展表
 						}
@@ -924,7 +924,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 								}
 							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 								//打款成功
-								removeRecordMax(PayResultReqBo);
 								AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
 								afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
 								afLoanService.dealLoanSucc(loanDo.getRid(),"");
@@ -940,7 +939,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	}
 
 	private void removeRecordMax(EdspayGiveBackPayResultReqBo PayResultReqBo) {
-		//移出record_max表
 		AfRecordMaxDo recordMaxDo = afRecordMaxService.getByBusIdAndEventype(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
 		if (null != recordMaxDo) {
 			afRecordMaxService.deleteById(recordMaxDo.getRid());
