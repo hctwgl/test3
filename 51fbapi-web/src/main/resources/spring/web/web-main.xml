@@ -348,9 +348,6 @@
 				<!-- 4.1.2及以上绑卡 -->
 				<entry key="/auth/applyBindBankcard" value-ref="applyBindBankcardApi"/>
 				<entry key="/auth/submitBindBankcard" value-ref="submitBindBankcardApi"/>
-                <entry key="/auth/applySuperBindBankcard" value-ref="applySuperBindBankcardApi"/>
-				<entry key="/auth/submitSuperBindBankcard" value-ref="submitSuperBindBankcardApi"/>
-				
 				
 
 				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />

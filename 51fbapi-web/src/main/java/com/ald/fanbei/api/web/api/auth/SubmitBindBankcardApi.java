@@ -97,7 +97,7 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
 				
-				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), param.smsCode, "02");
+				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
 					throw new FanbeiException(FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 				}

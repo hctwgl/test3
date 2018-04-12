@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -34,7 +32,6 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.SubmitSuperBindBankcardParam;
-import com.alibaba.fastjson.JSON;
 
 /**
  *@类现描述：绑卡并支付订单
@@ -120,24 +117,8 @@ public class SubmitSuperBindBankcardApi implements ApiHandle {
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
 				
-				Map<String, Object> payResult = afOrderService.payBrandOrder(
-						context.getUserName(), 
-						param.bankCardId,
-						payType.getCode(), 
-						param.orderId,
-						context.getUserId(), 
-						order.getOrderNo(), 
-						order.getThirdOrderNo(), 
-						order.getGoodsName(),
-						finalSaleAmount, 
-						param.orderNper,
-						appName, 
-						CommonUtil.getIpAddr(request));
-	            
-				if(!Boolean.parseBoolean(payResult.get("success").toString())) {
-					logger.error("afOrderService.payBrandOrder error,res = ", JSON.toJSONString(payResult));
-					throw new FanbeiException(FanbeiExceptionCode.ORDER_PAY_FAIL);
-				}
+				// TODO 调用ConfirmPaymentApi
+				
 				return 1;
 			}
 		});

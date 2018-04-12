@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -66,19 +65,13 @@ public class ApplySuperBindBankcardApi implements ApiHandle {
 			param.idNumber = userAccount.getIdNumber();
 		}
 		
-		// TODO upsUtil.super authSign
-		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02", param.bankCode);
-		if(!upsResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
-		}else if(!"10".equals(upsResult.getNeedCode())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR);
-		}
+		// TODO 调用  PayOrderV1Api
 		
 		String isMain = YesNoStatus.NO.getCode();
 		AfUserBankcardDo bank = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 		if(null == bank){ isMain = YesNoStatus.YES.getCode(); }
 		
-		AfUserBankcardDo bankDo = genUserBankcardDo(upsResult.getBankCode(), param.bankName, param.cardNumber, param.mobile, userId, isMain);
+		AfUserBankcardDo bankDo = genUserBankcardDo(param.bankCode, param.bankName, param.cardNumber, param.mobile, userId, isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 
 		Map<String,Object> map = new HashMap<String,Object>();

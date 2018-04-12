@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
-@Component("submitSuperBindBankcardParam")
+@Component("submitBindBankcardParam")
 public class SubmitBindBankcardParam {
 	public Long orderId;
 	
