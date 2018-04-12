@@ -16,9 +16,11 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.domain.AfBklDo;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
@@ -43,6 +45,9 @@ public class BklUtils {
     @Resource
     SmsUtil smsUtil;
     public  void submitJob(AfBklDo bklDo) {
+        if (!checkTodayOrders(bklDo)){
+            return;
+        }
         Map map=new HashMap();
         map.put("work_id", bklDo.getCsvArn()+ new Date().getTime());
         map.put("corp_code", "51返呗");
@@ -97,6 +102,53 @@ public class BklUtils {
             logger.error("bklUtils submitJob httpResponseVO error =>{}",e);
         }
     }
+    /**
+     * 判断是否发起电核
+     * @return 是否发起电核true是false否
+     * 返回值
+     * <code>
+     *  {
+     *      "code": 1000,           //1000正常,其他异常
+     *      "msg": "",              //错误信息
+     *      "data": ""     //返回数据
+     *  }
+     * </code>
+     * @throws Exception 异常
+     * @date: 2018/4/12 14:32
+     * @author: xieqiang
+     */
+private boolean checkTodayOrders(AfBklDo bklDo){
+    try {
+        //AfIagentResultDo afIagentResultDo = iagentResultService.getIagentByUserIdToday(bklDo.getUserId());
+        AfOrderDo afOrderDo = afOrderService.selectTodayIagentStatus(bklDo.getUserId());
+        if (afOrderDo ==null){
+            return true;
+        }else{
+            String iagentstatus = afOrderDo.getIagentStatus();
+            afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),iagentstatus);
+            if ("BEG".contains(iagentstatus)){
+                AfOrderDo afOrderClose = afOrderService.getOrderById(bklDo.getOrderId());
+                Map<String,String> qmap = new HashMap<>();
+                qmap.put("orderNo",afOrderClose.getOrderNo());
+                //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderClose.getOrderNo(),JSONObject.toJSONString(qmap));
+            }
+            return false;
+            /*String checkState = afIagentResultDo.getCheckState();
+            if ( checkState!=null && !"".equals(checkState)){
 
+                if (afOrderDo != null){
+
+                }else{
+                    return true;
+                }
+            }*/
+        }
+    }catch (Exception e){
+        logger.info("checkTodayOrders error orderno="+bklDo.getCsvArn(),e);
+        return false;
+    }
+
+}
 
 }

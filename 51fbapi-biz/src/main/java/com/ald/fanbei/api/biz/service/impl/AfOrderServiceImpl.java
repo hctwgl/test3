@@ -3237,4 +3237,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getLeaseProtocol(orderId);
 	}
 
+	@Override
+	public AfOrderDo selectTodayIagentStatus(Long userId){
+		return orderDao.selectTodayIagentStatus(userId);
+	}
+
 }
