@@ -57,6 +57,9 @@ public class VisualH5Controller  extends BaseController {
     @Resource
     AfInterestFreeRulesService afInterestFreeRulesService;
 
+    @Resource
+    AfActivityGoodsService afActivityGoodsService;
+
     @RequestMapping(value = "/getVisualH5", method = RequestMethod.POST)
     public String getVisualH5(HttpServletRequest request, HttpServletResponse response) {
         Long visualId = NumberUtil.objToLongDefault(request.getParameter("id"),0);
@@ -130,7 +133,10 @@ public class VisualH5Controller  extends BaseController {
             goodsInfo.put("goodsId", goods.get("id"));
             // 如果是分期免息商品，则计算分期
             Long goodsId = Long.parseLong(goods.get("id").toString());
-
+            HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
+            if(afActivityGoods != null){
+                goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
+            }
             AfSchemeGoodsDo schemeGoodsDo = null;
             try {
                 schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
@@ -200,7 +206,10 @@ public class VisualH5Controller  extends BaseController {
             goodsInfo.put("goodsId", goods.get("id"));
             // 如果是分期免息商品，则计算分期
             Long goodsId = Long.parseLong(goods.get("id").toString());
-
+            HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
+            if(afActivityGoods != null){
+                goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
+            }
             AfSchemeGoodsDo schemeGoodsDo = null;
             try {
                 schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);

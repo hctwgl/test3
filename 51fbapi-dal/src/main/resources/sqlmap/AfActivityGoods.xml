@@ -234,4 +234,18 @@
 		</foreach>
 		 GROUP BY goods_id
 	</select>
+
+	<select id="getVisualActivityGoodsByGoodsId" resultType="HashMap">
+		SELECT
+		goods_id,special_price
+		FROM
+		af_activity_goods
+		WHERE
+		is_delete = 0
+		AND now() > valid_start
+		AND valid_end > now()
+		AND
+		goods_id = #{goodsId}
+		ORDER BY id DESC LIMIT 1
+	</select>
 </mapper>
