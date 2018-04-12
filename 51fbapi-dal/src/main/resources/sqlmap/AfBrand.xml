@@ -144,4 +144,10 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getAllAndNameSort" resultType="com.ald.fanbei.api.dal.domain.dto.AfBrandDto">
+    	SELECT t1.id rid, t1.name, t2.f_PY nameIndex
+		FROM af_brand t1, af_coslers t2
+		WHERE  CONV(HEX(LEFT(CONVERT(t1.name USING gbk ), 1)), 16, 10) BETWEEN t2.cBegin AND t2.cEnd and t1.is_delete = 0
+		ORDER BY convert(t1.name using gbk) ASC
+    </select>
 </mapper>

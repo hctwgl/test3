@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfBrandDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBrandDto;
 
 /**
  * 品牌Service
@@ -11,5 +14,10 @@ import com.ald.fanbei.api.dal.domain.AfBrandDo;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfBrandService extends ParentService<AfBrandDo, Long>{
+	/**
+	 * 获取所有品牌并按照首字母进行排序
+	 * @return
+	 */
+	List<AfBrandDto> getAllAndNameSort();
 
 }
