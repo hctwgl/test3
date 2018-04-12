@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -62,6 +63,12 @@ public class VisualH5Controller extends BaseController {
 
     @Resource
     AfCouponService afCouponService;
+
+    @Resource
+    AfUserCouponService afUserCouponService;
+
+    @Resource
+    AfUserService afUserService;
 
     /**
      * 获取H5设置
@@ -302,37 +309,42 @@ public class VisualH5Controller extends BaseController {
     @RequestMapping(value = "/getCouponStatus", method = RequestMethod.POST)
     public String getCouponStatus(HttpServletRequest request, HttpServletResponse response) {
         try {
-           List<Map<String, Object>> data = new ArrayList<>();
+            FanbeiWebContext context = new FanbeiWebContext();
+            List<Map<String, Object>> data = new ArrayList<>();
             Long visualId = NumberUtil.objToLongDefault(request.getParameter("visualId"), 0);
             if (visualId <= 0) {
                 return H5CommonResponse.getNewInstance(false, "请求参数缺失", "", null).toString();
             }
             List<HashMap> list = afVisualH5ItemService.getCouponByVisualId(visualId);
             List<String> couponIds = new ArrayList<>();
-            if(list != null && list.size() > 0){
-                for (int i = 0; i < list.size(); i++){
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
                     JSONObject coupon = JSON.parseObject(list.get(i).get("value_4").toString());
                     JSONArray array = coupon.getJSONArray("list");
-                    for (int j=0;j<array.size();j++){
+                    for (int j = 0; j < array.size(); j++) {
                         JSONObject item = array.getJSONObject(i);
-                        couponIds.add(item.getString("couponId")) ;
+                        couponIds.add(item.getString("couponId"));
                     }
                 }
             }
-            if(couponIds.size()>0){
+            if (couponIds.size() > 0) {
                 List<AfCouponDo> couponList = afCouponService.getCouponByIds(couponIds);
-                for (AfCouponDo afCouponDo: couponList) {
+                for (AfCouponDo afCouponDo : couponList) {
                     Map<String, Object> item = new HashMap<String, Object>();
-                    if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
-                        item.put("id",afCouponDo.getRid());
-                        item.put("isHas","Y");
+                    item.put("id", afCouponDo.getRid());
+                    item.put("Status", "Y");
+                    if (afCouponDo.getQuota() <= afCouponDo.getQuotaAlready()) {
+                        item.put("Status", "N");
                     }
-                    else {
-                        item.put("id",afCouponDo.getRid());
-                        item.put("isHas","N");
+                    if (afCouponDo.getStatus().equals("C")) {
+                        item.put("Status", "N");
                     }
-                    if(afCouponDo.getStatus().equals("C")){
-                        item.put("isHas","N");
+                    context = doWebCheck(request, false);
+                    if(context.isLogin()) {
+                        AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+                        if(afUserCouponService.getUserCouponByUserIdAndCouponId(afUser.getRid(),afCouponDo.getRid()) > 0){
+                            item.put("Status", "G");
+                        }
                     }
                     data.add(item);
                 }
