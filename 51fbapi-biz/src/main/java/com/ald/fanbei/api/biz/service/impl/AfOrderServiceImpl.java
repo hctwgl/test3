@@ -3241,5 +3241,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public AfOrderDo selectTodayIagentStatus(Long userId){
 		return orderDao.selectTodayIagentStatus(userId);
 	}
+	@Override
+	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId){
+		return orderDao.selectTodayIagentStatusCOrders(userId);
+	}
 
 }

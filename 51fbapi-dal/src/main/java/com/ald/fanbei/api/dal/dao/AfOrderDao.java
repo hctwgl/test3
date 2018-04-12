@@ -318,4 +318,5 @@ public interface AfOrderDao {
 	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
 
 	AfOrderDo selectTodayIagentStatus(@Param("userId") Long userId);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
 }

@@ -226,6 +226,16 @@ public class ThirdController extends AbstractThird{
                     //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
                     HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
                 }
+                List<AfOrderDo> orderList = afOrderService.selectTodayIagentStatusCOrders(afOrderDo.getUserId());
+                if (orderList!= null){
+                    for (AfOrderDo temp:orderList){
+                        afOrderService.updateIagentStatusByOrderId(temp.getRid(),iagentstate);
+                        if ("PAID".equals(temp.getStatus())&&"E".equals(iagentstate)){
+                            HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(new HashMap<>()));
+
+                        }
+                    }
+                }
             }
         }else{
             AfIagentResultDo resultDo = new AfIagentResultDo();

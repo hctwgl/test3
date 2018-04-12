@@ -1429,4 +1429,12 @@
         and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
         and iagent_status is not NULL ORDER BY gmt_create ASC LIMIT 1
 	</select>
+	<select id="selectTodayIagentStatusCOrders" resultType="AfOrderDo" >
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_order
+		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND status='PAID'
+		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+		and iagent_status is NULL
+	</select>
 </mapper>
