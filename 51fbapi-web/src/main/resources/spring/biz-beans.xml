@@ -27,6 +27,9 @@
 				<value>fbapi.db.url</value>
 				<value>fbapi.db.username</value>
 				<value>fbapi.db.password</value>
+				<value>loan.fbapi.db.url</value>
+				<value>loan.fbapi.db.username</value>
+				<value>loan.fbapi.db.password</value>
 				<!-- redis -->
 				<value>fbapi.redis.hostname</value>
 				<value>fbapi.redis.port</value>
