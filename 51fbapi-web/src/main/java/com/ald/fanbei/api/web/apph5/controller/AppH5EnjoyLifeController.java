@@ -8,11 +8,10 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
@@ -168,12 +167,12 @@ public class AppH5EnjoyLifeController extends BaseController {
                 // redis取不到，则从一级缓存获取
                 activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             }
+            AfSeckillActivityQuery query = new AfSeckillActivityQuery();
+            query.setName("乐享生活节");
+            query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
             if(activityInfoList == null) {
                 // 一级缓存获取不到，则从数据库获取
                 //activityInfoList = getActivityList();
-                AfSeckillActivityQuery query = new AfSeckillActivityQuery();
-                query.setName("乐享生活节");
-                query.setGmtStart();
                 activityInfoList = activityGoodsUtil.getActivityGoods(query);
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
@@ -218,14 +217,15 @@ public class AppH5EnjoyLifeController extends BaseController {
                                 if(isGetLock){
                                     logger.info(Thread.currentThread().getName() + "3activityList:" + activityList);
                                     //bizCacheUtil.saveObjectForever(processKey,isProcess);
-                                    Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil,scheduledCache,afSeckillActivityService);
+                                    Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,
+                                            bizCacheUtil,scheduledCache,afSeckillActivityService,activityGoodsUtil,query);
                                     pool.execute(process);
                                 }
                             }
                             if(activityList==null){
                                 activityList = getActivityPartList(subjectList,resource,array);
-                                bizCacheUtil.saveListByTime(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList, 1*60);
-                                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList);
+                                bizCacheUtil.saveListByTime(cacheKey, activityList, 1*60);
+                                scheduledCache.putObject(cacheKey, activityList);
                             }
                         /*} catch (Exception e) {
                             e.printStackTrace();
@@ -382,13 +382,15 @@ class GetActivityListThread implements Runnable {
     private AfSchemeGoodsService afSchemeGoodsService;
     private AfInterestFreeRulesService afInterestFreeRulesService;
     private AfSeckillActivityService afSeckillActivityService;
+    private ActivityGoodsUtil activityGoodsUtil;
+    private AfSeckillActivityQuery query;
     @Resource
     BizCacheUtil bizCacheUtil;
     @Resource
     Cache scheduledCache;
     GetActivityListThread(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array,
                           AfSubjectService afSubjectService,AfSubjectGoodsService afSubjectGoodsService,AfSchemeGoodsService afSchemeGoodsService,AfInterestFreeRulesService afInterestFreeRulesService,
-                          BizCacheUtil bizCacheUtil,Cache scheduledCache,AfSeckillActivityService afSeckillActivityService) {
+                          BizCacheUtil bizCacheUtil,Cache scheduledCache,AfSeckillActivityService afSeckillActivityService,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
         this.subjectList = subjectList;
         this.resource = resource;
         this.array = array;
@@ -399,32 +401,22 @@ class GetActivityListThread implements Runnable {
         this.bizCacheUtil = bizCacheUtil;
         this.scheduledCache = scheduledCache;
         this.afSeckillActivityService = afSeckillActivityService;
+        this.activityGoodsUtil = activityGoodsUtil;
+        this.query = query;
     }
 
     @Override
     public void run() {
         getActivityPartList(subjectList,resource,array,afSubjectService,
                 afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil,scheduledCache);
-        getActivityList(afSeckillActivityService,bizCacheUtil,scheduledCache);
+        getActivityList(afSeckillActivityService,bizCacheUtil,scheduledCache,activityGoodsUtil,query);
 
     }
-    private List<Map> getActivityList(AfSeckillActivityService afSeckillActivityService,BizCacheUtil bizCacheUtil,Cache scheduledCache) {
+    private List<Map> getActivityList(AfSeckillActivityService afSeckillActivityService,BizCacheUtil bizCacheUtil,Cache scheduledCache,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
         //获取所有活动
-        List<Map> activityList = new ArrayList<Map>();
-        List<AfSeckillActivityDo> afSeckillActivityDos = afSeckillActivityService.getActivityNow();
-        for(AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos){
-            Map secActivityInfoMap = new HashMap();
-            Long activityId = afSeckillActivityDo.getRid();
-            String actName = afSeckillActivityDo.getName();
-            secActivityInfoMap.put("activityId",activityId);
-            secActivityInfoMap.put("actName",actName);
-            //取出该活动所有商品
-            List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityGoodsByActivityId(activityId);
-            secActivityInfoMap.put("afSeckillActivityGoodsDtos",afSeckillActivityGoodsDtos);
-            activityList.add(secActivityInfoMap);
-        }
-        bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList);
-        scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList);
+        List<Map<String, Object>> activityInfoList = activityGoodsUtil.getActivityGoods(query);
+        bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+        scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
         return null;
     }
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array,
@@ -511,23 +503,5 @@ class GetActivityListThread implements Runnable {
         }
 
         return null;
-    }
-
-    private List<Map> getActivityList() {
-        //获取所有活动
-        List<Map> activityList = new ArrayList<Map>();
-        List<AfSeckillActivityDo> afSeckillActivityDos = afSeckillActivityService.getActivityNow();
-        for(AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos){
-            Map secActivityInfoMap = new HashMap();
-            Long activityId = afSeckillActivityDo.getRid();
-            String actName = afSeckillActivityDo.getName();
-            secActivityInfoMap.put("activityId",activityId);
-            secActivityInfoMap.put("actName",actName);
-            //取出该活动所有商品
-            List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityGoodsByActivityId(activityId);
-            secActivityInfoMap.put("afSeckillActivityGoodsDtos",afSeckillActivityGoodsDtos);
-            activityList.add(secActivityInfoMap);
-        }
-        return activityList;
     }
 }
