@@ -144,7 +144,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getByCategoryId" resultType="com.ald.fanbei.admin.dal.domain.AfCategoryOprationDo">
+    <select id="getByCategoryId" resultType="com.ald.fanbei.api.dal.domain.AfCategoryOprationDo">
     	select 
     	<include refid="queryFields"/>
     	from af_category_opration where category_id =#{cateGoryId ,jdbcType=BIGINT} and is_delete = 0 and status = 1
