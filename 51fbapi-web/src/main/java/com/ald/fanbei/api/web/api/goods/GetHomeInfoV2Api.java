@@ -10,20 +10,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfActivityService;
-import com.ald.fanbei.api.biz.service.AfCategoryService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfModelH5Service;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -36,13 +28,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -95,7 +80,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	Cache scheduledCache;
 	@Resource
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
-
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -329,8 +315,27 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			// 第一个类目下查询商品
 			List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
 			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			//判断商品是否处于活动中
+			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+			List<Long> goodsIdList = new ArrayList<>();
+			for (AfGoodsDo goodsDo : goodsDoList) {
+				goodsIdList.add(goodsDo.getRid());
+			}
+			if(goodsIdList!=null&&goodsIdList.size()>0){
+				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+			}
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+							goodsDo.setRebateAmount(secKillRebAmount);
+						}
+						break;
+					}
+				}
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
@@ -412,8 +417,27 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				goodsDoList = afGoodsService.getGoodsByItem(categoryId);
 			}
 			List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
+			//判断商品是否处于活动中
+			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+			List<Long> goodsIdList = new ArrayList<>();
+			for (AfGoodsDo goodsDo : goodsDoList) {
+				goodsIdList.add(goodsDo.getRid());
+			}
+			if(goodsIdList!=null&&goodsIdList.size()>0){
+				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+			}
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+					if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+						goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+						BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+						if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+							goodsDo.setRebateAmount(secKillRebAmount);
+						}
+						break;
+					}
+				}
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
