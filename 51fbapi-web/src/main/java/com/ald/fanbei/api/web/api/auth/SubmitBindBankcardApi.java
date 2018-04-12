@@ -94,9 +94,6 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
 					afUserAccountService.updateUserAccount(userAccForUpdate);
 				}
-                //设置用户绑卡状态
-                userAuthUpdate.setBankcardStatus("Y");
-                afUserAuthService.updateUserAuth(userAuthUpdate);
 				// 设置卡状态为可用
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
