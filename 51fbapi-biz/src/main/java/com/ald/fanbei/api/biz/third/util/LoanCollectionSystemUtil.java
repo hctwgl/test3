@@ -82,7 +82,6 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                 String repayNo = obj.getString("repay_no");
                 String loanNo = obj.getString("loan_no");
                 String repayType = obj.getString("repay_type");
-                String repayTime = obj.getString("repay_time");
                 String repayAmount = obj.getString("repay_amount");
                 String restAmount = obj.getString("rest_amount");
                 String repayCardNum = obj.getString("repay_cardNum");
@@ -93,13 +92,13 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                 Long repaymentId = NumberUtil.objToLongDefault("repayment_id",0l);
                 boolean isAllRepay = obj.getBoolean("is_all_repay");
 
-                if (StringUtil.isAllNotEmpty(repayNo, loanNo, repayType, repayTime, repayAmount, tradeNo)) {
+                if (StringUtil.isAllNotEmpty(repayNo, loanNo, repayType, repayAmount, tradeNo)) {
                     AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
                     if (loanDo == null) {
                         notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS);
                         return notifyRespBo;
                     }
-                    afLoanRepaymentService.offlineRepay(loanDo, loanNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin, isAllRepay,repaymentId);
+                    afLoanRepaymentService.offlineRepay(loanDo, loanNo, repayType, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin, isAllRepay,repaymentId);
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SUCCESS);
                 } else {
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);

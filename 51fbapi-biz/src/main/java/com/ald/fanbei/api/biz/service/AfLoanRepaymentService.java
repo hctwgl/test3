@@ -22,7 +22,7 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	void repay(LoanRepayBo bo);
 	
 	void offlineRepay(AfLoanDo loanDo, String loanNo, 
-			String repayType, String repayTime, String repayAmount,
+			String repayType, String repayAmount,
 			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin,boolean isAllRepay,Long repaymentId);
 
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
