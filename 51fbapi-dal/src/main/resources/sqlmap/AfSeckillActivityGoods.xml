@@ -264,4 +264,66 @@
         AND a.activity_id=#{activityId}
         GROUP BY a.goods_id
     </select>
+    
+    <select id="getActivityGoodsByActName" resultType="AfActGoodsDto">
+        SELECT
+        a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
+        g.price_amount,g.sale_amount,g.rebate_amount,g.rebate_rate,g.remark,g.source
+        FROM af_seckill_activity_goods a LEFT JOIN af_goods g ON (a.goods_id=g.id)
+        LEFT JOIN af_goods_price b ON (a.price_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND a.special_price>0
+        AND g.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+        <if test="items != null and items != ''">
+            AND a.goods_id IN
+            <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND a.activity_id=#{activityId}
+        GROUP BY a.goods_id
+    </select>
+    
+    <select id="getHomePageSecKillGoods" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods"
+    		parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery">
+	    SELECT
+			min(a.special_price) activityAmount,
+			a.goods_id,
+			a.limit_count as total,
+			g.`name` as goodName,
+			g.goods_icon as goodsIcon,
+			g.thumbnail_icon,
+			g.goods_url as goodsUrl,
+			g.price_amount,
+			g.sale_amount,
+			g.rebate_amount,
+			g.rebate_rate,
+			g.remark,
+			IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
+			IF(s.id is null ,0,1) as subscribe,
+			c.interest_free_id
+		FROM
+			af_seckill_activity y
+		JOIN af_seckill_activity_goods a ON y.id = a.activity_id
+		LEFT JOIN af_goods g ON (a.goods_id = g.id)
+		LEFT JOIN af_goods_price b ON (a.price_id = b.id)
+		LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
+		LEFT JOIN af_User_Goods_Sms s on s.goods_id = g.id 
+			<if test="userId != null">
+				and s.user_id = #{userId}
+			</if>
+		LEFT JOIN af_scheme_goods c on g.id = c.goods_id
+		WHERE
+			a.is_delete = 0
+		AND y.is_delete = 0
+		AND g.is_delete = 0
+		AND b.is_delete = 0
+		AND b.is_sale = 'Y'
+		AND a.type = 2
+		AND a.special_price > 0
+		AND y.`name` = #{activityName}
+		AND y.gmt_end >= #{dateStart}
+		AND y.gmt_start <![CDATA[<=]]> #{dateEnd}
+		GROUP BY a.goods_id
+		order by a.sort DESC
+    </select>
 </mapper>

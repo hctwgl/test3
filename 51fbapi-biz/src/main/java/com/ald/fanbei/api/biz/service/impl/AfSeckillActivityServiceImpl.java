@@ -2,18 +2,26 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -142,5 +150,19 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId) {
 		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIdsAndActId(goodsIdList,activityId);
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo) {
+	    
+	    Date activityDate = DateUtil.addDays(new Date(), activityDay);
+	    HomePageSecKillQuery homePageSecKillQuery = new HomePageSecKillQuery();
+	    homePageSecKillQuery.setActivityName(activityName);
+	    homePageSecKillQuery.setDateStart(DateUtil.getStartOfDate(activityDate));
+	    homePageSecKillQuery.setDateEnd(DateUtil.getEndOfDate(activityDate));
+	    homePageSecKillQuery.setUserId(userId);
+	    homePageSecKillQuery.setPageNo(pageNo);
+	    
+	    return afSeckillActivityGoodsDao.getHomePageSecKillGoods(homePageSecKillQuery);
 	}
 }
