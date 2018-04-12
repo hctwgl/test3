@@ -245,7 +245,7 @@ public class VisualH5Controller extends BaseController {
                 for (int j = 0; j < value.size(); j++) {
                     JSONObject item = value.getJSONObject(j);
                     if (item.getString("categorynName").equals(categorynName)) {
-                        selectIds = StringUtil.splitToList(item.getString("skuId"), ",");
+                        selectIds = StringUtil.splitToList(item.getString("goodsId"), ",");
                     }
                 }
             }
