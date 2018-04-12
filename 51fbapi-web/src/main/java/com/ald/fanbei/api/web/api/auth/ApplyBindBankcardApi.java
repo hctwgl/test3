@@ -60,7 +60,7 @@ public class ApplyBindBankcardApi implements ApiHandle {
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
 		}
 		
-		if(param.realname == null) {
+		if(param.idNumber == null) {
 			AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
 			param.realname = userAccount.getRealName();
 			param.idNumber = userAccount.getIdNumber();

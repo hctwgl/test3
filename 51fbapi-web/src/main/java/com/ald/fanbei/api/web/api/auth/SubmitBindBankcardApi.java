@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -66,7 +68,7 @@ public class SubmitBindBankcardApi implements ApiHandle {
 			public Integer doInTransaction(TransactionStatus status) {
 				AfUserAccountDo userAccDB = afUserAccountService.getUserAccountByUserId(context.getUserId());
 				AfUserAccountDo userAccForUpdate = new AfUserAccountDo();
-				
+                AfUserAuthDo userAuthUpdate=new AfUserAuthDo();
 				if(userAccDB.getPassword() == null) { //支付密码为空，则此次请求需设置支付密码
 					if(StringUtils.isEmpty(param.payPwd)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_PAY_PWD_MISS);
@@ -79,23 +81,26 @@ public class SubmitBindBankcardApi implements ApiHandle {
 					}
 				}
 				
-				if(userAccDB.getRealName() == null) { //真实姓名为空，则此次请求需存入身份证信息
-					if(StringUtils.isEmpty(param.realName)) {
+				if(userAccDB.getIdNumber()==null) { //真实姓名为空，则此次请求需存入身份证信息
+					if(StringUtils.isEmpty(param.realname)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_REALINFO_MISS);
 					} else {
 						userAccForUpdate.setUserId(context.getUserId());
-						userAccForUpdate.setRealName(param.realName);
+						userAccForUpdate.setRealName(param.realname);
 						userAccForUpdate.setIdNumber(param.idNumber);
 					}
 				}
-				
+				userAccForUpdate.setBindCard("Y");
 				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
 					afUserAccountService.updateUserAccount(userAccForUpdate);
 				}
-				
+                //设置用户绑卡状态
+                userAuthUpdate.setBankcardStatus("Y");
+                afUserAuthService.updateUserAuth(userAuthUpdate);
 				// 设置卡状态为可用
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
+
 				
 				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
