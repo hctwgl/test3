@@ -17,6 +17,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.vo.afu.Data;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -142,6 +143,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     couponDto.setUserAlready(pickCount);
                 }
             }
+            jsonObj.put("nowDate",new Data());
             jsonObj.put("couponList", couponList);
 
             //jsonObj.put("notifyUrl", notifyUrl);
@@ -184,14 +186,14 @@ public class AppH5EnjoyLifeController extends BaseController {
             String subjectName  = parentSubjectDo.getName();
             jsonObj.put("modelName", subjectName); // 主会场名称
             //测试并发
-            int threadCount = 1;
+            /*int threadCount = 1;
             final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
             for (int i = 0; i < threadCount; i++) {
 
                 //Runnable process = new SecKillOrder(afGoodsService,afSeckillActivityService,afGoodsPriceService);
                 new Thread() {
                     public void run() {
-                        try {
+                        try {*/
                             List<Map> activityList = new ArrayList<Map>();
 
                             String cacheKey = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST.getCode();
@@ -218,18 +220,18 @@ public class AppH5EnjoyLifeController extends BaseController {
                                 bizCacheUtil.saveListByTime(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList, 1*60);
                                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityList);
                             }
-                        } catch (Exception e) {
+                        /*} catch (Exception e) {
                             e.printStackTrace();
                         }
                     };
                 }.start();
                 countDownLatch.countDown();
                 System.out.println(countDownLatch.getCount());
-            }
+            }*/
 
 
 
-            //jsonObj.put("activityPartList", activityList);
+            jsonObj.put("activityPartList", activityList);
             resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
         }catch(FanbeiException e){
             resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
