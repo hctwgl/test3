@@ -60,7 +60,8 @@ public class SubmitBindBankcardApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, final FanbeiContext context, final HttpServletRequest request) {
 		final SubmitBindBankcardParam param = (SubmitBindBankcardParam) requestDataVo.getParamObj();
 		
-        transactionTemplate.execute(new TransactionCallback<Integer>() {
+		final AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(param.bankCardId);
+		int res = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				AfUserAccountDo userAccDB = afUserAccountService.getUserAccountByUserId(context.getUserId());
@@ -93,18 +94,24 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				}
 				
 				// 设置卡状态为可用
-				AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(param.bankCardId);
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
 				
 				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
-					throw new FanbeiException(FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
+					status.setRollbackOnly();
+					return 1000; //UPS绑卡失败
 				}
 				
-				return 1;
+				return 1; //仅当返回1 才操作成功
 			}
 		});
+        
+        if(res == 1000) {
+        	bank.setStatus(BankcardStatus.UNBIND.getCode());
+			afUserBankcardService.updateUserBankcard(bank);
+			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+        }
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		return resp;

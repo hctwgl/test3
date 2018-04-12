@@ -58,10 +58,10 @@ public class AuthTest  extends BaseTest{
 	public void submitBindBankcard() {
 		String url = urlBase + "/auth/submitBindBankcard";
 		Map<String,String> params = new HashMap<>();
-		params.put("bankCardId", "65656565");
+		params.put("bankCardId", "3111202");
 		params.put("payPwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
 		params.put("realname", "胡潮永");
-		params.put("idNumber", "3203265648764614");
+		params.put("idNumber", "330624198509136450");
 		params.put("smsCode", "65888");
 		
 		testApi(url, params, userName, true);
