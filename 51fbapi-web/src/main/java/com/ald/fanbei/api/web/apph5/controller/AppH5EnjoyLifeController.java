@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.ActivityGoodsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -15,6 +16,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.vo.afu.Data;
@@ -94,7 +96,8 @@ public class AppH5EnjoyLifeController extends BaseController {
     AfSeckillActivityService afSeckillActivityService;
 
     ExecutorService pool = Executors.newFixedThreadPool(1);
-
+    @Resource
+    ActivityGoodsUtil activityGoodsUtil;
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -160,14 +163,18 @@ public class AppH5EnjoyLifeController extends BaseController {
             AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
             jsonObj.put("userAccountInfo", userAccountInfo);
             //活动信息
-            List<Map> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+            List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             if(activityInfoList == null) {
                 // redis取不到，则从一级缓存获取
-                activityInfoList = (List<Map>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+                activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             }
             if(activityInfoList == null) {
                 // 一级缓存获取不到，则从数据库获取
-                activityInfoList = getActivityList();
+                //activityInfoList = getActivityList();
+                AfSeckillActivityQuery query = new AfSeckillActivityQuery();
+                query.setName("乐享生活节");
+                query.setGmtStart();
+                activityInfoList = activityGoodsUtil.getActivityGoods(query);
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
             }
@@ -334,7 +341,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                 }
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid());
+                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
                 if(nperList!= null){
                     activityGoodsInfo.put("goodsType", "1");
@@ -481,8 +488,7 @@ class GetActivityListThread implements Runnable {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid());
-
+                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
                         Map nperMap = nperList.get(nperList.size() - 1);
