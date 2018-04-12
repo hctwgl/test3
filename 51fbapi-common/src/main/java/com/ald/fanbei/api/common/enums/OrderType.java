@@ -23,6 +23,7 @@ public enum OrderType {
 	SELFSUPPORTCP("SELFSUPPORTCP", "自营商品订单组合","SG_CP"),
 	SELFBUILD("SELFBUILD", "自建商品订单", "SB"),
     TRADE("TRADE", "商圈订单", "TR"),
+    LEASE("LEASE", "租赁商品订单","LE"),
 	
 	LEGAL("LEGAL", "借钱搭售商品订单","LG");
     private String code;

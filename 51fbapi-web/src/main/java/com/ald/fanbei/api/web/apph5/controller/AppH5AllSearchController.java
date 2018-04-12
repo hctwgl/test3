@@ -12,16 +12,14 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserSearchService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -33,10 +31,6 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -78,6 +72,8 @@ public class AppH5AllSearchController extends BaseController {
 	@Resource
 	AfUserService afUserService;
 
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 	@RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
 	public String get(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
@@ -136,9 +132,16 @@ public class AppH5AllSearchController extends BaseController {
 			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
 			int totalCount = query.getTotalCount();
 			int totalPage = query.getTotalPage();
-
+			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+			List<Long> goodsIdList = new ArrayList<>();
 			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
-				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
+				goodsIdList.add(goodsDo.getRid());
+			}
+			if(goodsIdList!=null&&goodsIdList.size()>0){
+				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+			}
+			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo,activityGoodsDos);
 				goodsList.add(vo);
 			}
 			data.put("goodsList", goodsList);
@@ -156,9 +159,19 @@ public class AppH5AllSearchController extends BaseController {
 		return result;
 	}
 
-	private AfSearchGoodsVo convertFromSelfToVo(AfGoodsDo goodsDo) {
+	private AfSearchGoodsVo convertFromSelfToVo(AfGoodsDo goodsDo,List<AfSeckillActivityGoodsDo> activityGoodsDos) {
 		AfSearchGoodsVo goodsVo = new AfSearchGoodsVo();
 		if (goodsDo != null) {
+			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+				if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+					goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+					if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDo.setRebateAmount(secKillRebAmount);
+					}
+					break;
+				}
+			}
 			goodsVo.setGoodsIcon(goodsDo.getGoodsIcon());
 			goodsVo.setGoodsName(goodsDo.getName());
 			goodsVo.setGoodsUrl(goodsDo.getGoodsUrl());

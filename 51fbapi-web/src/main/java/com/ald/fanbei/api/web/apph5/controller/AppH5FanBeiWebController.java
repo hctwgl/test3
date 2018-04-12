@@ -948,6 +948,7 @@ public class AppH5FanBeiWebController extends BaseController {
 					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="
 							+ MobileStatus.WAIT.getCode() + "userId=" + afUserDo.getRid());
 				}
+				processResult = true;
 			} else if (MoXieResCodeType.FIFTY.getCode().equals(mxcode)) {
 				// 三方不经过强风控，直接通过backUrl返回api告知用户认证失败
 				authDo.setMobileStatus(MobileStatus.NO.getCode());

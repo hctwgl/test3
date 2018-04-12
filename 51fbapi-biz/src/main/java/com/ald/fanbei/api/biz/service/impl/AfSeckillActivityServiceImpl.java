@@ -5,7 +5,9 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -125,6 +127,21 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId) {
 		return afSeckillActivityDao.getStartActivityByGoodsId(goodsId);
+	}
+
+	@Override
+	public List<AfSeckillActivityGoodsDo> getActivityGoodsByGoodsIds(List<Long> goodsIdList) {
+		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIds(goodsIdList);
+	}
+
+	@Override
+	public List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query) {
+		return afSeckillActivityDao.getActivityList(query);
+	}
+
+	@Override
+	public List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityGoodsByGoodsIdsAndActId(goodsIdList,activityId);
 	}
 
 	@Override

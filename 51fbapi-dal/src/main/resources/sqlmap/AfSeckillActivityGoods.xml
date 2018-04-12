@@ -232,6 +232,39 @@
         AND a.goods_id=#{goodsId} AND b.id=#{activityId}
     </select>
 
+    <select id="getActivityGoodsByGoodsIds" resultType="AfSeckillActivityGoodsDo">
+        SELECT
+        a.id rid,min(a.special_price) special_price,a.goods_id
+        FROM af_seckill_activity_goods a LEFT JOIN af_seckill_activity c ON (a.activity_id=c.id)
+        LEFT JOIN af_goods_price b ON (a.price_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND a.special_price>0
+        AND c.is_delete=0 AND c.is_disable=0 AND b.is_delete=0 AND b.is_sale='Y'
+        AND a.goods_id IN
+        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND c.gmt_pstart <![CDATA[<=]]> now() AND c.gmt_end <![CDATA[>=]]> now()
+        GROUP BY a.goods_id
+    </select>
+
+    <select id="getActivityGoodsByGoodsIdsAndActId" resultType="AfActGoodsDto">
+        SELECT
+        a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
+        g.price_amount,g.sale_amount,g.rebate_amount,g.rebate_rate,g.remark,g.source
+        FROM af_seckill_activity_goods a LEFT JOIN af_goods g ON (a.goods_id=g.id)
+        LEFT JOIN af_goods_price b ON (a.price_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND a.special_price>0
+        AND g.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+        <if test="items != null and items != ''">
+            AND a.goods_id IN
+            <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND a.activity_id=#{activityId}
+        GROUP BY a.goods_id
+    </select>
+
     <select id="getActivityGoodsByActivityId" resultType="AfSeckillActivityGoodsDto">
         SELECT
         a.id rid,min(a.special_price) special_price,a.limit_count,a.goods_id,a.price_id,b.name goodsName

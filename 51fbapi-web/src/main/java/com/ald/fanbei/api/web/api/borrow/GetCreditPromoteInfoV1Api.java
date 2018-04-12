@@ -46,13 +46,13 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(!authDo.getZmStatus().equals("Y")){
-			authDo.setZmScore(0);
-			authDo.setZmStatus("Y");
-			authDo.setGmtZm(new Date());
-			authDo.setIvsScore(0);
-			authDo.setIvsStatus("Y");
-			authDo.setGmtIvs(new Date());
-			afUserAuthService.updateUserAuth(authDo);
+//			authDo.setZmScore(0);
+//			authDo.setZmStatus("Y");
+//			authDo.setGmtZm(new Date());
+//			authDo.setIvsScore(0);
+//			authDo.setIvsStatus("Y");
+//			authDo.setGmtIvs(new Date());
+//			afUserAuthService.updateUserAuth(authDo);
 		}
 		Map<String, Object> data = afUserAuthService.getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion(),scene);
 		resp.setResponseData(data);

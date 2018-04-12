@@ -6,12 +6,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataData;
@@ -39,6 +35,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
@@ -59,19 +56,6 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAuthContactsService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfContactsOldService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.biz.service.RiskTrackerService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
@@ -165,13 +149,17 @@ public class TestController {
     AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
+    @Resource
+    JdbcTemplate loanJdbcTemplate;
+
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
     private KafkaSync kafkaSync;
-
+    @Autowired
+    private AppOpenLogService appOpenLogService;
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
@@ -262,6 +250,30 @@ public class TestController {
             logger.error("compensate error:", e);
         }
         return "调用处理中^";
+    }
+
+    @RequestMapping("/loanTest")
+    @ResponseBody
+    public String loanTest() {
+        try{
+            Thread.sleep(50000);
+        }catch (Exception e){
+
+        }
+
+       Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+"13165995223"+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
+        return String.valueOf(data) ;
+
+    }
+    @RequestMapping("/kafkaTest")
+    @ResponseBody
+    public String kafkaTest() {
+       kafkaSync.syncEvent(13989455786l,"sync_directory",true);
+        kafkaSync.syncEvent(18637963069l,"sync_directory",true);
+        kafkaSync.syncEvent(18637963176l,"sync_directory",true);
+
+        return "调用处理中^";
+
     }
 
     @RequestMapping("/cuishou")
@@ -392,6 +404,26 @@ public class TestController {
 
         return reqResult;*/
 	    return "fail";
+    }
+    public void testTrans(){
+        transactionTemplate.execute(new TransactionCallback<String>() {
+
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                AppOpenLogDo appOpenLogDo=new AppOpenLogDo();
+                appOpenLogDo.setUuid("test");
+                appOpenLogDo.setAppVersion("403");
+                appOpenLogDo.setGmtCreate(new Date());
+                appOpenLogDo.setPhoneType("ios");
+                appOpenLogDo.setUserName("renchunlei");
+                appOpenLogService.saveRecord(appOpenLogDo);
+                AppOpenLogDo query=new AppOpenLogDo();
+                query.setAppVersion("403");
+                List<AppOpenLogDo> appOpenLogDos= appOpenLogService.getListByCommonCondition(query);
+
+                return "";
+            }
+        });
     }
     @RequestMapping("/address")
     @ResponseBody

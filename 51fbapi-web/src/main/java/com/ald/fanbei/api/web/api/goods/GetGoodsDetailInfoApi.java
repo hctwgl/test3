@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,9 +60,13 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
+	
+	@Resource
+	AfSchemeService afSchemeService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -119,7 +124,11 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 				Date gmtPStart = afSeckillActivityDo.getGmtPStart();
 				//返利金额
-				vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
+				BigDecimal secKillRebAmount = BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+				if(goods.getRebateAmount().compareTo(secKillRebAmount)>0){
+					vo.setRebateAmount(secKillRebAmount+"");
+				}
+				//vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
 				vo.setActivityId(activityId);
 				vo.setActivityType(afSeckillActivityDo.getType());
 				vo.setActivityName(afSeckillActivityDo.getName());
@@ -169,7 +178,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setSpecialPrice(BigDecimal.ZERO);
 		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
+				saleAmount, resource.getValue1(), resource.getValue2(),goodsId,"0");
 
 		if(nperList!= null){
 			Map nperMap = nperList.get(nperList.size() - 1);
@@ -179,6 +188,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
+		
+
 		resp.setResponseData(vo);
 		return resp;
 	}

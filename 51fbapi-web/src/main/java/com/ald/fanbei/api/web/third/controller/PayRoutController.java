@@ -15,8 +15,13 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
+import com.ald.fanbei.api.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,11 +69,6 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBankDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
@@ -142,7 +142,8 @@ public class PayRoutController {
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
 	@Resource
 	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-
+	@Resource
+	ContractPdfThreadPool contractPdfThreadPool;
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
 
@@ -186,6 +187,9 @@ public class PayRoutController {
 
 	@Resource
 	private AfBorrowExtendDao afBorrowExtendDao;
+
+	@Autowired
+	KafkaSync kafkaSync;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -313,7 +317,7 @@ public class PayRoutController {
 					afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
-				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
                     AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
                     afSupDo.setRid(result);
                     afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
@@ -406,7 +410,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
 					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId,false);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
-						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach) || PayOrderSource.LEASE_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, transactionId, PayType.WECHAT.getCode());
 				} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
 					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, transactionId);
@@ -419,7 +423,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId, "");
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
-						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach) || PayOrderSource.LEASE_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
 				}
 			}
@@ -455,8 +459,11 @@ public class PayRoutController {
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
 					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
-						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
+					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+					if (result <= 0) {
+						return "ERROR";
+					}
 				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
 					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
 							PayType.COMBINATION_PAY.getCode());
@@ -505,7 +512,7 @@ public class PayRoutController {
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
 					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
-						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
 					if (result <= 0) {
 						return "ERROR";
@@ -899,7 +906,8 @@ public class PayRoutController {
 					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
 				}
 			}
-
+			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
 
 //			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
 //
@@ -918,7 +926,15 @@ public class PayRoutController {
 			orderDoUpdate.setGmtFinished(new Date());
 			orderDoUpdate.setLogisticsInfo("已签收");
 			afOrderService.updateOrder(orderDoUpdate);
-
+			if(afOrder.getOrderType().equals(OrderType.LEASE.getCode())){
+				Date today = new Date();
+				Date gmtStart = DateUtil.addDays(today,1);
+				Date gmtEnd = DateUtil.addMonths(gmtStart,afOrder.getNper() + 1);
+				afOrderDao.UpdateOrderLeaseTime(gmtStart,gmtEnd,afOrder.getRid());
+				//生成pdf
+				Map<String,Object> leaseData = afOrderService.getLeaseProtocol(orderId);
+				contractPdfThreadPool.LeaseProtocolPdf(leaseData,afOrder.getUserId(),orderId);
+			}
 			return "success";
 		}
 		catch (Exception e){

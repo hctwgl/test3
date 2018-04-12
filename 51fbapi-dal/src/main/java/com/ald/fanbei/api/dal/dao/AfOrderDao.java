@@ -5,13 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 
-
-
-import com.ald.fanbei.api.dal.domain.dto.AfOrderSceneAmountDto;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -244,6 +241,79 @@ public interface AfOrderDao {
 
 	List<AfOrderSceneAmountDto> getSceneAmountByOrderId(@Param("orderId")Long orderId);
 
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	HashMap checkLeaseOrder(@Param("userId")Long userId ,@Param("goodsId") Long goodsId);
+
+	/**
+	 * 添加租赁订单
+	 * @return
+	 */
+	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	AfOrderLeaseDo getOrderLeaseByOrderId(@Param("orderId")Long orderId);
+
+	/**
+	 * 支付时修改订单押金金额
+	 * @return
+	 */
+	int updateOrderLeaseByPay(@Param("cashDeposit")BigDecimal cashDeposit,@Param("quotadeposit")BigDecimal quotadeposit,@Param("id")Long id);
+
+	/**
+	 * 关闭订单
+	 * @return
+	 */
+	int closeOrder(@Param("closedReason")String closedReason,@Param("closedDetail")String closedDetail,@Param("id")Long id,@Param("userId")Long userId);
+
+	/**
+	 * 修改租赁订单返利
+	 * @return
+	 */
+	int rebateOrderLease(@Param("orderId")Long orderId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	LeaseOrderDto getAllOrderLeaseByOrderId(@Param("orderId")Long orderId,@Param("userId")Long userId);
+
+	/**
+	 * 查询所有租赁订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeaseList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize,@Param("userId")Long userId);
+
+	/**
+	 * 查询租赁中订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeasingList(@Param("pageIndex")Long pageIndex,@Param("pageSize")Long pageSize,@Param("userId")Long userId);
+
+	/**
+	 * 修改租赁订单租期开始时间和结束时间
+	 * @return
+	 */
+	int UpdateOrderLeaseTime(@Param("gmtStart")Date gmtStart,@Param("gmtEnd")Date gmtEnd, @Param("orderId")Long orderId);
+
+	/**
+	 * h5删除订单
+	 * @return
+	 */
+	int UpdateOrderLeaseShow(@Param("orderId")Long orderId,@Param("userId")Long userId);
 	String getTradeBusinessNameByOrderId(@Param("orderId")Long orderid);
 
+	void updateIagentStatusByOrderId(@Param("orderId")Long orderId, @Param("iagentStatus")String iagentStatus);
+	/**
+	 * 获取租赁协议
+	 * @return
+	 */
+	HashMap getLeaseProtocol(@Param("orderId") Long orderId);
+
+	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
 }

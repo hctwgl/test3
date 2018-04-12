@@ -30,8 +30,14 @@
 		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
 		(g.sale_amount-g.rebate_amount) real_amount,g.tags,g.goods_pic1,g.goods_pic2,g.goods_pic3,g.goods_pic4,g.goods_detail,g.remark
 	</sql>
-	
-	<select id="getGoodsById" resultType="AfGoodsDo">
+
+    <resultMap id="leaseResultMap" type="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
+		<id column="rid" property="rid" jdbcType="BIGINT" />
+        <collection select="getByGoodsId" property="goodsPrice" column="rid" ofType="AfGoodsPriceDo">
+        </collection>
+    </resultMap>
+
+    <select id="getGoodsById" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM
@@ -340,7 +346,7 @@
 	</select>
 
 
-	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">			
+	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">
 		select 
 				g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
 		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
@@ -380,7 +386,7 @@
 
 	<select id="getGoodsVerifyByCategoryId" resultType="AfGoodsDo">
 		select
-			g.source,g.rebate_amount,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
+			g.source,g.rebate_amount,g.rebate_rate,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
 		from af_goods_verify v,af_goods g
 		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
 		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH' order by v.gmt_create DESC
@@ -407,7 +413,62 @@
 		
 	</select>
 
-	<select id="">
+
+	<select id="getHomeLeaseGoods" resultMap="leaseResultMap">
+		SELECT
+			a.id rid,a.goods_icon,a.name
+		FROM
+		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
+		WHERE
+		a.is_delete = 0
+		AND b.is_sale = 'Y'
+		AND b.is_delete = 0
+		ORDER BY b.sort
+		LIMIT #{pageIndex},#{pageSize}
+	</select>
+
+	<select id="getLeaseGoodsByGoodsId" resultType="com.ald.fanbei.api.dal.domain.dto.LeaseGoods">
+		SELECT
+		<include refid="queryAllFields"/>,b.is_sale,b.buyout
+		FROM
+		af_goods_lease b LEFT JOIN af_goods a on b.goods_id = a.id
+		WHERE
+		a.is_delete = 0
+		AND b.is_sale = 'Y'
+		AND b.is_delete = 0
+		AND b.goods_id=#{goodsId}
+	</select>
+
+	<select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
+		SELECT
+		lease_param,lease_amount
+		from af_goods_price
+		WHERE goods_id=#{rid}
+	</select>
+
+	<select id="getGoodsListByGoodsId" resultType="AfGoodsDo">
+		<foreach collection="list" item="item" separator="UNION ALL" >
+			SELECT
+			<include refid="queryFields"/>
+			FROM
+			af_goods
+			WHERE is_delete = 0
+			AND status = 'PUBLISH'
+			AND id = #{item}
+		</foreach>
+	</select>
+
+	<select id="getGoodsDoByGoodsId" resultType="AfActivityGoodsDto">
+		SELECT
+			g.id rid,g.name,g.goods_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
+			g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
+			(g.sale_amount-g.rebate_amount) real_amount,g.goods_detail,sum(p.sale_count) count
+		FROM
+		af_goods g
+		LEFT JOIN af_goods_price p ON p.is_delete = 0 AND p.is_sale = 'Y' AND p.goods_id = g.id
+		where g.is_delete = 0
+		AND g.status = 'PUBLISH'
+		AND g.id in (#{goodsId})
 
 	</select>
 

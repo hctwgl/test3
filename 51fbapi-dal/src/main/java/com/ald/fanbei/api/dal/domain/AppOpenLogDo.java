@@ -41,7 +41,10 @@ import java.math.BigDecimal;
      */
     private String userName;
 
-
+    /**
+     * 设备指纹
+     */
+    private String uuid;
     /**
      * 获取主键Id
      *
@@ -54,7 +57,7 @@ import java.math.BigDecimal;
     /**
      * 设置主键Id
      * 
-     * @param 要设置的主键Id
+     * @param rid
      */
     public void setRid(Long rid){
       this.rid = rid;
@@ -132,4 +135,11 @@ import java.math.BigDecimal;
       this.userName = userName;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

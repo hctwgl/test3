@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
+import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -21,6 +24,8 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
     AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId);
 
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
 
     List<AfSeckillActivityDo> getActivityNow();
 }
