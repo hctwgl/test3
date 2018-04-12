@@ -173,8 +173,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	@Resource
 	AfUserService afUserService;
 	@Resource
-	AfBorrowCashDo afBorrowCashDo;
-	@Resource
 	AfLoanService afLoanService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
@@ -241,7 +239,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
-					&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
+					&&(StringUtil.equals(loanDo.getAppName(), "www")||StringUtil.equals(loanDo.getAppName(), ""))
 					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 					List<EdspayGetCreditRespBo> whiteCollarBorrowInfo = assetSideEdspayUtil.buildWhiteCollarBorrowInfo(loanDo);
