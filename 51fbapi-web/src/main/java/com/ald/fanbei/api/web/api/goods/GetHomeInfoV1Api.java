@@ -122,7 +122,12 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				AfResourceDo zmConfigResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_RULE_CONFIG.getCode());
 				//芝麻信用重新启用的版本分界
 				Integer zmVersionDivision = NumberUtil.objToIntDefault(zmConfigResourceDo.getValue3(), 412);
-				if(appVersion >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && authDo.getZmScore()==0 ){
+				Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zmConfigResourceDo.getValue4());
+				if(zmReAuthDatetime==null){
+					//默认值处理
+					zmReAuthDatetime = DateUtil.getStartDate();
+				}
+				if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())) ){
 					//将数据存入缓存
 					bizCacheUtil.saveObject(Constants.ZM_AUTH_POP_GUIDE_CACHE_KEY+type+context.getUserId(), System.currentTimeMillis(), Constants.SECOND_OF_ONE_DAY);
 				}

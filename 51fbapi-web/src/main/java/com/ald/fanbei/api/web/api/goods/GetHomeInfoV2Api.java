@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
@@ -137,7 +139,12 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			AfResourceDo zmConfigResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_RULE_CONFIG.getCode());
 			//芝麻信用重新启用的版本分界
 			Integer zmVersionDivision = NumberUtil.objToIntDefault(zmConfigResourceDo.getValue3(), 412);
-			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && authDo.getZmScore()==0 ){
+			Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zmConfigResourceDo.getValue4());
+			if(zmReAuthDatetime==null){
+				//默认值处理
+				zmReAuthDatetime = DateUtil.getStartDate();
+			}
+			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())) ){
 				//将数据存入缓存
 				bizCacheUtil.saveObject(Constants.ZM_AUTH_POP_GUIDE_CACHE_KEY+envType+context.getUserId(), System.currentTimeMillis(), Constants.SECOND_OF_ONE_DAY);
 			}

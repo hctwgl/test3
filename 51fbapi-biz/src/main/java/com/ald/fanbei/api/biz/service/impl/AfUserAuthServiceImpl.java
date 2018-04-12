@@ -180,9 +180,13 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	zmModel.put("zmStatus", authDo.getZmStatus());
 	zmModel.put("zmScore", authDo.getZmScore());
 	zmModel.put("isShow", zhimaConfigResource.getValue());
-	
+	Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zhimaConfigResource.getValue4());
+	if(zmReAuthDatetime==null){
+		//默认值处理
+		zmReAuthDatetime = DateUtil.getStartDate();
+	}
 	if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && 
-			(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && authDo.getZmScore()==0) )) {
+			(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && authDo.getZmScore()==0) || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm()) )) {
 	    String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 	    AfResourceDo zhimaNewUrl = afResourceService.getSingleResourceBytype("zhimaNewUrl");
 
@@ -201,7 +205,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}else{
 		if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
 			zmModel.put("zmDesc", "未认证");
-		}else if(authDo.getZmScore()==0){
+		}else if(authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())){
 			zmModel.put("zmDesc", "重新认证");
 		}else{
 			zmModel.put("zmDesc", "已认证");
