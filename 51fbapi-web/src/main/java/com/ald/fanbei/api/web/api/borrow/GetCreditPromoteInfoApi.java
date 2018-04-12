@@ -126,7 +126,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 			zmReAuthDatetime = DateUtil.getStartDate();
 		}
 		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && 
-				(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && authDo.getZmScore()==0) || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm()) )) {
+				( StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm()))) )) {
             String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
             AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
 
@@ -140,13 +140,17 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}
 
 		//展示给用户的芝麻认证描述文案
-		if(NumberUtil.objToIntDefault(zmConfigResourceDo.getValue1(), 0)==1){
-			zmModel.put("zmDesc", authDo.getZmScore());
-		}else{
-			if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
-				zmModel.put("zmDesc", "未认证");
-			}else if(authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())){
+		if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
+			if(YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())){
 				zmModel.put("zmDesc", "重新认证");
+			}else{
+				zmModel.put("zmDesc", "未认证");
+			}
+		}else if(authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())){
+			zmModel.put("zmDesc", "重新认证");
+		}else{
+			if(NumberUtil.objToIntDefault(zmConfigResourceDo.getValue1(), 0)==1){
+				zmModel.put("zmDesc", authDo.getZmScore());
 			}else{
 				zmModel.put("zmDesc", "已认证");
 			}

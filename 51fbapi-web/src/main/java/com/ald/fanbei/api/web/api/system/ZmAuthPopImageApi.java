@@ -79,7 +79,9 @@ public class ZmAuthPopImageApi implements ApiHandle {
 				//默认值处理
 				zmReAuthDatetime = DateUtil.getStartDate();
 			}
-			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())) ){
+			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) 
+					&& (YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
+					&& (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())) ){
 				//指定版本后，弹窗打开，用户芝麻信用通过，且芝麻分为0并且芝麻认证对用户开放情况下，弹窗则有效
 				data.put("imageUrl", zmPopImageResourceDo.getValue());
 				String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
