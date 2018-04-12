@@ -193,7 +193,7 @@ public class RiskController {
 				return "SUCCESS";
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				return "ERROR";
+				return "FAIL";
 			}
 		} else {
 			return "ERROR";
@@ -220,7 +220,7 @@ public class RiskController {
 				return "SUCCESS";
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				return "ERROR";
+				return "FAIL";
 			}
 		} else {
 			return "ERROR";
@@ -247,7 +247,7 @@ public class RiskController {
 				return "SUCCESS";
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				return "ERROR";
+				return "FAIL";
 			}
 		} else {
 			return "ERROR";
@@ -273,7 +273,7 @@ public class RiskController {
 				return "SUCCESS";
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				return "ERROR";
+				return "FAIL";
 			}
 		} else {
 			return "ERROR";
