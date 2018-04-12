@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -33,17 +34,20 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.web.cache.Cache;
@@ -87,7 +91,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
-
+	@Resource
+	private AfUserAuthService afUserAuthService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
@@ -102,11 +107,28 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		contextApp = context;
 
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
-
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		Integer appVersion = context.getAppVersion();
 		try {
 			String userName = context.getUserName();
 			Long userId = context.getUserId();
+			
+			//如果当前用户已登录且芝麻弹窗引导为打开状态，则进行缓存处理 begin add by chengkang
+			if(userId!=null && userId>0){//当前时间戳
+				AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+				//芝麻信息认证启动页配置 val:弹窗图片地址  val2:打开开关Y/N val3:弹窗间隔时间ms
+				AfResourceDo zmPopImageResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_APP_POP_IMAGE.getCode());
+				//芝麻信息认证相关配置 val:开放开关Y/N val1:展示 0文字1数 val2:认证逻辑 Y严格认证 N默认通过val3:分界app版本
+				AfResourceDo zmConfigResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_RULE_CONFIG.getCode());
+				//芝麻信用重新启用的版本分界
+				Integer zmVersionDivision = NumberUtil.objToIntDefault(zmConfigResourceDo.getValue3(), 412);
+				if(appVersion >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) && YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && authDo.getZmScore()==0 ){
+					//将数据存入缓存
+					bizCacheUtil.saveObject(Constants.ZM_AUTH_POP_GUIDE_CACHE_KEY+type+context.getUserId(), System.currentTimeMillis(), Constants.SECOND_OF_ONE_DAY);
+				}
+			}
+			//如果当前用户已登录且芝麻弹窗引导为打开状态，则进行缓存处理 end add by chengkang
+			
 			if (userName != null && userId != null) {
 				// 获取后台配置的注册时间
 				String regTime = "";
@@ -212,7 +234,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "OLD");
-		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
