@@ -203,5 +203,12 @@
         FROM af_visual_h5_item
         <include refid="commonCondition"/> ORDER BY sort
     </select>
+
+    <select id="getCouponByVisualId" resultType="HashMap">
+        SELECT
+        value_4
+        FROM af_visual_h5_item
+        WHERE type = 'COUPON' AND visual_id=#{visualId}
+    </select>
     
 </mapper>

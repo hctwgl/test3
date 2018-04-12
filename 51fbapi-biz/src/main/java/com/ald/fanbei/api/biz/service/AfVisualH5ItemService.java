@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfVisualH5ItemDo;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * 可视化H5Service
  * 
@@ -12,4 +15,5 @@ import com.ald.fanbei.api.dal.domain.AfVisualH5ItemDo;
  */
 public interface AfVisualH5ItemService extends ParentService<AfVisualH5ItemDo, Long>{
 
+    List<HashMap> getCouponByVisualId(Long visualId);
 }

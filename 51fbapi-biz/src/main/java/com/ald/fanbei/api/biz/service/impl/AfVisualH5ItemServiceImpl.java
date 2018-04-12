@@ -10,6 +10,8 @@ import com.ald.fanbei.api.dal.dao.AfVisualH5ItemDao;
 import com.ald.fanbei.api.dal.domain.AfVisualH5ItemDo;
 import com.ald.fanbei.api.biz.service.AfVisualH5ItemService;
 
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -32,5 +34,10 @@ public class AfVisualH5ItemServiceImpl extends ParentServiceImpl<AfVisualH5ItemD
 		@Override
 	public BaseDao<AfVisualH5ItemDo, Long> getDao() {
 		return afVisualH5ItemDao;
+	}
+
+	@Override
+	public List<HashMap> getCouponByVisualId(Long visualId) {
+		return afVisualH5ItemDao.getCouponByVisualId(visualId);
 	}
 }

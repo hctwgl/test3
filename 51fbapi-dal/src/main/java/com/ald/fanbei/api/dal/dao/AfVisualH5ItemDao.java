@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfVisualH5ItemDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * 可视化H5Dao
@@ -12,6 +16,6 @@ import com.ald.fanbei.api.dal.domain.AfVisualH5ItemDo;
  */
 public interface AfVisualH5ItemDao extends BaseDao<AfVisualH5ItemDo, Long> {
 
-    
+    List<HashMap> getCouponByVisualId(@Param("visualId") Long visualId);
 
 }
