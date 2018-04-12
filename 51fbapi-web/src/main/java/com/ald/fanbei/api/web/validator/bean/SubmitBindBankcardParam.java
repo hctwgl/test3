@@ -15,7 +15,7 @@ public class SubmitBindBankcardParam {
 	public String lng;
 	
 	public String payPwd;
-	public String realName;
+	public String realname;
 	public String idNumber;
 	
 	@NotNull

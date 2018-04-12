@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -79,16 +80,16 @@ public class SubmitBindBankcardApi implements ApiHandle {
 					}
 				}
 				
-				if(userAccDB.getRealName() == null) { //真实姓名为空，则此次请求需存入身份证信息
-					if(StringUtils.isEmpty(param.realName)) {
+				if(userAccDB.getIdNumber()==null) { //真实姓名为空，则此次请求需存入身份证信息
+					if(StringUtils.isEmpty(param.realname)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_REALINFO_MISS);
 					} else {
 						userAccForUpdate.setUserId(context.getUserId());
-						userAccForUpdate.setRealName(param.realName);
+						userAccForUpdate.setRealName(param.realname);
 						userAccForUpdate.setIdNumber(param.idNumber);
 					}
 				}
-				
+				userAccForUpdate.setBindCard("Y");
 				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
 					afUserAccountService.updateUserAccount(userAccForUpdate);
 				}
