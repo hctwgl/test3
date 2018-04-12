@@ -14,7 +14,7 @@
 	</resultMap>
 
 	<select id="findGoodsByPageFlag" resultMap="BottomGoodsDtoRM">
-		SELECT g.id goods_id, g.goods_icon, g.name goods_name, g.sale_amount, bg.sort
+		SELECT g.id goods_id, g.goods_icon, g.name goods_name, g.sale_amount, bg.id, bg.sort
 		FROM af_bottom_goods bg, af_bottom_goods_page p, af_goods g
 		WHERE g.is_delete = 0 AND p.is_delete = 0 AND p.is_disable = 0
 			AND bg.page_id = p.id AND bg.goods_id = g.id AND p.page_flag = #{pageFlag}
