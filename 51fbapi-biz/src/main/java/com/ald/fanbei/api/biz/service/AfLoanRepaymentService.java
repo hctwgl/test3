@@ -27,7 +27,7 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 					  String restAmount, String outTradeNo, String isBalance, String repayCardNum, String operator, String isAdmin, boolean isAllRepay, Long repaymentId, List<HashMap> periodsList);
 
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
-	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator,Long collectionRepaymentId);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator,Long collectionRepaymentId,List<HashMap> periodsList);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	
