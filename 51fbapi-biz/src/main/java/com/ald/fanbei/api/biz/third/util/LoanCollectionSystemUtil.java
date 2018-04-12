@@ -11,7 +11,9 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -90,6 +92,7 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                 String isBalance = obj.getString("is_balance");
                 String isAdmin = obj.getString("is_admin");
                 Long repaymentId = NumberUtil.objToLongDefault("repayment_id",0l);
+                JSONArray array = obj.getJSONArray("");
                 boolean isAllRepay = obj.getBoolean("is_all_repay");
 
                 if (StringUtil.isAllNotEmpty(repayNo, loanNo, repayType, repayAmount, tradeNo)) {
@@ -104,15 +107,15 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
                 }
             } else {
-                logger.info("offlineRepaymentNotify sign is invalid", FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
+                logger.info("loanOfflineRepaymentNotify sign is invalid", FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
                 notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR);
             }
         } catch (FanbeiException e) {
-            logger.error("offlineRepaymentNotify fanbei error", e);
+            logger.error("loanOfflineRepaymentNotify fanbei error", e);
             notifyRespBo.setCode(e.getErrorCode().getCode());
             notifyRespBo.setMsg(e.getErrorCode().getErrorMsg());
         } catch (Exception e) {
-            logger.error("offlineRepaymentNotify error", e);
+            logger.error("loanOfflineRepaymentNotify error", e);
             notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SYSTEM_ERROR);
         } finally {
             notifyRespBo.setSign(DigestUtil.MD5(JsonUtil.toJSONString(notifyRespBo)));
