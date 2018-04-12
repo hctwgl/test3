@@ -744,7 +744,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	@Override
 	public void offlineRepay(AfLoanDo loanDo, String loanNo, 
 				String repayType, String repayAmount,
-				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String repayChannel,String isAdmin,boolean isAllRepay,Long repaymentId) {
+				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String repayChannel,String isAdmin,boolean isAllRepay,Long repaymentId,List<HashMap> periodsList) {
 		
 		LoanRepayBo bo = buildLoanRepayBo(loanDo, loanNo, repayType, repayAmount, restAmount, outTradeNo, isBalance, repayCardNum, repayChannel, isAdmin,repaymentId);
 		// TODO 分期信息

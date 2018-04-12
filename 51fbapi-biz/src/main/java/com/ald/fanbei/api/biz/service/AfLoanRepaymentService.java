@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
@@ -21,9 +22,9 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	
 	void repay(LoanRepayBo bo);
 	
-	void offlineRepay(AfLoanDo loanDo, String loanNo, 
-			String repayType, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin,boolean isAllRepay,Long repaymentId);
+	void offlineRepay(AfLoanDo loanDo, String loanNo,
+					  String repayType, String repayAmount,
+					  String restAmount, String outTradeNo, String isBalance, String repayCardNum, String operator, String isAdmin, boolean isAllRepay, Long repaymentId, List<HashMap> periodsList);
 
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
 	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator,Long collectionRepaymentId);

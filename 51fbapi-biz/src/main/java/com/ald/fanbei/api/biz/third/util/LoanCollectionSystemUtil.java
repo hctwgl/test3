@@ -18,6 +18,9 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,16 +95,21 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                 String isBalance = obj.getString("is_balance");
                 String isAdmin = obj.getString("is_admin");
                 Long repaymentId = NumberUtil.objToLongDefault("repayment_id",0l);
-                JSONArray array = obj.getJSONArray("");
+                JSONArray array = obj.getJSONArray("periods_list");
+                if (array == null || array.size() == 0){
+                    notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
+                    return notifyRespBo;
+                }
+                HashMap[] objects = (HashMap[]) array.toArray();
+                List<HashMap> periodsList = Arrays.asList(objects);
                 boolean isAllRepay = obj.getBoolean("is_all_repay");
-
                 if (StringUtil.isAllNotEmpty(repayNo, loanNo, repayType, repayAmount, tradeNo)) {
                     AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
                     if (loanDo == null) {
                         notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS);
                         return notifyRespBo;
                     }
-                    afLoanRepaymentService.offlineRepay(loanDo, loanNo, repayType, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin, isAllRepay,repaymentId);
+                    afLoanRepaymentService.offlineRepay(loanDo, loanNo, repayType, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin, isAllRepay,repaymentId,periodsList);
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.SUCCESS);
                 } else {
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
