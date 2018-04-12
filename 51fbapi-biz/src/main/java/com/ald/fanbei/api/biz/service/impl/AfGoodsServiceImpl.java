@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -18,6 +20,7 @@ import com.ald.fanbei.api.biz.bo.TaobaoItemInfoBo;
 import com.ald.fanbei.api.biz.bo.TaobaoResultBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
@@ -35,6 +38,8 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Resource
 	AfGoodsDao afGoodsDao;
+	@Resource
+	private BizCacheUtil bizCacheUtil;
 	@Override
 	public List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query) {
 		return afGoodsDao.getCateGoodsList(query);
@@ -213,7 +218,12 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 	@Override
 	public List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId) {
-		return afGoodsDao.getAllByBrandIdAndVolume(brandId);
+		List<AfGoodsDo> brandGoodsList = bizCacheUtil.getObjectList("VolumeTop5Goods" + brandId);
+		if (CollectionUtil.isEmpty(brandGoodsList)){
+			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
+			bizCacheUtil.saveObjectList("VolumeTop5Goods" + brandId, brandGoodsList);
+		}
+		return brandGoodsList;
 	}
 
 }
