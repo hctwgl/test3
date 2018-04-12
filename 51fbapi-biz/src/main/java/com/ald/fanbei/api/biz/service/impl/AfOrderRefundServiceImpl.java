@@ -206,7 +206,7 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 					
 					AfTradeSettleOrderDo afTradeSettleOrderDo = new AfTradeSettleOrderDo();
 	                afTradeSettleOrderDo.setOrderId(orderInfo.getRid());
-	                afTradeSettleOrderDo.setStatus(AfTradeSettleOrderStatus.CANCER.getCode());
+	                afTradeSettleOrderDo.setStatus(AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
 	                afTradeSettleOrderDo.setModifier("SYSTEM");
 	                afTradeSettleOrderDo.setGmtModified(new Date());
 	                afTradeSettleOrderService.updateSettleOrder(afTradeSettleOrderDo);
