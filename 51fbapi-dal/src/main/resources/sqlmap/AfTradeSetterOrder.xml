@@ -68,8 +68,7 @@
 	 			gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
 	 		</if>
 	 	</set>
-	 	where status = 'NOT_EXTRACTABLE'
-          AND order_id = #{orderId,jdbcType=BIGINT}
+	 	where order_id = #{orderId,jdbcType=BIGINT}
 	 </update>
 	
 </mapper>
