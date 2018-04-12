@@ -1527,8 +1527,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// 获取借款分期配置信息
 		AfResourceDo resource = null;
 		if (orderType.equals(OrderType.TRADE.getCode())) {
-			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-					Constants.RES_BORROW_TRADE);
+//			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+//					Constants.RES_BORROW_TRADE);
+			
+			AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId); 
+			Long businessId = afTradeOrderDo.getBusinessId();
+			List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
+			if(null != resourceList && !resourceList.isEmpty()){
+				String value3;
+				for(AfResourceDo afResourceDo: resourceList){
+					value3 = afResourceDo.getValue3();
+					if(StringUtils.equals(String.valueOf(businessId), value3)){
+						resource = afResourceDo;
+						break;
+					}
+				}
+			}
+			
+			// 各分期利率均为0
+			if(null == resource){
+				resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
+			}
 		} else {
 			// 获取借款分期配置信息
 			// 11.27加入用户专有利率
