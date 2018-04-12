@@ -181,6 +181,7 @@ public class Constants {
 	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
 	public static final String RES_BORROW_CASH_POUNDAGE_RATE = "RES_BORROW_CASH_POUNDAGE_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE_TIME = "RES_BORROW_CASH_POUNDAGE_TIME";
+	public static final String GOODS_DETAIL_RECYCLE_FLAG = "GOODS_DETAIL_RECYCLE_FLAG";
 
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";

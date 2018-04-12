@@ -184,7 +184,13 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
-		
+		AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
+		if (reflag != null){
+			String value3 = reflag.getValue3();
+			if (value3 != null&&value3.contains(goods.getBrandId()+"")){
+				vo.setIsShow(1);
+			}
+		}
 
 		resp.setResponseData(vo);
 		return resp;

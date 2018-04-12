@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 
 
 /**
@@ -20,5 +21,7 @@ public interface AfInterestFreeRulesService {
 	 * @return
 	 */
 	AfInterestFreeRulesDo getById(Long id);
+
+	AfInterestReduceSchemeDo getReduceSchemeByGoodId(long goodsId,long brandId,long catogeryId);
 	    
 }
