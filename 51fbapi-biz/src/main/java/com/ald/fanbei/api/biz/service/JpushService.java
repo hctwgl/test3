@@ -105,7 +105,13 @@ public interface JpushService {
 	 * @param date
 	 */
 	public void dealBorrowCashApplyFail(String userName, Date date);
-
+	/**
+	 * 【借钱申请失败提示】温馨提示
+	 *
+	 * @param userName
+	 * @param date
+	 */
+	public void dealBorrowCashApplyFailForKoudai(String userName, Date date,String content);
 	/**
 	 * 【续借成功提示】温馨提示
 	 * 
