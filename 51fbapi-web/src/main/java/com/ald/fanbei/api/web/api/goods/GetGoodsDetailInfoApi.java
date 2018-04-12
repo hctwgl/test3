@@ -206,23 +206,13 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		if (afInterestReduceSchemeDo != null){
 			vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
 			AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
-			if (afInterestReduceRulesDo != null){
-				BigDecimal nper1 = afInterestReduceRulesDo.getNper1();
-				BigDecimal nper2 = afInterestReduceRulesDo.getNper2();
-				BigDecimal nper3 = afInterestReduceRulesDo.getNper3();
-				BigDecimal nper6 = afInterestReduceRulesDo.getNper6();
-				BigDecimal nper9 = afInterestReduceRulesDo.getNper9();
-				BigDecimal nper12 = afInterestReduceRulesDo.getNper12();
-				Map<String,Object> temp = new HashMap<>();
-				temp.put("rate",nper1);
-				temp.put("rate",nper1);
-			}
+
 		}
 		vo.setInterestFreeDesc(freedesc);
 		resp.setResponseData(vo);
 		return resp;
 	}
-	
+
     private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
