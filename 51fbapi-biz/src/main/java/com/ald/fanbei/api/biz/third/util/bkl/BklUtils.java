@@ -54,7 +54,7 @@ public class BklUtils {
         map.put("access_token", ConfigProperties.get(Constants.CONFKEY_BKL_ACCESS_TOKEN));
         map.put("job_code", "51FB-SP01");
         map.put("order_id", bklDo.getCsvArn() + new Date().getTime());
-        String work_data = "{'csv_phone_num':'15868156133','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+bklDo.getCsvName()+"','csv_sex':'"+bklDo.getCsvSex()+
+        String work_data = "{'csv_phone_num':'"+bklDo.getCsvPhoneNum()+"','csv_arn':'"+bklDo.getCsvArn()+"','csv_name':'"+bklDo.getCsvName()+"','csv_sex':'"+bklDo.getCsvSex()+
                 "','csv_digit_4':"+bklDo.getCsvDigit4()+",'csv_birth_date':'"+bklDo.getCsvBirthDate()+"','csv_staging':"+bklDo.getCsvStaging()+
                 ",'csv_amt':"+bklDo.getCsvAmt()+",'csv_pay_way':'"+bklDo.getCsvPayWay()+"','csv_product_category':'"+bklDo.getCsvProductCategory()+"' }";
         Map dtt=null;
