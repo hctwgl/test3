@@ -4,11 +4,16 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
@@ -27,10 +32,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhourui on 2018年04月09日 10:50
@@ -69,6 +71,9 @@ public class VisualH5Controller extends BaseController {
 
     @Resource
     AfUserService afUserService;
+
+    @Resource
+    AfUserCouponDao afUserCouponDao;
 
     /**
      * 获取H5设置
@@ -154,15 +159,16 @@ public class VisualH5Controller extends BaseController {
             String value = afVisualH5ItemDo.getValue4();
             List<String> selectIds = new ArrayList<>();
             if (StringUtil.isNotBlank(value)) {
-                String[] skuIds = value.split(",");
-                Integer current = (pageIndex - 1) * pageSize;
-                if (current < skuIds.length) {
-                    for (int i = current; i < skuIds.length; i++) {
-                        if (i - current <= pageSize) {
-                            selectIds.add(skuIds[i]);
-                        }
-                    }
-                }
+                selectIds = StringUtil.splitToList(value, ",");
+//                String[] skuIds = value.split(",");
+//                Integer current = (pageIndex - 1) * pageSize;
+//                if (current < skuIds.length) {
+//                    for (int i = current; i < skuIds.length; i++) {
+//                        if (i - current <= pageSize) {
+//                            selectIds.add(skuIds[i]);
+//                        }
+//                    }
+//                }
             }
             List<HashMap> list = afGoodsService.getVisualGoodsByGoodsId(selectIds);
             for (HashMap goods : list) {
@@ -352,6 +358,80 @@ public class VisualH5Controller extends BaseController {
             }
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (Exception e) {
+            logger.error("changeUserAddress", e);
+            return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+        }
+    }
+
+    /**
+     * 领取优惠券
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/pickCoupon", method = RequestMethod.POST)
+    public String pickCoupon(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            FanbeiWebContext context = new FanbeiWebContext();
+            context = doWebCheck(request, true);
+            Map<String, Object> data = new HashMap<>();
+            Long couponId = NumberUtil.objToLongDefault(request.getParameter("couponId"), 0);
+            if (couponId <= 0) {
+                return H5CommonResponse.getNewInstance(false, "请求参数缺失", "", null).toString();
+            }
+            AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+            AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+            if (couponDo == null) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", null).toString();
+            }
+            Integer limitCount = couponDo.getLimitCount();
+            Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUser.getRid(),
+                    NumberUtil.objToLongDefault(couponId, 1l));
+            if (limitCount <= myCount) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null).toString();
+            }
+            Long totalCount = couponDo.getQuota();
+            if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", null).toString();
+            }
+            AfUserCouponDo userCoupon = new AfUserCouponDo();
+            userCoupon.setCouponId(couponId);
+            userCoupon.setGmtStart(new Date());
+            if (com.alibaba.druid.util.StringUtils.equals(couponDo.getExpiryType(), "R")) {
+                userCoupon.setGmtStart(couponDo.getGmtStart());
+                userCoupon.setGmtEnd(couponDo.getGmtEnd());
+                if (DateUtil.afterDay(new Date(), couponDo.getGmtEnd())) {
+                    userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+                }
+            } else {
+                userCoupon.setGmtStart(new Date());
+                if (couponDo.getValidDays() == -1) {
+                    userCoupon.setGmtEnd(DateUtil.getFinalDate());
+                } else {
+                    userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+                }
+            }
+            userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
+            userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+            userCoupon.setUserId(afUser.getRid());
+            afUserCouponDao.addUserCoupon(userCoupon);
+            AfCouponDo couponDoT = new AfCouponDo();
+            couponDoT.setRid(couponDo.getRid());
+            couponDoT.setQuotaAlready(1);
+            afCouponService.updateCouponquotaAlreadyById(couponDoT);
+            return H5CommonResponse.getNewInstance(true, "领券成功", "", data).toString();
+        }
+        catch (FanbeiException e){
+            logger.error("getDefaultUserAddress", e);
+            if(e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.USER_BORROW_NOT_EXIST_ERROR)
+                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT)){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getCode(), "", null).toString();
+            }
+            else {
+                return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+            }
+        }
+        catch (Exception e) {
             logger.error("changeUserAddress", e);
             return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
         }
