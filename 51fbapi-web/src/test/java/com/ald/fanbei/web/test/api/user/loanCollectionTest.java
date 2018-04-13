@@ -81,6 +81,48 @@ public class loanCollectionTest extends BaseTest {
         HttpUtil.doHttpPost(url, getUrlParamsByMap(paramsT));
     }
 
+    @Test
+    public void testOfflineLoanRepayment() {
+        String url = urlBase + "/third/collection/offlineLoanRepayment";
+        Map params = new HashMap<>();
+        Map map = new HashMap();
+        List list = new ArrayList();
+        map.put("id","525");
+        map.put("repayAmount",1700.34);
+        map.put("reductionAmount",56);
+        list.add(map);
+        map = new HashMap();
+        map.put("id","526");
+        map.put("repayAmount",1666.29);
+        map.put("reductionAmount",0);
+        list.add(map);
+        map = new HashMap();
+        map.put("id","527");
+        map.put("repayAmount",1710.72);
+        map.put("reductionAmount",0);
+        list.add(map);
+        System.out.println(JSON.toJSONString(list));
+        params.put("repay_no","4545645645614524");
+        params.put("loan_no","dk2018032714252900946");
+        params.put("repay_type","");
+        params.put("repay_amount","");
+        params.put("rest_amount","");
+        params.put("repay_cardNum","");
+        params.put("trade_no","415241245454545");
+        params.put("repayment_id","");
+        params.put("is_all_repay","false");
+        params.put("periods_list",list);
+        String data = JsonUtil.toJSONString(params);
+        String timestamp = DateUtil.formatDate(new Date());
+        String sign = DigestUtil.MD5(data);
+        Map<String, String> paramsT = new HashMap<>();
+        paramsT.put("data", data);
+        paramsT.put("sign", sign);
+        paramsT.put("timestamp", timestamp);
+//        HttpUtil.doHttpsPostIgnoreCertUrlencoded(url,getUrlParamsByMap(paramsT) );
+        HttpUtil.doHttpPost(url, getUrlParamsByMap(paramsT));
+    }
+
     public String getUrlParamsByMap(Map<String, String> map) {
         if (map == null) {
             return "";
