@@ -69,19 +69,19 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				AfUserAccountDo userAccDB = afUserAccountService.getUserAccountByUserId(context.getUserId());
 				AfUserAccountDo userAccForUpdate = new AfUserAccountDo();
                 AfUserAuthDo userAuthUpdate=new AfUserAuthDo();
-				if(userAccDB.getPassword() == null) { //支付密码为空，则此次请求需设置支付密码
-					if(StringUtils.isEmpty(param.payPwd)) {
+				if(StringUtil.isEmpty(userAccDB.getPassword())) { //支付密码为空，则此次请求需设置支付密码
+					if(StringUtils.isEmpty(param.newPassword)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_PAY_PWD_MISS);
 					} else {
 						String salt = UserUtil.getSalt();
-						String newPwd = UserUtil.getPassword(param.payPwd, salt);
+						String newPwd = UserUtil.getPassword(param.newPassword, salt);
 						userAccForUpdate.setUserId(context.getUserId());
 						userAccForUpdate.setSalt(salt);
 						userAccForUpdate.setPassword(newPwd);
 					}
 				}
 				
-				if(userAccDB.getIdNumber()==null) { //真实姓名为空，则此次请求需存入身份证信息
+				if(StringUtil.isEmpty(userAccDB.getIdNumber())) { //真实姓名为空，则此次请求需存入身份证信息
 					if(StringUtils.isEmpty(param.realname)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_REALINFO_MISS);
 					} else {
@@ -94,14 +94,15 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
 					afUserAccountService.updateUserAccount(userAccForUpdate);
 				}
-                //设置用户绑卡状态
-                userAuthUpdate.setBankcardStatus("Y");
-                afUserAuthService.updateUserAuth(userAuthUpdate);
+
 				// 设置卡状态为可用
 				bank.setStatus(BankcardStatus.BIND.getCode());
 				afUserBankcardService.updateUserBankcard(bank);
 
-				
+				//设置用户绑卡状态
+				userAuthUpdate.setUserId(userAccDB.getUserId());
+				userAuthUpdate.setBankcardStatus("Y");
+				afUserAuthService.updateUserAuth(userAuthUpdate);
 				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
 					status.setRollbackOnly();
