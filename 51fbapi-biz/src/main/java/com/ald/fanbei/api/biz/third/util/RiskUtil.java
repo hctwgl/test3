@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -314,7 +315,8 @@ public class RiskUtil extends AbstractThird {
 	KafkaSync kafkaSync;
 	@Resource
 	AfUserSeedService afUserSeedService;
-
+	@Resource
+	JdbcTemplate loanJdbcTemplate;
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -892,6 +894,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+
 		// String url = "http://192.168.110.16:8080" +
 		// "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = requestProxy.post(url, reqBo);
@@ -915,13 +918,34 @@ public class RiskUtil extends AbstractThird {
 			String result = dataObj.getString("result");
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
-			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) { riskResp.setPassWeakRisk(true); }
-			else {riskResp.setPassWeakRisk(false);}
 			riskResp.setConsumerNo(consumerNo);
 			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
 			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
 			riskResp.setRejectCode(dataObj.getString("rejectCode"));
 			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
+			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) {
+				riskResp.setPassWeakRisk(true);
+				try{
+					if(scene.equals("50")){//借钱才走这个逻辑
+						AfUserDo userDo= afUserService.getUserById( Long.parseLong(consumerNo));
+						Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+userDo.getUserName()+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
+						if(data>0){
+							logger.info("loan on koudaixianjin username:"+userDo.getUserName());
+							riskResp.setPassWeakRisk(false);
+							riskResp.setResult("30");
+							riskResp.setRejectCode("104");
+						}
+					}
+
+				}catch (Exception e){
+					logger.info("loan on koudaixianjin error:",e);
+				}
+
+			}
+			else {
+				riskResp.setPassWeakRisk(false);
+			}
+
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);

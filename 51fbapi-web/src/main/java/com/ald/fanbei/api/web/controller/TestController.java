@@ -35,6 +35,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
@@ -148,6 +149,9 @@ public class TestController {
     AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
+    @Resource
+    JdbcTemplate loanJdbcTemplate;
+
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
@@ -248,7 +252,19 @@ public class TestController {
         return "调用处理中^";
     }
 
+    @RequestMapping("/loanTest")
+    @ResponseBody
+    public String loanTest() {
+        try{
+            Thread.sleep(50000);
+        }catch (Exception e){
 
+        }
+
+       Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+"13165995223"+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
+        return String.valueOf(data) ;
+
+    }
     @RequestMapping("/kafkaTest")
     @ResponseBody
     public String kafkaTest() {

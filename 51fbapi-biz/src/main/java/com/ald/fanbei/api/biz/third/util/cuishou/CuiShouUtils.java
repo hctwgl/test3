@@ -536,7 +536,13 @@ public class CuiShouUtils {
                 Long borrowId = jsonObject.getLong("ref_id");
                 AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
+                afBorrowCashDo.setSumRate(null);
+                afBorrowCashDo.setSumOverdue(null);
+                afBorrowCashDo.setSumRenewalPoundage(null);
+                afBorrowCashDo.setSumRebate(null);
+                afBorrowCashDo.setSumJfb(null);
                 afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+
                 Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
 
