@@ -1,5 +1,10 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.RiskOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.common.util.SignUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 
 /**
  * @类现描述：
@@ -442,5 +450,31 @@ public class RiskController {
 		} else {
 			return "ERROR";
 		}
+	}
+	
+	/**
+	 * 风控直接修改用户认证信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/directModifyUserAuthInfo"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String directModifyUserAuthInfo(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		
+		logger.info("directModifyUserAuthInfo begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.authGxbNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	private void checkSign(Map<String, Object> reqParams) {
 	}
 }
