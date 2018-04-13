@@ -13,8 +13,9 @@ public class SubmitBindBankcardParam {
 	public Integer orderNper;
 	public String lat;
 	public String lng;
-	
-	public String payPwd;
+
+	//支付密码
+	public String newPassword;
 	public String realname;
 	public String idNumber;
 	
