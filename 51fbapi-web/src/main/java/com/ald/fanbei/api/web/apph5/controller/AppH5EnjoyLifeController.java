@@ -299,6 +299,20 @@ public class AppH5EnjoyLifeController extends BaseController {
                         Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("rid")));
                         Long activityId = Long.valueOf(String.valueOf(afActGoodsDto.get("activityId")));
                         AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getSaleInfoByGoodsIdAndActId(activityId,goodsId);
+                        if(userDo!=null){
+                            AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
+                            afActivityUserSmsDo.setGoodsId(goodsId);
+                            afActivityUserSmsDo.setUserId(userDo.getRid());
+                            afActivityUserSmsDo.setActivityId(activityId);
+                            AfActivityUserSmsDo userSmsDo = afActivityUserSmsService.getByCommonCondition(afActivityUserSmsDo);
+                            if(userSmsDo!=null){
+                                afActGoodsDto.put("isReserve","1");
+                            }else{
+                                afActGoodsDto.put("isReserve","0");
+                            }
+                        }else{
+                            afActGoodsDto.put("isReserve","0");
+                        }
                         afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
                         afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
                     }
@@ -353,12 +367,13 @@ public class AppH5EnjoyLifeController extends BaseController {
             afActivityUserSmsDo.setGoodsId(goodsId);
             afActivityUserSmsDo.setUserId(userDo.getRid());
             afActivityUserSmsDo.setActivityId(activityId);
-            afActivityUserSmsDo.setGoodsName(goodsName);
+
             AfActivityUserSmsDo userSms = afActivityUserSmsService.getByCommonCondition(afActivityUserSmsDo);
             if(null != userSms){
                 return  H5CommonResponse.getNewInstance(false, "商品已预约").toString();
             }
             try{
+                afActivityUserSmsDo.setGoodsName(goodsName);
                 afActivityUserSmsDo.setActivityTime(startTime);
                 afActivityUserSmsDo.setSendTime(sendTime);
                 int flag = afActivityUserSmsService.saveRecord(afActivityUserSmsDo);
