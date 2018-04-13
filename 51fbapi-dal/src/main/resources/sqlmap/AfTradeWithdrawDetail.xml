@@ -84,7 +84,7 @@ id,record_id,order_id
         <include refid="commonCondition"/>
     </select>
     <select id="getByRecordId" resultType="com.ald.fanbei.api.dal.domain.AfTradeWithdrawDetailDo" >
-        SELECT
+	    SELECT
         <include refid="queryFields" />
         FROM af_trade_withdraw_detail
         where is_delete=0 and record_id=#{recordId}
