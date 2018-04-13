@@ -671,6 +671,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
 							smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
 						}
+						loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+						afLoanDao.updateById(loanDo);
 					}
 				}
 			}
@@ -706,12 +708,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
+		/*	Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGiveBackPayResultReqBo PayResultReqBo = null;
@@ -899,6 +901,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 										jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
 										smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
 									}
+									loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+									afLoanDao.updateById(loanDo);
 								}
 							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
 								//打款失败
@@ -921,6 +925,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 										jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
 										smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
 									}
+									loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+									afLoanDao.updateById(loanDo);
 								}
 							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 								//打款成功
