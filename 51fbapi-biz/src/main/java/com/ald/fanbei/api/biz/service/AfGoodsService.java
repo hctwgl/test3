@@ -136,19 +136,19 @@ public interface AfGoodsService {
 	 * @param goodsQuery
 	 * @return
 	 */
-	List<AfGoodsDo> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
 	/**
 	 * 爱尚街根据分类ID和价格查询商品 升序 
 	 * @param goodsQuery
 	 * @return
 	 */
-	List<AfGoodsDo> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
 	/**
 	 * 爱尚街根据分类ID和价格查询商品 降序
 	 * @param goodsQuery
 	 * @return
 	 */
-	List<AfGoodsDo> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
 	/**
 	 * 查询该品牌下的所有商品
 	 * @param brandId

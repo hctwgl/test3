@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -61,7 +62,7 @@ public class GetGoodsList1Api implements ApiHandle {
         String priceSortValue = ObjectUtils.toString(requestDataVo.getParams().get("priceSort"));
         int pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
         AfGoodsQuery goodsQuery = getCheckParams(requestDataVo);
-        List<AfGoodsDo> goodList;
+        List<HomePageSecKillGoods> goodList;
         if (StringUtil.isBlank(volumeSortValue) && StringUtil.isBlank(priceSortValue)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg());
         }
@@ -89,34 +90,32 @@ public class GetGoodsList1Api implements ApiHandle {
         }
         // the logic of page
      //   List<AfGoodsDo> pageGoodsList = doPage(pageNo,goodList);
-        for(AfGoodsDo goodsDo : goodList) {
+        for(HomePageSecKillGoods goodsDo : goodList) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             String url = "";
-            goodsInfo.put("goodName",goodsDo.getName());
+            goodsInfo.put("goodName",goodsDo.getGoodName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
             goodsInfo.put("saleAmount",goodsDo.getSaleAmount());
+			if (goodsDo.getActivityAmount() != null){
+				goodsInfo.put("saleAmount",goodsDo.getActivityAmount());          	
+				}
             goodsInfo.put("priceAmount",goodsDo.getPriceAmount());
-            if(!StringUtil.isEmpty(goodsDo.getGoodsPic1())){
-                url = goodsDo.getGoodsPic1();
-            }else{
-                url = goodsDo.getGoodsIcon();
-            }
+            url = goodsDo.getGoodsIcon();
             goodsInfo.put("goodsIcon",url);
-            goodsInfo.put("goodsId",goodsDo.getRid());
+            goodsInfo.put("goodsId",goodsDo.getGoodsId());
             goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
-            goodsInfo.put("source",goodsDo.getSource());
-            goodsInfo.put("numId",goodsDo.getNumId());
+            goodsInfo.put("goodsType", "0");
 //            if(volume>10000){
 //                DecimalFormat df = new DecimalFormat("0.00");
 //                BigDecimal bigDecimal = new BigDecimal(df.format(volume/10000));
 //                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP).doubleValue();
 //                goodsInfo.put("volume",bigDecimal.toString()+"万");
 //            }else{
-            goodsInfo.put("volume",goodsDo.getSaleCount());
+            goodsInfo.put("volume",goodsDo.getTotal());
 //            }
             goodsInfo.put("goodsType", "0");
             // 如果是分期免息商品，则计算分期
-            Long goodsId = goodsDo.getRid();
+            Long goodsId = goodsDo.getGoodsId();
             AfSchemeGoodsDo schemeGoodsDo = null;
             try {
                 schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
