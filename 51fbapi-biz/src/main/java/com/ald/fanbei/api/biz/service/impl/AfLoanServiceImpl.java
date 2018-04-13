@@ -238,9 +238,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 				}
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 				if (StringUtil.equals(assetPushType.getCollar(), YesNoStatus.YES.getCode())
 					&&(StringUtil.equals(loanDo.getAppName(), "www")||StringUtil.equals(loanDo.getAppName(), ""))
-					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
+					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag&&!bankIsMaintaining) {
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 					List<EdspayGetCreditRespBo> whiteCollarBorrowInfo = assetSideEdspayUtil.buildWhiteCollarBorrowInfo(loanDo);
 					//债权实时推送
@@ -707,5 +708,21 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	public AfLoanDo getByLoanNo(String loanNo) {
 		return afLoanDao.getByLoanNo(loanNo);
 	}
+	
+	
+	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+		String[] split = assetPushResource.getValue4().split(",");
+		String maintainStart = split[0];
+		String maintainEnd = split[1];
+		Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+		Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+		 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+		
+		}
+		return bankIsMaintaining;
+	}
+
 
 }
