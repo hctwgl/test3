@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,6 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBrandDo;
@@ -39,21 +37,16 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.dto.AfBrandDto;
-import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
-import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
-import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfGoodsVo1;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
- * @类描述 爱尚街分类 品牌
+ * @类描述 爱尚街分类 品牌结果页 app内H5页面，可分享
  * @author liutengyuan 
  * @date 2018年4月10日
  */
@@ -140,76 +133,7 @@ public class AppH5BrandController extends BaseController {
 		}
 	}
 	
-	@RequestMapping(value="/brandChannels",method=RequestMethod.POST,produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public String brandChannels(HttpServletRequest request ,HttpServletResponse response){
-		FanbeiWebContext context = new FanbeiWebContext();
-		Map<String, Object> data = new HashMap<String, Object>();
-		try {
-			context = doWebCheck(request, false);
-			String tag = ObjectUtils.toString(request.getParameter("tag"), null);
-			logger.info("/category/brandChannels params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "requestParam tag:" + tag);
-			if (tag == null && !"brandChal".equals(tag)){
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_ERROR.getErrorMsg(),"", null).toString();
-			}
-			List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
-			String imageUrl = "";
-			String h5LinkUrl = null;
-			String[] brandIds = {};
-			List<AfBrandDo> hotBrandList = new ArrayList<AfBrandDo>();
-			List<AfBrandDto> allBrandList = new ArrayList<AfBrandDto>();
-			Map<String, List<AfBrandDto>> allBrandInfo = new HashMap<String,List<AfBrandDto>>();
-			if (CollectionUtil.isNotEmpty(list)){
-				AfResourceH5Dto afResourceH5Dto = list.get(0);
-				Long modelId = afResourceH5Dto.getId();
-				List<AfResourceH5ItemDto> configList = afResourceH5ItemService.selectByModelId(modelId);
-				if (CollectionUtil.isNotEmpty(configList)){
-					for (AfResourceH5ItemDto afResourceH5ItemDto : configList) {
-						String pageMark = afResourceH5ItemDto.getValue1();
-						// zhu tui pin pai
-						if ("mainBrand".equals(pageMark )){
-							imageUrl = afResourceH5ItemDto.getValue2();
-							h5LinkUrl = afResourceH5ItemDto.getValue3();
-						}else if("hotBrand".equals(pageMark)){
-							String ids = afResourceH5ItemDto.getValue2();
-							if (ids != null){
-								String idStr = ids.trim();
-								brandIds = idStr.split(",");
-							}
-						}
-					}
-					for (String id :brandIds){
-						AfBrandDo brandInfo = afBrandService.getById(NumberUtil.objToLongDefault(id, 0));
-						hotBrandList.add(brandInfo);
-					}
-				}
-				allBrandList = afBrandService.getAllAndNameSort();
-				for (AfBrandDto  afBrandDto :allBrandList){
-					String initName = afBrandDto.getNameIndex();// get the first key of name
-					if (CollectionUtil.isNotEmpty(allBrandInfo.get(initName)) ){
-						 List<AfBrandDto> relatedBrandList = allBrandInfo.get(initName);
-						 relatedBrandList.add(afBrandDto);
-						 allBrandInfo.put(initName,relatedBrandList );
-					}else{
-						ArrayList<AfBrandDto> relatedBrandList = new ArrayList<AfBrandDto>();
-						relatedBrandList.add(afBrandDto);
-						allBrandInfo.put(initName, relatedBrandList);
-					}
-				}
-				
-			}
-			data.put("imageUrl", imageUrl);
-			data.put("h5LinkUrl", h5LinkUrl);
-			data.put("hotBrandList", hotBrandList);
-			data.put("allBrandInfo", allBrandInfo);
-			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.BRAND_CATEGORY_PAGE_INIT_SUCCESS.getErrorMsg(), "", data).toString();
-		} catch (Exception e) {
-			String result =  H5CommonResponse.getNewInstance(false, "品牌分类页初始化失败..", "", e.getMessage()).toString();
-			logger.error("/category/brandChannels初始化数据失败  e = {} , resultStr = {}", e, result);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
-			return result;
-		}
-	}
+	
 	
 	
 	 private  List<Map<String, Object>>  HandleData(AfResourceDo resource, JSONArray array,
@@ -365,5 +289,13 @@ public class AppH5BrandController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+//	public static void main(String[] args) {
+//		char[] str = new char[26];
+//		for (int i = 0; i < 26; i++) {
+//		str[i]= (char)(65 + i );
+//		}
+//		for (int i = 0; i < str.length; i++) {
+//			System.out.println(str[i]);
+//		}
+//		}
 }
