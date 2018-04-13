@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,4 +32,8 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     AfSeckillActivityGoodsDto getActivityInfoByPriceIdAndActId(@Param("goodsPriceId")Long goodsPriceId,@Param("activityId")Long activityId);
 
     List<AfSeckillActivityGoodsDto> getActivityPricesByGoodsIdAndActId(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId);
+
+    List<AfSeckillActivityGoodsDo> getActivityGoodsByGoodsIds(@Param("items") List<Long> goodsIdList);
+
+    List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(@Param("items") List<Long> goodsIdList, @Param("activityId") Long activityId);
 }

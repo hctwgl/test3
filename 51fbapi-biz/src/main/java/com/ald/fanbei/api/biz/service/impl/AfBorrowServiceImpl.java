@@ -1472,6 +1472,26 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		//return JSON.toJSONString(map);
 		return map;
 	}
+	
+	/**
+     * 适配规则利率（1，2，3，6，9，12期）
+     * @param realNper
+     * @return
+     */
+    private int getTempNperForBorrowRate(int realNper){
+    	int tempNper = realNper;
+    	if(Constants.FOUR == realNper || Constants.FIVE == realNper){
+    		tempNper = Constants.THREE;
+    	}
+    	else if(Constants.SEVEN == realNper || Constants.EIGHT == realNper){
+    		tempNper = Constants.SIX;
+    	}
+    	else if(Constants.TEN == realNper || Constants.ELEVEN == realNper){
+    		tempNper = Constants.NINE;
+    	}
+    	
+    	return tempNper;
+    }
 
 	public int addHomeBorrow(final Long orderId,final int nper){
 		return 1;
