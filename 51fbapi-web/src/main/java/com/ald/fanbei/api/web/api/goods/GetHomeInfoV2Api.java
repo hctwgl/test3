@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,10 +25,12 @@ import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -35,14 +38,16 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -95,7 +100,9 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	Cache scheduledCache;
 	@Resource
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
-
+	@Resource
+	private AfUserAuthService afUserAuthService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -121,8 +128,30 @@ public class GetHomeInfoV2Api implements ApiHandle {
 //		}
 //		}
 		
-		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		//如果当前用户已登录且芝麻弹窗引导为打开状态，则进行缓存处理 begin add by chengkang
+		if(context.getUserId()!=null && context.getUserId()>0){//当前时间戳
+			AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+			//芝麻信息认证启动页配置 val:弹窗图片地址  val2:打开开关Y/N val3:弹窗间隔时间ms
+			AfResourceDo zmPopImageResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_APP_POP_IMAGE.getCode());
+			//芝麻信息认证相关配置 val:开放开关Y/N val1:展示 0文字1数 val2:认证逻辑 Y严格认证 N默认通过val3:分界app版本
+			AfResourceDo zmConfigResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ZHIMA_VERIFY_CONFIG.getCode(), AfResourceSecType.ZHIMA_VERIFY_RULE_CONFIG.getCode());
+			//芝麻信用重新启用的版本分界
+			Integer zmVersionDivision = NumberUtil.objToIntDefault(zmConfigResourceDo.getValue3(), 412);
+			Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zmConfigResourceDo.getValue4());
+			if(zmReAuthDatetime==null){
+				//默认值处理
+				zmReAuthDatetime = DateUtil.getStartDate();
+			}
+			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) 
+					&& ((YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
+							|| (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())))){
+				//将数据存入缓存
+				bizCacheUtil.saveObject(Constants.ZM_AUTH_POP_GUIDE_CACHE_KEY+envType+context.getUserId(), System.currentTimeMillis(), Constants.SECOND_OF_ONE_DAY);
+			}
+		}
+		//如果当前用户已登录且芝麻弹窗引导为打开状态，则进行缓存处理 end add by chengkang
+		
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());

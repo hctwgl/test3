@@ -137,6 +137,7 @@
 				<value>/system/checkVersion</value>
 				<value>/system/AppLaunchImage</value>
 				<value>/system/appPopImage</value>
+				<value>/system/zmAuthPopImage</value>
 				<value>/system/getTabbarInfor</value>
 				<value>/user/submitShareAction</value>
 				<value>/user/checkMobileRegistered</value>
@@ -295,6 +296,7 @@
 				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
 				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
 				<entry key="/system/maidian" value-ref="maiDianApi" />
+				<entry key="/system/zmAuthPopImage" value-ref="zmAuthPopImageApi" />
 
 				<!-- auth模块 -->
 				<entry key="/auth/authFace" value-ref="authFaceApi" />
