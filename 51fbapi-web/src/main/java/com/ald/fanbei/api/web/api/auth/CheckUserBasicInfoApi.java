@@ -50,7 +50,7 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         } else {
             checkResult.put("isRealNameAuth", false);
         }
-        AfUserAccountDo afUserAccountDo= afUserAccountService.getUserInfoByUserId(userId);
+        AfUserAccountDo afUserAccountDo= afUserAccountService.getUserAccountByUserId(userId);
         if(afUserAccountDo==null || StringUtil.isEmpty(afUserAccountDo.getPassword()) ){
             checkResult.put("isPayPwd", false);
         }else {
