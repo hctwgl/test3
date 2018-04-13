@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -315,6 +316,13 @@ public class RiskUtil extends AbstractThird {
 	KafkaSync kafkaSync;
 	@Resource
 	AfUserSeedService afUserSeedService;
+	
+	@Resource
+	  AfTradeSettleOrderService afTradeSettleOrderService;
+	  
+	  @Resource
+	  AfTradeBusinessInfoService afTradeBusinessInfoService;
+	
 	@Resource
 	JdbcTemplate loanJdbcTemplate;
 	public static String getUrl() {
@@ -1213,6 +1221,19 @@ public class RiskUtil extends AbstractThird {
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
 						orderInfo.getOrderType());
 				
+				// 支付成功生成结算单 add by luoxiao on 2018-03-30 start
+			        try{
+			          List<AfTradeBusinessInfoDto> businessInfoList = afTradeBusinessInfoService.getByOrderId(orderInfo.getRid());
+			          if(null != businessInfoList && !businessInfoList.isEmpty()){
+			            Long businessId = businessInfoList.get(0).getBusinessId();
+			            Integer withDrawCycleDays = businessInfoList.get(0).getWithdrawCycle();
+			            createSettlementOrder(orderInfo, userAccountInfo.getRealName(), businessId, withDrawCycleDays);
+			          }
+			        }catch(Exception e){
+			          logger.error("createSettlementOrder error.", e);
+			        }
+			        // end by luoxiao
+				
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				Boolean flag=true;
@@ -1288,7 +1309,57 @@ public class RiskUtil extends AbstractThird {
 		resultMap.put("success", true);
 		return resultMap;
 	}
+	/**
+	   * 生成线下商圈结算单， 
+	   * 和产品王鲁迪沟通过，线下商圈暂时只生成一条结算单（因为订单没有结束时间，无法算每期结算金额），按照原模式结算
+	   * @param afOrderDo
+	   * @param userName
+	   * @param businessId
+	   */
+	  private void createSettlementOrder(AfOrderDo afOrderDo, String userName, Long businessId, int withDrawCycleDays){
+	    AfTradeSettleOrderDo settleOrderDo = new AfTradeSettleOrderDo();
+	    settleOrderDo.setBalanceAmount(afOrderDo.getActualAmount());
+	    settleOrderDo.setBatchDelayDays(withDrawCycleDays);
+	    settleOrderDo.setBatchMonth(afOrderDo.getNper());
+	    settleOrderDo.setBusinessId(businessId);
+	    settleOrderDo.setGmtCreate(new Date());
+	    settleOrderDo.setCreator(userName);
+	    settleOrderDo.setDetails("线下商圈结算订单-" + userName + "-批次1");
+	    settleOrderDo.setExtractableDate(getExtractableDate(withDrawCycleDays, afOrderDo.getGmtCreate()));
+	    settleOrderDo.setIsDelete(0);
+	    settleOrderDo.setBusinessName(afOrderDo.getShopName());
+	    settleOrderDo.setOrderId(afOrderDo.getRid());
+	    settleOrderDo.setOrderNo(afOrderDo.getOrderNo());
+	    settleOrderDo.setStatus(AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
+	    settleOrderDo.setGmtModified(new Date());
+	    
+	    afTradeSettleOrderService.createSettleOrder(settleOrderDo);
+	  }
+	  
+	  /**
+	     * 获取租房分期结算可提取时间
+	     * @param batchDelayDays
+	     * @return
+	     */
+	  private Date getExtractableDate(int batchDelayDays, Date gmtCreate) {
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(gmtCreate);
+	    
+	    String dateTimeString = DateUtil.formatDateForPatternWithHyhen(gmtCreate) + " 23:59:59.999";
+	    Date extractableDate = DateUtil.parseDate(dateTimeString, DateUtil.DATE_TIME_FULL);
+	    
+	    int gmtCreateHour = calendar.get(Calendar.HOUR_OF_DAY);
+	    if(gmtCreateHour > 12){
+	      extractableDate = DateUtil.addDays(extractableDate, 1);
+	    }
+	    
+	    if(batchDelayDays > 1){
+	      extractableDate = DateUtil.addDays(extractableDate, batchDelayDays - 1);
+	    }
 
+	    return extractableDate;
+	  }
+	  
 	private String  isBklResult(AfOrderDo orderInfo) {
 		String result = "v2";
 		//种子名单
@@ -2995,6 +3066,9 @@ public class RiskUtil extends AbstractThird {
 	public boolean updateRentScore(String consumerNo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setConsumerNo(consumerNo);
+		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+		String riskOrderNo = riskUtil.getOrderNo("rent", card.getCardNumber().substring(card.getCardNumber().length() - 4, card.getCardNumber().length()));
+		reqBo.setOrderNo(riskOrderNo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/updateRentScore.htm";
