@@ -53,7 +53,7 @@ public class BrandChannelsApi implements ApiHandle {
 	//	String tag = ObjectUtils.toString(request.getParameter("tag"), null);
 		String tag = ObjectUtils.toString(requestDataVo.getParams().get("tag"), null);
 		logger.info("/category/brandChannels params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "requestParam tag:" + tag);
-		if (tag == null && !"brandChal".equals(tag)){
+		if (tag == null || !"brandChal".equals(tag)){
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 		@SuppressWarnings("unchecked")
@@ -87,12 +87,14 @@ public class BrandChannelsApi implements ApiHandle {
 							}
 						}
 					}
-					for (String id :brandIds){
+					// query configed the hot brands
+					/*for (String id :brandIds){
 						AfBrandDo brandInfo = afBrandService.getById(NumberUtil.objToLongDefault(id, 0));
 						if (brandInfo != null){
 							hotBrandList.add(brandInfo);
 						}
-					}
+					}*/
+					 hotBrandList = afBrandService.getHotBrands(brandIds);
 				}
 				allBrandList = afBrandService.getAllAndNameSort();
 				char[] str = new char[26];

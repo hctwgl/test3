@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 
 import org.apache.commons.lang.StringUtils;
@@ -217,8 +218,8 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByCategoryIdAndPriceDesc(goodsQuery);
 	}
 	@Override
-	public List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId) {
-		List<AfGoodsDo> brandGoodsList = bizCacheUtil.getObjectList("VolumeTop5Goods" + brandId);
+	public List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId) {
+		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList("VolumeTop5Goods" + brandId);
 		if (CollectionUtil.isEmpty(brandGoodsList)){
 			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
 			bizCacheUtil.saveObjectList("VolumeTop5Goods" + brandId, brandGoodsList);

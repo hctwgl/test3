@@ -42,4 +42,9 @@ public class AfBrandServiceImpl extends ParentServiceImpl<AfBrandDo, Long> imple
 		public List<AfBrandDto> getAllAndNameSort() {
 			return afBrandDao.getAllAndNameSort();
 		}
+
+		@Override
+		public List<AfBrandDo> getHotBrands(String[] brandIds) {
+			return afBrandDao.getHotBrands(brandIds);
+		}
 }

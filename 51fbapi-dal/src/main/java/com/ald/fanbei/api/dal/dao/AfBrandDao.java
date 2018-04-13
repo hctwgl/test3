@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBrandDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBrandDto;
 
@@ -19,6 +21,12 @@ public interface AfBrandDao extends BaseDao<AfBrandDo, Long> {
 	 * @return
 	 */
 	List<AfBrandDto> getAllAndNameSort();
+	/**
+	 * 获取配置的热卖商品
+	 * @param brandIds
+	 * @return
+	 */
+	List<AfBrandDo> getHotBrands(@Param(value="brandIds")String[] brandIds);
 
     
 

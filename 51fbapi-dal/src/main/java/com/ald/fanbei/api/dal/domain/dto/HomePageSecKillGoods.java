@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.domain.dto;
 
 import java.math.BigDecimal;
 
+import com.ald.fanbei.api.common.AbstractSerial;
+
 /**
  * 
 * @ClassName: HomePageSecKillGoods 
@@ -10,9 +12,10 @@ import java.math.BigDecimal;
 * @date 2018年4月12日 下午5:15:55 
 *
  */
-public class HomePageSecKillGoods {
+public class HomePageSecKillGoods extends AbstractSerial{
 
-    private BigDecimal activityAmount;
+	private static final long serialVersionUID = 1L;
+	private BigDecimal activityAmount;
     private Long goodsId;
     private Integer total;
     private String goodName;

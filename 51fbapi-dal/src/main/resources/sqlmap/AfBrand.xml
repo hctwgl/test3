@@ -150,4 +150,15 @@
 		WHERE  CONV(HEX(LEFT(CONVERT(t1.name USING gbk ), 1)), 16, 10) BETWEEN t2.cBegin AND t2.cEnd and t1.is_delete = 0
 		ORDER BY convert(t1.name using gbk) ASC
     </select>
+    
+    <select id="getHotBrands" resultType="com.ald.fanbei.api.dal.domain.AfBrandDo">
+    	SELECT 
+    	<include refid="queryFields" />
+        FROM af_brand
+        where is_delete = 0 and id in
+        <foreach collection="brandIds" item="id" index="index"
+             open="(" close=")" separator=",">
+        #{id}
+    </foreach>
+    </select>
 </mapper>

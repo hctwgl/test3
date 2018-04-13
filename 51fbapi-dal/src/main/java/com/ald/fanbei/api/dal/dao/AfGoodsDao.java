@@ -6,6 +6,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 
 import org.apache.ibatis.annotations.Param;
@@ -152,7 +153,7 @@ public interface AfGoodsDao {
 	 * @param brandId
 	 * @return
 	 */
-	List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId);
+	List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId);
 
 
 }

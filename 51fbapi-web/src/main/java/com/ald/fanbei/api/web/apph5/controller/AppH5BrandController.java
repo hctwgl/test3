@@ -37,6 +37,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -84,23 +85,20 @@ public class AppH5BrandController extends BaseController {
 			if (brandId == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg(), "", null).toString();
 			}
-//	AfGoodsQuery goodsQuery = getCheckParams(request);
+			//	AfGoodsQuery goodsQuery = getCheckParams(request);
 			// 1 query info of the brand
 			AfBrandDo brandInfo = (AfBrandDo) bizCacheUtil.getObject("barndInfo"+brandId);
 			if (brandInfo == null){
 				brandInfo = afBrandService.getById(brandId);
 				bizCacheUtil.saveObject("barndInfo"+brandId, brandInfo, Constants.SECOND_OF_HALF_DAY);
 			}
-			// 2 query goods of the brand with volume of top5
-//	List<AfGoodsDo> starGoodsList = afGoodsService.getGoodsListByBrandIdAndVolume(brandId);
-//	List<AfGoodsDo> goodsList = afGoodsService.getGoodsListByBrandId(brandId);
-			List<AfGoodsDo> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
+			List<HomePageSecKillGoods> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
 			if (brandGoodsList == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.BRAND_GOODS_IS_EMPTY.getErrorMsg(), "", null).toString();
 			}
 			// handle the goods data 
-			List<AfGoodsDo> starGoodsList = new ArrayList<AfGoodsDo>();
-			List<AfGoodsDo> otherGoodsList = new ArrayList<AfGoodsDo>();
+			List<HomePageSecKillGoods> starGoodsList = new ArrayList<HomePageSecKillGoods>();
+			List<HomePageSecKillGoods> otherGoodsList = new ArrayList<HomePageSecKillGoods>();
 			for (int i =0;i < brandGoodsList.size(); i++){
 				if (i < 5){
 					starGoodsList.add(brandGoodsList.get(i));
@@ -109,7 +107,7 @@ public class AppH5BrandController extends BaseController {
 				}
 			}
 			// do page logic
-			List<AfGoodsDo> allGoodsList = doPage(pageNo, otherGoodsList);
+			List<HomePageSecKillGoods> allGoodsList = doPage(pageNo, otherGoodsList);
 			
 		//	List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			//获取借款分期配置信息
@@ -137,29 +135,25 @@ public class AppH5BrandController extends BaseController {
 	
 	
 	 private  List<Map<String, Object>>  HandleData(AfResourceDo resource, JSONArray array,
-			List<AfGoodsDo> starGoodsList) {
+			List<HomePageSecKillGoods> starGoodsList) {
 		 List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-		 for(AfGoodsDo goodsDo : starGoodsList) {
+		 for(HomePageSecKillGoods goodsDo : starGoodsList) {
 	            Map<String, Object> goodsInfo = new HashMap<String, Object>();
 	            String url = "";
-	            goodsInfo.put("goodName",goodsDo.getName());
+	            goodsInfo.put("goodName",goodsDo.getGoodName());
 	            goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
 	            goodsInfo.put("saleAmount",goodsDo.getSaleAmount());
+				if (goodsDo.getActivityAmount() != null){
+					goodsInfo.put("saleAmount",goodsDo.getActivityAmount());          	
+					}
 	            goodsInfo.put("priceAmount",goodsDo.getPriceAmount());
-	            if(!StringUtil.isEmpty(goodsDo.getGoodsPic1())){
-	                url = goodsDo.getGoodsPic1();
-	            }else{
-	                url = goodsDo.getGoodsIcon();
-	            }
+	            url = goodsDo.getGoodsIcon();
 	            goodsInfo.put("goodsIcon",url);
-	            goodsInfo.put("goodsId",goodsDo.getRid());
+	            goodsInfo.put("goodsId",goodsDo.getGoodsId());
 	            goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
-	            goodsInfo.put("source",goodsDo.getSource());
-	            goodsInfo.put("numId",goodsDo.getNumId());
-	            goodsInfo.put("volume",goodsDo.getSaleCount());
 	            goodsInfo.put("goodsType", "0");
 	            // 如果是分期免息商品，则计算分期
-	            Long goodsId = goodsDo.getRid();
+	            Long goodsId = goodsDo.getGoodsId();
 	            AfSchemeGoodsDo schemeGoodsDo = null;
 	            try {
 	                schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
@@ -204,7 +198,7 @@ public class AppH5BrandController extends BaseController {
 	    }*/
 
 
-	 private List<AfGoodsDo> doPage(int pageNo, List<AfGoodsDo> goodList) {
+	 private List<HomePageSecKillGoods> doPage(int pageNo, List<HomePageSecKillGoods> goodList) {
 	    	// 不够一页
 	    	int pageSize = 30;
 	    	if (goodList.size() <= pageSize){
@@ -214,7 +208,7 @@ public class AppH5BrandController extends BaseController {
 	    	int startNumber = (pageNo-1) * pageSize;
 	    	int endNumber = pageNo * pageSize -1;
 	    	int listSize = goodList.size();
-	    	ArrayList<AfGoodsDo> list = new ArrayList<AfGoodsDo>();
+	    	ArrayList<HomePageSecKillGoods> list = new ArrayList<HomePageSecKillGoods>();
 	    	if (endNumber <= listSize -1){
 	    		for (int i =startNumber; i <=endNumber;i++){
 	    			list.add(goodList.get(i));
@@ -222,11 +216,6 @@ public class AppH5BrandController extends BaseController {
 	    		return list;
 	    	}
 	    	if (listSize -1 < startNumber){
-	    		int number = listSize/pageNo;
-	    		startNumber = number * pageSize;
-	    		for (int i = startNumber;i<listSize;i++){
-	    			list.add(goodList.get(i));
-	    		}
 	    		return list;
 	    	}
 	    	for (int i = startNumber;i < listSize;i++){
