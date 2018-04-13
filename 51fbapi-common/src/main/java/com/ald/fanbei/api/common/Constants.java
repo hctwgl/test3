@@ -181,6 +181,7 @@ public class Constants {
 	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
 	public static final String RES_BORROW_CASH_POUNDAGE_RATE = "RES_BORROW_CASH_POUNDAGE_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE_TIME = "RES_BORROW_CASH_POUNDAGE_TIME";
+	public static final String GOODS_DETAIL_RECYCLE_FLAG = "GOODS_DETAIL_RECYCLE_FLAG";
 
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";
@@ -521,17 +522,17 @@ public class Constants {
 	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
 
 	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
-	
+
 	/**
      * 用户租房分期利率
      */
     public static final String BORROW_TENEMENT_RATE = "BORROW_TENEMENT_RATE";
-    
+
     /**
      * 默认用户租房分期利率（分期利率均为0）
      */
     public static final String BORROW_TENEMENT_RATE_DEFAULT = "BORROW_TENEMENT_RATE_DEFAULT";
-    
+
 	// 租房分期期数
     public static final int ONE = 1;
     public static final int TWO = 2;
