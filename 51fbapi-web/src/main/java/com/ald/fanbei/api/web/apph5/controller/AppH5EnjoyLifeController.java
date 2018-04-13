@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
@@ -145,7 +146,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     couponDto.setUserAlready(pickCount);
                 }
             }
-            jsonObj.put("nowDate",new Data());
+            jsonObj.put("nowDate",new Date());
             jsonObj.put("couponList", couponList);
 
             //jsonObj.put("notifyUrl", notifyUrl);
@@ -161,8 +162,11 @@ public class AppH5EnjoyLifeController extends BaseController {
             //获取可用额度
             AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
             jsonObj.put("userAccountInfo", userAccountInfo);
+            AfSeckillActivityQuery query = new AfSeckillActivityQuery();
+            query.setName("乐享生活节");
+            query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
             //活动信息
-            List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+            /*List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             if(activityInfoList == null) {
                 // redis取不到，则从一级缓存获取
                 activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
@@ -177,7 +181,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
             }
-            jsonObj.put("activityInfoList", activityInfoList);
+            jsonObj.put("activityInfoList", activityInfoList);*/
             // 查询会场下所有二级会场
             final List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
             //List<Map> activityList = new ArrayList<Map>();
@@ -252,25 +256,56 @@ public class AppH5EnjoyLifeController extends BaseController {
         }
         return resp.toString();
     }
-    private List<Map> getActivityList() {
-        //获取所有活动
-        List<Map> activityList = new ArrayList<Map>();
-        List<AfSeckillActivityDo> afSeckillActivityDos = afSeckillActivityService.getActivityNow();
-        for(AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos){
-            Map secActivityInfoMap = new HashMap();
-            Long activityId = afSeckillActivityDo.getRid();
-            String actName = afSeckillActivityDo.getName();
-            secActivityInfoMap.put("activityId",activityId);
-            secActivityInfoMap.put("actName",actName);
-            secActivityInfoMap.put("gmtStart",afSeckillActivityDo.getGmtStart());
-            secActivityInfoMap.put("gmtEnd",afSeckillActivityDo.getGmtEnd());
-            secActivityInfoMap.put("gmtPStart",afSeckillActivityDo.getGmtPStart());
-            //取出该活动所有商品
-            List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityGoodsByActivityId(activityId);
-            secActivityInfoMap.put("afSeckillActivityGoodsDtos",afSeckillActivityGoodsDtos);
-            activityList.add(secActivityInfoMap);
+    @SuppressWarnings("rawtypes")
+    @RequestMapping(value = "getSecActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getSecActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        JSONObject jsonObj = new JSONObject();
+        try{
+            //活动信息
+            List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+            if(activityInfoList == null) {
+                // redis取不到，则从一级缓存获取
+                activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+            }
+            AfSeckillActivityQuery query = new AfSeckillActivityQuery();
+            query.setName("乐享生活节");
+            query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
+            if(activityInfoList != null) {
+                // 一级缓存获取不到，则从数据库获取
+                //activityInfoList = getActivityList();
+                activityInfoList = activityGoodsUtil.getActivityGoods(query);
+                bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+            }
+            if(activityInfoList!=null){
+                //更新商品库存和销量
+                for(int i=0;i<activityInfoList.size();i++){
+                    Map<String, Object> activityData = activityInfoList.get(i);
+                    List<Map<String, Object>> goodsInfo = (List<Map<String, Object>>)activityData.get("goodsList");
+                    for(int j=0;j<goodsInfo.size();j++){
+                        Map<String, Object> afActGoodsDto = goodsInfo.get(j);
+                        Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("rid")));
+                        Long activityId = Long.valueOf(String.valueOf(afActGoodsDto.get("activityId")));
+                        AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getSaleInfoByGoodsIdAndActId(activityId,goodsId);
+                        afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
+                        afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
+                    }
+                }
+                bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
+            }
+
+            jsonObj.put("activityInfoList", activityInfoList);
+        }catch (Exception e){
+            resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
+            logger.error("请求失败"+e);
+            return resp.toString();
         }
-        return activityList;
+
+        resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
+        return resp.toString();
     }
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array) {
         //获取所有活动
