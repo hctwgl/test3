@@ -8,10 +8,13 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
@@ -98,6 +101,8 @@ public class AppH5EnjoyLifeController extends BaseController {
     ExecutorService pool = Executors.newFixedThreadPool(1);
     @Resource
     ActivityGoodsUtil activityGoodsUtil;
+    @Resource
+    AfActivityUserSmsService afActivityUserSmsService;
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -262,7 +267,12 @@ public class AppH5EnjoyLifeController extends BaseController {
     public String getSecActivityInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         JSONObject jsonObj = new JSONObject();
+        FanbeiWebContext context = new FanbeiWebContext();
         try{
+            context = doWebCheck(request, false);
+            String userName = context.getUserName();
+            userName = "18314896619";
+            AfUserDo userDo = afUserService.getUserByUserName(userName);
             //活动信息
             List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             if(activityInfoList == null) {
@@ -307,6 +317,71 @@ public class AppH5EnjoyLifeController extends BaseController {
         resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
         return resp.toString();
     }
+
+    //活动预约接口
+    @RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        FanbeiWebContext context = new FanbeiWebContext();
+        try{
+            context = doWebCheck(request,false);
+            String userName = context.getUserName();
+            userName = "18314896619";
+            AfUserDo userDo = afUserService.getUserByUserName(userName);
+            Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
+            Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"),0l);
+            String goodsName = "商品名称";
+            AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+            if(null != afGoodsDo){
+                goodsName = afGoodsDo.getName();
+            }
+            Date sendTime = null;
+            Date startTime = null;
+            AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getById(activityId);
+            if(afSeckillActivityDo==null){
+                return H5CommonResponse.getNewInstance(false, "活动已结束").toString();
+            }else{
+                Date endTime = afSeckillActivityDo.getGmtEnd();
+                if(endTime!=null&&endTime.getTime()<(new Date().getTime())){
+                    return H5CommonResponse.getNewInstance(false, "活动已结束").toString();
+                }
+                startTime = afSeckillActivityDo.getGmtStart();
+                sendTime = DateUtil.addMins(startTime,-10);
+            }
+            AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
+            afActivityUserSmsDo.setGoodsId(goodsId);
+            afActivityUserSmsDo.setUserId(userDo.getRid());
+            afActivityUserSmsDo.setActivityId(activityId);
+            afActivityUserSmsDo.setGoodsName(goodsName);
+            AfActivityUserSmsDo userSms = afActivityUserSmsService.getByCommonCondition(afActivityUserSmsDo);
+            if(null != userSms){
+                return  H5CommonResponse.getNewInstance(false, "商品已预约").toString();
+            }
+            try{
+                afActivityUserSmsDo.setActivityTime(startTime);
+                afActivityUserSmsDo.setSendTime(sendTime);
+                int flag = afActivityUserSmsService.saveRecord(afActivityUserSmsDo);
+                if(flag <= 0){
+                    return H5CommonResponse.getNewInstance(false, "预约失败").toString();
+                }
+            }catch (Exception e){
+                return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
+            }
+            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
+        } catch(FanbeiException e){
+            String opennative = "/fanbei-web/opennative?name=";
+            String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
+            return H5CommonResponse
+                    .getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+                    .toString();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return H5CommonResponse.getNewInstance(false, "预约失败").toString();
+        }
+
+    }
+
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array) {
         //获取所有活动
         Map secActivityInfoMap = new HashMap();
