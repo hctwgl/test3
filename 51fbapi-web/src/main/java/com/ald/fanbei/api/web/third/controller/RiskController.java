@@ -143,6 +143,7 @@ public class RiskController {
 	
 	
 	
+	
 	/**
 	 * 开通白领贷回调
 	 * @param request
@@ -443,5 +444,61 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
+	
+	
+	/* ---------------------------
+	 * start 此区域内接口为风控主动调用    |
+	 * ---------------------------
+	 */
+	/**
+	 * 风控主动查询 用户补充认证信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/auth/querySecAuthInfo"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String querySecAuthInfo(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("consumerNo");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal authGxb begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.authGxbNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	/**
+	 * 强风控回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/auth/syncStrongRiskByForcePush" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String syncStrongRiskByForcePush(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyRegisterStrongRiskV1 begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyRegisterStrongRiskV1(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
+	/* ---------------------------
+	 * end 此区域内接口为风控主动调用    |
+	 * ---------------------------
+	 */
 	
 }

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
@@ -775,4 +776,24 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	return whiteIdsList.contains(userName);
     }
+
+	@Override
+	public void dealFromStrongRiskFocePush(Long userId, AfUserAccountDo acc, BigDecimal au_amount) {
+		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
+			String warnMsg = "User " + userId + " have dealing borrow cash!";
+			logger.warn(warnMsg);
+			throw new FanbeiException(warnMsg);
+		}
+		
+		AfUserAuthDo authDo = new AfUserAuthDo();
+		authDo.setUserId(userId);
+		authDo.setRiskStatus(RiskStatus.YES.getCode());
+		authDo.setBasicStatus(RiskStatus.YES.getCode());
+		authDo.setGmtBasic(new Date(System.currentTimeMillis()));
+		authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+		afUserAuthService.updateUserAuth(authDo);
+		updateUserScenceAmount(acc, consumerNo, au_amount, new BigDecimal(0),
+				new BigDecimal(0));
+		return 0;
+	}
 }

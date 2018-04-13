@@ -80,4 +80,11 @@ public interface AfUserAuthService {
 	boolean passWhiteList(String userName);
 	
 	boolean getAuthRaiseStatus(AfAuthRaiseStatusDo afAuthRaiseStatusDo, String scene, String auth_type, Date authDate);
+	
+	/**
+	 * 处理来自风控其主动发出的风控回调请求
+	 * @return
+	 */
+	void dealFromStrongRiskFocePush(Long userId);
+	
 }
