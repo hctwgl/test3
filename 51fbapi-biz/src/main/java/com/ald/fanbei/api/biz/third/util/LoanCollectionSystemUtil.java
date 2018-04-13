@@ -96,14 +96,13 @@ public class LoanCollectionSystemUtil extends AbstractThird {
                 String isAdmin = obj.getString("is_admin");
                 Long repaymentId = NumberUtil.objToLongDefault("repayment_id",0l);
                 JSONArray array = obj.getJSONArray("periods_list");
+                List<HashMap> periodsList = JSONObject.parseArray(obj.getString("periods_list"),HashMap.class);
                 if (array == null || array.size() == 0){
                     notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
                     return notifyRespBo;
                 }
-                HashMap[] objects = (HashMap[]) array.toArray();
-                List<HashMap> periodsList = Arrays.asList(objects);
                 boolean isAllRepay = obj.getBoolean("is_all_repay");
-                if (StringUtil.isAllNotEmpty(repayNo, loanNo, repayType, repayAmount, tradeNo)) {
+                if (StringUtil.isAllNotEmpty(repayNo, loanNo, tradeNo)) {
                     AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
                     if (loanDo == null) {
                         notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS);

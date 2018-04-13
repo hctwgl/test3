@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,12 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
-import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -505,9 +500,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 					BigDecimal repayAmount = BigDecimal.ZERO;
 					if(canRepay(loanPeriodsDo)){
 						BigDecimal reductionAmount = BigDecimal.ZERO;
-						for (HashMap map:periodsList) {
-							if (map.get("id") == loanPeriodsDo.getRid()){
-								reductionAmount = BigDecimal.valueOf((Double) map.get("reductionAmount"));
+						if (periodsList != null && periodsList.size() > 0){
+							for (HashMap map:periodsList) {
+								if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+									reductionAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))) );
+								}
 							}
 						}
 						dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo,reductionAmount);		//逾期费
@@ -540,9 +537,11 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				AfLoanPeriodsDo loanPeriodsDo = afLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
 				if(loanPeriodsDo!=null){
 					BigDecimal reductionAmount = BigDecimal.ZERO;
-					for (HashMap map:periodsList) {
-						if (map.get("id") == loanPeriodsDo.getRid()){
-							reductionAmount = BigDecimal.valueOf((Double) map.get("reductionAmount"));
+					if (periodsList != null && periodsList.size() > 0){
+						for (HashMap map:periodsList) {
+							if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+								reductionAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))));
+							}
 						}
 					}
 					loanPeriodsDoList.add(loanPeriodsDo);
@@ -650,7 +649,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
         	}
         } else {
         	loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), repayAmount).subtract(reductionAmount));
-        	loanPeriodsDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
+        	loanPeriodsDo.setOverdueAmount(overdueAmount.subtract(repayAmount).add(reductionAmount));
         	LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
         	
         	if(loanDo.getOverdueAmount().compareTo(BigDecimal.ZERO)>0){
@@ -790,7 +789,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
 		bo.actualAmount =  bo.repaymentAmount;
 		bo.loanId = loanDo.getRid();
-		
+		bo.loanDo = loanDo;
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		if (isAdmin != null && "Y".equals(isAdmin)){
 			bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
@@ -806,8 +805,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 			BigDecimal reductionAmount = BigDecimal.ZERO;
 			BigDecimal actualAmount = BigDecimal.ZERO;
 			for (HashMap map:periodsList) {
-				reductionAmount.add(BigDecimal.valueOf((Double) map.get("reductionAmount")));
-				actualAmount.add(BigDecimal.valueOf((Double) map.get("repayAmount")));
+				reductionAmount = reductionAmount.add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount")))));
+				actualAmount = actualAmount.add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("repayAmount")))));
 			}
 			bo.repaymentAmount = actualAmount.add(reductionAmount);
 			bo.reductionAmount = reductionAmount;
@@ -820,7 +819,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		if(afLoanRepaymentDao.getLoanRepaymentByTradeNo(outTradeNo) != null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
 		}
-		
 		calculateOfflineRestAmount(bo);
 		/*BigDecimal restAmount=BigDecimal.ZERO;
 		if(bo.isAllRepay){		// 提前结清
@@ -1118,13 +1116,16 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
 						.subtract(loanPeriodsDo.getRepayAmount());
 			}else { // 未出账， 提前还款时不用还手续费和利息
+				if (!bo.isAllRepay){//判断是否为按期还款，按期还款不能提前还未出账账单
+					throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+				}
 				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
 			}
 			if (periodsList.get(periodsList.size()-1).get("id") != loanPeriodsDo.getRid()){
 				for (HashMap map:bo.periodsList) {
-					if (map.get("id") == loanPeriodsDo.getRid()){
-						BigDecimal repayAmount = BigDecimal.valueOf((Double) map.get("repayAmount")).add(BigDecimal.valueOf((Double) map.get("reductionAmount")));
-						if (repayAmount.compareTo(restAmount) > 1 || repayAmount.compareTo(restAmount) < -1 ){
+					if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+						BigDecimal repayAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("repayAmount"))) ).add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))) ));
+						if (repayAmount.compareTo(restAmount.add(BigDecimal.ONE)) > 0 || repayAmount.compareTo(restAmount.subtract(BigDecimal.ONE)) < 0 ){
 							logger.warn("calculateOfflineRestAmount error, offlineRepayAmount="+ repayAmount +", restAmount="+ restAmount);
 							throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 						}
