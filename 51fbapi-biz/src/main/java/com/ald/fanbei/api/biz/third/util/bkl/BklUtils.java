@@ -119,11 +119,14 @@ public class BklUtils {
      */
 private boolean checkTodayOrders(AfBklDo bklDo){
     try {
-        //AfIagentResultDo afIagentResultDo = iagentResultService.getIagentByUserIdToday(bklDo.getUserId());
+        AfIagentResultDo afIagentResultDo = iagentResultService.getIagentByUserIdToday(bklDo.getUserId());
         AfOrderDo afOrderDo = afOrderService.selectTodayIagentStatus(bklDo.getUserId());
         if (afOrderDo ==null){
             return true;
         }else{
+            if (afIagentResultDo == null){
+                return true;
+            }
             String iagentstatus = afOrderDo.getIagentStatus();
             afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),iagentstatus);
             if ("BEG".contains(iagentstatus)){
