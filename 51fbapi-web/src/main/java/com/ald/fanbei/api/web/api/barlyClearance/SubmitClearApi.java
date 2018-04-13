@@ -196,18 +196,7 @@ public class SubmitClearApi implements ApiHandle {
                 }
                 map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo,bankPayType);
-                //代收
-                UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
-                if (!upsResult.isSuccess()) {
-                    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                }
-                Map<String, Object> newMap = new HashMap<String, Object>();
-                newMap.put("outTradeNo", upsResult.getOrderNo());
-                newMap.put("tradeNo", upsResult.getTradeNo());
-                newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
-                newMap.put("refId", map.get("refId"));
-                newMap.put("type", map.get("type"));
-                resp.setResponseData(newMap);
+                resp.setResponseData(map);
             }
         } catch (FanbeiException e) {
             logger.error("borrowbill repayment fail" + e);
