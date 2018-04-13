@@ -528,4 +528,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	    // TODO Auto-generated method stub
 	    return afBorrowCashDao.getCashBorrowByUserIdAndActivity(userId,activityTime);
 	}
+	
+	@Override
+	public boolean haveDealingBorrowCash(Long userId) {
+		return afBorrowCashDao.tuchDealingBorrowCash(userId) != null;
+	}
 }

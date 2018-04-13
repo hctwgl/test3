@@ -1768,8 +1768,10 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
+	 * @history: 
+	 * 	实名认证时风控异步审核(新版本3.9.7以上) @author chefeipeng 2017年6月7日 14:47:50
+	 * 	放开小贷第一次回调的校验，支持风控主动特定orderNo格式下的回调 @author ZJF 2018年4月13日
 	 * @return
-	 * @方法描述：实名认证时风控异步审核(新版本3.9.7以上) @author chefeipeng 2017年6月7日 14:47:50
 	 */
 	public int asyRegisterStrongRiskV1(String code, String data, String msg, String signInfo) {
 		RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
@@ -1805,12 +1807,30 @@ public class RiskUtil extends AbstractThird {
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
 			if (StringUtils.equals("10", result)) {
 				if (SceneType.CASH.getCode().equals(scene)) {
+					// TODO 处理风控主动特定orderNo格式下的回调
+					if(orderNo.contains("wwwww")) {
+						// TODO 判断用户是否有执行中的小贷借款
+						
+						
+						AfUserAuthDo authDo = new AfUserAuthDo();
+						authDo.setUserId(consumerNo);
+						authDo.setRiskStatus(RiskStatus.YES.getCode());
+						authDo.setBasicStatus(RiskStatus.YES.getCode());
+						authDo.setGmtBasic(new Date(System.currentTimeMillis()));
+						authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+						afUserAuthService.updateUserAuth(authDo);
+						updateUserScenceAmount(userAccountDo, consumerNo, au_amount, new BigDecimal(0),
+								new BigDecimal(0));
+						return 0;
+					}
+					
 					// 小额贷强风控认证成功，更新总额度
 					String totalAmount = obj.getString("totalAmount");
 					AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(consumerNo,
 							"LOAN_TOTAL", totalAmount);
 					afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 					
+					//判断更新小贷认证状态 和 额度
 					if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())
 							&& !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode())
 							|| orderNo.contains("sdrz")) {
