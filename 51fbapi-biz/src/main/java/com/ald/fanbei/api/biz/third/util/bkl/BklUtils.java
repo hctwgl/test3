@@ -12,21 +12,26 @@ import com.ald.fanbei.api.biz.iagent.utils.HttpRequestVO;
 import com.ald.fanbei.api.biz.iagent.utils.HttpResponseVO;
 import com.ald.fanbei.api.biz.service.AfIagentResultService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.domain.AfBklDo;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +46,8 @@ public class BklUtils {
     AfIagentResultService iagentResultService;
     @Resource
     AfOrderService afOrderService;
+    @Resource
+    AfResourceService afResourceService;
 
     @Resource
     SmsUtil smsUtil;
@@ -119,8 +126,13 @@ public class BklUtils {
      */
 private boolean checkTodayOrders(AfBklDo bklDo){
     try {
+        BigDecimal amount = new BigDecimal(100);
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
+        if (afResourceDo != null){
+            amount = new BigDecimal(afResourceDo.getValue3());
+        }
         AfIagentResultDo afIagentResultDo = iagentResultService.getIagentByUserIdToday(bklDo.getUserId());
-        AfOrderDo afOrderDo = afOrderService.selectTodayIagentStatus(bklDo.getUserId());
+        AfOrderDo afOrderDo = afOrderService.selectTodayIagentStatus(bklDo.getUserId(),amount);
         if (afOrderDo ==null){
             return true;
         }else{
