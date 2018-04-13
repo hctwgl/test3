@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
@@ -130,8 +129,9 @@ public class PayOrderV1Api implements ApiHandle {
         String county = ObjectUtils.toString(requestDataVo.getParams().get("county"),"");
         String province = ObjectUtils.toString(requestDataVo.getParams().get("province"),"");
         String gpsAddress = ObjectUtils.toString(requestDataVo.getParams().get("address"),"");
+        String bankChannel = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),"");
         logger.info(province+":"+city+":"+county+":"+gpsAddress);
-
+        
         VersionCheckUitl.setVersion( context.getAppVersion());//addby hongzhengpei
 
 
@@ -373,7 +373,7 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");

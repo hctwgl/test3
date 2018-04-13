@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -81,30 +82,13 @@ public class LoanAllRepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
-		this.afLoanRepaymentService.repay(bo);
+		Map<String, Object> data = this.afLoanRepaymentService.repay(bo,bankPayType);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.loanId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", AfLoanRepaymentStatus.SUCC.name());
-		if(bo.userCouponDto != null) {
-			data.put("couponAmount", bo.userCouponDto.getAmount());
-		}
-		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-			data.put("userAmount", bo.rebateAmount);
-		}
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		data.put("jfbAmount", BigDecimal.ZERO);
-		
 		resp.setResponseData(data);
 		
 		return resp;

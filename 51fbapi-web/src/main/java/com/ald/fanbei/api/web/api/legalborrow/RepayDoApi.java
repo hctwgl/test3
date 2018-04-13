@@ -90,32 +90,16 @@ public class RepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
 		// 405以下版本，检查是否有进行中V2借款数据
 		afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), bo.borrowId);
 		
-		this.afBorrowLegalRepaymentService.repay(bo);
+		Map<String, Object> data = this.afBorrowLegalRepaymentService.repay(bo, bankPayType);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.borrowId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", AfBorrowLegalRepaymentStatus.YES.getCode());
-		if(bo.userCouponDto != null) {
-			data.put("couponAmount", bo.userCouponDto.getAmount());
-		}
-		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-			data.put("userAmount", bo.rebateAmount);
-		}
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		data.put("jfbAmount", BigDecimal.ZERO);
-		
 		resp.setResponseData(data);
 		
 		return resp;

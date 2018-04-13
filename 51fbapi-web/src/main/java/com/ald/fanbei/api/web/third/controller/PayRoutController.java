@@ -53,6 +53,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -188,6 +189,9 @@ public class PayRoutController {
 	@Resource
 	private AfBorrowExtendDao afBorrowExtendDao;
 
+	@Autowired
+	private UpsUtil upsUtil;
+	
 	@Autowired
 	KafkaSync kafkaSync;
 
@@ -543,7 +547,7 @@ public class PayRoutController {
 			return "ERROR";
 		}
 	}
-
+	
 	/**
 	 * 易宝订单回调
 	 *

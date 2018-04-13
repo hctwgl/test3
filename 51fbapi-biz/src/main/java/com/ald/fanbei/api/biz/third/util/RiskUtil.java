@@ -316,10 +316,10 @@ public class RiskUtil extends AbstractThird {
 	KafkaSync kafkaSync;
 	@Resource
 	AfUserSeedService afUserSeedService;
-	
+
 	@Resource
 	AfTradeSettleOrderService afTradeSettleOrderService;
-	
+
 	@Resource
 	AfTradeBusinessInfoService afTradeBusinessInfoService;
 
@@ -1234,7 +1234,7 @@ public class RiskUtil extends AbstractThird {
 					logger.error("createSettlementOrder error.", e);
 				}
 				// end by luoxiao
-				
+
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				Boolean flag=true;
@@ -1310,9 +1310,9 @@ public class RiskUtil extends AbstractThird {
 		resultMap.put("success", true);
 		return resultMap;
 	}
-	
+
 	/**
-	 * 生成线下商圈结算单， 
+	 * 生成线下商圈结算单，
 	 * 和产品王鲁迪沟通过，线下商圈暂时只生成一条结算单（因为订单没有结束时间，无法算每期结算金额），按照原模式结算
 	 * @param afOrderDo
 	 * @param userName
@@ -1334,10 +1334,10 @@ public class RiskUtil extends AbstractThird {
 		settleOrderDo.setOrderNo(afOrderDo.getOrderNo());
 		settleOrderDo.setStatus(AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
 		settleOrderDo.setGmtModified(new Date());
-		
+
 		afTradeSettleOrderService.createSettleOrder(settleOrderDo);
 	}
-	
+
 	/**
      * 获取租房分期结算可提取时间
      * @param batchDelayDays
@@ -1346,15 +1346,15 @@ public class RiskUtil extends AbstractThird {
 	private Date getExtractableDate(int batchDelayDays, Date gmtCreate) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(gmtCreate);
-		
+
 		String dateTimeString = DateUtil.formatDateForPatternWithHyhen(gmtCreate) + " 23:59:59.999";
 		Date extractableDate = DateUtil.parseDate(dateTimeString, DateUtil.DATE_TIME_FULL);
-		
+
 		int gmtCreateHour = calendar.get(Calendar.HOUR_OF_DAY);
 		if(gmtCreateHour > 12){
 			extractableDate = DateUtil.addDays(extractableDate, 1);
 		}
-		
+
 		if(batchDelayDays > 1){
 			extractableDate = DateUtil.addDays(extractableDate, batchDelayDays - 1);
 		}
@@ -1547,159 +1547,7 @@ public class RiskUtil extends AbstractThird {
 		return creditRespBos;
 	}
 
-	/**
-	 * 风控通过后组合支付
-	 *
-	 * @param userId
-	 * @param orderNo
-	 * @param tradeNo
-	 * @param resultMap
-	 * @param isSelf
-	 * @param virtualCode
-	 * @param bankAmount
-	 * @param borrow
-	 * @param verybo
-	 * @param cardInfo
-	 * @return
-	 */
-	public Map<String, Object> combinationPay(final Long userId, final String orderNo, AfOrderDo orderInfo,
-			String tradeNo, Map<String, Object> resultMap, Boolean isSelf, Map<String, Object> virtualMap,
-			BigDecimal bankAmount, AfBorrowDo borrow, RiskVerifyRespBo verybo, AfUserBankcardDo cardInfo) {
-		String result = verybo.getResult();
 
-		logger.info("combinationPay:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
-		// 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
-
-		if (!result.equals("10")) {
-			resultMap.put("success", false);
-			resultMap.put("verifybo", JSONObject.toJSONString(verybo));
-			resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-
-			orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
-			orderInfo.setClosedDetail("系统关闭");
-			// maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
-			String rejectCode = verybo.getRejectCode();
-			orderInfo.setClosedReason("风控审批不通过");
-			if (StringUtils.isNotBlank(rejectCode)) {
-				orderInfo.setClosedReason("风控审批不通过" + rejectCode);
-			}
-			orderInfo.setGmtClosed(new Date());
-			logger.info("updateOrder orderInfo = {}", orderInfo);
-			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-				try {
-					// 菠萝觅风控拒绝的订单自动取消
-					boluomeUtil.cancelOrder(orderInfo.getThirdOrderNo(), orderInfo.getSecType(),
-							orderInfo.getClosedReason());
-					orderDao.updateOrder(orderInfo);
-				} catch (UnsupportedEncodingException e) {
-					logger.info("cancel Order error");
-				}
-			} else {
-				if (StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-					AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderInfo.getRid());
-					afAgentOrderDo.setClosedReason("风控审批失败");
-					afAgentOrderDo.setGmtClosed(new Date());
-					afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-
-					// 添加关闭订单释放优惠券
-					if (afAgentOrderDo.getCouponId() > 0) {
-						AfUserCouponDo couponDo = afUserCouponService.getUserCouponById(afAgentOrderDo.getCouponId());
-
-						if (couponDo != null && couponDo.getGmtEnd().after(new Date())) {
-							couponDo.setStatus(CouponStatus.NOUSE.getCode());
-							afUserCouponService.updateUserCouponSatusNouseById(afAgentOrderDo.getCouponId());
-						} else if (couponDo != null && couponDo.getGmtEnd().before(new Date())) {
-							couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-							afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
-						}
-					}
-
-				}
-				orderDao.updateOrder(orderInfo);
-			}
-			jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
-			return resultMap;
-		}
-
-		String orderType = OrderType.SELFSUPPORT.getCode();
-		if (StringUtil.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
-			orderType = OrderType.AGENTCPBUY.getCode();
-		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-			orderType = OrderType.BOLUOMECP.getCode();
-		} else if (StringUtil.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())) {
-			orderType = OrderType.SELFSUPPORTCP.getCode();
-		}
-
-		// 银行卡支付 代收
-		UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(),
-				cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(),
-				Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
-		if (!respBo.isSuccess()) {
-			if (StringUtil.isNotBlank(respBo.getRespCode())) {
-				// 模版数据map处理
-				Map<String, String> replaceMapData = new HashMap<String, String>();
-				String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-				replaceMapData.put("errorMsg", errorMsg);
-				try {
-					AfUserDo userDo = afUserService.getUserById(userId);
-					smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0,
-							AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
-				} catch (Exception e) {
-					logger.error("pay order rela bank pay error,userId=" + userId, e);
-				}
-				
-				throw new FanbeiException(errorMsg);
-			}
-			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-		}
-		String virtualCode = afOrderService.getVirtualCode(virtualMap);
-		// 是虚拟商品
-		if (StringUtils.isNotBlank(virtualCode)) {
-			AfUserVirtualAccountDo virtualAccountInfo = BuildInfoUtil.buildUserVirtualAccountDo(orderInfo.getUserId(),
-					orderInfo.getBorrowAmount(), afOrderService.getVirtualAmount(virtualMap), orderInfo.getRid(),
-					orderInfo.getOrderNo(), virtualCode);
-			// 增加虚拟商品记录
-			afUserVirtualAccountService.saveRecord(virtualAccountInfo);
-		}
-
-		// 新增借款信息
-		afBorrowDao.addBorrow(borrow); // 冻结状态
-		// 在风控审批通过后额度不变生成账单
-		AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-		afBorrowExtendDo.setId(borrow.getRid());
-		afBorrowExtendDo.setInBill(0);
-		afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-
-		/**
-		 * modify by hongzhengpei
-		 */
-		if (VersionCheckUitl.getVersion() >= VersionCheckUitl.VersionZhangDanSecond) {
-			if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())
-					|| orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
-				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-				afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),
-						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
-						orderInfo.getOrderType());
-			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
-				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-			} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-				afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-			}
-		} else {
-			afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),
-					userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(),
-					orderInfo.getOrderType());
-		}
-		// 更新拆分场景使用额度
-		updateUsedAmount(orderInfo, borrow);
-		logger.info("updateOrder orderInfo = {}", orderInfo);
-		orderDao.updateOrder(orderInfo);
-		resultMap.put("success", true);
-		return resultMap;
-	}
 
 	/**
 	 * 更新拆分场景使用额度
@@ -1707,7 +1555,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param orderInfo
 	 * @param borrow
 	 */
-	private void updateUsedAmount(AfOrderDo orderInfo, AfBorrowDo borrow) {
+	public void updateUsedAmount(AfOrderDo orderInfo, AfBorrowDo borrow) {
 		// 获取临时额度
 		AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
 		// 判断商圈订单

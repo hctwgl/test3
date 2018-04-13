@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeWaimaiDo;
 
+
 /**
  * 新人专享Dao
  * 
