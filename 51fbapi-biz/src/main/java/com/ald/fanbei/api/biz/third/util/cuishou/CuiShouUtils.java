@@ -72,6 +72,10 @@ public class CuiShouUtils {
     AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
     @Resource
     AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+    @Resource
+    AfLoanService afLoanService;
+    @Resource
+    AfLoanRepaymentService afLoanRepaymentService;
 
     /**
      * 线下还款
@@ -132,7 +136,19 @@ public class CuiShouUtils {
 //                return JSON.toJSONString(c);
                 return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
             } else if (CuiShouType.WITH_BORROW.getCode().equals(c_type)) {
-
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        CuiShouUtils.setIsXianXiaHuangKuang(true);
+                        CuiShouBackMoney c = loanBorrowCashMoney(jsonObject);
+                        JSONObject j = (JSONObject) c.getData();
+                        if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
+                            j.put("ref_id", CuiShouUtils.getAfLoanRepaymentDo().getRid());
+                            c.setData(j);
+                        }
+                        sycnSuccessAndError(c,0); //同步返回数据
+                    }
+                }).start();
 
             }
             return JSONObject.toJSONString(new  CuiShouBackMoney(200, "成功")) ;//同步反回接收成功
@@ -377,6 +393,61 @@ public class CuiShouUtils {
             }
         } catch (Exception e) {
             thirdLog.error("offlineRepaymentNotify error", e);
+            cuiShouBackMoney.setCode(500);
+            return cuiShouBackMoney;
+        }
+    }
+
+    /**
+     * 白领贷还款
+     * @param jsonObject
+     * @return
+     */
+    private CuiShouBackMoney loanBorrowCashMoney(JSONObject obj) {
+
+
+        CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
+        JSONObject _returnObject = new JSONObject();
+        _returnObject.put("id", obj.getLongValue("id"));
+        _returnObject.put("type", CuiShouType.WITH_BORROW.getCode());
+        cuiShouBackMoney.setData(_returnObject);
+
+        try {
+            String repayNo = obj.getString("repay_no");
+            String loanNo = obj.getString("loan_no");
+            String repayType = obj.getString("repay_type");
+            String repayAmount = obj.getString("repay_amount");
+            String restAmount = obj.getString("rest_amount");
+            String repayCardNum = obj.getString("repay_cardNum");
+            String operator = obj.getString("operator");
+            String tradeNo = obj.getString("trade_no"); // 三方交易流水号
+            String isBalance = obj.getString("is_balance");
+            String isAdmin = obj.getString("is_admin");
+            Long repaymentId = NumberUtil.objToLongDefault("repayment_id",0l);
+            JSONArray array = obj.getJSONArray("periods_list");
+            List<HashMap> periodsList = JSONObject.parseArray(obj.getString("periods_list"),HashMap.class);
+            if (array == null || array.size() == 0){
+                cuiShouBackMoney.setCode(303);
+                thirdLog.error("offlineLoanRepaymentNotify error loanNo ="+ loanNo);
+                return cuiShouBackMoney;
+            }
+            boolean isAllRepay = obj.getBoolean("is_all_repay");
+            if (StringUtil.isAllNotEmpty(repayNo, loanNo, tradeNo)) {
+                AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
+                if (loanDo == null) {
+                    cuiShouBackMoney.setCode(205);
+                    thirdLog.error("offlineLoanRepaymentNotify error loanNo ="+ loanNo);
+                    return cuiShouBackMoney;
+                }
+                afLoanRepaymentService.offlineRepay(loanDo, loanNo, repayType, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin, isAllRepay,repaymentId,periodsList);
+            } else {
+                cuiShouBackMoney.setCode(303);
+                thirdLog.error("offlineLoanRepaymentNotify error loanNo ="+ loanNo);
+            }
+            cuiShouBackMoney.setCode(200);
+            return cuiShouBackMoney;
+        } catch (Exception e) {
+            thirdLog.error("offlineLoanRepaymentNotify error", e);
             cuiShouBackMoney.setCode(500);
             return cuiShouBackMoney;
         }

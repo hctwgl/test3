@@ -126,7 +126,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "（借款人）：";
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
-        logger.info("sign account id: " + accountId);
+        logger.info("userStreamSign sign account id: " + accountId);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
@@ -558,7 +558,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "楚橡信息科技股份有限公司";
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
-        logger.info("sign account id: " + accountId);
+        logger.info("thirdSign sign account id: " + accountId);
         posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
@@ -599,7 +599,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("thirdPartyKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
-        logger.info("sign account id: " + accountId);
+        logger.info("thirdStreamSign sign account id: " + accountId);
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -624,7 +624,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        logger.info("sign account id: " + accountId);
+        logger.info("selfStreamSign sign account id: " + accountId);
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -649,7 +649,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        logger.info("sign account id: " + accountId);
+        logger.info("streamSign sign account id: " + accountId);
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -691,7 +691,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "商务股份有限公司";
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
-        logger.info("sign account id: " + accountId);
+        logger.info("selfSign sign account id: " + accountId);
         fileName = "反呗合同";
         posPage = "6";
         PosBean pos = new PosBean();
