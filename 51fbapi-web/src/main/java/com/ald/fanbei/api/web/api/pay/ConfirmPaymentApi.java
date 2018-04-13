@@ -115,7 +115,7 @@ public class ConfirmPaymentApi implements ApiHandle {
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	}
 
-	resp.addResponseData("data", map);
+	resp.setResponseData(map);
 
 	return resp;
     }
