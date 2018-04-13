@@ -357,7 +357,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 					//百度智能地址
 					try {
-						smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
+						//smartAddressEngine.setScoreAsyn(afBorrowLegalOrderDo.getAddress(),borrowId,afBorrowLegalOrderDo.getOrderNo());
 					}catch (Exception e){
 						logger.info("smart address {}",e);
 					}
@@ -372,7 +372,20 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-					jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+                    logger.info("test2 ");
+					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
+					try{
+						if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")&&afResourceDo.getValue4().contains(appType)){
+							jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
+							smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
+						}else{
+							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+						}
+					}catch (Exception e){
+						logger.error("push legal borrow cash error", e);
+					}
+
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 				}
 				return resp;
 			} catch (Exception e) {
