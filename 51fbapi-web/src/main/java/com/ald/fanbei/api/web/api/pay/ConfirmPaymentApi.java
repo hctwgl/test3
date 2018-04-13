@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -77,7 +78,7 @@ public class ConfirmPaymentApi implements ApiHandle {
 	String smsCode = ObjectUtils.toString(requestDataVo.getParams().get("smsCode"), null);
 	String tradeNo = ObjectUtils.toString(requestDataVo.getParams().get("tradeNo"), null);
 
-	if (tradeNo == null || smsCode == null) {
+	if (StringUtils.isBlank(tradeNo) || StringUtils.isBlank(smsCode)) {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	}
 
