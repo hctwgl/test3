@@ -127,7 +127,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					//默认值处理
 					zmReAuthDatetime = DateUtil.getStartDate();
 				}
-				if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) 
+				if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) 
 						&& ((YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
 								|| (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())))){
 						//将数据存入缓存

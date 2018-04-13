@@ -41,7 +41,6 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -144,7 +143,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				//默认值处理
 				zmReAuthDatetime = DateUtil.getStartDate();
 			}
-			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) && YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue()) 
+			if(context.getAppVersion() >= zmVersionDivision && YesNoStatus.YES.getCode().equals(zmPopImageResourceDo.getValue2()) 
 					&& ((YesNoStatus.YES.getCode().equals(authDo.getZmStatus()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())))
 							|| (YesNoStatus.NO.getCode().equals(authDo.getZmStatus()) && YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())))){
 				//将数据存入缓存
