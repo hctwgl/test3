@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -94,12 +95,22 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			logger.error(e.toString());
 		}
 		JSONArray interestFreeArray = null;
+		String freedesc = null;
 		if(schemeGoodsDo != null){
-			AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-			String interestFreeJson = interestFreeRulesDo.getRuleJson();
-			if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-				interestFreeArray = JSON.parseArray(interestFreeJson);
+			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
+
+			if (afSchemeDo != null){
+				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen())){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+						freedesc = afSchemeDo.getDescr();
+					}
+				}
+
 			}
+
 		}
 		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
 		//秒杀、促销活动商品信息
@@ -188,12 +199,24 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
-		
+		AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
+		if (reflag != null){
+			String value3 = reflag.getValue3();
+			if (value3 != null&&value3.contains(goods.getBrandId()+"")){
+				vo.setIsShow(1);
+			}
+		}
+		AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+		if (afInterestReduceSchemeDo != null){
+			vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
+			AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
 
+		}
+		vo.setInterestFreeDesc(freedesc);
 		resp.setResponseData(vo);
 		return resp;
 	}
-	
+
     private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
@@ -278,5 +301,22 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		return vo;
 	}
+private boolean freeflag(Date start,Date end,String isOpen){
+		try {
+			if (!"Y".equals(isOpen)){
+				return false;
+			}
+			if (DateUtil.compareDate(end,new Date()) && DateUtil.compareDate(new Date(),start)){
+				return true;
 
+			}else {
+				return false;
+			}
+		}catch (Exception e){
+			logger.info("freeflag",e);
+			return false;
+
+		}
+
+}
 }
