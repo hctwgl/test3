@@ -125,7 +125,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 			//默认值处理
 			zmReAuthDatetime = DateUtil.getStartDate();
 		}
-		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && 
+		if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) &&   YesNoStatus.YES.getCode().equals(zmConfigResourceDo.getValue())  &&
 				( StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm()))) )) {
             String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
             AfResourceDo zhimaNewUrl= afResourceService.getSingleResourceBytype("zhimaNewUrl");
