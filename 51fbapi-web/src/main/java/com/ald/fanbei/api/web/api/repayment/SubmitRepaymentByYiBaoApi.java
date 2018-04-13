@@ -176,9 +176,6 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         String billIds1 = "";
         Map<String, Object> map;
         try {
-        	
-           //---------非快捷支付加锁(快捷支付统一接口处理)
-         //  if(bankPayType == null || !"KUAIJIE".equals(bankPayType)){
 	            if (afUserWithholdService.getCountByUserId(userId) > 0) {
 	                for (int i = 0; i < billStr.length; i++) {
 	                    String billId1 = billStr[i];
@@ -193,8 +190,8 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 	                    }
 	                }
 	            }
-        //   }
-            if (cardId.longValue() == -2) {//余额支付
+
+	        if (cardId.longValue() == -2) {//余额支付
                 //用户账户余额校验添加
                 if (afUserAccountDo.getRebateAmount().compareTo(actualAmount) < 0) {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
