@@ -114,10 +114,6 @@ public class ConfirmPaymentApi implements ApiHandle {
 	    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	}
 
-	if (map.get("resp") == null || (map.get("resp") != null && !((UpsCollectRespBo) map.get("resp")).isSuccess())) {
-	    throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
-	}
-
 	resp.addResponseData("data", map);
 
 	return resp;
