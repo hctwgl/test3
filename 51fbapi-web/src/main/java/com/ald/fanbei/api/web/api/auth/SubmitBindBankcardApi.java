@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -67,8 +68,10 @@ public class SubmitBindBankcardApi implements ApiHandle {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				AfUserAccountDo userAccDB = afUserAccountService.getUserAccountByUserId(context.getUserId());
+				AfUserDo userDo=afUserService.getUserById(context.getUserId());
 				AfUserAccountDo userAccForUpdate = new AfUserAccountDo();
                 AfUserAuthDo userAuthUpdate=new AfUserAuthDo();
+                AfUserDo userUpdate=new AfUserDo();
 				if(StringUtil.isEmpty(userAccDB.getPassword())) { //支付密码为空，则此次请求需设置支付密码
 					if(StringUtils.isEmpty(param.newPassword)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_PAY_PWD_MISS);
@@ -80,7 +83,11 @@ public class SubmitBindBankcardApi implements ApiHandle {
 						userAccForUpdate.setPassword(newPwd);
 					}
 				}
-				
+				if(StringUtil.isEmpty(userDo.getRealName())){
+					userUpdate.setRid(context.getUserId());
+					userUpdate.setRealName(param.realname);
+					afUserService.updateUser(userUpdate);
+				}
 				if(StringUtil.isEmpty(userAccDB.getIdNumber())) { //真实姓名为空，则此次请求需存入身份证信息
 					if(StringUtils.isEmpty(param.realname)) {
 						throw new FanbeiException(FanbeiExceptionCode.BINDCARD_REALINFO_MISS);
