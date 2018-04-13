@@ -163,6 +163,7 @@ public class RiskController {
 				riskUtil.asyDredgeWhiteCollarLoan(code, data, msg, signInfo);
 				return "SUCCESS";
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				return "FAIL";
 			}
 		} else {
