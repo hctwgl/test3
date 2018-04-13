@@ -329,7 +329,7 @@ public class VisualH5Controller extends BaseController {
                     JSONObject coupon = JSON.parseObject(list.get(i).get("value_4").toString());
                     JSONArray array = coupon.getJSONArray("list");
                     for (int j = 0; j < array.size(); j++) {
-                        JSONObject item = array.getJSONObject(i);
+                        JSONObject item = array.getJSONObject(j);
                         couponIds.add(item.getString("couponId"));
                     }
                 }
