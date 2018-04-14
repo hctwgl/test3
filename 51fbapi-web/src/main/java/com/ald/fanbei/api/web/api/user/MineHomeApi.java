@@ -89,7 +89,7 @@ public class MineHomeApi implements ApiHandle {
         fillCreditInfo(data, userId);
         fillAccountInfo(data, userId);
         fillOrderInfo(data, userId);
-        fillBannerAndNavigationInfo(data, userId, requestDataVo.getId());
+        fillBannerAndNavigationInfo(data, requestDataVo.getId());
         resp.setResponseData(data);
 
         return resp;
@@ -98,6 +98,7 @@ public class MineHomeApi implements ApiHandle {
     // 填充用户信息
     private void fillUserInfo(MineHomeVo data, Long userId) {
         data.setIsSign(YesNoStatus.NO.getCode());
+        data.setCustomerPhone(randomPhone());
 
         if (userId != null) {
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
@@ -110,7 +111,6 @@ public class MineHomeApi implements ApiHandle {
                 data.setIdNumber(userAccountInfo.getIdNumber());
                 data.setMobile(userAccountInfo.getMobile());
                 data.setRecommendCode(userAccountInfo.getRecommendCode());
-                data.setCustomerPhone(randomPhone());
                 data.setRebateAmount(userAccountInfo.getRebateAmount()
                         .setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
@@ -142,6 +142,8 @@ public class MineHomeApi implements ApiHandle {
 
     // 填充信用信息
     private void fillCreditInfo(MineHomeVo data, Long userId) {
+        if (userId == null) return;
+
         AfResourceDo creditResource = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
         List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "ONE");
         List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "ONE");
@@ -210,6 +212,8 @@ public class MineHomeApi implements ApiHandle {
 
     // 填充账户信息
     private void fillAccountInfo(MineHomeVo data, Long userId) {
+        if (userId == null) return;
+
         // 优惠券
         int coupleCount = afUserCouponService.getUserCouponByUserNouse(userId);
         GetBrandCouponCountRequestBo bo = new GetBrandCouponCountRequestBo();
@@ -241,6 +245,8 @@ public class MineHomeApi implements ApiHandle {
 
     // 填充订单信息
     private void fillOrderInfo(MineHomeVo data, Long userId) {
+        if (userId == null) return;
+
         AfOrderCountDto orderCountDto = afOrderService.countStatusNum(userId);
         data.setNewOrderNum(orderCountDto.getNewOrderNum());
         data.setPaidOrderNum(orderCountDto.getPaidOrderNum());
@@ -249,7 +255,7 @@ public class MineHomeApi implements ApiHandle {
     }
 
     // 填充banner和快速导航信息
-    private void fillBannerAndNavigationInfo(MineHomeVo data, Long userId, String appModel) {
+    private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         logger.info("getDrainageBannerListApi and type = {}", invelomentType);
