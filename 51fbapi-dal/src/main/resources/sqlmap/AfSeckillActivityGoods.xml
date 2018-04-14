@@ -369,7 +369,7 @@
 	          GROUP BY g.id
 
     </select>
-     <select id="getHomePageSecKillGoodsByConfigureResourceH5" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery">
+     <select id="getHomePageSecKillGoodsByActivityModel" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery">
 	SELECT
       MIN(a.special_price) activityAmount,
       g.id,
