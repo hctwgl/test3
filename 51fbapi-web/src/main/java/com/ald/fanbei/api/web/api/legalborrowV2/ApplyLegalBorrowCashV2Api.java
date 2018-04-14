@@ -346,7 +346,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
-								verifyBo.getResult(), null, mainCard, afBorrowCashDo);
+								verifyBo.getResult(), afBorrowLegalOrderDo, mainCard, afBorrowCashDo);
 					}
 					// 增加借款埋点信息
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
@@ -366,7 +366,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					/*afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());*/
-					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo);
+					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
                     logger.info("test2 ");
 					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
 					try{
@@ -392,7 +392,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				// 关闭借款
 				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				// 关闭搭售商品订单
-//				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
+				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
 				// 更新风控审核状态为拒绝
 				delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
 				// 如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
@@ -403,7 +403,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.APPLY.getCode());
 					delegateBorrowCashDo.setReviewDetails("弱风控认证存在捕获外异常");
 				}
-				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo);
+				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 		} finally {
