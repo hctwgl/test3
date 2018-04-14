@@ -467,6 +467,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
 				// 更新订单状态
 //				afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+				//111
 				ApplyLegalBorrowCashServiceImpl.this.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 				return "success";
 			}
