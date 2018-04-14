@@ -9,33 +9,57 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
-import com.ald.fanbei.api.biz.service.*;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.bo.risk.ReqFromRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromSecondaryRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromStrongRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
+import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.AuthType;
+import com.ald.fanbei.api.common.enums.LoanType;
+import com.ald.fanbei.api.common.enums.RiskRaiseResult;
+import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add;
-import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
-import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @类现描述：
@@ -65,6 +89,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     AfUserAccountSenceService afUserAccountSenceService;
     @Resource
     AfAuthRaiseStatusService afAuthRaiseStatusService;
+    @Resource
+    AfBorrowCashService afBorrowCashService;
 
     @Override
     public int addUserAuth(AfUserAuthDo afUserAuthDo) {
@@ -777,23 +803,83 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	return whiteIdsList.contains(userName);
     }
 
+    
+    /* ---------------------------------
+	 * start 此区域内接口为风控主动调用    |
+	 * --------------------------------- */
+    /**
+     * 处理来自风控主动推送的强风控回调
+     */
 	@Override
-	public void dealFromStrongRiskFocePush(Long userId, AfUserAccountDo acc, BigDecimal au_amount) {
+	public void dealFromStrongRiskFocePush(ReqFromStrongRiskBo reqBo) {
+		Long userId = reqBo.consumerNo;
+		
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
-			String warnMsg = "User " + userId + " have dealing borrow cash!";
-			logger.warn(warnMsg);
-			throw new FanbeiException(warnMsg);
+			throw new FanbeiException("dealFromSecondaryRiskFocePush, ConsumerNo=" + userId + "have deal borrow cash");
 		}
 		
-		AfUserAuthDo authDo = new AfUserAuthDo();
-		authDo.setUserId(userId);
-		authDo.setRiskStatus(RiskStatus.YES.getCode());
-		authDo.setBasicStatus(RiskStatus.YES.getCode());
-		authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-		authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-		afUserAuthService.updateUserAuth(authDo);
-		updateUserScenceAmount(acc, consumerNo, au_amount, new BigDecimal(0),
-				new BigDecimal(0));
-		return 0;
+		if (StringUtils.equals("10", reqBo.result)) {
+			if (SceneType.CASH.getCode().equals(reqBo.scene)) { // 认证通过
+				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, "LOAN_TOTAL", reqBo.totalAmount.toString());
+				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+				
+				this.updateRiskStatus(RiskStatus.YES, userId); 
+				
+				AfUserAccountDo accountDo = new AfUserAccountDo();
+				accountDo.setUserId(userId);
+				accountDo.setAuAmount(reqBo.amount);
+				afUserAccountService.updateUserAccount(accountDo);
+			}
+		} else if (StringUtils.equals("30", reqBo.result)) {   // 认证未通过
+			if (SceneType.CASH.getCode().equals(reqBo.scene)) {
+				this.updateRiskStatus(RiskStatus.NO, userId);
+			}
+		}
 	}
+	
+	@Override
+	public void dealFromSecondaryRiskFocePush(ReqFromSecondaryRiskBo reqBo) {
+		Long userId = reqBo.consumerNo;
+		
+		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
+			throw new FanbeiException("dealFromSecondaryRiskFocePush, ConsumerNo=" + userId + "have deal borrow cash");
+		}
+		
+		String raiseStatus = reqBo.results[0].getResult();
+		if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+		    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+		    afUserAccountDo.setUserId(userId);
+		    afUserAccountDo.setAuAmount(reqBo.amount);
+		    afUserAccountService.updateUserAccount(afUserAccountDo);
+		    
+		    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
+		    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+
+		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
+		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+		} else {
+		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
+		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+		}
+	}
+	
+	private void updateRiskStatus(RiskStatus status, Long userId) {
+    	AfUserAuthDo authDo = new AfUserAuthDo();
+    	Date cur = new Date(System.currentTimeMillis());
+		authDo.setUserId(userId);
+		authDo.setRiskStatus(status.getCode());
+		authDo.setBasicStatus(status.getCode());
+		authDo.setGmtBasic(cur);
+		authDo.setGmtRisk(cur);
+		updateUserAuth(authDo);
+    }
+	/* ---------------------------------
+	 * end 此区域内接口为风控主动调用    |
+	 * --------------------------------- */
+
+	@Override
+	public RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo) {
+		return null;
+	}
+	
 }

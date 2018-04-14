@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.risk.ReqFromRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromSecondaryRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromStrongRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -82,9 +86,20 @@ public interface AfUserAuthService {
 	boolean getAuthRaiseStatus(AfAuthRaiseStatusDo afAuthRaiseStatusDo, String scene, String auth_type, Date authDate);
 	
 	/**
-	 * 处理来自风控其主动发出的风控回调请求
+	 * 处理来自风控其主动发出的强风控回调请求
 	 * @return
 	 */
-	void dealFromStrongRiskFocePush(Long userId);
+	void dealFromStrongRiskFocePush(ReqFromStrongRiskBo reqBo);
 	
+	/**
+	 * 处理来自风控其主动发出的补充认证回调请求
+	 * @return
+	 */
+	void dealFromSecondaryRiskFocePush(ReqFromSecondaryRiskBo reqBo);
+	
+	/**
+	 * 查询补充认证的相关状态
+	 * @return
+	 */
+	RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo);
 }
