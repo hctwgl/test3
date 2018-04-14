@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -46,7 +47,7 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         }
         Map<String,Boolean> checkResult = new HashMap<String,Boolean>();
         AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
-        if (StringUtil.equals(afUserAuthDo.getBasicStatus(), YesNoStatus.YES.getCode())) {
+        if (StringUtil.equals(afUserAuthDo.getBasicStatus(), UserAuthSceneStatus.YES.getCode())) {
             checkResult.put("isRealNameAuth", true);
         } else {
             checkResult.put("isRealNameAuth", false);
