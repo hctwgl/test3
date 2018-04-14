@@ -120,12 +120,6 @@ public interface AfGoodsService {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
 	/**
-	 * 爱上街根据品牌id查询销量前五的商品
-	 * @param brandId
-	 * @return
-	 */
-	List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId);
-	/**
 	 * 爱尚街根据品牌id查询出所有的商品
 	 * @param brandId
 	 * @return
@@ -137,24 +131,16 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+	
 	/**
-	 * 爱尚街根据分类ID和价格查询商品 升序 
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
-	/**
-	 * 爱尚街根据分类ID和价格查询商品 降序
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
-	/**
-	 * 查询该品牌下的所有商品
+	 * 品牌结果页 查询该品牌下的所有商品按照销量进行降序
 	 * @param brandId
 	 * @return
 	 */
 	List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId);
+
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
+			AfGoodsQuery goodsQuery);
 	
 }
 

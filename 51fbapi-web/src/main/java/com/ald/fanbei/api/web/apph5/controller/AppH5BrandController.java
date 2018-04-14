@@ -85,13 +85,13 @@ public class AppH5BrandController extends BaseController {
 			if (brandId == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg(), "", null).toString();
 			}
-			//	AfGoodsQuery goodsQuery = getCheckParams(request);
 			// 1 query info of the brand
 			AfBrandDo brandInfo = (AfBrandDo) bizCacheUtil.getObject("barndInfo"+brandId);
 			if (brandInfo == null){
 				brandInfo = afBrandService.getById(brandId);
 				bizCacheUtil.saveObject("barndInfo"+brandId, brandInfo, Constants.SECOND_OF_HALF_DAY);
 			}
+			// 按销量查询出所有的商品，在进行分页
 			List<HomePageSecKillGoods> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
 			if (brandGoodsList == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.BRAND_GOODS_IS_EMPTY.getErrorMsg(), "", null).toString();

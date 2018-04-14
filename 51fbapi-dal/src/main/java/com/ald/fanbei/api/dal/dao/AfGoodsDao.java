@@ -119,13 +119,7 @@ public interface AfGoodsDao {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
 	/**
-	 * 爱上街根据品牌id查询销量前五的商品
-	 * @param brandId
-	 * @return
-	 */
-	List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId);
-	/**
-	 * 爱尚街根据品牌id查询出该品牌下所有的商品
+	 * 根据品牌id查询出该品牌下所有的商品
 	 * @param brandId
 	 * @return
 	 */
@@ -137,23 +131,13 @@ public interface AfGoodsDao {
 	 */
 	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
 	/**
-	 * 爱尚街根据分类ID和价格查询商品 升序 
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
-	/**
-	 * 爱尚街根据分类ID和价格查询商品 降序
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
-	/**
 	 * 查询出该品牌下的所有商品 按照销量进行降序
 	 * @param brandId
 	 * @return
 	 */
 	List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId);
+
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(AfGoodsQuery goodsQuery);
 
 
 }

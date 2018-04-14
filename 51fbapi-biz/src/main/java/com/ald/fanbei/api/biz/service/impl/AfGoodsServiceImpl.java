@@ -195,36 +195,41 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
 	}
 	@Override
-	public List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId) {
-		return afGoodsDao.getGoodsListByBrandIdAndVolume(brandId);
-	}
-	@Override
 	public List<AfGoodsDo> getGoodsListByBrandId(Long brandId) {
 		return afGoodsDao.getGoodsListByBrandId(brandId);
 	}
 	@Override
 	public List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(
 			AfGoodsQuery goodsQuery) {
-		return afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
+		String key = "categoryDetailVolume"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+"desc";
+		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
+		if (CollectionUtil.isEmpty(goodsList)){
+			goodsList = afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
+			bizCacheUtil.saveObjectList(key, goodsList);
+		}
+		return goodsList;
 	}
-	@Override
-	public List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceAsc(
-			AfGoodsQuery goodsQuery) {
-		return afGoodsDao.getGoodsByCategoryIdAndPriceAsc(goodsQuery);
-	}
-	@Override
-	public List<HomePageSecKillGoods> getGoodsByCategoryIdAndPriceDesc(
-			AfGoodsQuery goodsQuery) {
-		return afGoodsDao.getGoodsByCategoryIdAndPriceDesc(goodsQuery);
-	}
+	
 	@Override
 	public List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId) {
-		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList("VolumeTop5Goods" + brandId);
+		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList("brandAllGoods" + brandId);
 		if (CollectionUtil.isEmpty(brandGoodsList)){
 			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
-			bizCacheUtil.saveObjectList("VolumeTop5Goods" + brandId, brandGoodsList);
+			bizCacheUtil.saveObjectList("brandAllGoods" + brandId, brandGoodsList);
 		}
 		return brandGoodsList;
 	}
+	@Override
+	public List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
+			AfGoodsQuery goodsQuery) {// 页面+第几页+升序还是排序
+		String key = "categoryDetailPrice"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+goodsQuery.getSort();
+		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
+		if (CollectionUtil.isEmpty(goodsList)){
+			goodsList = afGoodsDao.getGoodsByCategoryIdAndPrice(goodsQuery);
+			bizCacheUtil.saveObjectList(key, goodsList);
+		}
+		return goodsList;
+	}
+	
 
 }

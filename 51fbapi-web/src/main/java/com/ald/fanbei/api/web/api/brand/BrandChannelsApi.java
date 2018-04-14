@@ -77,8 +77,8 @@ public class BrandChannelsApi implements ApiHandle {
 						String pageMark = afResourceH5ItemDto.getValue1();
 						// zhu tui pin pai
 						if ("mainBrand".equals(pageMark )){
-							imageUrl = afResourceH5ItemDto.getValue2();
-							h5LinkUrl = afResourceH5ItemDto.getValue3();
+							imageUrl = afResourceH5ItemDto.getValue3();
+							h5LinkUrl = afResourceH5ItemDto.getValue2();
 						}else if("hotBrand".equals(pageMark)){
 							String ids = afResourceH5ItemDto.getValue2();
 							if (ids != null){

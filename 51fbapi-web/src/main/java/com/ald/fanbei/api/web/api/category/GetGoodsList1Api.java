@@ -70,14 +70,16 @@ public class GetGoodsList1Api implements ApiHandle {
         	// sort by volume
         	 goodList = afGoodsService.getGoodsVerifyByCategoryIdAndVolume(goodsQuery); // 自营商品审核信息
         }else{
+        	// sort by price
         	if (StringUtil.equals("asc", priceSortValue)){
-        		 goodList = afGoodsService.getGoodsByCategoryIdAndPriceAsc(goodsQuery);
+        		// goodList = afGoodsService.getGoodsByCategoryIdAndPriceAsc(goodsQuery);
+        		 goodsQuery.setSort("asc");
+        		 goodList = afGoodsService.getGoodsByCategoryIdAndPrice(goodsQuery);
         	}else{
-        		 goodList = afGoodsService.getGoodsByCategoryIdAndPriceDesc(goodsQuery);
+        		 goodsQuery.setSort("desc");
+        		 goodList = afGoodsService.getGoodsByCategoryIdAndPrice(goodsQuery);
         	}
         }
-     //   List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);// 按照三级类目查到的商品信息
-     //   List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery); // 自营商品审核信息
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -96,6 +98,7 @@ public class GetGoodsList1Api implements ApiHandle {
             goodsInfo.put("goodName",goodsDo.getGoodName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
             goodsInfo.put("saleAmount",goodsDo.getSaleAmount());
+            goodsInfo.put("activityAmount", goodsDo.getActivityAmount());
 			if (goodsDo.getActivityAmount() != null){
 				goodsInfo.put("saleAmount",goodsDo.getActivityAmount());          	
 				}
@@ -105,15 +108,9 @@ public class GetGoodsList1Api implements ApiHandle {
             goodsInfo.put("goodsId",goodsDo.getGoodsId());
             goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
             goodsInfo.put("goodsType", "0");
-//            if(volume>10000){
-//                DecimalFormat df = new DecimalFormat("0.00");
-//                BigDecimal bigDecimal = new BigDecimal(df.format(volume/10000));
-//                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP).doubleValue();
-//                goodsInfo.put("volume",bigDecimal.toString()+"万");
-//            }else{
             goodsInfo.put("volume",goodsDo.getTotal());
-//            }
             goodsInfo.put("goodsType", "0");
+            goodsInfo.put("source", "SELFSUPPORT");
             // 如果是分期免息商品，则计算分期
             Long goodsId = goodsDo.getGoodsId();
             AfSchemeGoodsDo schemeGoodsDo = null;
@@ -143,8 +140,6 @@ public class GetGoodsList1Api implements ApiHandle {
             }
             goodsList.add(goodsInfo);
         }
-
-      
         data.put("goodsList",goodsList);
         data.put("pageNo", pageNo);
         resp.setResponseData(data);
