@@ -455,8 +455,8 @@ public class CuiShouUtils {
      */
     public void sycnSuccessAndError(CuiShouBackMoney cuiShouBackMoney, Integer type) {
 //        String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/callback/nperRepay";
-        String url = ConfigProperties.get("fbapi.cuishou.sycnurl") + "/report/repayment";
-//        String url ="http://192.168.96.38:8003/report/repayment";
+//        String url = ConfigProperties.get("fbapi.cuishou.sycnurl") + "/report/repayment";
+        String url ="http://192.168.96.38:8003/report/repayment";
         try {
             String mm = JSON.toJSONString(cuiShouBackMoney);
             byte[] pd = DigestUtil.digestString(mm.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
