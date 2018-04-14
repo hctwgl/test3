@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalCashCouponDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowLegalCashCouponDto;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 借款附带优惠券表Service
@@ -17,4 +22,6 @@ public interface AfBorrowLegalCashCouponService extends ParentService<AfBorrowLe
     Integer deleteBorrowLegalCashCoupon(Long id);
 
     Integer updateBorrowLegalCashCoupon(AfBorrowLegalCashCouponDo afBorrowLegalCashCouponDo);
+
+    List<AfBorrowLegalCashCouponDto> getCouponIdByBorrowAmout(BigDecimal borrowAmount);
 }

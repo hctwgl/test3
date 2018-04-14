@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalCashCouponDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowLegalCashCouponDto;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 借款附带优惠券表Dao
@@ -13,5 +17,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalCashCouponDo;
 public interface AfBorrowLegalCashCouponDao extends BaseDao<AfBorrowLegalCashCouponDo, Long> {
 
     int deleteById(Long id);
+
+    List<AfBorrowLegalCashCouponDto> getCouponIdByBorrowAmout(BigDecimal borrowAmount);
 
 }

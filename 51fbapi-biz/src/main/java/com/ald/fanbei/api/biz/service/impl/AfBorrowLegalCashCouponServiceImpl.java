@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowLegalCashCouponDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import com.ald.fanbei.api.dal.dao.AfBorrowLegalCashCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalCashCouponDo;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalCashCouponService;
 
+import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -47,5 +50,10 @@ public class AfBorrowLegalCashCouponServiceImpl extends ParentServiceImpl<AfBorr
 	@Override
 	public Integer updateBorrowLegalCashCoupon(AfBorrowLegalCashCouponDo afBorrowLegalCashCouponDo) {
 		return afBorrowLegalCashCouponDao.updateById(afBorrowLegalCashCouponDo);
+	}
+
+	@Override
+	public List<AfBorrowLegalCashCouponDto> getCouponIdByBorrowAmout(BigDecimal borrowAmount) {
+		return afBorrowLegalCashCouponDao.getCouponIdByBorrowAmout(borrowAmount);
 	}
 }
