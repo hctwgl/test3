@@ -46,6 +46,8 @@ public interface ApplyLegalBorrowCashService {
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
+	public void updateBorrowStatus(AfBorrowCashDo cashDo);
+
 	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalCouponDo couponDo);
 
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
