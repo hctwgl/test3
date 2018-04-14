@@ -1121,7 +1121,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 				}
 				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
 			}
-			if (periodsList.get(periodsList.size()-1).get("id") != loanPeriodsDo.getRid()){
+			if (Long.parseLong(String.valueOf(periodsList.get(periodsList.size()-1).get("id"))) != loanPeriodsDo.getRid()){
 				for (HashMap map:bo.periodsList) {
 					if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
 						BigDecimal repayAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("repayAmount"))) ).add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))) ));

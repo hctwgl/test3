@@ -135,7 +135,7 @@ public class CuiShouUtils {
                         CuiShouUtils.setIsXianXiaHuangKuang(true);
                         CuiShouBackMoney c = loanBorrowCashMoney(jsonObject);
                         JSONObject j = (JSONObject) c.getData();
-                        if (CuiShouUtils.getAfRepaymentBorrowCashDo() != null) {
+                        if (CuiShouUtils.getAfLoanRepaymentDo() != null) {
                             j.put("ref_id", CuiShouUtils.getAfLoanRepaymentDo().getRid());
                             c.setData(j);
                         }
@@ -402,7 +402,7 @@ public class CuiShouUtils {
 
         CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
         JSONObject _returnObject = new JSONObject();
-        _returnObject.put("id", obj.getLongValue("id"));
+        _returnObject.put("id", obj.getLongValue("repayment_id"));
         _returnObject.put("type", CuiShouType.WITH_BORROW.getCode());
         cuiShouBackMoney.setData(_returnObject);
 
@@ -417,7 +417,7 @@ public class CuiShouUtils {
             String tradeNo = obj.getString("trade_no"); // 三方交易流水号
             String isBalance = obj.getString("is_balance");
             String isAdmin = obj.getString("is_admin");
-            Long repaymentId = NumberUtil.objToLongDefault("repayment_id", 0l);
+            Long repaymentId = NumberUtil.objToLongDefault(obj.getString("repayment_id"), 0l);
             JSONArray array = obj.getJSONArray("periods_list");
             List<HashMap> periodsList = JSONObject.parseArray(obj.getString("periods_list"), HashMap.class);
             if (array == null || array.size() == 0) {
@@ -455,8 +455,8 @@ public class CuiShouUtils {
      */
     public void sycnSuccessAndError(CuiShouBackMoney cuiShouBackMoney, Integer type) {
 //        String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/callback/nperRepay";
-        String url = ConfigProperties.get("fbapi.cuishou.sycnurl") + "/report/repayment";
-        //String url ="http://192.168.117.50:8003/report/repayment";
+//        String url = ConfigProperties.get("fbapi.cuishou.sycnurl") + "/report/repayment";
+        String url ="http://192.168.96.38:8003/report/repayment";
         try {
             String mm = JSON.toJSONString(cuiShouBackMoney);
             byte[] pd = DigestUtil.digestString(mm.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
@@ -515,9 +515,7 @@ public class CuiShouUtils {
     public void syncCuiShou(AfLoanRepaymentDo afLoanRepaymentDo) {
         try {
             thirdLog.info("cuishouhuankuan bailingdai:" + afLoanRepaymentDo.toString());
-            if (CuiShouUtils.getIsXianXiaHuangKuang() != null && CuiShouUtils.getIsXianXiaHuangKuang()) {
-                return;
-            }
+
             setAfLoanRepaymentDo(afLoanRepaymentDo);
             CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
             cuiShouBackMoney.setCode(200);
@@ -526,6 +524,9 @@ public class CuiShouUtils {
             jsonObject.put("id", afLoanRepaymentDo.getRemark());
             jsonObject.put("type", CuiShouType.WITH_BORROW.getCode());
             cuiShouBackMoney.setData(jsonObject);
+            if (CuiShouUtils.getIsXianXiaHuangKuang() != null && CuiShouUtils.getIsXianXiaHuangKuang()) {
+                return;
+            }
             sycnSuccessAndError(cuiShouBackMoney, 1);
         } catch (Exception e) {
             thirdLog.error("cuishouhuankuan xianjinjie error:", e);
