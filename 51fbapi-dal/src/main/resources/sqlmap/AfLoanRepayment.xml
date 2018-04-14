@@ -347,4 +347,10 @@
 		is_delete = 0 and trade_no_out = #{outTradeNo} 
 		limit 1
     </select>
+
+    <select id="getProcessLoanRepaymentNumByLoanId" parameterType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM  af_loan_repayment
+        WHERE is_delete = 0 AND loan_id = #{loanId} AND status IN ('PROCESSING','APPLY')
+    </select>
 </mapper>

@@ -119,4 +119,12 @@ public interface AfRepaymentBorrowCashDao {
      * @return
      */
     int status2Process(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
+
+    /**
+     * 获取还款处理中数量
+     *
+     * @author wangli
+     * @date 2018/4/14 10:03
+     */
+    int getRepayingTotalNumByBorrowId(@Param("borrowId") Long borrowId);
 }

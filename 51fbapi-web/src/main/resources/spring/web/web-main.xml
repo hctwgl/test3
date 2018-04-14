@@ -239,6 +239,7 @@
 
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
+				<entry key="/user/home" value-ref="mineHomeApi" />
 
 
 

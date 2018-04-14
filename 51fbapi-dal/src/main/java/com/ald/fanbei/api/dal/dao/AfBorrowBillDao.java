@@ -495,4 +495,12 @@ public interface AfBorrowBillDao {
 	List<AfBorrowBillDo> getBorrowBillListByStatus(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
 
 	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(@Param("userId")Long userId);
+
+	/**
+	 * 获取用户最新的逾期账单
+	 *
+	 * @author wangli
+	 * @date 2018/4/13 18:10
+	 */
+    AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(@Param("userId") Long userId);
 }

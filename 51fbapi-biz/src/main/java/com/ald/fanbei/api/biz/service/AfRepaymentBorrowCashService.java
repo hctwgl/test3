@@ -3,13 +3,13 @@
  */
 package com.ald.fanbei.api.biz.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @类描述：
@@ -86,6 +86,13 @@ public interface AfRepaymentBorrowCashService {
 	 * @return
 	 */
 	BigDecimal getRepayingTotalAmountByBorrowId(Long borrowId);
+	/**
+	 * 查找还款处理中的数量
+	 *
+	 * @author wangli
+	 * @date 2018/4/14 10:02
+	 */
+	int getRepayingTotalNumByBorrowId(Long borrowId);
 	
 	/**
 	 * 查询某一天最后一个订单号

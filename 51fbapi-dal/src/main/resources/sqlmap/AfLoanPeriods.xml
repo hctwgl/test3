@@ -416,4 +416,20 @@
         ORDER BY nper ASC
         LIMIT 1
     </select>
+
+    <select id="findList" resultType="AfLoanPeriodsDo">
+        SELECT  <include refid="queryFields" />
+        FROM af_loan_periods
+        WHERE is_delete = 0
+            <if test="loanId != null">
+              AND loan_id = #{loanId}
+            </if>
+            <if test="gmtPlanRepayStart != null">
+                AND gmt_plan_repay <![CDATA[>=]]> #{gmtPlanRepayStart}
+            </if>
+            <if test="gmtPlanRepayEnd != null">
+                AND gmt_plan_repay <![CDATA[<=]]> #{gmtPlanRepayEnd}
+            </if>
+        ORDER BY nper ASC
+    </select>
 </mapper>
