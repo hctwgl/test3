@@ -139,7 +139,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(Long.parseLong(modelId),
                     ActivityType.ACTIVITY_TEMPLATE.getCode());
             String userName = context.getUserName();
-            userName = "18314896619";
+            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
 
             for(AfCouponDto couponDto : couponList) {
@@ -271,7 +271,7 @@ public class AppH5EnjoyLifeController extends BaseController {
         try{
             context = doWebCheck(request, false);
             String userName = context.getUserName();
-            userName = "18314896619";
+            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
             //活动信息
             List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());

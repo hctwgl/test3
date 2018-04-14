@@ -73,7 +73,7 @@
         <if test="gmtStart == null and gmtEnd == null">
             AND a.gmt_pstart <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
         </if>
-        ORDER BY a.gmt_start DESC
+        ORDER BY a.gmt_start ASC
     </select>
 
     <select id="getActivityNow" resultType="AfSeckillActivityDo">
