@@ -97,6 +97,8 @@ public class MineHomeApi implements ApiHandle {
 
     // 填充用户信息
     private void fillUserInfo(MineHomeVo data, Long userId) {
+        data.setIsSign(YesNoStatus.NO.getCode());
+
         if (userId != null) {
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
             if (userAccountInfo != null) {
