@@ -333,15 +333,15 @@ public class AppH5EnjoyLifeController extends BaseController {
     }
 
     //活动预约接口
-    @RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/reserveGoodsV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         FanbeiWebContext context = new FanbeiWebContext();
         try{
-            context = doWebCheck(request,false);
+            context = doWebCheck(request,true);
             String userName = context.getUserName();
-            userName = "18314896619";
+            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
             Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
             Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"),0l);
