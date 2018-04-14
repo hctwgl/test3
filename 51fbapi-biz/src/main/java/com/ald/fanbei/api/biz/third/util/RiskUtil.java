@@ -1058,6 +1058,12 @@ public class RiskUtil extends AbstractThird {
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
 				updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount);
 				
+				/* start 4.1.2 新增提额逻辑 */
+				if(afUserAuthDo != null) {
+					afUserAuthService.dealRaiseQuota(afUserAuthDo, dataObj);
+				}
+				/* end 4.1.2  新增提额逻辑 */
+				
 			}
 			
 			return riskResp;

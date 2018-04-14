@@ -518,7 +518,7 @@ public class RiskController {
 			this.checkSign(params);
 			
 			ReqFromStrongRiskBo req = JSON.parseObject(params.get(REQUEST_KEY_DATA), ReqFromStrongRiskBo.class);
-			afUserAuthService.dealFromStrongRiskFocePush(req);
+			afUserAuthService.dealFromStrongRiskForcePush(req);
 			
 			return RESPONSE_CODE_SUCC;
 		} catch (Exception e) {
@@ -542,7 +542,7 @@ public class RiskController {
 			this.checkSign(params);
 			
 			ReqFromSecondaryRiskBo req = JSON.parseObject(params.get(REQUEST_KEY_DATA), ReqFromSecondaryRiskBo.class);
-			afUserAuthService.dealFromSecondaryRiskFocePush(req);
+			afUserAuthService.dealFromSecondaryRiskForcePush(req);
 			
 			return RESPONSE_CODE_SUCC;
 		} catch (Exception e) {

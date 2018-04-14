@@ -37,6 +37,7 @@ import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.SecAuthStatus;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -805,17 +806,17 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
     
     /* ---------------------------------
-	 * start 此区域内接口为风控主动调用    |
+	 * start 此区域内 处理风控主动调用       |
 	 * --------------------------------- */
     /**
      * 处理来自风控主动推送的强风控回调
      */
 	@Override
-	public void dealFromStrongRiskFocePush(ReqFromStrongRiskBo reqBo) {
+	public void dealFromStrongRiskForcePush(ReqFromStrongRiskBo reqBo) {
 		Long userId = reqBo.consumerNo;
 		
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
-			throw new FanbeiException("dealFromSecondaryRiskFocePush, ConsumerNo=" + userId + "have deal borrow cash");
+			throw new FanbeiException("dealFromStrongRiskForcePush, ConsumerNo=" + userId + "have deal borrow cash");
 		}
 		
 		if (StringUtils.equals("10", reqBo.result)) {
@@ -838,11 +839,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 	
 	@Override
-	public void dealFromSecondaryRiskFocePush(ReqFromSecondaryRiskBo reqBo) {
+	public void dealFromSecondaryRiskForcePush(ReqFromSecondaryRiskBo reqBo) {
 		Long userId = reqBo.consumerNo;
 		
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
-			throw new FanbeiException("dealFromSecondaryRiskFocePush, ConsumerNo=" + userId + "have deal borrow cash");
+			throw new FanbeiException("dealFromSecondaryRiskForcePush, ConsumerNo=" + userId + "have deal borrow cash");
 		}
 		
 		String raiseStatus = reqBo.results[0].getResult();
@@ -863,6 +864,63 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	}
 	
+	@Override
+	public RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo) {
+		AfUserAuthDo info = getUserAuthInfoByUserId(reqBo.consumerNo);
+		if(info == null) {
+			throw new FanbeiException("None exist consumerNo = " + reqBo.consumerNo);
+		}
+		RespSecAuthInfoToRiskBo resp = new RespSecAuthInfoToRiskBo();
+		resp.isAlipayAuthed = !SecAuthStatus.INIT.getCode().equals(info.getAlipayStatus());
+		resp.isBankAuthed = !SecAuthStatus.INIT.getCode().equals(info.getOnlinebankStatus());
+		resp.isCardEmailAuthed = !SecAuthStatus.INIT.getCode().equals(info.getCreditStatus());
+		resp.isChsiAuthed = !SecAuthStatus.INIT.getCode().equals(info.getChsiStatus());
+		resp.isFundAuthed = !SecAuthStatus.INIT.getCode().equals(info.getFundStatus());
+		resp.isInsuranceAuthed = !SecAuthStatus.INIT.getCode().equals(info.getJinpoStatus());
+		resp.isZhengxinAuthed = !SecAuthStatus.INIT.getCode().equals(info.getZhengxinStatus());
+		return resp;
+	}
+	
+	
+	@Override
+	public void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj) {
+		try {
+			String riskStatus = dataObj.getString("riskStatus");
+			
+			String secAlipayStatus = dataObj.getString("secAlipayStatus");
+			String secBankStatus = dataObj.getString("secBankStatus");
+			String secCardEmailStatus = dataObj.getString("secCardEmailStatus");
+			String secChsiStatus = dataObj.getString("secChsiStatus");
+			String secFundStatus = dataObj.getString("secFundStatus");
+			String secInsuranceStatus = dataObj.getString("secInsuranceStatus");
+			String secZhengxinStatus = dataObj.getString("secZhengxinStatus");
+			
+			this.checkStatusLegality(riskStatus, secAlipayStatus, secBankStatus, secCardEmailStatus,
+									 secChsiStatus, secFundStatus,secInsuranceStatus, secZhengxinStatus);
+			
+			afUserAuthDo.setRiskStatus(riskStatus);
+			
+			afUserAuthDo.setAlipayStatus(secAlipayStatus);
+			afUserAuthDo.setOnlinebankStatus(secBankStatus);
+			afUserAuthDo.setCreditStatus(secCardEmailStatus);
+			afUserAuthDo.setChsiStatus(secChsiStatus);
+			afUserAuthDo.setFundStatus(secFundStatus);
+			afUserAuthDo.setJinpoStatus(secInsuranceStatus);
+			afUserAuthDo.setZhengxinStatus(secZhengxinStatus);
+			
+			updateUserAuth(afUserAuthDo);
+		}catch (Exception e) {
+			logger.error("dealRaiseQuota error, consumerNo=" + afUserAuthDo.getUserId() + "dataObj="+ dataObj.toJSONString() +","+e.getMessage(), e);
+		}
+	}
+	private void checkStatusLegality(String... statuses) {
+		for(String status : statuses) {
+			if(SecAuthStatus.YES.getCode().equals(status) || SecAuthStatus.NO.getCode().equals(status)) {
+			}else {
+				throw new FanbeiException("Illegal status value = " + status);
+			}
+		}
+	}
 	private void updateRiskStatus(RiskStatus status, Long userId) {
     	AfUserAuthDo authDo = new AfUserAuthDo();
     	Date cur = new Date(System.currentTimeMillis());
@@ -874,12 +932,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		updateUserAuth(authDo);
     }
 	/* ---------------------------------
-	 * end 此区域内接口为风控主动调用    |
+	 * end 此区域内处理风控主动调用   		|
 	 * --------------------------------- */
-
-	@Override
-	public RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo) {
-		return null;
-	}
 	
 }
