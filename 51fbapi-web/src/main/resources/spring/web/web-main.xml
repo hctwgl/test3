@@ -145,7 +145,11 @@
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
+				<value>/category/getGoodsList1</value>
+				<value>/category/brandChannels</value>
+				
 				<value>/goods/getHomeGoodsList</value>
+				<value>/goods/getHomeGoodsList1</value>
 				<value>/category/getAllGoodsCategory</value>
 
 				<value>/homePage/homeScrollBar</value>
@@ -498,6 +502,8 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<entry key="/category/getGoodsList1" value-ref="getGoodsList1Api" />
+				<entry key="/category/brandChannels" value-ref="brandChannelsApi" />
 				<!-- 漂浮窗信息 -->
 				<entry key="/floatingWindow/floatInfo" value-ref="floatInfo" />
 

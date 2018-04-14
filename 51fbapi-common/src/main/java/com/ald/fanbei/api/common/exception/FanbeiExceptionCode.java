@@ -426,9 +426,10 @@ public enum FanbeiExceptionCode {
     SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
     SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
-    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
-
-
+    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！"),
+    BRAND_GOODS_IS_EMPTY("BRAND_GOODS_IS_EMPTY",9005,"goods of this brand is empty","改品牌下的商品信息为空!"),
+    BRAND_RESULT_INIT_SUCCESS("BRAND_RESULT_INIT_SUCCESS",9006,"brand result page init success","品牌结果页初始化成功!"),
+    BRAND_CATEGORY_PAGE_INIT_SUCCESS("BRAND_CATEGORY_PAGE_INIT_SUCCESS",9007,"aishangjie brand category page init success","品牌分类页面初始化成功!");
     /**
      * 错误码
      */

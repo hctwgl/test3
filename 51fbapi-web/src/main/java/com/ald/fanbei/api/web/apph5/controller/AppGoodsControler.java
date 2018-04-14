@@ -15,6 +15,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -23,14 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
-import com.ald.fanbei.api.biz.service.AfModelH5Service;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -42,12 +36,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5Do;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
@@ -59,7 +47,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import sun.rmi.runtime.Log;
 
 /**
  * @类描述：
@@ -87,6 +74,8 @@ public class AppGoodsControler extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
@@ -138,13 +127,32 @@ public class AppGoodsControler extends BaseController {
 		}
 		List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService
 				.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId, type, 0, pageCount);
+		//判断商品是否处于活动中
+		List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+		List<Long> goodsIdList = new ArrayList<>();
+		for (AfUserH5ItmeGoodsDto goodsDo : goodsDoList) {
+			goodsIdList.add(Long.valueOf(goodsDo.getGoodsId()));
+		}
+		if(goodsIdList!=null&&goodsIdList.size()>0){
+			activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+		}
 		// 判断商品是否在优惠方案中
 		List goodsList = new ArrayList();
 		for (AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
+			//改变活动价格
+			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+				if(activityGoodsDo.getGoodsId().toString().equals(goodsDto.getGoodsId())){
+					goodsDto.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDto.getSaleAmount().multiply(goodsDto.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+					if(goodsDto.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDto.setRebateAmount(secKillRebAmount);
+					}
+					break;
+				}
+			}
 			Map goodsInfoMap = CollectionConverterUtil.convertObjToMap(goodsDto);
 			goodsInfoMap.put("goodsType", "0");
 			String goodsId = goodsDto.getGoodsId();
-
 			if (goodsId != null && !"".equals(goodsId)) {
 				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
 				JSONArray interestFreeArray = null;

@@ -386,12 +386,47 @@
 
 	<select id="getGoodsVerifyByCategoryId" resultType="AfGoodsDo">
 		select
-			g.source,g.rebate_amount,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
+			g.source,g.rebate_amount,g.rebate_rate,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
 		from af_goods_verify v,af_goods g
 		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
 		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH' order by v.gmt_create DESC
 	</select>
-
+	
+	<select id="getGoodsVerifyByCategoryIdAndVolume" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsQuery">
+		SELECT
+      MIN(a.special_price) activityAmount,
+      g.id goodsId,
+      a.limit_count AS total,
+      g.`name` AS goodName,
+      g.goods_icon AS goodsIcon,
+      g.thumbnail_icon,
+      g.goods_url AS goodsUrl,
+      g.price_amount,
+      g.sale_amount,
+      g.rebate_amount,
+      g.rebate_rate,
+      g.remark,
+      IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
+      IF(s.id IS NULL ,0,1) AS subscribe,
+      c.interest_free_id
+    FROM
+      af_goods  g  
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
+          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+         
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          WHERE
+            g.is_delete = 0
+            AND g.category_id =#{categoryId}
+            AND g.is_delete = 0   
+            AND  g.status = 'PUBLISH' AND g.source = 'SELFSUPPORT' AND g.stock_count > 0  
+            GROUP BY g.id
+		    ORDER BY g.sale_count desc
+	</select>
+	
 	<select id="getAvaliableSelfGoods" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
@@ -471,5 +506,82 @@
 		AND g.id in (#{goodsId})
 
 	</select>
-
+	
+	
+	<select id="getGoodsListByBrandId" resultType="AfGoodsDo">
+		select 
+		<include refid="queryAllFields"></include>
+		 from af_goods a where brand_id = #{brandId} and is_delete = 0 AND status = 'PUBLISH' and source = 'SELFSUPPORT' ORDER BY sale_count desc 
+	</select>
+	
+	<select id="getAllByBrandIdAndVolume" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods">
+		SELECT
+      MIN(a.special_price) activityAmount,
+      g.id goodsId,
+      a.limit_count AS total,
+      g.`name` AS goodName,
+      g.goods_icon AS goodsIcon,
+      g.thumbnail_icon,
+      g.goods_url AS goodsUrl,
+      g.price_amount,
+      g.sale_amount,
+      g.rebate_amount,
+      g.rebate_rate,
+      g.remark,
+      IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
+      IF(s.id IS NULL ,0,1) AS subscribe,
+      c.interest_free_id
+    FROM
+      af_goods  g  
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
+          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+         
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          WHERE
+            g.is_delete = 0
+            AND g.brand_id =#{brandId}
+            AND g.is_delete = 0   
+            AND  g.status = 'PUBLISH' AND g.source = 'SELFSUPPORT' AND g.stock_count > 0  
+            GROUP BY g.id
+		    ORDER BY g.sale_count desc
+	</select>
+	
+	<select id="getGoodsByCategoryIdAndPrice" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsQuery">
+		SELECT
+      MIN(a.special_price) activityAmount,
+      g.id goodsId,
+      a.limit_count AS total,
+      g.`name` AS goodName,
+      g.goods_icon AS goodsIcon,
+      g.thumbnail_icon,
+      g.goods_url AS goodsUrl,
+      g.price_amount,
+      g.sale_amount,
+      g.rebate_amount,
+      g.rebate_rate,
+      g.remark,
+      IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
+      IF(s.id IS NULL ,0,1) AS subscribe,
+      c.interest_free_id
+    FROM
+      af_goods  g  
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
+          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+         
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          WHERE
+            g.is_delete = 0
+            AND g.category_id =#{categoryId}
+            AND g.is_delete = 0   
+            AND  g.status = 'PUBLISH' AND g.source = 'SELFSUPPORT' AND g.stock_count > 0  
+            GROUP BY g.id
+		    ORDER BY ifnull(MIN(a.special_price),g.sale_amount) ${sort}
+	
+	</select>
 </mapper>

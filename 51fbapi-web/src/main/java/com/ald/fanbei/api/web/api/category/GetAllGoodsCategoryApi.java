@@ -1,10 +1,12 @@
 package com.ald.fanbei.api.web.api.category;
 
+import com.ald.fanbei.api.biz.service.AfCategoryOprationService;
 import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
+import com.ald.fanbei.api.dal.domain.AfCategoryOprationDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -24,6 +26,7 @@ import java.util.Map;
 /**
  * @类描述：商品分类
  * @author chefeipeng 2017年10月25日下午2:03:35
+ * @version version 4.1.3 liutengyuan 2018.4.14 为爱尚街添加分类运营位信息
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("getAllGoodsCategoryApi")
@@ -31,6 +34,8 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
 
     @Resource
     AfGoodsCategoryService afGoodsCategoryService;
+    @Resource
+    private AfCategoryOprationService afCategoryOprationService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -56,6 +61,8 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                 Map<String,Object> objFirst = new HashMap<String,Object>();
                 rid = oneList.get(x).getId();
                 name = oneList.get(x).getName();
+                // 查询分类运营位配置信息
+                AfCategoryOprationDo categoryRunData =  afCategoryOprationService.getByCategoryId(rid);
                 secondList = afGoodsCategoryService.selectSecondLevel(rid);
                 //查出三级
                 if(null != secondList && secondList.size()>0){
@@ -85,6 +92,7 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                     }
                 }
                 objFirst.put("name",name);
+                objFirst.put("categoryRunData", categoryRunData);
                 objFirst.put("secondLevelList",secondLevelList);
                 oneLevelList.add(objFirst);
             }

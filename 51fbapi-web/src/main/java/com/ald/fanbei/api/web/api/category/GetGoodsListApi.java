@@ -45,6 +45,8 @@ public class GetGoodsListApi implements ApiHandle {
     AfInterestFreeRulesService afInterestFreeRulesService;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    AfSeckillActivityService afSeckillActivityService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -54,8 +56,8 @@ public class GetGoodsListApi implements ApiHandle {
         AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
         AfGoodsQuery goodsQuery = getCheckParams(requestDataVo);
 
-        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
-        List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery);
+        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);// 按照三级类目查到的商品信息
+        List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery); // 自营商品审核信息
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -71,10 +73,29 @@ public class GetGoodsListApi implements ApiHandle {
 //                break;
 //            }
 //        }
-
+        //查找活动商品
+        //判断商品是否处于活动中
+        List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+        List<Long> goodsIdList = new ArrayList<>();
+        for (AfGoodsDo goodsDo : goodList) {
+            goodsIdList.add(goodsDo.getRid());
+        }
+        if(goodsIdList!=null&&goodsIdList.size()>0){
+            activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+        }
         for(AfGoodsDo goodsDo : goodList) {
 //            double volume = new Long(goodsDo.getVolume()).intValue();
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
+            for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+                if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+                    goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+                    BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                        goodsDo.setRebateAmount(secKillRebAmount);
+                    }
+                    break;
+                }
+            }
             String url = "";
             goodsInfo.put("goodName",goodsDo.getName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
@@ -112,7 +133,7 @@ public class GetGoodsListApi implements ApiHandle {
                 AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
                 String interestFreeJson = interestFreeRulesDo.getRuleJson();
                 if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                    interestFreeArray = JSON.parseArray(interestFreeJson);
+                    interestFreeArray = JSON.parseArray(interestFreeJson);// 免息规则
                 }
             }
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
