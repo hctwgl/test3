@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -17,4 +18,8 @@ import java.util.List;
  */
 public interface AfResourceH5ItemDao extends BaseDao<AfResourceH5ItemDo, Long> {
 	List<AfResourceH5ItemDto> selectByModelId(@Param("modelId") Long modelId);
+
+	AfResourceH5ItemDo getByTagAndType(@Param("tag")String tag,@Param("type") String type);
+
+	List<AfResourceH5ItemDo> getByTag(@Param("tag")String tag);
 }

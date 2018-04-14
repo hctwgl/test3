@@ -8,6 +8,7 @@ import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
 
 /**
@@ -40,4 +41,10 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(@Param("items") List<Long> goodsIdList, @Param("activityId") Long activityId);
     
     List<HomePageSecKillGoods> getHomePageSecKillGoods(HomePageSecKillQuery homePageSecKillQuery);
+
+	List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(
+			@Param("userId")Long userId,@Param("items") List<Long> goodsIdList);
+
+	List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
+			HomePageSecKillByActivityModelQuery homePageSecKillByActivityModelQuery);
 }

@@ -201,4 +201,16 @@ public interface AfResourceDao {
 		List<AfResourceDo> getConfigsListByTypesAndSecType(@Param("type")String type,@Param("secType") String secType);
 
 	List<AfResourceDo> getNewSpecialResource(@Param("type") String type);//获取新的专场信息(未出账单列表页|已出账单列表页)
+
+	List<AfResourceDo> getGridViewInfoCenterList();
+
+	List<AfResourceDo> getGridViewInfoDownList();
+
+	List<AfResourceDo> getGridViewInfoUpList();
+
+//	AfResourceDo getEcommerceFloor();
+
+	List<AfResourceDo> getEcommercePositionUp();
+
+	List<AfResourceDo> getEcommercePositionDown();
 }

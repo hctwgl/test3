@@ -889,4 +889,40 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return result;
 	}
 
+	@Override
+	public List<AfResourceDo> getGridViewInfoUpList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoUpList();
+	}
+
+	@Override
+	public List<AfResourceDo> getGridViewInfoCenterList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoCenterList();
+	}
+
+	@Override
+	public List<AfResourceDo> getGridViewInfoDownList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoDownList();
+	}
+
+//	@Override
+//	public AfResourceDo getEcommerceFloor() {
+//		// TODO Auto-generated method stub
+//		return afResourceDao.getEcommerceFloor();
+//	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionUp() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getEcommercePositionUp();
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionDown() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getEcommercePositionDown();
+	}
+
 }

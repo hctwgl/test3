@@ -17,5 +17,28 @@
         AND model_id = #{modelId}
         order by sort desc
     </select>
+     <select id="getByTagAndType" resultType="AfResourceH5ItemDo">
+        SELECT
+          <include refid="queryFields"/>
+        FROM
+          af_resource_h5_item i
+          join af_resource_h5  r on r.id = i.model_id
+        WHERE i.is_delete = 0
+	        AND   r.is_delete = 0
+	        AND   r.tag   = #{tag}
+	        AND   i.value2 = #{type}
+	        limit 1
+    </select>
+     <select id="getByTag" resultType="AfResourceH5ItemDo">
+        SELECT
+          <include refid="queryFields"/>
+         FROM
+          af_resource_h5_item i
+          join af_resource_h5  r on r.id = i.model_id
+        WHERE i.is_delete = 0
+	        AND   r.is_delete = 0
+	        AND   r.tag   = #{tag}
+        order by i.sort desc
+    </select>
     
 </mapper>

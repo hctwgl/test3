@@ -616,4 +616,95 @@
             b.is_delete = 0 AND
 			a.type = #{type}
 	</select>
+	<select id="getGridViewInfoUpList" resultType="AfResourceDo">
+	
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'MANEY_PICUTRES_ASJ'
+		AND
+		r1.value_3
+		IN
+		('NINE_UPPER_TOP_IMAGE','NINE_UPPER_ONE_IMAGE','NINE_UPPER_TWO_IMAGE')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	
+	<select id="getGridViewInfoCenterList" resultType="AfResourceDo">
+	
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'MANEY_PICUTRES_ASJ'
+		AND
+		r1.value_3
+		IN
+		('NINE_CENTER_ONE_IMAGE','NINE_CENTER_TWO_IMAGE','NINE_CENTER_THREE_IMAGE')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	<select id="getGridViewInfoDownList" resultType="AfResourceDo">
+	
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'MANEY_PICUTRES_ASJ'
+		AND
+		r1.value_3
+		IN
+		('NINE_UP_ONE_IMAGE','NINE_UP_TWO_IMAGE','NINE_UP_THREE_IMAGE')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	
+	<select id="getEcommercePositionUp" resultType="AfResourceDo">
+	
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_IMAGE_ECOMMERCE_POSITION_ASJ'
+		AND
+		r1.value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP_ONE','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP_TWO')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	<select id="getEcommercePositionDown" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_IMAGE_ECOMMERCE_POSITION_ASJ'
+		AND
+		r1.value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
 </mapper>

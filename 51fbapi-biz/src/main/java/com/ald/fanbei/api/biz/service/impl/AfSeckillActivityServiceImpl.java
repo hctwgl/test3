@@ -1,28 +1,30 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.dao.AfGoodsPriceDao;
+import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
+import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
-import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -164,5 +166,24 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	    homePageSecKillQuery.setPageNo(pageNo);
 	    
 	    return afSeckillActivityGoodsDao.getHomePageSecKillGoods(homePageSecKillQuery);
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(Long userId,
+			List<Long> goodsIdList) {
+		// TODO Auto-generated method stub
+		return afSeckillActivityGoodsDao.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
+			Long userId, String tag, Integer type, Long tabId,Integer pageNo) {
+		HomePageSecKillByActivityModelQuery homePageSecKillByActivityModelQuery = new HomePageSecKillByActivityModelQuery();
+		// TODO Auto-generated method stub
+		homePageSecKillByActivityModelQuery.setUserId(userId);
+		homePageSecKillByActivityModelQuery.setPageNo(pageNo);
+		homePageSecKillByActivityModelQuery.setTag(tag);
+		homePageSecKillByActivityModelQuery.setType(type);
+	    return afSeckillActivityGoodsDao.getHomePageSecKillGoodsByActivityModel(homePageSecKillByActivityModelQuery);
 	}
 }

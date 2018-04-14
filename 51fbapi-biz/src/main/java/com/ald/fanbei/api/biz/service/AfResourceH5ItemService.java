@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 
+import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
 
 import java.util.List;
@@ -15,4 +16,8 @@ import java.util.List;
  */
 public interface AfResourceH5ItemService {
 	List<AfResourceH5ItemDto> selectByModelId(Long modelId);
+
+	AfResourceH5ItemDo getByTagAndType(String tag, String type);
+
+	List<AfResourceH5ItemDo> getByTag(String tag);
 }
