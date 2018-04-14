@@ -1421,4 +1421,11 @@
 	<update id="updatepdfUrlByOrderId">
 		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
 	</update>
+
+	<select id="countStatusNum" resultType="HashMap">
+		SELECT status, COUNT(1) num
+		FROM af_order
+		WHERE is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
+		GROUP BY status
+	</select>
 </mapper>

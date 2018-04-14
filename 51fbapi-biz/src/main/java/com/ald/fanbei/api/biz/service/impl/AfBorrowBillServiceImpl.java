@@ -1,35 +1,32 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.util.*;
-
-import javax.annotation.Resource;
-
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.dao.AfUserSeedDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 
@@ -666,5 +663,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		     return afBorrowBillDao.getOverdueBorrowBillInfoByUserId(userId);
+	}
+
+	@Override
+	public AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(Long userId) {
+		return afBorrowBillDao.getLatestOverdueBorrowBillInfoByUserId(userId);
 	}
 }

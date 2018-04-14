@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.apph5.controller;
+package com.ald.fanbei.api.web.h5.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -45,15 +46,10 @@ import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-/**
- * @类描述 爱尚街分类 品牌结果页 app内H5页面，可分享
- * @author liutengyuan 
- * @date 2018年4月10日
- */
+
 @Controller
 @RequestMapping("/category")
-public class AppH5BrandController extends BaseController {
+public class H5BrandController extends BaseController {
 	
 	@Resource
 	private AfBrandService afBrandService;
@@ -72,26 +68,29 @@ public class AppH5BrandController extends BaseController {
 	@Resource
 	private BizCacheUtil bizCacheUtil;
 	
-	@RequestMapping(value="/brandResult",method=RequestMethod.POST,produces="application/json;charset=UTF-8")
+	@RequestMapping(value="/H5brandResult",method=RequestMethod.POST,produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String brandResult(HttpServletRequest request ,HttpServletResponse response){
-		FanbeiWebContext context = new FanbeiWebContext();
+		FanbeiH5Context context = new FanbeiH5Context();
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
-			context = doWebCheck(request, false);
+			context = doH5Check(request, false);
 			Long brandId = NumberUtil.objToLong(request.getParameter("brandId"));
 			int pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
-			logger.info("/category/brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "brandId:" + brandId);
+			logger.info("/category/H5brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "brandId:" + brandId);
 			if (brandId == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg(), "", null).toString();
 			}
+//	AfGoodsQuery goodsQuery = getCheckParams(request);
 			// 1 query info of the brand
 			AfBrandDo brandInfo = (AfBrandDo) bizCacheUtil.getObject("barndInfo"+brandId);
 			if (brandInfo == null){
 				brandInfo = afBrandService.getById(brandId);
 				bizCacheUtil.saveObject("barndInfo"+brandId, brandInfo, Constants.SECOND_OF_HALF_DAY);
 			}
-			// 按销量查询出所有的商品，在进行分页
+			// 2 query goods of the brand with volume of top5
+//	List<AfGoodsDo> starGoodsList = afGoodsService.getGoodsListByBrandIdAndVolume(brandId);
+//	List<AfGoodsDo> goodsList = afGoodsService.getGoodsListByBrandId(brandId);
 			List<HomePageSecKillGoods> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
 			if (brandGoodsList == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.BRAND_GOODS_IS_EMPTY.getErrorMsg(), "", null).toString();
@@ -125,16 +124,41 @@ public class AppH5BrandController extends BaseController {
 			return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.BRAND_RESULT_INIT_SUCCESS.getErrorMsg(), "", data).toString();
 		} catch (Exception e) {
 			String result =  H5CommonResponse.getNewInstance(false, "品牌结果页初始化失败..", "", e.getMessage()).toString();
-			logger.error("/category/brandResult 初始化数据失败  e = {} , resultStr = {}", e, result);
+			logger.error("/category/H5brandResult 初始化数据失败  e = {} , resultStr = {}", e, result);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
 			return result;
 		}
 	}
 	
+	private List<HomePageSecKillGoods> doPage(int pageNo, List<HomePageSecKillGoods> goodList) {
+    	// 不够一页
+    	int pageSize = 30;
+    	if (goodList.size() <= pageSize){
+    		return goodList;
+    	}
+    	// 多页
+    	int startNumber = (pageNo-1) * pageSize;
+    	int endNumber = pageNo * pageSize -1;
+    	int listSize = goodList.size();
+    	ArrayList<HomePageSecKillGoods> list = new ArrayList<HomePageSecKillGoods>();
+    	if (endNumber <= listSize -1){
+    		return list;
+    	}
+    	if (listSize -1 < startNumber){
+    		int number = listSize/pageNo;
+    		startNumber = number * pageSize;
+    		for (int i = startNumber;i<listSize;i++){
+    			list.add(goodList.get(i));
+    		}
+    		return list;
+    	}
+    	for (int i = startNumber;i < listSize;i++){
+    		list.add(goodList.get(i));
+    	}
+		return list;
+	}
 	
-	
-	
-	 private  List<Map<String, Object>>  HandleData(AfResourceDo resource, JSONArray array,
+	private  List<Map<String, Object>>  HandleData(AfResourceDo resource, JSONArray array,
 			List<HomePageSecKillGoods> starGoodsList) {
 		 List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 		 for(HomePageSecKillGoods goodsDo : starGoodsList) {
@@ -185,91 +209,24 @@ public class AppH5BrandController extends BaseController {
 	}
 
 
-
-
-	/*private AfGoodsQuery getCheckParams(HttpServletRequest request){
-		 Long brandId = NumberUtil.objToLong(request.getParameter("brandId"));
-		 int pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
-	        AfGoodsQuery query = new AfGoodsQuery();
-	        query.setPageNo(pageNo);
-	        query.setCategoryId(brandId);
-	        query.setPageSize(30);
-	        return query;
-	    }*/
-
-
-	 private List<HomePageSecKillGoods> doPage(int pageNo, List<HomePageSecKillGoods> goodList) {
-	    	// 不够一页
-	    	int pageSize = 30;
-	    	if (goodList.size() <= pageSize){
-	    		return goodList;
-	    	}
-	    	// 多页
-	    	int startNumber = (pageNo-1) * pageSize;
-	    	int endNumber = pageNo * pageSize -1;
-	    	int listSize = goodList.size();
-	    	ArrayList<HomePageSecKillGoods> list = new ArrayList<HomePageSecKillGoods>();
-	    	if (endNumber <= listSize -1){
-	    		for (int i =startNumber; i <=endNumber;i++){
-	    			list.add(goodList.get(i));
-	    		}
-	    		return list;
-	    	}
-	    	if (listSize -1 < startNumber){
-	    		return list;
-	    	}
-	    	for (int i = startNumber;i < listSize;i++){
-	    		list.add(goodList.get(i));
-	    	}
-			return list;
-		}
-
-
-
-
-
-
-
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request,
 			boolean isForQQ) {
-		if (StringUtils.isBlank(reqData)) {
-			throw new FanbeiException("param is null",FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-		}
-		return reqData;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public RequestDataVo parseRequestData(String requestData,
 			HttpServletRequest request) {
 		try {
-            RequestDataVo reqVo = new RequestDataVo();
-            String method = request.getRequestURI();
-            reqVo.setMethod(method);
-            reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
-            String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
-            String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
-            String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
-            String sign = request.getHeader(Constants.REQ_SYS_NODE_SIGN);
-            String time = request.getHeader(Constants.REQ_SYS_NODE_TIME);
+			RequestDataVo reqVo = new RequestDataVo();
 
-            Map<String,Object> system = new HashMap<String,Object>();
-            
-            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
-            system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
-            system.put(Constants.REQ_SYS_NODE_USERNAME, userName);
-            system.put(Constants.REQ_SYS_NODE_SIGN, sign);
-            system.put(Constants.REQ_SYS_NODE_TIME, time);
-            
-            reqVo.setSystem(system);
-            
-            JSONObject jsonObj = JSON.parseObject(requestData);
-            reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
-
-            return reqVo;
-        } catch (Exception e) {
-            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-        }
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(),
+					FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
 	}
 
 	@Override
@@ -278,13 +235,5 @@ public class AppH5BrandController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-//	public static void main(String[] args) {
-//		char[] str = new char[26];
-//		for (int i = 0; i < 26; i++) {
-//		str[i]= (char)(65 + i );
-//		}
-//		for (int i = 0; i < str.length; i++) {
-//			System.out.println(str[i]);
-//		}
-//		}
+
 }

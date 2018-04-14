@@ -583,7 +583,6 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
-
 			</map>
 		</constructor-arg>
 	</bean>

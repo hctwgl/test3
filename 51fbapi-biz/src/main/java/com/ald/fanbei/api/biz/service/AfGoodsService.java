@@ -5,6 +5,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
@@ -119,12 +120,6 @@ public interface AfGoodsService {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
 	/**
-	 * 爱上街根据品牌id查询销量前五的商品
-	 * @param brandId
-	 * @return
-	 */
-	List<AfGoodsDo> getGoodsListByBrandIdAndVolume(Long brandId);
-	/**
 	 * 爱尚街根据品牌id查询出所有的商品
 	 * @param brandId
 	 * @return
@@ -135,25 +130,17 @@ public interface AfGoodsService {
 	 * @param goodsQuery
 	 * @return
 	 */
-	List<AfGoodsDo> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+	
 	/**
-	 * 爱尚街根据分类ID和价格查询商品 升序 
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<AfGoodsDo> getGoodsByCategoryIdAndPriceAsc(AfGoodsQuery goodsQuery);
-	/**
-	 * 爱尚街根据分类ID和价格查询商品 降序
-	 * @param goodsQuery
-	 * @return
-	 */
-	List<AfGoodsDo> getGoodsByCategoryIdAndPriceDesc(AfGoodsQuery goodsQuery);
-	/**
-	 * 查询该品牌下的所有商品
+	 * 品牌结果页 查询该品牌下的所有商品按照销量进行降序
 	 * @param brandId
 	 * @return
 	 */
-	List<AfGoodsDo> getAllByBrandIdAndVolume(Long brandId);
+	List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId);
+
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
+			AfGoodsQuery goodsQuery);
 	
 }
 

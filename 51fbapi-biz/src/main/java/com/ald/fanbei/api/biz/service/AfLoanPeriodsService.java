@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 贷款业务Service
@@ -42,5 +42,12 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	List<AfLoanPeriodsDo> listCanRepayPeriods(Long loanId);
 
 	AfLoanPeriodsDo getOneByLoanId(Long loanId);
-	
+
+	/**
+	 * 获取本月分期
+	 *
+	 * @author wangli
+	 * @date 2018/4/14 12:38
+	 */
+	AfLoanPeriodsDo getCurrMonthPeriod(Long loanId);
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
@@ -316,4 +317,12 @@ public interface AfOrderDao {
 	HashMap getLeaseProtocol(@Param("orderId") Long orderId);
 
 	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
+
+	/**
+	 * 统计各个状态的订单数
+	 *
+	 * @author wangli
+	 * @date 2018/4/13 9:59
+	 */
+    List<Map<String, Object>> countStatusNum(@Param("userId") Long userId);
 }

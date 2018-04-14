@@ -19,5 +19,11 @@ public interface AfBrandService extends ParentService<AfBrandDo, Long>{
 	 * @return
 	 */
 	List<AfBrandDto> getAllAndNameSort();
+	/**
+	 * 查询配置的热卖品牌列表
+	 * @param brandIds
+	 * @return
+	 */
+	List<AfBrandDo> getHotBrands(String[] brandIds);
 
 }

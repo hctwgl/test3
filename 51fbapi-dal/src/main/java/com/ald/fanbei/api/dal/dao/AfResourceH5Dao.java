@@ -18,4 +18,11 @@ public interface AfResourceH5Dao extends BaseDao<AfResourceH5Do, Long> {
 
 	List<AfResourceH5Dto> selectByStatus(@Param("tag")String tag);
 
+	/**
+	 * 根据页面标识获取H5资源
+	 *
+	 * @author wangli
+	 * @date 2018/4/10 20:02
+	 */
+    AfResourceH5Dto getByPageFlag(@Param("pageFlag") String pageFlag);
 }

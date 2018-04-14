@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * @类描述：商品分类
  * @author chefeipeng 2017年10月25日下午2:03:35
+ * @version version 4.1.3 liutengyuan 2018.4.14 为爱尚街添加分类运营位信息
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("getAllGoodsCategoryApi")

@@ -3155,7 +3155,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		orderDao.updateIagentStatusByOrderId(orderId,iagentStatus);
 	}
 
-    @Override
+	@Override
+	public AfOrderCountDto countStatusNum(Long userId) {
+		List<Map<String, Object>> data = orderDao.countStatusNum(userId);
+		return new AfOrderCountDto(data);
+	}
+
+	@Override
     public HashMap checkLeaseOrder(Long userId, Long goodsId) {
         return orderDao.checkLeaseOrder(userId,goodsId);
     }

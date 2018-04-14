@@ -16,11 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -464,5 +460,14 @@ public interface AfOrderService {
 	 * @return
 	 */
 	HashMap getLeaseProtocol(Long orderId);
+
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
+
+	/**
+	 * 统计用户各个状态的订单数
+	 *
+	 * @author wangli
+	 * @date 2018/4/13 9:58
+	 */
+	AfOrderCountDto countStatusNum(Long userId);
 }
