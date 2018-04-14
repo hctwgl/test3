@@ -406,7 +406,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			// 审核通过
 			delegateBorrowCashDo.setGmtArrival(currDate);
 			delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+//			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 			// 打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
 					afUserDo.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", mainCard.getMobile(),
@@ -424,8 +424,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 				// 关闭订单
-				afBorrowLegalOrderDo.setStatus(AfBorrowCashStatus.closed.getCode());
-				afBorrowLegalOrderDo.setClosedDetail("transed fail");
+//				afBorrowLegalOrderDo.setStatus(AfBorrowCashStatus.closed.getCode());
+//				afBorrowLegalOrderDo.setClosedDetail("transed fail");
 
 			} else {
 				// 打款成功，更新借款状态、可用额度等信息
@@ -449,7 +449,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
 			delegateBorrowCashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
 			// 更新订单状态
-			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
+//			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
 			logger.info("test1 ");
 			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
 			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
@@ -466,7 +466,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				// 更新借款状态
 				afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
 				// 更新订单状态
-				afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+//				afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 				ApplyLegalBorrowCashServiceImpl.this.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 				return "success";
 			}
@@ -507,6 +507,17 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		if (StringUtils.isEmpty(cardNo)) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 		}
+	}
+
+	@Override
+	public void updateBorrowStatus(final AfBorrowCashDo cashDo) {
+		transactionTemplate.execute(new TransactionCallback<String>() {
+			@Override
+			public String doInTransaction(TransactionStatus ts) {
+				afBorrowCashService.updateBorrowCash(cashDo);
+				return "success";
+			}
+		});
 	}
 
 	@Override

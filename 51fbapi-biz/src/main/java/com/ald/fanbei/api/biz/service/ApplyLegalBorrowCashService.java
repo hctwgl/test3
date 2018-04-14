@@ -44,7 +44,9 @@ public interface ApplyLegalBorrowCashService {
 
 	public void checkCardNotEmpty(AfUserBankcardDo mainCard);
 
-	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
+	public void updateBorrowStatus(AfBorrowCashDo cashDo);
+
+	public void updateBorrowStatus(AfBorrowCashDo cashDo,AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
 	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalCouponDo couponDo);
 
