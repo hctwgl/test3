@@ -229,10 +229,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				
 				// 正式环境和预发布环境区分
 				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-					topBannerList = getBannerInfoWithResourceDolist(
+					operateBannerList = getBannerInfoWithResourceDolist(
 							afResourceService.getResourceHomeListByTypeOrderBy(operateBanner));
 				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-					topBannerList = getBannerInfoWithResourceDolist(
+					operateBannerList = getBannerInfoWithResourceDolist(
 							afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(operateBanner));
 				}
 				// 顶部轮播
@@ -286,11 +286,11 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					flashSaleContent = afResourceH5ItemDo.getValue1();
 					flashSaleImageUrl = afResourceH5ItemDo.getValue3();
 				}
-				data.put("content",flashSaleContent);
-				data.put("imageUrl",flashSaleImageUrl);
-				data.put("startTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue1()));
-				data.put("currentTime", new Date().getTime());
-				data.put("endTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue2()));
+				flashSaleInfo.put("content",flashSaleContent);
+				flashSaleInfo.put("imageUrl",flashSaleImageUrl);
+				flashSaleInfo.put("startTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue1()));
+				flashSaleInfo.put("currentTime", new Date().getTime());
+				flashSaleInfo.put("endTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue2()));
 				flashSaleInfo.put("goodsList", flashSaleGoods);
 				//品质新品
 				Map<String, Object> newProduct = new HashMap<String, Object>();
@@ -298,6 +298,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				 List<Object> newProductGoodsIdList = new ArrayList<Object>();
 				  List<AfResourceH5ItemDo>  newProductList =  afResourceH5ItemService.getByTag(newProductTag);
 				 if(newProductList != null && newProductList.size() >0 ){
+					int i= 0;
 					 for(AfResourceH5ItemDo newProductDo:newProductList ){
 						 if("TOP_IMAGE".equals(newProductDo.getValue2())){
 							 newProduct.put("imageUrl", newProductDo.getValue3());
@@ -311,7 +312,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 								newProductInfo.put("type", "GOODS_ID");
 							    newProductGoodsIdList.add(newProductInfo);
 							}
-					      }
+					     }
 						 newProduct.put("newProductList", newProductGoodsIdList);
 				     }
 				 }
@@ -320,13 +321,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				 // 精选活动
 				 try{
 					
-			        List<Object> activityGoodsInfoList1 = new ArrayList<Object>(); 
-					Map<String, Object> goodsInfo = new HashMap<String, Object>();
-					      List<Long> goodsIdList = new ArrayList<Long>(); 
 						  List<AfResourceH5ItemDo>  activityList =  afResourceH5ItemService.getByTag(activityGoodsTag);
-						  if(activityList != null && activityList.size() >0 ){
+						 if(activityList != null && activityList.size() >0 ){
+							 List<Object> activityGoodsInfoList1 = new ArrayList<Object>(); 
 							 for(AfResourceH5ItemDo activityDo:activityList ){
 								  if("GOODS".equals(activityDo.getValue2())){
+								           List<Long> goodsIdList = new ArrayList<Long>(); 
 										   if(activityDo.getValue1() != null){
 											 String goodsIds = activityDo.getValue1();
 											 String[] goodsId = goodsIds.split(",");  
@@ -337,16 +337,21 @@ public class GetHomeInfoV3Api implements ApiHandle {
 										    }
 										    List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
 											List<Map<String, Object>> activityGoodsInfoList = getGoodsInfoList(goodsList,brandTag,null);
-											goodsInfo.put("goodsList", activityGoodsInfoList);
-											goodsInfo.put("imageUrl", activityDo.getValue3());
-											goodsInfo.put("type", "H5_URL");
-											goodsInfo.put("content",activityDo.getValue4() );
-											activityGoodsInfoList1.add(goodsInfo);
-							       }else  if("TOP_IMAGE".equals(activityDo.getValue2())){
+											//没有商品整块不显示
+											
+											if(activityGoodsInfoList != null && activityGoodsInfoList.size()  >0){
+												Map<String, Object> goodsInfo = new HashMap<String, Object>();
+												goodsInfo.put("goodsList", activityGoodsInfoList);
+												goodsInfo.put("imageUrl", activityDo.getValue3());
+												goodsInfo.put("type", "H5_URL");
+												goodsInfo.put("content",activityDo.getValue4() );
+												activityGoodsInfoList1.add(goodsInfo);
+											}
+							      }else  if("TOP_IMAGE".equals(activityDo.getValue2())){
 										 activityGoodsInfo.put("imageUrl", activityDo.getValue3());
 										 activityGoodsInfo.put("content", activityDo.getValue1());
-									  } 
-						       }
+								  } 
+						    }
 							 activityGoodsInfo.put("activityGoodsList", activityGoodsInfoList1);
 							 
 					    }
@@ -354,29 +359,33 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					 
 				 }
 				 Map<String, Object> brandInfo = new HashMap<String, Object>();
-				 // 精选活动
+				 // 大牌汇聚
 				 try{
 					
 			        List<Object> brandList1 = new ArrayList<Object>(); 
-					Map<String, Object> goodsInfo = new HashMap<String, Object>();
-					      List<Long> goodsIdList = new ArrayList<Long>(); 
-						  List<AfResourceH5ItemDo>  brandGoodsList =  afResourceH5ItemService.getByTag(activityGoodsTag);
+
+						  List<AfResourceH5ItemDo>  brandGoodsList =  afResourceH5ItemService.getByTag(brandTag);
 						  if(brandGoodsList != null && brandGoodsList.size() >0 ){
 							 for(AfResourceH5ItemDo activityDo:brandGoodsList ){
 								  if("GOODS".equals(activityDo.getValue2())){
-										   if(activityDo.getValue1() != null){
+									  List<Long> goodsIdList = new ArrayList<Long>();    
+									  if(activityDo.getValue1() != null){
 												 String goodsIds = activityDo.getValue1();
 												 String[] goodsId = goodsIds.split(",");  
 												 Long[] gids = (Long[]) ConvertUtils.convert(goodsId,Long.class);
+											      
 												 for(Long gid: gids){
 													 goodsIdList.add(gid);
 												 }
 										   }
 										    List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
 											List<Map<String, Object>> brandGoodsInfoList = getGoodsInfoList(goodsList,newProductTag,null);
-											goodsInfo.put("brandGoodsList", brandGoodsInfoList);
-											goodsInfo.put("imageUrl", activityDo.getValue3());
-											brandList1.add(goodsInfo);
+											if(brandGoodsInfoList != null && brandGoodsInfoList.size()>0){
+												Map<String, Object> goodsInfo = new HashMap<String, Object>();
+												goodsInfo.put("brandGoodsList", brandGoodsInfoList);
+												goodsInfo.put("imageUrl", activityDo.getValue3());
+												brandList1.add(goodsInfo);
+											}
 							      }else if("TOP_IMAGE".equals(activityDo.getValue2())){
 									 brandInfo.put("imageUrl", activityDo.getValue3());
 									 brandInfo.put("content", activityDo.getValue1());
@@ -482,7 +491,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 //		}
 		// 获取上方4个电商运营位,如果配置不全，则不显示
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUp();
-		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 4) {
+		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 3) {
 			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
 			if (!ecommercePositionUpInfoList.isEmpty()) {
 				ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
@@ -497,11 +506,11 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			}
 		}
 		// 获取电商轮播图片
-		List<Object> ecommerceBannerList = getBannerInfoWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerEcommerce.getCode()));
-		if (!ecommerceBannerList.isEmpty()) {
-			ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
-		}
+//		List<Object> ecommerceBannerList = getBannerInfoWithResourceDolist(
+//				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerEcommerce.getCode()));
+//		if (!ecommerceBannerList.isEmpty()) {
+//			ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
+//		}
 		return ecommerceAreaInfoMap;
 	}
 

@@ -68,4 +68,7 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 
 	List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
 			Long userId, String tag, Integer type, Long tabId, Integer pageNo);
+
+	List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(Long userId,
+			Integer pageNo, String pageFlag);
 }

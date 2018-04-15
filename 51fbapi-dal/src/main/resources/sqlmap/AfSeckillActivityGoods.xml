@@ -331,7 +331,7 @@
      <select id="getHomePageSecKillGoodsByConfigureResourceH5" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods">
 	SELECT
       MIN(a.special_price) activityAmount,
-      g.id,
+      g.id goods_id,
       a.limit_count AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
@@ -372,7 +372,7 @@
      <select id="getHomePageSecKillGoodsByActivityModel" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery">
 	SELECT
       MIN(a.special_price) activityAmount,
-      g.id,
+      g.id goods_id,
       a.limit_count AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
@@ -388,7 +388,6 @@
       c.interest_free_id
     FROM
       af_goods  g  
-     
           JOIN af_activity_model  m ON  m.`goods_id` = g.`id`
           JOIN af_activity ac ON ac.id = m.activity_id   
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
@@ -404,10 +403,45 @@
 	   AND    ac.`type` = #{type}
 	   AND    ac.`tag` = #{tag}  
 	   AND    ac.`title1` = #{tabId}   
-	   GROUP BY g.id
-	          
-	          
-
+	   GROUP BY m.goods_id
+	   ORDER  BY  m.sort desc
+    </select>
+    
+    
+     <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
+	SELECT
+      MIN(a.special_price) activityAmount,
+      g.id goods_id,
+      a.limit_count AS total,
+      g.`name` AS goodName,
+      g.goods_icon AS goodsIcon,
+      g.thumbnail_icon,
+      g.goods_url AS goodsUrl,
+      g.price_amount,
+      g.sale_amount,
+      g.rebate_amount,
+      g.rebate_rate,
+      g.remark,
+      IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
+      IF(s.id IS NULL ,0,1) AS subscribe,
+      c.interest_free_id
+    FROM
+      af_goods  g  
+          JOIN af_bottom_goods  m ON  m.`goods_id` = g.`id`
+          JOIN af_bottom_goods_page ap ON ap.id = m.page_id   
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
+          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          WHERE
+	          g.is_delete = 0
+	   AND    ap.`is_delete` = 0
+	   AND    m.`is_delete` = 0
+	   AND    ap.page_flag = #{pageFlag}
+	   GROUP BY m.goods_id
+	   ORDER  BY m.sort DESC
     </select>
     
     

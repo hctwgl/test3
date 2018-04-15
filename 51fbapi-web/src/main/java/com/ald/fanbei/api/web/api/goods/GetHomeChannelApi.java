@@ -160,28 +160,13 @@ public class GetHomeChannelApi implements ApiHandle {
 			topTab =  topTabBarList.get(0);
 		}
 		data.put("topTab", topTab);
+		List<AfResourceDo> backgroundList = afResourceService
+				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
+		// 首页背景图  ?确认是否要首页的
+		if (!backgroundList.isEmpty()) {
+					data.put("backgroundList", backgroundList);
+		}
 		
-		
-		// 顶部导航信息
-	
-
-//		String topBanner = AfResourceType.HomeBannerV401.getCode();
-//		if (StringUtils.equals(deviceType, "IPHONEX")) {
-//			topBanner = AfResourceType.HomeBannerV401iPhoneX.getCode();
-//		}
-//		// 正式环境和预发布环境区分
-//		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-//			topBannerList = getBannerInfoWithResourceDolist(
-//					afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
-//		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-//			topBannerList = getBannerInfoWithResourceDolist(
-//					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
-//		}
-
-//		// 快速导航信息
-//		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
-//				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
-		// tabList[]
 	    List<Object> topBannerList = new ArrayList<Object>();
 	    List<Object> navigationList = new ArrayList<Object>();
 	    List<Object> onePlusThreeArea = new ArrayList<Object>();
@@ -230,7 +215,7 @@ public class GetHomeChannelApi implements ApiHandle {
 						onePlusThreeBanner.put("imageUrl", homePageChannelConfigure.getImageUrl());
 						onePlusThreeBanner.put("type", homePageChannelConfigure.getJumpType());
 						onePlusThreeBanner.put("content", homePageChannelConfigure.getJumpUrl());
-					}else if (1 == homePageChannelConfigure.getStatus()){
+					}else if (0 <  homePageChannelConfigure.getPosition() && 1 == homePageChannelConfigure.getStatus()){
 						Map<String, Object> onePlusThree = new HashMap<String, Object>(); 
 						onePlusThree.put("imageUrl", homePageChannelConfigure.getImageUrl());
 						onePlusThree.put("type", homePageChannelConfigure.getJumpType());
@@ -241,16 +226,32 @@ public class GetHomeChannelApi implements ApiHandle {
 				}
 			}
 			navigationInfo = getNavigationInfolist(navigationList);
-			data.put("topBannerList", topBannerList);
-			data.put("navigationInfo", navigationInfo);
-			onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
-			onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
-			data.put("onePlusThreeInfo", onePlusThreeInfo);
+			//data.put("topBannerList", topBannerList);
+			//data.put("navigationInfo", navigationInfo);
+			//onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
+			//onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
+			//data.put("onePlusThreeInfo", onePlusThreeInfo);
+			if (!topBannerList.isEmpty()) {
+				data.put("topBannerList", topBannerList);
+			}
+			if (!navigationInfo.isEmpty()) {
+				data.put("navigationInfo", navigationInfo);
+			}
+			if (!onePlusThreeBanner.isEmpty()) {
+				onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
+			}
+			if (!onePlusThreeArea.isEmpty()) {
+				onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
+			}
+			if (!onePlusThreeInfo.isEmpty()) {
+				data.put("onePlusThreeInfo", onePlusThreeInfo);
+			}
+			
 		}
 	   //推荐商品
 		 Map<String, Object> recommendGoodsInfo = new HashMap<String, Object>();
 		 try{
-			    List<Long> goodsIdList = new ArrayList<Long>();
+			
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				String type = "HOME_PAGE_CHANNEL_RECOMMEND_GOODS";
 				String recommendTag = "HC_IMAGE";
@@ -260,6 +261,7 @@ public class GetHomeChannelApi implements ApiHandle {
 		        	  if(goodsIds != null){
 						     String[] goodsId = goodsIds.split(",");  
 						     Long[] gids = (Long[]) ConvertUtils.convert(goodsId,Long.class);
+						     List<Long> goodsIdList = new ArrayList<Long>();
 							 for(Long gid: gids){
 								 goodsIdList.add(gid);
 							 }
@@ -286,11 +288,12 @@ public class GetHomeChannelApi implements ApiHandle {
 			 
 		 }
 		//更多商品
+		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
 		 try{
 		 String moreGoodsTag = "MORE_IMAGE";
 		 String activityTag = "HOME_CHANNEL_MORE_GOODS";
 		 Integer activityType = 5;
-		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
+		
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,1);
 		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
@@ -312,7 +315,14 @@ public class GetHomeChannelApi implements ApiHandle {
 		 }catch(Exception e){
 			 
 		 }
-			 
+
+		
+		 if (!recommendGoodsInfo.isEmpty()) {
+				data.put("recommendGoodsInfo", recommendGoodsInfo);
+			}
+			if (!moreGoodsInfo.isEmpty()) {
+				data.put("moreGoodsInfo", moreGoodsInfo);
+			}
 		resp.setResponseData(data);
 		return resp;
 
@@ -333,10 +343,10 @@ public class GetHomeChannelApi implements ApiHandle {
 		List<Object> navigationList = new ArrayList<Object>();
 		if(navigationList2 != null &&navigationList2.size()>0){
 		int navCount = navigationList2.size();
-		if (navCount > 5 && navCount < 10) {
-				navigationList.addAll(navigationList2.subList(0, 4));
+		if (navCount >= 5 && navCount < 10) {
+				navigationList.addAll(navigationList2.subList(0, 5));
 		} else if (navCount >= 10) {
-				navigationList.addAll(navigationList2.subList(5, 9));
+				navigationList.addAll(navigationList2.subList(5, 10));
 		}
 		navigationInfo.put("navigationList", navigationList);
 		}

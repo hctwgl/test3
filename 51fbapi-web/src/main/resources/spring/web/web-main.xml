@@ -113,6 +113,10 @@
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
 				<value>/goods/getHomeInfoV2</value>
+				<value>/goods/getHomeInfoV3</value>
+				<value>/goods/getChannel</value>
+				<value>/goods/getMoreGoods</value>
+				<value>/goods/getChannelMoreGoods</value>
 				<value>/goods/getHomeInfoFront</value>
 				<value>/user/loginFront</value>
 				<value>/good/getSearchHome</value>
@@ -256,7 +260,8 @@
 				<entry key="/goods/getHomeInfoV2" value-ref="getHomeInfoV2Api" />
 				<entry key="/goods/getHomeInfoV3" value-ref="getHomeInfoV3Api" />
 				<entry key="/goods/getChannel" value-ref="getHomeChannelApi" />
-				
+				<entry key="/goods/getMoreGoods" value-ref="getMoreGoodsApi" />
+				<entry key="/goods/getChannelMoreGoods" value-ref="getChannelMoreGoodsApi" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />

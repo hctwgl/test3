@@ -20,7 +20,7 @@
 
      <select id="getByTagAndType" resultType="AfResourceH5ItemDo">
         SELECT
-          <include refid="queryFields"/>
+            i.id rid,i.model_id,i.value1,i.value2,i.value3,i.value4,i.sort
         FROM
           af_resource_h5_item i
           join af_resource_h5  r on r.id = i.model_id
@@ -32,7 +32,7 @@
     </select>
      <select id="getByTag" resultType="AfResourceH5ItemDo">
         SELECT
-          <include refid="queryFields"/>
+         i.id rid,i.model_id,i.value1,i.value2,i.value3,i.value4,i.sort
          FROM
           af_resource_h5_item i
           join af_resource_h5  r on r.id = i.model_id

@@ -24,6 +24,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
 
 
@@ -184,6 +185,19 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByActivityModelQuery.setPageNo(pageNo);
 		homePageSecKillByActivityModelQuery.setTag(tag);
 		homePageSecKillByActivityModelQuery.setType(type);
+		homePageSecKillByActivityModelQuery.setTabId(tabId);
 	    return afSeckillActivityGoodsDao.getHomePageSecKillGoodsByActivityModel(homePageSecKillByActivityModelQuery);
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(
+			Long userId, Integer pageNo, String pageFlag) {
+		// TODO Auto-generated method stub
+		HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery = new HomePageSecKillByBottomGoodsQuery();
+		// TODO Auto-generated method stub
+		homePageSecKillByBottomGoodsQuery.setUserId(userId);
+		homePageSecKillByBottomGoodsQuery.setPageNo(pageNo);
+		homePageSecKillByBottomGoodsQuery.setPageFlag(pageFlag);
+	    return afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 	}
 }
