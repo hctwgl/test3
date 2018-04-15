@@ -252,7 +252,9 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				Long userId = null;
 				if (context.getUserName() != null) {
 				    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-				    userId = userDo.getRid();
+				    if(userDo != null){
+				    	userId = userDo.getRid();
+				    }
 				}
 				//限时抢购
 				Map<String, Object> flashSaleInfo = new HashMap<String, Object>();

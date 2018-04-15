@@ -124,7 +124,9 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		Long userId = null;
 		if (context.getUserName() != null) {
 		    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-		    userId = userDo.getRid();
+		    if(userDo != null){
+		    	userId = userDo.getRid();
+		    }
 		}
 		
 		

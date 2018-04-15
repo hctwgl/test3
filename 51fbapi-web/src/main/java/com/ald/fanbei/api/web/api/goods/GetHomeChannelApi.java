@@ -122,7 +122,9 @@ public class GetHomeChannelApi implements ApiHandle {
 		Long userId = null;
 		if (context.getUserName() != null) {
 		    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-		    userId = userDo.getRid();
+		    if(userDo != null){
+		    	userId = userDo.getRid();
+		    }
 		}
 		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
