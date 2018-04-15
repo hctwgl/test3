@@ -223,8 +223,14 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					data.put("gridViewInfo", gridViewInfo);
 				}
 
-				// 运营位轮播图
+
+
+				//1、未登录的用户显示；2、已登但未下过单的用户显示；3、不符合“新人专享”活动条的用户不显示。
+
+				
+				// 新人专享位（是否加入缓存？）
 				List<Object> operateBannerList = new ArrayList<Object>();
+				Object operateBannerInfo = new Object();
 				String operateBanner = AfResourceType.OPERATION_POSITION_BANNER.getCode();
 				
 				// 正式环境和预发布环境区分
@@ -237,7 +243,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				}
 				// 顶部轮播
 				if (!operateBannerList.isEmpty()) {
-							data.put("operateBannerList", operateBannerList);
+					operateBannerInfo = operateBannerList.get(0);
+							data.put("operateBannerList", operateBannerInfo);
 				}
 		
 		// 获取常驻运营位信息
