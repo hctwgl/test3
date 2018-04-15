@@ -14,6 +14,8 @@ public interface AfBorrowLegalCouponDao extends BaseDao<AfBorrowLegalCouponDo, L
 
 	AfBorrowLegalCouponDo getByRenewalId(Long renewalId);
 
+	AfBorrowLegalCouponDo getByBorrowId(Long borrowId);
+
     
 
 }

@@ -15,4 +15,6 @@ public interface AfBorrowLegalCouponService extends ParentService<AfBorrowLegalC
 	// 获取续期优惠券
 	AfBorrowLegalCouponDo getByRenewalId(Long renewalId);
 
+	AfBorrowLegalCouponDo getByBorrowId(Long borrowId);
+
 }

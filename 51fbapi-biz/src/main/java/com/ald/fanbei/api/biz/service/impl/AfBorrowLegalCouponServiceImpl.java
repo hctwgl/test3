@@ -39,4 +39,9 @@ public class AfBorrowLegalCouponServiceImpl extends ParentServiceImpl<AfBorrowLe
 	public AfBorrowLegalCouponDo getByRenewalId(Long renewalId) {
 		return afBorrowLegalCouponDao.getByRenewalId(renewalId);
 	}
+
+	@Override
+	public AfBorrowLegalCouponDo getByBorrowId(Long borrowId) {
+		return afBorrowLegalCouponDao.getByBorrowId(borrowId);
+	}
 }
