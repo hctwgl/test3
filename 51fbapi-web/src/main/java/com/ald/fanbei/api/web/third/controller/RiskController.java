@@ -46,13 +46,9 @@ public class RiskController {
 	private static final String TRADE_STATUE_SUCC = "0000";
 	private static final String REQUEST_KEY_SIGN_INFO = "signInfo";
 	private static final String REQUEST_KEY_DATA = "data";
-	private static final String REQUEST_KEY_CODE = "code";
-	private static final String REQUEST_KEY_msg = "msg";
 	
 	private static final String RESPONSE_CODE_SUCC = "SUCCESS";
 	private static final String RESPONSE_CODE_FAIL = "FAIL";
-	private static final String RESPONSE_SUCC_PREFFIX = "SUCCESS,";
-	private static final String RESPONSE_FAIL_PREFFIX = "FAIL,";
 	
 	@Resource
 	RiskUtil riskUtil;
@@ -493,13 +489,13 @@ public class RiskController {
 			logger.info("querySecAuthInfo begin, request params=" + params);
 			this.checkSign(params);
 			
-			ReqFromRiskBo req = JSON.parseObject(params.get(REQUEST_KEY_DATA), ReqFromRiskBo.class);
+			ReqFromRiskBo req = JSON.parseObject(JSON.toJSONString(params), ReqFromRiskBo.class);
 			RespSecAuthInfoToRiskBo resp = afUserAuthService.getSecondaryAuthInfo(req);
 			
-			return RESPONSE_SUCC_PREFFIX + JSON.toJSONString(resp);
+			return RESPONSE_CODE_SUCC + "," + JSON.toJSONString(resp);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return RESPONSE_FAIL_PREFFIX + e.getMessage();
+			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
 		}
 	}
 	
@@ -523,7 +519,7 @@ public class RiskController {
 			return RESPONSE_CODE_SUCC;
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return RESPONSE_FAIL_PREFFIX + e.getMessage();
+			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
 		}
 	}
 	
@@ -547,7 +543,8 @@ public class RiskController {
 			return RESPONSE_CODE_SUCC;
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return RESPONSE_FAIL_PREFFIX + e.getMessage();
+			
+			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
 		}
 	}
 	/* -------------------------------

@@ -14,6 +14,9 @@ import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.risk.ReqFromRiskBo;
 import com.ald.fanbei.api.biz.bo.risk.ReqFromSecondaryRiskBo;
@@ -92,6 +95,9 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     AfAuthRaiseStatusService afAuthRaiseStatusService;
     @Resource
     AfBorrowCashService afBorrowCashService;
+    
+    @Resource
+    TransactionTemplate transactionTemplate;
 
     @Override
     public int addUserAuth(AfUserAuthDo afUserAuthDo) {
@@ -812,24 +818,29 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
      * 处理来自风控主动推送的强风控回调
      */
 	@Override
-	public void dealFromStrongRiskForcePush(ReqFromStrongRiskBo reqBo) {
-		Long userId = reqBo.consumerNo;
+	public void dealFromStrongRiskForcePush(final ReqFromStrongRiskBo reqBo) {
+		final Long userId = reqBo.consumerNo;
 		
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
-			throw new FanbeiException("dealFromStrongRiskForcePush, ConsumerNo=" + userId + "have deal borrow cash");
+			throw new FanbeiException("ConsumerNo=" + userId + " have deal borrow cash");
 		}
 		
 		if (StringUtils.equals("10", reqBo.result)) {
 			if (SceneType.CASH.getCode().equals(reqBo.scene)) { // 认证通过
-				AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, "LOAN_TOTAL", reqBo.totalAmount.toString());
-				afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
-				
-				this.updateRiskStatus(RiskStatus.YES, userId); 
-				
-				AfUserAccountDo accountDo = new AfUserAccountDo();
-				accountDo.setUserId(userId);
-				accountDo.setAuAmount(reqBo.amount);
-				afUserAccountService.updateUserAccount(accountDo);
+				transactionTemplate.execute(new TransactionCallback<Boolean>() {
+					public Boolean doInTransaction(TransactionStatus arg0) {
+						AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, "LOAN_TOTAL", reqBo.totalAmount.toString());
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+						
+						updateRiskStatus(RiskStatus.YES, userId); 
+						
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(userId);
+						accountDo.setAuAmount(reqBo.amount);
+						afUserAccountService.updateUserAccount(accountDo);
+						return true;
+					}
+				});
 			}
 		} else if (StringUtils.equals("30", reqBo.result)) {   // 认证未通过
 			if (SceneType.CASH.getCode().equals(reqBo.scene)) {
@@ -839,29 +850,41 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 	
 	@Override
-	public void dealFromSecondaryRiskForcePush(ReqFromSecondaryRiskBo reqBo) {
-		Long userId = reqBo.consumerNo;
+	public void dealFromSecondaryRiskForcePush(final ReqFromSecondaryRiskBo reqBo) {
+		final Long userId = reqBo.consumerNo;
 		
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
-			throw new FanbeiException("dealFromSecondaryRiskForcePush, ConsumerNo=" + userId + "have deal borrow cash");
+			throw new FanbeiException("ConsumerNo=" + userId + " have deal borrow cash");
 		}
 		
-		String raiseStatus = reqBo.results[0].getResult();
-		if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-		    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-		    afUserAccountDo.setUserId(userId);
-		    afUserAccountDo.setAuAmount(reqBo.amount);
-		    afUserAccountService.updateUserAccount(afUserAccountDo);
-		    
-		    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
-		    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+		final String authType = reqBo.results[0].getScene();
+		final AuthType at = AuthType.findByCode(authType);
+		final String raiseStatus = reqBo.results[0].getResult();
+		
+		transactionTemplate.execute(new TransactionCallback<Boolean>() {
+			public Boolean doInTransaction(TransactionStatus arg0) {
+				if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+				    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				    afUserAccountDo.setUserId(userId);
+				    afUserAccountDo.setAuAmount(reqBo.amount);
+				    afUserAccountService.updateUserAccount(afUserAccountDo);
+				    
+				    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
+				    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 
-		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
-		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		} else {
-		    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
-		    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		}
+				    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
+				    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    
+				    updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+				} else {
+				    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
+				    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    
+		    		updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+				}
+				return true;
+			}
+		});
 	}
 	
 	@Override
@@ -931,6 +954,39 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		authDo.setGmtRisk(cur);
 		updateUserAuth(authDo);
     }
+	private void updateSecAuthStatus(Long userId, AuthType authType, SecAuthStatus secAuthstatus) {
+		Date cur = new Date();
+		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+		afUserAuthDo.setUserId(userId);
+		
+		if(AuthType.ALIPAY.equals(authType)) {
+			afUserAuthDo.setAlipayStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtAlipay(cur);
+		}else if(AuthType.BANK.equals(authType)) {
+			afUserAuthDo.setOnlinebankStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtCredit(cur);
+		}else if(AuthType.CARDEMAIL.equals(authType)) {
+			afUserAuthDo.setCreditStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtCredit(cur);
+		}else if(AuthType.CHSI.equals(authType)) {
+			afUserAuthDo.setChsiStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtChsi(cur);
+		}else if(AuthType.FUND.equals(authType)) {
+			afUserAuthDo.setFundStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtFund(cur);
+		}else if(AuthType.INSURANCE.equals(authType)) {
+			afUserAuthDo.setJinpoStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtJinpo(cur);
+		}else if(AuthType.ZHENGXIN.equals(authType)) {
+			afUserAuthDo.setZhengxinStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtZhengxin(cur);
+		}else {
+			throw new FanbeiException("Illegal sec auth type=" + authType);
+		}
+		
+		afUserAuthDo.setRiskStatus(RiskStatus.YES.getCode());
+		updateUserAuth(afUserAuthDo);
+	}
 	/* ---------------------------------
 	 * end 此区域内处理风控主动调用   		|
 	 * --------------------------------- */
