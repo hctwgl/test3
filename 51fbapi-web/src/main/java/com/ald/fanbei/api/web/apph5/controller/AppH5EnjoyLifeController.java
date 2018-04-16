@@ -183,7 +183,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             }catch (Exception e){
                 logger.error("get activityGoodsList error" + e);
             }
-
+            jsonObj.put("activityGoodsList", activityGoodsList);
             //获取可用额度
             AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
             if(userDo!=null){
