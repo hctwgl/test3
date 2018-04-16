@@ -548,7 +548,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 					dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo,reductionAmount);		//逾期费
 					dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
 					dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
-					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
+					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo,reductionAmount);	//修改借款分期状态
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
@@ -705,7 +705,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 	 * @Description: 分期记录 完成处理
 	 * @return  void
 	 */
-	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
+	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo,BigDecimal reductionAmount) {
 		
 		// 所有需还金额
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
@@ -731,7 +731,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		
 		// 所有已还金额
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(reductionAmount);
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
