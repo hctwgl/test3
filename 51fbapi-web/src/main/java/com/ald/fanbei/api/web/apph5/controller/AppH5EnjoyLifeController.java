@@ -155,14 +155,14 @@ public class AppH5EnjoyLifeController extends BaseController {
 
             //jsonObj.put("notifyUrl", notifyUrl);
             // 根据modelId查询banner信息
-            List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
+            /*List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
             if(bannerList != null && bannerList.size() > 0){
                 AfModelH5ItemDo bannerInfo = bannerList.get(0);
                 jsonObj.put("bannerImage", bannerInfo.getItemIcon());
             } else {
                 resp = H5CommonResponse.getNewInstance(false, "banner信息为空");
                 return resp.toString();
-            }
+            }*/
             //获取配置商品信息
             List<AfGoodsDo> activityGoodsList = new ArrayList<>();
             try{
