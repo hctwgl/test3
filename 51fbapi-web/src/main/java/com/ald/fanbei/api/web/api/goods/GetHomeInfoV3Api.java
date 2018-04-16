@@ -198,6 +198,14 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
 		}
 
+		String sloganImage = "";
+		String homeImages = AfResourceType.HOME_IAMGES.getCode();
+		String slogan = AfResourceType.SLOGAN_IMAGE.getCode();
+
+		 AfResourceDo homeImage = afResourceService.getConfigByTypesAndSecType(homeImages, slogan);
+		if(homeImage !=null ){
+			sloganImage = homeImage.getValue();
+		}
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
@@ -418,6 +426,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		// 快速导航
 		if (!navigationInfo.isEmpty()) {
 			data.put("navigationInfo", navigationInfo);
+		}
+		
+		if (!sloganImage.isEmpty()) {
+			data.put("sloganImage", sloganImage);
 		}
 		// 新增运营位1,快捷导航上方活动专场
 		if (!navigationUpOne.isEmpty()) {
