@@ -322,7 +322,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     List<Map<String, Object>> goodsInfo = (List<Map<String, Object>>)activityData.get("goodsList");
                     for(int j=0;j<goodsInfo.size();j++){
                         Map<String, Object> afActGoodsDto = goodsInfo.get(j);
-                        Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("rid")));
+                        Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("goodsId")));
                         Long activityId = Long.valueOf(String.valueOf(afActGoodsDto.get("activityId")));
                         AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getSaleInfoByGoodsIdAndActId(activityId,goodsId);
                         if(userDo!=null){
