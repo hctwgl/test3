@@ -37,14 +37,5 @@ public class AfInterestFreeRulesServiceImpl implements
 		return freeRulesDo;
 	}
 
-	@Override
-	public AfInterestReduceSchemeDo getReduceSchemeByGoodId(long goodsId, long brandId, long catogeryId) {
-		return afInterestFreeRulesDao.getReduceSchemeByGoodId(goodsId,brandId,catogeryId);
-	}
-
-	@Override
-	public AfInterestReduceRulesDo getReduceRuleById(Long rid) {
-		return afInterestFreeRulesDao.getReduceRuleById(rid);
-	}
 
 }
