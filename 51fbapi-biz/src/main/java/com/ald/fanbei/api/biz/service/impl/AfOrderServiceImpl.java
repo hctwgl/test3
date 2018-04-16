@@ -1219,7 +1219,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
 								orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
 						borrow.setVersion(1);
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1281,7 +1281,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						// 用额度进行分期
 						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
 								leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
 						borrow.setVersion(1);
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1359,7 +1359,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								orderInfo.setRiskOrderNo(riskOrderNo);
 								borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
 										afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
-										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
 								borrow.setVersion(1);
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1510,7 +1510,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	 * @return
 	 */
 	public AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
-			String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType) {
+			String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType, String secOrderType) {
 
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null
@@ -1527,8 +1527,31 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// 获取借款分期配置信息
 		AfResourceDo resource = null;
 		if (orderType.equals(OrderType.TRADE.getCode())) {
-			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-					Constants.RES_BORROW_TRADE);
+			// 非租房业务
+			if(!StringUtils.equals(Constants.ORDER_TYPE_TENEMENT, secOrderType)){
+				resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+						Constants.RES_BORROW_TRADE);
+			}
+			else{
+				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId); 
+				Long businessId = afTradeOrderDo.getBusinessId();
+				List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
+				if(null != resourceList && !resourceList.isEmpty()){
+					String value3;
+					for(AfResourceDo afResourceDo: resourceList){
+						value3 = afResourceDo.getValue3();
+						if(StringUtils.equals(String.valueOf(businessId), value3)){
+							resource = afResourceDo;
+							break;
+						}
+					}
+				}
+				
+				// 各分期利率均为0
+				if(null == resource){
+					resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
+				}
+			}
 		} else {
 			// 获取借款分期配置信息
 			// 11.27加入用户专有利率

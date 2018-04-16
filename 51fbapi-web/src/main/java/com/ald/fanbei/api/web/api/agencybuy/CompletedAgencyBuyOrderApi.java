@@ -139,12 +139,14 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
 						//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
 						rebateContext.rebate(orderInfo);
-						
 //						addBorrowBill(orderInfo);
 						addBorrowBill_1(orderInfo);
 						//实时推送自营分期的债权给钱包
 						//防止重复推送
 						AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+						if(afBorrowDo==null){
+							return resp;
+						}
 						List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
 						if (afRetryTemplDos == null ||afRetryTemplDos.size() == 0) {
 							//没推送过
@@ -177,6 +179,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 								addBorrowBill_1(orderInfo);
 								//实时推送代买分期的债权给钱包
 								AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderInfo.getRid());
+								if(afBorrowDo==null){
+									return resp;
+								}
 								List<AfRetryTemplDo> afRetryTemplDos = afRetryTemplService.getByBusId(afBorrowDo.getBorrowNo());
 								if (afRetryTemplDos == null ||afRetryTemplDos.size()==0) {
 									AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());

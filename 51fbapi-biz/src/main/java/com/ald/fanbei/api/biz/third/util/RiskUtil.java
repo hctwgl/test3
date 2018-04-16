@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.biz.third.util;
 
 import java.io.UnsupportedEncodingException;
@@ -5,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -314,6 +317,15 @@ public class RiskUtil extends AbstractThird {
 	KafkaSync kafkaSync;
 	@Resource
 	AfUserSeedService afUserSeedService;
+	
+	@Resource
+	AfTradeSettleOrderService afTradeSettleOrderService;
+	
+	@Resource
+	AfTradeBusinessInfoService afTradeBusinessInfoService;
+
+	@Resource
+	JdbcTemplate loanJdbcTemplate;
 
 	public static String getUrl() {
 		if (url == null) {
@@ -892,6 +904,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+
 		// String url = "http://192.168.110.16:8080" +
 		// "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = requestProxy.post(url, reqBo);
@@ -915,13 +928,34 @@ public class RiskUtil extends AbstractThird {
 			String result = dataObj.getString("result");
 			riskResp.setSuccess(true);
 			riskResp.setResult(result);
-			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) { riskResp.setPassWeakRisk(true); }
-			else {riskResp.setPassWeakRisk(false);}
 			riskResp.setConsumerNo(consumerNo);
 			riskResp.setVirtualCode(dataObj.getString("virtualCode"));
 			riskResp.setVirtualQuota(dataObj.getBigDecimal("virtualQuota"));
 			riskResp.setRejectCode(dataObj.getString("rejectCode"));
 			riskResp.setBorrowNo(dataObj.getString("borrowNo"));
+			if(StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) {
+				riskResp.setPassWeakRisk(true);
+				try{
+					if(scene.equals("50")){//借钱才走这个逻辑
+						AfUserDo userDo= afUserService.getUserById( Long.parseLong(consumerNo));
+						Integer data= loanJdbcTemplate.queryForObject("SELECT COUNT(1) from af_borrow_cash a left join af_user b on a.user_id=b.id where b.user_name='"+userDo.getUserName()+"' and a.`status` in ('TRANSED','TRANSEDING')",Integer.class);
+						if(data>0){
+							logger.info("loan on koudaixianjin username:"+userDo.getUserName());
+							riskResp.setPassWeakRisk(false);
+							riskResp.setResult("30");
+							riskResp.setRejectCode("104");
+						}
+					}
+
+				}catch (Exception e){
+					logger.info("loan on koudaixianjin error:",e);
+				}
+
+			}
+			else {
+				riskResp.setPassWeakRisk(false);
+			}
+
 			return riskResp;
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -1189,6 +1223,19 @@ public class RiskUtil extends AbstractThird {
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),
 						orderInfo.getOrderType());
 				
+				// 支付成功生成结算单 add by luoxiao on 2018-03-30 start
+				try{
+					List<AfTradeBusinessInfoDto> businessInfoList = afTradeBusinessInfoService.getByOrderId(orderInfo.getRid());
+					if(null != businessInfoList && !businessInfoList.isEmpty()){
+						Long businessId = businessInfoList.get(0).getBusinessId();
+						Integer withDrawCycleDays = businessInfoList.get(0).getWithdrawCycle();
+						createSettlementOrder(orderInfo, userAccountInfo.getRealName(), businessId, withDrawCycleDays);
+					}
+				}catch(Exception e){
+					logger.error("createSettlementOrder error.", e);
+				}
+				// end by luoxiao
+				
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				Boolean flag=true;
@@ -1203,9 +1250,8 @@ public class RiskUtil extends AbstractThird {
 						flag=false;
 					}
 				}
-				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
-						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag&&!bankIsMaintaining) {
+						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag) {
 					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
 					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
@@ -1264,6 +1310,57 @@ public class RiskUtil extends AbstractThird {
 
 		resultMap.put("success", true);
 		return resultMap;
+	}
+	
+	/**
+	 * 生成线下商圈结算单， 
+	 * 和产品王鲁迪沟通过，线下商圈暂时只生成一条结算单（因为订单没有结束时间，无法算每期结算金额），按照原模式结算
+	 * @param afOrderDo
+	 * @param userName
+	 * @param businessId
+	 */
+	private void createSettlementOrder(AfOrderDo afOrderDo, String userName, Long businessId, int withDrawCycleDays){
+		AfTradeSettleOrderDo settleOrderDo = new AfTradeSettleOrderDo();
+		settleOrderDo.setBalanceAmount(afOrderDo.getActualAmount());
+		settleOrderDo.setBatchDelayDays(withDrawCycleDays);
+		settleOrderDo.setBatchMonth(afOrderDo.getNper());
+		settleOrderDo.setBusinessId(businessId);
+		settleOrderDo.setGmtCreate(new Date());
+		settleOrderDo.setCreator(userName);
+		settleOrderDo.setDetails("线下商圈结算订单-" + userName + "-批次1");
+		settleOrderDo.setExtractableDate(getExtractableDate(withDrawCycleDays, afOrderDo.getGmtCreate()));
+		settleOrderDo.setIsDelete(0);
+		settleOrderDo.setBusinessName(afOrderDo.getShopName());
+		settleOrderDo.setOrderId(afOrderDo.getRid());
+		settleOrderDo.setOrderNo(afOrderDo.getOrderNo());
+		settleOrderDo.setStatus(AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
+		settleOrderDo.setGmtModified(new Date());
+		
+		afTradeSettleOrderService.createSettleOrder(settleOrderDo);
+	}
+	
+	/**
+     * 获取租房分期结算可提取时间
+     * @param batchDelayDays
+     * @return
+     */
+	private Date getExtractableDate(int batchDelayDays, Date gmtCreate) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(gmtCreate);
+		
+		String dateTimeString = DateUtil.formatDateForPatternWithHyhen(gmtCreate) + " 23:59:59.999";
+		Date extractableDate = DateUtil.parseDate(dateTimeString, DateUtil.DATE_TIME_FULL);
+		
+		int gmtCreateHour = calendar.get(Calendar.HOUR_OF_DAY);
+		if(gmtCreateHour > 12){
+			extractableDate = DateUtil.addDays(extractableDate, 1);
+		}
+		
+		if(batchDelayDays > 1){
+			extractableDate = DateUtil.addDays(extractableDate, batchDelayDays - 1);
+		}
+
+		return extractableDate;
 	}
 
 	private String  isBklResult(AfOrderDo orderInfo) {
@@ -3124,6 +3221,9 @@ public class RiskUtil extends AbstractThird {
 	public boolean updateRentScore(String consumerNo) {
 		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
 		reqBo.setConsumerNo(consumerNo);
+		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+		String riskOrderNo = riskUtil.getOrderNo("rent", card.getCardNumber().substring(card.getCardNumber().length() - 4, card.getCardNumber().length()));
+		reqBo.setOrderNo(riskOrderNo);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/updateRentScore.htm";

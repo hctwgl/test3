@@ -463,7 +463,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					if(afSeckillActivityGoodsDto!=null&&afSeckillActivityGoodsDto.getSpecialPrice().compareTo(BigDecimal.ZERO)>0){
 						logger.error("afSeckillActivity getSpecialPrice for userId:" + userId);
 						afOrder.setActualAmount(afSeckillActivityGoodsDto.getSpecialPrice().multiply(new BigDecimal(count)).subtract(couponAmount));
-						BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate());
+						BigDecimal secKillRebAmount = afOrder.getActualAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
 						if(afOrder.getRebateAmount().compareTo(secKillRebAmount)>0){
 							afOrder.setRebateAmount(secKillRebAmount);
 						}
