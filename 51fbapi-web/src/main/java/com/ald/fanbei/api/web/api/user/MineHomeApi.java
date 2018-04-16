@@ -142,11 +142,18 @@ public class MineHomeApi implements ApiHandle {
 
     // 填充信用信息
     private void fillCreditInfo(MineHomeVo data, Long userId) {
-        if (userId == null) return;
-
         AfResourceDo creditResource = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
         List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "ONE");
         List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "ONE");
+
+        // 未登录
+        if (userId == null) {
+            data.setShowAmount(cashDescs.get(0));
+            data.setDesc(DESC_AMOUNT_NOAUTH);
+            data.setOnlineShowAmount(consumeDescs.get(0));
+            data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
+            return;
+        }
 
         // 购物额度认证状态
         AfUserAuthStatusDo consumeAuthStatus = afUserAuthStatusService

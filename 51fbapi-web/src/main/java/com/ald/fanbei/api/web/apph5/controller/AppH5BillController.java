@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -36,7 +37,7 @@ import java.util.*;
  * @date 2018/4/13 15:11
  */
 @Controller
-@RequestMapping("/borrow")
+@RequestMapping("/fanbei-web/borrow")
 public class AppH5BillController extends BaseController {
 
     private static final String opennative = "/fanbei-web/opennative?name=";
@@ -97,12 +98,17 @@ public class AppH5BillController extends BaseController {
      * @date 2018/4/13 15:23
      */
     @RequestMapping(value = "/allWaitRepayments", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
     public String findAllWaitRepaymentList(HttpServletRequest request) {
         FanbeiWebContext context = new FanbeiWebContext();
 
         try {
             context = doWebCheck(request, true);
             Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
+
+            // 测试
+           /* String userName = request.getParameter("userName");
+            Long userId = afUserService.getUserByUserName(userName).getRid();*/
 
             List<Map<String, Object>> data = new ArrayList<>();
             data.add(getBorrowBill(userId));

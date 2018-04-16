@@ -79,38 +79,56 @@ public class AppH5LifeController extends BaseController {
 
     @RequestMapping(value = "/categoryAndBanner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getCategoryAndBanner() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("shopList", findShopList());
-        data.put("bannerList", findBannerList());
+    public String getCategoryAndBanner(HttpServletRequest request) {
+        try {
+            doWebCheck(request, false);
 
-        H5CommonResponse resp = H5CommonResponse.getNewInstance(true, "成功","",data);
-        return resp.toString();
+            Map<String, Object> data = new HashMap<>();
+            data.put("shopList", findShopList());
+            data.put("bannerList", findBannerList());
+
+            return H5CommonResponse.getNewInstance(true, "成功","",data).toString();
+        } catch (Exception e) {
+            logger.error("/fanbei-web/life/categoryAndBanner error = {}", e.getStackTrace());
+            return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
+        }
     }
 
     @RequestMapping(value = "/h5ResourceList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findH5ResourceList() {
-        List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
-                .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
-        if (CollectionUtil.isEmpty(resourceH5Dtos)) {
-            logger.error("Cannot find tag:" + BottomGoodsPageFlag.LIFE.getCode() + " , please check H5Resource config.");
-            return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
-        }
+    public String findH5ResourceList(HttpServletRequest request) {
+        try {
+            doWebCheck(request, false);
 
-        return H5CommonResponse
-                .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
+            List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
+                    .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
+            if (CollectionUtil.isEmpty(resourceH5Dtos)) {
+                logger.error("Cannot find tag:" + BottomGoodsPageFlag.LIFE.getCode() + " , please check H5Resource config.");
+                return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
+            }
+            return H5CommonResponse
+                    .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
+        } catch (Exception e) {
+            logger.error("/fanbei-web/life/h5ResourceList error={}", e.getStackTrace());
+            return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
+        }
     }
 
     @RequestMapping(value = "/goods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findBottomGoods(@RequestParam("pageNo") Integer pageNo) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("floorImage", getFloorImage());
-        data.put("list", doFindBottomGoods(pageNo));
-        data.put("pageNo", pageNo);
+    public String findBottomGoods(HttpServletRequest request, @RequestParam("pageNo") Integer pageNo) {
+        try {
+            doWebCheck(request, false);
 
-        return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+            Map<String, Object> data = new HashMap<>();
+            data.put("floorImage", getFloorImage());
+            data.put("list", doFindBottomGoods(pageNo));
+            data.put("pageNo", pageNo);
+            return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+        } catch (Exception e) {
+            logger.error("/fanbei-web/life/goods error={}", e.getStackTrace());
+            return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
+        }
     }
 
     @Override
@@ -200,7 +218,9 @@ public class AppH5LifeController extends BaseController {
             }
 
             Map<String, Object> e = new HashMap<>();
-            e.put("floorImage", itemList.get(0).getValue3());
+            // 从列表中移除楼层图
+            AfResourceH5ItemDto floorImageResource = itemList.remove(0);
+            e.put("floorImage", floorImageResource.getValue3());
             e.put("type", resource.getSort());
             List<Map<String, Object>> itemMapList = CollectionConverterUtil.convertToListFromList(itemList,
                     new Converter<AfResourceH5ItemDto, Map<String, Object>>() {
