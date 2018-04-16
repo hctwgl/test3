@@ -20,11 +20,11 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_interest_reduce_goods,af_interest_reduce_rules,af_interest_reduce_scheme";
+		String tables = "af_record_max";
 
 		// 配置作者及Domain说明
-		String classAuthor = "qiao";
-		String functionName = "降息";
+		String classAuthor = "wujun";
+		String functionName = "债权推送查询上限记录表";
 
 
 //		String tables = "af_facescore_img";

@@ -28,6 +28,7 @@ public class AfUserBankcardDo extends AbstractSerial {
     private String status;
     private String bankIcon;
     private String isValid;
+    private String bankChannel;
 
     private String payType;
 
@@ -140,6 +141,14 @@ public class AfUserBankcardDo extends AbstractSerial {
 
     public void setPayType(String payType) {
 	this.payType = payType;
+    }
+
+    public String getBankChannel() {
+	return bankChannel;
+    }
+
+    public void setBankChannel(String bankChannel) {
+	this.bankChannel = bankChannel;
     }
 
 }

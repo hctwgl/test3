@@ -227,9 +227,11 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					}
 					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+					//浙商是否维护中逻辑
+					Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 					if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
 						&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
-						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
+						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag&&!bankIsMaintaining) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
 						List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
@@ -416,6 +418,20 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		}
 	}
 
+	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+			String[] split = assetPushResource.getValue4().split(",");
+			String maintainStart = split[0];
+			String maintainEnd = split[1];
+			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+			
+		}
+		return bankIsMaintaining;
+	}
+	
 	private void doMaidianLog(HttpServletRequest request, AfBorrowCashDo afBorrowCashDo, RequestDataVo requestDataVo,
 			FanbeiContext context) {
 		String ext1 = afBorrowCashDo.getBorrowNo();

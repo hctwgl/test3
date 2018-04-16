@@ -582,16 +582,18 @@ public class StartCashierApi implements ApiHandle {
 
 	// 专项额度控制
 	Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
+	AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 	// 获取可使用额度+临时额度
 	AfUserAccountSenceDo userAccountInfo = null;
-	if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType()))
+	if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
 	    userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), orderInfo.getUserId());
+	    cashierTypeVo.setCategoryName(afResourceDo.getValue3());
+	}
 	else {
 	    userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
 	}
 	if (userAccountInfo != null) {
 	    BigDecimal leftAmount = afOrderService.checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
-	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 	    if ("TRUE".equals(virtualMap.get(Constants.VIRTUAL_CHECK))) {
 		cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
 		cashierTypeVo.setCategoryName(virtualMap.get(Constants.VIRTUAL_CHECK_NAME).toString() + afResourceDo.getValue2());

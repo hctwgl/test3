@@ -138,18 +138,16 @@ public class SubmitClearApi implements ApiHandle {
         String billIds1 = "";
         Map<String, Object> map;
         try {
-            if (afUserWithholdService.getCountByUserId(userId) > 0) {
-                for (int i = 0; i < billStr.length; i++) {
-                    String billId1 = billStr[i];
-                    if (afBorrowBillService.updateBorrowBillLockById(billId1) > 0) {
-                        if (billIds1.equals("")) {
-                            billIds1 = billId1;
-                        } else {
-                            billIds1 = billIds1 + "," + billId1;
-                        }
+            for (int i = 0; i < billStr.length; i++) {
+                String billId1 = billStr[i];
+                if (afBorrowBillService.updateBorrowBillLockById(billId1) > 0) {
+                    if (billIds1.equals("")) {
+                        billIds1 = billId1;
                     } else {
-                        throw new FanbeiException(FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
+                        billIds1 = billIds1 + "," + billId1;
                     }
+                } else {
+                    throw new FanbeiException(FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
                 }
             }
             if (cardId.longValue() == -2) {//余额支付
@@ -196,18 +194,7 @@ public class SubmitClearApi implements ApiHandle {
                 }
                 map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo,bankPayType);
-                //代收
-                UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
-                if (!upsResult.isSuccess()) {
-                    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                }
-                Map<String, Object> newMap = new HashMap<String, Object>();
-                newMap.put("outTradeNo", upsResult.getOrderNo());
-                newMap.put("tradeNo", upsResult.getTradeNo());
-                newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
-                newMap.put("refId", map.get("refId"));
-                newMap.put("type", map.get("type"));
-                resp.setResponseData(newMap);
+                resp.setResponseData(map);
             }
         } catch (FanbeiException e) {
             logger.error("borrowbill repayment fail" + e);
