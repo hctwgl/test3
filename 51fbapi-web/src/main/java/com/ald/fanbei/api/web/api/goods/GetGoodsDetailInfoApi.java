@@ -202,7 +202,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
 		if (reflag != null){
 			String value3 = reflag.getValue3();
-			if (value3 != null&&value3.contains(goods.getBrandId()+"")){
+			if (value3 != null&&value3.contains(goods.getCategoryId()+"")){
 				vo.setIsShow(1);
 			}
 		}
