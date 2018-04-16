@@ -184,10 +184,10 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			if (userId == null) {
 				profitAmount = BigDecimal.ZERO;
 			}
-			List<Long> allGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmoutForV2(profitAmount);
+			/*List<Long> allGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmoutForV2(profitAmount);
 			if(!allGoodsId.contains(param.getGoodsId())) {
 				throw new FanbeiException("请检查网络，稍后重新再试！",true);
-			}
+			}*/
 			
 			data.put("serviceAmount", "0");
 			data.put("amount", param.getAmount());
