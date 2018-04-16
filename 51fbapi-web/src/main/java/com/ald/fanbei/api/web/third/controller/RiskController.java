@@ -492,7 +492,7 @@ public class RiskController {
 			ReqFromRiskBo req = JSON.parseObject(JSON.toJSONString(params), ReqFromRiskBo.class);
 			RespSecAuthInfoToRiskBo resp = afUserAuthService.getSecondaryAuthInfo(req);
 			
-			return RESPONSE_CODE_SUCC + "," + JSON.toJSONString(resp);
+			return JSON.toJSONString(resp);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
