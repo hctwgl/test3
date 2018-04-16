@@ -261,6 +261,11 @@ $(function(){
     $('.goTop').click(function(){
         $('body,html').animate({scrollTop:0},300);
     })
+
+    //样式15--点击商品返回顶部
+    $('.goodCont').click(function(){
+        $('body,html').animate({scrollTop:0},300);
+    })
 });
 
 

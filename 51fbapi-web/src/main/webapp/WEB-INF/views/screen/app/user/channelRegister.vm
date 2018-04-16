@@ -155,6 +155,11 @@
     #if( $!{style}==12 || $!{style}==13|| $!{style}==14 || $!{style}==15)
         <img class="goTop" src="$commonUrl/addRegister06.png">
     #end
+    #if($!{style}==15)
+        <div class="goodList">
+            <div class="goodCont"></div><div class="goodCont"></div><div class="goodCont"></div>
+        </div>
+    #end
 </div>
 <script type="text/javascript">
     var _saber={};
