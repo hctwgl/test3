@@ -3313,5 +3313,15 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
         }
 
         return payType;
+    }
+
+	@Override
+	public AfBorrowDo buildAgentPayBorrow(String name, BorrowType type,
+			Long userId, BigDecimal amount, int nper, String status,
+			Long orderId, String orderNo, String borrowRate,
+			String interestFreeJson, String orderType, String secOrderType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 }

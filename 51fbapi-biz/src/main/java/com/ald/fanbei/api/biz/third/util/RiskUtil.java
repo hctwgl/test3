@@ -3946,5 +3946,19 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
 		return riskResp;
-	}
+	}	
+	
+	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+			String[] split = assetPushResource.getValue4().split(",");
+			String maintainStart = split[0];
+			String maintainEnd = split[1];
+			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+			
+		}
+		return bankIsMaintaining;
+	}	
 }
