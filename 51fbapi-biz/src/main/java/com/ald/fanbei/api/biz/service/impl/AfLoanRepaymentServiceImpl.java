@@ -1116,8 +1116,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
 						.subtract(loanPeriodsDo.getRepayAmount());
 			}else { // 未出账， 提前还款时不用还手续费和利息
-				if (!bo.isAllRepay){//判断是否为按期还款，按期还款不能提前还未出账账单
-					throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+				if (!bo.isAllRepay ){//判断是否为按期还款，按期还款不能提前还未出账账单
+					for (HashMap map:bo.periodsList) {
+						if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+							throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+						}
+					}
 				}
 				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
 			}
