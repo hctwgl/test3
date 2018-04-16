@@ -184,7 +184,7 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	KuaijieOrderCombinationPayBo bizObject = new KuaijieOrderCombinationPayBo(orderInfo, borrow, userAccountInfo, virtualMap);
 	String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
 	if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-	    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
+	    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderCombinationPayService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 	} else {// 代扣
 	    resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 	}
