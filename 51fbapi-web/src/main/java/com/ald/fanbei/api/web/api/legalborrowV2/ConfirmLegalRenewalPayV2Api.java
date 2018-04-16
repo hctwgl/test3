@@ -197,7 +197,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                 }
                 
                 //还款金额是否大于银行单笔限额
-	        afUserBankcardService.checkUpsBankLimit(card.getBankCode(), actualAmount);
+	        afUserBankcardService.checkUpsBankLimit(card.getBankCode(), card.getBankChannel(),actualAmount);
 	        
                 AfResourceDo afResource = afResourceService.getSingleResourceBytype("bank_repay_limit_" + card.getBankCode());
                 if (afResource != null && afResource.getValue().equals(card.getBankCode())) {

@@ -103,9 +103,9 @@ public interface AfUserBankcardService {
 
     int updateViceBankCard(String cardNumber, Long userId);
 
-    UpsBankStatusDto getUpsBankStatus(String bankCode);
+    UpsBankStatusDto getUpsBankStatus(String bankCode, String bankChannel);
 
-    UpsBankStatusDto getUpsBankStatus(Long cardId);
+    //UpsBankStatusDto getUpsBankStatus(Long cardId);
     
-    void checkUpsBankLimit(String bankCode, BigDecimal amount);
+    void checkUpsBankLimit(String bankCode, String bankChannel, BigDecimal amount);
 }

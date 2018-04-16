@@ -1234,7 +1234,6 @@ public class RiskUtil extends AbstractThird {
 					logger.error("createSettlementOrder error.", e);
 				}
 				// end by luoxiao
-
 				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				Boolean flag=true;
