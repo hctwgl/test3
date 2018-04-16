@@ -37,6 +37,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
@@ -213,13 +214,14 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
 
-	String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
-	if (bizCacheUtil.getObject(lockKey) == null) {
-	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
-	} else {
-	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	if (!BankPayChannel.KUAIJIE.equals(bankChannel)) {
+	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+	    if (bizCacheUtil.getObject(lockKey) == null) {
+		bizCacheUtil.saveObject(lockKey, lockKey, 30);
+	    } else {
+		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	    }
 	}
-
 
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
