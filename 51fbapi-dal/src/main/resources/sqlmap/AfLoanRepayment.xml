@@ -78,10 +78,6 @@
 
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo" keyProperty="rid" useGeneratedKeys="true">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
         INSERT INTO af_loan_repayment
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="userId != null">        
