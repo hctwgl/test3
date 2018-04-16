@@ -75,10 +75,10 @@ public class LegalBorrowV2Test  extends BaseTest{
 	@Test
 	public void  delegatePay() {
 		String url = urlBase + "/third/ups/delegatePay?";
-		String orderNo = "jq2018041611010500103";
+		String orderNo = "jq2018041614095300106";
 		String merPriv = PayOrderSource.BORROWCASH.getCode();
 		String tradeState = "00";
-		String reqExt = "3339801";
+		String reqExt = "3339804";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&reqExt=" + reqExt + "&tradeState=" + tradeState;
 		url += reqStr;
@@ -129,7 +129,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2018041611164300012";
+		String orderNo = "xj2018041614350000014";
 		String merPriv = PayOrderSource.RENEW_CASH_LEGAL_V2.getCode();
 		String tradeNo = "xianfeng21231";
 		String tradeState = "00";

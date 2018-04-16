@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -23,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -53,6 +56,8 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 
 	@Resource
 	AfBorrowLegalCashCouponService legalCashCouponService;
+	@Resource
+	NumberWordFormat numberWordFormat;
 
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoV2Api.class);
 
@@ -65,6 +70,39 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
+		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
+		BigDecimal borrowDay = new BigDecimal(borrowType);
+		
+		// 查询新利率配置
+				AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+						Constants.BORROW_CASH_INFO_LEGAL_NEW);
+				BigDecimal newRate = null;
+		
+				double newServiceRate = 0;
+				double newInterestRate = 0;
+				if (rateInfoDo != null) {
+					String borrowRate = rateInfoDo.getValue2();
+					Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
+					newServiceRate = (double) rateInfo.get("serviceRate");
+					newInterestRate = (double) rateInfo.get("interestRate");
+					double totalRate = (double) rateInfo.get("totalRate");
+					newRate = BigDecimal.valueOf(totalRate / 100);
+				} else {
+					newRate = BigDecimal.valueOf(0.36);
+				}
+				
+		
+				newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+				logger.info("newRate = > {}, borrowAmount = > {}",newRate,borrowAmount);
+				logger.info("borrowDay = > {}",borrowDay);
+				// 计算服务费和手续费
+				BigDecimal serviceFee = new BigDecimal(newServiceRate / 100).multiply(borrowAmount).multiply(borrowDay)
+						.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+				BigDecimal interestFee = new BigDecimal(newInterestRate / 100).multiply(borrowAmount).multiply(borrowDay)
+						.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		
+				BigDecimal repayAmount = BigDecimalUtil.add(serviceFee,interestFee,borrowAmount);
+		
 		List<AfBorrowLegalCashCouponDto> cashCouponDoList = legalCashCouponService.getCouponIdByBorrowAmout(borrowAmount);
 		List<Map<String,Object>> goodsInfoList = Lists.newArrayList();
 		for (AfBorrowLegalCashCouponDto cashCoupon:cashCouponDoList) {
@@ -75,9 +113,9 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			goodsInfoMap.put("goodsIcon", "");
 			goodsInfoMap.put("goodsServiceFee", "");
 			goodsInfoMap.put("goodsInterestFee", "");
-			goodsInfoMap.put("serviceFee", "");
-			goodsInfoMap.put("interestFee", "");
-			goodsInfoMap.put("repayAmount", "");
+			goodsInfoMap.put("serviceFee", serviceFee);
+			goodsInfoMap.put("interestFee", interestFee);
+			goodsInfoMap.put("repayAmount", repayAmount);
 			goodsInfoMap.put("goodsProperty", "");
 			goodsInfoList.add(goodsInfoMap);
 		}
