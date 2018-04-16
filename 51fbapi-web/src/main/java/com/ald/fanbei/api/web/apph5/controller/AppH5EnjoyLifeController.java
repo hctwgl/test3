@@ -165,7 +165,13 @@ public class AppH5EnjoyLifeController extends BaseController {
                 return resp.toString();
             }
             //获取可用额度
-            AfUserAccountSenceDo userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
+            AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
+            if(userDo!=null){
+                userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
+            }else{
+                userAccountInfo.setAuAmount(new BigDecimal(5000));
+                userAccountInfo.setUsedAmount(new BigDecimal(0));
+            }
             jsonObj.put("userAccountInfo", userAccountInfo);
             AfSeckillActivityQuery query = new AfSeckillActivityQuery();
             query.setName("乐享生活节");
@@ -547,6 +553,7 @@ class GetActivityListThread implements Runnable {
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array,
                                       AfSubjectService afSubjectService,AfSubjectGoodsService afSubjectGoodsService,AfSchemeGoodsService afSchemeGoodsService,AfInterestFreeRulesService afInterestFreeRulesService,
                                       BizCacheUtil bizCacheUtil,Cache scheduledCache) {
+
         List<Map> activityList = new ArrayList<Map>();
         logger.info(Thread.currentThread().getName() + "new Thread");
         try {
