@@ -1264,13 +1264,15 @@ public class AppH5FanBeiWebController extends BaseController {
 		         }
 		     }
 			 goodsInfo.put("imageUrl",imageUrl);
-			 moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
+			 if (!goodsInfo.isEmpty()) {
+					returnData.put("moreGoodsInfo", goodsInfo);
+				}
+			// moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
 		 }catch(Exception e){
 			 
 		 }
-			if (!moreGoodsInfo.isEmpty()) {
-				returnData.put("moreGoodsInfo", moreGoodsInfo);
-			}
+			
+		 
 			
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),
 					"", returnData).toString();

@@ -62,6 +62,7 @@ public class GetGoodsList1Api implements ApiHandle {
         String priceSortValue = ObjectUtils.toString(requestDataVo.getParams().get("priceSort"));
         int pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
         AfGoodsQuery goodsQuery = getCheckParams(requestDataVo);
+        logger.info("/category/getGoodsList1 params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "requestParam{sortName:" + priceSortValue ==null?volumeSortValue:priceSortValue+"pageNo:"+pageNo+"}");
         List<HomePageSecKillGoods> goodList;
         if (StringUtil.isBlank(volumeSortValue) && StringUtil.isBlank(priceSortValue)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg());

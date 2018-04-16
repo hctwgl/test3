@@ -155,14 +155,15 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		         }
 		     }
 			 goodsInfo.put("imageUrl",imageUrl);
-			 moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
+			// moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
+			 if (!goodsInfo.isEmpty()) {
+					data.put("moreGoodsInfo", goodsInfo);
+				}
 		 }catch(Exception e){
 			 
 		 }
 		
-			if (!moreGoodsInfo.isEmpty()) {
-				data.put("moreGoodsInfo", moreGoodsInfo);
-			}
+			
 		resp.setResponseData(data);
 		return resp;
 

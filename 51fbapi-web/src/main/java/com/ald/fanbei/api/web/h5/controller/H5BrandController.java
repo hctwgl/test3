@@ -74,7 +74,7 @@ public class H5BrandController extends BaseController {
 		FanbeiH5Context context = new FanbeiH5Context();
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
-			context = doH5Check(request, false);
+		//	context = doH5Check(request, false);
 			Long brandId = NumberUtil.objToLong(request.getParameter("brandId"));
 			int pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 			logger.info("/category/H5brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "brandId:" + brandId);

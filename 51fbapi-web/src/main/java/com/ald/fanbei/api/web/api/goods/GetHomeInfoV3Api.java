@@ -178,8 +178,27 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		Object topTab = new Object();
 		if(topTabBarList != null && topTabBarList.size()>0){
 			topTab =  topTabBarList.get(0);
+			data.put("topTab", topTab);
 		}
-		data.put("topTab", topTab);
+
+		
+//		
+//		String bottomTabBar = AfResourceType.TABBAR_HOME_BUTTOM.getCode();	
+//		List<Object> bottomTabBarList = new ArrayList<Object>();
+//		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+//			bottomTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderBy(bottomTabBar));
+//		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+//			bottomTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(bottomTabBar));
+//		}
+//		Object bottomTab = new Object();
+//		if(bottomTabBarList != null && bottomTabBarList.size()>0){
+//			bottomTab =  bottomTabBarList.get(0);
+//			data.put("bottomTab", bottomTab);
+//		}
+		
+
 		
 		
 		// 顶部导航信息
@@ -592,7 +611,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			AfResourceDo afResourceDo = homeNomalPositonRescList.get(i);
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
-			data.put("titleName", afResourceDo.getName());
+			//data.put("titleName", afResourceDo.getName());
 			data.put("type", afResourceDo.getValue1());
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
@@ -671,7 +690,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		for (AfResourceDo afResourceDo : resclist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
-			data.put("titleName", afResourceDo.getName());
+			//data.put("titleName", afResourceDo.getName());
 			if (afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())) {
 				data.put("type", afResourceDo.getSecType());
 			} else {
