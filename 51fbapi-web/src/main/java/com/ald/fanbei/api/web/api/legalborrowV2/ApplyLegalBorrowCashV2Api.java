@@ -14,7 +14,6 @@ import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
 
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,6 +56,14 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
@@ -166,12 +173,10 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 			String appName = getAppName(requestDataVo);
 			afBorrowCashDo.setMajiabaoName(appName);
 			// 搭售商品订单
-			AfBorrowLegalCouponDo couponDo = new AfBorrowLegalCouponDo();
-			couponDo.setCouponId(param.getGoodsId());
-			couponDo.setBorrowId(0l);
-			couponDo.setUserId(userId);
+			final AfBorrowLegalOrderDo afBorrowLegalOrderDo = applyLegalBorrowCashService.buildBorrowLegalOrder(userId,
+					paramBo);
 			// 数据库中新增借钱记录
-			Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo,couponDo);
+			Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo,afBorrowLegalOrderDo);
 			// 生成借款信息失败
 			applyLegalBorrowCashService.checkGenRecordError(borrowId);
 
@@ -198,12 +203,12 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 				if (whiteListInfo != null) {
 					whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
-						new Converter<String, String>() {
-							@Override
-							public String convert(String source) {
-								return source.trim();
-							}
-						});
+							new Converter<String, String>() {
+								@Override
+								public String convert(String source) {
+									return source.trim();
+								}
+							});
 				}
 				Date currDate = new Date();
 				if((verifyBo.isSuccess()&&StringUtils.equals("10", verifyBo.getResult()))||whiteIdsList.contains(afUserDo.getUserName())) {
@@ -223,8 +228,8 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 					if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
-						&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
-						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
+							&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
+							&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
 						List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
@@ -325,7 +330,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						// 审核通过
 						delegateBorrowCashDo.setGmtArrival(currDate);
 						delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-//						afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+						afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 						delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
 						Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
 						Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
@@ -338,7 +343,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 								// 更新借款状态
 								afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
 								// 更新订单状态
-//								afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+								afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 								applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 								return "success";
 							}
@@ -346,7 +351,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
-								verifyBo.getResult(), null, mainCard, afBorrowCashDo);
+								verifyBo.getResult(), afBorrowLegalOrderDo, mainCard, afBorrowCashDo);
 					}
 					// 增加借款埋点信息
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
@@ -363,18 +368,18 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 					delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
 					// 更新订单状态为关闭
-					/*afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
+					afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
-					afBorrowLegalOrderDo.setGmtClosed(new Date());*/
-					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo);
-                    logger.info("test2 ");
+					afBorrowLegalOrderDo.setGmtClosed(new Date());
+					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+					logger.info("test2 ");
 					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
 					try{
 						if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")&&afResourceDo.getValue4().contains(appType)){
 							jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
-                            if (afResourceDo.getValue3().contains(afUserDo.getUserName().substring(0, 3))) {
-                                smsUtil.sendMarketingSmsToDhstForEC(afUserDo.getUserName(), afResourceDo.getValue2());
-                            }
+							if (afResourceDo.getValue3().contains(afUserDo.getUserName().substring(0, 3))) {
+								smsUtil.sendMarketingSmsToDhstForEC(afUserDo.getUserName(), afResourceDo.getValue2());
+							}
 						}else{
 							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
 						}
@@ -392,7 +397,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				// 关闭借款
 				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				// 关闭搭售商品订单
-//				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
+				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
 				// 更新风控审核状态为拒绝
 				delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
 				// 如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
@@ -403,7 +408,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.APPLY.getCode());
 					delegateBorrowCashDo.setReviewDetails("弱风控认证存在捕获外异常");
 				}
-				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo);
+				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 		} finally {
@@ -412,7 +417,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 	}
 
 	private void doMaidianLog(HttpServletRequest request, AfBorrowCashDo afBorrowCashDo, RequestDataVo requestDataVo,
-			FanbeiContext context) {
+							  FanbeiContext context) {
 		String ext1 = afBorrowCashDo.getBorrowNo();
 		String ext2 =  ObjectUtils.toString(afBorrowCashDo.getUserId());
 		String ext3 =  ObjectUtils.toString(afBorrowCashDo.getAmount());

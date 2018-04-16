@@ -4,7 +4,12 @@ import java.math.BigDecimal;
 
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 public interface ApplyLegalBorrowCashService {
@@ -12,7 +17,7 @@ public interface ApplyLegalBorrowCashService {
 	public AfBorrowLegalOrderDo buildBorrowLegalOrder(Long userId, ApplyLegalBorrowCashBo param);
 
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
-			AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
+											AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
 
 	public void checkLock(String lockKey);
 
@@ -31,14 +36,14 @@ public interface ApplyLegalBorrowCashService {
 	public void checkCanBorrow(AfUserAccountDo accountDo, ApplyLegalBorrowCashBo param);
 
 	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo,
-			AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param);
+						  AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param);
 
 	public void addTodayTotalAmount(int day, BigDecimal amount);
 
 	public void checkBorrowFinish(Long userId);
 
 	public void delegatePay(String consumerNo, String orderNo, String result,
-			AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
+							AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
 
 	public void checkRiskRefused(Long userId);
 
@@ -46,12 +51,10 @@ public interface ApplyLegalBorrowCashService {
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
-	public void updateBorrowStatus(AfBorrowCashDo cashDo);
-
-	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalCouponDo couponDo);
+	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
-			ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo);
+											 ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo);
 
 	public void updateBorrowStatus2Apply(Long borrowId, String riskOrderNo);
 

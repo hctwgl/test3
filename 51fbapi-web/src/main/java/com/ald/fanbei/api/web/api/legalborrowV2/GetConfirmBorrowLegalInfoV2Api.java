@@ -46,7 +46,7 @@ import com.google.common.collect.Maps;
 
 /**
  * @类描述：
- * 
+ *
  * @author Jiang Rongbo 2017年3月24日下午6:28:50
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -72,12 +72,12 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		
+
 		GetConfirmBorrowLegalInfoParam param =  (GetConfirmBorrowLegalInfoParam)requestDataVo.getParamObj();
 		try{
 			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
@@ -184,11 +184,11 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			if (userId == null) {
 				profitAmount = BigDecimal.ZERO;
 			}
-			/*List<Long> allGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmoutForV2(profitAmount);
+			List<Long> allGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmoutForV2(profitAmount);
 			if(!allGoodsId.contains(param.getGoodsId())) {
 				throw new FanbeiException("请检查网络，稍后重新再试！",true);
-			}*/
-			
+			}
+
 			data.put("serviceAmount", "0");
 			data.put("amount", param.getAmount());
 			data.put("arrivalAmount", param.getAmount());
@@ -202,23 +202,23 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 	}
 
 	private Object getUserPoundageRate(Long userId,Map<String, Object> data,String borrowType) {
-			BigDecimal orgRate = null;
-			try {
-				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data),borrowType);
-				String poundageRate = riskResp.getPoundageRate();
-				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
-					orgRate = new BigDecimal(poundageRate);
-				}
-			} catch (Exception e) {
-				logger.info(userId + "从风控获取分层用户额度失败：" + e);
+		BigDecimal orgRate = null;
+		try {
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString(),new JSONObject(data),borrowType);
+			String poundageRate = riskResp.getPoundageRate();
+			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
+				orgRate = new BigDecimal(poundageRate);
 			}
-			return orgRate;
-		
+		} catch (Exception e) {
+			logger.info(userId + "从风控获取分层用户额度失败：" + e);
+		}
+		return orgRate;
+
 	}
 
 	/**
 	 * 计算最多能计算多少额度 150取100 250.37 取200
-	 * 
+	 *
 	 * @param usableAmount
 	 * @return
 	 */
@@ -228,7 +228,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 		return new BigDecimal(amount / 100 * 100);
 
 	}
-	
+
 	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
 		String oneDay = "";

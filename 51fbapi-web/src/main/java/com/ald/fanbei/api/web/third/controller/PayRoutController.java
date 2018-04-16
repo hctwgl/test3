@@ -17,11 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
-import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.biz.service.AfOrderRefundService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailV2Service;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfSupplierOrderSettlementService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
@@ -50,6 +69,28 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
+import com.ald.fanbei.api.dal.dao.AfBankDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
+import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
+import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfHuicaoOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfSupplierOrderSettlementDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -105,15 +146,10 @@ public class PayRoutController {
 	ContractPdfThreadPool contractPdfThreadPool;
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
-	@Resource
-	AfBorrowLegalCouponService legalCouponService;
-	@Resource
-	AfUserCouponDao userCouponDao;
-	@Resource
-	AfCouponDao couponDao;
+
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	
+
 	//贷款
 	@Resource
 	AfLoanService afLoanService;
@@ -132,16 +168,16 @@ public class PayRoutController {
 
 	@Resource
 	private ThirdPayUtility thirdPayUtility;
-    @Resource
-    private AfUserAmountService afUserAmountService;
+	@Resource
+	private AfUserAmountService afUserAmountService;
 
 
 
-    @Resource
-    private AfUserAccountDao afUserAccountDao;
+	@Resource
+	private AfUserAccountDao afUserAccountDao;
 
-    @Resource
-    private AfBorrowDao afBorrowDao;
+	@Resource
+	private AfBorrowDao afBorrowDao;
 
 	@Resource
 	private AfTradeCodeInfoService afTradeCodeInfoService;
@@ -158,19 +194,17 @@ public class PayRoutController {
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
-    @Resource
-    private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
-    @Resource
-    private AfUserCouponService afUserCouponService;
+	@Resource
+	private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
 
-    @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
-    @ResponseBody
-    public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
-        for (String paramKey : request.getParameterMap().keySet()) {
-            thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-        }
-        return "succ";
-    }
+	@RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
+		for (String paramKey : request.getParameterMap().keySet()) {
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+		}
+		return "succ";
+	}
 
 
 	@RequestMapping(value = { "/authSignNotify" }, method = RequestMethod.POST)
@@ -240,23 +274,20 @@ public class PayRoutController {
 					final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 					afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 					// FIXME 查询是否有订单，查询订单状态
-					/*final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
+					final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
 							.getLastBorrowLegalOrderByBorrowId(rid);
 
 					if (legalOrderDo != null) {
 						legalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
 						afBorrowLegalOrderService.updateById(legalOrderDo);
-					}*/
+					}
 					// 查询借款信息是否存在
-					/*AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
+					AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
 							.getBorrowLegalOrderCashByBorrowIdNoStatus(rid);
 					if (legalOrderCashDo != null) {
 						legalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());
 						afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
-					}*/
-					AfBorrowLegalCouponDo borrowLegalCouponDo = legalCouponService.getByBorrowId(rid);
-					// 关联优惠券
-					afUserCouponService.grantCoupon(borrowLegalCouponDo.getUserId(), borrowLegalCouponDo.getCouponId(), "BORROW", rid+"");
+					}
 
 					afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
 
@@ -287,10 +318,10 @@ public class PayRoutController {
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
 				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
-                    AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
-                    afSupDo.setRid(result);
-                    afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
-                }
+					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setRid(result);
+					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
 				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
@@ -312,19 +343,6 @@ public class PayRoutController {
 			return "ERROR";
 		}
 	}
-
-//	private AfUserCouponDo buildUserCoupon(Long rid, AfBorrowLegalCouponDo borrowLegalCouponDo) {
-//		AfCouponDo coupon = couponDao.getCouponById(borrowLegalCouponDo.getCouponId());
-//		AfUserCouponDo userCouponDo = new AfUserCouponDo();
-//		userCouponDo.setCouponId(borrowLegalCouponDo.getCouponId());
-//		userCouponDo.setGmtStart(coupon.getGmtStart());
-//		userCouponDo.setGmtEnd(coupon.getGmtEnd());
-//		userCouponDo.setStatus("NOUSE");
-//		userCouponDo.setSourceRef(String.valueOf(rid));
-//		userCouponDo.setSourceType("BORROW");
-//		userCouponDo.setUserId(borrowLegalCouponDo.getUserId());
-//		return userCouponDo;
-//	}
 
 	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -492,7 +510,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
-					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
+					afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
