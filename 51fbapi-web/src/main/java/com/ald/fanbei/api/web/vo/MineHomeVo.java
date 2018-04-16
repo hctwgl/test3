@@ -89,7 +89,7 @@ public class MineHomeVo extends AbstractSerial {
     private String onlineDesc = "";
 
     // 待还金额
-    private String outMoney = "";
+    private String outMoney = "0.00";
 
     // 待还金额描述
     private String outMoneyDesc = "";

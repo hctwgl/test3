@@ -1423,7 +1423,7 @@
 	</update>
 
 	<select id="countStatusNum" resultType="HashMap">
-		SELECT status, COUNT(1) num
+		SELECT status, IFNULL(COUNT(1), 0) num
 		FROM af_order
 		WHERE is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
 		GROUP BY status

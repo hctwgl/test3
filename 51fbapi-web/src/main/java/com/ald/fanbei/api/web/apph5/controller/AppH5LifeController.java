@@ -211,7 +211,7 @@ public class AppH5LifeController extends BaseController {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (AfResourceH5Dto resource : resourceH5Dtos) {
-            final List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(resource.getRid());
+            final List<AfResourceH5ItemDto> itemList = afResourceH5ItemService.selectByModelId(resource.getId());
 
             if (!configIsEffective(resource, itemList)) {
                 continue;

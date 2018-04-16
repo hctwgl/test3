@@ -176,6 +176,7 @@
 				<value>/order/dmNperEnabled</value>
 
 				<value>/user/getMineInfoV1</value>
+				<value>/user/home</value>
 			</list>
 		</constructor-arg>
 	</bean>

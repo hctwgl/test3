@@ -30,7 +30,7 @@ public class AfOrderCountDto extends AbstractSerial {
 
     public AfOrderCountDto(List<Map<String, Object>> data) {
         for (Map<String, Object> e : data) {
-            Integer num = (Integer) e.get("num");
+            int num = ((Long) e.get("num")).intValue();
             String status = (String) e.get("status");
             if (status.equals(OrderStatus.NEW.getCode())) {
                 newOrderNum = num;

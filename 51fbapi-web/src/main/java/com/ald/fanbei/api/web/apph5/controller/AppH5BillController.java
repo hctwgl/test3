@@ -192,7 +192,7 @@ public class AppH5BillController extends BaseController {
         if (currMonthChildBill != null) {
             result.put("amount", overdueAmount.add(waitRepaymentOutMoney)
                     .setScale(2, RoundingMode.HALF_UP).toString());
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateToYYYYMMdd(currMonthChildBill.getGmtPayTime()));
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthChildBill.getGmtPayTime()));
             result.put("status", STATUS_WAITREFUND);
             return result;
         } else if (overdueMonth > 0) {
@@ -200,7 +200,7 @@ public class AppH5BillController extends BaseController {
             result.put("amount", overdueAmount);
 
             AfBorrowBillDo latestOverdueBill = afBorrowBillService.getLatestOverdueBorrowBillInfoByUserId(userId);
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateToYYYYMMdd(latestOverdueBill.getGmtPayTime()));
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(latestOverdueBill.getGmtPayTime()));
 
             result.put("status", STATUS_WAITREFUND);
             return result;
@@ -209,7 +209,7 @@ public class AppH5BillController extends BaseController {
         AfBorrowBillDo nextMonthBill = getNextMonthNotOutBorrowBill(userId);
         if (nextMonthBill != null) {
             result.put("amount", nextMonthBill.getBillAmount());
-            result.put("billDesc", "将于" + DateUtil.formatDateToYYYYMMdd(nextMonthBill.getGmtOutDay()) + "出账");
+            result.put("billDesc", "将于" + DateUtil.formatMonthAndDay(nextMonthBill.getGmtOutDay()) + "出账");
             result.put("status", STATUS_NEXTWAITREFUND);
             return result;
         }
@@ -266,7 +266,7 @@ public class AppH5BillController extends BaseController {
             return result;
         }
         // 待还未逾期
-        result.put("billDesc", "最后还款日 " + DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()));
+        result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(borrowCashDo.getGmtPlanRepayment()));
         result.put("status", STATUS_WAITREFUND);
         return result;
     }
@@ -308,7 +308,7 @@ public class AppH5BillController extends BaseController {
                 && currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
             result.put("amount", waitRepaymentAmount);
             result.put("billDesc", "（含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
-                    + "元）最后还款日 " + DateUtil.formatDateToYYYYMMdd(currMonthPeriodsDo.getGmtPlanRepay()));
+                    + "元）最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -316,7 +316,8 @@ public class AppH5BillController extends BaseController {
         if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.AWAIT_REPAY.getCode()) ||
                 currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.PART_REPAY.getCode())) {
             result.put("amount", waitRepaymentAmount);
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateToYYYYMMdd(currMonthPeriodsDo.getGmtPlanRepay()));
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(
+                    currMonthPeriodsDo.getGmtPlanRepay()));
             result.put("status", STATUS_WAITREFUND);
             return result;
         }
