@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -73,7 +74,9 @@ public class AppH5BrandController extends BaseController {
 	@ResponseBody
 	public String brandResult(HttpServletRequest request ,HttpServletResponse response){
 		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
+			context = doWebCheck(request, false);
 			Long brandId = NumberUtil.objToLong(request.getParameter("brandId"));
 			int pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 			logger.info("/category/brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "brandId:" + brandId);
@@ -241,12 +244,13 @@ public class AppH5BrandController extends BaseController {
             RequestDataVo reqVo = new RequestDataVo();
             String method = request.getRequestURI();
             reqVo.setMethod(method);
-            reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
-            String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
-            String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
-            String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
-            String sign = request.getHeader(Constants.REQ_SYS_NODE_SIGN);
-            String time = request.getHeader(Constants.REQ_SYS_NODE_TIME);
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString(Constants.REQ_SYS_NODE_ID));
+            String appVersion = jsonObj.getString(Constants.REQ_SYS_NODE_VERSION);
+            String netType = jsonObj.getString(Constants.REQ_SYS_NODE_NETTYPE);
+            String userName = jsonObj.getString(Constants.REQ_SYS_NODE_USERNAME);
+            String sign = jsonObj.getString(Constants.REQ_SYS_NODE_SIGN);
+            String time = jsonObj.getString(Constants.REQ_SYS_NODE_TIME);
 
             Map<String,Object> system = new HashMap<String,Object>();
             
@@ -258,7 +262,7 @@ public class AppH5BrandController extends BaseController {
             
             reqVo.setSystem(system);
             
-            JSONObject jsonObj = JSON.parseObject(requestData);
+          //  JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
 
             return reqVo;
