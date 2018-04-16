@@ -1281,7 +1281,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						// 用额度进行分期
 						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
 								leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(),null);
 						borrow.setVersion(1);
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1359,7 +1359,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								orderInfo.setRiskOrderNo(riskOrderNo);
 								borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
 										afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
-										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(),null);
 								borrow.setVersion(1);
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1510,7 +1510,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	 * @return
 	 */
 	public AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
-			String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType) {
+			String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType, String secOrderType) {
 
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null
