@@ -11,13 +11,18 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -137,7 +142,17 @@ public class AppH5BillController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
     }
 
     @Override
@@ -175,7 +190,7 @@ public class AppH5BillController extends BaseController {
             result.put("amount", waitRepaymentOutMoney.setScale(2, RoundingMode.HALF_UP).toString());
 
             int refundingNum = afBorrowBillService.getOnRepaymentCountByUserId(userId);
-            result.put("billDesc", "您有" + refundingNum + "笔还款正在处理中");
+            result.put("billDesc", "您有<span>" + refundingNum + "</span>笔还款正在处理中");
             result.put("status", STATUS_REFUNDING);
             return  result;
         }
@@ -183,7 +198,7 @@ public class AppH5BillController extends BaseController {
         if (overdueAmount.compareTo(BigDecimal.ZERO) > 0) {
             result.put("amount", overdueAmount.add(waitRepaymentOutMoney)
                     .setScale(2, RoundingMode.HALF_UP).toString());
-            result.put("billDesc", "您有" + overdueAmount + "个月的逾期账单");
+            result.put("billDesc", "您有<span>" + overdueAmount + "</span>个月的逾期账单");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -253,7 +268,7 @@ public class AppH5BillController extends BaseController {
         repayingMoney = repayingMoney.add(repayingOrderMoney);
         if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
             int repayingNum = afRepaymentBorrowCashService.getRepayingTotalNumByBorrowId(borrowCashDo.getRid());
-            result.put("billDesc", "您有" + repayingNum + "笔还款正在处理中");
+            result.put("billDesc", "您有<span>" + repayingNum + "</span>笔还款正在处理中");
             result.put("status", STATUS_REFUNDING);
             return result;
         }
@@ -261,7 +276,7 @@ public class AppH5BillController extends BaseController {
         Date now = DateUtil.getEndOfDate(new Date());
         if (StringUtils.equals(borrowCashDo.getStatus(), "TRANSED")
                 && borrowCashDo.getGmtPlanRepayment().before(now)) {
-            result.put("billDesc", "逾期将产生逾期费，并上报征信，请尽快还款");
+            result.put("billDesc", "<i>逾期将产生逾期费，并上报征信，\n请尽快还款</i>");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -298,7 +313,7 @@ public class AppH5BillController extends BaseController {
             result.put("amount", waitRepaymentAmount);
 
             int processNum = afLoanRepaymentService.getProcessLoanRepaymentNumByLoanId(lastLoanDo.getRid());
-            result.put("billDesc", "您有" + processNum + "还款正在处理中");
+            result.put("billDesc", "您有<span>" + processNum + "</span>还款正在处理中");
 
             result.put("status", STATUS_REFUNDING);
             return result;
@@ -307,8 +322,8 @@ public class AppH5BillController extends BaseController {
         if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.AWAIT_REPAY.getCode())
                 && currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
             result.put("amount", waitRepaymentAmount);
-            result.put("billDesc", "（含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
-                    + "元）最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
+            result.put("billDesc", "<i>（含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
+                    + "元）</i>\n最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
             result.put("status", STATUS_OVERDUE);
             return result;
         }
