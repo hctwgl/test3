@@ -66,6 +66,7 @@ public class BklUtils {
                 "','csv_digit_4':"+bklDo.getCsvDigit4()+",'csv_birth_date':'"+bklDo.getCsvBirthDate()+"','csv_staging':"+bklDo.getCsvStaging()+
                 ",'csv_amt':"+bklDo.getCsvAmt()+",'csv_pay_way':'"+bklDo.getCsvPayWay()+"','csv_product_category':'"+bklDo.getCsvProductCategory()+"' }";
         Map dtt=null;
+        logger.info("bklUtils submitJob work_data = "+work_data);
         try {
             dtt = AOSJson.fromJson(work_data, HashMap.class);
             logger.info("bklUtils submitJob success json dtt = "+dtt);

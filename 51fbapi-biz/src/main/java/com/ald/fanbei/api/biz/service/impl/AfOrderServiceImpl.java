@@ -1219,7 +1219,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId,
 								orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType());
+								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
 						borrow.setVersion(1);
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1527,26 +1527,30 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// 获取借款分期配置信息
 		AfResourceDo resource = null;
 		if (orderType.equals(OrderType.TRADE.getCode())) {
-//			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-//					Constants.RES_BORROW_TRADE);
-
-			AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId);
-			Long businessId = afTradeOrderDo.getBusinessId();
-			List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
-			if(null != resourceList && !resourceList.isEmpty()){
-				String value3;
-				for(AfResourceDo afResourceDo: resourceList){
-					value3 = afResourceDo.getValue3();
-					if(StringUtils.equals(String.valueOf(businessId), value3)){
-						resource = afResourceDo;
-						break;
+			// 非租房业务
+			if(!StringUtils.equals(Constants.ORDER_TYPE_TENEMENT, secOrderType)){
+				resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+						Constants.RES_BORROW_TRADE);
+			}
+			else{
+				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId);
+				Long businessId = afTradeOrderDo.getBusinessId();
+				List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
+				if(null != resourceList && !resourceList.isEmpty()){
+					String value3;
+					for(AfResourceDo afResourceDo: resourceList){
+						value3 = afResourceDo.getValue3();
+						if(StringUtils.equals(String.valueOf(businessId), value3)){
+							resource = afResourceDo;
+							break;
+						}
 					}
 				}
-			}
 
-			// 各分期利率均为0
-			if(null == resource){
-				resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
+				// 各分期利率均为0
+				if(null == resource){
+					resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
+				}
 			}
 		} else {
 			// 获取借款分期配置信息
@@ -1808,8 +1812,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							if (bklResult.equals("v2")){//需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
-								if (orderInfo.getIagentStatus() ==null)
-									orderInfo.setIagentStatus("C");
+								orderInfo.setIagentStatus("C");
 							}else if (bklResult.equals("v1")){//不需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
@@ -2005,16 +2008,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
 			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
 			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
-			String sex = "男";
+			String sex ;
 			if (idNumberDo != null){
-				String citizenId = idNumberDo.getCitizenId();
-				int mod = 0;
-				if (citizenId.length()==18){
-					mod = citizenId.charAt(16)%2;
-				}else if(citizenId.length()==15){
-					mod = citizenId.charAt(14)%2;
-				}
-				sex = mod==0?"女":"男";
+				sex = idNumberDo.getGender();
+			}else {
+				sex = "";
 			}
 			AfBklDo bklDo = new AfBklDo();
 			bklDo.setCsvArn(orderInfo.getOrderNo());
@@ -2030,7 +2028,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			bklDo.setOrderId(orderInfo.getRid());
 			bklDo.setUserId(orderInfo.getUserId());
 			bklUtils.submitJob(bklDo);
-			orderInfo.setIagentStatus(bklDo.getIagentState());
 		}catch (Exception e){
 			logger.error("submitBklInfo error = >{}",e);
 		}
