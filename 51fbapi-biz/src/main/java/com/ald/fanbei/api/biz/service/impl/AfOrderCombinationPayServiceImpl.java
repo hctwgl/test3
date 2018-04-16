@@ -241,10 +241,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	    afBorrowExtendDo.setInBill(0);
 	    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
 
-	    /**
-	     * modify by hongzhengpei
-	     */
-	    if (VersionCheckUitl.getVersion() >= VersionCheckUitl.VersionZhangDanSecond) {
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode()) || orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
 		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 		    afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
@@ -253,10 +249,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 		} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 		}
-	    } else {
-		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
-	    }
 
 	    // 更新拆分场景使用额度
 	    riskUtil.updateUsedAmount(orderInfo, borrow);
