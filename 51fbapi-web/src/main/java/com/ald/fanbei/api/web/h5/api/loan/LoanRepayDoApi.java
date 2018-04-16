@@ -85,26 +85,8 @@ public class LoanRepayDoApi implements ApiHandle {
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
-		this.afLoanRepaymentService.repay(bo,bankPayType);
-		
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.loanId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", AfLoanRepaymentStatus.SUCC.name());
-		if(bo.userCouponDto != null) {
-			data.put("couponAmount", bo.userCouponDto.getAmount());
-		}
-		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-			data.put("userAmount", bo.rebateAmount);
-		}
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		data.put("jfbAmount", BigDecimal.ZERO);
-		
+		Map<String, Object> data = this.afLoanRepaymentService.repay(bo,bankPayType);		
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);		
 		resp.setResponseData(data);
 		
 		return resp;
@@ -174,7 +156,7 @@ public class LoanRepayDoApi implements ApiHandle {
 				if (null == card) { throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR); }
 				
 				//还款金额是否大于银行单笔限额
-				afUserBankcardService.checkUpsBankLimit(card.getBankCode(), bo.actualAmount);
+				afUserBankcardService.checkUpsBankLimit(card.getBankCode(), card.getBankChannel(), bo.actualAmount);
 				
 				bo.cardName = card.getBankName();
 				bo.cardNo = card.getCardNumber();

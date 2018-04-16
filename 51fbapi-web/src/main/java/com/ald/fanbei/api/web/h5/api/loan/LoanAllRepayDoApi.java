@@ -151,7 +151,7 @@ public class LoanAllRepayDoApi implements ApiHandle {
 				AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bo.cardId);
 				if (null == card) { throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR); }
 				//还款金额是否大于银行单笔限额
-				afUserBankcardService.checkUpsBankLimit(card.getBankCode(), bo.actualAmount);
+				afUserBankcardService.checkUpsBankLimit(card.getBankCode(),card.getBankChannel(), bo.actualAmount);
 				
 				bo.cardName = card.getBankName();
 				bo.cardNo = card.getCardNumber();
