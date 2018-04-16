@@ -160,6 +160,8 @@ public class PayRoutController {
 
     @Resource
     private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+    @Resource
+    private AfUserCouponService afUserCouponService;
 
     @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
     @ResponseBody
@@ -253,10 +255,8 @@ public class PayRoutController {
 						afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
 					}*/
 					AfBorrowLegalCouponDo borrowLegalCouponDo = legalCouponService.getByBorrowId(rid);
-					if (borrowLegalCouponDo != null){
-						AfUserCouponDo userCouponDo = buildUserCoupon(rid, borrowLegalCouponDo);
-						userCouponDao.addUserCoupon(userCouponDo);
-					}
+					// 关联优惠券
+					afUserCouponService.grantCoupon(borrowLegalCouponDo.getUserId(), borrowLegalCouponDo.getCouponId(), "BORROW", rid+"");
 
 					afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
 
@@ -313,18 +313,18 @@ public class PayRoutController {
 		}
 	}
 
-	private AfUserCouponDo buildUserCoupon(Long rid, AfBorrowLegalCouponDo borrowLegalCouponDo) {
-		AfCouponDo coupon = couponDao.getCouponById(borrowLegalCouponDo.getCouponId());
-		AfUserCouponDo userCouponDo = new AfUserCouponDo();
-		userCouponDo.setCouponId(borrowLegalCouponDo.getCouponId());
-		userCouponDo.setGmtStart(coupon.getGmtStart());
-		userCouponDo.setGmtEnd(coupon.getGmtEnd());
-		userCouponDo.setStatus("NOUSE");
-		userCouponDo.setSourceRef(String.valueOf(rid));
-		userCouponDo.setSourceType("BORROW");
-		userCouponDo.setUserId(borrowLegalCouponDo.getUserId());
-		return userCouponDo;
-	}
+//	private AfUserCouponDo buildUserCoupon(Long rid, AfBorrowLegalCouponDo borrowLegalCouponDo) {
+//		AfCouponDo coupon = couponDao.getCouponById(borrowLegalCouponDo.getCouponId());
+//		AfUserCouponDo userCouponDo = new AfUserCouponDo();
+//		userCouponDo.setCouponId(borrowLegalCouponDo.getCouponId());
+//		userCouponDo.setGmtStart(coupon.getGmtStart());
+//		userCouponDo.setGmtEnd(coupon.getGmtEnd());
+//		userCouponDo.setStatus("NOUSE");
+//		userCouponDo.setSourceRef(String.valueOf(rid));
+//		userCouponDo.setSourceType("BORROW");
+//		userCouponDo.setUserId(borrowLegalCouponDo.getUserId());
+//		return userCouponDo;
+//	}
 
 	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
 	@ResponseBody
