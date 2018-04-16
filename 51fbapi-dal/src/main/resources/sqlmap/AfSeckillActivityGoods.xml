@@ -275,8 +275,8 @@
 
     <select id="getSaleInfoByGoodsIdAndActId" resultType="AfSeckillActivityDo">
         SELECT count(a.id) saleCount,IFNULL(sum(c.limit_count) ,0) goodsCount
-        FROM af_seckill_activity_order a LEFT JOIN af_seckill_activity_goods c ON (a.goods_id=c.goods_id AND a.activity_id=c.activity_id ) LEFT JOIN af_goods_price b ON (c.price_id=b.id)
-        WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND a.goods_id=#{goodsId}
+        FROM af_seckill_activity_goods c LEFT JOIN  af_seckill_activity_order a ON (a.goods_id=c.goods_id AND a.activity_id=c.activity_id ) LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId} AND c.goods_id=#{goodsId}
         AND c.type=2 AND c.special_price>0
         AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
     </select>
