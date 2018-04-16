@@ -522,5 +522,8 @@ public class Constants {
 
 	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
 
+	//乐享生活节
+	public static final String ENJOYLIFE_ACTIVITY_INFO = "ENJOYLIFE_ACTIVITY_INFO";
+	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
 }

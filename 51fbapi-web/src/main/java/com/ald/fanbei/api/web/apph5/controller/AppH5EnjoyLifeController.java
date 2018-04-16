@@ -12,9 +12,7 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
@@ -22,6 +20,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.afu.Data;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -164,6 +163,27 @@ public class AppH5EnjoyLifeController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, "banner信息为空");
                 return resp.toString();
             }
+            //获取配置商品信息
+            List<AfGoodsDo> activityGoodsList = new ArrayList<>();
+            try{
+                AfResourceDo activityResource = afResourceService.getConfigByTypesAndSecType(Constants.ENJOYLIFE_ACTIVITY_INFO, Constants.ACTIVITY_INFO_GOODSID);
+                if(activityResource!=null){
+                    String goodsIds = activityResource.getValue();
+                    goodsIds.replace("，",",");
+                    if(StringUtil.isNotBlank(goodsIds)){
+                        List<Long> goodsIdList = CollectionConverterUtil.convertToListFromArray(goodsIds.split(","), new Converter<String, Long>() {
+                            @Override
+                            public Long convert(String source) {
+                                return Long.parseLong(source);
+                            }
+                        });
+                        activityGoodsList = afGoodsService.getGoodsListByGoodsId(goodsIdList);
+                    }
+                }
+            }catch (Exception e){
+                logger.error("get activityGoodsList error" + e);
+            }
+
             //获取可用额度
             AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
             if(userDo!=null){
