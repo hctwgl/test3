@@ -470,4 +470,7 @@ public interface AfOrderService {
 	 * @date 2018/4/13 9:58
 	 */
 	AfOrderCountDto countStatusNum(Long userId);
+
+
+	int getSelfsupportPaySuccessOrderByUserId(Long userId);
 }

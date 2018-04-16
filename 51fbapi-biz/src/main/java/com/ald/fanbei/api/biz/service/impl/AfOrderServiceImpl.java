@@ -16,6 +16,7 @@ import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -3236,5 +3237,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	@Override
 	public HashMap getLeaseProtocol(Long orderId) {
 		return orderDao.getLeaseProtocol(orderId);
+	}
+
+	@Override
+	public int getSelfsupportPaySuccessOrderByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getSelfsupportPaySuccessOrderByUserId(userId);
 	}
 }

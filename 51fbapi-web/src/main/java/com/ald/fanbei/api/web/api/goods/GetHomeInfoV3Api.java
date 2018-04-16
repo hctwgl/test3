@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfHomePageChannelService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -33,13 +33,11 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -47,19 +45,11 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -70,7 +60,6 @@ import com.ald.fanbei.api.web.vo.AfHomePageChannelVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -103,7 +92,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
-
+    @Resource 
+    AfOrderService afOrderService;
 	@Resource
 	AfModelH5Service afModelH5Service;
 	@Resource
@@ -127,7 +117,13 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
-		
+		Long userId = null;
+		if (context.getUserName() != null) {
+		    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+		    if(userDo != null){
+		    	userId = userDo.getRid();
+		    }
+		}
 //		String userName = context.getUserName();
 //		Long userId = context.getUserId();
 //		if (userName != null && userId != null) {
@@ -225,27 +221,37 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 
 
-				//1、未登录的用户显示；2、已登但未下过单的用户显示；3、不符合“新人专享”活动条的用户不显示。
-
+				//未登录显示，新用户（商城没有一笔支付成功的订单） 显示，  其余均不显示
+				
+				boolean newExclusive = false; //s是否符合新人专享
+				if(userId != null ){
+				int  selfsupportPaySuccessOrder = 	afOrderService.getSelfsupportPaySuccessOrderByUserId(userId);
+					if(selfsupportPaySuccessOrder < 1 ){
+						newExclusive = true;
+					}
+				}
+				
+				if(userId == null  || newExclusive){
 				
 				// 新人专享位（是否加入缓存？）
-				List<Object> operateBannerList = new ArrayList<Object>();
-				Object operateBannerInfo = new Object();
+				List<Object> newExclusiveList = new ArrayList<Object>();
+				Object newExclusiveInfo = new Object();
 				String operateBanner = AfResourceType.OPERATION_POSITION_BANNER.getCode();
 				
 				// 正式环境和预发布环境区分
 				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-					operateBannerList = getBannerInfoWithResourceDolist(
+					newExclusiveList = getBannerInfoWithResourceDolist(
 							afResourceService.getResourceHomeListByTypeOrderBy(operateBanner));
 				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-					operateBannerList = getBannerInfoWithResourceDolist(
+					newExclusiveList = getBannerInfoWithResourceDolist(
 							afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(operateBanner));
 				}
 				// 顶部轮播
-				if (!operateBannerList.isEmpty()) {
-					operateBannerInfo = operateBannerList.get(0);
-							data.put("operateBannerList", operateBannerInfo);
+				if (!newExclusiveList.isEmpty()) {
+					newExclusiveInfo = newExclusiveList.get(0);
+							data.put("newExclusiveInfo", newExclusiveInfo);
 				}
+			}
 		
 		// 获取常驻运营位信息
 		List<Object> homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(
@@ -256,13 +262,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!ecommerceAreaInfo.isEmpty()) {
 					data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 				}
-				Long userId = null;
-				if (context.getUserName() != null) {
-				    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-				    if(userDo != null){
-				    	userId = userDo.getRid();
-				    }
-				}
+				
 				//限时抢购
 				Map<String, Object> flashSaleInfo = new HashMap<String, Object>();
 				 

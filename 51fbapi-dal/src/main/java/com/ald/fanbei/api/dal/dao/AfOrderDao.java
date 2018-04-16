@@ -10,7 +10,6 @@ import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.dto.*;
 
-
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -325,4 +324,6 @@ public interface AfOrderDao {
 	 * @date 2018/4/13 9:59
 	 */
     List<Map<String, Object>> countStatusNum(@Param("userId") Long userId);
+
+	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
 }
