@@ -81,8 +81,6 @@ public class SmsUtil extends AbstractThird {
     private static String RECYCLE_REBATE_SUCCESS = "您的回收订单已完成，账户到账返现%s元，其中包含回收订单金额%s元，订单返现%s元，快去我的账户中查看吧~";//回收业务成功返现
     private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在51返呗回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
 
-
-
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
 
@@ -497,6 +495,7 @@ public class SmsUtil extends AbstractThird {
         this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
         return smsResult.isSucc();
     }
+    
 
     /**
      * 设置支付发送短信验证码

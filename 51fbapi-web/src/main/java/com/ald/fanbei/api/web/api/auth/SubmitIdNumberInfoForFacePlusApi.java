@@ -61,6 +61,7 @@ public class SubmitIdNumberInfoForFacePlusApi implements ApiHandle {
 		Long userId = context.getUserId();
 		logger.info("进入");
 		Map<String, Object> params = requestDataVo.getParams();
+
 		String type = ObjectUtils.toString(params.get("type"), "");
 		if (ApiCallType.findRoleTypeByCode(type) == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);

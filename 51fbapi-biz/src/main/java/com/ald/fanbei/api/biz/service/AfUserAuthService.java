@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
@@ -64,7 +65,7 @@ public interface AfUserAuthService {
 	 */
 	List<AfUserAuthDo> getUserAuthListWithIvs_statusIsY(AfUserAuthQuery query);
 
-	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene);
+	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene,AfResourceDo zhimaConfigResource);
 
 	boolean allBasicAuthPassed(Long userId);
 	boolean allBasicAuthPassed(AfUserAuthDo authInfo);

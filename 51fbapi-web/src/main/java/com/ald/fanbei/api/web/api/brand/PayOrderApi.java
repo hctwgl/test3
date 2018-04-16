@@ -68,7 +68,7 @@ public class PayOrderApi implements ApiHandle {
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
 
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-		
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankPayType"),null);
 		if (orderId == null || payId == null) {
 			logger.error("orderId is empty or payId is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -109,7 +109,7 @@ public class PayOrderApi implements ApiHandle {
 				saleAmount = orderInfo.getActualAmount();
 			}
 		
-			Map<String,Object> result = afOrderService.payBrandOrderOld(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress);
+			Map<String,Object> result = afOrderService.payBrandOrderOld(payId, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),saleAmount , nper,appName,ipAddress,bankPayType);
 			resp.setResponseData(result);
 		} catch (FanbeiException exception) {
 			throw new FanbeiException("pay order failed", exception.getErrorCode());

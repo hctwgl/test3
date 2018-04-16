@@ -8,11 +8,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.util.StringUtil;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.RepayBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -23,6 +29,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -70,7 +77,8 @@ public class RepayDoV2Api implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
+    	String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);    	
+    	RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
         bo.remoteIp = CommonUtil.getIpAddr(request);
 
         String borrowProcessingNO = afRepaymentService.getProcessingRepayNo(context.getUserId());
@@ -78,26 +86,8 @@ public class RepayDoV2Api implements ApiHandle {
             throw new FanbeiException("分期还款处理中,无法进行还款操作", true);
         }
 
-        this.afBorrowLegalRepaymentV2Service.repay(bo);
-
+        Map<String, Object> data = this.afBorrowLegalRepaymentV2Service.repay(bo,bankPayType);
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Map<String, Object> data = Maps.newHashMap();
-        data.put("rid", bo.borrowId);
-        data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-        data.put("gmtCreate", new Date());
-        data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
-        if (bo.userCouponDto != null) {
-            data.put("couponAmount", bo.userCouponDto.getAmount());
-        }
-        if (bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-            data.put("userAmount", bo.rebateAmount);
-        }
-        data.put("actualAmount", bo.actualAmount);
-        data.put("cardName", bo.cardName);
-        data.put("cardNumber", bo.cardNo);
-        data.put("repayNo", bo.tradeNo);
-        data.put("jfbAmount", BigDecimal.ZERO);
-
         resp.setResponseData(data);
 
         return resp;
@@ -182,7 +172,7 @@ public class RepayDoV2Api implements ApiHandle {
                 }
                 
                 //还款金额是否大于银行单笔限额
-		afUserBankcardService.checkUpsBankLimit(card.getBankCode(), bo.actualAmount);
+		afUserBankcardService.checkUpsBankLimit(card.getBankCode(),card.getBankChannel(), bo.actualAmount);
 		
                 bo.cardName = card.getBankName();
                 bo.cardNo = card.getCardNumber();
