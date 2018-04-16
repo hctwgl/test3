@@ -1808,7 +1808,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							if (bklResult.equals("v2")){//需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 								submitBklInfo(orderInfo);
-								orderInfo.setIagentStatus("C");
+								if (orderInfo.getIagentStatus() ==null)
+									orderInfo.setIagentStatus("C");
 							}else if (bklResult.equals("v1")){//不需电核
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
@@ -2029,6 +2030,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			bklDo.setOrderId(orderInfo.getRid());
 			bklDo.setUserId(orderInfo.getUserId());
 			bklUtils.submitJob(bklDo);
+			orderInfo.setIagentStatus(bklDo.getIagentState());
 		}catch (Exception e){
 			logger.error("submitBklInfo error = >{}",e);
 		}

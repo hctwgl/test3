@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -129,7 +130,7 @@ private boolean checkTodayOrders(AfBklDo bklDo){
         BigDecimal amount = new BigDecimal(100);
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
         if (afResourceDo != null){
-            amount = new BigDecimal(afResourceDo.getValue3());
+            amount = new BigDecimal(afResourceDo.getValue());
         }
         AfIagentResultDo afIagentResultDo = iagentResultService.getIagentByUserIdToday(bklDo.getUserId());
         AfOrderDo afOrderDo = afOrderService.selectTodayIagentStatus(bklDo.getUserId(),amount);
@@ -140,13 +141,22 @@ private boolean checkTodayOrders(AfBklDo bklDo){
                 return true;
             }
             String iagentstatus = afOrderDo.getIagentStatus();
-            afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),iagentstatus);
+            bklDo.setIagentState("ADF".contains(iagentstatus)?"A":"BEG".contains(iagentstatus)?"B":iagentstatus);
+            //afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),iagentstatus);
             if ("BEG".contains(iagentstatus)){
                 AfOrderDo afOrderClose = afOrderService.getOrderById(bklDo.getOrderId());
                 Map<String,String> qmap = new HashMap<>();
                 qmap.put("orderNo",afOrderClose.getOrderNo());
                 //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
-                HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderClose.getOrderNo(),JSONObject.toJSONString(qmap));
+                final String  orderNo = afOrderClose.getOrderNo();
+                final String json = JSONObject.toJSONString(qmap);
+                YFSmsUtil.pool.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
+                    }
+                });
+
             }
             return false;
             /*String checkState = afIagentResultDo.getCheckState();
