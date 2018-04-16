@@ -157,7 +157,7 @@ public class AppH5LeaseController extends BaseController {
             if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
                 AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(afUser.getRid(), "ONLINE");
-                if(afUserAuthStatusDo.getStatus().equals("Y")) {
+                if(afUserAuthStatusDo!=null&&afUserAuthStatusDo.getStatus().equals("Y")) {
                     if (StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score", afUser.getRid().toString()))) {
                         riskUtil.updateRentScore(afUser.getRid().toString());
                         bizCacheUtil.hset("Lease_Score", afUser.getRid().toString(), DateUtil.getNow(), DateUtil.getTodayLast());

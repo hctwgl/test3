@@ -58,7 +58,7 @@ public class GetFlowFlayerResourceConfigApi implements ApiHandle{
   		}
   		if(context.getUserId() != null && context.getUserId() > 0){
 			AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(context.getUserId(), "ONLINE");
-			if(afUserAuthStatusDo.getStatus().equals("Y")) {
+			if(afUserAuthStatusDo!=null&&afUserAuthStatusDo.getStatus().equals("Y")) {
 				if (StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score", context.getUserId().toString()))) {
 					riskUtil.updateRentScore(context.getUserId().toString());
 					bizCacheUtil.hset("Lease_Score", context.getUserId().toString(), DateUtil.getNow(), DateUtil.getTodayLast());
