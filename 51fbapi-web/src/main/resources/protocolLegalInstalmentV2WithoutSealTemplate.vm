@@ -17,9 +17,13 @@
 <p>1.6借款本金：借款人在丙方平台发布借款需求时所设定的借款金额。借款本金以丙方平台具体展示及记录为准。</p>
 <p>1.7指定账户：与履行本协议项下权利义务相关的账户，包括但不限于平台账户和银行存管账户两类账户类型。具体适用的账户类型视实际情况确定。</p>
 <p>根据就甲方通过丙方平台向乙方提出借款需求，丙方介绍介绍甲方在丁方运营的融资撮合平台向乙方借款，乙方了解甲方借款需求并同意向甲方出借款项，同时由丙方、丁方为甲方、乙方借款提供居间服务。经各方协商一致，现就上述借款事宜订立如下协议，以期共同遵守。</p>
+<br/>
+<br/>
+<br/>
+<br/>
 <p style="margin-bottom: 40px;">二、借款基本信息</p>
 <div  style="margin-bottom: 30px;">
-    <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
+    <table border="1" cellspacing="0" cellpadding="0" width="600" align='center'>
         <tr style="text-align:center;">
             <td style="width: 40%">借款本金</td>
             <td style="width: 60%">#if($!{amountLower})￥$!{amountLower}#end</td>
@@ -34,7 +38,7 @@
         </tr>
         <tr style="text-align:center;">
             <td>借款期限</td>
-            <td>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")#end</td>
+            <td>$!{gmtStart} 至 $!{gmtEnd}</td>
         </tr>
         <tr style="text-align:center;">
             <td>还款方式</td>
@@ -42,7 +46,7 @@
         </tr>
         <tr style="text-align:center;">
             <td>还款日</td>
-            <td>#if($!{repayDay})$dateUtil.formatDate($!{repayDay},"yyyy-MM-dd")#end</td>
+            <td>$!{repayDay}</td>
         </tr>
         <tr style="text-align:center;">
             <td>借款用途</td>
@@ -52,7 +56,7 @@
 </div>
 <p>还款计划：</p>
 <div  style="margin-bottom: 30px;">
-    <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
+    <table border="1" cellspacing="0" cellpadding="0" width="600" align='center'>
         <tr style="text-align:center;">
             <th>期数</th>
             <th>还款日</th>
@@ -62,7 +66,7 @@
         #foreach($item in $!{repayPlan})
             <tr style="text-align:center;">
                 <td>$!{item.nper}</td>
-                <td>$dateUtil.formatDate($!{item.gmtCreate},"yyyy-MM-dd")</td>
+                <td>$!{item.type}</td>
                 <td>#if($!{item.amount})￥$!{item.amount}#end</td>
                 <td>#if($!{item.nperAmount})￥$!{item.nperAmount}#end</td>
             </tr>
@@ -149,10 +153,10 @@
 <h3>八、 法律的适用和争议的解决</h3>
 <p>本协议受中华人民共和国法律管辖并按中华人民共和国法律解释。协议履行中发生争议，可由各方协商解决，协商不成可向丙方所在地人民法院提起诉讼解决。</p>
 <p style="margin-bottom: 30px;">败诉方应承担对方为解决本争议而产生的所有费用，包括但不限于诉讼费、保全费及保全担保费、律师费、公证费、交通费等。</p>
-<p style="margin-bottom: 30px;">甲方 （借款人）：<em>${realName}</em></p>
+<p style="margin-bottom: 30px;">甲方 （借款人）：<em><em style="color: white">borrower</em>${realName}</em></p>
 <p style="margin-bottom: 30px;">乙方 （出借人）：</p>
 <div  style="margin-bottom: 30px;">
-    <table border="1" cellspacing="0" cellpadding="0" width="700" align='center'>
+    <table border="1" cellspacing="0" cellpadding="0" width="600" align='center'>
         <tr style="text-align:center;">
             <th>姓名</th>
             <th>身份证号码</th>
@@ -164,7 +168,7 @@
         #end
     </table>
 </div>
-<p style="margin-bottom: 30px;">丙方：<em>浙江阿拉丁电子商务股份有限公司</em></p>
-<p style="margin-bottom: 30px;">丁方：<em>浙江楚橡信息科技有限公司</em></p>
-<p style="margin-bottom: 80px;">签署时间：<em>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")#end</em></p>
+<p style="margin-bottom: 30px;">丙方：<em>浙江阿拉丁电子商务股份有限公司</em><p style="color: white">ald</p></p>
+<p style="margin-bottom: 30px;">丁方：<em>浙江楚橡信息科技有限公司</em><p style="color: white">cx</p></p>
+<p style="margin-bottom: 80px;">签署时间：<em>$!{gmtStart}</em></p>
 </body>

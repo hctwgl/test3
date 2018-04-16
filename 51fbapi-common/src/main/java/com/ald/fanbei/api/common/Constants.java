@@ -546,6 +546,11 @@ public class Constants {
     public static final int TEN = 10;
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
+    
+    /**
+     * 线下商圈租房业务类型
+     */
+    public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
 
 
 }
