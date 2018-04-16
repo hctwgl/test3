@@ -164,31 +164,22 @@ public class AppH5EnjoyLifeController extends BaseController {
                 return resp.toString();
             }*/
             //获取配置商品信息
-            List<AfGoodsDo> activityGoodsList = new ArrayList<>();
+            List<AfResourceDo> activityResource = new ArrayList<>();
             try{
-                AfResourceDo activityResource = afResourceService.getConfigByTypesAndSecType(Constants.ENJOYLIFE_ACTIVITY_INFO, Constants.ACTIVITY_INFO_GOODSID);
-                if(activityResource!=null){
-                    String goodsIds = activityResource.getValue();
-                    goodsIds.replace("，",",");
-                    if(StringUtil.isNotBlank(goodsIds)){
-                        List<Long> goodsIdList = CollectionConverterUtil.convertToListFromArray(goodsIds.split(","), new Converter<String, Long>() {
-                            @Override
-                            public Long convert(String source) {
-                                return Long.parseLong(source);
-                            }
-                        });
-                        activityGoodsList = afGoodsService.getGoodsListByGoodsId(goodsIdList);
-                    }
-                }
+                activityResource = afResourceService.getConfigsByTypesAndSecType(Constants.ENJOYLIFE_ACTIVITY_INFO, Constants.ACTIVITY_INFO_GOODSID);
             }catch (Exception e){
                 logger.error("get activityGoodsList error" + e);
             }
-            jsonObj.put("activityGoodsList", activityGoodsList);
+            jsonObj.put("activityGoodsList", activityResource);
             //获取可用额度
             AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
             if(userDo!=null){
                 userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
             }else{
+                userAccountInfo.setAuAmount(new BigDecimal(5000));
+                userAccountInfo.setUsedAmount(new BigDecimal(0));
+            }
+            if(userAccountInfo==null){
                 userAccountInfo.setAuAmount(new BigDecimal(5000));
                 userAccountInfo.setUsedAmount(new BigDecimal(0));
             }
