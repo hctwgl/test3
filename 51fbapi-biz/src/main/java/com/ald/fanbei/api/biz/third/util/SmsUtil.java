@@ -842,10 +842,11 @@ public class SmsUtil extends AbstractThird {
         // 2. 根据配置创建会话对象, 用于和邮件服务器交互
         Session session = Session.getDefaultInstance(props);
         session.setDebug(true); // 设置为debug模式, 可以查看详细的发送 log
-        String sendUserName = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_USERNAME),
-                ConfigProperties.get(Constants.CONFKEY_AES_KEY));
-        String sendPassword = AesUtil.decrypt(ConfigProperties.get(Constants.EMAIL_SEND_PWD),
-                ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+
+        String sendUserName = AesUtil.decrypt("mGviJyFnmdEcOb6VlJ6zl/H9G6dyjgAb1cb/tUCNgZM=",
+                "testC1b6x@6aH$2dlw");
+        String sendPassword = AesUtil.decrypt("BeSHxmaAFBhNCE2gIdPVRg==",
+                "testC1b6x@6aH$2dlw");
         // 3. 创建一封邮件
         MimeMessage message = createMimeMessage(session, sendUserName, email, content);
 
@@ -993,6 +994,15 @@ public class SmsUtil extends AbstractThird {
         }
 
         return "DH";
+    }
+    public static void main(String [] args){
+        try {
+
+            sendEmailToDhst("3184343296@qq.com", "<table border=1><tr><th>支付宝流水号</th><th>商户订单号</th><th>账务类型</th><th>收入（+元）</th><th>支出（-元）</th><th>账户余额（元）</th><th>服务费（元）</th><th>支付渠道</th><th>签约产品</th><th>对方账户</th><th>对方名称</th><th>银行订单号</th><th>商品名称</th><th>备注</th></tr><tr><td>3029672583413669</td><td> </td><td>转账</td><td>100.00</td><td> </td><td>455328.03</td><td>0</td><td> </td><td> </td><td>15293971826</td><td>秦继强</td><td> </td><td> </td><td>秦继强15293971826</td></tr></table>");
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
+
     }
 }
 

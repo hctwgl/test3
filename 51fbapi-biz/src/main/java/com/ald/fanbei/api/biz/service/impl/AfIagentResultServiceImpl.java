@@ -41,4 +41,9 @@ public class AfIagentResultServiceImpl extends ParentServiceImpl<AfIagentResultD
 	public AfIagentResultDo getIagentByWorkId(long workId){
 		return afIagentResultDao.getIagentByWorkId(workId);
 	}
+
+	@Override
+	public AfIagentResultDo getIagentByUserIdToday(long userId) {
+		return afIagentResultDao.getIagentByUserIdToday(userId);
+	}
 }

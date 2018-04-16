@@ -4,7 +4,7 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,name,rule_json
 	</sql>
-	
+
 	<select id="getById" resultType="AfInterestFreeRulesDo">
 		SELECT
 			<include refid="queryFields" />
