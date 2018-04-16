@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
@@ -33,17 +35,6 @@ import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.AuthType;
-import com.ald.fanbei.api.common.enums.LoanType;
-import com.ald.fanbei.api.common.enums.RiskRaiseResult;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.SceneType;
-import com.ald.fanbei.api.common.enums.SecAuthStatus;
-import com.ald.fanbei.api.common.enums.UserAccountSceneType;
-import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -829,6 +820,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 			if (SceneType.CASH.getCode().equals(reqBo.scene)) { // 认证通过
 				transactionTemplate.execute(new TransactionCallback<Boolean>() {
 					public Boolean doInTransaction(TransactionStatus arg0) {
+						logger.info("dealFromStrongRiskForcePush start totalAmount ="+reqBo.totalAmount.toString()+",userId="+userId+",loanType=LOAN_TOTAL");
 						AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, "LOAN_TOTAL", reqBo.totalAmount.toString());
 						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 						
@@ -856,35 +848,37 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
 			throw new FanbeiException("ConsumerNo=" + userId + " have deal borrow cash");
 		}
-		
-		final String authType = reqBo.results[0].getScene();
-		final AuthType at = AuthType.findByCode(authType);
-		final String raiseStatus = reqBo.results[0].getResult();
-		
-		transactionTemplate.execute(new TransactionCallback<Boolean>() {
-			public Boolean doInTransaction(TransactionStatus arg0) {
-				if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-				    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-				    afUserAccountDo.setUserId(userId);
-				    afUserAccountDo.setAuAmount(reqBo.amount);
-				    afUserAccountService.updateUserAccount(afUserAccountDo);
-				    
-				    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
-				    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+		for (RiskQuotaRespBo.Result result:reqBo.results) {
+			final String authType = result.getScene();
+			final AuthType at = RiskSceneAuthType.findByCode(authType);
+			final String raiseStatus = result.getResult();
 
-				    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
-				    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-				    
-				    updateSecAuthStatus(userId, at, SecAuthStatus.YES);
-				} else {
-				    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
-				    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-				    
-		    		updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+			transactionTemplate.execute(new TransactionCallback<Boolean>() {
+				public Boolean doInTransaction(TransactionStatus arg0) {
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(reqBo.amount);
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+
+						AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+
+						updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+
+						updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+					}
+					return true;
 				}
-				return true;
-			}
-		});
+			});
+		}
+
 	}
 	
 	@Override
