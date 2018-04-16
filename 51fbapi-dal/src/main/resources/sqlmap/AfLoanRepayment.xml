@@ -77,7 +77,7 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo" keyProperty="rid">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo" keyProperty="rid" useGeneratedKeys="true">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
