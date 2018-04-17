@@ -1517,7 +1517,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		}
 		return borrowRate;
 	}
-	
+
 	public AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper,
 			String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType, String secOrderType) {
 
@@ -1542,7 +1542,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						Constants.RES_BORROW_TRADE);
 			}
 			else{
-				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId); 
+				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId);
 				Long businessId = afTradeOrderDo.getBusinessId();
 				List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
 				if(null != resourceList && !resourceList.isEmpty()){
@@ -1555,7 +1555,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}
 					}
 				}
-				
+
 				// 各分期利率均为0
 				if(null == resource){
 					resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
@@ -1626,7 +1626,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
             borrow.setAmount(amount.multiply(new BigDecimal(nper)));
         }return borrow;
 	}
-	
+
 
 	private void removeSecondNper(JSONArray array) {
 		if (array == null) {
@@ -3296,5 +3296,15 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
         return payType;
     }
+
+
+	@Override
+	public AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount){
+		return orderDao.selectTodayIagentStatus(userId, amount);
+	}
+	@Override
+	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId){
+		return orderDao.selectTodayIagentStatusCOrders(userId);
+	}
 
 }

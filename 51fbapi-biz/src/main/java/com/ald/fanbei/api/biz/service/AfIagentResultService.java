@@ -13,4 +13,5 @@ import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
 public interface AfIagentResultService extends ParentService<AfIagentResultDo, Long>{
     public void updateResultByWorkId(AfIagentResultDo afIagentResultDo);
     public AfIagentResultDo getIagentByWorkId(long workId);
+    public AfIagentResultDo getIagentByUserIdToday(long userId);
 }

@@ -205,15 +205,18 @@ public class InterestFreeUitl {
                     JSONObject tempobj1 = (JSONObject)temp1;
                     set.add(tempobj1.getString("nper"));
                 }
-                JSONArray arr = new JSONArray();
-                for (Object temp:temparray){
-                    JSONObject tempobj = (JSONObject)temp;
-                    String nper = tempobj.getString("nper");
-                    if (set.contains(nper)){
-                        arr.add(tempobj);
+                if (flag){
+                    JSONArray arr = new JSONArray();
+                    for (Object temp:temparray){
+                        JSONObject tempobj = (JSONObject)temp;
+                        String nper = tempobj.getString("nper");
+                        if (set.contains(nper)){
+                            arr.add(tempobj);
+                        }
                     }
+                    array = arr;
                 }
-                array = arr;
+
             }else{
                 if (flag)
                  array = temparray;
@@ -240,22 +243,22 @@ public class InterestFreeUitl {
         BigDecimal nper6 = afInterestReduceRulesDo.getNper6();
         BigDecimal nper9 = afInterestReduceRulesDo.getNper9();
         BigDecimal nper12 = afInterestReduceRulesDo.getNper12();
-        Map<String,Object> temp1 = new HashMap<>();
+        JSONObject temp1 = new JSONObject();
         temp1.put("rate",nper1);
         temp1.put(Constants.DEFAULT_NPER,1);
-        Map<String,Object> temp2 = new HashMap<>();
+        JSONObject temp2 = new JSONObject();
         temp2.put("rate",nper2);
         temp2.put(Constants.DEFAULT_NPER,2);
-        Map<String,Object> temp3 = new HashMap<>();
+        JSONObject temp3 = new JSONObject();
         temp3.put("rate",nper3);
         temp3.put(Constants.DEFAULT_NPER,3);
-        Map<String,Object> temp6 = new HashMap<>();
+        JSONObject temp6 = new JSONObject();
         temp6.put("rate",nper6);
         temp6.put(Constants.DEFAULT_NPER,6);
-        Map<String,Object> temp9 = new HashMap<>();
+        JSONObject temp9 = new JSONObject();
         temp9.put("rate",nper9);
         temp9.put(Constants.DEFAULT_NPER,9);
-        Map<String,Object> temp12 = new HashMap<>();
+        JSONObject temp12 = new JSONObject();
         temp12.put("rate",nper12);
         temp12.put(Constants.DEFAULT_NPER,12);
         array.add(temp1);
