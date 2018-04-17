@@ -184,7 +184,7 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	KuaijieOrderCombinationPayBo bizObject = new KuaijieOrderCombinationPayBo(orderInfo, borrow, userAccountInfo, virtualMap);
 	String remark = isSelf ? "自营商品订单支付" : "品牌订单支付";
 	if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-	    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
+	    resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderCombinationPayService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 	} else {// 代扣
 	    resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 	}
@@ -241,10 +241,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	    afBorrowExtendDo.setInBill(0);
 	    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
 
-	    /**
-	     * modify by hongzhengpei
-	     */
-	    if (VersionCheckUitl.getVersion() >= VersionCheckUitl.VersionZhangDanSecond) {
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode()) || orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
 		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 		    afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
@@ -253,10 +249,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 		} else if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 		    afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
 		}
-	    } else {
-		afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
-	    }
 
 	    // 更新拆分场景使用额度
 	    riskUtil.updateUsedAmount(orderInfo, borrow);

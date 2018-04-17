@@ -314,7 +314,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				String maxBorrowTime = afResourceDo.getTypeDesc().split(",")[1];
             	try {
         			//加锁Lock
-        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);
+        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_TEN_MINITS);
         			//校验现在金额是否满足
         			if (isLock) {
         				//分配债权资产包
@@ -781,7 +781,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
             	List<AfViewAssetBorrowDo> debtList= new ArrayList<AfViewAssetBorrowDo>();
             	try {
         			//加锁Lock
-        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);
+        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_TEN_MINITS);
         			if (isLock) {
         				//校验现在金额是否满足
         				BigDecimal sumAmount = afViewAssetBorrowService.getSumAmount(gmtCreateStart,gmtCreateEnd);

@@ -583,8 +583,10 @@
 			abc.user_id userId,
 			au.real_name NAME,
 			aua.id_number cardId,
-			au.user_name mobile,
-			abc.card_number bankNo,
+
+			aub.mobile mobile,
+			aub.card_number bankNo,
+
 			abc.card_name cardName,
 			abc.arrival_amount money,
 			abc.type type,
@@ -596,8 +598,10 @@
 		LEFT JOIN af_user au ON au.id = abc.user_id
 		LEFT JOIN af_user_account aua ON aua.user_id = au.id
 		LEFT JOIN af_borrow_legal_order_cash abloc on abc.id=abloc.borrow_id
+  		left JOIN af_user_bankcard aub ON aub.user_id=abc.user_id
 		WHERE
 			abc.id = #{borrowCashId}
+		AND aub.`is_main` ='Y' and aub.status ='B' and aub.is_delete=0  limit 1
 	</select>
 
 </mapper>

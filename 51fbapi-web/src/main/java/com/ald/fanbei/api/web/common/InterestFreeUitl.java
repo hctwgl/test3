@@ -60,7 +60,7 @@ public class InterestFreeUitl {
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
-        checkNper(goodsid,method,array);
+        array = checkNper(goodsid,method,array);
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
@@ -179,19 +179,20 @@ public class InterestFreeUitl {
         }
         return list;
     }
-    public static void checkNper(Long goodsid,String method,JSONArray array){
+    public static JSONArray  checkNper(Long goodsid,String method,JSONArray array){
         if (goodsid != null && goodsid >0l){
             AfInterestFreeRulesService afInterestFreeRulesService = (AfInterestFreeRulesService)SpringBeanContextUtil.getBean("afInterestFreeRulesService");
             AfGoodsService afGoodsService = (AfGoodsService)SpringBeanContextUtil.getBean("afGoodsService");
             AfGoodsDo goods = afGoodsService.getGoodsById(goodsid);
             AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
             JSONArray temparray = new JSONArray();
+            boolean flag = false;
             if (afInterestReduceSchemeDo != null){
                 AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
                 if (afInterestReduceRulesDo != null){
 
                     temparray= getreducenpers(afInterestReduceRulesDo);
-
+                    flag = true;
                 }
             }
             /*AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率*/
@@ -204,17 +205,21 @@ public class InterestFreeUitl {
                     JSONObject tempobj1 = (JSONObject)temp1;
                     set.add(tempobj1.getString("nper"));
                 }
-                JSONArray arr = new JSONArray();
-                for (Object temp:temparray){
-                    JSONObject tempobj = (JSONObject)temp;
-                    String nper = tempobj.getString("nper");
-                    if (set.contains(nper)){
-                        arr.add(tempobj);
+                if (flag){
+                    JSONArray arr = new JSONArray();
+                    for (Object temp:temparray){
+                        JSONObject tempobj = (JSONObject)temp;
+                        String nper = tempobj.getString("nper");
+                        if (set.contains(nper)){
+                            arr.add(tempobj);
+                        }
                     }
+                    array = arr;
                 }
-                array = arr;
+
             }else{
-                array = temparray;
+                if (flag)
+                 array = temparray;
             }
 
             //  }
@@ -228,6 +233,7 @@ public class InterestFreeUitl {
 
 
         }
+        return array;
     }
     public static JSONArray getreducenpers(AfInterestReduceRulesDo afInterestReduceRulesDo){
         JSONArray array = new JSONArray();

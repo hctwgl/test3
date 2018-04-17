@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -306,6 +307,9 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		logger.error("BorrowCash sendMessage error for:" + e);
 	    }
 	    dealRepaymentSucess(repayment.getPayTradeNo(), "", true);
+
+	    map.put("refId", repayment.getRid());
+        map.put("type", UserAccountLogType.REPAYMENT.getCode());
 	}
 	return map;
     }
@@ -337,6 +341,13 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    HashMap<String, Object> map = new HashMap<String, Object>();
 	    map.put("refId", kuaijieRepaymentBo.getRepayment().getRid());
 	    map.put("type", UserAccountLogType.REPAYMENT.getCode());
+	    
+	    map.put("outTradeNo", respBo.getOrderNo());
+	    map.put("tradeNo", respBo.getTradeNo());
+	    map.put("cardNo", Base64.encodeString(cardNo));
+	    map.put("refId", map.get("refId"));
+	    map.put("type", map.get("type"));
+	    
 	    return map;
 	} else {
 	    // 未获取到缓存数据，支付订单过期

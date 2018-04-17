@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.UserAuthSceneStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -45,12 +47,12 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         }
         Map<String,Boolean> checkResult = new HashMap<String,Boolean>();
         AfUserAuthDo afUserAuthDo= afUserAuthService.getUserAuthInfoByUserId(userId);
-        if (StringUtil.equals(afUserAuthDo.getBasicStatus(), "Y")) {
+        if (StringUtil.equals(afUserAuthDo.getBasicStatus(), UserAuthSceneStatus.YES.getCode())) {
             checkResult.put("isRealNameAuth", true);
         } else {
             checkResult.put("isRealNameAuth", false);
         }
-        AfUserAccountDo afUserAccountDo= afUserAccountService.getUserInfoByUserId(userId);
+        AfUserAccountDo afUserAccountDo= afUserAccountService.getUserAccountByUserId(userId);
         if(afUserAccountDo==null || StringUtil.isEmpty(afUserAccountDo.getPassword()) ){
             checkResult.put("isPayPwd", false);
         }else {
@@ -62,7 +64,7 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         }else {
             checkResult.put("isIdCard", true);
         }
-        if(afUserAccountDo==null || !StringUtil.equals(afUserAccountDo.getBindCard(),"Y")){
+        if(afUserAccountDo==null || !StringUtil.equals(afUserAccountDo.getBindCard(),YesNoStatus.YES.getCode())){
             checkResult.put("isBindIcCard", false);
         }else {
             checkResult.put("isBindIcCard", true);
@@ -70,5 +72,4 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         resp.setResponseData(checkResult);
         return resp;
     }
-
 }
