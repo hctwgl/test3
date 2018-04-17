@@ -396,7 +396,7 @@ public interface AfBorrowBillService {
 	 */
 	int getOnRepaymentCountByUserId(Long userId);
 
-	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId);
+	AfBorrowBillDo getOverdue BorrowBillInfoByUserId(Long userId);
 
 	/**
 	 * 获取用户最新的逾期账单

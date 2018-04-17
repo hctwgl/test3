@@ -11,7 +11,6 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
-import com.ald.fanbei.api.dal.domain.query.AfLoanPeriodsQueryNoPage;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -151,15 +150,7 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 
 	@Override
 	public AfLoanPeriodsDo getCurrMonthPeriod(Long loanId) {
-		AfLoanPeriodsQueryNoPage query = new AfLoanPeriodsQueryNoPage();
-		query.setLoanId(loanId);
-		Date strDay = DateUtil.getFirstOfMonth(new Date());
-		strDay = DateUtil.addHoures(strDay, -12);
-		Date endDay = DateUtil.addMonths(strDay, 1);
-		query.setGmtPlanRepayStart(strDay);
-		query.setGmtPlanRepayEnd(endDay);
-		List<AfLoanPeriodsDo> list = afLoanPeriodsDao.findList(query);
-		return list.size() > 0 ? list.get(0) : null;
+		return afLoanPeriodsDao.getCurrMonthPeriod(loanId);
 	}
 
 }

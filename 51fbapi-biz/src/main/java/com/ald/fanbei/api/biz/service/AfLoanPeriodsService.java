@@ -50,4 +50,5 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	 * @date 2018/4/14 12:38
 	 */
 	AfLoanPeriodsDo getCurrMonthPeriod(Long loanId);
+
 }
