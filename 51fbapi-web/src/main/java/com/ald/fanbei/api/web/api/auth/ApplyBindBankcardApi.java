@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
@@ -65,7 +66,11 @@ public class ApplyBindBankcardApi implements ApiHandle {
 			param.realname = userAccount.getRealName();
 			param.idNumber = userAccount.getIdNumber();
 		}
-		
+
+		if(afUserAccountService.getCountByIdNumer(param.idNumber,userId)>0){
+			return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ID_CARD_EXIST_ERROR);
+		}
+
 		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02", param.bankCode);
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
