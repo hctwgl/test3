@@ -1581,6 +1581,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
 		}
+		AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
+		Long goodsid = afOrderDo.getGoodsId();
+		if (goodsid != null && goodsid >0l) {
+			array = afResourceService.checkNper(goodsid,"1",array);
+		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 				BigDecimal.ONE.intValue(), amount, resource.getValue1(), resource.getValue2());
 		BigDecimal perAmount = null;
