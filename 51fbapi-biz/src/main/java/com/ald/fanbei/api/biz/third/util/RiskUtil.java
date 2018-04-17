@@ -1250,8 +1250,9 @@ public class RiskUtil extends AbstractThird {
 						flag=false;
 					}
 				}
+				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
-						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag) {
+						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag&&!bankIsMaintaining) {
 					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
 					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
