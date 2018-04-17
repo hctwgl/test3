@@ -276,5 +276,7 @@ public interface AfResourceService {
 
 	List<AfResourceDo> getEcommercePositionDown();
 
+	List<AfResourceDo> getBackGroundByTypeOrder(String code);
+
 
 }

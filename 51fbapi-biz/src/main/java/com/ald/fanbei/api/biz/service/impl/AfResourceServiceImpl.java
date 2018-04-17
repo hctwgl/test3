@@ -10,13 +10,14 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+
 import org.bouncycastle.jce.provider.asymmetric.ec.KeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -923,6 +924,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public List<AfResourceDo> getEcommercePositionDown() {
 		// TODO Auto-generated method stub
 		return afResourceDao.getEcommercePositionDown();
+	}
+
+	@Override
+	public List<AfResourceDo> getBackGroundByTypeOrder(String code) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getBackGroundByTypeOrder(code);
 	}
 
 }
