@@ -186,12 +186,13 @@ public class InterestFreeUitl {
             AfGoodsDo goods = afGoodsService.getGoodsById(goodsid);
             AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
             JSONArray temparray = new JSONArray();
+            boolean flag = false;
             if (afInterestReduceSchemeDo != null){
                 AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
                 if (afInterestReduceRulesDo != null){
 
                     temparray= getreducenpers(afInterestReduceRulesDo);
-
+                    flag = true;
                 }
             }
             /*AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率*/
@@ -214,7 +215,8 @@ public class InterestFreeUitl {
                 }
                 array = arr;
             }else{
-                array = temparray;
+                if (flag)
+                 array = temparray;
             }
 
             //  }
