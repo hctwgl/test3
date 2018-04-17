@@ -58,7 +58,7 @@
 			id = #{userId}
 	</select>
 
-	<select id="getUserByBorrowCashStatus" resultType="AfUserDo">
+	<select id="getUserByBorrowCashStatus" resultType="java.lang.Long">
 		SELECT
 		u.id
 		FROM
@@ -69,8 +69,9 @@
 		u.is_delete = 0
 		AND ua.risk_status= 'Y'
 		and bc.`is_delete`= 0
-		and bc.status in ('CLOSED', 'FINSH')
+		and bc.status in ('WAITTRANSED','TRANSEDING','TRANSED')
 		and u.id = #{userId}
+		limit 1
 	</select>
 	
 	<select id="getUserIdByMobile" resultType="java.lang.Long">
