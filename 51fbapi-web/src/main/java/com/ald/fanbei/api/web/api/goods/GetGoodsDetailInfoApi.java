@@ -96,6 +96,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		JSONArray interestFreeArray = null;
 		String freedesc = null;
+		String iconMark = null;
 		if(schemeGoodsDo != null){
 			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
 
@@ -106,6 +107,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 						freedesc = afSchemeDo.getDescr();
+						iconMark = afSchemeDo.getIconMark();
 					}
 				}
 
@@ -209,10 +211,11 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
 		if (afInterestReduceSchemeDo != null){
 			vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
-			AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
+			vo.setInterestCutMark(afInterestReduceSchemeDo.getIconMark());
 
 		}
 		vo.setInterestFreeDesc(freedesc);
+		vo.setInterestFreeMark(iconMark);
 		resp.setResponseData(vo);
 		return resp;
 	}
