@@ -353,7 +353,7 @@ public class AfResourceServiceImpl implements AfResourceService {
             rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
         }
         JSONArray array = JSON.parseArray(resource.getValue());
-        checkNper(goodId,"1",array);
+        array = checkNper(goodId,"1",array);
         // 如果是重新生成的账单，需要原来账单的总期数
         JSONObject borrowRate = new JSONObject();
         for (int i = 0; i < array.size(); i++) {
