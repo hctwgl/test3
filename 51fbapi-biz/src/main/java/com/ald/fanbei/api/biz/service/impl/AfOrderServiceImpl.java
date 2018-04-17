@@ -1281,7 +1281,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						// 用额度进行分期
 						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId,
 								leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo,
-								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
+								orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(),null);
 						borrow.setVersion(1);
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1359,7 +1359,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								orderInfo.setRiskOrderNo(riskOrderNo);
 								borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(),
 										afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(),
-										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), null);
+										orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(),null);
 								borrow.setVersion(1);
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1533,7 +1533,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						Constants.RES_BORROW_TRADE);
 			}
 			else{
-				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId); 
+				AfTradeOrderDo afTradeOrderDo = afTradeOrderService.getById(orderId);
 				Long businessId = afTradeOrderDo.getBusinessId();
 				List<AfResourceDo> resourceList = afResourceService.getConfigsByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE);
 				if(null != resourceList && !resourceList.isEmpty()){
@@ -1546,7 +1546,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						}
 					}
 				}
-				
+
 				// 各分期利率均为0
 				if(null == resource){
 					resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.BORROW_TENEMENT_RATE_DEFAULT);
@@ -3254,4 +3254,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public HashMap getLeaseProtocol(Long orderId) {
 		return orderDao.getLeaseProtocol(orderId);
 	}
+
+	@Override
+	public AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount){
+		return orderDao.selectTodayIagentStatus(userId, amount);
+	}
+	@Override
+	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId){
+		return orderDao.selectTodayIagentStatusCOrders(userId);
+	}
+
 }
