@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -813,7 +814,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(reductionAmount);
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
-		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
+		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+ JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
         } else if (minus.compareTo(BigDecimal.ZERO) < 0) {	// 部分还款
