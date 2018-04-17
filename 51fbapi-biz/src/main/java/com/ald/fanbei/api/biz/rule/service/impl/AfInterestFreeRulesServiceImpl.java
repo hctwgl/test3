@@ -43,10 +43,10 @@ public class AfInterestFreeRulesServiceImpl implements
 		AfInterestReduceSchemeDo afInterestReduceSchemeDo = null;
 		afInterestReduceSchemeDo = afInterestFreeRulesDao.getReduceSchemeByGoodId(goodsId,null,null);
 		if (afInterestReduceSchemeDo == null){
-			afInterestFreeRulesDao.getReduceSchemeByGoodId(null,brandId,null);
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,brandId,null);
 		}
 		if (afInterestReduceSchemeDo == null){
-			afInterestFreeRulesDao.getReduceSchemeByGoodId(null,null,catogeryId);
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,null,catogeryId);
 		}
 			return afInterestReduceSchemeDo;
 
