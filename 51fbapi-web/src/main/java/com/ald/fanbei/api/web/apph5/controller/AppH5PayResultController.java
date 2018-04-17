@@ -115,7 +115,18 @@ public class AppH5PayResultController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
     }
 
     @Override

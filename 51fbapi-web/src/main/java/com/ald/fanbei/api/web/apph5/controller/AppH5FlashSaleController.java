@@ -1,11 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -138,9 +134,13 @@ public class AppH5FlashSaleController extends BaseController {
 	}
 	AfResourceDo afResourceHomeSecKillDo = afResourceService.getSingleResourceBytype("HOME_SECKILL_CONFIG");
 	List<HomePageSecKillGoods> list = afSeckillActivityService.getHomePageSecKillGoods(userId, afResourceHomeSecKillDo.getValue(),activityDay, pageNo);
-	data.put("startTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue1()));
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DAY_OF_MONTH,activityDay);
+	data.put("startTime", DateUtil.getStartOfDate(calendar.getTime()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue1()));
 	data.put("currentTime", new Date().getTime());
-	data.put("endTime", DateUtil.getStartOfDate(new Date()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue2()));
+	data.put("endTime", DateUtil.getStartOfDate(calendar.getTime()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue2()));
 	
 	List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
 	// 获取借款分期配置信息
