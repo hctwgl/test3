@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.domain.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -31,6 +32,24 @@ public class HomePageSecKillGoods extends AbstractSerial{
     private Integer subscribe;
     private Integer interestFreeId;
     private String source; // 商品的来源
+    private Date activityStart;
+    private Date activityEnd;
+
+    public Date getActivityStart() {
+        return activityStart;
+    }
+
+    public void setActivityStart(Date activityStart) {
+        this.activityStart = activityStart;
+    }
+
+    public Date getActivityEnd() {
+        return activityEnd;
+    }
+
+    public void setActivityEnd(Date activityEnd) {
+        this.activityEnd = activityEnd;
+    }
 
     public String getSource() {
 		return source;
@@ -162,7 +181,25 @@ public class HomePageSecKillGoods extends AbstractSerial{
 
     @Override
     public String toString() {
-	return "HomePageSecKillGoods [activityAmount=" + activityAmount + ", goodsId=" + goodsId + ", total=" + total + ", goodName=" + goodName + ", goodsIcon=" + goodsIcon + ", thumbnailIcon=" + thumbnailIcon + ", goodsUrl=" + goodsUrl + ", priceAmount=" + priceAmount + ", saleAmount=" + saleAmount + ", rebateAmount=" + rebateAmount + ", rebate_rate=" + rebateRate + ", remark=" + remark + ", volume=" + volume + ", subscribe=" + subscribe + ", interestFreeId=" + interestFreeId + "]";
+        return "HomePageSecKillGoods{" +
+                "activityAmount=" + activityAmount +
+                ", goodsId=" + goodsId +
+                ", total=" + total +
+                ", goodName='" + goodName + '\'' +
+                ", goodsIcon='" + goodsIcon + '\'' +
+                ", thumbnailIcon='" + thumbnailIcon + '\'' +
+                ", goodsUrl='" + goodsUrl + '\'' +
+                ", priceAmount=" + priceAmount +
+                ", saleAmount=" + saleAmount +
+                ", rebateAmount=" + rebateAmount +
+                ", rebateRate=" + rebateRate +
+                ", remark='" + remark + '\'' +
+                ", volume=" + volume +
+                ", subscribe=" + subscribe +
+                ", interestFreeId=" + interestFreeId +
+                ", source='" + source + '\'' +
+                ", activityStart=" + activityStart +
+                ", activityEnd=" + activityEnd +
+                '}';
     }
-
 }

@@ -135,12 +135,11 @@ public class AppH5FlashSaleController extends BaseController {
 	AfResourceDo afResourceHomeSecKillDo = afResourceService.getSingleResourceBytype("HOME_SECKILL_CONFIG");
 	List<HomePageSecKillGoods> list = afSeckillActivityService.getHomePageSecKillGoods(userId, afResourceHomeSecKillDo.getValue(),activityDay, pageNo);
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.add(Calendar.DAY_OF_MONTH,activityDay);
-	data.put("startTime", DateUtil.getStartOfDate(calendar.getTime()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue1()));
+	if(list.size()>0) {
+		data.put("startTime", list.get(0).getActivityStart().getTime());
+		data.put("endTime", list.get(0).getActivityEnd().getTime());
+	}
 	data.put("currentTime", new Date().getTime());
-	data.put("endTime", DateUtil.getStartOfDate(calendar.getTime()).getTime()+ Long.parseLong(afResourceHomeSecKillDo.getValue2()));
 	
 	List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
 	// 获取借款分期配置信息
