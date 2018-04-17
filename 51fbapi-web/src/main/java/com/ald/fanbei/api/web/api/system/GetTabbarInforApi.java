@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.api.system;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -47,31 +45,22 @@ public class GetTabbarInforApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		//4.1.3之前的版本用原先的，之后的用新的
-		List<AfResourceDo> resourceList = new  ArrayList<AfResourceDo>();
-		Integer appVersion = context.getAppVersion();
-		if (appVersion < 413) {
-			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
-		} else{
-			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.ASJHomeTabbar.getCode());
-		}
-	
-		
+		List<AfResourceDo> resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
 		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(context,resourceList,requestDataVo);
 		//resp.setResponseData(tabbarInfor);
 
-		//查询用户登录后未支付订单数
+		//鏌ヨ鐢ㄦ埛鐧诲綍鍚庢湭鏀粯璁㈠崟鏁�
 		Long userId = context.getUserId();
 		if(userId != null){
-			//查看redis中是否有登录时间,有说明不是第一次登录,判断与上次登录时间是否是同一天
+			//鏌ョ湅redis涓槸鍚︽湁鐧诲綍鏃堕棿,鏈夎鏄庝笉鏄涓�娆＄櫥褰�,鍒ゆ柇涓庝笂娆＄櫥褰曟椂闂存槸鍚︽槸鍚屼竴澶�
 			String getTime = (String)bizCacheUtil.getObject(Constants.NO_FINISH_ORDER + userId);
-			//记录用户当前登录时间
+			//璁板綍鐢ㄦ埛褰撳墠鐧诲綍鏃堕棿
 			String nowLogin = DateUtil.getShortNow(new Date());
-			//不是第一次登录
+			//涓嶆槸绗竴娆＄櫥褰�
 			if(getTime != null){
-				//当前登录时间和redis中存储的时间是否是同一天
+				//褰撳墠鐧诲綍鏃堕棿鍜宺edis涓瓨鍌ㄧ殑鏃堕棿鏄惁鏄悓涓�澶�
 				if(!nowLogin.equals(getTime)){
-					//根据用户id查询用户未支付订单数
+					//鏍规嵁鐢ㄦ埛id鏌ヨ鐢ㄦ埛鏈敮浠樿鍗曟暟
 					int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
 					bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,Constants.SECOND_OF_ONE_DAY);
 					tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
@@ -89,10 +78,10 @@ public class GetTabbarInforApi implements ApiHandle {
 					return resp;
 				}
 			}
-			//第一次登录
-			//记录用户当前登录时间,存到redis中
+			//绗竴娆＄櫥褰�
+			//璁板綍鐢ㄦ埛褰撳墠鐧诲綍鏃堕棿,瀛樺埌redis涓�
 			bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,Constants.SECOND_OF_ONE_DAY);
-			//根据用户id查询用户未支付订单数
+			//鏍规嵁鐢ㄦ埛id鏌ヨ鐢ㄦ埛鏈敮浠樿鍗曟暟
 			int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
 			if(noFinishOrderCount == 0){
 				bizCacheUtil.saveObject(Constants.FIRST_TIME+userId,"Y",Constants.SECOND_OF_ONE_DAY);
@@ -107,10 +96,10 @@ public class GetTabbarInforApi implements ApiHandle {
 	}
 	
 	private Map<String, Object> getObjectWithResourceDolist(FanbeiContext context,List<AfResourceDo> tabbarlist,RequestDataVo requestDataVo) {
-		//是否使用后台传来的图片，否的话菜单图片用app本地图片
+		//鏄惁浣跨敤鍚庡彴浼犳潵鐨勫浘鐗囷紝鍚︾殑璇濊彍鍗曞浘鐗囩敤app鏈湴鍥剧墖
 		AfResourceDo useImgDo = afResourceService
 				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
-				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
+				//app 鍦╝ppstore 瀹℃牳淇℃伅锛屽鏋滆繕鏈鏍革紝鍒欑敤鍚庡彴浼犵殑鍥剧墖
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
 		boolean use = this.useImg(useImgDo, requestDataVo, context);
 		Map<String, Object> index = new HashMap<String, Object>();
@@ -156,36 +145,6 @@ public class GetTabbarInforApi implements ApiHandle {
 				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowSelected", data);
 			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION")){
-				index.put("operationPositionNomal", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION_SELECTED")){
-				index.put("operationPositionSelected", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_LIFE")){
-				index.put("asjLifeNomal", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_LIFE_SELECTED")){
-				index.put("asjLifeSelected", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_FIND")){
-				index.put("asjFindNomal", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_FIND_SELECTED")){
-				index.put("asjFindSelected", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_HOME_NOMAL")){
-				index.put("asjHomeNomal", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_HOME_SELECTED")){
-				index.put("asjHomeSelected", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_NOMAL")){
-				index.put("asjMainNomal", data);
-			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_NOMAL_SELECTED")){
-				index.put("asjMainSelected", data);
-			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_HIGHLIGHT")){
 				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowHighLight", data);
@@ -196,7 +155,7 @@ public class GetTabbarInforApi implements ApiHandle {
 		return index;
 	}
 	/**
-	 * 针对IOS 在appStore审核中时，处理底部tab借钱模块为搜呗
+	 * 閽堝IOS 鍦╝ppStore瀹℃牳涓椂锛屽鐞嗗簳閮╰ab鍊熼挶妯″潡涓烘悳鍛�
 	 * @param context
 	 * @param requestDataVo
 	 * @param data
@@ -208,22 +167,22 @@ public class GetTabbarInforApi implements ApiHandle {
 	        if (resourceInfo == null) {
 	        	return;
 	        } 
-		 //需要打开为了审核的相关版本
-        //VALUE是为了IOS审核
+		 //闇�瑕佹墦寮�涓轰簡瀹℃牳鐨勭浉鍏崇増鏈�
+        //VALUE鏄负浜咺OS瀹℃牳
         if(requestDataVo.getId().startsWith("i")) {
         	String iosCheckVersion = resourceInfo.getValue();
         	if (!StringUtils.isBlank(iosCheckVersion)) {
         		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
         		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-        		data.put("title", array.contains(desVersion) ? "搜呗" : data.get("title"));
+        		data.put("title", array.contains(desVersion) ? "鎼滃憲" : data.get("title"));
         	}
         } else {
-        //VALUE2是为了Android审核
+        //VALUE2鏄负浜咥ndroid瀹℃牳
         	String androidCheckVersion = resourceInfo.getValue2();
         	if (!StringUtils.isBlank(androidCheckVersion)) {
         		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
         		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-        		data.put("title", array.contains(desVersion) ? "搜呗" : data.get("title"));
+        		data.put("title", array.contains(desVersion) ? "鎼滃憲" : data.get("title"));
         	}
         }
 	}
@@ -235,29 +194,29 @@ public class GetTabbarInforApi implements ApiHandle {
 		if (resourceInfo == null) {
         	return;
         } 
-		//需要打开为了审核的相关版本
-		//VALUE是为了IOS审核
+		//闇�瑕佹墦寮�涓轰簡瀹℃牳鐨勭浉鍏崇増鏈�
+		//VALUE鏄负浜咺OS瀹℃牳
 		if(requestDataVo.getId().startsWith("i")) {
 			String iosCheckVersion = resourceInfo.getValue();
 			if (!StringUtils.isBlank(iosCheckVersion)) {
 				List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
 				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-				data.put("title", array.contains(desVersion) ? "服务" : data.get("title"));
+				data.put("title", array.contains(desVersion) ? "鏈嶅姟" : data.get("title"));
 			}
 		} else {
-			//VALUE2是为了Android审核
+			//VALUE2鏄负浜咥ndroid瀹℃牳
 			String androidCheckVersion = resourceInfo.getValue2();
 			if (!StringUtils.isBlank(androidCheckVersion)) {List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
 				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-				data.put("title", array.contains(desVersion) ? "服务" : data.get("title"));
+				data.put("title", array.contains(desVersion) ? "鏈嶅姟" : data.get("title"));
 			}
 		}
 	}
 	
 	/**
-	 * 是否使用后台传来的图片做菜单栏的图片
-	 * @param useImgDo 是否使用后台传图片
-	 * @return true:用后台的 ，false:用app本地的
+	 * 鏄惁浣跨敤鍚庡彴浼犳潵鐨勫浘鐗囧仛鑿滃崟鏍忕殑鍥剧墖
+	 * @param useImgDo 鏄惁浣跨敤鍚庡彴浼犲浘鐗�
+	 * @return true:鐢ㄥ悗鍙扮殑 锛宖alse:鐢╝pp鏈湴鐨�
 	 */
 	private boolean useImg(AfResourceDo useImgDo,RequestDataVo requestDataVo,FanbeiContext context){
 		boolean use = true;

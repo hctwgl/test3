@@ -446,6 +446,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 							      	}else if("TOP_IMAGE".equals(activityDo.getValue2())){
 									 brandInfo.put("imageUrl", activityDo.getValue3());
 									 brandInfo.put("content", activityDo.getValue1());
+									 brandInfo.put("type", activityDo.getValue4());
 							      	}
 								 
 						    }
