@@ -520,6 +520,7 @@
       g.id goodsId,
       a.limit_count AS total,
       g.`name` AS goodName,
+      g.source,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
       g.goods_url AS goodsUrl,

@@ -150,6 +150,7 @@ public class AppH5BrandController extends BaseController {
 	            goodsInfo.put("goodsId",goodsDo.getGoodsId());
 	            goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
 	            goodsInfo.put("goodsType", "0");
+	            goodsInfo.put("source", goodsDo.getSource());
 	            // 如果是分期免息商品，则计算分期
 	            Long goodsId = goodsDo.getGoodsId();
 	            AfSchemeGoodsDo schemeGoodsDo = null;
