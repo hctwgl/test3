@@ -316,4 +316,7 @@ public interface AfOrderDao {
 	HashMap getLeaseProtocol(@Param("orderId") Long orderId);
 
 	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
+
+	AfOrderDo selectTodayIagentStatus(@Param("userId") Long userId,@Param("amount") BigDecimal amount);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
 }

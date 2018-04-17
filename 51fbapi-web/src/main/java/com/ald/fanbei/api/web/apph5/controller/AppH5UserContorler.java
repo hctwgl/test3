@@ -594,14 +594,15 @@ public class AppH5UserContorler extends BaseController {
             try {
                 tongdunUtil.getPromotionResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {
+                try {
+                    baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
+                }catch (Exception ex){
+                    logger.error("/app/user/commitChannelRegister getRegistResult error => {}",ex.getMessage());
+                }
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-            try {
-                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
-            }catch (Exception e){
-                logger.error("/app/user/commitChannelRegister getRegistResult error => {}",e.getMessage());
-            }
+
             // 更新为已经验证
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 
