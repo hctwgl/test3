@@ -396,6 +396,10 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					delegateBorrowCashDo.setReviewDetails("弱风控认证存在捕获外异常");
 				}
 				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+				Integer countUnpayOverDue= afBorrowBillService.countNotPayOverdueBill(userId);
+				if(countUnpayOverDue>0){
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR_BORROW);
+				}
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 		} finally {
