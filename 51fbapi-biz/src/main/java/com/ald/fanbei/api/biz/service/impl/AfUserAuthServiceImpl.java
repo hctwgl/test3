@@ -593,8 +593,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		break;
 	    }
 	}
+	//add by weiqingeng
+	if(null == authDate){
+		data.put("title", "");
+		data.put("status", "N");
+		return false;
+	}
 	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
-	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date()), afterTenDay);
 	data.put("title", "");
 	logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
 	if (between < 0) {
@@ -603,6 +609,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 	return true;
     }
+
+	public static void main(String[] args) {
+		System.out.println(DateUtil.getEndOfDate(new Date()));
+	}
 
     private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo) {
 	Map<String, Object> supplementAuth = new HashMap<String, Object>();
