@@ -354,7 +354,7 @@
       af_goods  g  
       
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
           LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
@@ -399,7 +399,7 @@
           JOIN af_activity_model  m ON  m.`goods_id` = g.`id`
           JOIN af_activity ac ON ac.id = m.activity_id   
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
           LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
@@ -438,7 +438,7 @@
           JOIN af_bottom_goods  m ON  m.`goods_id` = g.`id`
           JOIN af_bottom_goods_page ap ON ap.id = m.page_id   
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> NOW()  AND y.gmt_start <![CDATA[<=]]> NOW()
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY) 
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
           LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  

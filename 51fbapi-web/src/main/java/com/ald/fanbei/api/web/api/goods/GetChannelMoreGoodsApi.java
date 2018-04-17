@@ -42,6 +42,7 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelConfigureDo;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -128,8 +129,6 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		    	userId = userDo.getRid();
 		    }
 		}
-		
-		
 	 
 		//更多商品
 		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
@@ -141,7 +140,7 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
 		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+		     moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
 		     String imageUrl = "";
 			 String content = "";
 		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
@@ -154,22 +153,21 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 						  }
 		         }
 		     }
-			 goodsInfo.put("imageUrl",imageUrl);
-			// moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
-			 if (!goodsInfo.isEmpty()) {
-					data.put("moreGoodsInfo", goodsInfo);
-				}
+		     if(StringUtil.isNotEmpty(imageUrl)){
+		    	   moreGoodsInfo.put("imageUrl",imageUrl);
+		    	   moreGoodsInfo.put("content", content);
+	    	 }
 		 }catch(Exception e){
 			 
 		 }
-		
-			
+		 
+		 if (!moreGoodsInfo.isEmpty()) {
+				data.put("moreGoodsInfo", moreGoodsInfo);
+			}
 		resp.setResponseData(data);
 		return resp;
 
-		
 	}
-	
 	
 
 	private List<Map<String, Object>> getGoodsInfoList(List<HomePageSecKillGoods> list,String tag,AfResourceH5ItemDo afResourceH5ItemDo){

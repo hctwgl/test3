@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import jodd.util.StringUtil;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -129,13 +131,13 @@ public class GetHomeChannelApi implements ApiHandle {
 		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		// 搜索框背景图
-		List<AfResourceDo> serchBoxRescList = afResourceService
-				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
-		if (serchBoxRescList != null && !serchBoxRescList.isEmpty()) {
-			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
-			String searchBoxBgImage = serchBoxInfo.getValue();
-			data.put("searchBoxBgImage", searchBoxBgImage);
-		} 
+//		List<AfResourceDo> serchBoxRescList = afResourceService
+//				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
+//		if (serchBoxRescList != null && !serchBoxRescList.isEmpty()) {
+//			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
+//			String searchBoxBgImage = serchBoxInfo.getValue();
+//			data.put("searchBoxBgImage", searchBoxBgImage);
+//		} 
 		// tabList[]
 		List<AfHomePageChannelDo> channelList =  afHomePageChannelService.getListOrderBySortDesc();
 		List<AfHomePageChannelVo> tabList = new ArrayList<AfHomePageChannelVo>();
@@ -162,12 +164,12 @@ public class GetHomeChannelApi implements ApiHandle {
 			topTab =  topTabBarList.get(0);
 		}
 		data.put("topTab", topTab);
-		List<AfResourceDo> backgroundList = afResourceService
-				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
-		// 首页背景图  ?确认是否要首页的
-		if (!backgroundList.isEmpty()) {
-					data.put("backgroundList", backgroundList);
-		}
+//		List<AfResourceDo> backgroundList = afResourceService
+//				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
+//		// 首页背景图  ?确认是否要首页的
+//		if (!backgroundList.isEmpty()) {
+//					data.put("backgroundList", backgroundList);
+//		}
 		
 	    List<Object> topBannerList = new ArrayList<Object>();
 	    List<Object> navigationList = new ArrayList<Object>();
@@ -272,7 +274,7 @@ public class GetHomeChannelApi implements ApiHandle {
 							 }
 							  List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
 							  List<Map<String, Object>> recommendGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-							     goodsInfo.put("goodsList", recommendGoodsInfoList);
+							  recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
 								 String imageUrl = "";
 								 String content = "";
 							     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(recommendTag);
@@ -284,8 +286,10 @@ public class GetHomeChannelApi implements ApiHandle {
 											  break;
 										  }
 							    }
-								goodsInfo.put("imageUrl", imageUrl);
-								recommendGoodsInfo.put("recommendGoodsInfo", goodsInfo);
+							    	 if(StringUtil.isNotEmpty(imageUrl)){
+								    	 recommendGoodsInfo.put("imageUrl", imageUrl);
+								    	 recommendGoodsInfo.put("content", content);
+							    	 }
 		        	  }
 		         }
 		 }
@@ -293,41 +297,46 @@ public class GetHomeChannelApi implements ApiHandle {
 			 
 		 }
 		//更多商品
-		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
-		 try{
-		 String moreGoodsTag = "MORE_IMAGE";
-		 String activityTag = "HOME_CHANNEL_MORE_GOODS";
-		 Integer activityType = 5;
+//		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
+//		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
+//		 try{
+//		 String moreGoodsTag = "MORE_IMAGE";
+//		 String activityTag = "HOME_CHANNEL_MORE_GOODS";
+//		 Integer activityType = 5;
 		
-		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,1);
-		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
-		     String imageUrl = "";
-			 String content = "";
-		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
-		     if(recommendList != null && recommendList.size() >0){
-		    	 for(AfResourceH5ItemDo recommend:recommendList ){
-						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
-							  content =  recommend.getValue1();
-							  imageUrl= recommend.getValue3();
-							  break;
-						  }
-		         }
-		     }
-			 goodsInfo.put("imageUrl",imageUrl);
-			 moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
-		 }catch(Exception e){
-			 
-		 }
+//		
+//		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,1);
+//		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
+//		    moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
+//		     String imageUrl = "";
+//			 String content = "";
+//		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
+//		     if(recommendList != null && recommendList.size() >0){
+//		    	 for(AfResourceH5ItemDo recommend:recommendList ){
+//						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
+//							  content =  recommend.getValue1();
+//							  imageUrl= recommend.getValue3();
+//							  break;
+//						  }
+//		         }
+//		     }
+//		     if(StringUtil.isNotEmpty(imageUrl)){
+//		    	   moreGoodsInfo.put("imageUrl",imageUrl);
+//		    	   moreGoodsInfo.put("content", content);
+//	    	 }
+//		  
+//			
+//		 }catch(Exception e){
+//			 
+//		 }
 
 		
 		 if (!recommendGoodsInfo.isEmpty()) {
 				data.put("recommendGoodsInfo", recommendGoodsInfo);
 			}
-			if (!moreGoodsInfo.isEmpty()) {
-				data.put("moreGoodsInfo", moreGoodsInfo);
-			}
+//			if (!moreGoodsInfo.isEmpty()) {
+//				data.put("moreGoodsInfo", moreGoodsInfo);
+//			}
 		resp.setResponseData(data);
 		return resp;
 
