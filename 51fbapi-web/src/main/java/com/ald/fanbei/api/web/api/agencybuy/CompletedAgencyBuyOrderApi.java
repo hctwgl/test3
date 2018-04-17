@@ -154,7 +154,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 							AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 							//浙商维护中逻辑
 							Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
-							if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())&&flag&&bankIsMaintaining){
+							if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&StringUtil.equals(YesNoStatus.YES.getCode(), assetPushType.getSelfSupport())&&flag&&!bankIsMaintaining){
 								//未满额且自营开关开启
 								List<EdspayGetCreditRespBo>  pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(afBorrowDo);
 								AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
