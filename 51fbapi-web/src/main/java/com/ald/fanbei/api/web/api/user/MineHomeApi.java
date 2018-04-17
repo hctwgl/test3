@@ -143,8 +143,8 @@ public class MineHomeApi implements ApiHandle {
     // 填充信用信息
     private void fillCreditInfo(MineHomeVo data, Long userId) {
         AfResourceDo creditResource = afResourceService.getSingleResourceBytype("CREDIT_AUTH_STATUS");
-        List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "one");
-        List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "one");
+        List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "one");// 借款最高额度
+        List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "one");// 购物最高额度
 
         // 未登录
         if (userId == null) {
