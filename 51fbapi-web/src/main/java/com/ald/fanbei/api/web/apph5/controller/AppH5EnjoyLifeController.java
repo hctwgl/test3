@@ -180,6 +180,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                 userAccountInfo.setUsedAmount(new BigDecimal(0));
             }
             if(userAccountInfo==null){
+                userAccountInfo = new AfUserAccountSenceDo();
                 userAccountInfo.setAuAmount(new BigDecimal(5000));
                 userAccountInfo.setUsedAmount(new BigDecimal(0));
             }
