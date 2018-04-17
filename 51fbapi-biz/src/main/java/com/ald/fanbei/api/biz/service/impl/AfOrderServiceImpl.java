@@ -829,7 +829,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
 			AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
-			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox) {
+			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox,String bankChannel) {
 		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
