@@ -47,6 +47,7 @@ public class AppH5BillController extends BaseController {
 
     private static final String opennative = "/fanbei-web/opennative?name=";
 
+    // 一下账单类型只在全部待还这个功能中使用
     // 购物账单
     private static final String BILL_TYPE_BILL = "BILL";
 
@@ -59,6 +60,7 @@ public class AppH5BillController extends BaseController {
     // 没有账单
     private static final String STATUS_NOBILL = "NOBILL";
 
+    // 以下状态只在全部待还这个功能中使用
     // 还款中
     private static final String STATUS_REFUNDING = "REFUNDING";
 
@@ -110,10 +112,6 @@ public class AppH5BillController extends BaseController {
         try {
             context = doWebCheck(request, true);
             Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
-
-            // 测试
-           /* String userName = request.getParameter("userName");
-            Long userId = afUserService.getUserByUserName(userName).getRid();*/
 
             List<Map<String, Object>> data = new ArrayList<>();
             data.add(getBorrowBill(userId));
