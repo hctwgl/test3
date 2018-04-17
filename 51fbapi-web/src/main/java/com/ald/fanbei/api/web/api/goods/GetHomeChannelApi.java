@@ -175,7 +175,6 @@ public class GetHomeChannelApi implements ApiHandle {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		Map<String, Object> onePlusThreeInfo = new HashMap<String, Object>();
 		Map<String, Object> onePlusThreeBanner = new HashMap<String, Object>();
-		
 	   List<AfHomePageChannelConfigureDo> channelConfigureList =  afHomePageChannelConfigureService.getByChannelId(tabId);
 		if(channelConfigureList != null && channelConfigureList.size() >0){
 			for(AfHomePageChannelConfigureDo homePageChannelConfigure:channelConfigureList){
@@ -219,6 +218,9 @@ public class GetHomeChannelApi implements ApiHandle {
 						onePlusThreeBanner.put("content", homePageChannelConfigure.getJumpUrl());
 					}else if (0 <  homePageChannelConfigure.getPosition() && 1 == homePageChannelConfigure.getStatus()){
 						Map<String, Object> onePlusThree = new HashMap<String, Object>(); 
+						if(homePageChannelConfigure.getSort() == 1){
+							
+						}
 						onePlusThree.put("imageUrl", homePageChannelConfigure.getImageUrl());
 						onePlusThree.put("type", homePageChannelConfigure.getJumpType());
 						onePlusThree.put("content", homePageChannelConfigure.getJumpUrl());
@@ -228,6 +230,7 @@ public class GetHomeChannelApi implements ApiHandle {
 				}
 			}
 			navigationInfo = getNavigationInfolist(navigationList);
+			onePlusThreeArea = getOnePlusThreeArea(onePlusThreeArea);
 			//data.put("topBannerList", topBannerList);
 			//data.put("navigationInfo", navigationInfo);
 			//onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
@@ -333,6 +336,32 @@ public class GetHomeChannelApi implements ApiHandle {
 	
 	
 	
+	private List<Object> getOnePlusThreeArea(List<Object> onePlusThreeArea) {
+		// TODO Auto-generated method stub
+//		int optCount = onePlusThreeArea.size();
+//		for (int i = 0; i < optCount; i++) {
+//			
+//		Object onePlusThreeAreaVo =  onePlusThreeArea.get(0);
+//		Class<?> clazz = onePlusThreeAreaVo.getClass();
+//		}
+//			
+		
+		
+		List<Object>  onePlusThreeAreaList = new ArrayList<Object>();
+		if(onePlusThreeArea != null && onePlusThreeArea.size() > 0 ){
+				int size = onePlusThreeArea.size();
+				if(size > 3 ){
+					onePlusThreeAreaList.addAll(onePlusThreeArea.subList(0, 3));
+				}if(size <= 3 ){
+					onePlusThreeAreaList.addAll(onePlusThreeArea);
+				}
+			
+		}
+		return onePlusThreeAreaList;
+	}
+
+
+
 	private AfHomePageChannelVo parseDoToVo(AfHomePageChannelDo afHomePageChannelDo) {
 		AfHomePageChannelVo vo = new AfHomePageChannelVo();
 		vo.setTabId(afHomePageChannelDo.getRid());

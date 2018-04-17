@@ -380,6 +380,15 @@
 		is_delete = 0 AND type = #{type} AND sec_type = '1'
 	</select>
 	
+	<select id="getBackGroundByTypeOrder" resultType="AfResourceDo">
+		SELECT
+		name,value,sec_type,value_1,value_3,sort
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} 
+		order by  id desc
+	</select>
 	<select id="getActivityRule" resultType="String">
 		SELECT value from
 		af_resource where is_delete = 0 and type =#{type}

@@ -53,9 +53,11 @@ public class AppH5LifeController extends BaseController {
     // 优惠位置标识  对应H5资源中的sort
     private static final int POSITION_FLAG_DISCOUNTS = 2;
 
-    private static final int PAGE_SIZE = 30;
-
+    // 分期未知标识
     private static final int POSITION_FALG_STAGE = 4;
+
+    // 生活页底部商品默认每页显示30个
+    private static final int PAGE_SIZE = 30;
 
     @Autowired
     private AfShopService afShopService;
@@ -254,7 +256,7 @@ public class AppH5LifeController extends BaseController {
 
     // 检查资源配置是否有效
     private boolean configIsEffective(AfResourceH5Dto resource, List<AfResourceH5ItemDto> itemList) {
-        // 根据约定，生活页面H5资源的第一个项应为楼层图
+        // 根据约定，生活页面H5资源的第一个项应为楼层图，配置不完整则不显示整个模块
         if (CollectionUtil.isEmpty(itemList) || itemList.size() == 1) {
             return false;
         }

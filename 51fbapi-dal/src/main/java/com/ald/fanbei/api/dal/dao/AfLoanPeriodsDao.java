@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.query.AfLoanPeriodsQueryNoPage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,10 +30,10 @@ public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 	AfLoanPeriodsDo getOneByLoanId(Long loanId);
 
 	/**
-	 * 根据条件查找列表
+	 * 获取本月借款分期
 	 *
 	 * @author wangli
-	 * @date 2018/4/14 12:49
+	 * @date 2018/4/17 13:52
 	 */
-	List<AfLoanPeriodsDo> findList(AfLoanPeriodsQueryNoPage query);
+	AfLoanPeriodsDo getCurrMonthPeriod(@Param("loanId") Long loanId);
 }

@@ -35,6 +35,7 @@ public enum AfResourceType {
 	HomeOneToTwo2("HOME_ONE_TO_TWO2", "首页一对二(1大上2小下)模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
+	ASJHomeTabbar("ASJ_HOME_TABBAR", "首页tabbar"),
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
 	HomeNavigationUpOneV401("HOME_NAVIGATION_UP_V401","快捷导航上方活动专场"),

@@ -213,4 +213,6 @@ public interface AfResourceDao {
 	List<AfResourceDo> getEcommercePositionUp();
 
 	List<AfResourceDo> getEcommercePositionDown();
+
+	List<AfResourceDo> getBackGroundByTypeOrder(@Param("type") String code);
 }
