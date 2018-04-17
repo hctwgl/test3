@@ -829,7 +829,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
 			AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
-			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox, String bankChannel) {
+			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox, String bqsBlackBox) {
 		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
@@ -1248,7 +1248,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
 			    bo = afResourceService.borrowRateWithResourceForTrade(nper);
 			} else {
-			    bo = afResourceService.borrowRateWithResource(nper, userName);
+			    bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
 			}
 			// }
 			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -1304,7 +1304,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
 			orderInfo.setNper(nper);
-			BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
+			BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
 			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 			orderInfo.setBorrowRate(boStr);
 
