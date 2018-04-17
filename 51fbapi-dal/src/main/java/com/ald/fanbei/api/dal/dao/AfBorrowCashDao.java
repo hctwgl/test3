@@ -246,4 +246,6 @@ public interface AfBorrowCashDao {
 	AfBorrowCashDto getBorrowCashInfoById(@Param("borrowCashId")Long borrowCashId);
 
 	AfBorrowCashDo fetchLastByUserId(@Param("userId")Long userId);
+	
+	Long tuchDealingBorrowCash(@Param("userId")Long userId);
 }

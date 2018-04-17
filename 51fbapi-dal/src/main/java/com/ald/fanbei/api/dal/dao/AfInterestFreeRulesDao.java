@@ -23,5 +23,6 @@ public interface AfInterestFreeRulesDao {
 	AfInterestReduceSchemeDo getReduceSchemeByGoodId(@Param("goodsId")Long goodsId,@Param("brandId")Long brandId,@Param("catogeryId")Long catogeryId);
 
 	AfInterestReduceRulesDo getReduceRuleById(@Param("rid")Long id);
+
 	    
 }

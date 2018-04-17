@@ -72,7 +72,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 	private AfGoodsPriceService afGoodsPriceService;
 	@Resource
 	NumberWordFormat numberWordFormat;
-	
+
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 
@@ -84,7 +84,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		Map<String, Object> respData = Maps.newHashMap();
 		// 判断用户是否登录
 		Long userId = context.getUserId();
-		
+
 		GetBorrowCashGoodInfoParam param = (GetBorrowCashGoodInfoParam) requestDataVo.getParamObj();
 		BigDecimal borrowAmount = param.getBorrowAmount();
 		String borrowType = String.valueOf(numberWordFormat.borrowTime(param.getBorrowType()));
@@ -113,7 +113,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			} catch(Exception e) {
 				logger.error("get user last borrow info error,msg=>{}", e.getMessage());
 			}
-			
+
 			oriRate = riskUtil.getRiskOriRate(userId,params,tmpBorrowType);
 		}
 
@@ -134,7 +134,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		} else {
 			newRate = BigDecimal.valueOf(0.36);
 		}
-		
+
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		logger.info("newRate = > {}, borrowAmount = > {}",newRate,borrowAmount);
@@ -198,11 +198,11 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 						goodsInfoMap.put("goodsProperty", propsArray[0]);
 					}
 				}
-				
+
 				goodsInfoList.add(goodsInfoMap);
 			}
-			
-			
+
+
 		}
 		respData.put("goodsInfoList", goodsInfoList);
 		if(afResourceService.getBorrowCashCLosed()){

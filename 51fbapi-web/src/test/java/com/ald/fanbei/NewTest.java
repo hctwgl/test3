@@ -1,3 +1,4 @@
+package com.ald.fanbei;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfUserDo;

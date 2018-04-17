@@ -307,6 +307,9 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		logger.error("BorrowCash sendMessage error for:" + e);
 	    }
 	    dealRepaymentSucess(repayment.getPayTradeNo(), "", true);
+
+	    map.put("refId", repayment.getRid());
+        map.put("type", UserAccountLogType.REPAYMENT.getCode());
 	}
 	return map;
     }
