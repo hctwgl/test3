@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -23,6 +25,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -151,7 +154,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     AfInterimDetailDao afInterimDetailDao;
     @Resource
     AfUserAccountSenceDao afUserAccountSenceDao;
-
+    @Autowired
+    KafkaSync kafkaSync;
     public void testbackDetail() {
         AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentById(94901l);
         afUserAmountService.addUseAmountDetail(afRepaymentDo);
@@ -614,6 +618,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
         });
 
         if(result==1){
+            try{
+                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+            }catch (Exception e){
+                logger.info("消息同步失败:",e);
+            }
             dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
             //还款成功同步逾期订单
             dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());

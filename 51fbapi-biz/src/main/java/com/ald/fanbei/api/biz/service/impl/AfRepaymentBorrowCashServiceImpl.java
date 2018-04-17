@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -131,7 +133,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Resource
     AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-
+    @Autowired
+    KafkaSync kafkaSync;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -583,6 +586,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         });
 
         if (resultValue == 1L) {
+            try{
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+            }catch (Exception e){
+                logger.info("消息同步失败:",e);
+            }
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                 if (StringUtils.equals("代扣付款",repayment.getName())) {
