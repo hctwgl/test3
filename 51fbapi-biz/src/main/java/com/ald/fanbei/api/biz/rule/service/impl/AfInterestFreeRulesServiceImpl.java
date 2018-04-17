@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.rule.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
@@ -34,5 +36,6 @@ public class AfInterestFreeRulesServiceImpl implements
 		}
 		return freeRulesDo;
 	}
+
 
 }

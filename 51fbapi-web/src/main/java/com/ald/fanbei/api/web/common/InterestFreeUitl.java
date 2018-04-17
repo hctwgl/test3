@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.apache.commons.lang.StringUtils;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -54,6 +59,7 @@ public class InterestFreeUitl {
      */
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
         if (goodsid != null && goodsid >0l){
             afResourceService = (AfResourceService)SpringBeanContextUtil.getBean("afResourceService");
             AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
@@ -90,7 +96,6 @@ public class InterestFreeUitl {
 
 
         }
-
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
@@ -208,6 +213,41 @@ public class InterestFreeUitl {
             }
         }
         return list;
+    }
+    public static JSONArray getreducenpers(AfInterestReduceRulesDo afInterestReduceRulesDo){
+        JSONArray array = new JSONArray();
+        BigDecimal nper1 = afInterestReduceRulesDo.getNper1();
+        BigDecimal nper2 = afInterestReduceRulesDo.getNper2();
+        BigDecimal nper3 = afInterestReduceRulesDo.getNper3();
+        BigDecimal nper6 = afInterestReduceRulesDo.getNper6();
+        BigDecimal nper9 = afInterestReduceRulesDo.getNper9();
+        BigDecimal nper12 = afInterestReduceRulesDo.getNper12();
+        Map<String,Object> temp1 = new HashMap<>();
+        temp1.put("rate",nper1);
+        temp1.put(Constants.DEFAULT_NPER,1);
+        Map<String,Object> temp2 = new HashMap<>();
+        temp2.put("rate",nper2);
+        temp2.put(Constants.DEFAULT_NPER,2);
+        Map<String,Object> temp3 = new HashMap<>();
+        temp3.put("rate",nper3);
+        temp3.put(Constants.DEFAULT_NPER,3);
+        Map<String,Object> temp6 = new HashMap<>();
+        temp6.put("rate",nper6);
+        temp6.put(Constants.DEFAULT_NPER,6);
+        Map<String,Object> temp9 = new HashMap<>();
+        temp9.put("rate",nper9);
+        temp9.put(Constants.DEFAULT_NPER,9);
+        Map<String,Object> temp12 = new HashMap<>();
+        temp12.put("rate",nper12);
+        temp12.put(Constants.DEFAULT_NPER,12);
+        array.add(temp1);
+        array.add(temp2);
+        array.add(temp3);
+        array.add(temp6);
+        array.add(temp9);
+        array.add(temp12);
+
+        return array;
     }
 
     /**

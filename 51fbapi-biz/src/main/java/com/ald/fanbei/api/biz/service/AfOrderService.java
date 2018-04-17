@@ -200,7 +200,7 @@ public interface AfOrderService {
 	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
 
 
-	AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType);
+	AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType, String secOrderType);
 
 
 	
@@ -465,4 +465,6 @@ public interface AfOrderService {
 	 */
 	HashMap getLeaseProtocol(Long orderId);
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
+	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
 }

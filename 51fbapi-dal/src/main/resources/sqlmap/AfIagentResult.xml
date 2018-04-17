@@ -186,4 +186,12 @@
             and TIMESTAMPDIFF(DAY,gmt_create,now()) &lt; #{dayNum}
         </if>
     </select>
+    <select id="getIagentByUserIdToday"  resultType="com.ald.fanbei.api.dal.domain.AfIagentResultDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_iagent_result
+        WHERE user_id=#{userId} and is_delete=0
+        and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+        ORDER BY `check_state` DESC ,`gmt_create`  ASC LIMIT 1
+    </select>
 </mapper>

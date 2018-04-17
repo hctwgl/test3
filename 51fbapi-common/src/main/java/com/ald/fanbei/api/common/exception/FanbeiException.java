@@ -44,21 +44,21 @@ public class FanbeiException extends RuntimeException {
         errorCode.setDesc(message);
     }
 
-    /**
-     * 动态配置异常
-     * @param resourceType 异常类型
-     * @param args 多个动态参数
-     */
-    public FanbeiException( String resourceType, String... args) {
-        super("资源配置,动态参数");
-        this.resourceType = resourceType;
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                paramsMap.put("&"+(i+1),args[i]);
-            }
-        }
-        errorCode = FanbeiExceptionCode.SYSTEM_ERROR;
-    }
+//    /**
+//     * 动态配置异常
+//     * @param resourceType 异常类型
+//     * @param args 多个动态参数
+//     */
+//    public FanbeiException( String resourceType, String... args) {
+//        super("资源配置,动态参数");
+//        this.resourceType = resourceType;
+//        if (args != null) {
+//            for (int i = 0; i < args.length; i++) {
+//                paramsMap.put("&"+(i+1),args[i]);
+//            }
+//        }
+//        errorCode = FanbeiExceptionCode.SYSTEM_ERROR;
+//    }
 
     public FanbeiException(String message, Throwable e) {
         super(message, e);
