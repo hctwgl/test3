@@ -100,7 +100,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
 
 			if (afSchemeDo != null){
-				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen())){
+				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
