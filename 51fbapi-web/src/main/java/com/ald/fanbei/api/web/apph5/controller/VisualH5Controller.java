@@ -401,11 +401,11 @@ public class VisualH5Controller extends BaseController {
             Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUser.getRid(),
                     NumberUtil.objToLongDefault(couponId, 1l));
             if (limitCount <= myCount) {
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", null).toString();
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getCode(), "", null).toString();
             }
             Long totalCount = couponDo.getQuota();
             if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", null).toString();
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getCode(), "", null).toString();
             }
             AfUserCouponDo userCoupon = new AfUserCouponDo();
             userCoupon.setCouponId(couponId);
