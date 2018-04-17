@@ -57,6 +57,21 @@
 		AND
 			id = #{userId}
 	</select>
+
+	<select id="getUserByBorrowCashStatus" resultType="AfUserDo">
+		SELECT
+		u.id
+		FROM
+		af_user u
+		LEFT JOIN `af_user_auth` ua on u.id= ua.`user_id`
+		LEFT JOIN `af_borrow_cash` bc on .bc.user_id= u.id
+		WHERE
+		u.is_delete = 0
+		AND ua.risk_status= 'Y'
+		and bc.`is_delete`= 0
+		and bc.status in ('CLOSED', 'FINSH')
+		and u.id = #{userId}
+	</select>
 	
 	<select id="getUserIdByMobile" resultType="java.lang.Long">
 		SELECT
