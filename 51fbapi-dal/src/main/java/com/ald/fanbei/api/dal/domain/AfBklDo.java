@@ -30,6 +30,7 @@ public class AfBklDo extends AbstractSerial {
 	private String csvProductCategory;
 	private Long orderId;
 	private Long userId;
+	private String iagentState;
 
 	
 

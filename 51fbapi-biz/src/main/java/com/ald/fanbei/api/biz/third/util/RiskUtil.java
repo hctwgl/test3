@@ -957,6 +957,19 @@ public class RiskUtil extends AbstractThird {
 
 			return riskResp;
 		} else {
+			if(riskResp!=null){
+				try{
+					String risk_error_type="risk_error_type_"+riskResp.getCode();
+					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype(risk_error_type);
+
+					if(afResourceDo!=null){
+						throw new FanbeiException(afResourceDo.getValue(),true);
+					}
+				}catch (Exception e){
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+				}
+
+			}
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
@@ -1282,7 +1295,8 @@ public class RiskUtil extends AbstractThird {
 					if (bklResult.equals("v2")){//需电核
 						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
 						submitBklInfo(orderInfo);
-						orderInfo.setIagentStatus("C");
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
 						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
 						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
@@ -1464,6 +1478,7 @@ public class RiskUtil extends AbstractThird {
 			bklDo.setOrderId(orderInfo.getRid());
 			bklDo.setUserId(orderInfo.getUserId());
 			bklUtils.submitJob(bklDo);
+			orderInfo.setIagentStatus(bklDo.getIagentState());
 		}catch (Exception e){
 			logger.error("submitBklInfo error = >{}",e);
 		}
@@ -3946,8 +3961,8 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
 		return riskResp;
-	}	
-	
+	}
+
 	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
 		Boolean bankIsMaintaining=false;
 		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
@@ -3957,8 +3972,8 @@ public class RiskUtil extends AbstractThird {
 			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
 			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
 			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
-			
+
 		}
 		return bankIsMaintaining;
-	}	
+	}
 }

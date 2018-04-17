@@ -627,7 +627,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 					dealLoanRepayOverdue(loanRepayDealBo, loanPeriodsDo, loanDo,reductionAmount);		//逾期费
 					dealLoanRepayPoundage(loanRepayDealBo, loanPeriodsDo);		//手续费
 					dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
-					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo);	//修改借款分期状态
+					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo,reductionAmount);	//修改借款分期状态
 				}
 				afLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
@@ -784,7 +784,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 	 * @Description: 分期记录 完成处理
 	 * @return  void
 	 */
-	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo) {
+	private void dealLoanRepayIfFinish(LoanRepayDealBo loanRepayDealBo, AfLoanRepaymentDo repaymentDo, AfLoanPeriodsDo loanPeriodsDo,BigDecimal reductionAmount) {
 		
 		// 所有需还金额
 		BigDecimal sumAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(), 
@@ -810,9 +810,10 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		
 		
 		// 所有已还金额
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(reductionAmount);
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
+		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
         } else if (minus.compareTo(BigDecimal.ZERO) < 0) {	// 部分还款
@@ -1190,8 +1191,12 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
 						.subtract(loanPeriodsDo.getRepayAmount());
 			}else { // 未出账， 提前还款时不用还手续费和利息
-				if (!bo.isAllRepay){//判断是否为按期还款，按期还款不能提前还未出账账单
-					throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+				if (!bo.isAllRepay ){//判断是否为按期还款，按期还款不能提前还未出账账单
+					for (HashMap map:bo.periodsList) {
+						if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+							throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+						}
+					}
 				}
 				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
 			}
