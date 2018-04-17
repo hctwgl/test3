@@ -100,13 +100,14 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
 
 			if (afSchemeDo != null){
-				AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
-
+						freedesc = afSchemeDo.getDescr();
 					}
-
+				}
 
 			}
 
@@ -205,7 +206,12 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setIsShow(1);
 			}
 		}
+		AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+		if (afInterestReduceSchemeDo != null){
+			vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
+			AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
 
+		}
 		vo.setInterestFreeDesc(freedesc);
 		resp.setResponseData(vo);
 		return resp;
