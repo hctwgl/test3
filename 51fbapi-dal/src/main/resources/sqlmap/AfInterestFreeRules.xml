@@ -34,7 +34,9 @@ WHERE  rg.is_delete=0 and rs.is_open='Y' AND unix_timestamp(NOW()) >= unix_times
 		<if test="catogeryId != null and catogeryId != ''">
 			and 	(rg.goods_id=#{catogeryId} and rs.rule_type =2)
 		</if>
-
+		<if test="brandId == null and goodsId == null and catogeryId == null">
+			and rg.goods_id is NULL
+		</if>
    ORDER BY rs.gmt_create DESC LIMIT 1
 	</select>
 	<select id="getReduceRuleById" resultType="AfInterestReduceRulesDo">
