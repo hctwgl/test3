@@ -311,6 +311,9 @@
 			<if test="userId != null">
 				and s.user_id = #{userId}
 			</if>
+            <if test="userId == null">
+                and s.user_id = -1
+            </if>
 		LEFT JOIN af_scheme_goods c on g.id = c.goods_id
 		WHERE
 			a.is_delete = 0
@@ -353,9 +356,12 @@
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
           LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
-          <if test="userId != null">
-				and s.user_id = #{userId}
-			</if>  
+             <if test="userId != null">
+                 and s.user_id = #{userId}
+             </if>
+             <if test="userId == null">
+                 and s.user_id = -1
+             </if>
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
           WHERE
 	          g.is_delete = 0
