@@ -346,7 +346,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                         }
                         //判断是否是当前场次
 
-                        afActGoodsDto.put("goodsCount",0);
+                        //afActGoodsDto.put("goodsCount",0);
                         afActGoodsDto.put("saleCount",0);
                     }
                     if(pStartDate.getTime()<=now.getTime()&&endDate.getTime()>=now.getTime()){
