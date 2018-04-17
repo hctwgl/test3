@@ -1200,7 +1200,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
 								bo = afResourceService.borrowRateWithResourceForTrade(nper);
 							} else {
-								bo = afResourceService.borrowRateWithResource(nper, userName);
+								bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
 							}
 //						}
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -1266,7 +1266,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
 						orderInfo.setNper(nper);
-						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
 
