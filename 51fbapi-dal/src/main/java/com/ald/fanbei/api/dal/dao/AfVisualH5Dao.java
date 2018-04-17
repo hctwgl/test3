@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfVisualH5Do;
  */
 public interface AfVisualH5Dao extends BaseDao<AfVisualH5Do, Long> {
 
-    
+    int updateById(AfVisualH5Do afVisualH5Do);
 
 }

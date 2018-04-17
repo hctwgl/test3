@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.OssUploadResult;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -22,16 +23,25 @@ import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -74,6 +84,9 @@ public class VisualH5Controller extends BaseController {
 
     @Resource
     AfUserCouponDao afUserCouponDao;
+
+    @Resource
+    OssFileUploadService ossFileUploadService;
 
     /**
      * 获取H5设置
@@ -433,6 +446,42 @@ public class VisualH5Controller extends BaseController {
         }
         catch (Exception e) {
             logger.error("changeUserAddress", e);
+            return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+        }
+    }
+
+
+    private static final String src = "D:/";
+    /**
+     * 生成HTML
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/doHtml", method = RequestMethod.POST)
+    public String doHtml(HttpServletRequest request, HttpServletResponse response) {
+        try{
+//            Document doc = Jsoup.parse(new URL("https://www.taobao.com").openStream(), "UTF-8", "https://www.taobao.com");
+//            String html = doc.outerHtml().toString();
+            long time = new Date().getTime();
+            Long id = NumberUtil.objToPageLongDefault(request.getParameter("id"), null);
+            String strHtml = ObjectUtils.toString(request.getParameter("strHtml"), null);
+            String outFilePath = src + "H5_VISUAL" + time + ".html";
+            File file = new File(outFilePath);
+            if(file.exists()) {//删除原来的旧文件
+                file.delete();
+            }
+            InputStream targetStream = IOUtils.toInputStream(strHtml, StandardCharsets.UTF_8.name());
+            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/html", IOUtils.toByteArray(targetStream));
+            OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+            String url = ossUploadResult.getUrl();
+            AfVisualH5Do visualH5Do = new AfVisualH5Do();
+            visualH5Do.setRid(id);
+            visualH5Do.setUrl(url);
+            afVisualH5Service.updateById(visualH5Do);
+            return H5CommonResponse.getNewInstance(true, "生成成功").toString();
+        }catch (Exception e){
+            logger.error("doHtml  error",e);
             return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
         }
     }

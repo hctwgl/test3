@@ -33,4 +33,10 @@ public class AfVisualH5ServiceImpl extends ParentServiceImpl<AfVisualH5Do, Long>
 	public BaseDao<AfVisualH5Do, Long> getDao() {
 		return afVisualH5Dao;
 	}
+
+	@Override
+	public int updateById(AfVisualH5Do afVisualH5Do) {
+		return afVisualH5Dao.updateById(afVisualH5Do);
+	}
+
 }

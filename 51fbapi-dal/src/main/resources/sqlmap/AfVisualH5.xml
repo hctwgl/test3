@@ -167,5 +167,7 @@
         FROM af_visual_h5
         <include refid="commonCondition"/>
     </select>
+
+
     
 </mapper>

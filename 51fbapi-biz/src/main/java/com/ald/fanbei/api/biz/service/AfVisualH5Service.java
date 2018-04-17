@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfVisualH5Do;
  */
 public interface AfVisualH5Service extends ParentService<AfVisualH5Do, Long>{
 
+    int updateById(AfVisualH5Do afVisualH5Do);
+
 }
