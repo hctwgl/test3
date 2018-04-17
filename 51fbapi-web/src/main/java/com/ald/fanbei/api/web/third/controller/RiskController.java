@@ -11,6 +11,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,9 @@ public class RiskController {
 	
 	@Resource
 	AfUserAuthService afUserAuthService;
+
+	@Resource
+	AfUserService userService;
 
 	@RequestMapping(value = { "/verify" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -493,6 +499,39 @@ public class RiskController {
 			RespSecAuthInfoToRiskBo resp = afUserAuthService.getSecondaryAuthInfo(req);
 			
 			return JSON.toJSONString(resp);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
+		}
+	}
+
+	/**
+	 * 风控主动查询 用户补充认证信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"/auth/getConfirmResultByUserId"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String getConfirmResultByUserId(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			Map<String, String> params = this.requestToMap(request);
+			logger.info("getConfirmResultByUserId begin, request params=" + params);
+			this.checkSign(params);
+			ReqFromRiskBo req = JSON.parseObject(JSON.toJSONString(params), ReqFromRiskBo.class);
+
+			AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(req.consumerNo);
+			String riskStatus = userAuthDo.getRiskStatus();
+			if (riskStatus.equals("Y")){
+				Long id = userService.getUserByBorrowCashStatus(req.consumerNo);
+				if (id == null){
+					return "SUCCESS";
+				}else {
+					return "FALSE";
+				}
+			}else {
+				return "FALSE";
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			return RESPONSE_CODE_FAIL + (e instanceof FanbeiException ? "," +e.getMessage(): "");
