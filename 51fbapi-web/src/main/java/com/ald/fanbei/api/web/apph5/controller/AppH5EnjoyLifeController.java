@@ -166,7 +166,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             //获取配置商品信息
             List<AfResourceDo> activityResource = new ArrayList<>();
             try{
-                activityResource = afResourceService.getConfigsByTypesAndSecType(Constants.ENJOYLIFE_ACTIVITY_INFO, Constants.ACTIVITY_INFO_GOODSID);
+                activityResource = afResourceService.getConfigByTypes(Constants.ENJOYLIFE_ACTIVITY_GOODSINFO);
             }catch (Exception e){
                 logger.error("get activityGoodsList error" + e);
             }

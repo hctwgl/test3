@@ -249,7 +249,8 @@
 
     <select id="getActivityGoodsByGoodsIdsAndActId" resultType="AfActGoodsDto">
         SELECT
-        a.goods_id,a.activity_id,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
+        a.goods_id,a.activity_id,min(a.special_price) special_price,IFNULL(sum(a.limit_count),0) goodsCount,
+        a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
         g.price_amount,g.sale_amount,g.rebate_amount,g.rebate_rate,g.remark,g.source
         FROM af_seckill_activity_goods a LEFT JOIN af_goods g ON (a.goods_id=g.id)
         LEFT JOIN af_goods_price b ON (a.price_id=b.id)

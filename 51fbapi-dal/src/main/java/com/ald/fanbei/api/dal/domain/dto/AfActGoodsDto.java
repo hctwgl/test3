@@ -12,5 +12,5 @@ public class AfActGoodsDto extends AfGoodsDo{
     private BigDecimal specialPrice;
     private Long activityId;
     private Long goodsId;
-
+    private Integer goodsCount;
 }

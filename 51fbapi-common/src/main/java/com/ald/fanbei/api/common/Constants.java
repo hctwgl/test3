@@ -553,7 +553,7 @@ public class Constants {
     public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
 
 	//乐享生活节
-	public static final String ENJOYLIFE_ACTIVITY_INFO = "ENJOYLIFE_ACTIVITY_INFO";
+	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
 }
