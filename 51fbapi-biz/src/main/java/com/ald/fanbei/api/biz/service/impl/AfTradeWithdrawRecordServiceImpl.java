@@ -8,7 +8,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfTradeSettleOrderService;
 import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
+import com.ald.fanbei.api.common.enums.AfTradeSettleOrderStatus;
 import com.ald.fanbei.api.common.enums.TradeOrderStatus;
 import com.ald.fanbei.api.common.enums.TradeWithdrawRecordStatus;
 import com.ald.fanbei.api.dal.dao.AfTradeOrderDao;
@@ -28,6 +30,9 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 	@Resource
 	private AfTradeWithdrawDetailDao afTradeWithdrawDetailDao;
 	
+	@Resource
+	private AfTradeSettleOrderService afTradeSettleOrderService;
+	
 	@Override
 	public BaseDao<AfTradeWithdrawRecordDo, Long> getDao() {
 		return afTradeWithdrawRecordDao;
@@ -35,6 +40,7 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 
 	@Override
 	public int dealWithDrawSuccess(long id) {
+		logger.info("enter into dealWithDrawSuccess,id={}", id);
 		AfTradeWithdrawRecordDo recordDo = new AfTradeWithdrawRecordDo();
 		recordDo.setId(id);
 		recordDo.setStatus(TradeWithdrawRecordStatus.TRANSED.getCode());
@@ -43,15 +49,23 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		List<AfTradeWithdrawDetailDo> detailList = afTradeWithdrawDetailDao.getByRecordId(id);
 		List<Long> ids = new ArrayList<>();
 		for (AfTradeWithdrawDetailDo detail: detailList) {
+			logger.info("dealWithDrawSuccess,id detail:" +  detail.getOrderId());
 			ids.add(detail.getOrderId());
 		}
-		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.EXTRACT.getCode());
+		
+		// modify by luoxiao 结算单状态变更 on 2018-04-10
+//		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.EXTRACT.getCode());
+		int count= afTradeSettleOrderService.batchUpdateSettleOrderStatus(ids, AfTradeSettleOrderStatus.EXTRACTED.getCode());
+		logger.info("dealWithDrawSuccess,count:" + count);
+		logger.info("dealWithDrawSuccess,id={}, end.", id);
+		// end by luoxiao 结算单状态变更 on 2018-04-10
 		return 0;
 	}
 
 	
 	@Override
 	public int dealWithDrawFail(long id) {
+		logger.info("enter into dealWithDrawFail,id={}", id);
 		AfTradeWithdrawRecordDo recordDo = new AfTradeWithdrawRecordDo();
 		recordDo.setId(id);
 		recordDo.setStatus(TradeWithdrawRecordStatus.CLOSED.getCode());
@@ -62,7 +76,11 @@ public class AfTradeWithdrawRecordServiceImpl extends ParentServiceImpl<AfTradeW
 		for (AfTradeWithdrawDetailDo detail: detailList) {
 			ids.add(detail.getOrderId());
 		}
-		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
+		// modify by luoxiao 结算单状态变更 on 2018-04-10
+//		afTradeOrderDao.updateStatusByIds(ids, TradeOrderStatus.NEW.getCode());
+		afTradeSettleOrderService.batchUpdateSettleOrderStatus(ids, AfTradeSettleOrderStatus.EXTRACTABLE.getCode());
+		logger.info("dealWithDrawFail,id={}, end.", id);
+		// end by luoxiao 结算单状态变更 on 2018-04-10
 		return 0;
 	}
 

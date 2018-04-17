@@ -181,6 +181,7 @@ public class Constants {
 	public static final String RES_BORROW_TRADE = "BORROW_TRADE";
 	public static final String RES_BORROW_CASH_POUNDAGE_RATE = "RES_BORROW_CASH_POUNDAGE_RATE";
 	public static final String RES_BORROW_CASH_POUNDAGE_TIME = "RES_BORROW_CASH_POUNDAGE_TIME";
+	public static final String GOODS_DETAIL_RECYCLE_FLAG = "GOODS_DETAIL_RECYCLE_FLAG";
 
 	public static final String RES_BRAND_SHOP = "BRAND_SHOP";
 	public static final String RES_CREDIT_SCORE_AMOUNT = "CREDIT_SCORE_AMOUNT";
@@ -322,6 +323,10 @@ public class Constants {
 	public static final String CONFKEY_NOTIFY_HOST = "fbapi.notify.host";
 	public static final String CONFKEY_RISK_URL = "fbapi.risk.url";
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
+
+	public static final String CONFKEY_BKL_URL = "fbapi.bkl.url";
+	public static final String CONFKEY_ADMIN_URL = "fbapi.admin.url";
+	public static final String CONFKEY_BKL_ACCESS_TOKEN = "fbapi.bkl.access.token";
 
 	// 菠萝觅
 	public static final String CONFKEY_BOLUOME_APPKEY = "fbapi.boluome.appkey";
@@ -515,6 +520,37 @@ public class Constants {
 	public static final String ORDER_MOBILE_VERIFY_SET = "ORDER_MOBILE_VERIFY_SET";
 
 	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
+
+	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
+
+	/**
+     * 用户租房分期利率
+     */
+    public static final String BORROW_TENEMENT_RATE = "BORROW_TENEMENT_RATE";
+
+    /**
+     * 默认用户租房分期利率（分期利率均为0）
+     */
+    public static final String BORROW_TENEMENT_RATE_DEFAULT = "BORROW_TENEMENT_RATE_DEFAULT";
+
+	// 租房分期期数
+    public static final int ONE = 1;
+    public static final int TWO = 2;
+    public static final int THREE = 3;
+    public static final int FOUR = 4;
+    public static final int FIVE = 5;
+    public static final int SIX = 6;
+    public static final int SEVEN = 7;
+    public static final int EIGHT = 8;
+    public static final int NINE = 9;
+    public static final int TEN = 10;
+    public static final int ELEVEN = 11;
+    public static final int TWELVE = 12;
+    
+    /**
+     * 线下商圈租房业务类型
+     */
+    public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
 
 
 }

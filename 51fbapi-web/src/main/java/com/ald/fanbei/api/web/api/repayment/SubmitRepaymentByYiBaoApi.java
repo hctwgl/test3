@@ -173,20 +173,19 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         String billIds1 = "";
         Map<String, Object> map;
         try {
-            if (afUserWithholdService.getCountByUserId(userId) > 0) {
-                for (int i = 0; i < billStr.length; i++) {
-                    String billId1 = billStr[i];
-                    if (afBorrowBillService.updateBorrowBillLockById(billId1) > 0) {
-                        if (billIds1.equals("")) {
-                            billIds1 = billId1;
-                        } else {
-                            billIds1 = billIds1 + "," + billId1;
-                        }
-                    } else {
-                        throw new FanbeiException(FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
-                    }
-                }
-            }
+             for (int i = 0; i < billStr.length; i++) {
+                 String billId1 = billStr[i];
+                 if (afBorrowBillService.updateBorrowBillLockById(billId1) > 0) {
+                     if (billIds1.equals("")) {
+                         billIds1 = billId1;
+                     } else {
+                         billIds1 = billIds1 + "," + billId1;
+                     }
+                 } else {
+                     throw new FanbeiException(FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
+                 }
+             }
+
             if (cardId.longValue() == -2) {//余额支付
                 //用户账户余额校验添加
                 if (afUserAccountDo.getRebateAmount().compareTo(actualAmount) < 0) {

@@ -163,6 +163,7 @@ public class RiskController {
 				riskUtil.asyDredgeWhiteCollarLoan(code, data, msg, signInfo);
 				return "SUCCESS";
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				return "FAIL";
 			}
 		} else {
@@ -187,8 +188,13 @@ public class RiskController {
 		String signInfo = request.getParameter("signInfo");
 		logger.info("deal fund begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.fundNotify(code, data, msg, signInfo);
-			return "SUCCESS";
+			try {
+				riskUtil.fundNotify(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return "FAIL";
+			}
 		} else {
 			return "ERROR";
 		}
@@ -209,8 +215,13 @@ public class RiskController {
 		String signInfo = request.getParameter("signInfo");
 		logger.info("deal newFund begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.newFundNotify(code, data, msg, signInfo);
-			return "SUCCESS";
+			try {
+				riskUtil.newFundNotify(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return "FAIL";
+			}
 		} else {
 			return "ERROR";
 		}
@@ -231,8 +242,13 @@ public class RiskController {
 		String signInfo = request.getParameter("signInfo");
 		logger.info("deal socialSecurity begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.socialSecurityNotify(code, data, msg, signInfo);
-			return "SUCCESS";
+			try {
+				riskUtil.socialSecurityNotify(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return "FAIL";
+			}
 		} else {
 			return "ERROR";
 		}
@@ -252,8 +268,13 @@ public class RiskController {
 		String signInfo = request.getParameter("signInfo");
 		logger.info("deal creditCard begin,code=" + code + ",data=" + data);
 		if (TRADE_STATUE_SUCC.equals(code)) {
-			riskUtil.creditCardNotify(code, data, msg, signInfo);
-			return "SUCCESS";
+			try {
+				riskUtil.creditCardNotify(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return "FAIL";
+			}
 		} else {
 			return "ERROR";
 		}

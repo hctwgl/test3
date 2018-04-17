@@ -37,7 +37,11 @@
 			<version>3.10.4</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.2.1.RELEASE</version>
+		</dependency>
 
 	</dependencies>
 	<build>
