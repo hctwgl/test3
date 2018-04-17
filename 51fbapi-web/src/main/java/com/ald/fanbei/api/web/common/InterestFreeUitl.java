@@ -205,15 +205,18 @@ public class InterestFreeUitl {
                     JSONObject tempobj1 = (JSONObject)temp1;
                     set.add(tempobj1.getString("nper"));
                 }
-                JSONArray arr = new JSONArray();
-                for (Object temp:temparray){
-                    JSONObject tempobj = (JSONObject)temp;
-                    String nper = tempobj.getString("nper");
-                    if (set.contains(nper)){
-                        arr.add(tempobj);
+                if (flag){
+                    JSONArray arr = new JSONArray();
+                    for (Object temp:temparray){
+                        JSONObject tempobj = (JSONObject)temp;
+                        String nper = tempobj.getString("nper");
+                        if (set.contains(nper)){
+                            arr.add(tempobj);
+                        }
                     }
+                    array = arr;
                 }
-                array = arr;
+
             }else{
                 if (flag)
                  array = temparray;
