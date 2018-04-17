@@ -237,7 +237,7 @@ public enum FanbeiExceptionCode {
 
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
-    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
+    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审核拒绝"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
     AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败，请稍后重试。若一直认证失败，请联系客服电话400-002-5151"),
@@ -268,6 +268,7 @@ public enum FanbeiExceptionCode {
     RISK_NEWFUND_NOTIFY_ERROR("RISK_NEWFUND_NOTIFY_ERROR",1925,"risk newfund notify error","51公积金信息通知风控异常"),
     RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
     UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
+    RISK_VERIFY_ERROR_BORROW("RISK_VERIFY_ERROR_BORROW",1931,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
