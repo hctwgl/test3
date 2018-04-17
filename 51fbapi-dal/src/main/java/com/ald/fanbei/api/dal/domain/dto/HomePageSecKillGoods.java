@@ -30,8 +30,17 @@ public class HomePageSecKillGoods extends AbstractSerial{
     private Integer volume;
     private Integer subscribe;
     private Integer interestFreeId;
+    private String source; // 商品的来源
 
-    public BigDecimal getActivityAmount() {
+    public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public BigDecimal getActivityAmount() {
 	return activityAmount;
     }
 
