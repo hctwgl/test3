@@ -281,4 +281,13 @@
         AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
     </select>
 
+    <select id="getActivityGoodsCountList" resultType="AfSeckillActivityDo">
+        SELECT c.goods_id rid,IFNULL(sum(c.limit_count) ,0) goodsCount
+        FROM af_seckill_activity_goods c LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId}
+        AND c.type=2 AND c.special_price>0
+        AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+        GROUP BY c.goods_id
+    </select>
+
 </mapper>

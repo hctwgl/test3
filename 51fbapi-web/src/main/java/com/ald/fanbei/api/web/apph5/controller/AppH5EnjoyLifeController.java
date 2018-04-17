@@ -289,8 +289,11 @@ public class AppH5EnjoyLifeController extends BaseController {
         try{
             context = doWebCheck(request, false);
             String userName = context.getUserName();
-            //userName = "18314896619";
-            AfUserDo userDo = afUserService.getUserByUserName(userName);
+            //userName = "15293971826";
+            AfUserDo userDo = new AfUserDo();
+            if(StringUtil.isNotBlank(userName)){
+                userDo = afUserService.getUserByUserName(userName);
+            }
             //活动信息
             List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             if(activityInfoList == null) {
@@ -307,32 +310,64 @@ public class AppH5EnjoyLifeController extends BaseController {
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
             }
+            //获取该用户所有预约信息
+            AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
+            List<AfActivityUserSmsDo> afActivityUserSmsDos = new ArrayList<>();
+            if(StringUtil.isNotBlank(userName)&&userDo!=null){
+                afActivityUserSmsDo.setUserId(userDo.getRid());
+                afActivityUserSmsDos = afActivityUserSmsService.getListByCommonCondition(afActivityUserSmsDo);
+            }
+            Date now = new Date();
             if(activityInfoList!=null){
                 //更新商品库存和销量
                 for(int i=0;i<activityInfoList.size();i++){
                     Map<String, Object> activityData = activityInfoList.get(i);
                     List<Map<String, Object>> goodsInfo = (List<Map<String, Object>>)activityData.get("goodsList");
+                    Date pStartDate = (Date)(activityData.get("gmtPStart"));
+                    Date endDate = (Date)(activityData.get("gmtEnd"));
+                    //Date pStartDate = DateUtil.parseDate(String.valueOf(activityData.get("gmtPStart")));
+                    //Date endDate = DateUtil.parseDate(String.valueOf(activityData.get("gmtEnd")));
+                    Long nowctivityId = 0l;
+                    Long activityId = Long.valueOf(String.valueOf(activityData.get("rid")));
                     for(int j=0;j<goodsInfo.size();j++){
                         Map<String, Object> afActGoodsDto = goodsInfo.get(j);
+                        afActGoodsDto.put("isReserve","0");
                         Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("goodsId")));
-                        Long activityId = Long.valueOf(String.valueOf(afActGoodsDto.get("activityId")));
-                        AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getSaleInfoByGoodsIdAndActId(activityId,goodsId);
-                        if(userDo!=null){
-                            AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
-                            afActivityUserSmsDo.setGoodsId(goodsId);
-                            afActivityUserSmsDo.setUserId(userDo.getRid());
-                            afActivityUserSmsDo.setActivityId(activityId);
-                            AfActivityUserSmsDo userSmsDo = afActivityUserSmsService.getByCommonCondition(afActivityUserSmsDo);
-                            if(userSmsDo!=null){
-                                afActGoodsDto.put("isReserve","1");
-                            }else{
-                                afActGoodsDto.put("isReserve","0");
+                        //Long activityId = Long.valueOf(String.valueOf(afActGoodsDto.get("activityId")));
+                        if(userDo!=null&&afActivityUserSmsDos!=null&&afActivityUserSmsDos.size()>0){
+                            //判断是否预约
+                            for(AfActivityUserSmsDo afActivityUserSmsDo1:afActivityUserSmsDos){
+                                if(activityId.equals(afActivityUserSmsDo1.getActivityId())&&goodsId.equals(afActivityUserSmsDo1.getGoodsId())){
+                                    //设置以预约
+                                    afActGoodsDto.put("isReserve","1");
+                                    break;
+                                }
                             }
-                        }else{
-                            afActGoodsDto.put("isReserve","0");
                         }
-                        afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
-                        afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
+                        //判断是否是当前场次
+
+                        afActGoodsDto.put("goodsCount",0);
+                        afActGoodsDto.put("saleCount",0);
+                    }
+                    if(pStartDate.getTime()<=now.getTime()&&endDate.getTime()>=now.getTime()){
+                        nowctivityId = activityId;
+                        //获取商品库存跟销量
+                        List<AfSeckillActivityDo> afSeckillActivityDos1 = afSeckillActivityService.getActivityGoodsCountList(activityId);
+                        List<AfSeckillActivityDo> afSeckillActivityDos2 = afSeckillActivityService.getActivitySaleCountList(activityId);
+                        for(int j=0;j<goodsInfo.size();j++){
+                            Map<String, Object> afActGoodsDto = goodsInfo.get(j);
+                            Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("goodsId")));
+                            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos1){
+                                if(afSeckillActivityDo.getRid().equals(goodsId)){
+                                    afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
+                                }
+                            }
+                            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos2){
+                                if(afSeckillActivityDo.getRid().equals(goodsId)){
+                                    afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
+                                }
+                            }
+                        }
                     }
                 }
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
@@ -421,7 +456,6 @@ public class AppH5EnjoyLifeController extends BaseController {
         List<AfSeckillActivityDo> afSeckillActivityDos = afSeckillActivityService.getActivityNow();
         for(AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos){
             Long activityId = afSeckillActivityDo.getRid();
-            String actName = afSeckillActivityDo.getName();
             //取出该活动所有商品
             List<AfSeckillActivityGoodsDto> afSeckillActivityGoodsDtos = afSeckillActivityService.getActivityGoodsByActivityId(activityId);
             secActivityInfoMap.put("afSeckillActivityGoodsDtos",afSeckillActivityGoodsDtos);
