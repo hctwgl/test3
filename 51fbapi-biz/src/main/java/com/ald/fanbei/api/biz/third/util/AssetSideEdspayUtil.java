@@ -734,6 +734,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
+			logger.info("giveBackPayResult orderNo"+PayResultReqBo.getOrderNo());
 			//判断是否已经主动查询处理过
 			AfRetryTemplDo retryTemplDo = afRetryTemplService.getByBusIdAndEventType(PayResultReqBo.getOrderNo(), RetryEventType.QUERY.getCode());
 			if (null != retryTemplDo) {
