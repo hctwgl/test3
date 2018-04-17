@@ -1428,15 +1428,31 @@
 		WHERE is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
 		GROUP BY status
 	</select>
-	
+
 	<select id="getSelfsupportPaySuccessOrderByUserId" resultType="java.lang.Integer">
-		SELECT 
+		SELECT
 		count(0)
 		FROM af_order
-		WHERE  is_delete=0 
+		WHERE  is_delete=0
 		AND order_type = 'SELFSUPPORT'
 		AND user_id = #{userId}
 		and pay_status = 'P'
 	</select>
-	
+
+	<select id="selectTodayIagentStatus" resultType="AfOrderDo" >
+		SELECT
+		<include refid="queryAllFields" />
+        FROM af_order
+        WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND actual_amount>=#{amount}
+        and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+        and iagent_status is not NULL ORDER BY gmt_create ASC LIMIT 1
+	</select>
+	<select id="selectTodayIagentStatusCOrders" resultType="AfOrderDo" >
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_order
+		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND status='PAID'
+		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+		and iagent_status ='C'
+	</select>
 </mapper>

@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
@@ -20,16 +24,12 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	
 	void repay(LoanRepayBo bo);
 	
-	void offlineRepay(AfLoanDo loanDo, String loanNo, 
-			String repayType, String repayTime, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
+	void offlineRepay(AfLoanDo loanDo, String loanNo,
+					  String repayType, String repayAmount,
+					  String restAmount, String outTradeNo, String isBalance, String repayCardNum, String operator, String isAdmin, boolean isAllRepay, Long repaymentId, List<HashMap> periodsList);
 
-	void offlineAllRepay(AfLoanDo loanDo, String loanNo, 
-			String repayType, String repayTime, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin);
-	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
-	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfLoanRepaymentDo repaymentDo,String operator,Long collectionRepaymentId,List<HashMap> periodsList);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	
@@ -44,6 +44,8 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * @return
 	 */
 	BigDecimal calculateAllRestAmount(Long rid);
+
+	BigDecimal calculateBillRestAmount(Long rid);
 
 	/**
 	 * 判断当前分期是否可以还款（是否已出账）
@@ -67,6 +69,6 @@ public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo,
 	 * @date 2018/4/14 12:23
 	 */
 	int getProcessLoanRepaymentNumByLoanId(Long loanId);
-	
+
 	List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId);
 }
