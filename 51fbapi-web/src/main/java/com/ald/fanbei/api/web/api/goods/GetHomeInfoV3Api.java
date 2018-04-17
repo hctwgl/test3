@@ -466,6 +466,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		
 		// 快速导航
 		if (!navigationInfo.isEmpty()) {
+				if(navigationBackground != null){
+					navigationInfo.put("backgroundImage", navigationBackground.getValue());
+					navigationInfo.put("color", navigationBackground.getValue3());
+					navigationInfo.put("showType", navigationBackground.getSecType());
+				}
+			
 			data.put("navigationInfo", navigationInfo);
 		}
 		
@@ -705,15 +711,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			dataMap.put("color", afResourceDo.getValue3());
 			navigationList.add(dataMap);
 		}
-		if(navCount >0 ){
-			if(backgroupd != null){
-				Map<String, Object> navigationBackground = new HashMap<String, Object>();
-				navigationBackground.put("backgroundImage", backgroupd.getValue());
-				navigationBackground.put("color", backgroupd.getValue3());
-				navigationBackground.put("showType", backgroupd.getSecType());
-				navigationInfo.put("navigationBackground", navigationBackground);
-			}
-		}
+		
 		navigationInfo.put("navigationList", navigationList);
 		return navigationInfo;
 	}
