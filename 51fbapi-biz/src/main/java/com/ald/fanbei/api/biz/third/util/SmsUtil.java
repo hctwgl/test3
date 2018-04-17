@@ -56,8 +56,10 @@ public class SmsUtil extends AbstractThird {
     private final static String ACCOUNT = "dh15433";
     private final static String MARKETING_ACCOUNT = "dh15434";
     private final static String MARKETING_ACCOUNT_PASSWORD = "aSZqA6Ub";
-    private final static String MARKET_ACCOUNT_EC = "dh15437";
-    private final static String MARKET_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
+    private final static String MARKET_ACCOUNT_EC = "dh15434";
+    private final static String MARKET_ACCOUNT_PASSWORD_EC = "aSZqA6Ub";
+//    private final static String MARKET_ACCOUNT_EC = "dh15437";
+//    private final static String MARKET_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
     private final static String SIGN = "【51返呗】";
     private static String password = null;
     private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
