@@ -36,8 +36,6 @@ public enum FanbeiExceptionCode {
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
 
-    USER_ID_CARD_EXIST_ERROR("USER_ID_CARD_EXIST_ERROR",1018,"user not exist error","用户未登录"),
-
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"),
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
@@ -189,7 +187,7 @@ public enum FanbeiExceptionCode {
     BANK_CARD_PAY_SMS_ERR("BANK_CARD_PAY_SMS_ERR",1564,"bank card pay sms error","银行卡支付短信验证失败"),
     REFUND_ERR("REFUND_ERR",1565,"refund error","退款失败"),
     UPS_BATCH_DELEGATE_ERR("UPS_BATCH_DELEGATE_ERR",1566,"ups batch delegate error","批量代付失败"),
-    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","短信验证码获取失败,请重试"),
+    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","绑卡信息与银行预留不一致，请核实信息后重新尝试"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     ORDER_PAY_DEALING("ORDER_PAY_DEALING",1569,"order pay dealing","订单正在支付中,请勿重复提交"),
     ORDER_HAS_PAID("ORDER_HAS_PAID",1570,"order has been paid","订单已经支付,请勿重复提交"),
@@ -335,6 +333,7 @@ public enum FanbeiExceptionCode {
     BORROW_CASH_ORDER_NOT_EXIST_ERROR("BORROW_CASH_ORDER_NOT_EXIST_ERROR",3002,"borrow cash order not exist","借钱订单信息不存在"),
     BORROW_CASH_RATE_ERROR("BORROW_CASH_RATE_ERROR",3003,"borrow cash rate not exist","获取利率失败，请联系客服"),
     BORROW_CASH_GOOD_NOT_EXIST_ERROR("BORROW_CASH_GOOD_NOT_EXIST_ERROR",3004,"borrow cash goods not exist","商品信息不存在"),
+    BORROW_CASH_COUPON_NOT_EXIST_ERROR("BORROW_CASH_COUPON_NOT_EXIST_ERROR",3005,"borrow cash coupon not exist","优惠券信息不存在"),
 
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),

@@ -77,7 +77,9 @@ public class ZhimaUtil extends AbstractThird {
             return resp;
         } catch (Exception e) {
             logger.error("watchlistii error;|" + openId, e);
-            throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
+            ZhimaCreditWatchlistiiGetResponse response = new ZhimaCreditWatchlistiiGetResponse();
+            response.setSuccess(false);
+            return response;
         }
     }
 

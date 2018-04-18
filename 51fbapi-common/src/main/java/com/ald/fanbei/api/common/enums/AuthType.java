@@ -23,6 +23,15 @@ public enum AuthType {
 		this.name = name;
 	}
 	
+	public static AuthType findByCode(String code) {
+		for (AuthType roleType : AuthType.values()) {
+			if (roleType.getCode().equals(code)) {
+				return roleType;
+			}
+		}
+		return null;
+	}
+	
 	public String getCode() {
 		return code;
 	}

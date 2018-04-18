@@ -72,5 +72,4 @@ public class CheckUserBasicInfoApi implements ApiHandle {
         resp.setResponseData(checkResult);
         return resp;
     }
-
 }

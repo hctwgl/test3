@@ -37,7 +37,7 @@ public class CheckUserIdCardInfoApi implements ApiHandle {
         }
         Map<String,Object> params=requestDataVo.getParams();
         if(afUserAccountService.getCountByIdNumer(ObjectUtils.identityToString(params.get("idNumber")),userId)>0){
-            return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ID_CARD_EXIST_ERROR);
+            return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_CARD_IS_EXIST);
         }
         return resp;
     }

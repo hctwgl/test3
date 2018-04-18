@@ -464,7 +464,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 
     @Override
     public int updateAuAmountByRid(long rid, BigDecimal auAmount) {
-        return afBorrowCashDao.updateAuAmountByRid(rid, auAmount);
+    	return afBorrowCashDao.updateAuAmountByRid(rid, auAmount);
     }
 
     @Override
@@ -528,5 +528,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public int getCashBorrowByUserIdAndActivity(Long userId, String activityTime) {
 	    // TODO Auto-generated method stub
 	    return afBorrowCashDao.getCashBorrowByUserIdAndActivity(userId,activityTime);
+	}
+	
+	@Override
+	public boolean haveDealingBorrowCash(Long userId) {
+		return afBorrowCashDao.tuchDealingBorrowCash(userId) != null;
 	}
 }

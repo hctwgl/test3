@@ -612,7 +612,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         return r;
     }
     @Override
-    public FileDigestSignResult selfStreamSign(String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream) {//钱包字节流签章
+    public FileDigestSignResult selfStreamSign(String fileName,String type,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream) {//钱包字节流签章
         SignType signType = null;
 //        fileName = "反呗合同";
         if ("Single".equalsIgnoreCase(type)) {
