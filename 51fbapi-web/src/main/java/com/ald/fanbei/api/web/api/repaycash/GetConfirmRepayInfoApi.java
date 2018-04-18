@@ -95,7 +95,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
-		
+		 String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		// 对402版本借钱，低版本还款情况做控制
 		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
 		
@@ -179,7 +179,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
 			}
 			map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-					userAmount, borrowId, cardId, userId, "", userDto);
+					userAmount, borrowId, cardId, userId, "", userDto,bankPayType);
 
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
@@ -197,7 +197,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
 			map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-					userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+					userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto,bankPayType);
 
 			validThirdReqExistFanbeiError(map);
 			// 代收
