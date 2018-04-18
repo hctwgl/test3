@@ -88,6 +88,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	NumberWordFormat numberWordFormat;
 	@Resource
 	AfBorrowCashOverduePushService overduePushService;
+	@Resource
+	AfEdspayUserInfoDao edspayUserInfoDao;
 
 
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
@@ -742,6 +744,21 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				eds.setEdspayUserCardId(cardId+"*********");
 			}
 			model.put("edspaySealDoList", edspaySealDoList);
+		}else {//查询钱包用户表
+			List<AfEdspayUserInfoDo> userInfoDoList = edspayUserInfoDao.getInfoByTypeAndTypeId(type,borrowId);
+			if (userInfoDoList != null && userInfoDoList.size() > 0){
+				for (AfEdspayUserInfoDo userInfoDo:userInfoDoList) {
+					String name = userInfoDo.getUserName().substring(0, 1);
+					if (userInfoDo.getUserName().length() == 2) {
+						userInfoDo.setUserName(name + "*");
+					} else if (userInfoDo.getUserName().length() == 3) {
+						userInfoDo.setUserName(name + "**");
+					}
+					String cardId = userInfoDo.getEdspayUserCardId().substring(0, 10);
+					userInfoDo.setEdspayUserCardId(cardId + "*********");
+				}
+				model.put("edspaySealDoList", userInfoDoList);
+			}
 		}
 	}
 
