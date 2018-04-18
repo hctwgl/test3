@@ -96,17 +96,20 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		JSONArray interestFreeArray = null;
 		String freedesc = null;
+		String iconMark = null;
 		if(schemeGoodsDo != null){
 			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
 
 			if (afSchemeDo != null){
-				AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
-
+						freedesc = afSchemeDo.getDescr();
+						iconMark = afSchemeDo.getIconMark();
 					}
-
+				}
 
 			}
 
@@ -201,13 +204,24 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
 		if (reflag != null){
 			String value3 = reflag.getValue3();
-			if (value3 != null&&value3.contains(goods.getBrandId()+"")){
+			if (value3 != null&&value3.contains(goods.getCategoryId()+"")){
 				vo.setIsShow(1);
 			}
 		}
+		if(context.getAppVersion()>411){
+			AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+			if (afInterestReduceSchemeDo != null){
+				vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
+				vo.setInterestCutMark(afInterestReduceSchemeDo.getIconMark());
 
-		vo.setInterestFreeDesc(freedesc);
-		resp.setResponseData(vo);
+			}
+			vo.setInterestFreeDesc(freedesc);
+			vo.setInterestFreeMark(iconMark);
+			resp.setResponseData(vo);
+		}else{
+			vo.setIsShow(0);
+		}
+
 		return resp;
 	}
 

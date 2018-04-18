@@ -1,13 +1,17 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,10 @@ public class AfResourceServiceImpl implements AfResourceService {
     AfResourceDao afResourceDao;
     @Resource
     private AfGoodsService afGoodsService;
+    @Resource
+    private AfInterestFreeRulesService afInterestFreeRulesService;
+    @Resource
+    AfGoodsDao afGoodsDao;
     //	@Resource
 //	BizCacheUtil bizCacheUtil;
     private static Map<String, List<AfResourceDo>> localResource = null;
@@ -252,9 +260,9 @@ public class AfResourceServiceImpl implements AfResourceService {
     }
 
     @Override
-    public BorrowRateBo borrowRateWithResource(Integer realTotalNper, String userName) {
+    public BorrowRateBo borrowRateWithResource(Integer realTotalNper, String userName,Long goodId) {
         BorrowRateBo borrowRate = new BorrowRateBo();
-        JSONObject borrowRateJson = getBorrowRateResource(realTotalNper, userName);
+        JSONObject borrowRateJson = getBorrowRateResource(realTotalNper, userName, goodId);
         JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
         borrowRate.setNper(borrowRateJson.getInteger("nper"));
         borrowRate.setRate(borrowRateJson.getBigDecimal("rate"));
@@ -320,7 +328,7 @@ public class AfResourceServiceImpl implements AfResourceService {
         return borrowRate;
     }
 
-    private JSONObject getBorrowRateResource(Integer realTotalNper, String userName) {
+    private JSONObject getBorrowRateResource(Integer realTotalNper, String userName,Long goodId) {
         // 获取借款分期配置信息
         AfResourceDo resource = getVipUserRate(userName);
         if (null == resource) {
@@ -335,6 +343,7 @@ public class AfResourceServiceImpl implements AfResourceService {
             rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
         }
         JSONArray array = JSON.parseArray(resource.getValue());
+        array = checkNper(goodId,"1",array);
         // 如果是重新生成的账单，需要原来账单的总期数
         JSONObject borrowRate = new JSONObject();
         for (int i = 0; i < array.size(); i++) {
@@ -368,6 +377,7 @@ public class AfResourceServiceImpl implements AfResourceService {
             rangeEnd = NumberUtil.objToBigDecimalDefault(range[1], BigDecimal.ZERO);
         }
         JSONArray array = JSON.parseArray(resourceOverdue.getValue());
+
         // 如果是重新生成的账单，需要原来账单的总期数
         JSONObject borrowRate = new JSONObject();
         for (int i = 0; i < array.size(); i++) {
@@ -382,7 +392,96 @@ public class AfResourceServiceImpl implements AfResourceService {
         }
         return borrowRate;
     }
+    @Override
+    public  JSONArray  checkNper(Long goodsid,String method,JSONArray array){
+        if (goodsid != null && goodsid >0l){
+            AfGoodsDo goods = afGoodsDao.getGoodsById(goodsid);
+            AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+            JSONArray temparray = new JSONArray();
+            boolean flag = false;
+            if (afInterestReduceSchemeDo != null){
+                AfInterestReduceRulesDo afInterestReduceRulesDo =  afInterestFreeRulesService.getReduceRuleById(afInterestReduceSchemeDo.getInterestReduceId());
+                if (afInterestReduceRulesDo != null){
 
+                    temparray= getreducenpers(afInterestReduceRulesDo);
+                    flag = true;
+                }
+            }
+            /*AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率*/
+            //if(resource1!=null){
+
+            if ("1".equals(method)){
+                Set<String> set = new HashSet<>();
+
+                for (Object temp1:array){
+                    JSONObject tempobj1 = (JSONObject)temp1;
+                    set.add(tempobj1.getString("nper"));
+                }
+                if (flag){
+                    JSONArray arr = new JSONArray();
+                    for (Object temp:temparray){
+                        JSONObject tempobj = (JSONObject)temp;
+                        String nper = tempobj.getString("nper");
+                        if (set.contains(nper)){
+                            arr.add(tempobj);
+                        }
+                    }
+                    array = arr;
+                }
+
+            }else{
+                if (flag)
+                    array = temparray;
+            }
+
+            //  }
+        /*    afInterestReduceGoodsService = (AfInterestReduceGoodsService)SpringBeanContextUtil.getBean("afInterestReduceGoodsService");
+
+            	JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
+                if (newArray != null) {
+                	array = newArray;
+
+			}*/
+
+
+        }
+        return array;
+    }
+    private  JSONArray getreducenpers(AfInterestReduceRulesDo afInterestReduceRulesDo){
+        JSONArray array = new JSONArray();
+        BigDecimal nper1 = afInterestReduceRulesDo.getNper1();
+        BigDecimal nper2 = afInterestReduceRulesDo.getNper2();
+        BigDecimal nper3 = afInterestReduceRulesDo.getNper3();
+        BigDecimal nper6 = afInterestReduceRulesDo.getNper6();
+        BigDecimal nper9 = afInterestReduceRulesDo.getNper9();
+        BigDecimal nper12 = afInterestReduceRulesDo.getNper12();
+        JSONObject temp1 = new JSONObject();
+        temp1.put("rate",nper1);
+        temp1.put(Constants.DEFAULT_NPER,1);
+        JSONObject temp2 = new JSONObject();
+        temp2.put("rate",nper2);
+        temp2.put(Constants.DEFAULT_NPER,2);
+        JSONObject temp3 = new JSONObject();
+        temp3.put("rate",nper3);
+        temp3.put(Constants.DEFAULT_NPER,3);
+        JSONObject temp6 = new JSONObject();
+        temp6.put("rate",nper6);
+        temp6.put(Constants.DEFAULT_NPER,6);
+        JSONObject temp9 = new JSONObject();
+        temp9.put("rate",nper9);
+        temp9.put(Constants.DEFAULT_NPER,9);
+        JSONObject temp12 = new JSONObject();
+        temp12.put("rate",nper12);
+        temp12.put(Constants.DEFAULT_NPER,12);
+        array.add(temp1);
+        array.add(temp2);
+        array.add(temp3);
+        array.add(temp6);
+        array.add(temp9);
+        array.add(temp12);
+
+        return array;
+    }
     @Override
     public List<AfResourceDo> getHomeIndexListByOrderby(String type) {
         // TODO Auto-generated method stub
@@ -869,7 +968,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 	    return "网上购物商品";
 	}
     }
-    
+
 	@Override
 	public int getIsShow(Long goodsId) {
 		int result = 0 ;

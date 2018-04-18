@@ -1193,22 +1193,21 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
 			}
 
-			orderInfo.setNper(nper);
-			BorrowRateBo bo = null;
-			// if (nper == 1) {
-			// // 信用支付
-			// bo =
-			// afResourceService.borrowRateWithResourceCredit(nper);
-			// } else {
-			if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-			    bo = afResourceService.borrowRateWithResourceForTrade(nper);
-			} else {
-			    bo = afResourceService.borrowRateWithResource(nper, userName);
-			}
-			// }
-			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
-			orderInfo.setBorrowRate(boStr);
-			logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderInfo.setNper(nper);
+						BorrowRateBo bo = null;
+//						if (nper == 1) {
+//							// 信用支付
+//							bo = afResourceService.borrowRateWithResourceCredit(nper);
+//						} else {
+							if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+								bo = afResourceService.borrowRateWithResourceForTrade(nper);
+							} else {
+								bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
+							}
+//						}
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+						orderInfo.setBorrowRate(boStr);
+						logger.info("updateOrder orderInfo = {}", orderInfo);
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
@@ -1258,10 +1257,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			// 银行卡需要支付的金额
 			BigDecimal bankAmount = BigDecimalUtil.subtract(actualAmount, leftAmount);
 
-			orderInfo.setNper(nper);
-			BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName);
-			String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
-			orderInfo.setBorrowRate(boStr);
+						orderInfo.setNper(nper);
+						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper, userName,orderInfo.getGoodsId());
+						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
+						orderInfo.setBorrowRate(boStr);
 
 			String cardNo = card.getCardNumber();
 			String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
@@ -1558,6 +1557,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		JSONArray interestFreeArray = null;
 		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
+		}
+		AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
+		Long goodsid = afOrderDo.getGoodsId();
+		if (goodsid != null && goodsid >0l) {
+			array = afResourceService.checkNper(goodsid,"1",array);
 		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 				BigDecimal.ONE.intValue(), amount, resource.getValue1(), resource.getValue2());
