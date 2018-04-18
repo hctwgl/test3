@@ -217,11 +217,11 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			}
 			vo.setInterestFreeDesc(freedesc);
 			vo.setInterestFreeMark(iconMark);
-			resp.setResponseData(vo);
+
 		}else{
 			vo.setIsShow(0);
 		}
-
+		resp.setResponseData(vo);
 		return resp;
 	}
 

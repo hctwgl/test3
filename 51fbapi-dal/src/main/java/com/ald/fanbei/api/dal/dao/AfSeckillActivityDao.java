@@ -5,6 +5,8 @@ import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 
 import java.util.List;
 
+import java.util.List;
+
 /**
  * 秒杀活动管理Dao
  * 
@@ -24,4 +26,6 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
 
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
+
+    List<AfSeckillActivityDo> getActivityNow();
 }
