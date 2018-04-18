@@ -36,6 +36,8 @@ public enum FanbeiExceptionCode {
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
 
+    USER_ID_CARD_EXIST_ERROR("USER_ID_CARD_EXIST_ERROR",1018,"user not exist error","用户未登录"),
+
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"),
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
@@ -202,6 +204,9 @@ public enum FanbeiExceptionCode {
     ORDER_HAS_CLOSED("ORDER_HAS_CLOSED",1579,"order has closed","订单已经关闭,请重新下单"),
     UPS_CACHE_EXPIRE("UPS_CACHE_EXPIRE",1580,"order has closed","支付请求已经关闭,请重新支付"),
     UPS_KUAIJIE_NOT_SUPPORT("UPS_KUAIJIE_NOT_SUPPORT",1581,"ups kuaijie not support","当前业务，未支持快捷支付"),
+    ORDER_PAY_FAIL("ORDER_PAY_FAIL",1582,"ORDER_PAY_FAIL","订单支付失败"),
+    BINDCARD_PAY_PWD_MISS("BINDCARD_PAY_PWD_MISS",1583,"BINDCARD_PAY_PWD_MISS","绑卡时缺失支付密码"),
+    BINDCARD_REALINFO_MISS("BINDCARD_REALINFO_MISS",1584,"BINDCARD_REALINFO_MISS","绑卡时缺失实名信息"),
 
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
