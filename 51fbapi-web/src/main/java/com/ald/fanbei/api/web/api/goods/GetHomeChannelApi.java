@@ -34,18 +34,12 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelConfigureDo;
-import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
@@ -56,12 +50,12 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfHomePageChannelVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 /**
- * @author Jiang Rongbo
+ * 频道页
+ * @author chenqiwei
  *
  */
 @Component("getHomeChannelApi")
@@ -130,47 +124,7 @@ public class GetHomeChannelApi implements ApiHandle {
 		}
 		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		// 搜索框背景图
-//		List<AfResourceDo> serchBoxRescList = afResourceService
-//				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
-//		if (serchBoxRescList != null && !serchBoxRescList.isEmpty()) {
-//			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
-//			String searchBoxBgImage = serchBoxInfo.getValue();
-//			data.put("searchBoxBgImage", searchBoxBgImage);
-//		} 
-		// tabList[]
-		List<AfHomePageChannelDo> channelList =  afHomePageChannelService.getListOrderBySortDesc();
-		List<AfHomePageChannelVo> tabList = new ArrayList<AfHomePageChannelVo>();
-		if (CollectionUtil.isNotEmpty(channelList)) {
-			tabList = CollectionConverterUtil.convertToListFromList(channelList, new Converter<AfHomePageChannelDo, AfHomePageChannelVo>() {
-				@Override
-				public AfHomePageChannelVo convert(AfHomePageChannelDo source) {
-					return parseDoToVo(source);
-				}
-			});
-		}
-		data.put("tabList", tabList);
-		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
-		List<Object> topTabBarList = new ArrayList<Object>();
-		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
-		}
-		Object topTab = new Object();
-		if(topTabBarList != null && topTabBarList.size()>0){
-			topTab =  topTabBarList.get(0);
-		}
-		data.put("topTab", topTab);
-//		List<AfResourceDo> backgroundList = afResourceService
-//				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
-//		// 首页背景图  ?确认是否要首页的
-//		if (!backgroundList.isEmpty()) {
-//					data.put("backgroundList", backgroundList);
-//		}
-		
+
 	    List<Object> topBannerList = new ArrayList<Object>();
 	    List<Object> navigationList = new ArrayList<Object>();
 	    List<Object> onePlusThreeArea = new ArrayList<Object>();
@@ -233,11 +187,6 @@ public class GetHomeChannelApi implements ApiHandle {
 			}
 			navigationInfo = getNavigationInfolist(navigationList);
 			onePlusThreeArea = getOnePlusThreeArea(onePlusThreeArea);
-			//data.put("topBannerList", topBannerList);
-			//data.put("navigationInfo", navigationInfo);
-			//onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
-			//onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
-			//data.put("onePlusThreeInfo", onePlusThreeInfo);
 			if (!topBannerList.isEmpty()) {
 				data.put("topBannerList", topBannerList);
 			}
@@ -259,7 +208,6 @@ public class GetHomeChannelApi implements ApiHandle {
 		 Map<String, Object> recommendGoodsInfo = new HashMap<String, Object>();
 		 try{
 			
-				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				String type = "HOME_PAGE_CHANNEL_RECOMMEND_GOODS";
 				String recommendTag = "HC_IMAGE";
 				AfResourceDo recommendGoods =  afResourceService.getConfigByTypesAndValue(type, tabId.toString());
@@ -296,47 +244,12 @@ public class GetHomeChannelApi implements ApiHandle {
 		 }catch(Exception e){
 			 
 		 }
-		//更多商品
-//		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
-//		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
-//		 try{
-//		 String moreGoodsTag = "MORE_IMAGE";
-//		 String activityTag = "HOME_CHANNEL_MORE_GOODS";
-//		 Integer activityType = 5;
 		
-//		
-//		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,1);
-//		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-//		    moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
-//		     String imageUrl = "";
-//			 String content = "";
-//		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
-//		     if(recommendList != null && recommendList.size() >0){
-//		    	 for(AfResourceH5ItemDo recommend:recommendList ){
-//						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
-//							  content =  recommend.getValue1();
-//							  imageUrl= recommend.getValue3();
-//							  break;
-//						  }
-//		         }
-//		     }
-//		     if(StringUtil.isNotEmpty(imageUrl)){
-//		    	   moreGoodsInfo.put("imageUrl",imageUrl);
-//		    	   moreGoodsInfo.put("content", content);
-//	    	 }
-//		  
-//			
-//		 }catch(Exception e){
-//			 
-//		 }
 
 		
 		 if (!recommendGoodsInfo.isEmpty()) {
 				data.put("recommendGoodsInfo", recommendGoodsInfo);
 			}
-//			if (!moreGoodsInfo.isEmpty()) {
-//				data.put("moreGoodsInfo", moreGoodsInfo);
-//			}
 		resp.setResponseData(data);
 		return resp;
 
@@ -346,16 +259,6 @@ public class GetHomeChannelApi implements ApiHandle {
 	
 	
 	private List<Object> getOnePlusThreeArea(List<Object> onePlusThreeArea) {
-		// TODO Auto-generated method stub
-//		int optCount = onePlusThreeArea.size();
-//		for (int i = 0; i < optCount; i++) {
-//			
-//		Object onePlusThreeAreaVo =  onePlusThreeArea.get(0);
-//		Class<?> clazz = onePlusThreeAreaVo.getClass();
-//		}
-//			
-		
-		
 		List<Object>  onePlusThreeAreaList = new ArrayList<Object>();
 		if(onePlusThreeArea != null && onePlusThreeArea.size() > 0 ){
 				int size = onePlusThreeArea.size();
@@ -370,14 +273,6 @@ public class GetHomeChannelApi implements ApiHandle {
 	}
 
 
-
-	private AfHomePageChannelVo parseDoToVo(AfHomePageChannelDo afHomePageChannelDo) {
-		AfHomePageChannelVo vo = new AfHomePageChannelVo();
-		vo.setTabId(afHomePageChannelDo.getRid());
-		vo.setTabName(afHomePageChannelDo.getName());
-		return vo;
-	}
-
 	private Map<String, Object> getNavigationInfolist(List<Object> navigationList2) {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		List<Object> navigationList = new ArrayList<Object>();
@@ -391,25 +286,6 @@ public class GetHomeChannelApi implements ApiHandle {
 		navigationInfo.put("navigationList", navigationList);
 		}
 		return navigationInfo;
-	}
-	/**
-	 * 根据rescList获取顶部导航信息
-	 * 
-	 * @param rescList
-	 *            ,资源列表
-	 * @return 顶部导航信息列表
-	 */
-	private List<Object> getBannerInfoWithResourceDolist(List<AfResourceDo> rescList) {
-		List<Object> bannerList = new ArrayList<Object>();
-		for (AfResourceDo rescDo : rescList) {
-			Map<String, Object> dataMap = new HashMap<String, Object>();
-			dataMap.put("imageUrl", rescDo.getValue());
-			dataMap.put("type", rescDo.getValue1());
-			dataMap.put("content", rescDo.getValue2());
-			dataMap.put("sort", rescDo.getSort());
-			bannerList.add(dataMap);
-		}
-		return bannerList;
 	}
 	private List<Map<String, Object>> getGoodsInfoList(List<HomePageSecKillGoods> list,String tag,AfResourceH5ItemDo afResourceH5ItemDo){
 		List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();

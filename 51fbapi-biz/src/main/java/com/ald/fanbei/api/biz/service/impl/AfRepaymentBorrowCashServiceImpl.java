@@ -1,5 +1,32 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
@@ -108,7 +135,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Resource
     AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-
+    @Autowired
+    KafkaSync kafkaSync;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -560,6 +588,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         });
 
         if (resultValue == 1L) {
+            try{
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+            }catch (Exception e){
+                logger.info("消息同步失败:",e);
+            }
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                 if (StringUtils.equals("代扣付款",repayment.getName())) {
