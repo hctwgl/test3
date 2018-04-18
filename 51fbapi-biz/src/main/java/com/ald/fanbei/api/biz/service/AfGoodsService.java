@@ -122,5 +122,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+
+	List<AfGoodsDo> getGoodsByIds(List<Long> goodList);
 }
 

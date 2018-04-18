@@ -189,4 +189,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
 	}
 
+	@Override
+	public List<AfGoodsDo> getGoodsByIds(List<Long> goodList){
+		return afGoodsDao.getGoodsByIds(goodList);
+	}
+
 }

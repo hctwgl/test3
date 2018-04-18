@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.Arrays;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -93,31 +95,43 @@ public class AppH53rdCelebrationActivityController extends BaseController {
     private List<Map<String, Object>> getGoodMapList(String value){
         List<Map<String, Object>> goodList = Lists.newArrayList();
 
-        if(!StringUtils.isEmpty(value)){
+        // 获取商品ID集合
+        List<Long> goodIdList = Lists.newArrayList();
+        if(StringUtils.isNotEmpty(value)){
             String[] goodArray = value.split(",");
+            if(null != goodArray && goodArray.length > 0){
+                for(String goodId: goodArray){
+                    goodIdList.add(Long.parseLong(StringUtils.trim(goodId)));
+                }
+            }
+
+            if(goodIdList.isEmpty()){
+                return goodList;
+            }
+
+            // 批量查询到商品信息
+            List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByIds(goodIdList);
+
             String  stockCount = null;
             Map<String, Object> goodMap;
-            for(String goodId: goodArray) {
-                AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(Long.parseLong(StringUtils.trim(goodId)));
+            for(AfGoodsDo afGoodsDo: goodsDoList) {
                 goodMap = Maps.newHashMap();
-                if (afGoodsDo != null) {
-                    goodMap.put("numId",String.valueOf(afGoodsDo.getRid()));
-                    goodMap.put("saleAmount",afGoodsDo.getPriceAmount().toString());
-                    goodMap.put("realAmount",afGoodsDo.getSaleAmount().toString());
-                    goodMap.put("rebateAmount",afGoodsDo.getRebateAmount().toString());
-                    goodMap.put("goodsName",afGoodsDo.getName());
-                    goodMap.put("goodsIcon",afGoodsDo.getGoodsIcon());
-                    goodMap.put("thumbnailIcon",afGoodsDo.getThumbnailIcon());
-                    goodMap.put("goodsUrl",afGoodsDo.getGoodsDetail().split(";")[0]);
-                    goodMap.put("openId",afGoodsDo.getOpenId());
-                    goodMap.put("source",afGoodsDo.getSource());
-                    stockCount = afGoodsDo.getStockCount();
-                    goodMap.put("stockCount",stockCount);
-                    if(StringUtils.isNotEmpty(stockCount) && Integer.parseInt(stockCount) < 0){
-                        goodMap.put("count","0");
-                    }
-                    goodList.add(goodMap);
+                goodMap.put("numId",String.valueOf(afGoodsDo.getRid()));
+                goodMap.put("saleAmount",afGoodsDo.getPriceAmount().toString());
+                goodMap.put("realAmount",afGoodsDo.getSaleAmount().toString());
+                goodMap.put("rebateAmount",afGoodsDo.getRebateAmount().toString());
+                goodMap.put("goodsName",afGoodsDo.getName());
+                goodMap.put("goodsIcon",afGoodsDo.getGoodsIcon());
+                goodMap.put("thumbnailIcon",afGoodsDo.getThumbnailIcon());
+                goodMap.put("goodsUrl",afGoodsDo.getGoodsDetail().split(";")[0]);
+                goodMap.put("openId",afGoodsDo.getOpenId());
+                goodMap.put("source",afGoodsDo.getSource());
+                stockCount = afGoodsDo.getStockCount();
+                goodMap.put("stockCount",stockCount);
+                if(StringUtils.isNotEmpty(stockCount) && Integer.parseInt(stockCount) < 0){
+                    goodMap.put("count","0");
                 }
+                goodList.add(goodMap);
             }
         }
         return goodList;
@@ -157,12 +171,6 @@ public class AppH53rdCelebrationActivityController extends BaseController {
         return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", "").toString();
     }
 
-    // 优惠券信息列表
-//    AppH5CouponController.activityCouponInfo();
-
-    // 领取优惠券
-//    AppH5CouponController.pickCoupon
-
     /**
      * 主活动页面
      * @param request
@@ -180,7 +188,6 @@ public class AppH53rdCelebrationActivityController extends BaseController {
 
     // TODO 秒杀商品预约短信提醒
 
-    // TODO 红包雨
 
 
     // TODO 商品列表

@@ -118,5 +118,5 @@ public interface AfGoodsDao {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
 
-
+	List<AfGoodsDo> getGoodsByIds(@Param("list") List<Long> goodList);
 }
