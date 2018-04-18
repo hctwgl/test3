@@ -581,6 +581,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 						//重推开关开启
 						recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+						return true;
 					}else{
 						//重推开关关闭
 						noRepushHandle(borrowCashInfo, switchConf);
@@ -590,6 +591,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			} catch (Exception e) {
 				if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+					return true;
 				}else{
 					noRepushHandle(borrowCashInfo, switchConf);
 				}
