@@ -917,17 +917,12 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     private byte[] downLoadByUrl(String url) throws IOException {
-        OutputStream fos = null;
         ByteArrayOutputStream bos = null;
         try {
-            return PdfCreateUtil.downLoadByUrl(url);
+            return PdfCreateUtil.downLoadByUrl(url,bos);
         } catch (Exception e) {
             logger.error("downLoadByUrl pdf合同生成失败 => {}", e);
         } finally {
-            if (null != fos) {
-                fos.flush();
-                fos.close();
-            }
             if (null != bos) {
                 bos.close();
             }
