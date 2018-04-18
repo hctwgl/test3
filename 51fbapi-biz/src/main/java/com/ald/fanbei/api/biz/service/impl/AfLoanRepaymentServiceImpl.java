@@ -811,7 +811,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		
 		
 		// 所有已还金额
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(reductionAmount);
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+ JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
