@@ -713,6 +713,21 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             }
             return getPdfInfoWithOutLender(protocolUrl, map, afBorrowCashDo.getUserId(), afBorrowCashDo.getRid(), "cashLoan", "1", investorList);
         } else if (debtType == 1) {//分期
+            if (orderNo.substring(0,2).equals("dk")){
+                AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
+                if (loanDo == null) {
+                    logger.error("白领贷借款信息不存在 => {}", orderNo);
+                    throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
+                }
+                AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+                afContractPdfDo.setType((byte) 5);
+                afContractPdfDo.setTypeId(loanDo.getRid());
+                AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+                if (pdf != null) {
+                    return pdf.getContractPdfUrl();
+                }
+                return getPdfInfoWithOutLender(protocolUrl, map, loanDo.getUserId(), loanDo.getRid(), "whiteCashloan", "5", investorList);
+            }
             AfBorrowDo afBorrowDo = afBorrowDao.getBorrowInfoByBorrowNo(orderNo);
             if (afBorrowDo == null) {
                 AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByCashNo(orderNo);
@@ -917,17 +932,12 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     private byte[] downLoadByUrl(String url) throws IOException {
-        OutputStream fos = null;
         ByteArrayOutputStream bos = null;
         try {
-            return PdfCreateUtil.downLoadByUrl(url);
+            return PdfCreateUtil.downLoadByUrl(url,bos);
         } catch (Exception e) {
             logger.error("downLoadByUrl pdf合同生成失败 => {}", e);
         } finally {
-            if (null != fos) {
-                fos.flush();
-                fos.close();
-            }
             if (null != bos) {
                 bos.close();
             }
