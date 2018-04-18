@@ -258,8 +258,13 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
             });
 
             if (resultValue == 1L) {
-				notifyUserBySms(repayDealBo,isBalance);
-            	nofityRisk(repayDealBo);
+            	try {
+					notifyUserBySms(repayDealBo, isBalance);
+					nofityRisk(repayDealBo);
+				}
+				catch (Exception e){
+					logger.error("nofityRisk or notifyUserBySms error",e);
+				}
 				cuiShouUtils.syncCuiShou(repaymentDo);
             }
     		
