@@ -451,7 +451,8 @@ public class VisualH5Controller extends BaseController {
     }
 
 
-    private static final String src = "D:/";
+    private static final String src = "/home/aladin/projectHmtl/";
+
     /**
      * 生成HTML
      * @param request
