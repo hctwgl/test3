@@ -551,6 +551,7 @@ public class Constants {
      * 线下商圈租房业务类型
      */
     public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
-
+    //芝麻认证引导弹窗缓存处理对应key标识
+  	public static final String ZM_AUTH_POP_GUIDE_CACHE_KEY = "zm_auth_pop_guide_";
 
 }

@@ -18,6 +18,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.alibaba.fastjson.JSON;
@@ -122,13 +123,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	return afUserAuthDao.getUserAuthListWithIvs_statusIsY(query);
     }
 
-    public Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene) {
+    public Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene,AfResourceDo zhimaConfigResource) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	Map<String, Object> creditModel = new HashMap<String, Object>();
 	Map<String, Object> zmModel = new HashMap<String, Object>();
 	Map<String, Object> locationModel = new HashMap<String, Object>();
 	Map<String, Object> contactorModel = new HashMap<String, Object>();
 	long between = 0l;
+
 	AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
 	JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 	Integer sorce = userDto.getCreditScore();
@@ -173,9 +175,18 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	creditModel.put("creditAssessTime", authDo.getGmtModified());
 	creditModel.put("allowConsume", getConsumeStatus(authDo.getUserId(), appVersion));
+
+
 	zmModel.put("zmStatus", authDo.getZmStatus());
 	zmModel.put("zmScore", authDo.getZmScore());
-	if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
+	zmModel.put("isShow", zhimaConfigResource.getValue());
+	Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zhimaConfigResource.getValue4());
+	if(zmReAuthDatetime==null){
+		//默认值处理
+		zmReAuthDatetime = DateUtil.getStartDate();
+	}
+	if (YesNoStatus.YES.getCode().equals(zhimaConfigResource.getValue())  &&
+			(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())) ))) {
 	    String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 	    AfResourceDo zhimaNewUrl = afResourceService.getSingleResourceBytype("zhimaNewUrl");
 
@@ -184,6 +195,25 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    } else {
 		zmModel.put("zmxyAuthUrl", zhimaNewUrl.getValue() + "?userId=" + AesUtil.encryptToBase64(authDo.getUserId().toString(), "123"));
 	    }
+	}else{
+		zmModel.put("zmxyAuthUrl", "");
+	}
+
+	//展示给用户的芝麻认证描述文案
+	if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
+		if(YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())){
+			zmModel.put("zmDesc", "重新认证");
+		}else{
+			zmModel.put("zmDesc", "未认证");
+		}
+	}else if(authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())){
+		zmModel.put("zmDesc", "重新认证");
+	}else{
+		if(NumberUtil.objToIntDefault(zhimaConfigResource.getValue1(), 0)==1){
+			zmModel.put("zmDesc", authDo.getZmScore());
+		}else{
+			zmModel.put("zmDesc", "已认证");
+		}
 	}
 
 	locationModel.put("locationStatus", authDo.getLocationStatus());
