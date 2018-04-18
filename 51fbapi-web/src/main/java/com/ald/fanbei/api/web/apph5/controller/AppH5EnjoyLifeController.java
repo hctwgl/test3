@@ -152,17 +152,6 @@ public class AppH5EnjoyLifeController extends BaseController {
             }
             jsonObj.put("nowDate",new Date());
             jsonObj.put("couponList", couponList);
-
-            //jsonObj.put("notifyUrl", notifyUrl);
-            // 根据modelId查询banner信息
-            /*List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
-            if(bannerList != null && bannerList.size() > 0){
-                AfModelH5ItemDo bannerInfo = bannerList.get(0);
-                jsonObj.put("bannerImage", bannerInfo.getItemIcon());
-            } else {
-                resp = H5CommonResponse.getNewInstance(false, "banner信息为空");
-                return resp.toString();
-            }*/
             //获取配置商品信息
             List<AfResourceDo> activityResource = new ArrayList<>();
             try{
@@ -188,23 +177,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             AfSeckillActivityQuery query = new AfSeckillActivityQuery();
             query.setName("乐享生活节");
             query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
-            //活动信息
-            /*List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
-            if(activityInfoList == null) {
-                // redis取不到，则从一级缓存获取
-                activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
-            }
-            AfSeckillActivityQuery query = new AfSeckillActivityQuery();
-            query.setName("乐享生活节");
-            query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
-            if(activityInfoList == null) {
-                // 一级缓存获取不到，则从数据库获取
-                //activityInfoList = getActivityList();
-                activityInfoList = activityGoodsUtil.getActivityGoods(query);
-                bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-                scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-            }
-            jsonObj.put("activityInfoList", activityInfoList);*/
+
             // 查询会场下所有二级会场
             final List<AfModelH5ItemDo> subjectList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
             //List<Map> activityList = new ArrayList<Map>();
@@ -215,15 +188,13 @@ public class AppH5EnjoyLifeController extends BaseController {
             AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
             String secSubjectId = subjectH5ItemDo.getItemValue();
             AfSubjectDo parentSubjectDo = afSubjectService.getSubjectInfoById(secSubjectId);
-            Long parentId = parentSubjectDo.getParentId();
+            //Long parentId = parentSubjectDo.getParentId();
             String subjectName  = parentSubjectDo.getName();
             jsonObj.put("modelName", subjectName); // 主会场名称
             //测试并发
-            /*int threadCount = 1;
+            /*int threadCount = 100;
             final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
             for (int i = 0; i < threadCount; i++) {
-
-                //Runnable process = new SecKillOrder(afGoodsService,afSeckillActivityService,afGoodsPriceService);
                 new Thread() {
                     public void run() {
                         try {*/
@@ -231,18 +202,18 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                             String cacheKey = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST.getCode();
                             String processKey = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_PROCESS_KEY.getCode();
-                            bizCacheUtil.delCache(processKey);
+                            //bizCacheUtil.delCache(processKey);
                             //Boolean isProcess = (Boolean) bizCacheUtil.getObject(processKey);
                             activityList = bizCacheUtil.getObjectList(cacheKey);
-                            logger.info(Thread.currentThread().getName() + "1activityList:" + activityList);
+                            logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "1activityList:");
                             if(activityList==null){
                                 boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
                                 activityList = (List<Map>) scheduledCache.getObject(cacheKey);
-                                logger.info(Thread.currentThread().getName() + "2activityList:" + activityList + ",isGetLock:"+isGetLock);
+                                logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "2activityList is null,isGetLock:"+isGetLock);
 
                                 //调用异步请求加入缓存
                                 if(isGetLock){
-                                    logger.info(Thread.currentThread().getName() + "3activityList:" + activityList);
+                                    logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "3activityList is null");
                                     //bizCacheUtil.saveObjectForever(processKey,isProcess);
                                     Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,
                                             bizCacheUtil,scheduledCache,afSeckillActivityService,activityGoodsUtil,query);
@@ -251,7 +222,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                             }
                             if(activityList==null){
                                 activityList = getActivityPartList(subjectList,resource,array);
-                                bizCacheUtil.saveListByTime(cacheKey, activityList, 1*60);
+                                bizCacheUtil.saveListByTime(cacheKey, activityList, 10*60);
                                 scheduledCache.putObject(cacheKey, activityList);
                             }
                         /*} catch (Exception e) {
@@ -262,8 +233,6 @@ public class AppH5EnjoyLifeController extends BaseController {
                 countDownLatch.countDown();
                 System.out.println(countDownLatch.getCount());
             }*/
-
-
 
             jsonObj.put("activityPartList", activityList);
             resp = H5CommonResponse.getNewInstance(true, "成功", "", jsonObj);
@@ -303,9 +272,10 @@ public class AppH5EnjoyLifeController extends BaseController {
             AfSeckillActivityQuery query = new AfSeckillActivityQuery();
             query.setName("乐享生活节");
             query.setGmtStart(DateUtil.parseDate("2018-04-12 00:00:00"));
-            if(activityInfoList != null) {
+            if(activityInfoList == null) {
                 // 一级缓存获取不到，则从数据库获取
                 //activityInfoList = getActivityList();
+                logger.info("getSecActivityInfo from sql activityInfoList is null");
                 activityInfoList = activityGoodsUtil.getActivityGoods(query);
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
                 scheduledCache.putObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
@@ -325,8 +295,6 @@ public class AppH5EnjoyLifeController extends BaseController {
                     List<Map<String, Object>> goodsInfo = (List<Map<String, Object>>)activityData.get("goodsList");
                     Date pStartDate = (Date)(activityData.get("gmtPStart"));
                     Date endDate = (Date)(activityData.get("gmtEnd"));
-                    //Date pStartDate = DateUtil.parseDate(String.valueOf(activityData.get("gmtPStart")));
-                    //Date endDate = DateUtil.parseDate(String.valueOf(activityData.get("gmtEnd")));
                     Long nowctivityId = 0l;
                     Long activityId = Long.valueOf(String.valueOf(activityData.get("rid")));
                     for(int j=0;j<goodsInfo.size();j++){
@@ -348,6 +316,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                         //afActGoodsDto.put("goodsCount",0);
                         afActGoodsDto.put("saleCount",0);
+
                     }
                     if(pStartDate.getTime()<=now.getTime()&&endDate.getTime()>=now.getTime()){
                         nowctivityId = activityId;
@@ -377,7 +346,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             jsonObj.put("activityInfoList", activityInfoList);
         }catch (Exception e){
             resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
-            logger.error("请求失败"+e);
+            logger.error("getSecActivityInfo请求失败"+e);
             return resp.toString();
         }
 
@@ -444,7 +413,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     .getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
                     .toString();
         }catch (Exception e){
-            logger.error(e.getMessage(), e);
+            logger.error("reserveGoodsV2 error", e);
             return H5CommonResponse.getNewInstance(false, "预约失败").toString();
         }
 
@@ -452,6 +421,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array) {
         //获取所有活动
+        logger.info("partActivityInfoV2 getFrom sql");
         Map secActivityInfoMap = new HashMap();
         List<AfSeckillActivityDo> afSeckillActivityDos = afSeckillActivityService.getActivityNow();
         for(AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos){
@@ -595,6 +565,7 @@ class GetActivityListThread implements Runnable {
 
     @Override
     public void run() {
+        logger.info("pool:partActivityInfoV2"+Thread.currentThread().getName() + "getactivityList");
         getActivityPartList(subjectList,resource,array,afSubjectService,
                 afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil,scheduledCache);
         getActivityList(afSeckillActivityService,bizCacheUtil,scheduledCache,activityGoodsUtil,query);
