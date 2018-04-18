@@ -35,7 +35,7 @@ public class Bootstrap4Jetty {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new JettyServerStart(webPath, 8080, "/", 0, true).start();
+		new JettyServerStart(webPath, 80, "/", 0, true).start();
 
 	}
 }
