@@ -44,7 +44,6 @@ public class PdfCreateUtil {
 
     public static byte[] createByte(Map<String, Object> data,OutputStream fos,ByteArrayOutputStream bos) throws IOException, DocumentException {
         String templatePath = data.get("templatePath").toString();//模板路径
-        String newPDFPath = data.get("PDFPath").toString();//生成路径
         PdfReader reader = new PdfReader(templatePath);
         bos = new ByteArrayOutputStream();
             /* 将要生成的目标PDF文件名称 */
