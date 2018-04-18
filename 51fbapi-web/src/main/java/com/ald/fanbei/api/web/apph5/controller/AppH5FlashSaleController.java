@@ -163,7 +163,7 @@ public class AppH5FlashSaleController extends BaseController {
 	    goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
 	    goodsInfo.put("volume", homePageSecKillGoods.getVolume());
 	    goodsInfo.put("total", homePageSecKillGoods.getTotal());	    
-	    
+	    goodsInfo.put("source", homePageSecKillGoods.getSource());	
 	    // 如果是分期免息商品，则计算分期
 	    Long goodsId = homePageSecKillGoods.getGoodsId();
 	    JSONArray interestFreeArray = null;
