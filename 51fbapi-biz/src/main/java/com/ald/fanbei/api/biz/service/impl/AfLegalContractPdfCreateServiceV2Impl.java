@@ -98,6 +98,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     AfBorrowService afBorrowService;
     @Resource
     AfOrderDao afOrderDao;
+    @Resource
+    AfEdspayUserInfoDao edspayUserInfoDao;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -164,20 +166,16 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             List<AfContractPdfEdspaySealDo> edspaySealDoList = new ArrayList<>();
             if (investorList != null && investorList.size() != 0) {
                 for (EdspayInvestorInfoBo infoBo : investorList) {
-                    investorUserDo.setMobile(infoBo.getInvestorPhone());
-                    investorUserDo.setRealName(infoBo.getInvestorName());
-                    investorAccountDo.setIdNumber(infoBo.getInvestorCardId());
-                    investorUserDo.setMajiabaoName("edspay");
-                    AfUserSealDo investorAfUserSealDo = afESdkService.getSealPersonal(investorUserDo, investorAccountDo);
-                    if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
-                        logger.error("创建e都市钱包用户印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-                        throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-                    }
-                    userSealDoList.add(investorAfUserSealDo);//印章列表
-                    AfContractPdfEdspaySealDo afContractPdfEdspaySealDo = new AfContractPdfEdspaySealDo();
-                    afContractPdfEdspaySealDo.setInvestorAmount(infoBo.getAmount());
-                    afContractPdfEdspaySealDo.setUserSealId(investorAfUserSealDo.getId());
-                    edspaySealDoList.add(afContractPdfEdspaySealDo);//e都市钱包印章和协议关联表
+                    AfEdspayUserInfoDo edspayUserInfoDo = new AfEdspayUserInfoDo();
+                    edspayUserInfoDo.setAmount(infoBo.getAmount());
+                    edspayUserInfoDo.setEdspayUserCardId(infoBo.getInvestorCardId());
+                    edspayUserInfoDo.setUserName(infoBo.getInvestorName());
+                    edspayUserInfoDo.setMobile(infoBo.getInvestorPhone());
+                    edspayUserInfoDo.setType(Integer.parseInt(String.valueOf(map.get("protocolCashType"))));
+                    edspayUserInfoDo.setTypeId(Long.parseLong(String.valueOf(map.get("borrowId"))));
+                    edspayUserInfoDo.setProtocolUrl(String.valueOf(map.get("PDFPath")));
+                    edspayUserInfoDao.saveRecord(edspayUserInfoDo);
+
                 }
                 map.put("userSealDoList", userSealDoList);
                 map.put("edspaySealDoList", edspaySealDoList);
@@ -864,11 +862,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     private String getPdfInfoWithOutLender(String protocolUrl, Map<String, Object> map, Long userId, Long id, String type, String protocolCashType, List<EdspayInvestorInfoBo> investorList) throws IOException {
+        map.put("borrowId", id);
+        map.put("protocolCashType",protocolCashType);
+        map.put("PDFPath", protocolUrl);
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
         long time = new Date().getTime();
-        map.put("PDFPath", protocolUrl);
-        map.put("borrowId", id);
-        map.put("protocolCashType", protocolCashType);
         map.put("userPath", src + accountDo.getUserName() + type + time + 1 + ".pdf");
         map.put("selfPath", src + accountDo.getUserName() + type + time + 2 + ".pdf");
         map.put("secondPath", src + accountDo.getUserName() + type + time + 3 + ".pdf");
