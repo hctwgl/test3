@@ -463,7 +463,14 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			delegateBorrowCashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
 			// 更新订单状态
 			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
-			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			logger.info("test1 ");
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
+			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+				jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
+				smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
+			}else{
+				jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			}
 		}
 
 		transactionTemplate.execute(new TransactionCallback<String>() {

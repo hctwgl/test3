@@ -68,7 +68,7 @@ public class AuthMobileApi implements ApiHandle {
 		AfUserAccountDo currUserAccount = afUserAccountService.getUserAccountByUserId(userId);
 		
 		String reqUrl = respBo.getUrl().trim()+"&showTitleBar=NO&quitOnLoginDone=YES&carrier_phone="+StringUtil.null2Str(currUserAccount.getUserName())
-				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.UrlEncoder(currUserAccount.getRealName())+"&backUrl="+StringUtil.UrlEncoder(apiHost+"/fanbei-web/app/mobileOperator?mobileReqTimeStamp="+mobileReqTimeStamp);
+				+"&carrier_idcard="+StringUtil.null2Str(currUserAccount.getIdNumber())+"&carrier_name="+StringUtil.UrlEncoder(currUserAccount.getRealName())+"&backUrl="+StringUtil.UrlEncoder(apiHost+"/fanbei-web/app/mobileOperator?processResult=true&mobileReqTimeStamp="+mobileReqTimeStamp);
 		
 		resp.addResponseData("url",reqUrl.trim());
 		return resp;

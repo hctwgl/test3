@@ -49,7 +49,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	
 	private String interestCutDesc;
 	private String interestFreeDesc;
-	private int isShow;
+	private int isShow=0;
 	
 	
 	public String getInterestCutDesc() {

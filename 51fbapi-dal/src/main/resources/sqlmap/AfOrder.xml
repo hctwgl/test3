@@ -710,7 +710,7 @@
 		FROM
 			af_order
 		WHERE
-			is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
+        is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
 		<if test="orderStatus == 'WC'" >
 			and (status = 'NEW' or status = 'PAID')
 		</if>
@@ -1009,7 +1009,7 @@
 	</select>
 	
 	<update id="deleteOrder" parameterType="java.lang.Long" >
-		UPDATE af_order SET gmt_modified=NOW(),is_delete = 1 WHERE id=#{rid}
+		UPDATE af_order SET gmt_modified=NOW(),is_hide = 1 WHERE id=#{rid}
 	</update>
 	
 	<select id = "getDealAmount" resultType="java.lang.Integer" >
@@ -1421,4 +1421,20 @@
 	<update id="updatepdfUrlByOrderId">
 		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
 	</update>
+	<select id="selectTodayIagentStatus" resultType="AfOrderDo" >
+		SELECT
+		<include refid="queryAllFields" />
+        FROM af_order
+        WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND actual_amount>=#{amount}
+        and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+        and iagent_status is not NULL ORDER BY gmt_create ASC LIMIT 1
+	</select>
+	<select id="selectTodayIagentStatusCOrders" resultType="AfOrderDo" >
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_order
+		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND status='PAID'
+		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+		and iagent_status ='C'
+	</select>
 </mapper>

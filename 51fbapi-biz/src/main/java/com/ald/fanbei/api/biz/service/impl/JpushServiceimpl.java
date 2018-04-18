@@ -253,8 +253,25 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("dealBorrowCashTransfer error", e);
 		}
 	}
-	
-	@Override
+
+    @Override
+    public void dealBorrowCashApplyFailForKoudai(String userName, Date date, String content) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("dealBorrowCashTransfer,pid=", pid, ",date=", date));
+			String msgContext = content;
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "210");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("借钱申请失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("dealBorrowCashTransfer error", e);
+		}
+    }
+
+    @Override
 	public void repayRenewalSuccess(String userName) {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
