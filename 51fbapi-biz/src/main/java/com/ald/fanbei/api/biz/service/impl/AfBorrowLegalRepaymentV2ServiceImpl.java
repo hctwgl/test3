@@ -426,7 +426,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	data.put("jfbAmount", BigDecimal.ZERO);
 	if(respBo!=null)
 	{
-	    data.put("resp", respBo);
+	    //data.put("resp", respBo);
 	    data.put("outTradeNo", respBo.getTradeNo());
 	}
 	
