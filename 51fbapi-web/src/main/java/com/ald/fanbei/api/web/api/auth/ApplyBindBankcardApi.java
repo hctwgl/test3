@@ -68,7 +68,7 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		}
 
 		if(afUserAccountService.getCountByIdNumer(param.idNumber,userId)>0){
-			return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ID_CARD_EXIST_ERROR);
+			return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_CARD_IS_EXIST);
 		}
 
 		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02", param.bankCode);

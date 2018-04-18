@@ -177,7 +177,7 @@ public class AppH5AllSearchController extends BaseController {
 			goodsVo.setGoodsUrl(goodsDo.getGoodsUrl());
 			goodsVo.setSource("SELFSUPPORT");
 
-			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount()));
+			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount(),goodsDo.getRid()));
 
 			goodsVo.setNumId(goodsDo.getRid().toString());
 			goodsVo.setRealAmount(goodsDo.getSaleAmount().toString());
@@ -188,13 +188,15 @@ public class AppH5AllSearchController extends BaseController {
 		return goodsVo;
 	}
 
-	public Map<String, Object> getNper(BigDecimal saleAmount) {
+	public Map<String, Object> getNper(BigDecimal saleAmount,Long goodsid) {
 		Map<String, Object> result = new HashMap<>();
 		// 获取借款分期配置信息
 		AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 				Constants.RES_BORROW_CONSUME);
 		JSONArray array = JSON.parseArray(res.getValue());
-
+		if (goodsid != null && goodsid >0l) {
+			array = afResourceService.checkNper(goodsid,"0",array);
+		}
 		final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
 				saleAmount, resource.getValue1(), resource.getValue2());
@@ -233,7 +235,7 @@ public class AppH5AllSearchController extends BaseController {
 		vo.setGoodsUrl(item.getItemUrl());
 		vo.setSource("TAOBAO");
 
-		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice())));
+		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice()),null));
 
 		vo.setVolume(item.getVolume());
 		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).toString());

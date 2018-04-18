@@ -214,7 +214,7 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
 
-	if (!BankPayChannel.KUAIJIE.equals(bankChannel)) {
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
 	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
 	    if (bizCacheUtil.getObject(lockKey) == null) {
 		bizCacheUtil.saveObject(lockKey, lockKey, 30);
@@ -226,11 +226,7 @@ public class PayOrderV1Api implements ApiHandle {
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
-            if (nper == 1) {
-                //信用支付
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResourceCredit(nper);
-                orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
-            } else {
+
                 //分期支付
                 BorrowRateBo borrowRate = null;
                 if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
@@ -275,11 +271,11 @@ public class PayOrderV1Api implements ApiHandle {
                         orderInfo.setRebateAmount(rebateAmount);
                     }
                 } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName());
+                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName(),orderInfo.getGoodsId());
                     orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
 
-            }
+
 
         }
 
