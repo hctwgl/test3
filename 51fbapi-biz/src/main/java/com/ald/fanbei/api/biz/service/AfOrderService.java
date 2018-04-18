@@ -465,4 +465,6 @@ public interface AfOrderService {
 	 */
 	HashMap getLeaseProtocol(Long orderId);
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
+	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
 }

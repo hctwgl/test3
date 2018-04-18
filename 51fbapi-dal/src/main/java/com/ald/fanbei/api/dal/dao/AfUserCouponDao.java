@@ -85,10 +85,19 @@ public interface AfUserCouponDao {
 	 * 获取用户专场可使用满减券
 	 * @param userId
 	 * @param amount
-	 * @param goodsId
 	 * @return
 	 */
 	List<AfUserCouponDto> getUserAcgencyCouponByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount);
+
+	/**
+	 * 获取商品专场可使用满减券
+	 * @param userId
+	 * @param amount
+	 * @return
+	 */
+	List<AfUserCouponDto> getSpecialGoodsCouponByAmount(@Param("userId")Long userId,@Param("amount")BigDecimal amount);
+
+
 	/**
 	 * 获取用户专场可使用满减券个数
 	 * @param userId

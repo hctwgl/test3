@@ -87,32 +87,24 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
-	@Resource
-	AfGoodsDouble12Service afGoodsDouble12Service;
-
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
-
 	@Resource
 	AfShareGoodsService afShareGoodsService;
-
 	@Resource
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
-	
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
-
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
 
