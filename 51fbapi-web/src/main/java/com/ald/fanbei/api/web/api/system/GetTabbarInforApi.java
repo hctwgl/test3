@@ -50,7 +50,7 @@ public class GetTabbarInforApi implements ApiHandle {
 		//4.1.3之前的版本用原先的，之后的用新的
 		List<AfResourceDo> resourceList = new  ArrayList<AfResourceDo>();
 		Integer appVersion = context.getAppVersion();
-		if (appVersion < 513) {
+		if (appVersion < 413) {
 			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
 		} else{
 			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.ASJHomeTabbar.getCode());
@@ -108,6 +108,9 @@ public class GetTabbarInforApi implements ApiHandle {
 	
 	private Map<String, Object> getObjectWithResourceDolist(FanbeiContext context,List<AfResourceDo> tabbarlist,RequestDataVo requestDataVo) {
 		//是否使用后台传来的图片，否的话菜单图片用app本地图片
+		Integer appVersion = context.getAppVersion();
+		
+
 		AfResourceDo useImgDo = afResourceService
 				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
 				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
@@ -121,7 +124,10 @@ public class GetTabbarInforApi implements ApiHandle {
 			data.put("imageUrl", afResourceDo.getValue());
 			}
 			data.put("titleColor", afResourceDo.getValue1());
-			
+			//兼容原版本
+			if (appVersion >= 413) {
+			 data.put("content", afResourceDo.getValue3());
+			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
 				index.put("homeNomal", data);
 			}
