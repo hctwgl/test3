@@ -909,8 +909,7 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = requestProxy.post(url, reqBo);
 		try{
 			logger.info("sync kafka data consumerNo:"+consumerNo);
-			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CASH_LOAN,true);
+			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_SCENE_WEEK,true);
 		}catch (Exception e){
 
 		}
@@ -957,6 +956,19 @@ public class RiskUtil extends AbstractThird {
 
 			return riskResp;
 		} else {
+			if(riskResp!=null){
+				try{
+					String risk_error_type="risk_error_type_"+riskResp.getCode();
+					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype(risk_error_type);
+
+					if(afResourceDo!=null){
+						throw new FanbeiException(afResourceDo.getValue(),true);
+					}
+				}catch (Exception e){
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+				}
+
+			}
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
 	}
