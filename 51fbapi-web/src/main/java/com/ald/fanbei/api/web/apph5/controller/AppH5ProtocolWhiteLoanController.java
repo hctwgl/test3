@@ -280,33 +280,36 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         afContractPdfDo.setTypeId(borrowId);
         afContractPdfDo.setType(type);
         afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
-        if (afContractPdfDo != null) {
-            List<AfContractPdfEdspaySealDto> edspaySealDoList = afContractPdfEdspaySealDao.getByPDFId(afContractPdfDo.getId());
-            for (AfContractPdfEdspaySealDto eds : edspaySealDoList) {
-                String name = eds.getUserName().substring(0, 1);
-                if (eds.getUserName().length() == 2) {
-                    eds.setUserName(name + "*");
-                } else if (eds.getUserName().length() == 3) {
-                    eds.setUserName(name + "**");
+        List<AfEdspayUserInfoDo> userInfoDoList = edspayUserInfoDao.getInfoByTypeAndTypeId(type,borrowId);
+        if (userInfoDoList != null && userInfoDoList.size() > 0){
+            for (AfEdspayUserInfoDo userInfoDo:userInfoDoList) {
+                String name = userInfoDo.getUserName().substring(0, 1);
+                if (userInfoDo.getUserName().length() == 2) {
+                    userInfoDo.setUserName(name + "*");
+                } else if (userInfoDo.getUserName().length() == 3) {
+                    userInfoDo.setUserName(name + "**");
                 }
-                String cardId = eds.getEdspayUserCardId().substring(0, 10);
-                eds.setEdspayUserCardId(cardId + "*********");
+                userInfoDo.setInvestorAmount(userInfoDo.getAmount());
+                String cardId = userInfoDo.getEdspayUserCardId().substring(0, 10);
+                userInfoDo.setEdspayUserCardId(cardId + "*********");
             }
-            model.put("edspaySealDoList", edspaySealDoList);
-        }else {//查询钱包用户表
-            List<AfEdspayUserInfoDo> userInfoDoList = edspayUserInfoDao.getInfoByTypeAndTypeId(type,borrowId);
-            if (userInfoDoList != null && userInfoDoList.size() > 0){
-                for (AfEdspayUserInfoDo userInfoDo:userInfoDoList) {
-                    String name = userInfoDo.getUserName().substring(0, 1);
-                    if (userInfoDo.getUserName().length() == 2) {
-                        userInfoDo.setUserName(name + "*");
-                    } else if (userInfoDo.getUserName().length() == 3) {
-                        userInfoDo.setUserName(name + "**");
+            model.put("edspaySealDoList", userInfoDoList);
+        }else {
+            if (afContractPdfDo != null){
+                List<AfContractPdfEdspaySealDto> edspaySealDoList = afContractPdfEdspaySealDao.getByPDFId(afContractPdfDo.getId());
+                if (edspaySealDoList != null && edspaySealDoList.size() > 0){
+                    for (AfContractPdfEdspaySealDto eds : edspaySealDoList) {
+                        String name = eds.getUserName().substring(0, 1);
+                        if (eds.getUserName().length() == 2) {
+                            eds.setUserName(name + "*");
+                        } else if (eds.getUserName().length() == 3) {
+                            eds.setUserName(name + "**");
+                        }
+                        String cardId = eds.getEdspayUserCardId().substring(0, 10);
+                        eds.setEdspayUserCardId(cardId + "*********");
                     }
-                    String cardId = userInfoDo.getEdspayUserCardId().substring(0, 10);
-                    userInfoDo.setEdspayUserCardId(cardId + "*********");
+                    model.put("edspaySealDoList", edspaySealDoList);
                 }
-                model.put("edspaySealDoList", userInfoDoList);
             }
         }
     }
