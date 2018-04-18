@@ -1552,6 +1552,9 @@ public class RiskUtil extends AbstractThird {
 			}
 		}
 		Integer nper = borrowDto.getNper();//分期数
+        if (nper == 5 || nper == 11) {//兼容租房5期与11期，作为6期与12期的利率
+        	nper++;
+        }
 		//获取消费分期协议年化利率配置
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
 		BigDecimal borrowRate=BigDecimal.ZERO;
