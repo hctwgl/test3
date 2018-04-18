@@ -231,7 +231,7 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
         model.put("loanRemark", afLoanDo.getLoanRemark());//借钱用途
         model.put("totalPeriods", afLoanDo);//总借钱信息
         getSeal(model, afUserDo, accountDo);
-        getEdspayInfo(model, loanId, (byte) 2);
+        getEdspayInfo(model, loanId, (byte) 5);
     }
 
     private void getModelNoLoanId(ModelMap model, BigDecimal amount, Integer nper, String loanRemark, String repayRemark, Long userId) {
