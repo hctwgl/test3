@@ -13,6 +13,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.druid.util.StringUtils;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,20 +35,12 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -77,6 +74,9 @@ public class AppH5CouponController extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	BoluomeUtil boluomeUtil;
+
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	private String opennative = "/fanbei-web/opennative?name=";
 
@@ -557,6 +557,111 @@ public class AppH5CouponController extends BaseController {
 			Calendar calEnd = Calendar.getInstance();
 			doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(),
 					context.getUserName());
+		}
+	}
+
+	/**
+	 * 领取优惠券
+	 * @param request
+	 * @param model
+	 * @return
+	 * @throws IOException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST)
+	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+		String key = "";
+		try {
+			Map<String, Object> returnData = Maps.newHashMap();
+
+			FanbeiWebContext context = doWebCheck(request, false);
+			AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
+			if (StringUtils.isEmpty(couponId)) {
+				throw new IllegalArgumentException("couponId can't be null");
+			}
+
+			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
+			if (couponDo == null) {
+				returnData.put("status", CouponWebFailStatus.CouponNotExist.getCode());
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(),
+						"", returnData).toString();
+			}
+
+			if(new Date().before(couponDo.getGmtStart())){
+				return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, "").toString();
+			}
+			if(new Date().after(couponDo.getGmtEnd())){
+				return H5CommonResponse.getNewInstance(false, "活动已结束", null, "").toString();
+			}
+
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(),
+						notifyUrl, returnData).toString();
+			}
+
+			key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + afUserDo.getRid() + ":" + couponId;
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 10);
+			if(isNotLock){
+				Integer limitCount = couponDo.getLimitCount();
+				Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponId(afUserDo.getRid(),
+						NumberUtil.objToLongDefault(couponId, 1l));
+				if (limitCount <= myCount) {
+					returnData.put("status", CouponWebFailStatus.COUPONCONTEXT5.getCode());
+
+					return H5CommonResponse.getNewInstance(false,
+							FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", returnData)
+							.toString();
+				}
+				Long totalCount = couponDo.getQuota();
+				if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
+					returnData.put("status", CouponWebFailStatus.COUPONCONTEXT3.getCode());
+
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(),
+							"", returnData).toString();
+				}
+
+				AfUserCouponDo userCoupon = new AfUserCouponDo();
+				userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
+				userCoupon.setGmtStart(new Date());
+				if (StringUtils.equals(couponDo.getExpiryType(), "R")) {
+					userCoupon.setGmtStart(couponDo.getGmtStart());
+					userCoupon.setGmtEnd(couponDo.getGmtEnd());
+					if (DateUtil.afterDay(new Date(), couponDo.getGmtEnd())) {
+						userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+					}
+				} else {
+					userCoupon.setGmtStart(new Date());
+					if (couponDo.getValidDays() == -1) {
+						userCoupon.setGmtEnd(DateUtil.getFinalDate());
+					} else {
+						userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+					}
+				}
+				userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
+				userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+				userCoupon.setUserId(afUserDo.getRid());
+				afUserCouponService.addUserCoupon(userCoupon);
+				AfCouponDo couponDoT = new AfCouponDo();
+				couponDoT.setRid(couponDo.getRid());
+				couponDoT.setQuotaAlready(1);
+				afCouponService.updateCouponquotaAlreadyById(couponDoT);
+				logger.info("pick coupon success", couponDoT);
+				return H5CommonResponse.getNewInstance(true, "领取成功", "", null).toString();
+			}
+			else{
+				return H5CommonResponse.getNewInstance(true, "领取成功", "", null).toString();
+			}
+		} catch (Exception e) {
+			logger.error("pick coupon error", e);
+			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+		}
+		finally {
+			bizCacheUtil.delCache(key);
 		}
 	}
 

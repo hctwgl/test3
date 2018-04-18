@@ -17,6 +17,7 @@ public enum CouponWebFailStatus {
 	 COUPONCONTEXT2("COUPONCONTEXT2","恭喜您已经领取成功，快去使用吧!"),
 	 COUPONCONTEXT3("COUPONCONTEXT3","今日优惠券已发放完毕，明日再来领取吧!"),
 	 COUPONCONTEXT4("COUPONCONTEXT4","该优惠券暂时未发放!"),
+	 COUPONCONTEXT5("COUPONCONTEXT5","您已经领取过了，快去使用吧!"),
 	 CouponNotExist("COUPON_NOT_EXIST", "优惠券不存在");
     
     private String code;

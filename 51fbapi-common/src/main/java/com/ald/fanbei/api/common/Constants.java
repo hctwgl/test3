@@ -551,5 +551,36 @@ public class Constants {
      */
     public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
 
+	/**
+	 * 三周年庆典预热页面商品ID集合
+	 */
+	public static final String TAC_WARM_UP_GOODS = "TAC_WARM_UP_GOODS";
+
+	/**
+	 * 三周年庆典人气商品ID集合
+	 */
+    public static final String TAC_POPULARITY_GOODS = "TAC_POPULARITY_GOODS";
+
+	/**
+	 * 三周年庆典猜你喜欢商品ID集合
+	 */
+	public static final String TAC_RECOMMEND_GOODS = "TAC_RECOMMEND_GOODS";
+
+	/**
+	 * 三周年庆典预热开始结束时间
+	 */
+	public static final String TAC_WARM_UP_TIME = "TAC_WARM_UP_TIME";
+
+	/**
+	 * 三周年庆典开始结束时间
+	 */
+	public static final String TAC_FORMAL_TIME = "TAC_FORMAL_TIME";
+
+	/**
+	 * 默认二级类型
+	 */
+	public static final String DEFAULT = "DEFAULT";
+
+
 
 }
