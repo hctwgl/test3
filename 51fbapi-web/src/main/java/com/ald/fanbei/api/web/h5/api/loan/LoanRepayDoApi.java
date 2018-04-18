@@ -52,7 +52,6 @@ import com.google.common.collect.Maps;
  * @Description: 白领贷-还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
- * @param <E>
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
@@ -81,7 +80,7 @@ public class LoanRepayDoApi implements ApiHandle {
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
+		String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
