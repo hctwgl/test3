@@ -129,8 +129,9 @@ public class AppH5FlashSaleController extends BaseController {
 	// 商品展示
 	Long userId = null;
 	if (context.getUserName() != null) {
-	    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-	    userId = userDo.getRid();
+		AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+		if (userDo != null)
+			userId = userDo.getRid();
 	}
 	AfResourceDo afResourceHomeSecKillDo = afResourceService.getSingleResourceBytype("HOME_SECKILL_CONFIG");
 	List<HomePageSecKillGoods> list = afSeckillActivityService.getHomePageSecKillGoods(userId, afResourceHomeSecKillDo.getValue(),activityDay, pageNo);
