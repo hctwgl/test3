@@ -85,9 +85,6 @@ public class AppH5EnjoyLifeController extends BaseController {
     BizCacheUtil bizCacheUtil;
 
     @Resource
-    BizCacheUtil scheduledCache;
-
-    @Resource
     AfUserAccountSenceService afUserAccountSenceService;
 
     @Resource
@@ -205,7 +202,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                             logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "1activityList:");
                             if(activityList==null){
                                 boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
-                                activityList = scheduledCache.getObjectList(cacheKey2);
+                                activityList = bizCacheUtil.getObjectList(cacheKey2);
                                 logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "2activityList is null,isGetLock:"+isGetLock);
 
                                 //调用异步请求加入缓存
@@ -213,14 +210,14 @@ public class AppH5EnjoyLifeController extends BaseController {
                                     logger.info("partActivityInfoV2"+Thread.currentThread().getName() + "3activityList is null");
                                     //bizCacheUtil.saveObjectForever(processKey,isProcess);
                                     Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,
-                                            bizCacheUtil,scheduledCache,afSeckillActivityService,activityGoodsUtil,query);
+                                            bizCacheUtil,afSeckillActivityService,activityGoodsUtil,query);
                                     pool.execute(process);
                                 }
                             }
                             if(activityList==null){
                                 activityList = getActivityPartList(subjectList,resource,array);
                                 bizCacheUtil.saveListByTime(cacheKey, activityList, 10*60);
-                                scheduledCache.saveListForever(cacheKey2, activityList);
+                                bizCacheUtil.saveListForever(cacheKey2, activityList);
                             }
                         /*} catch (Exception e) {
                             e.printStackTrace();
@@ -264,7 +261,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             List<Map<String, Object>> activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
             if(activityInfoList == null) {
                 // redis取不到，则从一级缓存获取
-                activityInfoList = (List<Map<String, Object>>) scheduledCache.getObject(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode());
+                activityInfoList = bizCacheUtil.getObjectList(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode());
             }
             AfSeckillActivityQuery query = new AfSeckillActivityQuery();
             query.setName("乐享生活节");
@@ -275,7 +272,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                 logger.info("getSecActivityInfo from sql activityInfoList is null");
                 activityInfoList = activityGoodsUtil.getActivityGoods(query);
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-                scheduledCache.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
+                bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
             }
             //获取该用户所有预约信息
             AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
@@ -337,7 +334,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     }
                 }
                 bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-                scheduledCache.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
+                bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
             }
 
             jsonObj.put("activityInfoList", activityInfoList);
@@ -531,11 +528,9 @@ class GetActivityListThread implements Runnable {
     private AfSeckillActivityQuery query;
     @Resource
     BizCacheUtil bizCacheUtil;
-    @Resource
-    BizCacheUtil scheduledCache;
     GetActivityListThread(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array,
                           AfSubjectService afSubjectService,AfSubjectGoodsService afSubjectGoodsService,AfSchemeGoodsService afSchemeGoodsService,AfInterestFreeRulesService afInterestFreeRulesService,
-                          BizCacheUtil bizCacheUtil,BizCacheUtil scheduledCache,AfSeckillActivityService afSeckillActivityService,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
+                          BizCacheUtil bizCacheUtil,AfSeckillActivityService afSeckillActivityService,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
         this.subjectList = subjectList;
         this.resource = resource;
         this.array = array;
@@ -544,7 +539,6 @@ class GetActivityListThread implements Runnable {
         this.afSubjectGoodsService = afSubjectGoodsService;
         this.afSubjectService = afSubjectService;
         this.bizCacheUtil = bizCacheUtil;
-        this.scheduledCache = scheduledCache;
         this.afSeckillActivityService = afSeckillActivityService;
         this.activityGoodsUtil = activityGoodsUtil;
         this.query = query;
@@ -554,20 +548,20 @@ class GetActivityListThread implements Runnable {
     public void run() {
         logger.info("pool:partActivityInfoV2"+Thread.currentThread().getName() + "getactivityList");
         getActivityPartList(subjectList,resource,array,afSubjectService,
-                afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil,scheduledCache);
-        getActivityList(afSeckillActivityService,bizCacheUtil,scheduledCache,activityGoodsUtil,query);
+                afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil);
+        getActivityList(afSeckillActivityService,bizCacheUtil,activityGoodsUtil,query);
 
     }
-    private List<Map> getActivityList(AfSeckillActivityService afSeckillActivityService,BizCacheUtil bizCacheUtil,BizCacheUtil scheduledCache,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
+    private List<Map> getActivityList(AfSeckillActivityService afSeckillActivityService,BizCacheUtil bizCacheUtil,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
         //获取所有活动
         List<Map<String, Object>> activityInfoList = activityGoodsUtil.getActivityGoods(query);
         bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST.getCode(), activityInfoList);
-        scheduledCache.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
+        bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode(), activityInfoList);
         return null;
     }
     private List<Map> getActivityPartList(List<AfModelH5ItemDo> subjectList,AfResourceDo resource,JSONArray array,
                                       AfSubjectService afSubjectService,AfSubjectGoodsService afSubjectGoodsService,AfSchemeGoodsService afSchemeGoodsService,AfInterestFreeRulesService afInterestFreeRulesService,
-                                      BizCacheUtil bizCacheUtil,BizCacheUtil scheduledCache) {
+                                      BizCacheUtil bizCacheUtil) {
         List<Map> activityList = new ArrayList<Map>();
         logger.info(Thread.currentThread().getName() + "new Thread");
         try {
@@ -638,7 +632,7 @@ class GetActivityListThread implements Runnable {
                 activityList.add(activityInfoMap);
             }
             bizCacheUtil.saveListByTime(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST.getCode(), activityList, 10*60);
-            scheduledCache.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST_CACHE2.getCode(), activityList);
+            bizCacheUtil.saveListForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST_CACHE2.getCode(), activityList);
             //Boolean isProcess = false;
             //bizCacheUtil.saveObjectForever(CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_PROCESS_KEY.getCode(),isProcess);
         }catch (Exception e){
