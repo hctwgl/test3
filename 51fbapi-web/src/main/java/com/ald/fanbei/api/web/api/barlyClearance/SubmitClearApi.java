@@ -155,10 +155,9 @@ public class SubmitClearApi implements ApiHandle {
                 if (afUserAccountDo.getRebateAmount().compareTo(showAmount) < 0) {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
                 }
-                map = afRepaymentService.createRepaymentByZfbOrWechat(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo,null);
-                resp.addResponseData("refId", map.get("refId"));
-                resp.addResponseData("type", map.get("type"));
+                resp.setResponseData(map);
             } else if (cardId.longValue() == -1) {//微信支付
                 if (context.getAppVersion() < 395) {
                     throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
@@ -182,7 +181,7 @@ public class SubmitClearApi implements ApiHandle {
                     throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
                 }
 
-                map = afRepaymentService.createRepaymentByBankOrRebate(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
+                map = afRepaymentService.createRepaymentByZfbOrWechat(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo,null);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "ZFB");
