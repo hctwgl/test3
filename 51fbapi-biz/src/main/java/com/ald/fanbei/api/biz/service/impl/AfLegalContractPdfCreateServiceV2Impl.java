@@ -160,25 +160,24 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             }
             map.put("personUserSeal", afUserSealDo.getUserSeal());
             map.put("accountId", afUserSealDo.getUserAccountId());
-            AfUserDo investorUserDo = new AfUserDo();
-            AfUserAccountDo investorAccountDo = new AfUserAccountDo();
-            List<AfUserSealDo> userSealDoList = new ArrayList<>();
-            List<AfContractPdfEdspaySealDo> edspaySealDoList = new ArrayList<>();
             if (investorList != null && investorList.size() != 0) {
-                for (EdspayInvestorInfoBo infoBo : investorList) {
-                    AfEdspayUserInfoDo edspayUserInfoDo = new AfEdspayUserInfoDo();
-                    edspayUserInfoDo.setAmount(infoBo.getAmount());
-                    edspayUserInfoDo.setEdspayUserCardId(infoBo.getInvestorCardId());
-                    edspayUserInfoDo.setUserName(infoBo.getInvestorName());
-                    edspayUserInfoDo.setMobile(infoBo.getInvestorPhone());
-                    edspayUserInfoDo.setType(Integer.parseInt(String.valueOf(map.get("protocolCashType"))));
-                    edspayUserInfoDo.setTypeId(Long.parseLong(String.valueOf(map.get("borrowId"))));
-                    edspayUserInfoDo.setProtocolUrl(String.valueOf(map.get("PDFPath")));
-                    edspayUserInfoDao.saveRecord(edspayUserInfoDo);
+                Byte protocolCashType = Byte.valueOf(String.valueOf(map.get("protocolCashType")));
+                Long borrowId = Long.parseLong(String.valueOf(map.get("borrowId")));
+                List<AfEdspayUserInfoDo> userInfoDos = edspayUserInfoDao.getInfoByTypeAndTypeId(protocolCashType,borrowId);
+                if (userInfoDos== null || userInfoDos.size() == 0){//之前没插入在记录保存
+                    for (EdspayInvestorInfoBo infoBo : investorList) {
+                        AfEdspayUserInfoDo edspayUserInfoDo = new AfEdspayUserInfoDo();
+                        edspayUserInfoDo.setAmount(infoBo.getAmount());
+                        edspayUserInfoDo.setEdspayUserCardId(infoBo.getInvestorCardId());
+                        edspayUserInfoDo.setUserName(infoBo.getInvestorName());
+                        edspayUserInfoDo.setMobile(infoBo.getInvestorPhone());
+                        edspayUserInfoDo.setType(Integer.valueOf(protocolCashType));
+                        edspayUserInfoDo.setTypeId(borrowId);
+                        edspayUserInfoDo.setProtocolUrl(String.valueOf(map.get("PDFPath")));
+                        edspayUserInfoDao.saveRecord(edspayUserInfoDo);
 
+                    }
                 }
-                map.put("userSealDoList", userSealDoList);
-                map.put("edspaySealDoList", edspaySealDoList);
             }
 
 
@@ -871,6 +870,10 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         map.put("selfPath", src + accountDo.getUserName() + type + time + 2 + ".pdf");
         map.put("secondPath", src + accountDo.getUserName() + type + time + 3 + ".pdf");
         map.put("thirdPath", src + accountDo.getUserName() + type + time + 4 + ".pdf");
+        map.put("sealWidth", "70");
+        map.put("posType", "1");
+        map.put("signType", "Key");
+        map.put("secondPartyKey", "商务股份有限公司");//阿拉丁签章关键字
         return getLegalContractPdfWithOutLender(map);
     }
 
@@ -921,6 +924,25 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
+    private byte[] downLoadByUrl(String url) throws IOException {
+        OutputStream fos = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            return PdfCreateUtil.downLoadByUrl(url);
+        } catch (Exception e) {
+            logger.error("downLoadByUrl pdf合同生成失败 => {}", e);
+        } finally {
+            if (null != fos) {
+                fos.flush();
+                fos.close();
+            }
+            if (null != bos) {
+                bos.close();
+            }
+        }
+        return null;
+    }
+
     public byte[] firstPartySign(Map<String, Object> map,boolean result){
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.firstPartySign(map);//借款人盖章
@@ -964,9 +986,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
-    public byte[] selfStreamSign(String PDFPath,Long borrowId,String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream,boolean result){
+    public byte[] selfStreamSign(String PDFPath,Long borrowId,String fileName,String type,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream,boolean result){
         try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.selfStreamSign(fileName,type,sealData,accountId,posType,width,key,posPage,isQrcodeSign,stream);//借款人盖章
+            FileDigestSignResult fileDigestSignResult = afESdkService.selfStreamSign(fileName,type,accountId,posType,width,key,posPage,isQrcodeSign,stream);//借款人盖章
             if (fileDigestSignResult.getErrCode() != 0) {
                 result = false;
                 logger.error("selfStreamSign 盖章证书生成失败 => {}", fileDigestSignResult.getMsg()  + ",personKey =" + key + ",borrowId = " + borrowId );
@@ -1062,7 +1084,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         stream = StreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("firstPartyKey"),"5",false,stream,result);
         if (stream != null){
             if (null != map.get("companySelfSeal") && !"".equals(map.get("companySelfSeal"))) {//ald签章
-                stream = selfStreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("companySelfSeal"),(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream,result);
+                stream = selfStreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream,result);
 //                stream = secondPartySign(map,result,stream);
             }
             if (null != map.get("thirdSeal") && !"".equals(map.get("thirdSeal"))) {//出借人签章
@@ -1306,6 +1328,48 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
+    private String ossFileUploadWithEdspaySeal(Map<String, Object> map,String fileName,InputStream input) throws IOException {
+        try {
+            MultipartFile multipartFile = new MockMultipartFile("file", fileName, "application/pdf", IOUtils.toByteArray(input));
+            OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+            input.close();
+            logger.info(ossUploadResult.getMsg(), "url:", ossUploadResult.getUrl());
+            if (null != ossUploadResult.getUrl()) {
+                String protocolCashType = map.get("protocolCashType").toString();
+                AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+                afContractPdfDo.setType(Byte.valueOf(protocolCashType));
+                afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
+                afContractPdfDo.setTypeId(Long.parseLong(map.get("borrowId").toString()));
+                AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+                if (pdf == null) {
+                    afContractPdfDao.insert(afContractPdfDo);
+                }else {
+                    afContractPdfDo.setId(pdf.getId());
+                    afContractPdfDao.updateById(afContractPdfDo);
+                }
+                return ossUploadResult.getUrl();
+            }
+        } catch (Exception e) {
+            logger.error("证书上传oss失败 => {}", e.getMessage());
+            return null;
+        } finally {
+            if (null != input) {
+                input.close();
+            }
+            File file1 = new File(map.get("PDFPath").toString());
+            file1.delete();
+            file1 = new File(map.get("userPath").toString());
+            file1.delete();
+            file1 = new File(map.get("selfPath").toString());
+            file1.delete();
+            file1 = new File(map.get("secondPath").toString());
+            file1.delete();
+            file1 = new File(map.get("thirdPath").toString());
+            file1.delete();
+        }
+        return null;
+    }
+
     private String getLegalContractPdf(Map<String, Object> map) throws IOException {
         boolean result = true;
         byte[] stream = new byte[1024];
@@ -1329,7 +1393,22 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     private String getLegalContractPdfWithOutLender(Map<String, Object> map) throws IOException {
         boolean result = true;
         byte[] stream = new byte[1024];
-        stream = borrowerCreateSeal(result,stream,map);//借款人签章
+        stream = downLoadByUrl(map.get("PDFPath").toString());
+        stream = StreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream,result);
+        if (stream != null){
+            if (null != map.get("secondPartyKey") && !"".equals(map.get("secondPartyKey"))) {//ald签章
+                stream = selfStreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream,result);
+//                stream = secondPartySign(map,result,stream);
+            }
+            if (null != map.get("thirdPartyKey") && !"".equals(map.get("thirdPartyKey"))) {//出借人签章
+                stream = StreamSign(map.get("PDFPath").toString(),(Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream,result);
+            }
+            InputStream sbs = new ByteArrayInputStream(stream);
+            return ossFileUploadWithEdspaySeal(map,map.get("selfPath").toString(),sbs);//oss上传
+        }else {
+            return null;
+        }
+        /*stream = borrowerCreateSeal(result,stream,map);//借款人签章
 
         stream = aldCreateSeal(result,stream,map);//阿拉丁签章
 
@@ -1339,7 +1418,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         outputStream.write(stream);
         outputStream.flush();
         outputStream.close();
-        return ossFileUploadWithEdspaySeal(map,map.get("selfPath").toString());//oss上传
+        return ossFileUploadWithEdspaySeal(map,map.get("selfPath").toString());//oss上传*/
     }
 
     private String getPdfInfoWithOutSeal(Long userId, AfBorrowDo afBorrowDo, AfBorrowCashDo afBorrowCashDo, String type) throws IOException {
