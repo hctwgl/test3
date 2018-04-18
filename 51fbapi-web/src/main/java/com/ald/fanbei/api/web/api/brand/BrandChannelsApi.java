@@ -76,10 +76,13 @@ public class BrandChannelsApi implements ApiHandle {
 					for (AfResourceH5ItemDto afResourceH5ItemDto : configList) {
 						String pageMark = afResourceH5ItemDto.getValue1();
 						// zhu tui pin pai
-						if ("mainBrand".equals(pageMark )){
+						if (pageMark != null){
+							pageMark = pageMark.trim();
+						}
+						if ("mainBrand".equalsIgnoreCase(pageMark )){
 							imageUrl = afResourceH5ItemDto.getValue3();
 							h5LinkUrl = afResourceH5ItemDto.getValue2();
-						}else if("hotBrand".equals(pageMark)){
+						}else if("hotBrand".equalsIgnoreCase(pageMark)){
 							String ids = afResourceH5ItemDto.getValue2();
 							if (ids != null){
 								String idStr = ids.trim();
@@ -94,7 +97,9 @@ public class BrandChannelsApi implements ApiHandle {
 							hotBrandList.add(brandInfo);
 						}
 					}*/
-					 hotBrandList = afBrandService.getHotBrands(brandIds);
+					if (brandIds.length >0){
+						hotBrandList = afBrandService.getHotBrands(brandIds);
+					}
 				}
 				allBrandList = afBrandService.getAllAndNameSort();
 				char[] str = new char[26];
@@ -129,7 +134,7 @@ public class BrandChannelsApi implements ApiHandle {
 			data.put("h5LinkUrl", h5LinkUrl);
 			data.put("hotBrandList", hotBrandList);
 			data.put("allBrandInfo", allBrandInfo2);
-			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data);
+			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.SECOND_OF_THREE);
 		}
 		resp.setResponseData(data);
 		return resp;
