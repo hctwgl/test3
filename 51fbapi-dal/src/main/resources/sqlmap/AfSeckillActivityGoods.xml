@@ -334,7 +334,7 @@
 		order by a.sort DESC
     </select>
 
-    <select id="getSecKillGoodsStock">
+    <select id="getSecKillGoodsStock" resultType="java.lang.Long">
         SELECT
           a.limit_count - IFNULL(COUNT(DISTINCT o.id), 0)
         FROM
