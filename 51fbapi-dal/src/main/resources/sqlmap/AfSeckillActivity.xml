@@ -76,12 +76,5 @@
         ORDER BY a.gmt_start ASC
     </select>
 
-    <select id="getActivityNow" resultType="AfSeckillActivityDo">
-        SELECT
-        a.id rid,a.name,a.type,a.gmt_start,a.gmt_end,a.gmt_pstart,
-        a.close_time,a.goods_limit_count,a.type
-        FROM af_seckill_activity a
-        WHERE a.is_delete = 0 AND a.is_disable=0
-    </select>
 
 </mapper>
