@@ -302,39 +302,39 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 						if (result) {
 							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
+							//老ups逻辑
+							final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+							delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
+							jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+							String bankNumber = mainCard.getCardNumber();
+							String lastBank = bankNumber.substring(bankNumber.length() - 4);
+							smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+							String title = "恭喜您，审核通过啦！";
+							String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
+							msgContent = msgContent.replace("&bankCardNo", lastBank);
+							jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
+							// 审核通过
+							delegateBorrowCashDo.setGmtArrival(currDate);
+							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+							afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+							delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
+							Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+							Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
+							Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+							delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+							
+							transactionTemplate.execute(new TransactionCallback<String>() {
+								@Override
+								public String doInTransaction(TransactionStatus status) {
+									// 更新借款状态
+									afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
+									// 更新订单状态
+									afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+									applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
+									return "success";
+								}
+							});
 						}
-						//老ups逻辑
-						final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-						delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
-						jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-						String bankNumber = mainCard.getCardNumber();
-						String lastBank = bankNumber.substring(bankNumber.length() - 4);
-						smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
-						String title = "恭喜您，审核通过啦！";
-						String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
-						msgContent = msgContent.replace("&bankCardNo", lastBank);
-						jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
-						// 审核通过
-						delegateBorrowCashDo.setGmtArrival(currDate);
-						delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-						afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
-						delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
-						Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
-						Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
-						Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-						delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-
-						transactionTemplate.execute(new TransactionCallback<String>() {
-							@Override
-							public String doInTransaction(TransactionStatus status) {
-								// 更新借款状态
-								afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
-								// 更新订单状态
-								afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
-								applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-								return "success";
-							}
-						});
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),

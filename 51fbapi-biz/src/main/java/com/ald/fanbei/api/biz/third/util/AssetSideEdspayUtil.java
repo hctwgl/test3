@@ -581,6 +581,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 						//重推开关开启
 						recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+						return true;
 					}else{
 						//重推开关关闭
 						noRepushHandle(borrowCashInfo, switchConf);
@@ -590,6 +591,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			} catch (Exception e) {
 				if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+					return true;
 				}else{
 					noRepushHandle(borrowCashInfo, switchConf);
 				}
@@ -618,7 +620,13 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 				afBorrowLegalOrderDo.setClosedDetail("推送失败关闭");
 				afBorrowLegalOrderDo.setGmtClosed(new Date());
+				logger.info("########################################################");
+				logger.info("BorrowCashDoTemp"+delegateBorrowCashDo.toString());
+				logger.info("BorrowLegalOrderTemp"+afBorrowLegalOrderDo.toString());
 				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+				logger.info("########################################################");
+				logger.info("BorrowCashDo"+borrowCashDo.toString());
+				logger.info("BorrowLegalOrder"+afBorrowLegalOrderDo.toString());
 				//维护拓展表
 				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
 				Date now = new Date();

@@ -166,7 +166,7 @@ public class LeaseOrderApi implements ApiHandle {
             afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 
             // 保存手续费信息
-            BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper, userName);
+            BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper, userName,afOrder.getGoodsId());
             afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 
             //下单时所有场景额度使用情况

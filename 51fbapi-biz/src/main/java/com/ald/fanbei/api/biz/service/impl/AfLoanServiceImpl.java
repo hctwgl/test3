@@ -248,6 +248,11 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 					boolean result = assetSideEdspayUtil.borrowCashCurPush(whiteCollarBorrowInfo, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (result) {
 						logger.info("borrowCashCurPush suceess,orderNo="+whiteCollarBorrowInfo.get(0).getOrderNo());
+						loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+						afLoanDao.updateById(loanDo);
+						afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
+						// 增加日志
+						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
 					}
 				}else{
 					// 调用UPS打款
@@ -263,13 +268,12 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 						smsUtil.sendBorrowPayMoneyFail(bo.userName);
 						throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
 					}
+					loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+					afLoanDao.updateById(loanDo);
+					afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
+					// 增加日志
+					afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
 				}
-				loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
-				afLoanDao.updateById(loanDo);
-				afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
-				
-				// 增加日志
-				afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
 			}catch(Exception e) {
 				loanDo.setStatus(AfLoanStatus.CLOSED.name());
 				afLoanDao.updateById(loanDo);
