@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfVisualH5Do;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 可视化H5Dao
@@ -13,5 +14,7 @@ import com.ald.fanbei.api.dal.domain.AfVisualH5Do;
 public interface AfVisualH5Dao extends BaseDao<AfVisualH5Do, Long> {
 
     int updateById(AfVisualH5Do afVisualH5Do);
+
+    AfVisualH5Do getById(@Param("rid") Long rid);
 
 }

@@ -38,5 +38,9 @@ public class AfVisualH5ServiceImpl extends ParentServiceImpl<AfVisualH5Do, Long>
 	public int updateById(AfVisualH5Do afVisualH5Do) {
 		return afVisualH5Dao.updateById(afVisualH5Do);
 	}
+	@Override
+	public AfVisualH5Do getById(Long id){
+		return afVisualH5Dao.getById(id);
+	}
 
 }

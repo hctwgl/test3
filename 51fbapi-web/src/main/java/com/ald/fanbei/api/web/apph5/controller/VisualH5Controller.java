@@ -461,12 +461,10 @@ public class VisualH5Controller extends BaseController {
     @RequestMapping(value = "/doHtml", method = RequestMethod.POST)
     public String doHtml(HttpServletRequest request, HttpServletResponse response) {
         try{
-//            Document doc = Jsoup.parse(new URL("https://www.taobao.com").openStream(), "UTF-8", "https://www.taobao.com");
-//            String html = doc.outerHtml().toString();
-            long time = new Date().getTime();
             Long id = NumberUtil.objToPageLongDefault(request.getParameter("id"), null);
             String strHtml = ObjectUtils.toString(request.getParameter("strHtml"), null);
-            String outFilePath = src + "H5_VISUAL" + time + ".html";
+            AfVisualH5Do afvisualH5Do = afVisualH5Service.getById(id);
+            String outFilePath = src + afvisualH5Do.getUrlName() + ".html";
             File file = new File(outFilePath);
             if(file.exists()) {//删除原来的旧文件
                 file.delete();

@@ -14,4 +14,6 @@ public interface AfVisualH5Service extends ParentService<AfVisualH5Do, Long>{
 
     int updateById(AfVisualH5Do afVisualH5Do);
 
+    AfVisualH5Do getById(Long id);
+
 }
