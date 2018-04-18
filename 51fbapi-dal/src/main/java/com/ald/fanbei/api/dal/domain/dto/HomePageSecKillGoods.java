@@ -34,6 +34,15 @@ public class HomePageSecKillGoods extends AbstractSerial{
     private String source; // 商品的来源
     private Date activityStart;
     private Date activityEnd;
+    private Long  activityId;
+
+    public Long getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(Long activityId) {
+        this.activityId = activityId;
+    }
 
     public Date getActivityStart() {
         return activityStart;

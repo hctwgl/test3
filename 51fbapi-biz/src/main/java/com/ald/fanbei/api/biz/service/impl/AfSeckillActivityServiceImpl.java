@@ -200,4 +200,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByBottomGoodsQuery.setPageFlag(pageFlag);
 	    return afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 	}
+
+	@Override
+	public Integer getSecKillGoodsStock(Long goodsId, Long activityId) {
+		return afSeckillActivityGoodsDao.getSecKillGoodsStock(goodsId,activityId);
+	}
 }
