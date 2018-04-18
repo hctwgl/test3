@@ -212,9 +212,11 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					}
 					AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 					AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+					//浙商是否维护中逻辑
+					Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 					if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
 						&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
-						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag) {
+						&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag&&!bankIsMaintaining) {
 						//开关开启，非马甲包的现金贷推送
 						AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
 						List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
@@ -300,39 +302,39 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 						if (result) {
 							logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
+							//老ups逻辑
+							final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+							delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
+							jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+							String bankNumber = mainCard.getCardNumber();
+							String lastBank = bankNumber.substring(bankNumber.length() - 4);
+							smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+							String title = "恭喜您，审核通过啦！";
+							String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
+							msgContent = msgContent.replace("&bankCardNo", lastBank);
+							jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
+							// 审核通过
+							delegateBorrowCashDo.setGmtArrival(currDate);
+							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+							afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+							delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
+							Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
+							Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
+							Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+							delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+							
+							transactionTemplate.execute(new TransactionCallback<String>() {
+								@Override
+								public String doInTransaction(TransactionStatus status) {
+									// 更新借款状态
+									afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
+									// 更新订单状态
+									afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+									applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
+									return "success";
+								}
+							});
 						}
-						//老ups逻辑
-						final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-						delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
-						jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-						String bankNumber = mainCard.getCardNumber();
-						String lastBank = bankNumber.substring(bankNumber.length() - 4);
-						smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
-						String title = "恭喜您，审核通过啦！";
-						String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
-						msgContent = msgContent.replace("&bankCardNo", lastBank);
-						jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
-						// 审核通过
-						delegateBorrowCashDo.setGmtArrival(currDate);
-						delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-						afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
-						delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
-						Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
-						Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
-						Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-						delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-
-						transactionTemplate.execute(new TransactionCallback<String>() {
-							@Override
-							public String doInTransaction(TransactionStatus status) {
-								// 更新借款状态
-								afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
-								// 更新订单状态
-								afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
-								applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-								return "success";
-							}
-						});
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
 						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
@@ -396,6 +398,10 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 					delegateBorrowCashDo.setReviewDetails("弱风控认证存在捕获外异常");
 				}
 				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+				Integer countUnpayOverDue= afBorrowBillService.countNotPayOverdueBill(userId);
+				if(countUnpayOverDue>0){
+					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR_BORROW);
+				}
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 		} finally {
@@ -403,6 +409,20 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		}
 	}
 
+	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+			String[] split = assetPushResource.getValue4().split(",");
+			String maintainStart = split[0];
+			String maintainEnd = split[1];
+			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+			
+		}
+		return bankIsMaintaining;
+	}
+	
 	private void doMaidianLog(HttpServletRequest request, AfBorrowCashDo afBorrowCashDo, RequestDataVo requestDataVo,
 			FanbeiContext context) {
 		String ext1 = afBorrowCashDo.getBorrowNo();

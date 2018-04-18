@@ -23,6 +23,8 @@ public interface AfInterestFreeRulesService {
 	 */
 	AfInterestFreeRulesDo getById(Long id);
 
+	AfInterestReduceSchemeDo getReduceSchemeByGoodId(Long goodsId,Long brandId,Long catogeryId);
 
+	AfInterestReduceRulesDo getReduceRuleById(Long rid);
 	    
 }

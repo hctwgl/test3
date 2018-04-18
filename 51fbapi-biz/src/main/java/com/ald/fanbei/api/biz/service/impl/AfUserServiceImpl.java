@@ -352,6 +352,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	}
 
 	@Override
+	public Long getUserByBorrowCashStatus(Long userId) {
+		return afUserDao.getUserByBorrowCashStatus(userId);
+	}
+
+	@Override
 	public AfUserDo getUserByMobile(String mobile) {
 		return afUserDao.getUserByMobile(mobile);
 	}

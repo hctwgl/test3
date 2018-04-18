@@ -119,4 +119,6 @@ public interface AfRepaymentBorrowCashDao {
      * @return
      */
     int status2Process(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
+    
+    int status2ProcessKuaijie(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
 }
