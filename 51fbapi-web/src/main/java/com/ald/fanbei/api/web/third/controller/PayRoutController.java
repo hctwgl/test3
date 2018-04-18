@@ -906,8 +906,7 @@ public class PayRoutController {
 					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
 				}
 			}
-			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
 
 //			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
 //
