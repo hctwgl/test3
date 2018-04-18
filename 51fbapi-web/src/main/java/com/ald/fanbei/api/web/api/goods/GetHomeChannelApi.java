@@ -61,7 +61,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 /**
- * @author Jiang Rongbo
+ * 频道页
+ * @author chenqiwei
  *
  */
 @Component("getHomeChannelApi")
@@ -130,47 +131,33 @@ public class GetHomeChannelApi implements ApiHandle {
 		}
 		
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		// 搜索框背景图
-//		List<AfResourceDo> serchBoxRescList = afResourceService
-//				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
-//		if (serchBoxRescList != null && !serchBoxRescList.isEmpty()) {
-//			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
-//			String searchBoxBgImage = serchBoxInfo.getValue();
-//			data.put("searchBoxBgImage", searchBoxBgImage);
-//		} 
-		// tabList[]
-		List<AfHomePageChannelDo> channelList =  afHomePageChannelService.getListOrderBySortDesc();
-		List<AfHomePageChannelVo> tabList = new ArrayList<AfHomePageChannelVo>();
-		if (CollectionUtil.isNotEmpty(channelList)) {
-			tabList = CollectionConverterUtil.convertToListFromList(channelList, new Converter<AfHomePageChannelDo, AfHomePageChannelVo>() {
-				@Override
-				public AfHomePageChannelVo convert(AfHomePageChannelDo source) {
-					return parseDoToVo(source);
-				}
-			});
-		}
-		data.put("tabList", tabList);
-		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
-		List<Object> topTabBarList = new ArrayList<Object>();
-		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
-		}
-		Object topTab = new Object();
-		if(topTabBarList != null && topTabBarList.size()>0){
-			topTab =  topTabBarList.get(0);
-		}
-		data.put("topTab", topTab);
-//		List<AfResourceDo> backgroundList = afResourceService
-//				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
-//		// 首页背景图  ?确认是否要首页的
-//		if (!backgroundList.isEmpty()) {
-//					data.put("backgroundList", backgroundList);
+
+//		List<AfHomePageChannelDo> channelList =  afHomePageChannelService.getListOrderBySortDesc();
+//		List<AfHomePageChannelVo> tabList = new ArrayList<AfHomePageChannelVo>();
+//		if (CollectionUtil.isNotEmpty(channelList)) {
+//			tabList = CollectionConverterUtil.convertToListFromList(channelList, new Converter<AfHomePageChannelDo, AfHomePageChannelVo>() {
+//				@Override
+//				public AfHomePageChannelVo convert(AfHomePageChannelDo source) {
+//					return parseDoToVo(source);
+//				}
+//			});
 //		}
-		
+//		data.put("tabList", tabList);
+//		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
+//		List<Object> topTabBarList = new ArrayList<Object>();
+//		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+//			topTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
+//		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+//			topTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
+//		}
+//		Object topTab = new Object();
+//		if(topTabBarList != null && topTabBarList.size()>0){
+//			topTab =  topTabBarList.get(0);
+//		}
+//		data.put("topTab", topTab);
+
 	    List<Object> topBannerList = new ArrayList<Object>();
 	    List<Object> navigationList = new ArrayList<Object>();
 	    List<Object> onePlusThreeArea = new ArrayList<Object>();
@@ -233,11 +220,6 @@ public class GetHomeChannelApi implements ApiHandle {
 			}
 			navigationInfo = getNavigationInfolist(navigationList);
 			onePlusThreeArea = getOnePlusThreeArea(onePlusThreeArea);
-			//data.put("topBannerList", topBannerList);
-			//data.put("navigationInfo", navigationInfo);
-			//onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
-			//onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
-			//data.put("onePlusThreeInfo", onePlusThreeInfo);
 			if (!topBannerList.isEmpty()) {
 				data.put("topBannerList", topBannerList);
 			}
