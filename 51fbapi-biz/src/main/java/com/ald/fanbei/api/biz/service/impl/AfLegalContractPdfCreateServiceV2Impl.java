@@ -882,6 +882,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
         long time = new Date().getTime();
         map.put("uploadPath", src + accountDo.getUserName() + type + time + ".pdf");
+        map.put("userPath", src + accountDo.getUserName() + type + time + 1 + ".pdf");
         map.put("sealWidth", "70");
         map.put("posType", "1");
         map.put("signType", "Key");
@@ -1402,8 +1403,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     private String getLegalContractPdfWithOutLender(Map<String, Object> map) throws IOException {
         boolean result = true;
         byte[] stream = new byte[1024];
-        stream = downLoadByUrl(map.get("PDFPath").toString());
-        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
+//        stream = downLoadByUrl(map.get("PDFPath").toString());
+        stream = borrowerCreateSeal(result,stream,map);//借款人签章
+//        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
         if (stream != null){
             if (null != map.get("secondPartyKey") && !"".equals(map.get("secondPartyKey"))) {//ald签章
                 stream = selfStreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
