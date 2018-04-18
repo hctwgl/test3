@@ -468,16 +468,4 @@ public interface AfOrderService {
 	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
 	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
 
-	/**
-	 * 检查order是否生效
-	 * @param orderId
-	 */
-	void checkOrderValidity(AfOrderDo order);
-
-	/**
-	 * 根据上送卡号解析出 PayType类型
-	 * @param bankcardId
-	 */
-	PayType resolvePayType(Long bankcardId, String isCombinationPay);
-
 }
