@@ -51,5 +51,11 @@ public class AfResourceH5ItemServiceImpl implements AfResourceH5ItemService {
 		return afResourceH5ItemDao.findListByModelTagAndSort(tag, sort);
 	}
 
+	@Override
+	public List<AfResourceH5ItemDo> getByTagAndValue2(String tag, String type) {
+		// TODO Auto-generated method stub
+		return afResourceH5ItemDao.getByTagAndValue2(tag,type);
+	}
+
 
 }

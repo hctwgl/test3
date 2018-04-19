@@ -34,4 +34,6 @@ public interface AfResourceH5ItemDao extends BaseDao<AfResourceH5ItemDo, Long> {
      */
     List<AfResourceH5ItemDo> findListByModelTagAndSort(@Param("tag") String tag, @Param("sort") Integer sort);
 
+	List<AfResourceH5ItemDo> getByTagAndValue2(@Param("tag")String tag,@Param("type") String type);
+
 }

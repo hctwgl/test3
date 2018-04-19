@@ -33,6 +33,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -109,7 +110,11 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 	AfSeckillActivityService afSeckillActivityService;
 	@Resource
 	AfResourceH5ItemService afResourceH5ItemService;
-	@Override
+	
+	private String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode(); 
+	private String CHANNEL_MORE_GOODS_TOP_IMAGE = 		   HomePageType.CHANNEL_MORE_GOODS_TOP_IMAGE.getCode(); 
+	private String HOME_CHANNEL_MORE_GOODS = 		   HomePageType.HOME_CHANNEL_MORE_GOODS.getCode(); 
+	 
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -132,33 +137,27 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 	 
 		//更多商品
 		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
-		 try{
-		 String moreGoodsTag = "MORE_IMAGE";
-		 String activityTag = "HOME_CHANNEL_MORE_GOODS";
-		 Integer activityType = 5;
-		
-		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
+	 try{
+		  Integer activityType = 5;
+		  List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
 		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		     moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
+
 		     String imageUrl = "";
 			 String content = "";
-		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
+			 List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,CHANNEL_MORE_GOODS_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
-		    	 for(AfResourceH5ItemDo recommend:recommendList ){
-						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
-							  content =  recommend.getValue1();
-							  imageUrl= recommend.getValue3();
-							  break;
-						  }
+		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+		    	 imageUrl = recommend.getValue3();
+							 content =  recommend.getValue1();
+						     imageUrl= recommend.getValue3();
 		         }
-		     }
-		     if(StringUtil.isNotEmpty(imageUrl)){
+		     if(StringUtil.isNotEmpty(imageUrl)&& moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
 		    	   moreGoodsInfo.put("imageUrl",imageUrl);
 		    	   moreGoodsInfo.put("content", content);
+				   moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
 	    	 }
 		 }catch(Exception e){
-			 
+			 logger.error("get chaannel moreGoodsInfo goodsInfo error "+ e);
 		 }
 		 
 		 if (!moreGoodsInfo.isEmpty()) {

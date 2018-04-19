@@ -30,4 +30,7 @@ public interface AfResourceH5ItemService {
 	 */
 	List<AfResourceH5ItemDo> findListByModelTagAndSort(String tag, Integer sort);
 
+	List<AfResourceH5ItemDo> getByTagAndValue2(String tag,
+			String type);
+
 }

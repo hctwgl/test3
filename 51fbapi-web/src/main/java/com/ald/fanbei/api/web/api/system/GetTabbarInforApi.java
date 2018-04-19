@@ -189,7 +189,7 @@ public class GetTabbarInforApi implements ApiHandle {
 			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_NOMAL")){
 				index.put("asjMainNomal", data);
 			}
-			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_NOMAL_SELECTED")){
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_SELECTED")){
 				index.put("asjMainSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_HIGHLIGHT")){

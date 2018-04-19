@@ -51,6 +51,7 @@ import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
+import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.MoXieResCodeType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
@@ -1219,12 +1220,15 @@ public class AppH5FanBeiWebController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/getMoreGoods", method = RequestMethod.POST,  produces = "application/json;charset=utf-8")
 	public String getMoreGoods(HttpServletRequest request, ModelMap model) throws IOException {
-
+		String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+		String GUESS_YOU_LIKE_TOP_IMAGE = 		   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
+		
 		FanbeiWebContext context = doWebCheck(request, false);
 		Map<String, Object> returnData = new HashMap<String, Object>();
 		// 获取用户信息
 		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 		// 用户是否存在
+		
 		Long userId = null;
 		if (afUserDo != null) {
 		    	userId = afUserDo.getRid();
@@ -1239,40 +1243,29 @@ public class AppH5FanBeiWebController extends BaseController {
 	      }
 	 
 		//更多商品
-		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
-		 try{
-		 String moreGoodsTag = "H_T_IMAGE";
-		 //String activityTag = "HOME_CHANNEL_MORE_GOODS";
-		 //Integer activityType = 5;
-		
+	try{
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
-		 //List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
 		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+		    
 		     String imageUrl = "";
-			 String content = "";
-		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
+		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
-		    	 for(AfResourceH5ItemDo recommend:recommendList ){
-						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
-							  content =  recommend.getValue1();
-							  imageUrl= recommend.getValue3();
-							  break;
-						  }
-		         }
+		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+		    	 imageUrl = recommend.getValue3();
 		     }
-			 goodsInfo.put("imageUrl",imageUrl);
+				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+					goodsInfo.put("imageUrl",imageUrl); 
+				    goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+				}
+		     
 			 if (!goodsInfo.isEmpty()) {
 					returnData.put("moreGoodsInfo", goodsInfo);
 				}
-			// moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
 		 }catch(Exception e){
-			 
+			 logger.error("h5 get moreGoodsInfo goodsInfo error "+ e);
 		 }
-			
-		 
 			
 			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),
 					"", returnData).toString();
@@ -1327,14 +1320,6 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 			goodsInfo.put("nperMap", nperMap);
 		     //更换content和type可跳转商品详情
-			if("FLASH_SALE".equals(tag)){
-				  String content = null;
-				 if(afResourceH5ItemDo != null){
-					 content = afResourceH5ItemDo.getValue1();
-				 }
-		    	  goodsInfo.put("type", "H5_URL");
-		    	  goodsInfo.put("content", content);
-		     }
 		   }
 		    goodsList.add(goodsInfo);
 		}

@@ -165,7 +165,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	    homePageSecKillQuery.setDateEnd(DateUtil.getEndOfDate(activityDate));
 	    homePageSecKillQuery.setUserId(userId);
 	    homePageSecKillQuery.setPageNo(pageNo);
-	    
+	    homePageSecKillQuery.setPageSize(20);
 	    return afSeckillActivityGoodsDao.getHomePageSecKillGoods(homePageSecKillQuery);
 	}
 
@@ -186,6 +186,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByActivityModelQuery.setTag(tag);
 		homePageSecKillByActivityModelQuery.setType(type);
 		homePageSecKillByActivityModelQuery.setTabId(tabId);
+		homePageSecKillByActivityModelQuery.setPageSize(20);
 	    return afSeckillActivityGoodsDao.getHomePageSecKillGoodsByActivityModel(homePageSecKillByActivityModelQuery);
 	}
 
@@ -198,6 +199,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByBottomGoodsQuery.setUserId(userId);
 		homePageSecKillByBottomGoodsQuery.setPageNo(pageNo);
 		homePageSecKillByBottomGoodsQuery.setPageFlag(pageFlag);
+		homePageSecKillByBottomGoodsQuery.setPageSize(20);
 	    return afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 	}
 }
