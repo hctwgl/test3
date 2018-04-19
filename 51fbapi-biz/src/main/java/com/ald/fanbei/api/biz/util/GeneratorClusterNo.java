@@ -15,6 +15,7 @@ import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -78,9 +79,11 @@ public class GeneratorClusterNo {
 	 * @param currDate
 	 * @return
 	 */
-	public String getOrderPayNo(Date currDate) {// 支付号规则：14位日期_5位订单序号
+	public String getOrderPayNo(Date currDate,String bankChannel) {// 支付号规则：14位日期_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("fk");
+		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel))
+		    orderSb.append("kj");
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getOrderPaySequenceNum(currDate)));
 		return orderSb.toString();
 	}
@@ -144,10 +147,15 @@ public class GeneratorClusterNo {
 	 * @param currDate
 	 * @return
 	 */
-	public String getRepaymentNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+	public String getRepaymentNo(Date currDate,String bankChannel) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
-		StringBuffer orderSb = new StringBuffer("hk");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentSequenceNum(currDate, "hk")));
+		String header = "hk";
+		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
+		    header += "kj";
+		}
+		
+		StringBuffer orderSb = new StringBuffer(header);
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentSequenceNum(currDate, header)));
 		return orderSb.toString();
 	}
 	/**
@@ -175,7 +183,24 @@ public class GeneratorClusterNo {
 			return orderSb.toString();
 		}
 	}
-
+	/**
+	 * 获取现金还款编号
+	 * 
+	 * @param currDate
+	 * @return
+	 */
+	public String getRepaymentBorrowCashNo(Date currDate, String bankChannel) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		synchronized (this){
+			String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+			StringBuffer orderSb = new StringBuffer("hq");
+			if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
+			    orderSb.append("kj");
+			}
+			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
+			return orderSb.toString();
+		}
+	}
+	
 	/**
 	 * 获取现金还款编号
 	 *

@@ -21,5 +21,6 @@ public interface AfIagentResultDao extends BaseDao<AfIagentResultDo, Long> {
 
     List<AfIagentResultDo> getIagentByUserIdAndStatusTime(AfIagentResultDto resultDto);
 
+    public AfIagentResultDo getIagentByUserIdToday(@Param("userId") long userId);
 
 }

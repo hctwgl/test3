@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -131,7 +133,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Resource
     AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-
+    @Autowired
+    KafkaSync kafkaSync;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -208,7 +211,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Override
     public Map<String, Object> createRepayment(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                               final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
+                                               final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,String bankPayType) {
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
         final String payTradeNo = repayNo;
@@ -246,8 +249,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
                 }
                 AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv);
+                UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), 
+                	bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", merPriv);
                 if (!respBo.isSuccess()) {
                     if (StringUtil.isNotBlank(respBo.getRespCode())) {
                 	String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
@@ -290,7 +293,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 
     public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                                    final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
+                                                    final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,final String bankPayType) {
 
         Date now = new Date();
         String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
@@ -326,8 +329,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
                     } else if (cardId > 0) {// 银行卡支付
                         AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                        UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                                bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+                        UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), 
+                        	bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, 
+                        	name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
                         if (!respBo.isSuccess()) {
                             String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
                             dealRepaymentFail(payTradeNo, "", true, errorMsg, repayment);
@@ -583,6 +587,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         });
 
         if (resultValue == 1L) {
+            try{
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+            }catch (Exception e){
+                logger.info("消息同步失败:",e);
+            }
             try {
                 AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                 if (StringUtils.equals("代扣付款",repayment.getName())) {

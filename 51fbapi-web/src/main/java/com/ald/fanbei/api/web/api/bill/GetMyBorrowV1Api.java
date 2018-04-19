@@ -210,7 +210,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                     status="5";
                 }
                 
-                if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                if(StringUtil.equals(userAuth.getFacesStatus(),"N")){
                     status="1";
                 }
                 listDesc1=getAuthDesc(value3,"two");
