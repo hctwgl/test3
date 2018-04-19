@@ -372,8 +372,10 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
 	    kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
+        if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+            afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+        }
 	    afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
-	    afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
 
 	    HashMap<String, Object> map = new HashMap<String, Object>();
 	    map.put("refId", kuaijieRepaymentBo.getRepayment().getRid());
