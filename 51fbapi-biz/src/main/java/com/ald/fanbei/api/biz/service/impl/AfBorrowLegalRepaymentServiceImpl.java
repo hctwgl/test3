@@ -9,6 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +162,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 
 	@Autowired
 	private AfBorrowLegalOrderService afBorrowLegalOrderService;
-
+	@Resource
+	KafkaSync kafkaSync;
 	@Resource
 	CuiShouUtils cuiShouUtils;
 
@@ -173,7 +178,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
         	if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
         	    lockRepay(bo.userId);
         	}
-	    	
+
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
@@ -272,6 +277,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 
             if (resultValue == 1L) {
             	try {
+
 					notifyUserBySms(repayDealBo, isBalance);
 					nofityRisk(repayDealBo);
 				}
@@ -279,6 +285,12 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 					logger.error("nofityRisk or notifyUserBySms error",e);
 				}
 				cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
             }
     		
     	}finally {
@@ -448,17 +460,17 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	    KuaijieRepayBo bizObject = new KuaijieRepayBo(repayment, legalOrderRepayment, bo);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(), 
+		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
 			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 	    } else {// 代扣
-		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
+		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
 			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
 	    dealRepaymentSucess(bo.tradeNo, "", repayment, legalOrderRepayment, null, null);
 	    resultMap = getResultMap(bo, null);
 	}
-	
+
 	return resultMap;
     }
 
@@ -475,9 +487,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	
+
     }
-    
+
     @Override
     protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
@@ -485,7 +497,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	    // 更新状态
 	    changOrderRepaymentStatus(payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRepaymentBo.getLegalOrderRepayment().getId());
 	}
-	
+
 	return getResultMap(kuaijieRepaymentBo.getBo(), respBo);
     }
 
@@ -512,10 +524,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends UpsPayKuaijieServiceAbstr
 	    //data.put("resp", respBo);
 	    data.put("outTradeNo", respBo.getTradeNo());
 	}
-	
+
 	return data;
     }
-    
+
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {

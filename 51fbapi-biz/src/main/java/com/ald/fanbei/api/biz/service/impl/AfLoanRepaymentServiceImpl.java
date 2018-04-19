@@ -12,6 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +151,8 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
     private AfResourceService afResourceService;
 	@Resource
 	CuiShouUtils cuiShouUtils;
-
+	@Resource
+	KafkaSync kafkaSync;
 
     @Override
     public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
@@ -508,6 +513,12 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
 				cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
             }
     		
     	}finally {
