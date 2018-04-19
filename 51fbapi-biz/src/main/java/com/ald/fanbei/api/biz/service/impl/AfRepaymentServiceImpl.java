@@ -291,11 +291,13 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    // 还款金额是否大于银行单笔限额
 	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
 	    // 构造业务数据，为后续接口使用
-	    KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment, billIdList);
+	    KuaijieRepaymentBo bizObject =null;// new KuaijieRepaymentBo(repayment, billIdList);
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 		repayment.setStatus(RepaymentStatus.SMS.getCode());
 		afRepaymentDao.addRepayment(repayment);
+		bizObject = new KuaijieRepaymentBo(repayment, billIdList);
 
+		logger.info("repaymentbizObject:"+JSON.toJSONString(bizObject));
 		map = sendKuaiJieSms( cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(),
 			JSON.toJSONString(bizObject), "afRepaymentService", Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
 	    } else {// 代扣
@@ -304,6 +306,8 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 		afUserAmountService.addUseAmountDetail(repayment);
 		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
+			bizObject = new KuaijieRepaymentBo(repayment, billIdList);
+			logger.info("repaymentbizObject:"+JSON.toJSONString(bizObject));
 		// 调用ups支付
 		map = doUpsPay(bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
 			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
