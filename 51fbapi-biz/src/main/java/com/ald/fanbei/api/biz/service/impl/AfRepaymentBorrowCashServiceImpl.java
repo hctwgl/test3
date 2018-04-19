@@ -589,7 +589,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         if (resultValue == 1L) {
             try{
                 kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
-                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+                kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
             }catch (Exception e){
                 logger.info("消息同步失败:",e);
             }
