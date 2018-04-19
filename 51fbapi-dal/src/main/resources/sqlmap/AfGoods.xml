@@ -472,7 +472,7 @@
 
 	</select>
 
-	<select id="getGoodsByIds" parameterType="list" resultType="list">
+	<select id="getGoodsByIds" parameterType="list" resultType="java.util.HashMap">
 		SELECT
 		    a.id as rid,
 			a.name as goodsName,
@@ -492,7 +492,8 @@
 			af_goods a
 		LEFT JOIN af_scheme_goods b on a.id = b.goods_id
 		WHERE
-		is_delete=0 AND id IN
+			a.is_delete=0
+	    AND a.id IN
 		<foreach item="item" collection="list" separator="," open="("
 				 close=")">
 			#{item, jdbcType=BIGINT}

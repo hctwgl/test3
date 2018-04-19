@@ -33,12 +33,12 @@ import java.util.Map;
 
 /**
  * @author luoxiao @date 2018/4/16 14:26
- * @类描述：3周年庆典活动
+ * @类描述：三周年庆典活动
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
 @RequestMapping("/fanbei-web/thirdAnnivCelebration/")
-public class AppH53rdCelebrationActivityController extends BaseController {
+public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @Resource
     private AfRecommendUserService afRecommendUserService;
 
@@ -115,13 +115,13 @@ public class AppH53rdCelebrationActivityController extends BaseController {
             List<Map<String, Object>> goodsInfoList = afGoodsService.getGoodsByIds(goodIdList);
 
             String  stockCount;
-            Integer interestFreeId;
+            Long interestFreeId;
             for(Map<String, Object> goodInfo: goodsInfoList) {
-                stockCount = (String) goodInfo.get("stockCount");
+                stockCount = String.valueOf(goodInfo.get("stockCount"));
                 if(StringUtils.isNotEmpty(stockCount) && Integer.parseInt(stockCount) < 0){
                     goodInfo.put("count","0");
                 }
-                interestFreeId = (Integer) goodInfo.get("interestFreeId");
+                interestFreeId = (Long) goodInfo.get("interestFreeId");
 
                 // 获取借款分期配置信息
                 AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -169,7 +169,7 @@ public class AppH53rdCelebrationActivityController extends BaseController {
         try{
             if(null != afUserDo){
                 Integer sharedTimes = afRecommendUserService.getTodayShareTimes(afUserDo.getRid());
-                if(null != sharedTimes && sharedTimes > 0){
+                if(null != sharedTimes && sharedTimes == 0){
                     // TODO 优惠券
                     AfCouponDo couponDo = afCouponService.getCouponById(0l);
                     AfUserCouponDo userCoupon = new AfUserCouponDo();
