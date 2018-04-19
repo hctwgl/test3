@@ -68,5 +68,15 @@
             AND a.gmt_pstart <![CDATA[<=]]> now() AND a.gmt_end <![CDATA[>=]]> now()
         </if>
     </select>
+
+    <select id="getActivityListByName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT a.id
+        FROM af_seckill_activity a
+        WHERE a.is_delete = 0 AND a.is_disable=0
+          AND a.name like CONCAT(#{name}, '%')
+          AND a.gmt_pstart <![CDATA[>=]]> curdate()
+          AND a.gmt_end <![CDATA[<]]> date_add(curdate(), interval 1 day)
+        ORDER BY a.name
+    </select>
     
 </mapper>

@@ -5,9 +5,11 @@ import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 秒杀活动管理Service
@@ -58,4 +60,8 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
 
     List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId);
+
+    List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo);
+
+    List<String> getActivityListByName(String name);
 }

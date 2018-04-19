@@ -578,6 +578,11 @@ public class Constants {
 	public static final String TAC_FORMAL_TIME = "TAC_FORMAL_TIME";
 
 	/**
+	 * 三周年庆典秒杀活动名称前缀
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_NAME = "TAC_SEC_KILL_ACTIVITY_NAME";
+
+	/**
 	 * 默认二级类型
 	 */
 	public static final String DEFAULT = "DEFAULT";
