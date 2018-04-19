@@ -163,6 +163,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 
 	if (!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))) {
 	    // 未出账时拦截按期还款
+		unLockRepay(bo.userId);
 	    throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 	}
 
