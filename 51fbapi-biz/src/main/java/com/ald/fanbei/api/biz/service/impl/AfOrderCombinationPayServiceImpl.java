@@ -219,7 +219,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 			afOrder.setRid(orderInfo.getRid());
 			afOrder.setPayStatus(PayStatus.DEALING.getCode());
 			afOrder.setStatus(OrderStatus.DEALING.getCode());
-			afOrderDao.updateOrder(afOrder);
 
 			AfBorrowDo borrow = kuaijieOrderCombinationPayBo.getBorrow();
 			AfUserAccountDo userAccountInfo = kuaijieOrderCombinationPayBo.getUserAccountInfo();
@@ -252,8 +251,8 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
 			// 更新拆分场景使用额度
 			riskUtil.updateUsedAmount(orderInfo, borrow);
-			logger.info("updateOrder orderInfo = {}", orderInfo);
-			orderDao.updateOrder(orderInfo);
+			logger.info("updateOrder orderInfo = {}", afOrder);
+            afOrderDao.updateOrder(afOrder);
 		}
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
