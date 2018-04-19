@@ -13,13 +13,13 @@ import com.ald.fanbei.api.biz.arbitration.*;
 import com.ald.fanbei.api.biz.service.RiskTrackerService;
 import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.alibaba.fastjson.JSON;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.ArbitrationRespBo;
@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.ArbitrationService;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.ArbitrationStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -243,118 +244,41 @@ public class ArbitrationController {
         return map;
     }
 
-    /**
-     * 该API接口由互仲平台向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的信息。
-     *
-     * @return
-     */
+    
     @ResponseBody
-    @RequestMapping(value = {"/getOrderInfo"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getOrderInfo() {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getOrderInfo(loanBillNo);
+    @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
+    public ArbitrationRespBo getData(HttpServletResponse response) {
+	 String type = ObjectUtils.toString(request.getParameter("type"));
+	 String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
+	 
+	 if("GETORDERINFO".equals(type)) {
+	     return arbitrationService.getOrderInfo(loanBillNo);
+	 } else if("GETFUNDINFO".equals(type)){
+	     return arbitrationService.getFundInfo(loanBillNo);
+	 } else if("SETSTATUS".equals(type)){
+	     setStatus();
+	 } else if("GETLITIGANTS".equals(type)){
+	     String ltype = ObjectUtils.toString(request.getParameter("ltype"));
+	     return arbitrationService.getLitiGants(loanBillNo,ltype);
+	 } else if("GETCREDITAGREEMENT".equals(type)){
+	     return arbitrationService.getCreditAgreement(loanBillNo);
+	 } else if("GETCREDITINFO".equals(type)){
+	     return arbitrationService.getCreditInfo(loanBillNo);
+	 } else if("GETREFUNDINFO".equals(type)){
+	     return arbitrationService.getRefundInfo(loanBillNo);
+	 } else if("GETPAYVOUCHER".equals(type)){
+	     return arbitrationService.getPayVoucher(loanBillNo);
+	 } 
+	    logger.info("type is Undefined,loanBillNo= "+loanBillNo);
+	    ArbitrationRespBo resp = new ArbitrationRespBo();
+	    List result = new ArrayList();
+	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
+	    resp.setErrMsg(ArbitrationStatus.FAILURE.getName());
+	    resp.setResult(result);
+	    return resp;
+	
     }
-
-
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的金额信息
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getFundInfo"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getFundInfo() {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getFundInfo(loanBillNo);
-    }
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getLitiGants"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getLitiGants() {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-        String ltype = ObjectUtils.toString(request
-                .getParameter("ltype"));
-
-
-        return arbitrationService.getLitiGants(loanBillNo, ltype);
-    }
-
-
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口，客户返回相应案件订单的借款协议列表
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getCreditAgreement"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getCreditAgreement(HttpServletResponse response) {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getCreditAgreement(loanBillNo);
-    }
-
-
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的借款信息列表
-     *
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getCreditInfo"}, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public ArbitrationRespBo getCreditInfo(HttpServletResponse response) {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getCreditInfo(loanBillNo);
-    }
-
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的金额信息
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getRefundInfo"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getRefundInfo() {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getRefundInfo(loanBillNo);
-    }
-    /**
-     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的打款凭证信息列表
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = {"/getPayVoucher"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getPayVoucher() {
-        printParams();
-        String loanBillNo = ObjectUtils.toString(request
-                .getParameter("loanBillNo"));
-
-        return arbitrationService.getPayVoucher(loanBillNo);
-    }
-
+    
     /**
      * 测试时打印所有参数
      */
