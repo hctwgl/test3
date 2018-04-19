@@ -194,7 +194,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                             List<Map> activityList = new ArrayList<Map>();
 
                             String cacheKey = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST.getCode();
-                            String cacheKey2 = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2.getCode();
+                            String cacheKey2 = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST_CACHE2.getCode();
                              String processKey = CacheConstants.PART_ACTIVITY.GET_ACTIVITY_INFO_V2_PROCESS_KEY.getCode();
                             //bizCacheUtil.delCache(processKey);
                             //Boolean isProcess = (Boolean) bizCacheUtil.getObject(processKey);
