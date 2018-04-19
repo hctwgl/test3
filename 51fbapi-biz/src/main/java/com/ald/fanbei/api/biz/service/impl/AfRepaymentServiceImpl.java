@@ -306,6 +306,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
                                     JSON.toJSONString(bizObject), "afRepaymentService", Constants.DEFAULT_PAY_PURPOSE, repamentName, UserAccountLogType.REPAYMENT.getCode());
                             map.put("refId", repayment.getRid());
                             map.put("type", UserAccountLogType.REPAYMENT.getCode());
+                            map.put("orderNo", payTradeNo);
                         } else {// 代扣
                             repayment.setStatus(RepaymentStatus.PROCESS.getCode());
                             afRepaymentDao.addRepayment(repayment);
@@ -319,6 +320,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
                                     afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, repamentName, UserAccountLogType.REPAYMENT.getCode());
                             map.put("refId", repayment.getRid());
                             map.put("type", UserAccountLogType.REPAYMENT.getCode());
+                            map.put("orderNo", payTradeNo);
                         }
                     } else if (cardId == -2) {// 余额支付
                         afRepaymentDao.addRepayment(repayment);
