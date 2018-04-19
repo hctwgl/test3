@@ -81,7 +81,7 @@ public class ArbitrationServiceImpl extends BaseService implements
     AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 
     @Override
-    public String getOrderInfo(String borrowNo) {
+    public ArbitrationRespBo getOrderInfo(String borrowNo) {
 
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	Map<String, Object> result = new HashMap<String, Object>();
@@ -94,7 +94,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 
 	    // 搭售V1
@@ -104,7 +104,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
 		resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }// 搭售V2
 	    else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo
 		    .getRid())) {
@@ -130,7 +130,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		 * resp.setErrCode(ArbitrationStatus.OLDBORROWCASH.getCode());
 		 * resp.setErrMsg(ArbitrationStatus.OLDBORROWCASH.getName());
 		 * 
-		 * return ObjectUtils.toString(resp);
+		 * return resp;
 		 */
 		result.put("amtCase", (BigDecimalUtil.add(
 			afBorrowCashDo.getAmount(),
@@ -201,11 +201,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
     }
 
     @Override
-    public String getFundInfo(String borrowNo) {
+    public ArbitrationRespBo getFundInfo(String borrowNo) {
 
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	Map<String, Object> result = new HashMap<String, Object>();
@@ -218,7 +218,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 
 	    AfUserAccountDo userAccountDo = afUserAccountService
@@ -241,7 +241,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
 		resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }// 搭售V2
 	    else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo
 		    .getRid())) {
@@ -354,11 +354,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
     }
 
     @Override
-    public String getLitiGants(String borrowNo, String type) {
+    public ArbitrationRespBo getLitiGants(String borrowNo, String type) {
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	List result = new ArrayList();
 	Map<String, Object> map = new HashMap<String, Object>();
@@ -371,14 +371,14 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 	    
 	    if(StringUtil.isBlank(type)) {
 		   resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
 		    resp.setErrMsg(ArbitrationStatus.FAILURE.getName());
 		    logger.info("type is null");
-		    return ObjectUtils.toString(resp);
+		    return resp;
 	    }
 	    
 	    AfResourceDo resource = afResourceService
@@ -456,12 +456,12 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
 	
     }
 
     @Override
-    public String getCreditAgreement(String borrowNo) {
+    public ArbitrationRespBo getCreditAgreement(String borrowNo) {
 
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	List result = new ArrayList();
@@ -474,7 +474,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 
 	    Map<String, Object> map = new HashMap<String, Object>();
@@ -532,11 +532,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
     }
 
     @Override
-    public String getCreditInfo(String borrowNo) {
+    public ArbitrationRespBo getCreditInfo(String borrowNo) {
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	List result = new ArrayList();
 
@@ -548,7 +548,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 
 	    Map<String, Object> map = new HashMap<String, Object>();
@@ -597,11 +597,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
     }
 
     @Override
-    public String getRefundInfo(String borrowNo) {
+    public ArbitrationRespBo getRefundInfo(String borrowNo) {
 	ArbitrationRespBo resp = new ArbitrationRespBo();
 	List result = new ArrayList();
 
@@ -613,7 +613,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
 		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return ObjectUtils.toString(resp);
+		return resp;
 	    }
 
 	    List<AfRepaymentBorrowCashDo> list = afRepaymentBorrowCashService
@@ -639,7 +639,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
 		    resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
 
-		    return ObjectUtils.toString(resp);
+		    return resp;
 		}// 搭售V2
 		else if (afBorrowLegalOrderService
 			.isV2BorrowCash(afBorrowCashDo.getRid())) {
@@ -700,7 +700,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    logger.info("getOrderInfo is Exception,borrowNo= " + borrowNo
 		    + ",e= " + e);
 	}
-	return ObjectUtils.toString(resp);
+	return resp;
     }
 
     public String getUrlParamsByMap(Map<String, String> map) {
@@ -727,7 +727,7 @@ public class ArbitrationServiceImpl extends BaseService implements
  * borrowNo); resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
  * resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
  * 
- * return ObjectUtils.toString(resp); }// 搭售V2 else if
+ * return resp; }// 搭售V2 else if
  * (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo .getRid())) { } //
  * 旧版借款 else {
  * 
@@ -735,7 +735,7 @@ public class ArbitrationServiceImpl extends BaseService implements
  * resp.setErrCode(ArbitrationStatus.OLDBORROWCASH.getCode());
  * resp.setErrMsg(ArbitrationStatus.OLDBORROWCASH.getName());
  * 
- * return ObjectUtils.toString(resp); }
+ * return resp; }
  * 
  * 
  * 

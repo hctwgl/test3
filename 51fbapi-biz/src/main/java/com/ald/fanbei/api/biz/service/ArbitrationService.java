@@ -20,7 +20,7 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getOrderInfo(String borrowNo);
+	ArbitrationRespBo getOrderInfo(String borrowNo);
 	
 	
 	/**
@@ -31,7 +31,7 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getFundInfo(String borrowNo);
+	ArbitrationRespBo getFundInfo(String borrowNo);
 	
 	/**
 	 * 在线仲裁系统
@@ -41,7 +41,7 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getLitiGants(String borrowNo, String type);
+	ArbitrationRespBo getLitiGants(String borrowNo, String type);
 	
 	/**
 	 * 在线仲裁系统
@@ -51,7 +51,7 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getCreditAgreement(String borrowNo);
+	ArbitrationRespBo getCreditAgreement(String borrowNo);
 	
 	
 	/**
@@ -62,7 +62,7 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getCreditInfo(String borrowNo);
+	ArbitrationRespBo getCreditInfo(String borrowNo);
 	
 	
 	/**
@@ -73,5 +73,5 @@ public interface ArbitrationService {
 	 * @return 
 	 * 
 	 * **/
-	String getRefundInfo(String borrowNo);
+	ArbitrationRespBo getRefundInfo(String borrowNo);
 }
