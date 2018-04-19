@@ -115,7 +115,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
-		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), null);
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		String pageFlag = ObjectUtils.toString(requestDataVo.getParams().get("pageFlag"), null);
 		
 		if(pageFlag == null || pageNo == null){
@@ -148,6 +148,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		    	 imageUrl = recommend.getValue3();
 		     }
 						 if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+							 goodsInfo.put("pageNo",pageNo); 
 							 goodsInfo.put("imageUrl",imageUrl); 
 						     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 		         }

@@ -120,7 +120,7 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		Long tabId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("tabId"), null);
-		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), null);
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		
 		if(tabId == null || pageNo == null){
 			logger.error("tabId or pageNo is null");
@@ -152,6 +152,7 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 						     imageUrl= recommend.getValue3();
 		         }
 		     if(StringUtil.isNotEmpty(imageUrl)&& moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+		    	   moreGoodsInfo.put("pageNo",pageNo); 
 		    	   moreGoodsInfo.put("imageUrl",imageUrl);
 		    	   moreGoodsInfo.put("content", content);
 				   moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);

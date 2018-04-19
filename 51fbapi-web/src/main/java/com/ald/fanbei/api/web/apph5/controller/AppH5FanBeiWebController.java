@@ -1233,7 +1233,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		if (afUserDo != null) {
 		    	userId = afUserDo.getRid();
 		}
-		Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), null);
+		Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 		String pageFlag = ObjectUtils.toString(request.getParameter("pageFlag"), null);
 		
 		if(pageFlag == null || pageNo == null){
@@ -1256,6 +1256,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		    	 imageUrl = recommend.getValue3();
 		     }
 				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+					goodsInfo.put("pageNo",pageNo); 
 					goodsInfo.put("imageUrl",imageUrl); 
 				    goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 				}
