@@ -63,7 +63,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 /**
- * @author Jiang Rongbo
+ * @author chenqiwei
  *
  */
 @Component("getChannelMoreGoodsApi")
@@ -143,7 +143,7 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		  Integer activityType = 5;
 		 // List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
 		  Map<String, Object> goodsListMap = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
-		List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
+		  List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 
 		     String imageUrl = "";
@@ -161,22 +161,22 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 					 int pageSize = homePageSecKillGoods.getPageSize();
 					 int size = goodsList.size();
 					 if(pageSize > size){
-						 moreGoodsInfo.put("nextPageNo",pageNo); 
+						 data.put("nextPageNo",-1); 
 					 }else{
-						 moreGoodsInfo.put("nextPageNo",pageNo+1); 
+						 data.put("nextPageNo",pageNo+1); 
 					 }
-		    	   moreGoodsInfo.put("imageUrl",imageUrl);
-		    	   moreGoodsInfo.put("content", content);
-				   moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
+				   data.put("imageUrl",imageUrl);
+		    	   data.put("content", content);
+		    	   data.put("moreGoodsList", moreGoodsInfoList);
 				 }
 	    	 }
 		 }catch(Exception e){
 			 logger.error("get chaannel moreGoodsInfo goodsInfo error "+ e);
 		 }
 		 
-		 if (!moreGoodsInfo.isEmpty()) {
-				data.put("moreGoodsInfo", moreGoodsInfo);
-			}
+//		 if (!moreGoodsInfo.isEmpty()) {
+//				data.put("moreGoodsInfo", moreGoodsInfo);
+//			}
 		resp.setResponseData(data);
 		return resp;
 

@@ -145,18 +145,18 @@ public class GetMoreGoodsApi implements ApiHandle {
 								 int pageSize = homePageSecKillGoods.getPageSize();
 								 int size = goodsList.size();
 								 if(pageSize > size){
-									 goodsInfo.put("nextPageNo",pageNo); 
+									 data.put("nextPageNo",-1); 
 								 }else{
-									 goodsInfo.put("nextPageNo",pageNo+1); 
+									 data.put("nextPageNo",pageNo+1); 
 								 }
-								 goodsInfo.put("imageUrl",imageUrl); 
-							     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+								 data.put("imageUrl",imageUrl); 
+								 data.put("moreGoodsList", moreGoodsInfoList);
 							 }
 		         }
 		     
-			 if (!goodsInfo.isEmpty()) {
-					data.put("moreGoodsInfo", goodsInfo);
-				}
+//			 if (!goodsInfo.isEmpty()) {
+//					data.put("moreGoodsInfo", goodsInfo);
+//				}
 		 }catch(Exception e){
 			 logger.error("home page get moreGoodsList error = "+e);
 		 }

@@ -115,6 +115,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
+	
+	private String TABBAR =		   HomePageType.TABBAR.getCode(); 
+	private String TABBAR_HOME_TOP =		   HomePageType.TABBAR_HOME_TOP.getCode(); 
+	
 	private String ASJ_IMAGES =		   HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
 	private String TOP_IMAGE = 		   HomePageType.TOP_IMAGE.getCode(); 
 	private String GOODS = 		   HomePageType.GOODS.getCode(); 
@@ -189,7 +193,19 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			topTabBarList = getBannerInfoWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
 		}
-	
+		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
+	     if(tabbarList != null && tabbarList.size() >0){
+	    	 AfResourceH5ItemDo recommend = tabbarList.get(0);
+	    	 Map<String, Object> topTab = new HashMap<String, Object>();
+	    		//Object topTab = new Object();
+	    	 if(StringUtil.isNotEmpty(recommend.getValue3())){
+	    		 topTab.put("imageUrl", recommend.getValue3());
+		    	 topTab.put("type", recommend.getValue4());
+		    	 topTab.put("content", recommend.getValue1());
+		    	 data.put("topTab", topTab);
+	    	 }
+	     }
+	     
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
 
@@ -460,11 +476,11 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		if(tabList != null && tabList.size()>0){
 			data.put("tabList", tabList);
 		}
-		if(topTabBarList != null && topTabBarList.size()>0){
-			Object topTab = new Object();
-			topTab =  topTabBarList.get(0);
-			data.put("topTab", topTab);
-		}
+//		if(topTabBarList != null && topTabBarList.size()>0){
+//			Object topTab = new Object();
+//			topTab =  topTabBarList.get(0);
+//			data.put("topTab", topTab);
+//		}
 		// 顶部轮播
 		if (!topBannerList.isEmpty()) {
 			data.put("topBannerList", topBannerList);

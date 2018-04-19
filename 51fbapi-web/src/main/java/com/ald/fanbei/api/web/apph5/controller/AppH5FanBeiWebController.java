@@ -1264,19 +1264,19 @@ public class AppH5FanBeiWebController extends BaseController {
 						 int pageSize = homePageSecKillGoods.getPageSize();
 						 int size = goodsList.size();
 						 if(pageSize > size){
-							 goodsInfo.put("nextPageNo",pageNo); 
+							 returnData.put("nextPageNo",-1); 
 						 }else{
-							 goodsInfo.put("nextPageNo",pageNo+1); 
+							 returnData.put("nextPageNo",pageNo+1); 
 						 }
-						goodsInfo.put("imageUrl",imageUrl); 
-						goodsInfo.put("imageUrl",imageUrl); 
-					    goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+						returnData.put("imageUrl",imageUrl); 
+						returnData.put("imageUrl",imageUrl); 
+						returnData.put("moreGoodsList", moreGoodsInfoList);
 					 }
 				}
 		     
-			 if (!goodsInfo.isEmpty()) {
-					returnData.put("moreGoodsInfo", goodsInfo);
-				}
+//			 if (!goodsInfo.isEmpty()) {
+//					returnData.put("moreGoodsInfo", goodsInfo);
+//				}
 		 }catch(Exception e){
 			 logger.error("h5 get moreGoodsInfo goodsInfo error "+ e);
 		 }
