@@ -286,6 +286,7 @@
     <select id="getHomePageSecKillGoods" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods"
     		parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery">
 	    SELECT
+            y.id as activityId,
 			min(a.special_price) activityAmount,
 			a.goods_id,
 			a.limit_count as total,
@@ -310,7 +311,7 @@
 		LEFT JOIN af_goods g ON (a.goods_id = g.id)
 		LEFT JOIN af_goods_price b ON (a.price_id = b.id)
 		LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
-		LEFT JOIN af_User_Goods_Sms s on s.goods_id = g.id 
+		LEFT JOIN af_User_Goods_Sms s on s.goods_id = g.id AND s.activity_id = y.id
 			<if test="userId != null">
 				and s.user_id = #{userId}
 			</if>
@@ -332,10 +333,21 @@
 		GROUP BY a.goods_id
 		order by a.sort DESC
     </select>
-    
+
+    <select id="getSecKillGoodsStock">
+        SELECT
+          a.limit_count - IFNULL(COUNT(DISTINCT o.id), 0)
+        FROM
+        af_seckill_activity_goods a
+        JOIN af_seckill_activity_order o ON a.goods_id = o.goods_id AND o.activity_id = a.id
+        WHERE
+          a.activity_id = #{activityId} and a.goods_id = #{goodsId}
+    </select>
+
     <!-- ResourceH5配置的商品较少（可能超过10个），未进行分页   -->
      <select id="getHomePageSecKillGoodsByConfigureResourceH5" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods">
 	SELECT
+      y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
       a.limit_count AS total,
@@ -350,7 +362,6 @@
       g.remark,
       g.source,
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
-      IF(s.id IS NULL ,0,1) AS subscribe,
       c.interest_free_id
     FROM
       af_goods  g  
@@ -358,14 +369,7 @@
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
-          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
-          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
-             <if test="userId != null">
-                 and s.user_id = #{userId}
-             </if>
-             <if test="userId == null">
-                 and s.user_id = -1
-             </if>
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
           WHERE
 	          g.is_delete = 0
@@ -381,6 +385,7 @@
     </select>
      <select id="getHomePageSecKillGoodsByActivityModel" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery">
 	SELECT
+      y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
       a.limit_count AS total,
@@ -395,7 +400,6 @@
       g.rebate_rate,
       g.remark,
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
-      IF(s.id IS NULL ,0,1) AS subscribe,
       c.interest_free_id
     FROM
       af_goods  g  
@@ -404,8 +408,7 @@
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
-          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
-          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
           WHERE
 	          g.is_delete = 0
@@ -421,6 +424,7 @@
     
      <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
 	SELECT
+      y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
       a.limit_count AS total,
@@ -435,7 +439,6 @@
       g.remark,
       g.source,
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
-      IF(s.id IS NULL ,0,1) AS subscribe,
       c.interest_free_id
     FROM
       af_goods  g  
@@ -444,8 +447,7 @@
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY) 
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
-          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id  
-          LEFT JOIN af_User_Goods_Sms s ON s.goods_id = g.id  
+          LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
           WHERE
 	          g.is_delete = 0

@@ -202,4 +202,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByBottomGoodsQuery.setPageSize(20);
 	    return afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 	}
+
+	@Override
+	public Integer getSecKillGoodsStock(Long goodsId, Long activityId) {
+		return afSeckillActivityGoodsDao.getSecKillGoodsStock(goodsId,activityId);
+	}
 }

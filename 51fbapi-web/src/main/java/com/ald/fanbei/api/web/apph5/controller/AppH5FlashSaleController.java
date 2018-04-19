@@ -164,8 +164,9 @@ public class AppH5FlashSaleController extends BaseController {
 	    goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
 	    goodsInfo.put("volume", homePageSecKillGoods.getVolume());
 	    goodsInfo.put("total", homePageSecKillGoods.getTotal());	    
-	    goodsInfo.put("source", homePageSecKillGoods.getSource());	
-	    // 如果是分期免息商品，则计算分期
+	    goodsInfo.put("source", homePageSecKillGoods.getSource());
+		goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
+		// 如果是分期免息商品，则计算分期
 	    Long goodsId = homePageSecKillGoods.getGoodsId();
 	    JSONArray interestFreeArray = null;
 	    if (homePageSecKillGoods.getInterestFreeId() != null) {
@@ -313,54 +314,65 @@ public class AppH5FlashSaleController extends BaseController {
     @RequestMapping(value = "/checkGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String CheckGoods(HttpServletRequest request, HttpServletResponse response) {
-	Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0l);
-	Integer sumCount = afGoodsPriceService.selectSumStock(goodsId);
-	if (null == sumCount || sumCount == 0) {
-	    return H5CommonResponse.getNewInstance(false, "您来晚了，商品已抢光！", "", goodsId).toString();
-	}
-	return H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
+
+    	if(StringUtils.isBlank(request.getParameter("goodsId"))|| StringUtils.isBlank(request.getParameter("activityId")))
+    		throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+
+		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0l);
+		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0l);
+
+		Integer sumCount = afSeckillActivityService.getSecKillGoodsStock(goodsId, activityId);
+		if (null == sumCount || sumCount <= 0) {
+			return H5CommonResponse.getNewInstance(false, "您来晚了，商品已抢光！", "", goodsId).toString();
+		}
+		return H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
     }
 
     @RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String ReserveGoods(HttpServletRequest request, HttpServletResponse response) {
-	H5CommonResponse resp = H5CommonResponse.getNewInstance();
-	FanbeiWebContext context = new FanbeiWebContext();
-	try {
-	    context = doWebCheck(request, true);
-	    String userName = context.getUserName();
-	    Long userId = convertUserNameToUserId(userName);
-	    Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0l);
-	    String goodsName = "商品名称";
-	    AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-	    if (null != afGoodsDo) {
-		goodsName = afGoodsDo.getName();
-	    }
-	    AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
-	    afUserGoodsSmsDo.setGoodsId(goodsId);
-	    afUserGoodsSmsDo.setUserId(userId);
-	    afUserGoodsSmsDo.setIsDelete(0l);
-	    afUserGoodsSmsDo.setGoodsName(goodsName);
-	    AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectBookingByGoodsIdAndUserId(afUserGoodsSmsDo);
-	    if (null != afUserGoodsSms) {
-		return H5CommonResponse.getNewInstance(false, "商品已预约").toString();
-	    }
-	    try {
-		int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
-		if (flag <= 0) {
-		    return H5CommonResponse.getNewInstance(false, "预约失败").toString();
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+		FanbeiWebContext context = new FanbeiWebContext();
+		try {
+			if(StringUtils.isBlank(request.getParameter("goodsId"))|| StringUtils.isBlank(request.getParameter("activityId")))
+				throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+
+			context = doWebCheck(request, true);
+			String userName = context.getUserName();
+			Long userId = convertUserNameToUserId(userName);
+			Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0l);
+			Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0l);
+			String goodsName = "商品名称";
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			if (null != afGoodsDo) {
+			goodsName = afGoodsDo.getName();
+			}
+			AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
+			afUserGoodsSmsDo.setGoodsId(goodsId);
+			afUserGoodsSmsDo.setUserId(userId);
+			afUserGoodsSmsDo.setIsDelete(0l);
+			afUserGoodsSmsDo.setGoodsName(goodsName);
+			afUserGoodsSmsDo.setActivityId(activityId);
+			AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectBookingByGoodsIdAndUserId(afUserGoodsSmsDo);
+			if (null != afUserGoodsSms) {
+				return H5CommonResponse.getNewInstance(false, "商品已预约").toString();
+			}
+			try {
+				int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
+				if (flag <= 0) {
+					return H5CommonResponse.getNewInstance(false, "预约失败").toString();
+				}
+				} catch (Exception e) {
+				return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
+				}
+			return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
+		} catch (FanbeiException e) {
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse.getNewInstance(false, "登陆之后才能进行查看", notifyUrl, null).toString();
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
 		}
-	    } catch (Exception e) {
-		return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
-	    }
-	    return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
-	} catch (FanbeiException e) {
-	    String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
-	    return H5CommonResponse.getNewInstance(false, "登陆之后才能进行查看", notifyUrl, null).toString();
-	} catch (Exception e) {
-	    logger.error(e.getMessage(), e);
-	    return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
-	}
 
     }
 
