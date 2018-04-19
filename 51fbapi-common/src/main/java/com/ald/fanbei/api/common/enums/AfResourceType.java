@@ -116,7 +116,10 @@ public enum AfResourceType {
 	//资产方相关配置
 	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),
 	//登录白名单
-	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");
+	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单"),
+	
+	ARBITRATION_TYPE("ARBITRATION_TYPE","在线仲裁系统相关配置"),
+	ARBITRATION_SEC_TYPE("ARBITRATION_SEC_TYPE","在线仲裁系统相关配置");
 
 	private String code;
     private String name;
