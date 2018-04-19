@@ -80,6 +80,7 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -1246,7 +1247,9 @@ public class AppH5FanBeiWebController extends BaseController {
 	try{
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
-		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
+		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 		    
 		     String imageUrl = "";
@@ -1256,9 +1259,19 @@ public class AppH5FanBeiWebController extends BaseController {
 		    	 imageUrl = recommend.getValue3();
 		     }
 				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
-					goodsInfo.put("pageNo",pageNo); 
-					goodsInfo.put("imageUrl",imageUrl); 
-				    goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+					 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
+					 if(homePageSecKillGoods != null){
+						 int pageSize = homePageSecKillGoods.getPageSize();
+						 int size = goodsList.size();
+						 if(pageSize > size){
+							 goodsInfo.put("nextPageNo",pageNo); 
+						 }else{
+							 goodsInfo.put("nextPageNo",pageNo+1); 
+						 }
+						goodsInfo.put("imageUrl",imageUrl); 
+						goodsInfo.put("imageUrl",imageUrl); 
+					    goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+					 }
 				}
 		     
 			 if (!goodsInfo.isEmpty()) {

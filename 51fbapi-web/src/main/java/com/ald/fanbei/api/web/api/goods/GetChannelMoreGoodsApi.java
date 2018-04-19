@@ -51,6 +51,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -139,7 +141,9 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
 	 try{
 		  Integer activityType = 5;
-		  List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
+		 // List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
+		  Map<String, Object> goodsListMap = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
+		List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		  List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 
 		     String imageUrl = "";
@@ -152,10 +156,19 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 						     imageUrl= recommend.getValue3();
 		         }
 		     if(StringUtil.isNotEmpty(imageUrl)&& moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
-		    	   moreGoodsInfo.put("pageNo",pageNo); 
+		    	 HomePageSecKillByActivityModelQuery homePageSecKillGoods = (HomePageSecKillByActivityModelQuery)goodsListMap.get("query");
+				 if(homePageSecKillGoods != null){
+					 int pageSize = homePageSecKillGoods.getPageSize();
+					 int size = goodsList.size();
+					 if(pageSize > size){
+						 moreGoodsInfo.put("nextPageNo",pageNo); 
+					 }else{
+						 moreGoodsInfo.put("nextPageNo",pageNo+1); 
+					 }
 		    	   moreGoodsInfo.put("imageUrl",imageUrl);
 		    	   moreGoodsInfo.put("content", content);
 				   moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
+				 }
 	    	 }
 		 }catch(Exception e){
 			 logger.error("get chaannel moreGoodsInfo goodsInfo error "+ e);

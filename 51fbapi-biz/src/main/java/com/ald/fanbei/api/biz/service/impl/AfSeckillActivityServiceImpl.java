@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -177,8 +179,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
+	public Map<String, Object> getHomePageSecKillGoodsByActivityModel(
 			Long userId, String tag, Integer type, Long tabId,Integer pageNo) {
+		 Map<String, Object> homePageSecKillGoods = new HashMap<String, Object>();
 		HomePageSecKillByActivityModelQuery homePageSecKillByActivityModelQuery = new HomePageSecKillByActivityModelQuery();
 		// TODO Auto-generated method stub
 		homePageSecKillByActivityModelQuery.setUserId(userId);
@@ -187,20 +190,30 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByActivityModelQuery.setType(type);
 		homePageSecKillByActivityModelQuery.setTabId(tabId);
 		homePageSecKillByActivityModelQuery.setPageSize(20);
-	    return afSeckillActivityGoodsDao.getHomePageSecKillGoodsByActivityModel(homePageSecKillByActivityModelQuery);
+		 List<HomePageSecKillGoods> homePageSecKillGoodsList =  afSeckillActivityGoodsDao.getHomePageSecKillGoodsByActivityModel(homePageSecKillByActivityModelQuery);
+		 homePageSecKillByActivityModelQuery.setFull(true);
+		 homePageSecKillGoods.put("query", homePageSecKillByActivityModelQuery);
+		 homePageSecKillGoods.put("goodsList", homePageSecKillGoodsList);
+		 return   homePageSecKillGoods;
+	
 	}
 
 	@Override
-	public List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(
+	public Map<String, Object> getMoreGoodsByBottomGoodsTable(
 			Long userId, Integer pageNo, String pageFlag) {
 		// TODO Auto-generated method stub
+	     Map<String, Object> homePageSecKillGoods = new HashMap<String, Object>();
 		HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery = new HomePageSecKillByBottomGoodsQuery();
 		// TODO Auto-generated method stub
 		homePageSecKillByBottomGoodsQuery.setUserId(userId);
 		homePageSecKillByBottomGoodsQuery.setPageNo(pageNo);
 		homePageSecKillByBottomGoodsQuery.setPageFlag(pageFlag);
 		homePageSecKillByBottomGoodsQuery.setPageSize(20);
-	    return afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
+		List<HomePageSecKillGoods> homePageSecKillGoodsList =  afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
+		homePageSecKillByBottomGoodsQuery.setFull(true);
+		homePageSecKillGoods.put("query", homePageSecKillByBottomGoodsQuery);
+	    homePageSecKillGoods.put("goodsList", homePageSecKillGoodsList);
+	    return   homePageSecKillGoods;
 	}
 
 	@Override
