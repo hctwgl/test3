@@ -132,7 +132,6 @@ public class GetMoreGoodsApi implements ApiHandle {
 		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-//		     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 		     String imageUrl = "";
 		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
@@ -145,18 +144,18 @@ public class GetMoreGoodsApi implements ApiHandle {
 								 int pageSize = homePageSecKillGoods.getPageSize();
 								 int size = goodsList.size();
 								 if(pageSize > size){
-									 data.put("nextPageNo",-1); 
+									 goodsInfo.put("nextPageNo",-1); 
 								 }else{
-									 data.put("nextPageNo",pageNo+1); 
+									 goodsInfo.put("nextPageNo",pageNo+1); 
 								 }
-								 data.put("imageUrl",imageUrl); 
-								 data.put("moreGoodsList", moreGoodsInfoList);
+								 goodsInfo.put("imageUrl",imageUrl); 
+								 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 							 }
 		         }
 		     
-//			 if (!goodsInfo.isEmpty()) {
-//					data.put("moreGoodsInfo", goodsInfo);
-//				}
+			 if (!goodsInfo.isEmpty()) {
+					data.put("moreGoodsInfo", goodsInfo);
+				}
 		 }catch(Exception e){
 			 logger.error("home page get moreGoodsList error = "+e);
 		 }

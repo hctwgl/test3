@@ -120,6 +120,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	private String TABBAR_HOME_TOP =		   HomePageType.TABBAR_HOME_TOP.getCode(); 
 	private String NEW_EXCLUSIVE =		       HomePageType.NEW_EXCLUSIVE.getCode(); 
 	
+	private String TABBAR =		       HomePageType.TABBAR.getCode(); 
 	private String HOME_IAMGE_SLOGAN =		   HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
 	private String ASJ_IMAGES =		   HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
 	private String TOP_IMAGE = 		   HomePageType.TOP_IMAGE.getCode(); 
@@ -195,12 +196,14 @@ public class GetHomeInfoV3Api implements ApiHandle {
 //			topTabBarList = getBannerInfoWithResourceDolist(
 //					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
 //		}
-		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(OPERATE,TABBAR_HOME_TOP);
+		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
 	     if(tabbarList != null && tabbarList.size() >0){
 	    	 AfResourceH5ItemDo recommend = tabbarList.get(0);
 	    	 Map<String, Object> topTab = new HashMap<String, Object>();
 	    		//Object topTab = new Object();
-	    	 if(StringUtil.isNotEmpty(recommend.getValue3())){
+	    	 if(StringUtil.isNotEmpty(recommend.getValue3())&& StringUtil.isNotEmpty(recommend.getValue1())
+	    			 && StringUtil.isNotEmpty(recommend.getValue4())
+	    			 ){
 	    		 topTab.put("imageUrl", recommend.getValue3());
 		    	 topTab.put("type", recommend.getValue4());
 		    	 topTab.put("content", recommend.getValue1());
@@ -225,14 +228,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		}
 
 		String sloganImage = "";
-//		String homeImages = AfResourceType.HOME_IAMGES.getCode();
-//		String slogan = AfResourceType.SLOGAN_IMAGE.getCode();
-//
-//		 AfResourceDo homeImage = afResourceService.getConfigByTypesAndSecType(homeImages, slogan);
-//		if(homeImage !=null ){
-//			sloganImage = homeImage.getValue();
-//		}
-		
+
 		   List<AfResourceH5ItemDo> sloganList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_IAMGE_SLOGAN);
 		     if(sloganList != null && sloganList.size() >0){
 		    	 sloganImage = sloganList.get(0).getValue3();
@@ -278,7 +274,9 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				    	 AfResourceH5ItemDo newExclusiveDo = newExclusiveList.get(0);
 				    	 Map<String, Object> newExclusiveInfo = new HashMap<String, Object>();
 				    		//Object topTab = new Object();
-				    	 if(StringUtil.isNotEmpty(newExclusiveDo.getValue3())){
+				    	 if(StringUtil.isNotEmpty(newExclusiveDo.getValue3()) && StringUtil.isNotEmpty(newExclusiveDo.getValue1())
+				    			 && StringUtil.isNotEmpty(newExclusiveDo.getValue4())
+				    			 ){
 				    		 newExclusiveInfo.put("imageUrl", newExclusiveDo.getValue3());
 				    		 newExclusiveInfo.put("type", newExclusiveDo.getValue4());
 				    		 newExclusiveInfo.put("content", newExclusiveDo.getValue1());

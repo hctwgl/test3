@@ -161,22 +161,21 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 					 int pageSize = homePageSecKillGoods.getPageSize();
 					 int size = goodsList.size();
 					 if(pageSize > size){
-						 data.put("nextPageNo",-1); 
+						 moreGoodsInfo.put("nextPageNo",-1); 
 					 }else{
-						 data.put("nextPageNo",pageNo+1); 
+						 moreGoodsInfo.put("nextPageNo",pageNo+1); 
 					 }
-				   data.put("imageUrl",imageUrl);
-		    	   data.put("content", content);
-		    	   data.put("moreGoodsList", moreGoodsInfoList);
+					 moreGoodsInfo.put("imageUrl",imageUrl);
+					 moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
 				 }
 	    	 }
 		 }catch(Exception e){
 			 logger.error("get chaannel moreGoodsInfo goodsInfo error "+ e);
 		 }
 		 
-//		 if (!moreGoodsInfo.isEmpty()) {
-//				data.put("moreGoodsInfo", moreGoodsInfo);
-//			}
+		 if (!moreGoodsInfo.isEmpty()) {
+				data.put("moreGoodsInfo", moreGoodsInfo);
+			}
 		resp.setResponseData(data);
 		return resp;
 
