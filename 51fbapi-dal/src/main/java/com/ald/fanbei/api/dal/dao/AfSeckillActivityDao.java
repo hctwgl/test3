@@ -27,5 +27,4 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
 
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
 
-    List<AfSeckillActivityDo> getActivityNow();
 }
