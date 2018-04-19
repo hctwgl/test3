@@ -22,7 +22,7 @@
         <ul>
             <li v-for="(data,index) in content.data.oneLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
                 <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
-                <div style="width: 1.56rem;height: .33rem;top: .1rem;position: absolute;background: url(https://f.51fanbei.com/h5/app/activity/06/iconModel.png) no-repeat center center;background-size: 100%;
+                <div v-if="iconShow==593" style="width: 1.56rem;height: .33rem;top: .1rem;position: absolute;background: url(https://f.51fanbei.com/h5/app/activity/06/iconModel.png) no-repeat center center;background-size: 100%;
                             font-size: .18rem;line-height: .33rem;color: white;">{{iconTxt[index]}}</div>
                 <img class="lazy" :data-original="data.goodsIcon">
                 <div class="txtContent">
