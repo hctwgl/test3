@@ -944,7 +944,12 @@ public class AppH5FanBeiWebController extends BaseController {
 			Date reqTime = new Date(mobileReqTimeStamp);
 
 			String mxcode = request.getParameter("mxcode");
-			String userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			String userName ="";
+			if(appInfo!=null){
+				userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			}else{
+				userName =request.getParameter("account");
+			}
 			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 
 			AfUserAuthDo authDo = new AfUserAuthDo();
