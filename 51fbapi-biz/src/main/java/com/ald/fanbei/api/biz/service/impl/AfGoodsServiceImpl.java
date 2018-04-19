@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -190,7 +191,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 
 	@Override
-	public List<AfGoodsDo> getGoodsByIds(List<Long> goodList){
+	public List<Map<String, Object>> getGoodsByIds(List<Long> goodList){
 		return afGoodsDao.getGoodsByIds(goodList);
 	}
 

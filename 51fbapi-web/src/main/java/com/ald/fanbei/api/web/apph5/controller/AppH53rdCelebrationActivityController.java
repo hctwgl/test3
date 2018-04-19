@@ -8,11 +8,9 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/activity/thirdAnnivCelebration")
+@RequestMapping("/fanbei-web/thirdAnnivCelebration/")
 public class AppH53rdCelebrationActivityController extends BaseController {
     @Resource
     private AfRecommendUserService afRecommendUserService;
@@ -58,6 +57,9 @@ public class AppH53rdCelebrationActivityController extends BaseController {
     @Resource
     private AfGoodsService afGoodsService;
 
+    @Resource
+    private AfInterestFreeRulesService afInterestFreeRulesService;
+
     /**
      * 预热页面--获取商品列表
      * @param request
@@ -65,7 +67,7 @@ public class AppH53rdCelebrationActivityController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/initWarmUpGoodList", method = RequestMethod.POST)
+    @RequestMapping(value = "initWarmUpGoodList", method = RequestMethod.POST)
     public String initWarmUpPage(HttpServletRequest request, HttpServletResponse response){
         JSONObject data = new JSONObject();
         try{
@@ -110,28 +112,46 @@ public class AppH53rdCelebrationActivityController extends BaseController {
             }
 
             // 批量查询到商品信息
-            List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByIds(goodIdList);
+            List<Map<String, Object>> goodsInfoList = afGoodsService.getGoodsByIds(goodIdList);
 
-            String  stockCount = null;
-            Map<String, Object> goodMap;
-            for(AfGoodsDo afGoodsDo: goodsDoList) {
-                goodMap = Maps.newHashMap();
-                goodMap.put("numId",String.valueOf(afGoodsDo.getRid()));
-                goodMap.put("saleAmount",afGoodsDo.getPriceAmount().toString());
-                goodMap.put("realAmount",afGoodsDo.getSaleAmount().toString());
-                goodMap.put("rebateAmount",afGoodsDo.getRebateAmount().toString());
-                goodMap.put("goodsName",afGoodsDo.getName());
-                goodMap.put("goodsIcon",afGoodsDo.getGoodsIcon());
-                goodMap.put("thumbnailIcon",afGoodsDo.getThumbnailIcon());
-                goodMap.put("goodsUrl",afGoodsDo.getGoodsDetail().split(";")[0]);
-                goodMap.put("openId",afGoodsDo.getOpenId());
-                goodMap.put("source",afGoodsDo.getSource());
-                stockCount = afGoodsDo.getStockCount();
-                goodMap.put("stockCount",stockCount);
+            String  stockCount;
+            Integer interestFreeId;
+            for(Map<String, Object> goodInfo: goodsInfoList) {
+                stockCount = (String) goodInfo.get("stockCount");
                 if(StringUtils.isNotEmpty(stockCount) && Integer.parseInt(stockCount) < 0){
-                    goodMap.put("count","0");
+                    goodInfo.put("count","0");
                 }
-                goodList.add(goodMap);
+                interestFreeId = (Integer) goodInfo.get("interestFreeId");
+
+                // 获取借款分期配置信息
+                AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+                JSONArray array = JSON.parseArray(resource.getValue());
+                if (array == null) {
+                    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+                }
+
+                // 如果是分期免息商品，则计算分期
+                JSONArray interestFreeArray = null;
+                if (interestFreeId != null) {
+                    AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId.longValue());
+                    String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                    if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                        interestFreeArray = JSON.parseArray(interestFreeJson);
+                    }
+                }
+
+                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                        (BigDecimal)goodInfo.get("saleAmount"), resource.getValue1(), resource.getValue2(), (Long)goodInfo.get("rid"), "0");
+                if (nperList != null) {
+                    goodInfo.put("goodsType", "1");
+                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                    String isFree = (String) nperMap.get("isFree");
+                    if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+                        nperMap.put("freeAmount", nperMap.get("amount"));
+                    }
+                    goodInfo.put("nperMap", nperMap);
+                }
+                goodList.add(goodInfo);
             }
         }
         return goodList;
@@ -177,7 +197,7 @@ public class AppH53rdCelebrationActivityController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/initMainPage", method = RequestMethod.POST)
+    @RequestMapping(value = "initMainPage", method = RequestMethod.POST)
     public String initMainPage(HttpServletRequest request, HttpServletResponse response) {
 
         return "";

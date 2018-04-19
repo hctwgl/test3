@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
@@ -123,6 +123,6 @@ public interface AfGoodsService {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
 
-	List<AfGoodsDo> getGoodsByIds(List<Long> goodList);
+	List<Map<String, Object>> getGoodsByIds(List<Long> goodList);
 }
 

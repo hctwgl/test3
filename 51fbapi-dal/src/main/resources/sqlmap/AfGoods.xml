@@ -472,11 +472,25 @@
 
 	</select>
 
-	<select id="getGoodsByIds" parameterType="list" resultType="AfGoodsDo">
+	<select id="getGoodsByIds" parameterType="list" resultType="list">
 		SELECT
-		<include refid="queryFields"/>
+		    a.id as rid,
+			a.name as goodsName,
+			a.goods_icon as goodsIcon,
+			a.thumbnail_icon as thumbnailIcon,
+			a.goods_url as goodsUrl,
+			a.open_id as openId,
+			a.num_id as numId,
+			a.price_amount as priceAmount,
+			a.sale_amount as saleAmount,
+			a.source as source,
+			a.rebate_amount as rebateAmount,
+			(a.sale_amount-a.rebate_amount) realAmount,
+			a.stock_count as stockCount,
+			b.interest_free_id as interestFreeId
 		FROM
-		af_goods
+			af_goods a
+		LEFT JOIN af_scheme_goods b on a.id = b.goods_id
 		WHERE
 		is_delete=0 AND id IN
 		<foreach item="item" collection="list" separator="," open="("
