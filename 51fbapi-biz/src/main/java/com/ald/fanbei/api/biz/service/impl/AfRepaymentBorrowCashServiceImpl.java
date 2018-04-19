@@ -877,6 +877,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         //还款方式解析
         OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
         //线下还款记录添加
+        String name;
+        if (isAdmin != null && "Y".equals(isAdmin)){
+            name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
+        }else {
+            name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
+        }
+        //线下还款记录添加
         final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNoV1(borrowNo);
         final AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, "催收平台线下还款", repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
                 0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
@@ -897,19 +904,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         return FanbeiThirdRespCode.BORROW_CASH_HAVE_FINISHED.getCode();
                     }
 
-                    Date currDate = new Date();
-                    Date gmtCreate = DateUtil.parseDateTimeShortExpDefault(repayTime, currDate);
-                    //还款方式解析
-                    OfflinePayType offlinePayType = OfflinePayType.findPayTypeByCode(repayType);
-                    //线下还款记录添加
-                    String name;
-                    if (isAdmin != null && "Y".equals(isAdmin)){
-                        name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
-                    }else {
-                        name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
-                    }
-                    AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, name, repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
-                            0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
+//                    AfRepaymentBorrowCashDo repayment = new AfRepaymentBorrowCashDo(gmtCreate, currDate, name, repayNo, repayAmount, repayAmount, afBorrowCashDo.getRid(), repayNo, tradeNo,
+//                            0L, BigDecimal.ZERO, BigDecimal.ZERO, AfBorrowCashRepmentStatus.YES.getCode(), afBorrowCashDo.getUserId(), "", offlinePayType == null ? repayType : offlinePayType.getName(), BigDecimal.ZERO);
+
                     afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 
                     BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
@@ -950,7 +947,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
                         tempRepayAmount = BigDecimal.ZERO;
                     }
-
                     // 判断是否能还清滞纳金 同时修改累计滞纳金
                     if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
                         bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
