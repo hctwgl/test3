@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
@@ -136,7 +138,8 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private CollectionSystemUtil collectionSystemUtil;
 	@Resource
 	CuiShouUtils cuiShouUtils;
-
+	@Resource
+	KafkaSync kafkaSync;
 
 	@Override
 	public void repay(LoanRepayBo bo) {
@@ -429,6 +432,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
 				cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
             }
     		
     	}finally {

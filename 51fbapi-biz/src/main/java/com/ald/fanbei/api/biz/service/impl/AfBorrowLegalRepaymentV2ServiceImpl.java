@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.dal.domain.*;
@@ -120,7 +122,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-
+	@Resource
+	KafkaSync kafkaSync;
     @Resource
     CuiShouUtils cuiShouUtils;
 
@@ -240,6 +243,12 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
             		logger.info("notifyUserBySms or nofityRisk has a Exception ,borrowNo = "+cashDo.getBorrowNo()+", e= "+e );
             	}
             	cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
             }
     		
     	}finally {
