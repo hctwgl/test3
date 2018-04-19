@@ -417,72 +417,76 @@ public class AppH5EnjoyLifeController extends BaseController {
         //获取所有活动
         logger.info("partActivityInfoV2 getFrom sql");
         List<Map> activityList = new ArrayList<Map>();
-        for(AfModelH5ItemDo subjectDo : subjectList) {
-            Map activityInfoMap = new HashMap();
-            String subjectId = subjectDo.getItemValue();
-            // 查询会场信息
-            AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
-            if(subjectInfo == null) {
-                return null;
-            }
-            activityInfoMap.put("name", subjectInfo.getName());
-            activityInfoMap.put("subjectId", subjectInfo.getId());
-            // 获取一级会场名称
-            AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
-            String activityName = "";
-            if(parentSubjectInfo != null){
-                activityName = parentSubjectInfo.getName();
-            }
+        try{
+            for(AfModelH5ItemDo subjectDo : subjectList) {
+                Map activityInfoMap = new HashMap();
+                String subjectId = subjectDo.getItemValue();
+                // 查询会场信息
+                AfSubjectDo subjectInfo = afSubjectService.getSubjectInfoById(subjectId);
+                if(subjectInfo == null) {
+                    return null;
+                }
+                activityInfoMap.put("name", subjectInfo.getName());
+                activityInfoMap.put("subjectId", subjectInfo.getId());
+                // 获取一级会场名称
+                AfSubjectDo parentSubjectInfo = afSubjectService.getParentSubjectInfoById(subjectId);
+                String activityName = "";
+                if(parentSubjectInfo != null){
+                    activityName = parentSubjectInfo.getName();
+                }
 
-            // 查询会场下所有商品信息
-            List<AfGoodsDo> subjectGoodsList = afSubjectGoodsService.listAllSubjectGoodsV1(subjectId);
-            List<Map> activityGoodsList  = new ArrayList<Map>();
-            for(AfGoodsDo goodsDo : subjectGoodsList) {
-                Map activityGoodsInfo = new HashMap();
-                activityGoodsInfo.put("goodName",goodsDo.getName());
-                activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-                activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-                activityGoodsInfo.put("goodsId", goodsDo.getRid());
-                activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-                activityGoodsInfo.put("source", goodsDo.getSource());
-                activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-                activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-                activityGoodsInfo.put("remark", goodsDo.getRemark());
-                activityGoodsInfo.put("activityName", activityName);
-                // 如果是分期免息商品，则计算分期
-                AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
-                JSONArray interestFreeArray = null;
-                if(null != afSchemeGoodsDo){
-                    Long goodsId = goodsDo.getRid();
-                    AfSchemeGoodsDo  schemeGoodsDo = null;
-                    try {
-                        schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-                    } catch(Exception e){
-                        logger.error(e.toString());
-                    }
-
-                    if(schemeGoodsDo != null){
-                        AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-                        String interestFreeJson = interestFreeRulesDo.getRuleJson();
-                        if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                            interestFreeArray = JSON.parseArray(interestFreeJson);
+                // 查询会场下所有商品信息
+                List<AfGoodsDo> subjectGoodsList = afSubjectGoodsService.listAllSubjectGoodsV1(subjectId);
+                List<Map> activityGoodsList  = new ArrayList<Map>();
+                for(AfGoodsDo goodsDo : subjectGoodsList) {
+                    Map activityGoodsInfo = new HashMap();
+                    activityGoodsInfo.put("goodName",goodsDo.getName());
+                    activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+                    activityGoodsInfo.put("goodsId", goodsDo.getRid());
+                    activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+                    activityGoodsInfo.put("source", goodsDo.getSource());
+                    activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                    activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+                    activityGoodsInfo.put("remark", goodsDo.getRemark());
+                    activityGoodsInfo.put("activityName", activityName);
+                    // 如果是分期免息商品，则计算分期
+                    AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
+                    JSONArray interestFreeArray = null;
+                    if(null != afSchemeGoodsDo){
+                        Long goodsId = goodsDo.getRid();
+                        AfSchemeGoodsDo  schemeGoodsDo = null;
+                        try {
+                            schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                        } catch(Exception e){
+                            logger.error(e.toString());
                         }
+
+                        if(schemeGoodsDo != null){
+                            AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+                            String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                            if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                                interestFreeArray = JSON.parseArray(interestFreeJson);
+                            }
+                        }
+
                     }
+                    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
+                    if(nperList!= null){
+                        activityGoodsInfo.put("goodsType", "1");
+                        Map nperMap = nperList.get(nperList.size() - 1);
+                        activityGoodsInfo.put("nperMap", nperMap);
+                    }
+                    activityGoodsList.add(activityGoodsInfo);
                 }
-                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
-
-                if(nperList!= null){
-                    activityGoodsInfo.put("goodsType", "1");
-                    Map nperMap = nperList.get(nperList.size() - 1);
-                    activityGoodsInfo.put("nperMap", nperMap);
-                }
-                activityGoodsList.add(activityGoodsInfo);
+                activityInfoMap.put("activityGoodsList", activityGoodsList);
+                activityList.add(activityInfoMap);
             }
-            activityInfoMap.put("activityGoodsList", activityGoodsList);
-            activityList.add(activityInfoMap);
+        }catch (Exception e){
+            logger.error("partActivityInfoV2 getFrom sql error for" + e);
         }
         return activityList;
     }
@@ -547,10 +551,13 @@ class GetActivityListThread implements Runnable {
     @Override
     public void run() {
         logger.info("pool:partActivityInfoV2"+Thread.currentThread().getName() + "getactivityList");
-        getActivityPartList(subjectList,resource,array,afSubjectService,
-                afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil);
-        getActivityList(afSeckillActivityService,bizCacheUtil,activityGoodsUtil,query);
-
+        try{
+            getActivityPartList(subjectList,resource,array,afSubjectService,
+                    afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,bizCacheUtil);
+            getActivityList(afSeckillActivityService,bizCacheUtil,activityGoodsUtil,query);
+        }catch (Exception e){
+            logger.error("pool:partActivityInfoV2 error for" + e);
+        }
     }
     private List<Map> getActivityList(AfSeckillActivityService afSeckillActivityService,BizCacheUtil bizCacheUtil,ActivityGoodsUtil activityGoodsUtil,AfSeckillActivityQuery query) {
         //获取所有活动
