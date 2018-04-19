@@ -159,8 +159,8 @@
     </select>
     <select id="getActivitySaleCountList" resultType="AfSeckillActivityDo">
         SELECT a.goods_id rid,count(a.id) saleCount
-        FROM af_seckill_activity_order a
-        WHERE a.is_delete = 0 AND a.activity_id=#{activityId}
+        FROM af_seckill_activity_order a LEFT JOIN af_order b ON (a.order_id=b.id)
+        WHERE a.is_delete = 0 AND a.activity_id=#{activityId} AND b.status!='CLOSED'
         GROUP BY a.goods_id
     </select>
 </mapper>
