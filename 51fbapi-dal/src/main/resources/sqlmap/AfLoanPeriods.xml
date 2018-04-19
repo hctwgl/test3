@@ -421,7 +421,7 @@
         SELECT 
           <include refid="queryFields"/>
         FROM af_loan_periods
-        WHERE is_delete = 0 AND loan_id = #{loan_id} AND NOW() <![CDATA[<=]]> gmt_plan_repay
+        WHERE is_delete = 0 AND loan_id = #{loanId} AND NOW() <![CDATA[<=]]> gmt_plan_repay
         ORDER BY nper LIMIT 1
     </select>
 </mapper>
