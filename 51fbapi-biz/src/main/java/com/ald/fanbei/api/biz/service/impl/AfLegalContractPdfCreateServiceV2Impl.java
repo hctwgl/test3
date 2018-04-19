@@ -970,14 +970,14 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     public byte[] StreamSign(Long borrowId,String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream){        try {
-            FileDigestSignResult fileDigestSignResult = afESdkService.streamSign(fileName,type,sealData,accountId,posType,width,key,posPage,isQrcodeSign,stream);//借款人盖章
-            if (fileDigestSignResult.getErrCode() != 0) {
-                logger.error("StreamSign 盖章证书生成失败 => {}", fileDigestSignResult.getMsg()  + ",personKey =" + key + ",borrowId = " + borrowId );
-            }
-            return fileDigestSignResult.getStream();
-        } catch (Exception e) {
-            logger.error("StreamSign 盖章证书生成失败 => {}", e  + ",personKey =" + key + ",borrowId = " + borrowId );
+        FileDigestSignResult fileDigestSignResult = afESdkService.streamSign(fileName,type,sealData,accountId,posType,width,key,posPage,isQrcodeSign,stream);//借款人盖章
+        if (fileDigestSignResult.getErrCode() != 0) {
+            logger.error("StreamSign 盖章证书生成失败 => {}", fileDigestSignResult.getMsg()  + ",personKey =" + key + ",borrowId = " + borrowId );
         }
+        return fileDigestSignResult.getStream();
+    } catch (Exception e) {
+        logger.error("StreamSign 盖章证书生成失败 => {}", e  + ",personKey =" + key + ",borrowId = " + borrowId );
+    }
         return null;
     }
 

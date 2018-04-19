@@ -1396,10 +1396,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
-	}
+//	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+//	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+//	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+//	}
     }
 
     @Override

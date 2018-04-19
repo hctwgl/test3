@@ -187,6 +187,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
 			    			modifyPackageDo.setRid(packageDo.getRid());
 			    			modifyPackageDo.setRealTotalMoney(cancelMoney.negate());
+			    			modifyPackageDo.setGmtModified(currDate);
 			    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
 			    			return 1;
 			    		}else{
@@ -653,6 +654,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			}
 		}
 		Integer nper = afViewAssetBorrowDo.getNper();//分期数
+		if (nper == 5 || nper == 11) {//兼容租房5期与11期，作为6期与12期的利率
+        	nper++;
+        }
 		//获取消费分期协议年化利率配置
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
 		BigDecimal borrowRate=BigDecimal.ZERO;

@@ -263,72 +263,94 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     }
 
     @Override
-    public Map<String, Object> createRepaymentByBankOrRebate(BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, String bankChannel) {
-	Date now = new Date();
-	String repayNo = generatorClusterNo.getRepaymentNo(now, bankChannel);
-	final String payTradeNo = repayNo;
+    public Map<String, Object> createRepaymentByBankOrRebate(BigDecimal jfbAmount, BigDecimal repaymentAmount, final BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount, String billIds, final Long cardId, final Long userId, final AfBorrowBillDo billDo, final String clientIp, final AfUserAccountDo afUserAccountDo, final String bankChannel) {
+        Date now = new Date();
+        String repayNo = generatorClusterNo.getRepaymentNo(now, bankChannel);
+        final String payTradeNo = repayNo;
 
-	// 新增还款记录
-	String name = Constants.DEFAULT_REPAYMENT_NAME + billDo.getName();
-	if (billDo.getCount() > 1) {
-	    name = new StringBuffer(Constants.DEFAULT_REPAYMENT_NAME).append(billDo.getBillYear() + "").append("年").append(billDo.getBillMonth()).append("月账单").toString();
-	} else if (BorrowType.CASH.getCode().equals(billDo.getType())) {
-	    name += billDo.getBorrowNo();
-	}
-	if (StringUtil.equals("sysJob", clientIp)) {
-	    name = "代扣付款";
-	}
-	final AfRepaymentDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, billIds, cardId, payTradeNo, name, userId);
-	Map<String, Object> map = new HashMap<String, Object>();
-	List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
-	    @Override
-	    public Long convert(String source) {
-		return Long.parseLong(source);
-	    }
-	});
+        // 新增还款记录
+        String name = Constants.DEFAULT_REPAYMENT_NAME + billDo.getName();
+        if (billDo.getCount() > 1) {
+            name = new StringBuffer(Constants.DEFAULT_REPAYMENT_NAME).append(billDo.getBillYear() + "").append("年").append(billDo.getBillMonth()).append("月账单").toString();
+        } else if (BorrowType.CASH.getCode().equals(billDo.getType())) {
+            name += billDo.getBorrowNo();
+        }
+        if (StringUtil.equals("sysJob", clientIp)) {
+            name = "代扣付款";
+        }
+        final AfRepaymentDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, billIds, cardId, payTradeNo, name, userId);
+        final Map<String, Object> map = new HashMap<String, Object>();
+        final List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+            @Override
+            public Long convert(String source) {
+                return Long.parseLong(source);
+            }
+        });
+        final String repamentName = name;
+        transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus status) {
+                try {
+                    if (cardId > 0) {// 银行卡支付
+                        // 还款金额是否大于银行单笔限额
+                        // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
+                        // 构造业务数据，为后续接口使用
+                        KuaijieRepaymentBo bizObject = null;// new KuaijieRepaymentBo(repayment, billIdList);
+                        if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+                            repayment.setStatus(RepaymentStatus.SMS.getCode());
+                            afRepaymentDao.addRepayment(repayment);
+                            bizObject = new KuaijieRepaymentBo(repayment, billIdList);
 
-	if (cardId > 0) {// 银行卡支付
-	    // 还款金额是否大于银行单笔限额
-	    // afUserBankcardService.checkUpsBankLimit(bank.getBankCode(), actualAmount);
-	    // 构造业务数据，为后续接口使用
-	    KuaijieRepaymentBo bizObject = new KuaijieRepaymentBo(repayment, billIdList);
-	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-		repayment.setStatus(RepaymentStatus.SMS.getCode());
-		afRepaymentDao.addRepayment(repayment);
+                            logger.info("repaymentbizObject:" + JSON.toJSONString(bizObject));
+                            sendKuaiJieSms(cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(),
+                                    JSON.toJSONString(bizObject), "afRepaymentService", Constants.DEFAULT_PAY_PURPOSE, repamentName, UserAccountLogType.REPAYMENT.getCode());
+                            map.put("refId", repayment.getRid());
+                            map.put("type", UserAccountLogType.REPAYMENT.getCode());
+                            map.put("orderNo", payTradeNo);
+                        } else {// 代扣
+                            repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+                            afRepaymentDao.addRepayment(repayment);
+                            afUserAmountService.addUseAmountDetail(repayment);
+                            afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
+                            afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
+                            bizObject = new KuaijieRepaymentBo(repayment, billIdList);
+                            logger.info("repaymentbizObject:" + JSON.toJSONString(bizObject));
+                            // 调用ups支付
+                            doUpsPay(bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
+                                    afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, repamentName, UserAccountLogType.REPAYMENT.getCode());
+                            map.put("refId", repayment.getRid());
+                            map.put("type", UserAccountLogType.REPAYMENT.getCode());
+                            map.put("orderNo", payTradeNo);
+                        }
+                    } else if (cardId == -2) {// 余额支付
+                        afRepaymentDao.addRepayment(repayment);
+                        // addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
+                        repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+                        afUserAmountService.addUseAmountDetail(repayment);
+                        afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
+                        try {
+                            if (StringUtil.equals("sysJob", clientIp)) {
+                                // 处理代扣短信
+                                // AfUserDo afUserDo = afUserService.getUserById(userId);
+                                sendSuccessMessage(userId, payTradeNo);
+                            }
+                        } catch (Exception e) {
+                            logger.error("BorrowCash sendMessage error for:" + e);
+                        }
+                        dealRepaymentSucess(repayment.getPayTradeNo(), "", true);
 
-		map = sendKuaiJieSms( cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(), afUserAccountDo.getIdNumber(),
-			JSON.toJSONString(bizObject), "afRepaymentService", Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
-	    } else {// 代扣
-		repayment.setStatus(RepaymentStatus.PROCESS.getCode());
-		afRepaymentDao.addRepayment(repayment);
-		afUserAmountService.addUseAmountDetail(repayment);
-		afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
-		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
-		// 调用ups支付
-		map = doUpsPay(bankChannel, cardId, payTradeNo, actualAmount, userId, afUserAccountDo.getRealName(),
-			afUserAccountDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, name, UserAccountLogType.REPAYMENT.getCode());
-	    }
-	} else if (cardId == -2) {// 余额支付
-	    afRepaymentDao.addRepayment(repayment);
-	    // addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
-	    repayment.setStatus(RepaymentStatus.PROCESS.getCode());
-	    afUserAmountService.addUseAmountDetail(repayment);
-	    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
-	    try {
-		if (StringUtil.equals("sysJob", clientIp)) {
-		    // 处理代扣短信
-		    // AfUserDo afUserDo = afUserService.getUserById(userId);
-		    sendSuccessMessage(userId, payTradeNo);
-		}
-	    } catch (Exception e) {
-		logger.error("BorrowCash sendMessage error for:" + e);
-	    }
-	    dealRepaymentSucess(repayment.getPayTradeNo(), "", true);
+                        map.put("refId", repayment.getRid());
+                        map.put("type", UserAccountLogType.REPAYMENT.getCode());
+                    }
 
-	    map.put("refId", repayment.getRid());
-        map.put("type", UserAccountLogType.REPAYMENT.getCode());
-	}
-	return map;
+                    return 0L;
+                } catch (Exception e) {
+                    logger.error("createRepaymentByBankOrRebate faied e = {}", e);
+                    return -1L;
+                }
+            }
+        });
+        return map;
     }
 
     @Override
@@ -352,8 +374,10 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 	    // 处理业务数据
 	    KuaijieRepaymentBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepaymentBo.class);
 	    kuaijieRepaymentBo.getRepayment().setStatus(RepaymentStatus.PROCESS.getCode());
+        if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+            afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
+        }
 	    afRepaymentDao.updateRepaymentByAfRepaymentDo(kuaijieRepaymentBo.getRepayment());
-	    afUserAmountService.addUseAmountDetail(kuaijieRepaymentBo.getRepayment());
 
 	    HashMap<String, Object> map = new HashMap<String, Object>();
 	    map.put("refId", kuaijieRepaymentBo.getRepayment().getRid());
