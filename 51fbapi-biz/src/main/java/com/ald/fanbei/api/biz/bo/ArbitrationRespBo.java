@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.bo;
 
+import org.omg.CORBA.OBJECT_NOT_EXIST;
+
 import java.util.HashMap;
 
 /**
@@ -9,7 +11,7 @@ import java.util.HashMap;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 
-public class ArbitrationRespBo extends HashMap<String, String>{
+public class ArbitrationRespBo extends HashMap<String, Object>{
 
 	/**
 	 * 
@@ -18,7 +20,7 @@ public class ArbitrationRespBo extends HashMap<String, String>{
 	
 	private String errCode;		//错误码
 	private String errMsg;		//错误信息
-	private String result;		//返回结果
+	private Object result;		//返回结果
 	
 	
 	
@@ -51,11 +53,11 @@ public class ArbitrationRespBo extends HashMap<String, String>{
 		this.put("errMsg", errMsg);
 	}
 
-	public String getResult() {
+	public Object getResult() {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(Object result) {
 		this.result = result;
 		this.put("result", result);
 	}

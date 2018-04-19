@@ -340,6 +340,20 @@ public class ArbitrationController {
 
         return arbitrationService.getRefundInfo(loanBillNo);
     }
+    /**
+     * 该API接口由客户提供，互仲向客户平台发起该请求，客户平台回应并返回相应结果信息。通过该接口客户返回案件订单相关的打款凭证信息列表
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/getPayVoucher"}, method = RequestMethod.POST)
+    public ArbitrationRespBo getPayVoucher() {
+        printParams();
+        String loanBillNo = ObjectUtils.toString(request
+                .getParameter("loanBillNo"));
+
+        return arbitrationService.getPayVoucher(loanBillNo);
+    }
 
     /**
      * 测试时打印所有参数

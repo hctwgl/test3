@@ -194,7 +194,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
 	    resp.setErrMsg(ArbitrationStatus.FAILURE.getName());
@@ -346,7 +346,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
@@ -449,7 +449,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
 	    resp.setErrMsg(ArbitrationStatus.FAILURE.getName());
@@ -524,7 +524,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
@@ -589,7 +589,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
@@ -692,7 +692,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    }
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
-	    resp.setResult(JsonUtil.toJSONString(result));
+	    resp.setResult(result);
 
 	} catch (Exception e) {
 	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
@@ -701,6 +701,22 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    + ",e= " + e);
 	}
 	return resp;
+    }
+
+    @Override
+    public ArbitrationRespBo getPayVoucher(String loanBillNo) {
+        ArbitrationRespBo arbitrationRespBo=new ArbitrationRespBo();
+        arbitrationRespBo.setErrCode("0000");
+        arbitrationRespBo.setErrMsg("");
+        HashMap dataMap=new HashMap();
+        dataMap.put("voucherUrl","http://www.baidu.com");
+        dataMap.put("voucherNo","jq001");
+        dataMap.put("voucherOffer","宝付");
+        dataMap.put("provedObject","");
+        List dataList=new ArrayList();
+        dataList.add(dataMap);
+        arbitrationRespBo.setResult(dataList);
+        return arbitrationRespBo;
     }
 
     public String getUrlParamsByMap(Map<String, String> map) {

@@ -74,4 +74,12 @@ public interface ArbitrationService {
 	 * 
 	 * **/
 	ArbitrationRespBo getRefundInfo(String borrowNo);
+
+	/**
+	 * 在线仲裁系统
+	 * 3.9	获取案件订单相关打款凭证【GETPAYVOUCHER】
+	 * @param loanBillNo
+	 * @return
+	 */
+	ArbitrationRespBo getPayVoucher(String loanBillNo);
 }
