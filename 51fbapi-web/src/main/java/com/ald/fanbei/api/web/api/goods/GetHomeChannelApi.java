@@ -238,10 +238,12 @@ public class GetHomeChannelApi implements ApiHandle {
 								     }
 								 
 							    	 if(StringUtil.isNotEmpty(imageUrl)){
+							    		 if(recommendGoodsInfoList.size()>=3){
 								    	 recommendGoodsInfo.put("imageUrl", imageUrl);
 								    	 recommendGoodsInfo.put("content", content);
 								    	 recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
 							    	 }
+							    }
 		        	  }
 		         }
 		        
