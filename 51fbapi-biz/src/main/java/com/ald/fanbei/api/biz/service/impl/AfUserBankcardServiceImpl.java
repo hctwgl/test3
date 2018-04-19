@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -46,7 +47,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     @Resource
     private AfUserBankcardDao afUserBankcardDao;
 
-    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);    
+    Logger logger = LoggerFactory.getLogger(AfUserBankcardServiceImpl.class);
 
     @Override
     public AfUserBankcardDo getUserMainBankcardByUserId(Long userId) {
@@ -54,17 +55,23 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     }
 
     @Override
-    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId) {
+    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion) {
 	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
 	if (CollectionUtil.isNotEmpty(list)) {
+	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 	    for (AfBankUserBankDto item : list) {
-		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode());
+		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode(),item.getBankChannel());
 		item.setBankStatus(bankStatus);
 
 		if (bankStatus.getIsMaintain() == 1) {
-		    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 		    item.setMessage(afResourceDo.getValue1());
 		    item.setIsValid("N");
+		}
+		if (appVersion < 412) {
+		    if (BankPayChannel.KUAIJIE.getCode().equals(item.getBankChannel())) {
+			item.setMessage(afResourceDo.getValue1());
+			item.setIsValid("N");
+		    }
 		}
 	    }
 
@@ -151,8 +158,14 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     }
 
     @Override
-    public UpsBankStatusDto getUpsBankStatus(String bankCode) {
-	String bankStatusKey = "ups_collect_" + bankCode;
+    public UpsBankStatusDto getUpsBankStatus(String bankCode, String bankChannel) {
+	String bankStatusKey = "";
+	if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel))
+	{
+	    bankStatusKey = "ups_quickPay_" + bankCode;
+	}else {
+	    bankStatusKey ="ups_collect_" + bankCode;
+	}
 	Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
 	logger.info("getUserBankcardByUserId key:" + bankStatusKey + ",value：" + bankStatusValue);
 	if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
@@ -162,16 +175,16 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 	}
     }
 
-    @Override
-    public UpsBankStatusDto getUpsBankStatus(Long cardId) {
+//    @Override
+//    public UpsBankStatusDto getUpsBankStatus(Long cardId) {
+//
+//	AfUserBankcardDo afUserBankcardDo = getUserBankcardById(cardId);
+//	return getUpsBankStatus(afUserBankcardDo.getBankCode());
+//    }
 
-	AfUserBankcardDo afUserBankcardDo = getUserBankcardById(cardId);
-	return getUpsBankStatus(afUserBankcardDo.getBankCode());
-    }
-
     @Override
-    public void checkUpsBankLimit(String bankCode, BigDecimal amount) {
-	UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode);
+    public void checkUpsBankLimit(String bankCode, String bankChannel,BigDecimal amount) {
+	UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode, bankChannel);
 
 	if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
 	    throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()));

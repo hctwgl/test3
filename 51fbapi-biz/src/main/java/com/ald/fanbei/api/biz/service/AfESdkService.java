@@ -50,7 +50,7 @@ public interface AfESdkService {
 
     FileDigestSignResult streamSign(String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream);//签章
 
-    FileDigestSignResult selfStreamSign(String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream);//签章
+    FileDigestSignResult selfStreamSign(String fileName,String type,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream);//签章
 
     FileDigestSignResult selfSign(Map<String,Object> map);//签章
 

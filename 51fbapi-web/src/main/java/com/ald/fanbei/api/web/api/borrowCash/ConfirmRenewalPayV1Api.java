@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -96,7 +97,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
     	BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-
+        String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 //        if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 //        }
@@ -226,7 +227,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 
             Map<String, Object> map;
             if (cardId == -2) {// 余额支付
-                map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+                map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null);
 
                 resp.addResponseData("refId", map.get("refId"));
                 resp.addResponseData("type", map.get("type"));
@@ -241,7 +242,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                 }
 
 //                if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")){
-                map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+                map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null);
                 map.put("userNo",userDto.getUserName());
                 map.put("userType","USER_ID");
                 map.put("directPayType","WX");
@@ -259,7 +260,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                 }
 
                 //if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
-                map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+                map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null);
                 map.put("userNo", userDto.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "ZFB");
@@ -282,7 +283,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                         throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
                     }
                 }
-                map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
+                map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(),bankPayType);
 
                 // 代收
                 UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

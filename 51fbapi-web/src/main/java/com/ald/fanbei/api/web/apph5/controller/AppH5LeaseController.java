@@ -1033,8 +1033,9 @@ public class AppH5LeaseController extends BaseController {
                 if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
                     data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
                 }
+                AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
                 // 保存手续费信息
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
+                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),afOrderDo.getGoodsId());
                 data.put("overdueRate",borrowRate.getOverdueRate());
                 data.put("realName",accountDo.getRealName());
                 data.put("userName",accountDo.getUserName());

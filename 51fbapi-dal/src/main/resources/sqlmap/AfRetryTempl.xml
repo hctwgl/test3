@@ -159,7 +159,7 @@
     
     <update id="deleteByBusidAndEventType">
         UPDATE af_retry_templ
-        set is_delete=1
+        set is_delete=1,gmt_modified =now()
      	WHERE
 			bus_id = #{borrowNo}
 		AND event_type =#{eventType}
