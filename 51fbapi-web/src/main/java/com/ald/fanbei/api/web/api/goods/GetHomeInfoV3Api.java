@@ -116,9 +116,11 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
 	
-	private String TABBAR =		   HomePageType.TABBAR.getCode(); 
+	private String OPERATE =		           HomePageType.OPERATE.getCode(); 
 	private String TABBAR_HOME_TOP =		   HomePageType.TABBAR_HOME_TOP.getCode(); 
+	private String NEW_EXCLUSIVE =		       HomePageType.NEW_EXCLUSIVE.getCode(); 
 	
+	private String HOME_IAMGE_SLOGAN =		   HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
 	private String ASJ_IMAGES =		   HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
 	private String TOP_IMAGE = 		   HomePageType.TOP_IMAGE.getCode(); 
 	private String GOODS = 		   HomePageType.GOODS.getCode(); 
@@ -184,16 +186,16 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			});
 		}
 	
-		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
-		List<Object> topTabBarList = new ArrayList<Object>();
-		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-			topTabBarList = getBannerInfoWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
-		}
-		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
+//		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
+//		List<Object> topTabBarList = new ArrayList<Object>();
+//		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+//			topTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
+//		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+//			topTabBarList = getBannerInfoWithResourceDolist(
+//					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
+//		}
+		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(OPERATE,TABBAR_HOME_TOP);
 	     if(tabbarList != null && tabbarList.size() >0){
 	    	 AfResourceH5ItemDo recommend = tabbarList.get(0);
 	    	 Map<String, Object> topTab = new HashMap<String, Object>();
@@ -223,13 +225,18 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		}
 
 		String sloganImage = "";
-		String homeImages = AfResourceType.HOME_IAMGES.getCode();
-		String slogan = AfResourceType.SLOGAN_IMAGE.getCode();
-
-		 AfResourceDo homeImage = afResourceService.getConfigByTypesAndSecType(homeImages, slogan);
-		if(homeImage !=null ){
-			sloganImage = homeImage.getValue();
-		}
+//		String homeImages = AfResourceType.HOME_IAMGES.getCode();
+//		String slogan = AfResourceType.SLOGAN_IMAGE.getCode();
+//
+//		 AfResourceDo homeImage = afResourceService.getConfigByTypesAndSecType(homeImages, slogan);
+//		if(homeImage !=null ){
+//			sloganImage = homeImage.getValue();
+//		}
+		
+		   List<AfResourceH5ItemDo> sloganList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_IAMGE_SLOGAN);
+		     if(sloganList != null && sloganList.size() >0){
+		    	 sloganImage = sloganList.get(0).getValue3();
+		     }
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()),navigationBackground);
@@ -266,23 +273,18 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				}
 				if(userId == null  || newExclusive){
 				// 新人专享位（是否加入缓存？）
-				List<Object> newExclusiveList = new ArrayList<Object>();
-				Object newExclusiveInfo = new Object();
-				String operateBanner = AfResourceType.OPERATION_POSITION_BANNER.getCode();
-				
-				// 正式环境和预发布环境区分
-				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-					newExclusiveList = getBannerInfoWithResourceDolist(
-							afResourceService.getResourceHomeListByTypeOrderBy(operateBanner));
-				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-					newExclusiveList = getBannerInfoWithResourceDolist(
-							afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(operateBanner));
-				}
-				// 顶部轮播
-				if (!newExclusiveList.isEmpty()) {
-					newExclusiveInfo = newExclusiveList.get(0);
-							data.put("newExclusiveInfo", newExclusiveInfo);
-				}
+					 List<AfResourceH5ItemDo>  newExclusiveList =  afResourceH5ItemService.getByTagAndValue2(OPERATE,NEW_EXCLUSIVE);
+				     if(newExclusiveList != null && newExclusiveList.size() >0){
+				    	 AfResourceH5ItemDo newExclusiveDo = newExclusiveList.get(0);
+				    	 Map<String, Object> newExclusiveInfo = new HashMap<String, Object>();
+				    		//Object topTab = new Object();
+				    	 if(StringUtil.isNotEmpty(newExclusiveDo.getValue3())){
+				    		 newExclusiveInfo.put("imageUrl", newExclusiveDo.getValue3());
+				    		 newExclusiveInfo.put("type", newExclusiveDo.getValue4());
+				    		 newExclusiveInfo.put("content", newExclusiveDo.getValue1());
+					    	 data.put("newExclusiveInfo", newExclusiveInfo);
+				    	 }
+				     }
 			}
 		
 		// 获取常驻运营位信息
@@ -296,7 +298,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				}
 				Map<String, Object> flashSaleInfo = new HashMap<String, Object>();
 				 //限时抢购
-			   // AfResourceH5ItemDo  afResourceH5ItemDo =  afResourceH5ItemService.getByTagAndType(FLASH_SALE,TOP_IMAGE);
 				AfResourceH5ItemDo  afResourceH5ItemDo = new AfResourceH5ItemDo();
 				   List<AfResourceH5ItemDo>  flashSaleList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_FLASH_SALE_FLOOR_IMAGE);
 				     if(flashSaleList != null && flashSaleList.size() >0){
