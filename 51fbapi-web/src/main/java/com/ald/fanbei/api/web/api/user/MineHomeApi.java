@@ -17,10 +17,14 @@ import com.ald.fanbei.api.web.vo.MineHomeVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -367,7 +371,7 @@ public class MineHomeApi implements ApiHandle {
         // 本月账单所属年
         int currBillYear = cal.get(Calendar.YEAR);
         // 本月账单所属月
-        int currBillMonth = cal.get(Calendar.MONTH) + 1;
+        int currBillMonth = cal.get(Calendar.MONTH) + 1;  
         // 已出账待还款金额
         BigDecimal waitRepaymentOutMoney = afBorrowBillService.getMonthlyBillByStatusNew(userId, currBillYear,
                 currBillMonth, BorrowBillStatus.NO.getCode());

@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -32,29 +31,23 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfHomePageChannelConfigureDo;
-import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfHomePageChannelVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -113,7 +106,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
-		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), null);
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
 		String pageFlag = ObjectUtils.toString(requestDataVo.getParams().get("pageFlag"), null);
 		
 		if(pageFlag == null || pageNo == null){
@@ -129,49 +122,48 @@ public class GetMoreGoodsApi implements ApiHandle {
 		    }
 		}
 		
-		
-	 
 		//更多商品
-		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
-		 try{
-		 String moreGoodsTag = "H_T_IMAGE";
-		 //String activityTag = "HOME_CHANNEL_MORE_GOODS";
-		 //Integer activityType = 5;
-		
+	 try{
+		 String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+		 String GUESS_YOU_LIKE_TOP_IMAGE = 		   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
 		 //List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
-		 List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		     goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 		     String imageUrl = "";
-			 String content = "";
-		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(moreGoodsTag);
+		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
-		    	 for(AfResourceH5ItemDo recommend:recommendList ){
-						  if("MORE_GOODS_TOP_IMAGE".equals(recommend.getValue2())){
-							  content =  recommend.getValue1();
-							  imageUrl= recommend.getValue3();
-							  break;
-						  }
-		         }
+		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+		    	 imageUrl = recommend.getValue3();
 		     }
-			 goodsInfo.put("imageUrl",imageUrl);
-			 //moreGoodsInfo.put("moreGoodsInfo", goodsInfo);
+						 if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+							 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
+							 if(homePageSecKillGoods != null){
+								 int pageSize = homePageSecKillGoods.getPageSize();
+								 int size = goodsList.size();
+								 if(pageSize > size){
+									 goodsInfo.put("nextPageNo",-1); 
+								 }else{
+									 goodsInfo.put("nextPageNo",pageNo+1); 
+								 }
+								 goodsInfo.put("imageUrl",imageUrl); 
+								 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+							 }
+		         }
+		     
 			 if (!goodsInfo.isEmpty()) {
 					data.put("moreGoodsInfo", goodsInfo);
 				}
 		 }catch(Exception e){
-			 
+			 logger.error("home page get moreGoodsList error = "+e);
 		 }
 		
-			
 		resp.setResponseData(data);
 		return resp;
-
 		
 	}
-	
 	
 
 	private List<Map<String, Object>> getGoodsInfoList(List<HomePageSecKillGoods> list,String tag,AfResourceH5ItemDo afResourceH5ItemDo){
@@ -197,6 +189,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		    goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
 		    goodsInfo.put("volume", homePageSecKillGoods.getVolume());
 		    goodsInfo.put("total", homePageSecKillGoods.getTotal());	    
+		    goodsInfo.put("source", homePageSecKillGoods.getSource());
 		    
 		    // 如果是分期免息商品，则计算分期
 		    Long goodsId = homePageSecKillGoods.getGoodsId();
@@ -220,14 +213,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 			}
 			goodsInfo.put("nperMap", nperMap);
 		     //更换content和type可跳转商品详情
-			if("FLASH_SALE".equals(tag)){
-				  String content = null;
-				 if(afResourceH5ItemDo != null){
-					 content = afResourceH5ItemDo.getValue1();
-				 }
-		    	  goodsInfo.put("type", "H5_URL");
-		    	  goodsInfo.put("content", content);
-		     }
+			
 		   }
 		    goodsList.add(goodsInfo);
 		}

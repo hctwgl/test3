@@ -155,10 +155,11 @@
     	SELECT 
     	<include refid="queryFields" />
         FROM af_brand
-        where is_delete = 0 and id in
-        <foreach collection="brandIds" item="id" index="index"
+        where is_delete = 0 
+        and id in
+        <foreach collection="array" item="id" index="index"
              open="(" close=")" separator=",">
         #{id}
-    </foreach>
+    	</foreach>
     </select>
 </mapper>

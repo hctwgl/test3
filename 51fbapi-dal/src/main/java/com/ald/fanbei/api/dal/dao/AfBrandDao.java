@@ -26,7 +26,7 @@ public interface AfBrandDao extends BaseDao<AfBrandDo, Long> {
 	 * @param brandIds
 	 * @return
 	 */
-	List<AfBrandDo> getHotBrands(@Param(value="brandIds")String[] brandIds);
+	List<AfBrandDo> getHotBrands(@Param(value="array")String[] brandIds);
 
     
 

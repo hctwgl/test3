@@ -213,7 +213,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
             }
         }
         if (resultValue == 1) {
-            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
             contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
                     afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
@@ -310,7 +311,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
         }
 
         if (resultValue == 1) {
-            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
 
             contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单

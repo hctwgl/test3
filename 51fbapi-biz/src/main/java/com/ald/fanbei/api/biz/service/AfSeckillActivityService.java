@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
@@ -66,9 +67,11 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 			Long userId, List<Long> goodsIdList);
 
 
-	List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
+	Map<String, Object> getHomePageSecKillGoodsByActivityModel(
 			Long userId, String tag, Integer type, Long tabId, Integer pageNo);
 
-	List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(Long userId,
+	Map<String, Object> getMoreGoodsByBottomGoodsTable(Long userId,
 			Integer pageNo, String pageFlag);
+
+    Integer getSecKillGoodsStock(Long goodsId, Long activityId);
 }

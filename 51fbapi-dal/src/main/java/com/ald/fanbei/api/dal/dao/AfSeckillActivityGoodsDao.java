@@ -43,6 +43,8 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     
     List<HomePageSecKillGoods> getHomePageSecKillGoods(HomePageSecKillQuery homePageSecKillQuery);
 
+    Integer getSecKillGoodsStock(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId);
+
 	List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(
 			@Param("userId")Long userId,@Param("items") List<Long> goodsIdList);
 

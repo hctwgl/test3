@@ -92,14 +92,15 @@ public class GetVerifyCodeApi implements ApiHandle {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 
 				}
-				// todo 这里面放同盾代码,下面是示例
-				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
-						mobile, "", "", "");
 				try {
 					baiQiShiUtils.getRegistResult(requestDataVo.getId(),bqsBlackBox,CommonUtil.getIpAddr(request),mobile,"","","","");
 				}catch (Exception e){
 					logger.error("getVerifyCodeApi baiQiShiUtils getRegistResult error => {}",e.getMessage());
 				}
+				// todo 这里面放同盾代码,下面是示例
+				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
+						mobile, "", "", "");
+
 			}
 
 			afUserDo = afUserService.getUserByUserName(mobile);
@@ -128,14 +129,15 @@ public class GetVerifyCodeApi implements ApiHandle {
 				if (StringUtils.isBlank(blackBox)) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 				}
-				// todo 这里面放同盾代码,下面是示例
-				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
-						mobile, "", "", "");
 				try {
 					baiQiShiUtils.getRegistResult(requestDataVo.getId(),bqsBlackBox,CommonUtil.getIpAddr(request),mobile,"","","","");
 				}catch (Exception e){
 					logger.error("getVerifyCodeApi baiQiShiUtils getRegistResult error => {}",e.getMessage());
 				}
+				// todo 这里面放同盾代码,下面是示例
+				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
+						mobile, "", "", "");
+
 			}
 			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
 			resp.addResponseData("code",1146);
