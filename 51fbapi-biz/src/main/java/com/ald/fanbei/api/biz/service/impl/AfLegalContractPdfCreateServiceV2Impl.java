@@ -713,6 +713,21 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             }
             return getPdfInfoWithOutLender(protocolUrl, map, afBorrowCashDo.getUserId(), afBorrowCashDo.getRid(), "cashLoan", "1", investorList);
         } else if (debtType == 1) {//分期
+            if (orderNo.substring(0,2).equals("dk")){
+                AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
+                if (loanDo == null) {
+                    logger.error("白领贷借款信息不存在 => {}", orderNo);
+                    throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
+                }
+                AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+                afContractPdfDo.setType((byte) 5);
+                afContractPdfDo.setTypeId(loanDo.getRid());
+                AfContractPdfDo pdf = afContractPdfDao.selectByTypeId(afContractPdfDo);
+                if (pdf != null) {
+                    return pdf.getContractPdfUrl();
+                }
+                return getPdfInfoWithOutLender(protocolUrl, map, loanDo.getUserId(), loanDo.getRid(), "whiteCashloan", "5", investorList);
+            }
             AfBorrowDo afBorrowDo = afBorrowDao.getBorrowInfoByBorrowNo(orderNo);
             if (afBorrowDo == null) {
                 AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByCashNo(orderNo);
@@ -867,6 +882,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);
         long time = new Date().getTime();
         map.put("uploadPath", src + accountDo.getUserName() + type + time + ".pdf");
+        map.put("userPath", src + accountDo.getUserName() + type + time + 1 + ".pdf");
         map.put("sealWidth", "70");
         map.put("posType", "1");
         map.put("signType", "Key");
@@ -891,7 +907,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 bos.close();
             }
             if (!result) {
-                File file1 = new File(map.get("PDFPath").toString());
+                File file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
             }
         }
@@ -917,17 +933,12 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     private byte[] downLoadByUrl(String url) throws IOException {
-        OutputStream fos = null;
         ByteArrayOutputStream bos = null;
         try {
-            return PdfCreateUtil.downLoadByUrl(url);
+            return PdfCreateUtil.downLoadByUrl(url,bos);
         } catch (Exception e) {
             logger.error("downLoadByUrl pdf合同生成失败 => {}", e);
         } finally {
-            if (null != fos) {
-                fos.flush();
-                fos.close();
-            }
             if (null != bos) {
                 bos.close();
             }
@@ -949,9 +960,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             result = false;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
-                file1 = new File(map.get("PDFPath").toString());
+                file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
             }
         }
@@ -998,7 +1009,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             result = false;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1018,9 +1029,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             logger.error("PdfCreateByStream e都市钱包盖章证书生成失败 => {}", e + ",PDFPath =" + map.get("PDFPath") + ",borrowId = " + map.get("borrowId") + ",protocolCashType = " + map.get("protocolCashType"));
         } finally {
             if (!result) {
-                File file1 = new File(map.get("thirdPath").toString());
+                File file1 = new File(String.valueOf(map.get("thirdPath")));
                 file1.delete();
-                file1 = new File(map.get("userPath").toString());
+                file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1129,11 +1140,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != input) {
                 input.close();
             }
-            File file1 = new File(map.get("PDFPath").toString());
+            File file1 = new File(String.valueOf(map.get("PDFPath")));
             file1.delete();
-            file1 = new File(map.get("userPath").toString());
+            file1 = new File(String.valueOf(map.get("userPath")));
             file1.delete();
-            file1 = new File(map.get("thirdPath").toString());
+            file1 = new File(String.valueOf(map.get("thirdPath")));
             file1.delete();
         }
         return false;
@@ -1155,7 +1166,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return null;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1177,7 +1188,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return null;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1210,7 +1221,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return null;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1239,7 +1250,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return null;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1261,7 +1272,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             result = false;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1313,15 +1324,15 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != input) {
                 input.close();
             }
-            File file1 = new File(map.get("PDFPath").toString());
+            File file1 = new File(String.valueOf(map.get("PDFPath")));
             file1.delete();
-            file1 = new File(map.get("userPath").toString());
+            file1 = new File(String.valueOf(map.get("userPath")));
             file1.delete();
-            file1 = new File(map.get("selfPath").toString());
+            file1 = new File(String.valueOf(map.get("selfPath")));
             file1.delete();
-            file1 = new File(map.get("secondPath").toString());
+            file1 = new File(String.valueOf(map.get("secondPath")));
             file1.delete();
-            file1 = new File(map.get("thirdPath").toString());
+            file1 = new File(String.valueOf(map.get("thirdPath")));
             file1.delete();
         }
         return null;
@@ -1355,15 +1366,15 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != input) {
                 input.close();
             }
-            File file1 = new File(map.get("PDFPath").toString());
+            File file1 = new File(String.valueOf(map.get("PDFPath")));
             file1.delete();
-            file1 = new File(map.get("userPath").toString());
+            file1 = new File(String.valueOf(map.get("userPath")));
             file1.delete();
-            file1 = new File(map.get("selfPath").toString());
+            file1 = new File(String.valueOf(map.get("selfPath")));
             file1.delete();
-            file1 = new File(map.get("secondPath").toString());
+            file1 = new File(String.valueOf(map.get("secondPath")));
             file1.delete();
-            file1 = new File(map.get("thirdPath").toString());
+            file1 = new File(String.valueOf(map.get("thirdPath")));
             file1.delete();
         }
         return null;
@@ -1392,8 +1403,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     private String getLegalContractPdfWithOutLender(Map<String, Object> map) throws IOException {
         boolean result = true;
         byte[] stream = new byte[1024];
-        stream = downLoadByUrl(map.get("PDFPath").toString());
-        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
+//        stream = downLoadByUrl(map.get("PDFPath").toString());
+        stream = borrowerCreateSeal(result,stream,map);//借款人签章
+//        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
         if (stream != null){
             if (null != map.get("secondPartyKey") && !"".equals(map.get("secondPartyKey"))) {//ald签章
                 stream = selfStreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
@@ -1661,7 +1673,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != input) {
                 input.close();
             }
-            File file1 = new File(map.get("PDFPath").toString());
+            File file1 = new File(String.valueOf(map.get("PDFPath")));
             file1.delete();
         }
         return null;
@@ -1686,7 +1698,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 bos.close();
             }
             if (!result) {
-                File file1 = new File(map.get("PDFPath").toString());
+                File file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
             }
         }
@@ -1704,9 +1716,9 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return result;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("PDFPath").toString());
+                File file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
-                file1 = new File(map.get("userPath").toString());
+                file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }
@@ -1725,11 +1737,11 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return result;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("PDFPath").toString());
+                File file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
-                file1 = new File(map.get("userPath").toString());
+                file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
-                file1 = new File(map.get("selfPath").toString());
+                file1 = new File(String.valueOf(map.get("selfPath")));
                 file1.delete();
             }
         }
@@ -1747,13 +1759,13 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return result;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("PDFPath").toString());
+                File file1 = new File(String.valueOf(map.get("PDFPath")));
                 file1.delete();
-                file1 = new File(map.get("userPath").toString());
+                file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
-                file1 = new File(map.get("selfPath").toString());
+                file1 = new File(String.valueOf(map.get("selfPath")));
                 file1.delete();
-                file1 = new File(map.get("secondPath").toString());
+                file1 = new File(String.valueOf(map.get("secondPath")));
                 file1.delete();
             }
         }
@@ -1800,13 +1812,13 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (null != input) {
                 input.close();
             }
-            File file1 = new File(map.get("PDFPath").toString());
+            File file1 = new File(String.valueOf(map.get("PDFPath")));
             file1.delete();
-            file1 = new File(map.get("userPath").toString());
+            file1 = new File(String.valueOf(map.get("userPath")));
             file1.delete();
-            file1 = new File(map.get("selfPath").toString());
+            file1 = new File(String.valueOf(map.get("selfPath")));
             file1.delete();
-            file1 = new File(map.get("secondPath").toString());
+            file1 = new File(String.valueOf(map.get("secondPath")));
             file1.delete();
         }
         return true;
@@ -1828,7 +1840,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return null;
         } finally {
             if (!result) {
-                File file1 = new File(map.get("userPath").toString());
+                File file1 = new File(String.valueOf(map.get("userPath")));
                 file1.delete();
             }
         }

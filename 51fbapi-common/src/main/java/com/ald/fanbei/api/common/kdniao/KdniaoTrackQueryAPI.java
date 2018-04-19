@@ -63,7 +63,7 @@ public class KdniaoTrackQueryAPI {
             Map<String, String> params = new HashMap<String, String>();
             params.put("RequestData", urlEncoder(requestData, "UTF-8"));
             params.put("EBusinessID", ConfigProperties.get(Constants.KDNIAO_BUSINESSID));
-            params.put("RequestType", "1002");
+            params.put("RequestType", "8001");
             String dataSign = encrypt(requestData, ConfigProperties.get(Constants.KDNIAO_APIKEY), "UTF-8");
             params.put("DataSign", urlEncoder(dataSign, "UTF-8"));
             params.put("DataType", "2");

@@ -469,7 +469,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		if (borrowId > 0) {
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
-				getEdspayInfo(model, borrowId, (byte) 1);
+				getEdspayInfo(model, borrowId, (byte) 7);
 				protocolGoodsCashLoan(afBorrowCashDo,borrowId,borrowAmount,model);
 				model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());

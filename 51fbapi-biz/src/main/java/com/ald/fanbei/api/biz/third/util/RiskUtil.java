@@ -908,8 +908,7 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = requestProxy.post(url, reqBo);
 		try{
 			logger.info("sync kafka data consumerNo:"+consumerNo);
-			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_CASH_LOAN,true);
+			kafkaSync.syncEvent(Long.parseLong(consumerNo), KafkaConstants.SYNC_SCENE_WEEK,true);
 		}catch (Exception e){
 
 		}
@@ -1261,8 +1260,9 @@ public class RiskUtil extends AbstractThird {
 						flag=false;
 					}
 				}
+				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())
-						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag) {
+						&&((orderInfo.getOrderType().equals(OrderType.TRADE.getCode())&&StringUtil.equals(assetPushType.getTrade(), YesNoStatus.YES.getCode()))||(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())&&StringUtil.equals(assetPushType.getBoluome(), YesNoStatus.YES.getCode())))&&flag&&!bankIsMaintaining) {
 					//钱包未满额，商圈类型开关或boluome开关开启时推送给钱包
 					List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = pushEdsPayBorrowInfo(borrow);
 					AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
@@ -1513,6 +1513,9 @@ public class RiskUtil extends AbstractThird {
 			}
 		}
 		Integer nper = borrowDto.getNper();//分期数
+        if (nper == 5 || nper == 11) {//兼容租房5期与11期，作为6期与12期的利率
+        	nper++;
+        }
 		//获取消费分期协议年化利率配置
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
 		BigDecimal borrowRate=BigDecimal.ZERO;
@@ -3960,5 +3963,19 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
 		}
 		return riskResp;
+	}
+
+	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+			String[] split = assetPushResource.getValue4().split(",");
+			String maintainStart = split[0];
+			String maintainEnd = split[1];
+			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+
+		}
+		return bankIsMaintaining;
 	}
 }
