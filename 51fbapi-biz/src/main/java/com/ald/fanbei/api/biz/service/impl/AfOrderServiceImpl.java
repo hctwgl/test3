@@ -1328,36 +1328,36 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    AfBorrowDo borrow = new AfBorrowDo();
 			    // 租赁逻辑
 			    if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
-				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-				orderInfo.setStatus(OrderStatus.NEW.getCode());
-				merPriv = OrderType.LEASE.getCode();
-				remark = "租赁商品订单支付";
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.NEW.getCode());
+					merPriv = OrderType.LEASE.getCode();
+					remark = "租赁商品订单支付";
 
-				String cardNo = card.getCardNumber();
-				String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-				orderInfo.setRiskOrderNo(riskOrderNo);
-				borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(), afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
-				borrow.setVersion(1);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String borrowTime = sdf.format(borrow.getGmtCreate());
-				RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-				canPay = verybo.isSuccess();
-				if (canPay) {
-				    String result = verybo.getResult();
-				    if (!result.equals("10")) {
-					canPay = false;
-				    }
+					String cardNo = card.getCardNumber();
+					String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					orderInfo.setRiskOrderNo(riskOrderNo);
+					borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(), afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
+					borrow.setVersion(1);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String borrowTime = sdf.format(borrow.getGmtCreate());
+					RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+					canPay = verybo.isSuccess();
+					if (canPay) {
+						String result = verybo.getResult();
+						if (!result.equals("10")) {
+							canPay = false;
+						}
+					}
+					if (!canPay) {
+						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+						resultMap.put("success", false);
+						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					} else {
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
+					}
 				}
-				if (!canPay) {
-				    afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
-				    resultMap.put("success", false);
-				    resultMap.put("verifybo", JSONObject.toJSONString(verybo));
-				    resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-				} else {
-				    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-				    orderInfo.setStatus(OrderStatus.DEALING.getCode());
-				}
-			    }
 
 			    // 银行卡支付 代收
 			    // 租赁弱风控判断（除租赁外银行卡不需要判断弱风控 canPay=true）
@@ -1404,43 +1404,46 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
-	}
+//	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+//	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+//	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+//	}
     }
 
     @Override
     protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
-	// 租赁逻辑
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	Map<String, Object> resultMap = new HashMap<String, Object>();
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
-		if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
-		    // 新增借款信息
-		    afBorrowDao.addBorrow(kuaijieOrderPayBo.getBorrow()); // 冻结状态
-		    // 在风控审批通过后额度不变生成账单
-		    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-		    afBorrowExtendDo.setId(kuaijieOrderPayBo.getBorrow().getRid());
-		    afBorrowExtendDo.setInBill(0);
-		    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-		    afBorrowService.updateBorrowStatus(kuaijieOrderPayBo.getBorrow(), kuaijieOrderPayBo.getAfOrderLeaseDo().getUserName(), kuaijieOrderPayBo.getOrderInfo().getUserId());
-		    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
+		// 租赁逻辑
+		KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if (kuaijieOrderPayBo.getOrderInfo() != null) {
+
+			orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+
+			if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
+				if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
+					// 新增借款信息
+					afBorrowDao.addBorrow(kuaijieOrderPayBo.getBorrow()); // 冻结状态
+					// 在风控审批通过后额度不变生成账单
+					AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+					afBorrowExtendDo.setId(kuaijieOrderPayBo.getBorrow().getRid());
+					afBorrowExtendDo.setInBill(0);
+					afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					afBorrowService.updateBorrowStatus(kuaijieOrderPayBo.getBorrow(), kuaijieOrderPayBo.getAfOrderLeaseDo().getUserName(), kuaijieOrderPayBo.getOrderInfo().getUserId());
+					afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
+				}
+			}
+
+			Map<String, Object> newMap = new HashMap<String, Object>();
+			newMap.put("outTradeNo", respBo.getOrderNo());
+			newMap.put("tradeNo", respBo.getTradeNo());
+			newMap.put("cardNo", Base64.encodeString(cardNo));
+			resultMap.put("resp", newMap);
+			resultMap.put("status", PayStatus.DEALING.getCode());
+			resultMap.put("success", true);
 		}
-	    }
 
-	    Map<String, Object> newMap = new HashMap<String, Object>();
-	    newMap.put("outTradeNo", respBo.getOrderNo());
-	    newMap.put("tradeNo", respBo.getTradeNo());
-	    newMap.put("cardNo", Base64.encodeString(cardNo));
-	    resultMap.put("resp", newMap);
-	    resultMap.put("status", PayStatus.DEALING.getCode());
-	    resultMap.put("success", true);
+		return resultMap;
 	}
-
-	return resultMap;
-    }
 
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
