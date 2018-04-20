@@ -7,14 +7,10 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfLoanDo;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -77,6 +73,9 @@ public class AppH5BillController extends BaseController {
     private AfUserService afUserService;
 
     @Autowired
+    private AfUserAccountService userAccountService;
+
+    @Autowired
     private AfBorrowBillService afBorrowBillService;
 
     @Autowired
@@ -113,10 +112,18 @@ public class AppH5BillController extends BaseController {
             context = doWebCheck(request, true);
             Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
 
+            // 获取用户账号返利金额，设置账单的还款所需信息时使用
+            String rebateAmount = "0.00";
+            BigDecimal amount = userAccountService.getUserAccountByUserId(userId).getRebateAmount();
+            if (amount != null) {
+                rebateAmount = amount.setScale(2, RoundingMode.HALF_UP).toString();
+            }
+
+
             List<Map<String, Object>> data = new ArrayList<>();
             data.add(getBorrowBill(userId));
-            data.add(getBorrowCash(userId));
-            data.add(getLoan(userId));
+            data.add(getBorrowCash(userId, rebateAmount));
+            data.add(getLoan(userId, rebateAmount));
 
             return H5CommonResponse.getNewInstance(true, "请求成功", "", data).toString();
         } catch (FanbeiException e) {
@@ -222,7 +229,7 @@ public class AppH5BillController extends BaseController {
     }
 
     // 获取极速贷账单
-    private Map<String,Object> getBorrowCash(Long userId) {
+    private Map<String,Object> getBorrowCash(Long userId, String rebateAmount) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", BILL_TYPE_CASH);
 
@@ -240,12 +247,23 @@ public class AppH5BillController extends BaseController {
         }
 
         // 计算待还金额
-        BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(),
+        /*BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(),
                 borrowCashDo.getOverdueAmount(), borrowCashDo.getRateAmount(), borrowCashDo.getSumRate(),
                 borrowCashDo.getPoundage(), borrowCashDo.getSumRenewalPoundage());
         String waitRepaymentAmount = BigDecimalUtil.subtract(allAmount, borrowCashDo.getRepayAmount())
+                .setScale(2, RoundingMode.HALF_UP).toString();*/
+        String waitRepaymentAmount = afBorrowCashService.calculateLegalRestAmount(borrowCashDo)
                 .setScale(2, RoundingMode.HALF_UP).toString();
         result.put("amount", waitRepaymentAmount);
+
+        // 还款所需信息
+        result.put("borrowId", borrowCashDo.getRid().toString());
+        result.put("shouldRepaymentAmount", waitRepaymentAmount);
+        result.put("rebateAmount", rebateAmount);
+        // 极速贷和白领贷走了相同接口，所以传默认值
+        result.put("loanPeriodsId", "");
+        result.put("loanRepaymentType", "");
+        result.put("periodsUnChargeAmount", "");
 
         // 还款中
         BigDecimal repayingMoney = afRepaymentBorrowCashService
@@ -270,11 +288,12 @@ public class AppH5BillController extends BaseController {
         // 待还未逾期
         result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(borrowCashDo.getGmtPlanRepayment()));
         result.put("status", STATUS_WAITREFUND);
+
         return result;
     }
 
     // 获取白领贷账单
-    private Map<String, Object> getLoan(Long userId) {
+    private Map<String, Object> getLoan(Long userId, String rebateAmount) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", BILL_TYPE_LOAN);
 
@@ -293,6 +312,21 @@ public class AppH5BillController extends BaseController {
 
         // 待还金额
         BigDecimal waitRepaymentAmount = afLoanPeriodsService.calcuRestAmount(currMonthPeriodsDo);
+
+        // 还款所需信息
+        result.put("borrowId", lastLoanDo.getRid().toString());
+        result.put("shouldRepaymentAmount", waitRepaymentAmount);
+        result.put("rebateAmount", rebateAmount);
+        String loanPeriodsId = "";
+        List<AfLoanPeriodsDo> canRepayPeriods = afLoanPeriodsService.listCanRepayPeriods(lastLoanDo.getRid());
+        for (int i = 0; i < canRepayPeriods.size(); i++) {
+            loanPeriodsId += canRepayPeriods.get(i).getRid().toString();
+            if (i < canRepayPeriods.size() - 1) {
+                loanPeriodsId += ",";
+            }
+        }
+        result.put("loanPeriodsId", loanPeriodsId);
+        result.put("loanRepaymentType", "commonSettle");
 
         // 还款中
         if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.REPAYING.getCode())) {
@@ -328,6 +362,15 @@ public class AppH5BillController extends BaseController {
             result.put("amount", "0.00");
             result.put("billDesc", "提前结清可减免手续费哦!");
             result.put("status", STATUS_NEXTWAITREFUND);
+
+            result.put("loanRepaymentType", "forwardSettle");
+            BigDecimal unChargeAmount = BigDecimal.ZERO;
+            List<AfLoanPeriodsDo> unps = afLoanPeriodsService.listUnChargeRepayPeriods(lastLoanDo.getRid());
+            for(AfLoanPeriodsDo p : unps) {
+                unChargeAmount = unChargeAmount.add(p.getAmount());
+            }
+            result.put("periodsUnChargeAmount",
+                    unChargeAmount.setScale(2, RoundingMode.HALF_UP).toString());
             return result;
         }
 
