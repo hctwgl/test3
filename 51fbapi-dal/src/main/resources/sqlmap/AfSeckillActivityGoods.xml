@@ -289,7 +289,7 @@
             y.id as activityId,
 			min(a.special_price) activityAmount,
 			a.goods_id,
-			a.limit_count as total,
+			sum(a.limit_count) as total,
 			g.`name` as goodName,
 			g.goods_icon as goodsIcon,
 			g.thumbnail_icon,
