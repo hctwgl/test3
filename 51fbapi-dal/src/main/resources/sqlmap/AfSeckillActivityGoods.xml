@@ -249,7 +249,8 @@
 
     <select id="getActivityGoodsByGoodsIdsAndActId" resultType="AfActGoodsDto">
         SELECT
-        a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
+        a.goods_id,a.activity_id,min(a.special_price) special_price,IFNULL(sum(a.limit_count),0) goodsCount,
+        a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
         g.price_amount,g.sale_amount,g.rebate_amount,g.rebate_rate,g.remark,g.source
         FROM af_seckill_activity_goods a LEFT JOIN af_goods g ON (a.goods_id=g.id)
         LEFT JOIN af_goods_price b ON (a.price_id=b.id)
@@ -264,7 +265,7 @@
         AND a.activity_id=#{activityId}
         GROUP BY a.goods_id
     </select>
-    
+
     <select id="getActivityGoodsByActName" resultType="AfActGoodsDto">
         SELECT
         a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
@@ -282,7 +283,7 @@
         AND a.activity_id=#{activityId}
         GROUP BY a.goods_id
     </select>
-    
+
     <select id="getHomePageSecKillGoods" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods"
     		parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery">
 	    SELECT
@@ -364,13 +365,13 @@
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
       c.interest_free_id
     FROM
-      af_goods  g  
-      
-          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+      af_goods  g
+
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
-          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           WHERE
 	          g.is_delete = 0
 	           <if test="items != null and items != ''">
@@ -379,7 +380,7 @@
 	                #{item}
 	            </foreach>
 	            </if>
-	          AND g.is_delete = 0   
+	          AND g.is_delete = 0
 	          GROUP BY g.id
 
     </select>
@@ -402,26 +403,26 @@
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
       c.interest_free_id
     FROM
-      af_goods  g  
+      af_goods  g
           JOIN af_activity_model  m ON  m.`goods_id` = g.`id`
-          JOIN af_activity ac ON ac.id = m.activity_id   
-          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
+          JOIN af_activity ac ON ac.id = m.activity_id
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
-          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           WHERE
 	          g.is_delete = 0
 	   AND    ac.`is_delete` = 0
 	   AND    m.`is_delete` = 0
 	   AND    ac.`type` = #{type}
-	   AND    ac.`tag` = #{tag}  
-	   AND    ac.`title1` = #{tabId}   
+	   AND    ac.`tag` = #{tag}
+	   AND    ac.`title1` = #{tabId}
 	   GROUP BY m.goods_id
 	   ORDER  BY  m.sort desc
     </select>
-    
-    
+
+
      <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
 	SELECT
       y.id as activityId,
@@ -441,14 +442,14 @@
       IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
       c.interest_free_id
     FROM
-      af_goods  g  
+      af_goods  g
           JOIN af_bottom_goods  m ON  m.`goods_id` = g.`id`
-          JOIN af_bottom_goods_page ap ON ap.id = m.page_id   
-          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0 
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY) 
+          JOIN af_bottom_goods_page ap ON ap.id = m.page_id
+          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY)
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
-          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id  
+          LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           WHERE
 	          g.is_delete = 0
 	   AND    ap.`is_delete` = 0
@@ -457,6 +458,32 @@
 	   GROUP BY m.goods_id
 	   ORDER  BY m.sort DESC
     </select>
-    
-    
+
+
+
+    <select id="getActivityGoodsByActivityId" resultType="AfSeckillActivityGoodsDto">
+        SELECT
+        a.id rid,min(a.special_price) special_price,a.limit_count,a.goods_id,a.price_id,b.name goodsName
+        FROM af_seckill_activity_goods a LEFT JOIN af_goods b ON (a.goods_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND b.is_delete=0
+        AND a.activity_id=#{activityId} GROUP BY a.goods_id
+    </select>
+
+    <select id="getSaleInfoByGoodsIdAndActId" resultType="AfSeckillActivityDo">
+        SELECT count(a.id) saleCount,IFNULL(sum(c.limit_count) ,0) goodsCount
+        FROM af_seckill_activity_goods c LEFT JOIN  af_seckill_activity_order a ON (a.goods_id=c.goods_id AND a.activity_id=c.activity_id ) LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId} AND c.goods_id=#{goodsId}
+        AND c.type=2 AND c.special_price>0
+        AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+    </select>
+
+    <select id="getActivityGoodsCountList" resultType="AfSeckillActivityDo">
+        SELECT c.goods_id rid,IFNULL(sum(c.limit_count) ,0) goodsCount
+        FROM af_seckill_activity_goods c LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId}
+        AND c.type=2 AND c.special_price>0
+        AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+        GROUP BY c.goods_id
+    </select>
+
 </mapper>

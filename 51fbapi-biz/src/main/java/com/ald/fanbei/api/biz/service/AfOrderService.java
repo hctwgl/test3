@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
@@ -70,7 +69,8 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox);
+		BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox,String bankChannel);
+
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -181,13 +181,13 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
+	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress, String bankChannel);
 	
 	/**
 	 * 处理菠萝觅回调订单 成功
@@ -476,4 +476,5 @@ public interface AfOrderService {
 
 
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
+
 }

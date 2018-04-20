@@ -53,6 +53,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -149,7 +150,7 @@ public class PayRoutController {
 
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	
+
 	//贷款
 	@Resource
 	AfLoanService afLoanService;
@@ -168,16 +169,16 @@ public class PayRoutController {
 
 	@Resource
 	private ThirdPayUtility thirdPayUtility;
-    @Resource
-    private AfUserAmountService afUserAmountService;
+	@Resource
+	private AfUserAmountService afUserAmountService;
 
 
 
-    @Resource
-    private AfUserAccountDao afUserAccountDao;
+	@Resource
+	private AfUserAccountDao afUserAccountDao;
 
-    @Resource
-    private AfBorrowDao afBorrowDao;
+	@Resource
+	private AfBorrowDao afBorrowDao;
 
 	@Resource
 	private AfTradeCodeInfoService afTradeCodeInfoService;
@@ -189,22 +190,25 @@ public class PayRoutController {
 	private AfBorrowExtendDao afBorrowExtendDao;
 
 	@Autowired
+	private UpsUtil upsUtil;
+	
+	@Autowired
 	KafkaSync kafkaSync;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
-    @Resource
-    private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+	@Resource
+	private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
 
-    @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
-    @ResponseBody
-    public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
-        for (String paramKey : request.getParameterMap().keySet()) {
-            thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-        }
-        return "succ";
-    }
+	@RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
+		for (String paramKey : request.getParameterMap().keySet()) {
+			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+		}
+		return "succ";
+	}
 
 
 	@RequestMapping(value = { "/authSignNotify" }, method = RequestMethod.POST)
@@ -318,10 +322,10 @@ public class PayRoutController {
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
 				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
-                    AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
-                    afSupDo.setRid(result);
-                    afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
-                }
+					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setRid(result);
+					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
 				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
@@ -510,7 +514,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
-					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
+					afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
@@ -543,7 +547,7 @@ public class PayRoutController {
 			return "ERROR";
 		}
 	}
-
+	
 	/**
 	 * 易宝订单回调
 	 *

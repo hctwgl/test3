@@ -18,10 +18,10 @@ import java.util.Map;
  */
 public interface AfRepaymentBorrowCashService {
 	Map<String, Object> createRepaymentYiBao(BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount,
-											 Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo);
+											 Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo,String bankPayType);
 
 	Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo);
+			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo,String bankPayType);
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo);
 	
 	public long dealRepaymentFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice,String errorMsg,AfRepaymentBorrowCashDo repayment);

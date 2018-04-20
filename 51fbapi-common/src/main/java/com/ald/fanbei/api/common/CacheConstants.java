@@ -89,4 +89,37 @@ public class CacheConstants {
 		}
 	}
 
+	public static enum PART_ACTIVITY{
+
+		GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST("GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST","V2活动商品"),
+		GET_ACTIVITY_INFO_V2_PROCESS_KEY("GET_ACTIVITY_INFO_V2_PROCESS_KEY","V2会场活动线程标识位"),
+		GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST("GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST","V2会场商品"),
+		GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2("GET_ACTIVITY_INFO_V2_ACTIVITY_INFO_LIST_CACHE2","V2活动商品(二级缓存)"),
+		GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST_CACHE2("GET_ACTIVITY_INFO_V2_ACTIVITY_PART_LIST_CACHE2","V2会场商品(二级缓存)");
+
+		private String code;
+		private String name;
+
+		private PART_ACTIVITY(String code, String name) {
+			this.code = code;
+			this.name = name;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
 }
