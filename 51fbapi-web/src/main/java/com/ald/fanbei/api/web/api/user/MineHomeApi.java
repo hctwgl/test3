@@ -17,14 +17,10 @@ import com.ald.fanbei.api.web.vo.MineHomeVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -175,7 +171,7 @@ public class MineHomeApi implements ApiHandle {
             // 授予的额度
             AfUserAccountSenceDo onlineScene = afUserAccountSenceService
                     .getByUserIdAndScene("ONLINE",userId);
-            BigDecimal onlineAuAmount = onlineAuAmount = onlineScene.getAuAmount();
+            BigDecimal onlineAuAmount = onlineScene.getAuAmount();
             // 临时额度
             AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
             if (interimAuDo != null

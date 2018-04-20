@@ -263,7 +263,7 @@ public class AppH5BillController extends BaseController {
         Date now = DateUtil.getEndOfDate(new Date());
         if (StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
                 && borrowCashDo.getGmtPlanRepayment().before(now)) {
-            result.put("billDesc", "<i>逾期将产生逾期费，并上报征信，\n请尽快还款</i>");
+            result.put("billDesc", "<i>逾期将产生逾期费,并上报征信,请尽快还款</i>");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -308,8 +308,8 @@ public class AppH5BillController extends BaseController {
         if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.AWAIT_REPAY.getCode())
                 && currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
             result.put("amount", waitRepaymentAmount);
-            result.put("billDesc", "<i>（含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
-                    + "元）</i>\n最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
+            result.put("billDesc", "<i>(含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
+                    + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -326,7 +326,7 @@ public class AppH5BillController extends BaseController {
         if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.FINISHED.getCode())
                 && currMonthPeriodsDo.getGmtPlanRepay().after(new Date())) {
             result.put("amount", "0.00");
-            result.put("billDesc", "提前结清可减免手续费哦！");
+            result.put("billDesc", "提前结清可减免手续费哦!");
             result.put("status", STATUS_NEXTWAITREFUND);
             return result;
         }
