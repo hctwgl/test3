@@ -133,10 +133,14 @@ public class GetMoreGoodsApi implements ApiHandle {
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 		     String imageUrl = "";
+		     String content = "";
+		     String type = "";
 		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
 		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
 		    	 imageUrl = recommend.getValue3();
+		    	 content = recommend.getValue1();
+		    	 type = recommend.getValue4();
 		     }
 						 if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
 							 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
@@ -149,6 +153,8 @@ public class GetMoreGoodsApi implements ApiHandle {
 									 goodsInfo.put("nextPageNo",pageNo+1); 
 								 }
 								 goodsInfo.put("imageUrl",imageUrl); 
+								 goodsInfo.put("content",content); 
+								 goodsInfo.put("type",type); 
 								 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 							 }
 		         }

@@ -107,9 +107,10 @@ public class GetHomeChannelApi implements ApiHandle {
 	AfResourceH5ItemService afResourceH5ItemService;
 	
 	private String HOME_PAGE_CHANNEL_RECOMMEND_GOODS = 	HomePageType.HOME_PAGE_CHANNEL_RECOMMEND_GOODS.getCode(); //频道页推荐商品id组
-	String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
-	String CHANNEL_RECOMMEND_GOODS_TOP_IMAGE = 		   HomePageType.CHANNEL_RECOMMEND_GOODS_TOP_IMAGE.getCode();//爱上街顶部图组
-	
+	private String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+	private String CHANNEL_RECOMMEND_GOODS_TOP_IMAGE = 		   HomePageType.CHANNEL_RECOMMEND_GOODS_TOP_IMAGE.getCode();//爱上街顶部图组
+	private String H5_URL = 		   HomePageType.H5_URL.getCode();//h5
+	private String CATEGORY_ID = 		   HomePageType.CATEGORY_ID.getCode();//h5
 	
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -144,7 +145,7 @@ public class GetHomeChannelApi implements ApiHandle {
 				if(0 == homePageChannelConfigure.getConfigureType() ){
 					Map<String, Object> bannerInfo = new HashMap<String, Object>();
 					bannerInfo.put("imageUrl", homePageChannelConfigure.getImageUrl());
-					bannerInfo.put("type", "H5_URL");
+					bannerInfo.put("type", H5_URL);
 					bannerInfo.put("content", homePageChannelConfigure.getJumpUrl());
 					bannerInfo.put("sort", homePageChannelConfigure.getSort());
 					if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
@@ -157,9 +158,16 @@ public class GetHomeChannelApi implements ApiHandle {
 				}
 				//1导航
 				if(1 == homePageChannelConfigure.getConfigureType() ){
+					//跳转类型。1:品牌；2:类目；3:H5
+					String type = "";
+					if(homePageChannelConfigure.getJumpType() == 2){
+						type = CATEGORY_ID;
+					}else{
+						type = H5_URL;
+					}
 					Map<String, Object> navigation = new HashMap<String, Object>();
 					navigation.put("imageUrl", homePageChannelConfigure.getImageUrl());
-					navigation.put("type", homePageChannelConfigure.getJumpType());
+					navigation.put("type",type );
 					navigation.put("titleName", homePageChannelConfigure.getName());
 					navigation.put("content", homePageChannelConfigure.getJumpUrl());
 					navigation.put("sort", homePageChannelConfigure.getSort());
@@ -176,7 +184,7 @@ public class GetHomeChannelApi implements ApiHandle {
 				if(2 == homePageChannelConfigure.getConfigureType() ){
 					if(0 ==  homePageChannelConfigure.getPosition()&& 1 == homePageChannelConfigure.getStatus()){
 						onePlusThreeBanner.put("imageUrl", homePageChannelConfigure.getImageUrl());
-						onePlusThreeBanner.put("type", homePageChannelConfigure.getJumpType());
+						onePlusThreeBanner.put("type", H5_URL);
 						onePlusThreeBanner.put("content", homePageChannelConfigure.getJumpUrl());
 					}else if (0 <  homePageChannelConfigure.getPosition() && 1 == homePageChannelConfigure.getStatus()){
 						Map<String, Object> onePlusThree = new HashMap<String, Object>(); 
@@ -184,7 +192,7 @@ public class GetHomeChannelApi implements ApiHandle {
 							
 						}
 						onePlusThree.put("imageUrl", homePageChannelConfigure.getImageUrl());
-						onePlusThree.put("type", homePageChannelConfigure.getJumpType());
+						onePlusThree.put("type", H5_URL);
 						onePlusThree.put("content", homePageChannelConfigure.getJumpUrl());
 						onePlusThree.put("sort", homePageChannelConfigure.getSort());
 						onePlusThreeArea.add(onePlusThree);
@@ -230,17 +238,20 @@ public class GetHomeChannelApi implements ApiHandle {
 							
 								 String imageUrl = "";
 								 String content = "";
+								 String type = "";
 								   List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,CHANNEL_RECOMMEND_GOODS_TOP_IMAGE);
 								     if(recommendList != null && recommendList.size() >0){
 								    	 AfResourceH5ItemDo recommend = recommendList.get(0);
 								    	  content =  recommend.getValue1();
 								    	  imageUrl = recommend.getValue3();
+								    	  type = recommend.getValue4();
 								     }
 								 
 							    	 if(StringUtil.isNotEmpty(imageUrl)){
 							    		 if(recommendGoodsInfoList.size()>=3){
 								    	 recommendGoodsInfo.put("imageUrl", imageUrl);
 								    	 recommendGoodsInfo.put("content", content);
+								    	 recommendGoodsInfo.put("type", type);
 								    	 recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
 							    	 }
 							    }
@@ -332,14 +343,7 @@ public class GetHomeChannelApi implements ApiHandle {
 			}
 			goodsInfo.put("nperMap", nperMap);
 		     //更换content和type可跳转商品详情
-			if("FLASH_SALE".equals(tag)){
-				  String content = null;
-				 if(afResourceH5ItemDo != null){
-					 content = afResourceH5ItemDo.getValue1();
-				 }
-		    	  goodsInfo.put("type", "H5_URL");
-		    	  goodsInfo.put("content", content);
-		     }
+			
 		   }
 		    goodsList.add(goodsInfo);
 		}

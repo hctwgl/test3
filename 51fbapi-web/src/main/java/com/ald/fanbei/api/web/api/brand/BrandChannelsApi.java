@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +22,9 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.domain.AfBrandDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBrandDto;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
@@ -31,7 +33,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBrandListVo;
-import com.ald.fanbei.api.web.vo.AfShopVo;
+import com.ald.fanbei.api.web.vo.AfBrandVo;
 /**
  * 爱尚街 分类品牌页面 app客户端
  * @author liutengyuan 
@@ -64,7 +66,7 @@ public class BrandChannelsApi implements ApiHandle {
 			String imageUrl = "";
 			String h5LinkUrl = null;
 			String[] brandIds = {};
-			List<AfBrandDo> hotBrandList = new ArrayList<AfBrandDo>();
+			List<AfBrandVo> hotBrands = new ArrayList<AfBrandVo>();
 			List<AfBrandDto> allBrandList = new ArrayList<AfBrandDto>();
 		//	Map<String, List<AfBrandDto>> allBrandInfo = new HashMap<String,List<AfBrandDto>>();
 			List<AfBrandListVo> allBrandInfo2 = new ArrayList<AfBrandListVo>();
@@ -85,20 +87,28 @@ public class BrandChannelsApi implements ApiHandle {
 						}else if("hotBrand".equalsIgnoreCase(pageMark)){
 							String ids = afResourceH5ItemDto.getValue2();
 							if (ids != null){
-								String idStr = ids.trim();
+								String idStr = ids.replaceAll("，", " ");
+								idStr = idStr.replaceAll(" +", ",");
 								brandIds = idStr.split(",");
 							}
 						}
 					}
 					// query configed the hot brands
-					/*for (String id :brandIds){
-						AfBrandDo brandInfo = afBrandService.getById(NumberUtil.objToLongDefault(id, 0));
-						if (brandInfo != null){
-							hotBrandList.add(brandInfo);
-						}
-					}*/
 					if (brandIds.length >0){
-						hotBrandList = afBrandService.getHotBrands(brandIds);
+						List<AfBrandDo> hotBrandList = afBrandService.getHotBrands(brandIds);
+						if (CollectionUtil.isNotEmpty(hotBrandList)){
+							hotBrands =  CollectionConverterUtil.convertToListFromList(hotBrandList, new Converter<AfBrandDo, AfBrandVo>(){
+								@Override
+								public AfBrandVo convert(AfBrandDo brandDo) {
+									AfBrandVo brandVo = new AfBrandVo();
+									brandVo.setRid(brandDo.getRid());
+									brandVo.setBanner(brandDo.getBanner());
+									brandVo.setLogo(brandDo.getLogo());
+									brandVo.setName(brandDo.getName());
+									return brandVo;
+								}
+							});
+						}
 					}
 				}
 				allBrandList = afBrandService.getAllAndNameSort();
@@ -132,7 +142,7 @@ public class BrandChannelsApi implements ApiHandle {
 			}
 			data.put("imageUrl", imageUrl);
 			data.put("h5LinkUrl", h5LinkUrl);
-			data.put("hotBrandList", hotBrandList);
+			data.put("hotBrandList", hotBrands);
 			data.put("allBrandInfo", allBrandInfo2);
 			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.MINITS_OF_FIVE);
 		}
