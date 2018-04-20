@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
@@ -53,4 +54,10 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
 
 	List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(
 			HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery);
+
+    List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId);
+
+    AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(@Param("activityId") Long activityId, @Param("goodsId") Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
 }

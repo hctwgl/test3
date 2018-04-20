@@ -234,7 +234,7 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		AfUserAccountDo afUserAccountDo= afUserAccountService.getUserAndAccountByUserId(orderInfo.getUserId());
 
 		
-		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper(),afUserAccountDo.getUserName());
+		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper(),afUserAccountDo.getUserName(),orderInfo.getGoodsId());
 		orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();

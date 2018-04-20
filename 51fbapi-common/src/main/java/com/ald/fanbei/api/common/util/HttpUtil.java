@@ -656,10 +656,8 @@ public class HttpUtil {
 
         try {
             response = httpclient.execute(httpost);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+        	throw new RuntimeException("HttpUtil.sendRequest error！", e);
         }
         return response;
     }

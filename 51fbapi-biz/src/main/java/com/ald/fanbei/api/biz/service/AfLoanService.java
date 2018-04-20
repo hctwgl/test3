@@ -6,6 +6,7 @@ import java.util.List;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.dto.AfLoanDto;
 
 /**
  * 贷款业务Service

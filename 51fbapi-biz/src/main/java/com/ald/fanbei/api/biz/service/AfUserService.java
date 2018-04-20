@@ -55,6 +55,8 @@ public interface AfUserService {
 	 */
 	AfUserDo getUserByUserName(String userName);
 
+	Long getUserByBorrowCashStatus(Long userId);
+
 	AfUserDo getUserByMobile(String mobile);
 
 	

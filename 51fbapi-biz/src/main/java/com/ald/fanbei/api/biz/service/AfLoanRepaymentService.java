@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.biz.service.impl.AfLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
@@ -20,9 +21,9 @@ import java.util.List;
  * @date 2018-01-19 16:50:32
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public interface AfLoanRepaymentService extends ParentService<AfLoanRepaymentDo, Long>{
+public interface AfLoanRepaymentService{
 	
-	void repay(LoanRepayBo bo);
+    	Map<String, Object> repay(LoanRepayBo bo,String bankPayType);
 	
 	void offlineRepay(AfLoanDo loanDo, String loanNo,
 					  String repayType, String repayAmount,
