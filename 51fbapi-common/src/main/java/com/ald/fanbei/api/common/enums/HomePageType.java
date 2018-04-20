@@ -25,6 +25,7 @@ public enum HomePageType {
 	 GOODS("GOODS", "商品"),
 	 GOODS_ID("GOODS_ID", "商品id"),
 	 H5_URL("H5_URL", "商品id"),
+	 CATEGORY_ID("CATEGORY_ID", "分类id"),
 	 TOP_IMAGE("TOP_IMAGE", "楼层图"),
 	 FLASH_SALE("FLASH_SALE", "限时抢购"),
 	 NEW_GOODS("NEW_GOODS", "品质新品"),
