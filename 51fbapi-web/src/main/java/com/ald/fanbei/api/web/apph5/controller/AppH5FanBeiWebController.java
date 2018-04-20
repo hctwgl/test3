@@ -1320,19 +1320,29 @@ public class AppH5FanBeiWebController extends BaseController {
 
 		for (HomePageSecKillGoods homePageSecKillGoods : list) {
 		    Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		    String  rebateAmount =   homePageSecKillGoods.getRebateAmount().toString();
+		    String priceAmount =  homePageSecKillGoods.getPriceAmount().toString();
+		    String saleAmount  = homePageSecKillGoods.getSaleAmount().toString();
+		    //如果大于等于8位，直接截取前8位。否则判断小数点后面的是否是00,10.分别去掉两位，一位
+		    if(null == homePageSecKillGoods.getActivityAmount()){
+		    	 goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
+		    }else{
+		    	 goodsInfo.put("activityAmount", substringAmount(homePageSecKillGoods.getActivityAmount().toString()));
+		    }
+		    
 		    goodsInfo.put("goodsName", homePageSecKillGoods.getGoodName());
-		    goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());
-		    goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());
-		    goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());
-		    goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
+		    goodsInfo.put("rebateAmount",  substringAmount(rebateAmount));
+		    goodsInfo.put("saleAmount",    substringAmount(saleAmount));
+		    goodsInfo.put("priceAmount",   substringAmount(priceAmount));
+		   
 		    goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());
 		    goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());
 		    goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());
 		    goodsInfo.put("goodsType", "0");
 		    goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
 		    goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-		    goodsInfo.put("total", homePageSecKillGoods.getTotal());	    
-		    goodsInfo.put("source", homePageSecKillGoods.getSource());	  
+		    goodsInfo.put("total", homePageSecKillGoods.getTotal());	
+		    goodsInfo.put("source", homePageSecKillGoods.getSource()); 
 		    
 		    // 如果是分期免息商品，则计算分期
 		    Long goodsId = homePageSecKillGoods.getGoodsId();
@@ -1352,6 +1362,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
 			String isFree = (String) nperMap.get("isFree");
 			if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+				//不影响其他业务，次数加
 			    nperMap.put("freeAmount", nperMap.get("amount"));
 			}
 			goodsInfo.put("nperMap", nperMap);
@@ -1405,6 +1416,33 @@ public class AppH5FanBeiWebController extends BaseController {
 			HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	private  BigDecimal substringAmount(String amount) {
+		BigDecimal substringAmount = new BigDecimal(0);
+		try{
+		//判断小数点后面的是否是00,10.分别去掉两位，一位。去掉之后大于等于8位，则截取前8位。
+		 String tempNumber = "0";
+		 String afterNumber =  amount.substring(amount.indexOf(".")+1,amount.length());
+		 if("00".equals(afterNumber)){
+			 tempNumber = amount.substring(0,amount.length()-3);
+		 } else if("10".equals(afterNumber)){
+			 tempNumber = amount.substring(0,amount.length()-1);
+		 }else{
+			 tempNumber = amount;
+		 }
+		 if(tempNumber.length() >8 ){
+			 tempNumber =  tempNumber.substring(0,8);
+			 String t = tempNumber.substring(tempNumber.length()-1, tempNumber.length());
+			 if(".".equals(t)){
+				 tempNumber =  tempNumber.substring(0,tempNumber.length()-1);
+			 }
+		 }
+		 substringAmount = new BigDecimal(tempNumber);
+	 
+		}catch(Exception e){
+			logger.error("substringAmount error"+e);
+		}
+		return substringAmount;
 	}
 
 }
