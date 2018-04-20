@@ -152,6 +152,10 @@ public class SubmitIdNumberInfoV1Api implements ApiHandle {
 				}
 				auth.setGmtFaces(new Date());
 				auth.setFaceType(FaceType.YITU.getCode());
+				// 4.1.2版本以后添加
+				auth.setRealnameStatus(YesNoStatus.YES.getCode());
+				auth.setGmtRealname(new Date());
+				//
 				afUserAuthService.updateUserAuth(auth);
 
 				AfUserDo afUserDo = new AfUserDo();

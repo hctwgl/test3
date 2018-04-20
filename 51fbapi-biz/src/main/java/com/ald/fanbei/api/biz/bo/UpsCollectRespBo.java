@@ -1,12 +1,18 @@
 package com.ald.fanbei.api.biz.bo;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
  *@类现描述：
  *@author chenjinhu 2017年2月20日 下午1:52:19
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UpsCollectRespBo extends UpsRespBo {
+public class UpsCollectRespBo extends UpsRespBo implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+    
 	private String amount			;  //交易金额
 	private String userNo			;   //用户唯一标识
 	private String realName			;	//真实姓名
@@ -23,6 +29,7 @@ public class UpsCollectRespBo extends UpsRespBo {
 	private String tradeState	;  //交易状态
 	private String tradeDesc		;  //交易状态描述
 	private String tradeNo			;//交易号
+	private Long tradeTime = new Date().getTime();
 	
 	public String getAmount() {
 		return amount;
@@ -120,4 +127,11 @@ public class UpsCollectRespBo extends UpsRespBo {
 	public void setTradeNo(String tradeNo) {
 		this.tradeNo = tradeNo;
 	}
+	public Long getTradeTime() {
+	    return tradeTime;
+	}
+	public void setTradeTime(Long tradeTime) {
+	    this.tradeTime = tradeTime;
+	}
+	
 }

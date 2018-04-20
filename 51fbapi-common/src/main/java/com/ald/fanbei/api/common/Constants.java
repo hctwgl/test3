@@ -546,11 +546,13 @@ public class Constants {
     public static final int TEN = 10;
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
-    
+
     /**
      * 线下商圈租房业务类型
      */
     public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
+    //芝麻认证引导弹窗缓存处理对应key标识
+  	public static final String ZM_AUTH_POP_GUIDE_CACHE_KEY = "zm_auth_pop_guide_";
 
 	/**
 	 * 三周年庆典预热页面商品ID集合
@@ -593,5 +595,8 @@ public class Constants {
 	public static final String DEFAULT = "DEFAULT";
 
 
+	//乐享生活节
+	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
+	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
 }

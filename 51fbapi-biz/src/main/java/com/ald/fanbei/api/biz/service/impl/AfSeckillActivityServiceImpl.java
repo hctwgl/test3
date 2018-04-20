@@ -156,4 +156,24 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	public List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd){
 		return afSeckillActivityDao.getActivityListByName(name, gmtStart, gmtEnd);
 	}
+
+	@Override
+	public List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityGoodsByActivityId(activityId);
+	}
+
+	@Override
+	public AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(Long activityId, Long goodsId) {
+		return afSeckillActivityGoodsDao.getSaleInfoByGoodsIdAndActId(activityId,goodsId);
+	}
+
+	@Override
+	public List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId) {
+		return afSeckillActivityGoodsDao.getActivityGoodsCountList(activityId);
+	}
+
+	@Override
+	public List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId) {
+		return afSeckillActivityOrderDao.getActivitySaleCountList(activityId);
+	}
 }

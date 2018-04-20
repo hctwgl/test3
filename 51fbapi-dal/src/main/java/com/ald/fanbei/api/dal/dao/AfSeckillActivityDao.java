@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 import java.util.List;
 
+import java.util.List;
+
 /**
  * 秒杀活动管理Dao
  * 
@@ -26,6 +28,7 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
 
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
+
 
     List<String> getActivityListByName(@Param("name") String name, @Param("gmtStart") Date gmtStart, @Param("gmtEnd") Date gmtEnd);
 }

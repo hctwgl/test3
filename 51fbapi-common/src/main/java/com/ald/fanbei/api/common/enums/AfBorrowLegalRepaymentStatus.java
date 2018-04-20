@@ -12,7 +12,8 @@ public enum AfBorrowLegalRepaymentStatus {
 	APPLY("A", "新建状态"), 
 	PROCESS("P","处理中"),
 	NO("N", "还款失败"),
-	YES("Y", "还款成功");
+	YES("Y", "还款成功"),
+	SMS("S","快捷支付获取短信");
     
     private String code;
     private String name;

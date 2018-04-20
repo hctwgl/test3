@@ -1,30 +1,37 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import com.ald.fanbei.api.biz.service.*;
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.AfAuthTdService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.lang.ObjectUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *@类现描述：签约银行卡时短信验证
  *@author hexin 2017年2月28日 下午4:03:21
+ *@since 4.1.2以下适用，4.1.2以上替换接口见{@link SubmitBindBankcardApi}
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

@@ -65,4 +65,12 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     List<HomePageSecKillGoods> getHomePageSecKillGoodsById(Long userId, Long activityId);
 
     List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd);
+
+    List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId);
+
+    AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(Long activityId, Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
+
+    List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
 }

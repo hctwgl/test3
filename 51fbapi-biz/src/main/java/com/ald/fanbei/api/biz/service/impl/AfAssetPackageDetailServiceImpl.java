@@ -187,6 +187,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
 			    			modifyPackageDo.setRid(packageDo.getRid());
 			    			modifyPackageDo.setRealTotalMoney(cancelMoney.negate());
+			    			modifyPackageDo.setGmtModified(currDate);
 			    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
 			    			return 1;
 			    		}else{
@@ -314,7 +315,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				String maxBorrowTime = afResourceDo.getTypeDesc().split(",")[1];
             	try {
         			//加锁Lock
-        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);
+        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_TEN_MINITS);
         			//校验现在金额是否满足
         			if (isLock) {
         				//分配债权资产包
@@ -653,6 +654,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			}
 		}
 		Integer nper = afViewAssetBorrowDo.getNper();//分期数
+		if (nper == 5 || nper == 11) {//兼容租房5期与11期，作为6期与12期的利率
+        	nper++;
+        }
 		//获取消费分期协议年化利率配置
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.borrowConsume.getCode());
 		BigDecimal borrowRate=BigDecimal.ZERO;
@@ -781,7 +785,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
             	List<AfViewAssetBorrowDo> debtList= new ArrayList<AfViewAssetBorrowDo>();
             	try {
         			//加锁Lock
-        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_FIFTEEN);
+        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_TEN_MINITS);
         			if (isLock) {
         				//校验现在金额是否满足
         				BigDecimal sumAmount = afViewAssetBorrowService.getSumAmount(gmtCreateStart,gmtCreateEnd);

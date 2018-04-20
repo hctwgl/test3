@@ -12,13 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.enums.AuthType;
 import com.ald.fanbei.api.common.enums.LoanType;
 import com.ald.fanbei.api.common.enums.RaiseStatus;
 import com.ald.fanbei.api.dal.dao.AfAuthRaiseStatusDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
-import com.timevale.tgtext.text.pdf.bi;
 
 /**
  * 贷款业务ServiceImpl
@@ -68,6 +66,7 @@ public class AfAuthRaiseStatusServiceImpl extends ParentServiceImpl<AfAuthRaiseS
 	delegateRaiseStatus.setUserId(raiseStatus.getUserId());
 	delegateRaiseStatus.setRaiseStatus(raiseStatus.getRaiseStatus());
 	delegateRaiseStatus.setGmtFinish(raiseStatus.getGmtFinish());
+	delegateRaiseStatus.setAmount(raiseStatus.getAmount());
 	AfAuthRaiseStatusDo existRaiseStatusDo = afAuthRaiseStatusDao.getByPrdTypeAndAuthType(raiseStatus.getPrdType(), raiseStatus.getAuthType(), raiseStatus.getUserId());
 	if (existRaiseStatusDo != null) {
 	    logger.info("saveOrUpdateRaiseStatus exist:" + existRaiseStatusDo.toString() + ",isUpdate:" + isUpdate);

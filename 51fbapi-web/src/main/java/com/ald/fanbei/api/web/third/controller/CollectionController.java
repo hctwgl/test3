@@ -92,6 +92,9 @@ public class CollectionController {
     @Resource
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 
+    @Resource
+    AfUserService userService;
+
     /**
      * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
      *
@@ -555,6 +558,49 @@ public class CollectionController {
             updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
             Map<String, String> map = new HashMap<String, String>();
             map.put("borrowId", afBorrowCashDo.getRid().toString());
+            String jsonString = JsonUtil.toJSONString(map);
+            updteBo.setData(jsonString);
+        } else {
+            logger.info("sign and sign is fail");
+            updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
+            updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
+            return updteBo;
+        }
+        return updteBo;
+    }
+
+    /**
+     * 催收平台查询borrowId接口
+     *
+     * @param borrowNo
+     * @return
+     */
+    @RequestMapping(value = {"/getConfirmResultByUserId"}, method = RequestMethod.POST)
+    @ResponseBody
+    public CollectionUpdateResqBo getConfirmResultByUserId(HttpServletRequest request, HttpServletResponse response) {
+        Long userId = NumberUtil.objToLongDefault(request.getParameter("data"),0l);
+        String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+        String sign = ObjectUtils.toString(request.getParameter("sign"));
+
+        logger.info("getBorrowIdByNo data=" + userId + ",timestamp=" + timestamp + ",sign1=" + sign + "");
+        Long id = userService.getUserByBorrowCashStatus(userId);
+        CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
+        if (id == null) {
+            logger.info("getConfirmResultByUserId id is null");
+            updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+            updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("result", "false");
+            String jsonString = JsonUtil.toJSONString(map);
+            updteBo.setData(jsonString);
+            return updteBo;
+        }
+        String sign1 = DigestUtil.MD5(String.valueOf(userId));
+        if (StringUtil.equals(sign, sign1)) { // 验签成功
+            updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+            updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("result", "true");
             String jsonString = JsonUtil.toJSONString(map);
             updteBo.setData(jsonString);
         } else {
