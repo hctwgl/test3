@@ -60,25 +60,34 @@ public class AfBklServiceImpl implements AfBklService {
     @Resource
     AfGoodsCategoryDao afGoodsCategoryDao;
 
+    @Resource
+    AfUserSeedService afUserSeedService;
+
     @Override
-    public String isBklResult(AfOrderDo orderInfo) {
-        String result = "v2";
+    public String  isBklResult(AfOrderDo orderInfo) {
+        String result = "v2";//需电核
+        //种子名单
+		AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
+		if (userSeedDo != null){
+			result = "v1";
+			return result;
+		}
         AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
         if (bklWhiteResource != null) {
             //白名单开启
             String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
             Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-            logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
+            logger.info("afBklService bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
             if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-                result = "v0";
+                result = "v0";//不在白名单用户不走电核，并且没有电核状态
                 return result;
             }
         }
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
         if (afResourceDo != null){
-            logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
+            logger.info("afBklService bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
             if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
-                result = "v1";
+                result = "v1";//电核通过
                 return result;
             }
             AfIagentResultDto iagentResultDo = new AfIagentResultDto();
@@ -86,10 +95,10 @@ public class AfBklServiceImpl implements AfBklService {
             iagentResultDo.setCheckResult("0");//通过审核
             iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
             List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
-            logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+ JSON.toJSONString(iagentResultDoList));
+            logger.info("afBklService bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
             if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
-                logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
-                result = "v1";
+                logger.info("afBklService bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
+                result = "v1";//电核通过
                 return result;
             }
             AfIagentResultDto resultDto = new AfIagentResultDto();
@@ -97,15 +106,14 @@ public class AfBklServiceImpl implements AfBklService {
             resultDto.setCheckResult("1");
             resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
             List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-            logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
+            logger.info("afBklService bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
             if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
-                logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
+                logger.info("afBklService bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
                 if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
-                    //直接拒绝
                     afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
                     Map<String,String> qmap = new HashMap<>();
                     qmap.put("orderNo",orderInfo.getOrderNo());
-                    result = "v3";
+                    result = "v3";//直接拒绝
                     final String  orderNo = orderInfo.getOrderNo();
                     final String json = JSONObject.toJSONString(qmap);
                     YFSmsUtil.pool.execute(new Runnable() {
@@ -114,6 +122,7 @@ public class AfBklServiceImpl implements AfBklService {
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
                         }
                     });
+
                 }else {
                     result = "v2";//需电核
                 }
@@ -125,7 +134,7 @@ public class AfBklServiceImpl implements AfBklService {
 
 
     @Override
-    public void submitBklInfo(AfOrderDo orderInfo,String type) {
+    public void submitBklInfo(AfOrderDo orderInfo,String type,BigDecimal amount) {
         try {
             AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
             AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
@@ -143,11 +152,10 @@ public class AfBklServiceImpl implements AfBklService {
             AfBklDo bklDo = new AfBklDo();
             bklDo.setCsvArn(orderInfo.getOrderNo());
             bklDo.setCsvPhoneNum(userDo.getMobile());
-            bklDo.setCsvAmt(String.valueOf(orderInfo.getBorrowAmount()));
+            bklDo.setCsvAmt(String.valueOf(amount));
             bklDo.setCsvDigit4(csvDigit4);
             bklDo.setCsvBirthDate(csvBirthDate);
             bklDo.setCsvName(userDo.getRealName());
-            orderInfo.getPayType();
             bklDo.setCsvPayWay(type);
             bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
             bklDo.setCsvSex(sex);
@@ -155,6 +163,7 @@ public class AfBklServiceImpl implements AfBklService {
             bklDo.setOrderId(orderInfo.getRid());
             bklDo.setUserId(orderInfo.getUserId());
             bklUtils.submitJob(bklDo);
+            orderInfo.setIagentStatus(bklDo.getIagentState());
         }catch (Exception e){
             logger.error("submitBklInfo error = >{}",e);
         }

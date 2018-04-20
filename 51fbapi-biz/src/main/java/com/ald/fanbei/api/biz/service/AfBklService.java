@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 
+import java.math.BigDecimal;
+
 
 /**
  * @author gsq 2018年4月20日下午4:08:25
@@ -12,5 +14,5 @@ public interface AfBklService {
 
     String isBklResult(AfOrderDo orderInfo);
 
-    void submitBklInfo(AfOrderDo orderInfo,String type);
+    void submitBklInfo(AfOrderDo orderInfo, String type, BigDecimal amount);
 }

@@ -1806,13 +1806,18 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						try {
 							String bklResult = afBklService.isBklResult(orderInfo);
 							if (bklResult.equals("v2")){//需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
-								afBklService.submitBklInfo(orderInfo,"组合支付");
-								orderInfo.setIagentStatus("C");
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+								afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
+								if (orderInfo.getIagentStatus()==null)
+									orderInfo.setIagentStatus("C");
 							}else if (bklResult.equals("v1")){//不需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 								orderInfo.setIagentStatus("A");
+							}else if (bklResult.equals("v3")){
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v3 orderInfo ="+JSON.toJSONString(orderInfo));
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
+								orderInfo.setIagentStatus("B");
 							}
 						}catch (Exception e){
 							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
@@ -1931,42 +1936,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			}
 		}
 		return result;
-	}
-
-	public void submitBklInfo(AfOrderDo orderInfo){
-		try {
-			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
-			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
-			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
-			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
-			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
-			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
-			String sex ;
-			if (idNumberDo != null){
-				sex = idNumberDo.getGender();
-			}else {
-				sex = "";
-			}
-			AfBklDo bklDo = new AfBklDo();
-			bklDo.setCsvArn(orderInfo.getOrderNo());
-			bklDo.setCsvPhoneNum(userDo.getMobile());
-			bklDo.setCsvAmt(String.valueOf(orderInfo.getBorrowAmount()));
-			bklDo.setCsvDigit4(csvDigit4);
-			bklDo.setCsvBirthDate(csvBirthDate);
-			bklDo.setCsvName(userDo.getRealName());
-			bklDo.setCsvPayWay("组合支付");
-			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
-			bklDo.setCsvSex(sex);
-			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
-			bklDo.setOrderId(orderInfo.getRid());
-			bklDo.setUserId(orderInfo.getUserId());
-			bklUtils.submitJob(bklDo);
-		}catch (Exception e){
-			logger.error("submitBklInfo error = >{}",e);
-		}
-
-
 	}
 
 	@Override
