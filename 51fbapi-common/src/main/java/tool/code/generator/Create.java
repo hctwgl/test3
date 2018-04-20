@@ -21,13 +21,10 @@ public class Create {
 
 
 		String tables = "af_category_opration";
-		String tables = "af_record_max";
 
 		// 配置作者及Domain说明
 		String classAuthor = "liutengyuan";
 		String functionName = "分类运营位配置";
-		String classAuthor = "wujun";
-		String functionName = "债权推送查询上限记录表";
 
 
 //		String tables = "af_facescore_img";
