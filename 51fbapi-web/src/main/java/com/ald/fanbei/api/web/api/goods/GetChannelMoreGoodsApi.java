@@ -240,7 +240,10 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 			Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
 			String isFree = (String) nperMap.get("isFree");
 			if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-			    nperMap.put("freeAmount", nperMap.get("amount"));
+				//不影响其他业务，此处加
+				String amount =  nperMap.get("amount").toString();
+				nperMap.put("amount",substringAmount(amount));
+			    nperMap.put("freeAmount",substringAmount(amount));
 			}
 			goodsInfo.put("nperMap", nperMap);
 		     //更换content和type可跳转商品详情
