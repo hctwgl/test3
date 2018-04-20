@@ -314,7 +314,7 @@
 		LEFT JOIN af_goods g ON (a.goods_id = g.id)
 		LEFT JOIN af_goods_price b ON (a.price_id = b.id)
 		LEFT JOIN af_seckill_activity_order o ON g.id = o.goods_id AND o.activity_id = y.id
-		LEFT JOIN af_User_Goods_Sms s on s.goods_id = g.id AND s.activity_id = y.id
+		LEFT JOIN af_activity_user_sms s on s.goods_id = g.id AND s.activity_id = y.id
 			<if test="userId != null">
 				and s.user_id = #{userId}
 			</if>
@@ -424,7 +424,6 @@
 	   ORDER  BY  m.sort desc
     </select>
 
-
      <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
 	SELECT
       y.id as activityId,
@@ -460,11 +459,6 @@
 	   GROUP BY m.goods_id
 	   ORDER  BY m.sort DESC
     </select>
-    
-    
-
-
-
 
     <select id="getActivityGoodsByActivityId" resultType="AfSeckillActivityGoodsDto">
         SELECT
