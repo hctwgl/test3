@@ -383,10 +383,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 											List<Map<String, Object>> activityGoodsInfoList = getGoodsInfoList(goodsList,HOME_SEL,null);
 											//没有商品整块不显示
 											String imageUrl = activityDo.getValue3();
+											String type = activityDo.getValue4();
 											if(activityGoodsInfoList != null && activityGoodsInfoList.size()  >0 && StringUtil.isNotEmpty(imageUrl)){
 												Map<String, Object> goodsInfo = new HashMap<String, Object>();
 												goodsInfo.put("goodsList", activityGoodsInfoList);
 												goodsInfo.put("imageUrl", imageUrl);
+												//1+n上图类型
 												goodsInfo.put("type", H5_URL);
 												//1+多
 												goodsInfo.put("content",activityDo.getValue4() );
@@ -816,18 +818,24 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			String isFree = (String) nperMap.get("isFree");
 			if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
 				//不影响其他业务，此处加
-				String amount =  nperMap.get("amount").toString();
+				Object oAmount =  nperMap.get("amount");
+				String amount = "";
+				if(oAmount != null){
+					amount = oAmount.toString();
+				}
 				nperMap.put("amount",substringAmount(amount));
 			    nperMap.put("freeAmount",substringAmount(amount));
 			}
 			goodsInfo.put("nperMap", nperMap);
 		     //更换content和type可跳转商品详情
 				if(HOME_FLASH_SALE_FLOOR_IMAGE.equals(tag)){
-					  String content = null;
+					  String content = "";
+					  String type   = "";
 					 if(afResourceH5ItemDo != null){
 						 content = afResourceH5ItemDo.getValue1();
+						 type = afResourceH5ItemDo.getValue4();
 					 }
-			    	  goodsInfo.put("type",H5_URL);
+			    	  goodsInfo.put("type",type);
 			    	  goodsInfo.put("content", content);
 			     }
 				//不影响其他业务，此处加

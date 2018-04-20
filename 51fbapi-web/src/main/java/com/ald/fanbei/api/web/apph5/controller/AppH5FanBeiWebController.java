@@ -1363,7 +1363,11 @@ public class AppH5FanBeiWebController extends BaseController {
 			String isFree = (String) nperMap.get("isFree");
 			if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
 				//不影响其他业务，次处加
-				String amount =  nperMap.get("amount").toString();
+				Object oAmount =  nperMap.get("amount");
+				String amount = "";
+				if(oAmount != null){
+					amount = oAmount.toString();
+				}
 				nperMap.put("amount",substringAmount(amount));
 			    nperMap.put("freeAmount",substringAmount(amount));
 			}
