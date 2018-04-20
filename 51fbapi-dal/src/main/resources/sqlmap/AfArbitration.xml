@@ -192,4 +192,44 @@
         <include refid="commonCondition"/>
     </select>
     
+    
+     <update id="updateByloanBillNo"  parameterType="com.ald.fanbei.api.dal.domain.AfArbitrationDo">
+        UPDATE af_arbitration
+          <set>
+               <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="loanBillNo != null and loanBillNo != '' ">        
+                loan_bill_no = #{loanBillNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="processCode != null and processCode != '' ">        
+                process_code = #{processCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="process != null and process != '' ">        
+                process = #{process,jdbcType=VARCHAR},                
+            </if>
+            <if test="statusCode != null and statusCode != '' ">        
+                status_code = #{statusCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="message != null and message != '' ">        
+                message = #{message,jdbcType=VARCHAR},                
+            </if>
+            <if test="payVoucher != null and payVoucher != '' ">        
+                pay_voucher = #{payVoucher,jdbcType=VARCHAR},                
+            </if>
+            <if test="value1 != null and value1 != '' ">        
+                value_1 = #{value1,jdbcType=VARCHAR},                
+            </if>
+            <if test="value2 != null and value2 != '' ">        
+                value_2 = #{value2,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND loan_bill_No = #{loanBillNo ,jdbcType=VARCHAR}
+    </update>
 </mapper>

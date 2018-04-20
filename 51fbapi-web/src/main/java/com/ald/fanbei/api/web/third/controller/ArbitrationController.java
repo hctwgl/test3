@@ -33,7 +33,9 @@ import com.ald.fanbei.api.common.enums.ArbitrationStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfArbitrationDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.domain.AfArbitrationDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -70,7 +72,7 @@ public class ArbitrationController {
 
     @ResponseBody
     @RequestMapping(value = "/submit", method = RequestMethod.GET)
-    public String submit(String borrowNo) {
+    public String submit(String loanBillNo) {
         printParams();
         SimpleDateFormat sdf = new SimpleDateFormat(Y_M_D_H_M_S);
         // String borrowNo = "jq2018041910202400260";
@@ -84,7 +86,7 @@ public class ArbitrationController {
             paramsInfo.setTime(sdf.format(new Date()));
             //-----
             ThirdOrderInfo orderInfo = new ThirdOrderInfo();
-            orderInfo.setLoanBillNo(borrowNo);//案件订单编号
+            orderInfo.setLoanBillNo(loanBillNo);//案件订单编号
 
             paramsInfo.setParam(URLEncoder.encode(JSON.toJSONString(orderInfo), "UTF-8"));
             //-----
@@ -95,7 +97,15 @@ public class ArbitrationController {
             String trackId = TRACK_PREFIX + new Date().getTime();
             String result = HttpClientUtils.postWithString(URL, jsonParam);
             logger.info(result);
-
+            
+            AfArbitrationDo afArbitrationDo =new AfArbitrationDo();
+            afArbitrationDo.setLoanBillNo(loanBillNo);
+            afArbitrationDo.setProcessCode("100");
+            afArbitrationDo.setProcess("仲裁申请");
+            afArbitrationDo.setStatusCode("0");
+            afArbitrationDo.setStatus("案件待提交");
+            arbitrationService.saveRecord(afArbitrationDo);
+            
             RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
             riskTrackerDo.setGmtCreate(new Date());
             riskTrackerDo.setParams(JSON.toJSONString(paramsInfo));
@@ -129,22 +139,26 @@ public class ArbitrationController {
         resultMap.put("errCode","0000");
         resultMap.put("errMsg","");
         try {
-            String loanBillNo = ObjectUtils.toString(request
-                    .getParameter("loanBillNo"));
-            String processCode = ObjectUtils.toString(request
-                    .getParameter("processCode"));
-            String process = ObjectUtils.toString(request
-                    .getParameter("process"));
-            String statusCode = ObjectUtils.toString(request
-                    .getParameter("statusCode"));
-            String status = ObjectUtils.toString(request
-                    .getParameter("status"));
-            String message = ObjectUtils.toString(request
-                    .getParameter("message"));
+            String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
+            String processCode = ObjectUtils.toString(request.getParameter("processCode"));
+            String process = ObjectUtils.toString(request.getParameter("process"));
+            String statusCode = ObjectUtils.toString(request.getParameter("statusCode"));
+            String status = ObjectUtils.toString(request.getParameter("status"));
+            String message = ObjectUtils.toString(request.getParameter("message"));
 
-            if(processCode.equals("0")){
+            if("0".equals(statusCode)){
                 //进行案件申请
                 application(loanBillNo);
+                
+                AfArbitrationDo afArbitrationDo =new AfArbitrationDo();
+                afArbitrationDo.setGmtModified(new Date());
+                afArbitrationDo.setLoanBillNo(loanBillNo);
+                afArbitrationDo.setProcess(process);
+                afArbitrationDo.setProcessCode(processCode);
+                afArbitrationDo.setStatus(status);
+                afArbitrationDo.setStatusCode(statusCode);
+                afArbitrationDo.setMessage(message);
+                arbitrationService.updateByloanBillNo(afArbitrationDo);
             }
             return JSON.toJSONString(resultMap);
         }catch (Exception e){
@@ -248,25 +262,25 @@ public class ArbitrationController {
     @ResponseBody
     @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
     public ArbitrationRespBo getData(HttpServletResponse response) {
-	 String type = ObjectUtils.toString(request.getParameter("type"));
+	 String busiCode = ObjectUtils.toString(request.getParameter("busiCode"));
 	 String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
 	 
-	 if("GETORDERINFO".equals(type)) {
+	 if("GETORDERINFO".equals(busiCode)) {
 	     return arbitrationService.getOrderInfo(loanBillNo);
-	 } else if("GETFUNDINFO".equals(type)){
+	 } else if("GETFUNDINFO".equals(busiCode)){
 	     return arbitrationService.getFundInfo(loanBillNo);
-	 } else if("SETSTATUS".equals(type)){
+	 } else if("SETSTATUS".equals(busiCode)){
 	     setStatus();
-	 } else if("GETLITIGANTS".equals(type)){
+	 } else if("GETLITIGANTS".equals(busiCode)){
 	     String ltype = ObjectUtils.toString(request.getParameter("ltype"));
 	     return arbitrationService.getLitiGants(loanBillNo,ltype);
-	 } else if("GETCREDITAGREEMENT".equals(type)){
+	 } else if("GETCREDITAGREEMENT".equals(busiCode)){
 	     return arbitrationService.getCreditAgreement(loanBillNo);
-	 } else if("GETCREDITINFO".equals(type)){
+	 } else if("GETCREDITINFO".equals(busiCode)){
 	     return arbitrationService.getCreditInfo(loanBillNo);
-	 } else if("GETREFUNDINFO".equals(type)){
+	 } else if("GETREFUNDINFO".equals(busiCode)){
 	     return arbitrationService.getRefundInfo(loanBillNo);
-	 } else if("GETPAYVOUCHER".equals(type)){
+	 } else if("GETPAYVOUCHER".equals(busiCode)){
 	     return arbitrationService.getPayVoucher(loanBillNo);
 	 } 
 	    logger.info("type is Undefined,loanBillNo= "+loanBillNo);

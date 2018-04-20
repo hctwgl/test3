@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.bo.ArbitrationRespBo;
+import com.ald.fanbei.api.dal.domain.AfArbitrationDo;
 
 /**
  * @类描述：在线仲裁系统Service
@@ -82,4 +83,8 @@ public interface ArbitrationService {
 	 * @return
 	 */
 	ArbitrationRespBo getPayVoucher(String loanBillNo);
+	
+	int saveRecord(AfArbitrationDo afArbitrationDo);
+	
+	 int updateByloanBillNo(AfArbitrationDo afArbitrationDo);
 }

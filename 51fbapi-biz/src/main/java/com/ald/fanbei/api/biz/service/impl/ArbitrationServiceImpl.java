@@ -33,9 +33,11 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfArbitrationDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.domain.AfArbitrationDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
@@ -58,9 +60,11 @@ import com.alibaba.fastjson.JSONObject;
 @Service("ArbitrationService")
 public class ArbitrationServiceImpl extends BaseService implements
 	ArbitrationService {
-
     @Resource
     AfBorrowCashDao afBorrowCashDao;
+    
+    @Resource
+    AfArbitrationDao afArbitrationDao;
     @Resource
     AfResourceService afResourceService;
     @Resource
@@ -735,26 +739,15 @@ public class ArbitrationServiceImpl extends BaseService implements
 	return s;
     }
 
+    @Override
+    public int saveRecord(AfArbitrationDo afArbitrationDo) {
+	return afArbitrationDao.saveRecord(afArbitrationDo);
+    }
+
+    @Override
+    public int updateByloanBillNo(AfArbitrationDo afArbitrationDo) {
+	return afArbitrationDao.updateByloanBillNo(afArbitrationDo);
+    }
+
 }
 
-/**
- * // 搭售V1 if (afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo
- * .getRid()) != null) { logger.info("order is borrowCashV1,borrowNo= " +
- * borrowNo); resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
- * resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
- * 
- * return resp; }// 搭售V2 else if
- * (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo .getRid())) { } //
- * 旧版借款 else {
- * 
- * logger.info("order is oldborrowCash,borrowNo= "+borrowNo);
- * resp.setErrCode(ArbitrationStatus.OLDBORROWCASH.getCode());
- * resp.setErrMsg(ArbitrationStatus.OLDBORROWCASH.getName());
- * 
- * return resp; }
- * 
- * 
- * 
- * 
- * 
- * **/

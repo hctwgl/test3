@@ -13,5 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfArbitrationDo;
 public interface AfArbitrationDao extends BaseDao<AfArbitrationDo, Long> {
 
     
+    int updateByloanBillNo(AfArbitrationDo afArbitrationDo);
 
 }
