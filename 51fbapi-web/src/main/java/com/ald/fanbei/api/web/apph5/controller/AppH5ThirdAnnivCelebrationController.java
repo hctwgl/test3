@@ -157,6 +157,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @param response
      * @return
      */
+    @ResponseBody
     @RequestMapping(value = "getCurrentSecKillGoods", method = RequestMethod.POST)
     public String getCurrentSecKillGoods(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
@@ -241,6 +242,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @param response
      * @return
      */
+    @ResponseBody
     @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST)
     public String getNextSecKillGoodList(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
