@@ -183,14 +183,18 @@ public class AppH5BillController extends BaseController {
         }
         // 逾期
         // 逾期金额
-        BigDecimal overdueAmount = afBorrowBillService
-                .getMonthlyBillByStatusNewV1(userId, BorrowBillStatus.OVERDUE.getCode());
+        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
+        query.setStatus(BorrowBillStatus.NO.getCode());
+        query.setOverdueStatus(YesNoStatus.YES.getCode());
+        query.setUserId(userId);
+        BigDecimal overdueAmount = afBorrowBillService.getUserBillMoneyByQuery(query);
+        overdueAmount = overdueAmount == null ? BigDecimal.ZERO : overdueAmount;
         // 逾期月数
         int overdueMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
         if (overdueMonth > 0) {
             result.put("amount", overdueAmount.add(waitRepaymentOutMoney)
                     .setScale(2, RoundingMode.HALF_UP).toString());
-            result.put("billDesc", "您有<span>" + overdueAmount + "</span>个月的逾期账单");
+            result.put("billDesc", "您有<span>" + overdueMonth + "</span>个月的逾期账单");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
@@ -202,16 +206,7 @@ public class AppH5BillController extends BaseController {
             result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthChildBill.getGmtPayTime()));
             result.put("status", STATUS_WAITREFUND);
             return result;
-        } /*else if (overdueMonth > 0) {
-            // 无本月已出，但有逾期待还
-            result.put("amount", overdueAmount);
-
-            AfBorrowBillDo latestOverdueBill = afBorrowBillService.getLatestOverdueBorrowBillInfoByUserId(userId);
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(latestOverdueBill.getGmtPayTime()));
-
-            result.put("status", STATUS_WAITREFUND);
-            return result;
-        }*/
+        }
         // 下月未出账单
         AfBorrowBillDo nextMonthBill = getNextMonthNotOutBorrowBill(userId);
         if (nextMonthBill != null) {

@@ -91,9 +91,6 @@ public class MineHomeVo extends AbstractSerial {
     // 待还金额
     private String outMoney = "0.00";
 
-    // 待还金额描述
-    private String outMoneyDesc = "";
-
     // 待付款订单数
     private Integer newOrderNum = 0;
 

@@ -34,6 +34,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -104,7 +105,12 @@ public class GetHomeChannelApi implements ApiHandle {
 	AfSeckillActivityService afSeckillActivityService;
 	@Resource
 	AfResourceH5ItemService afResourceH5ItemService;
-	@Override
+	
+	private String HOME_PAGE_CHANNEL_RECOMMEND_GOODS = 	HomePageType.HOME_PAGE_CHANNEL_RECOMMEND_GOODS.getCode(); //频道页推荐商品id组
+	String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+	String CHANNEL_RECOMMEND_GOODS_TOP_IMAGE = 		   HomePageType.CHANNEL_RECOMMEND_GOODS_TOP_IMAGE.getCode();//爱上街顶部图组
+	
+	
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -208,9 +214,8 @@ public class GetHomeChannelApi implements ApiHandle {
 		 Map<String, Object> recommendGoodsInfo = new HashMap<String, Object>();
 		 try{
 			
-				String type = "HOME_PAGE_CHANNEL_RECOMMEND_GOODS";
-				String recommendTag = "HC_IMAGE";
-				AfResourceDo recommendGoods =  afResourceService.getConfigByTypesAndValue(type, tabId.toString());
+				//String recommendTag = "HC_IMAGE";
+				AfResourceDo recommendGoods =  afResourceService.getConfigByTypesAndValue(HOME_PAGE_CHANNEL_RECOMMEND_GOODS, tabId.toString());
 		        if(recommendGoods != null){
 		        	 String goodsIds = recommendGoods.getValue3();
 		        	  if(goodsIds != null){
@@ -222,50 +227,44 @@ public class GetHomeChannelApi implements ApiHandle {
 							 }
 							  List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
 							  List<Map<String, Object>> recommendGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-							  recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
+							
 								 String imageUrl = "";
 								 String content = "";
-							     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTag(recommendTag);
-							     if(recommendList != null && recommendList.size() >0){
-							    	 for(AfResourceH5ItemDo recommend:recommendList ){
-										  if("RECOMMEND_TOP_IMAGE".equals(recommend.getValue2())){
-											  content =  recommend.getValue1();
-											  imageUrl= recommend.getValue3();
-											  break;
-										  }
-							    }
+								   List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,CHANNEL_RECOMMEND_GOODS_TOP_IMAGE);
+								     if(recommendList != null && recommendList.size() >0){
+								    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+								    	  content =  recommend.getValue1();
+								    	  imageUrl = recommend.getValue3();
+								     }
+								 
 							    	 if(StringUtil.isNotEmpty(imageUrl)){
+							    		 if(recommendGoodsInfoList.size()>=3){
 								    	 recommendGoodsInfo.put("imageUrl", imageUrl);
 								    	 recommendGoodsInfo.put("content", content);
+								    	 recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
 							    	 }
+							    }
 		        	  }
 		         }
-		 }
+		        
+		        
 		 }catch(Exception e){
-			 
+			 logger.error("recommendGoodsInfo goodsInfo error "+ e);
 		 }
-		
-
-		
 		 if (!recommendGoodsInfo.isEmpty()) {
 				data.put("recommendGoodsInfo", recommendGoodsInfo);
 			}
 		resp.setResponseData(data);
 		return resp;
-
-		
 	}
-	
 	
 	
 	private List<Object> getOnePlusThreeArea(List<Object> onePlusThreeArea) {
 		List<Object>  onePlusThreeAreaList = new ArrayList<Object>();
 		if(onePlusThreeArea != null && onePlusThreeArea.size() > 0 ){
 				int size = onePlusThreeArea.size();
-				if(size > 3 ){
+				if(size >= 3 ){
 					onePlusThreeAreaList.addAll(onePlusThreeArea.subList(0, 3));
-				}if(size <= 3 ){
-					onePlusThreeAreaList.addAll(onePlusThreeArea);
 				}
 			
 		}

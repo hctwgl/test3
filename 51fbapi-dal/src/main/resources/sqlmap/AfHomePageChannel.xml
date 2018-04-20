@@ -125,6 +125,7 @@
         <include refid="queryFields" />
         FROM af_home_page_channel
         where is_delete = 0
+        and status = 1
         order by sort desc 
     </select>
     

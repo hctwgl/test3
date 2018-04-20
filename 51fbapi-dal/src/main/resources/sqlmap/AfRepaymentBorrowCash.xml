@@ -303,8 +303,8 @@
         UPDATE af_repayment_borrow_cash SET status='P',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 
-	<select id="getRepayingTotalNumByBorrowId">
-		SELECT COUNT(1)
+	<select id="getRepayingTotalNumByBorrowId" resultType="java.lang.Integer">
+		SELECT IFNULL(COUNT(1), 0)
 		FROM af_repayment_borrow_cash
 		WHERE is_delete = 0 AND borrow_id=#{borrowId} AND `status` = 'P'
 	</select>

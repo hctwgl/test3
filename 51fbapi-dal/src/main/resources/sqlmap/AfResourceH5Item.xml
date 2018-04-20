@@ -26,6 +26,7 @@
           join af_resource_h5  r on r.id = i.model_id
         WHERE i.is_delete = 0
 	        AND   r.is_delete = 0
+	         and   r.status = 0
 	        AND   r.tag   = #{tag}
 	        AND   i.value2 = #{type}
 	        limit 1
@@ -37,6 +38,7 @@
           af_resource_h5_item i
           join af_resource_h5  r on r.id = i.model_id
         WHERE i.is_delete = 0
+          	 and   r.status = 0
 	        AND   r.is_delete = 0
 	        AND   r.tag   = #{tag}
         order by i.sort desc
@@ -50,5 +52,19 @@
         WHERE hi.model_id = h.id AND hi.is_delete = 0 AND h.is_delete = 0 AND h.tag = #{tag} AND h.sort = #{sort}
         ORDER BY hi.sort DESC
     </select>
+     
+       <select id="getByTagAndValue2" resultType="AfResourceH5ItemDto">
+          SELECT
+              i.id rid,i.model_id,i.value1,i.value2,i.value3,i.value4,i.sort
+         FROM
+          af_resource_h5_item i
+          join af_resource_h5  r on r.id = i.model_id
+          WHERE i.is_delete = 0
+          and   r.is_delete = 0
+          and   r.status = 0
+          and   r.tag = #{tag}
+          and   i.value2 =#{type}
+          order by sort desc
+       </select>
 
 </mapper>
