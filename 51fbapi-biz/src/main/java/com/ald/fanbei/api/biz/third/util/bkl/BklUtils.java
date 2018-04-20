@@ -101,7 +101,7 @@ public class BklUtils {
                 iagentResultDo.setGmtModified(new Date());
                 iagentResultService.saveRecord(iagentResultDo);
                 afOrderService.updateIagentStatusByOrderId(bklDo.getOrderId(),"C");
-                String content = "【阿拉丁电商】尊敬的用户，您的订单将在60分钟内进行审核，请您保持电话畅通，感谢您对51返呗的支持，祝您生活愉快";
+                String content = "尊敬的用户，为了保障您的财产安全，加速订单申请，我们稍后将会对您下单金额100元以上的订单进行智能电核，审核电话号码前三位为951，请您保持电话畅通并耐心完成互动！";
                 smsUtil.sendSmsToDhst(bklDo.getCsvPhoneNum(),content);
             }else {
                 logger.error("bklUtils submitJob httpResponseVO error out ="+httpResponseVO.getOut());

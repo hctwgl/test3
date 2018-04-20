@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.Constants;
@@ -63,8 +64,13 @@ public class AfBklServiceImpl implements AfBklService {
     @Resource
     AfUserSeedService afUserSeedService;
 
+    @Resource
+    SmsUtil smsUtil;
+
     @Override
     public String  isBklResult(AfOrderDo orderInfo) {
+
+        AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
         String result = "v2";//需电核
         //种子名单
 		AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
@@ -122,7 +128,8 @@ public class AfBklServiceImpl implements AfBklService {
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
                         }
                     });
-
+                    String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
+                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                 }else {
                     result = "v2";//需电核
                 }
