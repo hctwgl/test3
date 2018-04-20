@@ -278,7 +278,7 @@ public class CuiShouUtils {
                 }
             }
 
-            long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(), afRepaymentDo.getTradeNo(), false);
+            long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(), afRepaymentDo.getTradeNo(), false,null);
             if (i > 0) {
                 redisTemplate.delete(key);
                 thirdLog.info("cuiShouUtils  getRepayMentDo  success");
