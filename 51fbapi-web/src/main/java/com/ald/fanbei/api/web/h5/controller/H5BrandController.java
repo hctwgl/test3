@@ -72,55 +72,57 @@ public class H5BrandController extends BaseController {
 	@ResponseBody
 	public String brandResult(HttpServletRequest request ,HttpServletResponse response){
 		FanbeiH5Context context = new FanbeiH5Context();
-		Map<String, Object> data = new HashMap<String, Object>();
 		try {
 		//	context = doH5Check(request, false);
 			Long brandId = NumberUtil.objToLong(request.getParameter("brandId"));
 			int pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
-			logger.info("/category/H5brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "brandId:" + brandId);
+			logger.info("/category/H5brandResult params: id:" + request.getHeader(Constants.REQ_SYS_NODE_ID) + "  brandId:" + brandId);
 			if (brandId == null){
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getErrorMsg(), "", null).toString();
 			}
-//	AfGoodsQuery goodsQuery = getCheckParams(request);
 			// 1 query info of the brand
-			AfBrandDo brandInfo = (AfBrandDo) bizCacheUtil.getObject("barndInfo"+brandId);
-			if (brandInfo == null){
-				brandInfo = afBrandService.getById(brandId);
-				bizCacheUtil.saveObject("barndInfo"+brandId, brandInfo, Constants.SECOND_OF_HALF_DAY);
-			}
-			// 2 query goods of the brand with volume of top5
-//	List<AfGoodsDo> starGoodsList = afGoodsService.getGoodsListByBrandIdAndVolume(brandId);
-//	List<AfGoodsDo> goodsList = afGoodsService.getGoodsListByBrandId(brandId);
-			List<HomePageSecKillGoods> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
-			if (brandGoodsList == null){
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.BRAND_GOODS_IS_EMPTY.getErrorMsg(), "", null).toString();
-			}
-			// handle the goods data 
-			List<HomePageSecKillGoods> starGoodsList = new ArrayList<HomePageSecKillGoods>();
-			List<HomePageSecKillGoods> otherGoodsList = new ArrayList<HomePageSecKillGoods>();
-			for (int i =0;i < brandGoodsList.size(); i++){
-				if (i < 5){
-					starGoodsList.add(brandGoodsList.get(i));
-				}else{
-					otherGoodsList.add(brandGoodsList.get(i));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandResult"+brandId);
+			if (data == null){
+				data = new HashMap<String, Object>();
+				AfBrandDo brandInfo = (AfBrandDo) bizCacheUtil.getObject("barndInfo"+brandId);
+				if (brandInfo == null){
+					brandInfo = afBrandService.getById(brandId);
+					bizCacheUtil.saveObject("barndInfo"+brandId, brandInfo, Constants.SECOND_OF_HALF_DAY);
 				}
+				// 2 query goods of the brand with volume of top5
+				List<HomePageSecKillGoods> brandGoodsList = afGoodsService.getAllByBrandIdAndVolume(brandId);
+				if (brandGoodsList == null){
+					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.BRAND_GOODS_IS_EMPTY.getErrorMsg(), "", null).toString();
+				}
+				// handle the goods data 
+				List<HomePageSecKillGoods> starGoodsList = new ArrayList<HomePageSecKillGoods>();
+				List<HomePageSecKillGoods> otherGoodsList = new ArrayList<HomePageSecKillGoods>();
+				for (int i =0;i < brandGoodsList.size(); i++){
+					if (i < 5){
+						starGoodsList.add(brandGoodsList.get(i));
+					}else{
+						otherGoodsList.add(brandGoodsList.get(i));
+					}
+				}
+				// do page logic
+				List<HomePageSecKillGoods> allGoodsList = doPage(pageNo, otherGoodsList);
+				
+			//	List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+				//获取借款分期配置信息
+				AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+				JSONArray array = JSON.parseArray(resource.getValue());
+				if (array == null) {
+				    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+				}
+				List<Map<String,Object>> list1 = HandleData( resource,array, starGoodsList);
+				List<Map<String,Object>> list2= HandleData( resource,array, allGoodsList);
+				data.put("brandInfo",brandInfo);
+				data.put("starGoodsList",list1);
+				data.put("otherGoodsList",list2);
+				data.put("pageNo", pageNo);
+				bizCacheUtil.saveMap("ASJbrandResult"+brandId, data, Constants.SECOND_OF_ONE_MINITS);
 			}
-			// do page logic
-			List<HomePageSecKillGoods> allGoodsList = doPage(pageNo, otherGoodsList);
-			
-		//	List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			//获取借款分期配置信息
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-			JSONArray array = JSON.parseArray(resource.getValue());
-			if (array == null) {
-			    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-			}
-			List<Map<String,Object>> list1 = HandleData( resource,array, starGoodsList);
-			List<Map<String,Object>> list2= HandleData( resource,array, allGoodsList);
-			data.put("brandInfo",brandInfo);
-			data.put("starGoodsList",list1);
-			data.put("otherGoodsList",list2);
-			data.put("pageNo", pageNo);
 			return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.BRAND_RESULT_INIT_SUCCESS.getErrorMsg(), "", data).toString();
 		} catch (Exception e) {
 			String result =  H5CommonResponse.getNewInstance(false, "品牌结果页初始化失败..", "", e.getMessage()).toString();
