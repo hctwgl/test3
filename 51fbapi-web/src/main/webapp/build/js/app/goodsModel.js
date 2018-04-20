@@ -7,7 +7,10 @@ new Vue({
     el:'#vueCon',
     data:{
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
-        content:[]
+        content:[],
+        iconShow:getUrl('activityId'),
+        iconTxt:['券后价：4388','券后价：699','券后价：959']
+
     },
     created:function () {
         this.logData();

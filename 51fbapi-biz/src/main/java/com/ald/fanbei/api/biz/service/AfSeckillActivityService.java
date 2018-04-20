@@ -74,4 +74,12 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 			Integer pageNo, String pageFlag);
 
     Integer getSecKillGoodsStock(Long goodsId, Long activityId);
+
+    List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId);
+
+    AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(Long activityId, Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
+
+    List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
 }

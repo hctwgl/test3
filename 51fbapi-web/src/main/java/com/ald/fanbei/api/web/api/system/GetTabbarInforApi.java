@@ -110,10 +110,16 @@ public class GetTabbarInforApi implements ApiHandle {
 		//是否使用后台传来的图片，否的话菜单图片用app本地图片
 		Integer appVersion = context.getAppVersion();
 		
-
-		AfResourceDo useImgDo = afResourceService
-				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
-				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
+		AfResourceDo useImgDo = new AfResourceDo();
+		if (appVersion >= 413) {
+			useImgDo = afResourceService
+					.getConfigByTypesAndSecType(AfResourceType.ASJ_IS_USE_IMG.getCode(), AfResourceSecType.ASJ_IS_USE_IMG.getCode());
+		}else{
+			useImgDo = afResourceService
+					.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
+		}
+		
+		//app 在appstore 审核信息，如果还未审核，则用后台传的图片
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
 		boolean use = this.useImg(useImgDo, requestDataVo, context);
 		Map<String, Object> index = new HashMap<String, Object>();

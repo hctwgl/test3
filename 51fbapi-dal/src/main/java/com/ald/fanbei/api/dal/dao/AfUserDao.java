@@ -34,6 +34,8 @@ public interface AfUserDao {
 	 * @return
 	 */
 	AfUserDo getUserByRecommendCode(@Param("recommendCode")String recommendCode);
+
+	Long getUserByBorrowCashStatus(Long userId);
 	
 	/**
 	 * 更新用户消息

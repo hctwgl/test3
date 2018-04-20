@@ -11,10 +11,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.QueryEdspayApiHandleReqBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushStrategy;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushSwitchConf;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
@@ -28,6 +32,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGiveBackPayResultReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashPushService;
@@ -36,18 +41,25 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfLoanPushService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.biz.service.AfRecordMaxService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfAssetPackageBusiType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
@@ -61,8 +73,10 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -71,20 +85,33 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashPushDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
+import com.ald.fanbei.api.dal.domain.AfRecordMaxDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfRetryTemplDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.dto.AfLoanDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -134,6 +161,28 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
+	@Resource
+	AfLoanDao afLoanDao;
+	@Resource
+	AfLoanPeriodsDao afLoanPeriodsDao;
+	@Resource
+	JpushService jpushService;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfLoanService afLoanService;
+	@Resource
+	AfLoanPushService afLoanPushService;
+	@Resource
+	TransactionTemplate transactionTemplate;
+	@Resource
+	SmsUtil smsUtil;
+	@Resource
+	UpsUtil upsUtil;
+	@Resource
+	AfRecordMaxService afRecordMaxService;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -173,7 +222,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
-			
 			String currSign = DigestUtil.MD5(realDataJson);
 			if (!StringUtil.equals(currSign, sign)) {// 验签成功
 				//验证签名失败
@@ -183,6 +231,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			
 			//签名成功,业务处理
 			List<String> orderNos = edspayBackCreditReqBo.getOrderNos();
+			logger.info("giveBackCreditInfo:"+orderNos);
 			if(orderNos==null || orderNos.size()==0 || orderNos.size()>100){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
@@ -488,14 +537,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			map.put("sendTime", sendTime+"");
 			map.put("sign", sign);
 			map.put("appId", assetSideFanbeiFlag);
-			//发送前数据打印
-			logger.info("borrowCashCurPush originBorrowerJson = {},request = {}",borrowerJson,JSONObject.toJSONString(map));
 			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			try {
+				String url = assideResourceInfo.getValue1();
+				logger.info("borrowCashCurPush url = {},originBorrowerJson = {}, request = {}",url,borrowerJson,JSONObject.toJSONString(map));
 				//推送数据给钱包
-				String respResult = HttpUtil.doHttpPostJsonParam(assideResourceInfo.getValue1()+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
-				logger.info("borrowCashCurPush request  = {}, response = {}", JSONObject.toJSONString(map), respResult);
+				String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
+				logger.info("borrowCashCurPush response = {}", respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
 					try {
@@ -517,6 +566,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
 							//钱包满额,更新配置表
 							assetPushResource.setValue3(YesNoStatus.YES.getCode());
+							assetPushResource.setGmtModified(now);
 							afResourceService.editResource(assetPushResource);
 						}
 						
@@ -532,6 +582,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 						//重推开关开启
 						recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+						return true;
 					}else{
 						//重推开关关闭
 						noRepushHandle(borrowCashInfo, switchConf);
@@ -541,6 +592,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			} catch (Exception e) {
 				if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+					return true;
 				}else{
 					noRepushHandle(borrowCashInfo, switchConf);
 				}
@@ -552,6 +604,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	}
 
 	private void noRepushHandle(EdspayGetCreditRespBo borrowCashInfo,AssetPushSwitchConf switchConf) {
+		Date cur = new Date();
 		//区分现金贷和分期分别处理
 		if (borrowCashInfo.getDebtType()==0) {
 			//现金贷
@@ -565,10 +618,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				delegateBorrowCashDo.setRemark("推送失败关闭");
+				delegateBorrowCashDo.setGmtModified(cur);
 				// 更新订单状态为关闭
 				afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 				afBorrowLegalOrderDo.setClosedDetail("推送失败关闭");
-				afBorrowLegalOrderDo.setGmtClosed(new Date());
+				afBorrowLegalOrderDo.setGmtClosed(cur);
+				afBorrowLegalOrderDo.setGmtModified(cur);
 				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 				//维护拓展表
 				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
@@ -585,17 +640,48 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
 			}
 		}else{
-			//分期
-			//维护拓展表
 			AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowCashInfo.getOrderNo());
-			AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-			Date now = new Date();
-			borrowPushDo.setGmtCreate(now);
-			borrowPushDo.setGmtModified(now);
-			borrowPushDo.setBorrowId(borrowDo.getRid());
-			borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-			borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-			afBorrowPushService.saveRecord(borrowPushDo);
+			if (null != borrowDo) {
+				//分期
+				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+				Date now = new Date();
+				borrowPushDo.setGmtCreate(now);
+				borrowPushDo.setGmtModified(now);
+				borrowPushDo.setBorrowId(borrowDo.getRid());
+				borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
+				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowPushService.saveRecord(borrowPushDo);
+			}else{
+				AfLoanDo loanDo = afLoanService.getByLoanNo(borrowCashInfo.getOrderNo());
+				if (null != loanDo) {
+					//白领贷
+					AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+					afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+					AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
+					AfUserBankcardDo bankCard = afUserBankcardService.getUserMainBankcardByUserId(loanDo.getUserId());
+					List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+					if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
+						//直接关闭
+						dealLoanFail(loanDo, periodDos,"推送失败关闭");
+						jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+						smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+					}else{
+						// 调用UPS打款
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
+								afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+								bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+								UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+						loanDo.setTradeNoOut(upsResult.getOrderNo());
+						if (!upsResult.isSuccess()) {
+							dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+							smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+						}
+						loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+						afLoanDao.updateById(loanDo);
+					}
+				}
+			}
 		}
 	}
 
@@ -654,13 +740,17 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
+			logger.info("giveBackPayResult orderNo"+PayResultReqBo.getOrderNo());
 			//判断是否已经主动查询处理过
 			AfRetryTemplDo retryTemplDo = afRetryTemplService.getByBusIdAndEventType(PayResultReqBo.getOrderNo(), RetryEventType.QUERY.getCode());
 			if (null != retryTemplDo) {
 				//钱包主动通知之后移除主动查询表，不再主动查询
 				afRetryTemplService.deleteByBusidAndEventType(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
-				//业务处理
+				//移出record_max表
+				removeRecordMax(PayResultReqBo);
 				//回传区别现金贷和分期不同处理
+				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 				if (PayResultReqBo.getDebtType()==0) {
 					//现金贷
 					AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(PayResultReqBo.getOrderNo());
@@ -677,8 +767,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						afBorrowCashPushDo.setAssetSideFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 						afBorrowCashPushDo.setStatus(PushEdspayResult.REVIEWFAIL.getCode());
 						afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
-						AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-						AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 						if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getReviewFail())) {
 							//借款关闭
 							//更新借款状态
@@ -686,10 +774,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 							delegateBorrowCashDo.setRemark("浙商审核失败关闭");
+							delegateBorrowCashDo.setGmtModified(now);
 							// 更新订单状态为关闭
 							afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 							afBorrowLegalOrderDo.setClosedDetail("浙商审核失败关闭");
 							afBorrowLegalOrderDo.setGmtClosed(new Date());
+							afBorrowLegalOrderDo.setGmtModified(now);
 							applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 						}else{
 							//调ups打款
@@ -707,8 +797,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						afBorrowCashPushDo.setAssetSideFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
 						afBorrowCashPushDo.setStatus(PushEdspayResult.PAYFAIL.getCode());
 						afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
-						AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-						AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 						if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPayFail())) {
 							//借款关闭
 							//更新借款状态
@@ -716,10 +804,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 							delegateBorrowCashDo.setRemark("浙商打款失败关闭");
+							delegateBorrowCashDo.setGmtModified(now);
 							// 更新订单状态为关闭
 							afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 							afBorrowLegalOrderDo.setClosedDetail("浙商打款失败关闭");
 							afBorrowLegalOrderDo.setGmtClosed(new Date());
+							afBorrowLegalOrderDo.setGmtModified(now);
 							applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
 						}else{
 							//调ups打款
@@ -771,28 +861,92 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					}
 				}
 				if (PayResultReqBo.getDebtType()==1) {
-					//分期
 					AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(PayResultReqBo.getOrderNo());
-					AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-					Date now = new Date();
-					borrowPushDo.setGmtCreate(now);
-					borrowPushDo.setGmtModified(now);
-					borrowPushDo.setBorrowId(borrowDo.getRid());
-					borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
-					if (PayResultReqBo.getType()==0&&PayResultReqBo.getCode()==1){
-						//审核失败
-						borrowPushDo.setStatus(PushEdspayResult.REVIEWFAIL.getCode());
-						//记录拓展表
-					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
-						//打款失败
-						borrowPushDo.setStatus(PushEdspayResult.PAYFAIL.getCode());
-						//记录拓展表
-					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
-						//打款成功
-						borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
-						//记录拓展表
+					if (null != borrowDo) {
+						//分期
+						AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+						Date now = new Date();
+						borrowPushDo.setGmtCreate(now);
+						borrowPushDo.setGmtModified(now);
+						borrowPushDo.setBorrowId(borrowDo.getRid());
+						borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+						if (PayResultReqBo.getType()==0&&PayResultReqBo.getCode()==1){
+							//审核失败
+							borrowPushDo.setStatus(PushEdspayResult.REVIEWFAIL.getCode());
+							//记录拓展表
+						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
+							//打款失败
+							borrowPushDo.setStatus(PushEdspayResult.PAYFAIL.getCode());
+							//记录拓展表
+						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
+							//打款成功
+							borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
+							//记录拓展表
+						}
+						afBorrowPushService.saveRecord(borrowPushDo);
+					}else{
+						AfLoanDo loanDo = afLoanService.getByLoanNo(PayResultReqBo.getOrderNo());
+						if (null != loanDo) {
+							//白领贷
+							AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
+							AfUserBankcardDo bankCard = afUserBankcardService.getUserMainBankcardByUserId(loanDo.getUserId());
+							List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+							if (PayResultReqBo.getType()==0&&PayResultReqBo.getCode()==1){
+								//审核失败
+								AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.REVIEWFAIL.getCode());
+								afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+								if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getReviewFail())) {
+									//直接关闭
+									dealLoanFail(loanDo, periodDos,"浙商审核失败关闭");
+									jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+									smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+								}else{
+									// 调用UPS打款
+									UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
+											afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+											bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+											UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+									loanDo.setTradeNoOut(upsResult.getOrderNo());
+									if (!upsResult.isSuccess()) {
+										dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+										jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+										smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+									}
+									loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+									afLoanDao.updateById(loanDo);
+								}
+							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
+								//打款失败
+								AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYFAIL.getCode());
+								afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+								if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPayFail())) {
+									//借款关闭
+									dealLoanFail(loanDo, periodDos,"浙商打款失败关闭");
+									jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+									smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+								}else{
+									//调ups打款
+									UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
+											afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+											bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+											UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+									loanDo.setTradeNoOut(upsResult.getOrderNo());
+									if (!upsResult.isSuccess()) {
+										dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+										jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+										smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+									}
+									loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+									afLoanDao.updateById(loanDo);
+								}
+							}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
+								//打款成功
+								AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
+								afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+								afLoanService.dealLoanSucc(loanDo.getRid(),"");
+							}	
+						}
 					}
-					afBorrowPushService.saveRecord(borrowPushDo);
 				}
 			}
 		}catch(Exception e){
@@ -801,25 +955,31 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return notifyRespBo;
 	}
 
+	private void removeRecordMax(EdspayGiveBackPayResultReqBo PayResultReqBo) {
+		AfRecordMaxDo recordMaxDo = afRecordMaxService.getByBusIdAndEventype(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
+		if (null != recordMaxDo) {
+			afRecordMaxService.deleteById(recordMaxDo.getRid());
+		}
+	}
+
 	
 	public int queryEdspayApiHandle(String orderNo) {
 		try {
-			
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
-			// 打款成功，更新借款状态、可用额度等信息
-			try {
-				BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
-				afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
-			} catch (Exception e) {
-				logger.error("updateAuAmountByRid is fail;msg=" + e);
-			}
-			// 减少额度，包括搭售商品借款 
-			afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
-			// 增加日志
-			AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
-					borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
-			afUserAccountLogDao.addUserAccountLog(accountLog);
 			if (borrowCashDo!=null) {
+				//现金贷
+				try {
+					BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
+					afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
+				} catch (Exception e) {
+					logger.error("updateAuAmountByRid is fail;msg=" + e);
+				}
+				// 减少额度，包括搭售商品借款 
+				afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
+				// 增加日志
+				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
+						borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
+				afUserAccountLogDao.addUserAccountLog(accountLog);
 				//现金贷
 				borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
 				// FIXME 查询是否有订单，查询订单状态
@@ -838,6 +998,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
 				}
 				afBorrowCashService.borrowSuccessForNew(borrowCashDo);
+			}else{
+				AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
+				if (null != loanDo) {
+					//白领贷
+					AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
+					afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+					afLoanService.dealLoanSucc(loanDo.getRid(),"");
+				}
 			}
 		} catch (Exception e) {
 			logger.error("queryEdspayApiHandle error"+e);
@@ -865,12 +1033,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 
 	public int repushMaxApiHandle(String orderNo) {
 		try {
+			Date now = new Date();
+			AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+			AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
 			if (borrowCashDo!=null) {
 				//现金贷
 				//维护拓展表
 				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
-				Date now = new Date();
 				afBorrowCashPushDo.setGmtCreate(now);
 				afBorrowCashPushDo.setGmtModified(now);
 				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
@@ -878,9 +1048,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
 				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
 				AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+				AfUserDo afUserDo = afUserService.getUserById(borrowCashDo.getUserId());
 				AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
-				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
 					//借款关闭
 					//更新借款状态
@@ -888,33 +1057,168 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					delegateBorrowCashDo.setRid(borrowCashDo.getRid());
 					delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 					delegateBorrowCashDo.setRemark("推送钱包最大失败次数关闭");
+					delegateBorrowCashDo.setGmtModified(now);
 					// 更新订单状态为关闭
 					afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 					afBorrowLegalOrderDo.setClosedDetail("推送钱包最大失败次数关闭");
 					afBorrowLegalOrderDo.setGmtClosed(new Date());
+					afBorrowLegalOrderDo.setGmtModified(now);
 					applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
+					jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), now);
 				}else{
 					//调ups打款
 					applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
 							"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
 				}
 			}else{
-				//分期
 				//维护拓展表
 				AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(orderNo);
-				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-				Date now = new Date();
-				borrowPushDo.setGmtCreate(now);
-				borrowPushDo.setGmtModified(now);
-				borrowPushDo.setBorrowId(borrowDo.getRid());
-				borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-				afBorrowPushService.saveRecord(borrowPushDo);
+				if (null!=borrowDo) {
+					//分期 
+					AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+					borrowPushDo.setGmtCreate(now);
+					borrowPushDo.setGmtModified(now);
+					borrowPushDo.setBorrowId(borrowDo.getRid());
+					borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
+					borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
+					afBorrowPushService.saveRecord(borrowPushDo);
+				}else{
+					//白领贷
+					AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
+					if (null != loanDo) {
+						AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+						afLoanPushService.saveOrUpdateLoanPush(loanPushDo);
+						AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
+						AfUserBankcardDo bankCard = afUserBankcardService.getUserMainBankcardByUserId(loanDo.getUserId());
+						List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+						if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
+							//直接关闭
+							dealLoanFail(loanDo, periodDos,"推送钱包最大失败次数关闭");
+							jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+							smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+						}else{
+							// 调用UPS打款
+							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
+									afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+									bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+									UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+							loanDo.setTradeNoOut(upsResult.getOrderNo());
+							if (!upsResult.isSuccess()) {
+								dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
+								dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+								jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
+								smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+							}
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			logger.error("repushMaxApiHandle error"+e);
 			return 1;
 		}
 		return 0;
+	}
+
+	private AfLoanPushDo buildLoanPush(Long loanId, String assetSideFlag,String status) {
+		AfLoanPushDo loanPushDo =new AfLoanPushDo();
+		Date now = new Date();
+		loanPushDo.setGmtCreate(now);
+		loanPushDo.setGmtModified(now);
+		loanPushDo.setLoanId(loanId);
+		loanPushDo.setAssetSideFlag(assetSideFlag);
+		loanPushDo.setStatus(status);
+		return loanPushDo;
+	}
+	
+
+	private void dealLoanFail(final AfLoanDo loanDo, List<AfLoanPeriodsDo> periodDos, String msg) {
+		Date now = new Date();
+		loanDo.setStatus(AfLoanStatus.CLOSED.name());
+		loanDo.setRemark(msg);
+		loanDo.setGmtClose(now);
+		loanDo.setGmtModified(now);
+		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
+            try {
+            	afLoanDao.updateById(loanDo);
+        		afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount().negate());
+                return 1L;
+            } catch (Exception e) {
+                logger.error("dealLoanSucc update db error", e);
+                throw e;
+            }
+		}});
+	}
+
+	public List<EdspayGetCreditRespBo> buildWhiteCollarBorrowInfo(AfLoanDo loanDo) {
+		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
+		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		//获取开户行信息
+		FanbeiBorrowBankInfoBo bankInfo = assetSideEdspayUtil.getAssetSideBankInfo(assetSideEdspayUtil.getAssetSideBankInfo());
+		//借款人平台逾期信息
+		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(loanDo.getUserId());
+		//获取资产方的分润利率
+		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
+		AfLoanDto afLoanDto = afLoanDao.getBorrowInfoById(loanDo);
+		//白领贷的还款计划
+		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
+		List<AfLoanPeriodsDo> afLoanPeriods = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
+		Date lastBorrowBillGmtPayTime=null;
+		for (int i = 0; i < afLoanPeriods.size(); i++) {
+			RepaymentPlan repaymentPlan = new RepaymentPlan();
+			repaymentPlan.setRepaymentNo(afLoanPeriods.get(i).getRid()+"");
+			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(afLoanPeriods.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(afLoanDto.getLoanStartTime(), afLoanPeriods.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentAmount(afLoanPeriods.get(i).getAmount());
+			repaymentPlan.setRepaymentInterest(afLoanPeriods.get(i).getInterestFee());
+			repaymentPlan.setRepaymentPeriod(afLoanPeriods.get(i).getNper()-1);
+			repaymentPlans.add(repaymentPlan);
+			if (i == afLoanPeriods.size() - 1) {
+				lastBorrowBillGmtPayTime= afLoanPeriods.get(i).getGmtPlanRepay();
+			}
+		}
+		creditRespBo.setOrderNo(afLoanDto.getOrderNo());
+		creditRespBo.setUserId(loanDo.getUserId());
+		creditRespBo.setName(afLoanDto.getName());
+		creditRespBo.setCardId(afLoanDto.getCardId());
+		creditRespBo.setMobile(afLoanDto.getMobile());
+		creditRespBo.setBankNo(afLoanDto.getBankNo());
+		creditRespBo.setAcctName("");
+		creditRespBo.setMoney(afLoanDto.getMoney());
+		creditRespBo.setApr(BigDecimalUtil.multiply(loanDo.getInterestRate(), new BigDecimal(100)));
+		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afLoanDto.getLoanStartTime(), lastBorrowBillGmtPayTime));
+		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afLoanDto.getLoanStartTime()));
+		if (StringUtil.isNotBlank(afLoanDto.getLoanRemark())) {
+			creditRespBo.setPurpose(afLoanDto.getLoanRemark());
+		}else {
+			creditRespBo.setPurpose("个人消费");
+		}
+		creditRespBo.setPurpose("个人消费");
+		creditRespBo.setRepaymentStatus(0);
+		creditRespBo.setRepayName(afLoanDto.getName());
+		creditRespBo.setRepayAcct(afLoanDto.getBankNo());
+		creditRespBo.setRepayAcctBankNo("");
+		creditRespBo.setRepayAcctType(0);
+		if (StringUtil.equals(afLoanDto.getCardName(),"浙商银行")) {
+			creditRespBo.setIsRepayAcctOtherBank(0);
+		}else{
+			creditRespBo.setIsRepayAcctOtherBank(1);
+		}
+		creditRespBo.setManageFee(afAssetSideInfoDo.getAnnualRate());
+		if (StringUtil.isNotBlank(afLoanDto.getRepayRemark())) {
+			creditRespBo.setRepaymentSource(afLoanDto.getRepayRemark());
+		}else {
+			creditRespBo.setRepaymentSource("工资收入");
+		}
+		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
+		creditRespBo.setIsPeriod(1);
+		creditRespBo.setTotalPeriod(afLoanDto.getPeriods());
+		creditRespBo.setLoanerType(0);
+		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
+		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
+		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(0);
+		creditRespBos.add(creditRespBo);
+		return creditRespBos;
 	}
 }

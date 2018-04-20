@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -25,16 +27,35 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.bo.KuaijieLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.RepaymentStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -43,6 +64,24 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
+import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.AfLoanRepaymentDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -61,6 +100,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 
 
@@ -74,7 +115,7 @@ import java.util.concurrent.TimeUnit;
  */
  
 @Service("afLoanRepaymentService")
-public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymentDo, Long> implements AfLoanRepaymentService {
+public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract implements AfLoanRepaymentService {
 	
     private static final Logger logger = LoggerFactory.getLogger(AfLoanRepaymentServiceImpl.class);
    
@@ -125,48 +166,54 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     private AfLoanDao afLoanDao;
     @Resource
     private CollectionSystemUtil collectionSystemUtil;
+    @Resource
+    private AfResourceService afResourceService;
 	@Resource
 	CuiShouUtils cuiShouUtils;
+	@Resource
+	KafkaSync kafkaSync;
 
+    @Override
+    public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
 
-	@Override
-	public void repay(LoanRepayBo bo) {
-		
-		lockRepay(bo.userId);
-		
-		if(!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))){
-			// 未出账时拦截按期还款
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-		}
-		
-		Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-		}
-		
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-		
-		// 根据 还款金额  更新期数信息
-		if(!bo.isAllRepay) {	// 非提前结清
-			List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
-			bo.loanPeriodsIds.clear();
-			bo.loanPeriodsDoList.clear();
-			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
-				bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
-				bo.loanPeriodsDoList.add(afLoanPeriodsDo);
-			}
-		}
-
-		// 增加还款记录
-		generateRepayRecords(bo);
-	
-		// 还款操作
-		doRepay(bo, bo.loanRepaymentDo);
-			
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+	    lockRepay(bo.userId);
 	}
+
+	if (!bo.isAllRepay && !canRepay(bo.loanPeriodsDoList.get(0))) {
+	    // 未出账时拦截按期还款
+		unLockRepay(bo.userId);
+	    throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+	}
+
+	Date now = new Date();
+	String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+	if (StringUtil.equals("sysJob", bo.remoteIp)) {
+	    name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+	}
+
+	String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
+	bo.tradeNo = tradeNo;
+	bo.name = name;
+
+	// 根据 还款金额 更新期数信息
+	if (!bo.isAllRepay) { // 非提前结清
+	    List<AfLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+	    bo.loanPeriodsIds.clear();
+	    bo.loanPeriodsDoList.clear();
+	    for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriods) {
+		bo.loanPeriodsIds.add(afLoanPeriodsDo.getRid());
+		bo.loanPeriodsDoList.add(afLoanPeriodsDo);
+	    }
+	}
+
+	// 增加还款记录
+	generateRepayRecords(bo);
+
+	// 还款操作
+	return doRepay(bo, bo.loanRepaymentDo, bankPayType);
+
+    }
 	
 	/**
 	 * @Description:  增加还款记录
@@ -257,33 +304,99 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
      * @Description:  还款操作
      * @return  void
      */
-    private void doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment) {
-		if (bo.cardId > 0) {// 银行卡支付
-			if(repayment != null) {
-				changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), repayment.getRid());
-			}
-			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
-			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
-						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_LOAN.getCode());
-			
-			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
-			if (!respBo.isSuccess()) {
-				if(StringUtil.isNotBlank(respBo.getRespCode())){
-					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
-				}else{
-					dealRepaymentFail(bo.tradeNo, respBo.getTradeNo(), false, "");
-				}
-				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-			}
-			
-			bo.outTradeNo = respBo.getTradeNo();
-		} else if (bo.cardId == -2) {// 余额支付
-			dealRepaymentSucess(bo.tradeNo, "");
-		}
-		
+    private Map<String, Object> doRepay(LoanRepayBo bo, AfLoanRepaymentDo repayment, String bankChannel) {
+	Map<String, Object> resultMap = new HashMap<String, Object>();
+	if (bo.cardId > 0) {// 银行卡支付
+	    AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(bo.cardId);
+	    KuaijieLoanBo bizObject = new KuaijieLoanBo(repayment, bo);
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+		repayment.setStatus(RepaymentStatus.SMS.getCode());
+		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
+			bo.userDo.getIdNumber(), JSON.toJSONString(bizObject), "afLoanRepaymentService", Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
+	    } else {// 代扣
+		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
+			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
+	    }
+	} else if (bo.cardId == -2) {// 余额支付
+	    dealRepaymentSucess(bo.tradeNo, "");
+	    resultMap = getResultMap(bo, null);
 	}
+
+	return resultMap;
+    }
+
+    @Override
+    protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
+	if (kuaijieLoanBo.getRepayment() != null) {
+	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
+	}
+    }
+
+    @Override
+    protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+
+    }
     
+    @Override
+    protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo)
+    {
+	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
+	if (kuaijieLoanBo.getRepayment() != null) {
+	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.SMS.name(), kuaijieLoanBo.getRepayment().getRid());
+	}
+    }
+
+    @Override
+    protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
+	KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
+	if (kuaijieLoanBo.getRepayment() != null) {
+	    changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
+	}
+	return getResultMap(kuaijieLoanBo.getBo(),respBo);
+    }
+
+    @Override
+    protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
+	if (StringUtils.isNotBlank(payBizObject)) {
+	    // 处理业务数据
+	    if (StringUtil.isNotBlank(respBo.getRespCode())) {
+		dealRepaymentFail(payTradeNo, respBo.getTradeNo(), true, errorMsg);
+	    } else {
+		dealRepaymentFail(payTradeNo, respBo.getTradeNo(), false, "");
+	    }
+	} else {
+	    // 未获取到缓存数据，支付订单过期
+	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+	}
+    }
+
+    private Map<String, Object> getResultMap(LoanRepayBo bo, UpsCollectRespBo respBo)
+    {
+	Map<String, Object> data = Maps.newHashMap();
+	data.put("rid", bo.loanId);
+	data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+	data.put("gmtCreate", new Date());
+	data.put("status", AfLoanRepaymentStatus.SUCC.name());
+	if(bo.userCouponDto != null) {
+		data.put("couponAmount", bo.userCouponDto.getAmount());
+	}
+	if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
+		data.put("userAmount", bo.rebateAmount);
+	}
+	data.put("actualAmount", bo.actualAmount);
+	data.put("cardName", bo.cardName);
+	data.put("cardNumber", bo.cardNo);
+	data.put("repayNo", bo.tradeNo);
+	data.put("jfbAmount", BigDecimal.ZERO);
+	if(respBo!=null)
+	{
+	    data.put("resp", respBo);
+	    data.put("outTradeNo", respBo.getTradeNo());
+	}
+
+	return data;
+    }
 
    	/**
    	 * @Description: 还款状态修改
@@ -420,6 +533,12 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
 				cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
             }
     		
     	}finally {
@@ -722,7 +841,7 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
 		
 		
 		// 所有已还金额
-		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount().add(reductionAmount);
+		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+ JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
@@ -1040,11 +1159,6 @@ public class AfLoanRepaymentServiceImpl extends ParentServiceImpl<AfLoanRepaymen
     	String refId = "";								//还款的id串
     	Long userId ;									//目标用户id
     	boolean isAllRepay = false;	// 是否是提前还款（默认false为按期还款）
-	}
-
-	@Override
-	public BaseDao<AfLoanRepaymentDo, Long> getDao() {
-		return null;
 	}
 
 	@Override

@@ -116,22 +116,20 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
 	
-	private String OPERATE =		           HomePageType.OPERATE.getCode(); 
-	private String TABBAR_HOME_TOP =		   HomePageType.TABBAR_HOME_TOP.getCode(); 
-	private String NEW_EXCLUSIVE =		       HomePageType.NEW_EXCLUSIVE.getCode(); 
-	
-	private String TABBAR =		       HomePageType.TABBAR.getCode(); 
-	private String HOME_IAMGE_SLOGAN =		   HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
-	private String ASJ_IMAGES =		   HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
-	private String TOP_IMAGE = 		   HomePageType.TOP_IMAGE.getCode(); 
-	private String GOODS = 		   HomePageType.GOODS.getCode(); 
-	private String GOODS_ID =   HomePageType.GOODS_ID.getCode(); 
-	private String H5_URL =           HomePageType.H5_URL.getCode(); 
-	private String NEW_GOODS =    HomePageType.NEW_GOODS.getCode();    //品质新品
-	private String HOME_SEL = HomePageType.HOME_SEL.getCode();     // 精选活动
-	private String MAJOR_SUIT =		   HomePageType.MAJOR_SUIT.getCode();    //大牌汇聚
-	
-	private String HOME_FLASH_SALE_FLOOR_IMAGE = 	   HomePageType.HOME_FLASH_SALE_FLOOR_IMAGE.getCode();   //限时抢购楼层图
+	private String OPERATE =		              HomePageType.OPERATE.getCode(); 
+	private String TABBAR_HOME_TOP =		      HomePageType.TABBAR_HOME_TOP.getCode(); 
+	private String NEW_EXCLUSIVE =		          HomePageType.NEW_EXCLUSIVE.getCode(); 
+	private String TABBAR =		                  HomePageType.TABBAR.getCode(); 
+	private String HOME_IAMGE_SLOGAN =		      HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
+	private String ASJ_IMAGES =		   			  HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
+	private String TOP_IMAGE = 		  		      HomePageType.TOP_IMAGE.getCode(); 
+	private String GOODS = 		  			      HomePageType.GOODS.getCode(); 
+	private String GOODS_ID =   			      HomePageType.GOODS_ID.getCode(); 
+	private String H5_URL =          		      HomePageType.H5_URL.getCode(); 
+	private String NEW_GOODS =   			 	  HomePageType.NEW_GOODS.getCode();    //品质新品
+	private String HOME_SEL = 				 	  HomePageType.HOME_SEL.getCode();     // 精选活动
+	private String MAJOR_SUIT =		  		 	  HomePageType.MAJOR_SUIT.getCode();    //大牌汇聚
+	private String HOME_FLASH_SALE_FLOOR_IMAGE =  HomePageType.HOME_FLASH_SALE_FLOOR_IMAGE.getCode();   //限时抢购楼层图
 	
 	
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -187,15 +185,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			});
 		}
 	
-//		String topTabBar = AfResourceType.TABBAR_HOME_TOP.getCode();	
-//		List<Object> topTabBarList = new ArrayList<Object>();
-//		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-//			topTabBarList = getBannerInfoWithResourceDolist(
-//					afResourceService.getResourceHomeListByTypeOrderBy(topTabBar));
-//		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-//			topTabBarList = getBannerInfoWithResourceDolist(
-//					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topTabBar));
-//		}
 		 List<AfResourceH5ItemDo>  tabbarList =  afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
 	     if(tabbarList != null && tabbarList.size() >0){
 	    	 AfResourceH5ItemDo recommend = tabbarList.get(0);

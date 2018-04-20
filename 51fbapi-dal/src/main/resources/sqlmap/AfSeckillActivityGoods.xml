@@ -249,7 +249,8 @@
 
     <select id="getActivityGoodsByGoodsIdsAndActId" resultType="AfActGoodsDto">
         SELECT
-        a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
+        a.goods_id,a.activity_id,min(a.special_price) special_price,IFNULL(sum(a.limit_count),0) goodsCount,
+        a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
         g.price_amount,g.sale_amount,g.rebate_amount,g.rebate_rate,g.remark,g.source
         FROM af_seckill_activity_goods a LEFT JOIN af_goods g ON (a.goods_id=g.id)
         LEFT JOIN af_goods_price b ON (a.price_id=b.id)
@@ -264,6 +265,7 @@
         AND a.activity_id=#{activityId}
         GROUP BY a.goods_id
     </select>
+
     
     <select id="getActivityGoodsByActName" resultType="AfActGoodsDto">
         SELECT
@@ -289,7 +291,7 @@
             y.id as activityId,
 			min(a.special_price) activityAmount,
 			a.goods_id,
-			a.limit_count as total,
+			sum(a.limit_count) as total,
 			g.`name` as goodName,
 			g.goods_icon as goodsIcon,
 			g.thumbnail_icon,
@@ -334,7 +336,7 @@
 		order by a.sort DESC
     </select>
 
-    <select id="getSecKillGoodsStock">
+    <select id="getSecKillGoodsStock" resultType="java.lang.Long">
         SELECT
           a.limit_count - IFNULL(COUNT(DISTINCT o.id), 0)
         FROM
@@ -350,7 +352,7 @@
       y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      a.limit_count AS total,
+      sum(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
@@ -388,7 +390,7 @@
       y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      a.limit_count AS total,
+      sum(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
@@ -427,7 +429,7 @@
       y.id as activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      a.limit_count AS total,
+      sum(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
@@ -459,4 +461,32 @@
     </select>
     
     
+
+
+    <select id="getActivityGoodsByActivityId" resultType="AfSeckillActivityGoodsDto">
+        SELECT
+        a.id rid,min(a.special_price) special_price,a.limit_count,a.goods_id,a.price_id,b.name goodsName
+        FROM af_seckill_activity_goods a LEFT JOIN af_goods b ON (a.goods_id=b.id)
+        WHERE a.is_delete=0 AND a.type=2 AND b.is_delete=0
+        AND a.activity_id=#{activityId} GROUP BY a.goods_id
+    </select>
+
+    <select id="getSaleInfoByGoodsIdAndActId" resultType="AfSeckillActivityDo">
+        SELECT count(a.id) saleCount,IFNULL(sum(c.limit_count) ,0) goodsCount
+        FROM af_seckill_activity_goods c LEFT JOIN  af_seckill_activity_order a ON (a.goods_id=c.goods_id AND a.activity_id=c.activity_id ) LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId} AND c.goods_id=#{goodsId}
+        AND c.type=2 AND c.special_price>0
+        AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+    </select>
+
+    <select id="getActivityGoodsCountList" resultType="AfSeckillActivityDo">
+        SELECT c.goods_id rid,IFNULL(sum(c.limit_count) ,0) goodsCount
+        FROM af_seckill_activity_goods c LEFT JOIN af_goods_price b ON (c.price_id=b.id)
+        WHERE c.activity_id=#{activityId}
+        AND c.type=2 AND c.special_price>0
+        AND c.is_delete=0 AND b.is_delete=0 AND b.is_sale='Y'
+        GROUP BY c.goods_id
+    </select>
+
+
 </mapper>
