@@ -178,10 +178,10 @@ public final class HtmlToPdfUtil {
             render.createPDF(new FileOutputStream(outFilePath));
         } catch (DocumentException e) {
             e.printStackTrace();
-            logger.error("htmlContentWithCssToPdf =>{}",e+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}"+e+",content = "+content+",outFilePath = "+outFilePath);
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("htmlContentWithCssToPdf =>{}",e.getMessage()+",content = "+content+",outFilePath = "+outFilePath);
+            logger.error("htmlContentWithCssToPdf =>{}"+e+",content = "+content+",outFilePath = "+outFilePath);
         }
     }
 

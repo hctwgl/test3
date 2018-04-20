@@ -21,17 +21,17 @@ public class LegalBorrowV2Test  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://atestapp.51fanbei.com";
-//	String urlBase = "http://localhost:8080";
+//	String urlBase = "https://atestapp.51fanbei.com";
+	String urlBase = "http://localhost:80";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
-//	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
+	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
-//	String userName = "15293971826";	//秦继强 支付密码888888
+//	String userName = "15293971826";	//秦继强 支付密码888888 登陆q123456
 //	String userName = "13370127054";	//王卿 	支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
-	String userName = "17612158083";	//代秋田
+//	String userName = "17612158083";	//代秋田
 //	String userName = "17756648524";	//新账号 支付密码123456
 	
 	/**
@@ -43,20 +43,60 @@ public class LegalBorrowV2Test  extends BaseTest{
 	}
 	
 	
+	@Test
 	public void borrow() {
+		String url = urlBase + "/legalborrowV2/applyLegalBorrowCash"; // TODO
+		Map<String,String> params = new HashMap<>();
+		params.put("amount", 1000+"");
+		params.put("type", 10+"");
+		params.put("pwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
+		params.put("latitude", "20.35654");
+		params.put("longitude", "21.65645");
+		params.put("province", "浙江省");
+		params.put("city", "杭州市");
+		params.put("county", "中国");
+		params.put("address", "滨江区星耀城1期");
+		params.put("blackBox", "sadasd");
+		params.put("bqsBlackBox", "asdasdasd");
+		params.put("couponId", "");
+		params.put("goodsId", "1");
+		params.put("goodsName", "虚拟币");
+		params.put("goodsAmount", "10");
+		params.put("borrowRemark", "");
+		params.put("refundRemark", "");
+		params.put("deliveryAddress", "");
+		params.put("deliveryUser", "");
+		params.put("deliveryPhone", "13638668564");
+		params.put("gameId", "59");
 		
+		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
+	public void  delegatePay() {
+		String url = urlBase + "/third/ups/delegatePay?";
+		String orderNo = "jq2018041614095300106";
+		String merPriv = PayOrderSource.BORROWCASH.getCode();
+		String tradeState = "00";
+		String reqExt = "3339804";
+		
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&reqExt=" + reqExt + "&tradeState=" + tradeState;
+		url += reqStr;
+		Map<String,String> params = new HashMap<>();
+		
+		testApi(url, params, userName ,true);
+	}
+	
+	@Test
 	public void renewal() {
 		String url = urlBase + "/legalborrowV2/confirmLegalRenewalPay";
 		Map<String,String> params = new HashMap<>();
 		
-		params.put("borrowId", "1259666");
-		params.put("payPwd", DigestUtils.md5Hex("111111"));
+		params.put("borrowId", "3339801");
+		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("renewalAmount", "200");
-		params.put("cardId", "3111464124");
-		params.put("goodsId", "91630");
+		params.put("cardId", "3111464125");
+		params.put("goodsId", "1");
 		params.put("deliveryUser", "啊阿斯顿");
 		params.put("deliveryPhone", "18659876572");
 		params.put("address", "江苏南京");
@@ -86,11 +126,11 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018010811542108319";
-		String merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
+		String orderNo = "xj2018041614350000014";
+		String merPriv = PayOrderSource.RENEW_CASH_LEGAL_V2.getCode();
 		String tradeNo = "xianfeng21231";
 		String tradeState = "00";
 		

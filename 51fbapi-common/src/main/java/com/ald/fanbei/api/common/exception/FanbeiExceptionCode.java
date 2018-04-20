@@ -179,13 +179,15 @@ public enum FanbeiExceptionCode {
     UPS_QUERY_AUTH_SIGN_ERROR("UPS_QUERY_AUTH_SIGN_ERROR",1558,"ups query auth sign error","查询签约验证失败"),
     UPS_SIGN_DELAY_ERROR("UPS_SIGN_DELAY_ERROR",1559,"ups sign delay error","协议延期失败"),
     UPS_COLLECT_ERROR("UPS_COLLECT_ERROR",1560,"ups collect error","单笔代收失败"),
+    UPS_QUICK_PAY_CONFIRM_ERROR("UPS_QUICK_PAY_CONFIRM_ERROR",1760,"ups quick pay confirm error","快捷支付确认支付失败"),
+    UPS_QUICKPAY_RESEND_CODE_ERROR("UPS_QUICKPAY_RESEND_CODE_ERROR",1660,"ups quickpay recend code error","快捷支付发送验证码失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
     REQ_WXPAY_ERR("REQ_WXPAY_ERR",1562,"request wx error","微信app支付失败"),
     BANK_CARD_PAY_ERR("BANK_CARD_PAY_ERR",1563,"bank card pay error","银行卡支付失败"),
     BANK_CARD_PAY_SMS_ERR("BANK_CARD_PAY_SMS_ERR",1564,"bank card pay sms error","银行卡支付短信验证失败"),
     REFUND_ERR("REFUND_ERR",1565,"refund error","退款失败"),
     UPS_BATCH_DELEGATE_ERR("UPS_BATCH_DELEGATE_ERR",1566,"ups batch delegate error","批量代付失败"),
-    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","短信验证码获取失败,请重试"),
+    AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","绑卡信息与银行预留不一致，请核实信息后重新尝试"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     ORDER_PAY_DEALING("ORDER_PAY_DEALING",1569,"order pay dealing","订单正在支付中,请勿重复提交"),
     ORDER_HAS_PAID("ORDER_HAS_PAID",1570,"order has been paid","订单已经支付,请勿重复提交"),
@@ -198,6 +200,11 @@ public enum FanbeiExceptionCode {
     AFTERSALE_APPLY_NOT_EXIST("AFTERSALE_APPLY_NOT_EXIST",1577,"aftersale apply not exist","售后申请记录不存在"),
     FUNCTION_REPAIRING_ERROR("FUNCTION_REPAIRING_ERROR",1578,"function repairing error","此功能正在维护中，请耐心等待！"),
     ORDER_HAS_CLOSED("ORDER_HAS_CLOSED",1579,"order has closed","订单已经关闭,请重新下单"),
+    UPS_CACHE_EXPIRE("UPS_CACHE_EXPIRE",1580,"order has closed","支付请求已经关闭,请重新支付"),
+    UPS_KUAIJIE_NOT_SUPPORT("UPS_KUAIJIE_NOT_SUPPORT",1581,"ups kuaijie not support","当前业务，未支持快捷支付"),
+    ORDER_PAY_FAIL("ORDER_PAY_FAIL",1582,"ORDER_PAY_FAIL","订单支付失败"),
+    BINDCARD_PAY_PWD_MISS("BINDCARD_PAY_PWD_MISS",1583,"BINDCARD_PAY_PWD_MISS","绑卡时缺失支付密码"),
+    BINDCARD_REALINFO_MISS("BINDCARD_REALINFO_MISS",1584,"BINDCARD_REALINFO_MISS","绑卡时缺失实名信息"),
 
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
@@ -237,7 +244,7 @@ public enum FanbeiExceptionCode {
 
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
-    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
+    RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审核拒绝"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
     AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败，请稍后重试。若一直认证失败，请联系客服电话400-002-5151"),
@@ -268,6 +275,7 @@ public enum FanbeiExceptionCode {
     RISK_NEWFUND_NOTIFY_ERROR("RISK_NEWFUND_NOTIFY_ERROR",1925,"risk newfund notify error","51公积金信息通知风控异常"),
     RISK_RESPONSE_DATA_ERROR("RISK_RESPONSE_DATA_ERROR",1924,"risk response data error","风控返回数据异常"),
     UESR_ACCOUNT_SENCE_ERROR("UESR_ACCOUNT_SENCE_ERROR",1930,"get uesr account sence error","获取用户多场景额度信息失败"),
+    RISK_VERIFY_ERROR_BORROW("RISK_VERIFY_ERROR_BORROW",1931,"risk verify error","风控拒绝，您可能有未还款的账单，请还款后再支付"),
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
@@ -325,6 +333,7 @@ public enum FanbeiExceptionCode {
     BORROW_CASH_ORDER_NOT_EXIST_ERROR("BORROW_CASH_ORDER_NOT_EXIST_ERROR",3002,"borrow cash order not exist","借钱订单信息不存在"),
     BORROW_CASH_RATE_ERROR("BORROW_CASH_RATE_ERROR",3003,"borrow cash rate not exist","获取利率失败，请联系客服"),
     BORROW_CASH_GOOD_NOT_EXIST_ERROR("BORROW_CASH_GOOD_NOT_EXIST_ERROR",3004,"borrow cash goods not exist","商品信息不存在"),
+    BORROW_CASH_COUPON_NOT_EXIST_ERROR("BORROW_CASH_COUPON_NOT_EXIST_ERROR",3005,"borrow cash coupon not exist","优惠券信息不存在"),
 
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),
@@ -380,6 +389,8 @@ public enum FanbeiExceptionCode {
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     //7000
     BANKCARD_NOT_EXIST("BANKCARD_NOT_EXIST",7000,"bankcard is null","该用户没绑定银行卡"),
+    
+    USER_BANKCARD_NOT_EXIST("USER_BANKCARD_NOT_EXIST",7100,"user bankcard is null","未绑定此卡"),
 
     //物流信息不存在
     LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在"),
@@ -426,7 +437,9 @@ public enum FanbeiExceptionCode {
     SECKILL_ERROR_END("SECKILL_ERROR_END",9003,"seckill error activity is end ","活动未开始或已结束！"),
     SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
-    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！");
+    SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！"),
+    
+    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9006,"choose bank card pay","请您选择银行卡付款方式");
 
 
     /**

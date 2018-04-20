@@ -156,9 +156,12 @@ public class AppH5LeaseController extends BaseController {
             context = doWebCheck(request, false);
             if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-                if(StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score",afUser.getRid().toString()))){
-                    riskUtil.updateRentScore(afUser.getRid().toString());
-                    bizCacheUtil.hset("Lease_Score",afUser.getRid().toString(),DateUtil.getNow(), DateUtil.getTodayLast());
+                AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(afUser.getRid(), "ONLINE");
+                if(afUserAuthStatusDo!=null&&afUserAuthStatusDo.getStatus().equals("Y")) {
+                    if (StringUtil.isEmpty(bizCacheUtil.hget("Lease_Score", afUser.getRid().toString()))) {
+                        riskUtil.updateRentScore(afUser.getRid().toString());
+                        bizCacheUtil.hset("Lease_Score", afUser.getRid().toString(), DateUtil.getNow(), DateUtil.getTodayLast());
+                    }
                 }
             }
             Long pageIndex = NumberUtil.objToLongDefault(request.getParameter("pageIndex"), 1);
@@ -1030,8 +1033,9 @@ public class AppH5LeaseController extends BaseController {
                 if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
                     data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
                 }
+                AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
                 // 保存手续费信息
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
+                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),afOrderDo.getGoodsId());
                 data.put("overdueRate",borrowRate.getOverdueRate());
                 data.put("realName",accountDo.getRealName());
                 data.put("userName",accountDo.getUserName());
@@ -1114,8 +1118,7 @@ public class AppH5LeaseController extends BaseController {
                 afBorrowService.updateBorrowStatus(afBorrowDo, afUser.getUserName(), afOrderDo.getUserId());
             }
         }
-        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
     }
 
     private List<Object> getBannerObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {

@@ -42,7 +42,7 @@ public class PayAgencyOrderApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"), "").toString();
-
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"),null);
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
@@ -68,7 +68,7 @@ public class PayAgencyOrderApi implements ApiHandle {
 			}
 			
 //			Map<String,Object> result = afOrderService.payAgencyOrder( orderInfo);
-			Map<String,Object> result = afOrderService.payBrandOrderOld(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress);
+			Map<String,Object> result = afOrderService.payBrandOrderOld(0l, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(),orderInfo.getActualAmount() , orderInfo.getNper(),appName,ipAddress,bankPayType);
 
 			resp.setResponseData(result);
 

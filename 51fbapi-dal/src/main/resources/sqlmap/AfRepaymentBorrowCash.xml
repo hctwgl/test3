@@ -163,7 +163,7 @@
         FROM af_repayment_borrow_cash
         WHERE is_delete = 0
             AND borrow_id = #{borrowCashId}
-            AND status IN ('A','P')
+            AND status IN ('P')
         LIMIT 1
     </select>
 	<select id="getRepaymentBorrowCashByTradeNo" parameterType="java.lang.String" resultType="AfRepaymentBorrowCashDo">
@@ -301,6 +301,10 @@
 	
 	<update id="status2Process">
         UPDATE af_repayment_borrow_cash SET status='P',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
+    </update>
+	
+	<update id="status2ProcessKuaijie">
+        UPDATE af_repayment_borrow_cash SET status='S',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 	
 </mapper>

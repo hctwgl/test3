@@ -582,8 +582,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
 	}
 
 	/**
@@ -966,7 +965,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+
 	}
 
 	@Override
@@ -1268,7 +1268,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		}*/
 		if (0l !=resultValue){
-			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_SCENE_ONE,true);
 			afBorrowDao.updateBorrowVersion(borrow.getRid(),1);
 //			contractPdfThreadPool.protocolInstalmentPdf(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 		}
@@ -1461,7 +1461,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		}
 		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
 		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
-				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
+				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),
+				afOrderDo.getOrderType(), Constants.ORDER_TYPE_TENEMENT);
 
 		borrow.setNper(nper);
 

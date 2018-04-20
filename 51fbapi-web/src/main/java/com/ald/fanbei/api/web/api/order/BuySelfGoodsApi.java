@@ -87,32 +87,24 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
-	@Resource
-	AfGoodsDouble12Service afGoodsDouble12Service;
-
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
-
 	@Resource
 	AfShareGoodsService afShareGoodsService;
-
 	@Resource
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
-	
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
-
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
 
@@ -224,7 +216,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (!fromCashier) {
 			if (nper.intValue() > 0) {
 				// 保存手续费信息
-				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
+				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),afOrder.getGoodsId());
 				afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 			}
 		}

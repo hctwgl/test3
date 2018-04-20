@@ -173,20 +173,14 @@
 	<select id="getCouponByActivityIdAndType" resultType="AfCouponDto">
 		SELECT
 		<include refid="queryAllFields"></include>
-		FROM
-			af_coupon
-		WHERE
-			activity_id = #{activityId}
-		AND
-			activity_type = #{activityType}
-		AND
-			type = 'FULLVOUCHER'
-		AND
-			now() >= gmt_start
-		AND
-			gmt_end >= now()
-		AND
-			status = 'O'
+		FROM af_coupon
+		WHERE is_delete=0
+		AND activity_id = #{activityId}
+		AND activity_type = #{activityType}
+		AND type = 'FULLVOUCHER'
+		AND now() >= gmt_start
+		AND gmt_end >= now()
+		AND status = 'O'
 	</select>
 	
 		<select id="listCouponByIds" resultType="AfCouponDo">

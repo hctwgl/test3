@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
+import com.ald.fanbei.api.dal.domain.dto.AfLoanDto;
 
 /**
  * 贷款业务Dao
@@ -36,5 +37,7 @@ public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 	List<AfLoanDo> listDealingLoansByUserId(@Param("userId") Long userId);
 
 	AfLoanDo selectById(@Param("loanId")Long loanId);
+
+	AfLoanDto getBorrowInfoById(AfLoanDo loanDo);
 
 }

@@ -49,9 +49,26 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	
 	private String interestCutDesc;
 	private String interestFreeDesc;
-	private int isShow;
-	
-	
+	private String interestCutMark;
+	private String interestFreeMark;
+	private int isShow=0;
+
+	public String getInterestCutMark() {
+		return interestCutMark;
+	}
+
+	public void setInterestCutMark(String interestCutMark) {
+		this.interestCutMark = interestCutMark;
+	}
+
+	public String getInterestFreeMark() {
+		return interestFreeMark;
+	}
+
+	public void setInterestFreeMark(String interestFreeMark) {
+		this.interestFreeMark = interestFreeMark;
+	}
+
 	public String getInterestCutDesc() {
 		return interestCutDesc;
 	}
