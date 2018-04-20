@@ -583,6 +583,11 @@ public class Constants {
 	public static final String TAC_SEC_KILL_ACTIVITY_NAME = "TAC_SEC_KILL_ACTIVITY_NAME";
 
 	/**
+	 * 三周年庆典秒杀活动每日开始时间（小时）
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_START_TIME = "TAC_SEC_KILL_ACTIVITY_START_TIME";
+
+	/**
 	 * 默认二级类型
 	 */
 	public static final String DEFAULT = "DEFAULT";

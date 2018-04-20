@@ -70,12 +70,15 @@
     </select>
 
     <select id="getActivityListByName" resultType="java.lang.String" parameterType="java.lang.String">
-        SELECT a.id
-        FROM af_seckill_activity a
-        WHERE a.is_delete = 0 AND a.is_disable=0
-          AND a.name like CONCAT(#{name}, '%')
-          AND a.gmt_pstart <![CDATA[>=]]> curdate()
-          AND a.gmt_end <![CDATA[<]]> date_add(curdate(), interval 1 day)
+        SELECT a.id FROM af_seckill_activity a
+          WHERE a.is_delete = 0 AND a.is_disable=0
+            AND a.name like CONCAT(#{name}, '%')
+        <if test="gmtStart != null and gmtStart != ''">
+            AND a.gmt_pstart <![CDATA[>=]]> #{gmtStart}
+        </if>
+        <if test="gmtEnd != null and gmtEnd != ''">
+            AND a.gmt_end <![CDATA[<=]]> #{gmtEnd}
+        </if>
         ORDER BY a.name
     </select>
     

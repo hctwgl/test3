@@ -8,6 +8,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 
     List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId);
 
-    List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo);
+    List<HomePageSecKillGoods> getHomePageSecKillGoodsById(Long userId, Long activityId);
 
-    List<String> getActivityListByName(String name);
+    List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd);
 }

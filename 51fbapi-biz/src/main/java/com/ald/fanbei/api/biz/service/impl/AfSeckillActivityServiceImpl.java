@@ -10,7 +10,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
-import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -149,21 +148,12 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	}
 
 	@Override
-	public List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo) {
-
-		Date activityDate = DateUtil.addDays(new Date(), activityDay);
-		HomePageSecKillQuery homePageSecKillQuery = new HomePageSecKillQuery();
-		homePageSecKillQuery.setActivityName(activityName);
-		homePageSecKillQuery.setDateStart(DateUtil.getStartOfDate(activityDate));
-		homePageSecKillQuery.setDateEnd(DateUtil.getEndOfDate(activityDate));
-		homePageSecKillQuery.setUserId(userId);
-		homePageSecKillQuery.setPageNo(pageNo);
-		homePageSecKillQuery.setPageSize(20);
-		return afSeckillActivityGoodsDao.getHomePageSecKillGoods(homePageSecKillQuery);
+	public List<HomePageSecKillGoods> getHomePageSecKillGoodsById(Long userId, Long activityId) {
+		return afSeckillActivityGoodsDao.getHomePageSecKillGoodsById(userId, activityId);
 	}
 
 	@Override
-	public List<String> getActivityListByName(String name){
-		return afSeckillActivityDao.getActivityListByName(name);
+	public List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd){
+		return afSeckillActivityDao.getActivityListByName(name, gmtStart, gmtEnd);
 	}
 }
