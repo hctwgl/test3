@@ -464,19 +464,20 @@ public class VisualH5Controller extends BaseController {
         try{
             Long id = NumberUtil.objToPageLongDefault(request.getParameter("id"), null);
             String strHtml = ObjectUtils.toString(request.getParameter("strHtml"), null);
-            AfVisualH5Do afvisualH5Do = afVisualH5Service.getById(id);
-            String outFilePath = src + afvisualH5Do.getUrlName() + ".html";
-            File file = new File(outFilePath);
-            if(file.exists()) {//删除原来的旧文件
-                file.delete();
-            }
-            InputStream targetStream = IOUtils.toInputStream(strHtml, StandardCharsets.UTF_8.name());
-            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/html", IOUtils.toByteArray(targetStream));
-            OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
-            String url = ossUploadResult.getUrl();
+            String url = ObjectUtils.toString(request.getParameter("url"), null);
+//            AfVisualH5Do afvisualH5Do = afVisualH5Service.getById(id);
+//            String outFilePath = src + afvisualH5Do.getUrlName() + ".html";
+//            File file = new File(outFilePath);
+//            if(file.exists()) {//删除原来的旧文件
+//                file.delete();
+//            }
+//            InputStream targetStream = IOUtils.toInputStream(strHtml, StandardCharsets.UTF_8.name());
+//            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/html", IOUtils.toByteArray(targetStream));
+//            OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+//            String url = ossUploadResult.getUrl();
             AfVisualH5Do visualH5Do = new AfVisualH5Do();
             visualH5Do.setRid(id);
-            visualH5Do.setUrl(url);
+            visualH5Do.setUrl(url + "/h5/activity/201804/visualization.html?id=" + id);
             afVisualH5Service.updateById(visualH5Do);
             return H5CommonResponse.getNewInstance(true, "生成成功").toString();
         }catch (Exception e){
