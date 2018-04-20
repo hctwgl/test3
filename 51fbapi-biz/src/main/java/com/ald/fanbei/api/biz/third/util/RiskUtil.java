@@ -318,10 +318,13 @@ public class RiskUtil extends AbstractThird {
 	AfUserSeedService afUserSeedService;
 	
 	@Resource
-	  AfTradeSettleOrderService afTradeSettleOrderService;
+	AfTradeSettleOrderService afTradeSettleOrderService;
 
-	  @Resource
-	  AfTradeBusinessInfoService afTradeBusinessInfoService;
+	@Resource
+	AfTradeBusinessInfoService afTradeBusinessInfoService;
+
+	@Resource
+	AfBklService afBklService;
 
 	@Resource
 	JdbcTemplate loanJdbcTemplate;
@@ -1291,10 +1294,10 @@ public class RiskUtil extends AbstractThird {
 			//新增白名单逻辑
 			try {
 				try {
-					String bklResult = isBklResult(orderInfo);
+					String bklResult = afBklService.isBklResult(orderInfo);
 					if (bklResult.equals("v2")){//需电核
 						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
-						submitBklInfo(orderInfo);
+						afBklService.submitBklInfo(orderInfo,"分期付款");
 						if (orderInfo.getIagentStatus()==null)
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
