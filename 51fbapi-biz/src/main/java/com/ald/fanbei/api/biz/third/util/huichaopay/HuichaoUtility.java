@@ -606,7 +606,7 @@ public class HuichaoUtility implements ThirdInterface {
             }
         }
         else if(resultStatus.equals(HuiCaoOrderStatus.SUCCESS.getCode())){
-            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false);
+            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false,null);
         }
         else{
             //关闭
