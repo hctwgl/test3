@@ -148,12 +148,14 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 
 		     String imageUrl = "";
 			 String content = "";
+			 String type = "";
 			 List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,CHANNEL_MORE_GOODS_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
 		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
 		    	 imageUrl = recommend.getValue3();
 							 content =  recommend.getValue1();
 						     imageUrl= recommend.getValue3();
+						     type= recommend.getValue4();
 		         }
 		     if(StringUtil.isNotEmpty(imageUrl)&& moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
 		    	 HomePageSecKillByActivityModelQuery homePageSecKillGoods = (HomePageSecKillByActivityModelQuery)goodsListMap.get("query");
@@ -165,6 +167,9 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 					 }else{
 						 moreGoodsInfo.put("nextPageNo",pageNo+1); 
 					 }
+					 moreGoodsInfo.put("imageUrl",imageUrl); 
+					 moreGoodsInfo.put("content",content); 
+					 moreGoodsInfo.put("type",type); 
 					 moreGoodsInfo.put("imageUrl",imageUrl);
 					 moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
 				 }

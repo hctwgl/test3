@@ -476,4 +476,5 @@ public interface AfOrderService {
 
 
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
+
 }

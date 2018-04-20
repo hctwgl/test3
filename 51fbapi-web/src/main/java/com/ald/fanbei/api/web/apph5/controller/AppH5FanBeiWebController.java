@@ -1269,10 +1269,15 @@ public class AppH5FanBeiWebController extends BaseController {
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 		    
 		     String imageUrl = "";
+		     String type = "";
+		     String content = "";
 		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
 		     if(recommendList != null && recommendList.size() >0){
 		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
 		    	 imageUrl = recommend.getValue3();
+		    	 type = recommend.getValue4();
+		    	 content = recommend.getValue1();
+		    	 
 		     }
 				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
 					 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
@@ -1285,6 +1290,8 @@ public class AppH5FanBeiWebController extends BaseController {
 							 goodsInfo.put("nextPageNo",pageNo+1); 
 						 }
 						 goodsInfo.put("imageUrl",imageUrl); 
+						 goodsInfo.put("type",type); 
+						 goodsInfo.put("content",content); 
 						 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 					 }
 				}

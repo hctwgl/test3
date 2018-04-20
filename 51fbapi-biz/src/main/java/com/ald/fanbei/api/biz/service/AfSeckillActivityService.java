@@ -60,7 +60,7 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
 
     List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId);
-    
+
     List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo);
 
 	List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(

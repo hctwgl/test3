@@ -159,7 +159,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 
 	@Override
 	public List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo) {
-	    
+
 	    Date activityDate = DateUtil.addDays(new Date(), activityDay);
 	    HomePageSecKillQuery homePageSecKillQuery = new HomePageSecKillQuery();
 	    homePageSecKillQuery.setActivityName(activityName);
@@ -195,7 +195,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		 homePageSecKillGoods.put("query", homePageSecKillByActivityModelQuery);
 		 homePageSecKillGoods.put("goodsList", homePageSecKillGoodsList);
 		 return   homePageSecKillGoods;
-	
+
 	}
 
 	@Override
@@ -220,6 +220,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	public Integer getSecKillGoodsStock(Long goodsId, Long activityId) {
 		return afSeckillActivityGoodsDao.getSecKillGoodsStock(goodsId,activityId);
 	}
+
+	@Override
 	public List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId) {
 		return afSeckillActivityGoodsDao.getActivityGoodsByActivityId(activityId);
 	}

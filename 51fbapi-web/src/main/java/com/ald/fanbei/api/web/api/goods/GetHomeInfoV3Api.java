@@ -298,15 +298,18 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				List<Map<String, Object>> flashSaleGoods = getGoodsInfoList(flashSaleGoodsList,HOME_FLASH_SALE_FLOOR_IMAGE,afResourceH5ItemDo);
 				String flashSaleContent = "";
 				String flashSaleImageUrl = "";
+				String flashSaleType = "";
 				if(afResourceH5ItemDo !=null){
 					flashSaleContent = afResourceH5ItemDo.getValue1();
 					flashSaleImageUrl = afResourceH5ItemDo.getValue3();
+					flashSaleType   = afResourceH5ItemDo.getValue4();
 				}
 
 				//大于等于10个显示
 				if(flashSaleGoods.size()>=10 && StringUtil.isNotEmpty(flashSaleImageUrl)){
 					flashSaleInfo.put("content",flashSaleContent);
 					flashSaleInfo.put("imageUrl",flashSaleImageUrl);
+					flashSaleInfo.put("type",flashSaleType);
 					flashSaleInfo.put("currentTime", new Date().getTime());
 					if(flashSaleGoodsList != null && flashSaleGoodsList.size() >0){
 						flashSaleInfo.put("startTime", flashSaleGoodsList.get(0).getActivityStart().getTime());
@@ -332,6 +335,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 							 if(StringUtil.isNotEmpty(imageUrl)){
 								 newProduct.put("imageUrl", newProductDo.getValue3());
 								 newProduct.put("content", newProductDo.getValue1());
+								 newProduct.put("type", newProductDo.getValue4());
 								 newProductTopImage = true;
 							 }
 							 
@@ -343,7 +347,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 									newProductInfo.put("content", newProductDo.getValue1());
 									newProductInfo.put("sort", newProductDo.getSort());
 									newProductInfo.put("imageUrl", newProductDo.getValue3());
-									newProductInfo.put("type", GOODS_ID);
+									newProductInfo.put("type", newProductDo.getValue4());
 								    newProductGoodsIdList.add(newProductInfo);
 								    newProductGoodsList = true;
 								 }
@@ -384,6 +388,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 												goodsInfo.put("goodsList", activityGoodsInfoList);
 												goodsInfo.put("imageUrl", imageUrl);
 												goodsInfo.put("type", H5_URL);
+												//1+多
 												goodsInfo.put("content",activityDo.getValue4() );
 												activityGoodsInfoList1.add(goodsInfo);
 												activityGoodsList = true;
@@ -392,6 +397,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 							    	  if( activityDo.getValue3() != null && !"".equals(activityDo.getValue3())){
 										 activityGoodsInfo.put("imageUrl", activityDo.getValue3());
 										 activityGoodsInfo.put("content", activityDo.getValue1());
+										 activityGoodsInfo.put("type", activityDo.getValue4());	
 										 activityTopImage = true;
 							    	  }
 								  } 

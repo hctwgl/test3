@@ -310,10 +310,12 @@
 		WHERE is_delete = 0 AND borrow_id=#{borrowId} AND `status` = 'P'
 	</select>
 
-	
+
+
 	<update id="status2ProcessKuaijie">
         UPDATE af_repayment_borrow_cash SET status='S',trade_no=#{trandeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
-	
+
+
 
 </mapper>
