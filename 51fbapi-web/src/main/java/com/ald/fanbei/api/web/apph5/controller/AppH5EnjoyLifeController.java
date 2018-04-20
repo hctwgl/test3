@@ -398,7 +398,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     return H5CommonResponse.getNewInstance(false, "活动已结束").toString();
                 }
                 startTime = afSeckillActivityDo.getGmtStart();
-                sendTime = DateUtil.addMins(startTime,-10);
+                sendTime = DateUtil.addMins(startTime,-15);
             }
             AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
             afActivityUserSmsDo.setGoodsId(goodsId);
