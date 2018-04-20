@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.third.util;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -325,6 +326,8 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	JdbcTemplate loanJdbcTemplate;
+	@Resource
+	AfInterimAuService afInterimAuService;
 
 	public static String getUrl() {
 		if (url == null) {
@@ -851,11 +854,13 @@ public class RiskUtil extends AbstractThird {
 			summaryData.put("lastOverdueDay", "0");
 			summaryData.put("maxOverdueDay", "0");
 		}
+
 		reqBo.setSummaryData(JSON.toJSONString(summaryData));
 		// 12-13 弱风控加入订单信息
 		HashMap summaryOrderData = new HashMap();
 		if (orderid > 0) {
 			summaryOrderData = riskDataMap.get("summaryOrderData");
+
 		}
 		if (borrow != null && orderDo != null) {
 			summaryOrderData.put("calculateMethod", borrow.getCalculateMethod());
@@ -895,6 +900,35 @@ public class RiskUtil extends AbstractThird {
 			    else {
 				    summaryOrderData.put("boluomeDetails", "");
 			    }
+			    //额度占比
+				BigDecimal uaAmount = new BigDecimal(0);
+				BigDecimal uaAmountUsed = new BigDecimal(0);
+				BigDecimal uaAmountTemp = new BigDecimal(0);
+				BigDecimal uaAmountTempUsed = new BigDecimal(0);
+
+
+				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",orderDo.getUserId());
+				if (afUserAccountSenceDo != null){
+					uaAmount = afUserAccountSenceDo.getAuAmount();
+					uaAmountUsed = afUserAccountSenceDo.getUsedAmount();
+				}
+				AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(orderDo.getUserId());
+				if(afInterimAuDo.getGmtFailuretime().getTime()>= new Date().getTime()){
+					uaAmountTemp = afInterimAuDo.getInterimAmount();
+					uaAmountTempUsed = afInterimAuDo.getInterimUsed();
+				}
+				BigDecimal totalAmount = uaAmount.subtract(uaAmountUsed).add(uaAmountTemp).subtract(uaAmountTempUsed);
+				BigDecimal borrowAmount = orderDo.getBorrowAmount();
+				borrowAmount=borrowAmount == null?BigDecimal.ZERO:borrowAmount;
+				if (totalAmount.compareTo(BigDecimal.ZERO)>0){
+					summaryOrderData.put("unpayedCanUseRatio",borrowAmount.divide(totalAmount,2,BigDecimal.ROUND_HALF_UP));
+					BigDecimal userThisOrderSum = borrowAmount.compareTo(uaAmount.subtract(uaAmountUsed))<=0?BigDecimal.ZERO:borrowAmount.subtract(uaAmount.subtract(uaAmountUsed));
+					summaryOrderData.put("userThisOrderSum",userThisOrderSum);
+					summaryOrderData.put("userTemporaryLimitRatio",userThisOrderSum.add(uaAmountTempUsed).divide(uaAmountTemp,2,BigDecimal.ROUND_HALF_UP));
+				}
+				String thisOrderUnanimous = (String)summaryOrderData.get("thisOrderUnanimous");
+				summaryOrderData.put("thisOrderUnanimous",thisOrderUnanimous.equals(orderDo.getConsigneeMobile())?"true":"false");
+				summaryOrderData.put("GPSUnanimous",(orderDo.getGpsAddress()==null||"".equals(orderDo.getGpsAddress()))?"true":orderDo.getGpsAddress().equals(orderDo.getProvince())?"true":"false");
 			}
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
