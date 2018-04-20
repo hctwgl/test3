@@ -48,6 +48,7 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
 
     List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
 
+
     List<HomePageSecKillGoods> getHomePageSecKillGoods(HomePageSecKillQuery homePageSecKillQuery);
 
     Integer getSecKillGoodsStock(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId);
@@ -60,4 +61,10 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
 
 	List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(
 			HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery);
+
+    List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId);
+
+    AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(@Param("activityId") Long activityId, @Param("goodsId") Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
 }

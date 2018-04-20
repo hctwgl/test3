@@ -266,6 +266,8 @@
         GROUP BY a.goods_id
     </select>
 
+
+
     <select id="getActivityGoodsByActName" resultType="AfActGoodsDto">
         SELECT
         a.id rid,min(a.special_price) special_price,a.goods_id,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,
@@ -458,6 +460,9 @@
 	   GROUP BY m.goods_id
 	   ORDER  BY m.sort DESC
     </select>
+    
+    
+
 
 
 

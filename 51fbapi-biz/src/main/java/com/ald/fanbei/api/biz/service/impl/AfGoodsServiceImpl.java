@@ -215,7 +215,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList("brandAllGoods" + brandId);
 		if (CollectionUtil.isEmpty(brandGoodsList)){
 			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
-			bizCacheUtil.saveObjectList("brandAllGoods" + brandId, brandGoodsList);
+			bizCacheUtil.saveObjectListExpire("brandAllGoods" + brandId, brandGoodsList,Constants.MINITS_OF_FIVE);
 		}
 		return brandGoodsList;
 	}

@@ -134,7 +134,7 @@ public class BrandChannelsApi implements ApiHandle {
 			data.put("h5LinkUrl", h5LinkUrl);
 			data.put("hotBrandList", hotBrandList);
 			data.put("allBrandInfo", allBrandInfo2);
-			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.SECOND_OF_THREE);
+			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.MINITS_OF_FIVE);
 		}
 		resp.setResponseData(data);
 		return resp;
