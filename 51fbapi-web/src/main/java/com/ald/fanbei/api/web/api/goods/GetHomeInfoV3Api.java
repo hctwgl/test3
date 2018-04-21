@@ -974,9 +974,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			    interestFreeArray = JSON.parseArray(interestFreeJson);
 			}
 		    }
-		    
+		    BigDecimal  showAmount =  homePageSecKillGoods.getSaleAmount();
+		   if(null != homePageSecKillGoods.getActivityAmount()){
+			   showAmount = homePageSecKillGoods.getActivityAmount();
+		   }
 		    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), 
-			    homePageSecKillGoods.getSaleAmount(), resource.getValue1(), resource.getValue2(), goodsId, "0");
+		    		showAmount, resource.getValue1(), resource.getValue2(), goodsId, "0");
 		    if (nperList != null) {
 			goodsInfo.put("goodsType", "1");
 			Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
