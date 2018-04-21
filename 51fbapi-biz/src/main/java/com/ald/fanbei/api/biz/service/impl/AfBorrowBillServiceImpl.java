@@ -109,6 +109,16 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		List<String> idsList = StringUtil.splitToList(ids, ",");
 		BigDecimal billNum = new BigDecimal(idsList.size());
 		logger.info("borrow bill billNum:"+billNum);
+		if(couponAmount == null){
+			couponAmount = BigDecimal.ZERO;
+		}
+		if(jfbAmount ==null){
+			jfbAmount = BigDecimal.ZERO;
+		}
+		if(rebateAmount ==null){
+			rebateAmount = BigDecimal.ZERO;
+		}
+
 		BigDecimal couponAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal jfbAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal rebateAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
