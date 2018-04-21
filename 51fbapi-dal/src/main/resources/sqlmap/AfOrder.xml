@@ -1436,7 +1436,7 @@
 		WHERE  is_delete=0
 		AND order_type = 'SELFSUPPORT'
 		AND user_id = #{userId}
-		and pay_status = 'P'
+		and pay_status in('P','R') 
 	</select>
 
 	<select id="selectTodayIagentStatus" resultType="AfOrderDo" >
