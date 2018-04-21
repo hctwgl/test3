@@ -81,7 +81,7 @@ public class CuiShouUtils {
             thirdLog.info("cuishouhuankuan offlineRepaymentMoney {data:" + data + ",sign:" + sign + "}");
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "验签错误"));
+            if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
 
 
             final JSONObject jsonObject = JSONObject.parseObject(data);
@@ -103,7 +103,7 @@ public class CuiShouUtils {
                         sycnSuccessAndError(cuiShouBackMoney, 0); //同步返回数据
                     }
                 }).start();
-                return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
+                return JSON.toJSONString(new CuiShouBackMoney(200, "success"));//同步反回接收成功
 
             } else if (CuiShouType.BORROW_CASH.getCode().equals(c_type)) {
                 new Thread(new Runnable() {
@@ -127,7 +127,7 @@ public class CuiShouUtils {
 //                    c.setData(j);
 //                }
 //                return JSON.toJSONString(c);
-                return JSON.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
+                return JSON.toJSONString(new CuiShouBackMoney(200, "success"));//同步反回接收成功
             } else if (CuiShouType.WITH_BORROW.getCode().equals(c_type)) {
                 new Thread(new Runnable() {
                     @Override
@@ -144,10 +144,10 @@ public class CuiShouUtils {
                 }).start();
 
             }
-            return JSONObject.toJSONString(new CuiShouBackMoney(200, "成功"));//同步反回接收成功
+            return JSONObject.toJSONString(new CuiShouBackMoney(200, "success"));//同步反回接收成功
         } catch (Exception e) {
             thirdLog.error("offlineRepaymentMoney error", e);
-            CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney(500, "内部错误");
+            CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney(500, "error");
             JSONObject jsonObject = new JSONObject();
             try {
                 final JSONObject _jsonObject = JSONObject.parseObject(data);
@@ -596,7 +596,7 @@ public class CuiShouUtils {
         try {
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return JSON.toJSONString(new CuiShouBackMoney(201, "验签错误"));
+            if (!sign1.equals(sign)) return JSON.toJSONString(new CuiShouBackMoney(201, "sign error"));
 
             JSONObject jsonObject = JSONObject.parseObject(data);
             String type = jsonObject.getString("type");
@@ -674,10 +674,10 @@ public class CuiShouUtils {
             }
 
             thirdLog.info("cuishou finishBorrow type error" + type + ",data:" + data);
-            return JSON.toJSONString(new CuiShouBackMoney(207, "类型错误"));
+            return JSON.toJSONString(new CuiShouBackMoney(207, "type error"));
         } catch (Exception e) {
             thirdLog.error("cuishou finishBorrow error", e);
-            return JSON.toJSONString(new CuiShouBackMoney(500, "内部错误"));
+            return JSON.toJSONString(new CuiShouBackMoney(500, "error"));
         }
     }
 
