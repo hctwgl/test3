@@ -11,6 +11,8 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -95,14 +97,18 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfBorrowBillDo getBillAmountByIds(String ids) {
 		return afBorrowBillDao.getBillAmountByIds(StringUtil.splitToList(ids, ","));
 	}
+
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	/**
 	 * update by fumeiai 在af_borrow_bill表里增加了coupon_amount(优惠减免),jfb_amount(集分宝抵扣),rebate_amount(返利抵扣)
 	 * 在还款成功的时候，将优惠值平分到每个账单里
 	 */
 	@Override
 	public int updateBorrowBillStatusByIds(String ids, String status, Long repaymentId, BigDecimal couponAmount, BigDecimal jfbAmount, BigDecimal rebateAmount) {
+		logger.info("borrow bill couponAmount:"+couponAmount);
 		List<String> idsList = StringUtil.splitToList(ids, ",");
 		BigDecimal billNum = new BigDecimal(idsList.size());
+		logger.info("borrow bill billNum:"+billNum);
 		BigDecimal couponAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal jfbAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal rebateAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
