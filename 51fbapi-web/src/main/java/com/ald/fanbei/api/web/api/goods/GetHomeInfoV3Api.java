@@ -163,15 +163,27 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		// 背景图
 		if (backgroundList != null && !backgroundList.isEmpty()) {
 			  for(AfResourceDo background: backgroundList ){
+				 
 				  if(AfResourceType.HOME_SEARCH.getCode().equals(background.getValue1())){
-					  searchBackground = background;
+					  if (!StringUtils.equals(deviceType, "IPHONEX")) {
+						  searchBackground = background;
+						}
 				  }
+				  if(AfResourceType.HOME_SEARCH_IPHONEX.getCode().equals(background.getValue1())){
+					  if (StringUtils.equals(deviceType, "IPHONEX")) {
+						  searchBackground = background;
+						}
+				  }
+				 
 				if(AfResourceType.HOME_NINE_GRID.getCode().equals(background.getValue1())){
 					  nineBackground  =    background;
 				}
 				if(AfResourceType.HOME_NAVIGATION.getCode().equals(background.getValue1())){
 					  navigationBackground  = background;
 				 }
+				 if(searchBackground.getValue() != null && nineBackground.getValue()!= null & navigationBackground.getValue() != null){
+					  break;
+				  }
 			  }
 		} 
 		
