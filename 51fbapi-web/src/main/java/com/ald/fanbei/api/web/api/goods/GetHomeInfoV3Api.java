@@ -456,11 +456,16 @@ public class GetHomeInfoV3Api implements ApiHandle {
 								 }
 							}
 					     }
-						 if(newProductGoodsList &&newProductTopImage){
-							 List<Object> newProductGoodsIdListConvert  = getNewProductGoodsIdList(newProductGoodsIdList);
-							 newProduct.put("newProductList", newProductGoodsIdListConvert);
-						 }
+						 
 				     }
+					 if(newProductGoodsList &&newProductTopImage){
+						 List<Object> newProductGoodsIdListConvert  = getNewProductGoodsIdList(newProductGoodsIdList);
+						 newProduct.put("newProductList", newProductGoodsIdListConvert);
+						// 品质新品
+							if (!newProduct.isEmpty()) {
+								data.put("newProduct", newProduct);
+							}
+					 }
 				 }
 				  //加入缓存
 				    bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NEW_PRODUCT_INFO.getCode(), newProduct, Constants.SECOND_OF_TEN_MINITS);
@@ -687,10 +692,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		if (!flashSaleInfo.isEmpty()) {
 			data.put("flashSaleInfo", flashSaleInfo);
 		}
-		// 品质新品
-		if (!newProduct.isEmpty()) {
-			data.put("newProduct", newProduct);
-		}
+		
 		// 活动运营商品
 		if (!activityGoodsInfo.isEmpty()) {
 			data.put("activityGoodsInfo", activityGoodsInfo);
@@ -712,7 +714,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				int size = newProductGoodsIdList.size();
 				if(size < 4 && size > 1 ){
 					newProductGoodsIdLists.addAll(newProductGoodsIdList.subList(0, 2));
-				}if(size > 4 ){
+				}if(size >= 4 ){
 					newProductGoodsIdLists.addAll(newProductGoodsIdList.subList(0, 4));
 				}
 		}
