@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfIagentResultDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -79,9 +81,13 @@ public class ThirdController extends AbstractThird{
     AfResourceService afResourceService;
     @Resource
     AfOrderService afOrderService;
-
+    @Resource
+    SmsUtil smsUtil;
+    @Resource
+    AfUserService afUserService;
     @Resource
     HttpServletRequest request;
+
     @RequestMapping(value = { "/iagent/notify.json" }, method = RequestMethod.POST)
     @ResponseBody
     public String iagentReport( @RequestParam(value = "audio",required = false) MultipartFile audio,@RequestParam("work_id") final String   work_id, @RequestParam("job_id")final String   job_id, @RequestParam("work_result") final String work_result, @RequestParam("token")String token) throws Exception {
@@ -220,10 +226,13 @@ public class ThirdController extends AbstractThird{
                 if ("C".equals(iagentStatus)){
                     afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
                 }
+                AfUserDo userDo = afUserService.getUserById(afOrderDo.getUserId());
                 if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
                     Map<String,String> qmap = new HashMap<>();
                     qmap.put("orderNo",afOrderDo.getOrderNo());
                     //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
+                    String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
+                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                     HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
                 }
                 List<AfOrderDo> orderList = afOrderService.selectTodayIagentStatusCOrders(afOrderDo.getUserId());
@@ -231,6 +240,8 @@ public class ThirdController extends AbstractThird{
                     for (AfOrderDo temp:orderList){
                         afOrderService.updateIagentStatusByOrderId(temp.getRid(),iagentstate);
                         if ("PAID".equals(temp.getStatus())&&"E".equals(iagentstate)){
+                            String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
+                            smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+temp.getOrderNo(),JSONObject.toJSONString(new HashMap<>()));
 
                         }
