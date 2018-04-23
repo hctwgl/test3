@@ -1073,7 +1073,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
             }
             InputStream inputStream = new ByteArrayInputStream(stream);
-            return ossFileUpload(map,map.get("uploadPath").toString(),inputStream);//oss上传
+            return ossFileUpload(map, String.valueOf(map.get("uploadPath")),inputStream);//oss上传
         }else {
             return false;
         }
@@ -1341,7 +1341,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             input.close();
             logger.info(ossUploadResult.getMsg(), "url:", ossUploadResult.getUrl());
             if (null != ossUploadResult.getUrl()) {
-                String protocolCashType = map.get("protocolCashType").toString();
+                String protocolCashType = String.valueOf(map.get("protocolCashType"));
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
                 afContractPdfDo.setType(Byte.valueOf(protocolCashType));
                 afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
@@ -1411,7 +1411,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
             }
             InputStream inputStream = new ByteArrayInputStream(stream);
-            return ossFileUploadWithEdspaySeal(map,map.get("uploadPath").toString(),inputStream);//oss上传
+            return ossFileUploadWithEdspaySeal(map, String.valueOf(map.get("uploadPath")),inputStream);//oss上传
         }else {
             return null;
         }

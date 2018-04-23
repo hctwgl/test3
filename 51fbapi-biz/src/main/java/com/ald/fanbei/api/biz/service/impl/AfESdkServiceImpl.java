@@ -144,9 +144,7 @@ public class AfESdkServiceImpl implements AfESdkService {
     public FileDigestSignResult userSign(Map<String, Object> map) {
         // 待签署文 档路径
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
-        logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        logger.info("sign dstFile: " + dstFile);
         String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
@@ -181,7 +179,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         fileBean.setDstPdfFile(dstFile);
         fileBean.setFileName(fileName);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
-        logger.info("r cfp = " + JSON.toJSONString(r));
         // 使用用户印章签名
         return r;
     }
