@@ -303,10 +303,12 @@ public class GetHomeChannelApi implements ApiHandle {
 		int navCount = navigationList2.size();
 		if (navCount >= 5 && navCount < 10) {
 				navigationList.addAll(navigationList2.subList(0, 5));
+				navigationInfo.put("navigationList", navigationList);
 		} else if (navCount >= 10) {
-				navigationList.addAll(navigationList2.subList(5, 10));
+				navigationList.addAll(navigationList2.subList(0, 10));
+				navigationInfo.put("navigationList", navigationList);
 		}
-		navigationInfo.put("navigationList", navigationList);
+	
 		}
 		return navigationInfo;
 	}
