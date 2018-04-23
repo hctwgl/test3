@@ -61,14 +61,15 @@ import com.alibaba.fastjson.JSONObject;
 public abstract class BaseController {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final static Logger loggerStatic = LoggerFactory.getLogger(BaseController.class);
 	private final Logger biLogger = LoggerFactory.getLogger("FANBEI_BI");// app原生接口入口日志
 	protected final Logger biNewLog = LoggerFactory.getLogger("FANBEINEW_BI");// 新app原生接口入口日志
 
 	protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");// h5接口入口日志
 	protected final Logger webbiNewLog = LoggerFactory.getLogger("FBWEBNEW_BI");// 新h5接口入口日志
 
-	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
-	protected final Logger maidianNewLog = LoggerFactory.getLogger("FBMDNEW_BI");// 埋点日志
+	protected final static Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
+	protected final static Logger maidianNewLog = LoggerFactory.getLogger("FBMDNEW_BI");// 埋点日志
 
 	protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");// 第三方调用日志
 
@@ -716,9 +717,8 @@ public abstract class BaseController {
 	 *
 	 * @param request
 	 * @param respData
-	 * @param exeT
 	 */
-	protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String... extInfo) {
+	public static void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String... extInfo) {
 		try {
 			JSONObject param = new JSONObject();
 			Enumeration<String> enu = request.getParameterNames();
@@ -800,7 +800,7 @@ public abstract class BaseController {
 			}
 
 		} catch (Exception e) {
-			logger.error("maidian logger error", e);
+			loggerStatic.error("maidian logger error", e);
 		}
 	}
 
@@ -869,7 +869,6 @@ public abstract class BaseController {
 	 *            执行时间
 	 * @param inter
 	 *            接口
-	 * @param userName用户名
 	 * @param ext1
 	 *            扩展参数1
 	 * @param ext2
@@ -1001,7 +1000,6 @@ public abstract class BaseController {
 	 * 解析request
 	 *
 	 * @param reqData
-	 * @param httpServletRequest
 	 * @return
 	 */
 	protected String processTradeWeiXinRequest(String reqData, HttpServletRequest request, boolean isForQQ) {
