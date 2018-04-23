@@ -502,8 +502,21 @@ public class GetHomeInfoV3Api implements ApiHandle {
 														 goodsIdList.add(gid);
 													 }
 											    }
-											    List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
-												List<Map<String, Object>> activityGoodsInfoList = getGoodsInfoList(goodsList,HOME_SEL,null);
+											    List<HomePageSecKillGoods> goodsLists = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
+											  //重新排序，in 会重排，sql里保持排序，性能差
+												  List<HomePageSecKillGoods> goodsList = new  ArrayList<HomePageSecKillGoods>();
+												 // List<Long> goodsIdList = new ArrayList<Long>();    
+												  if(goodsLists != null && goodsLists.size()>0){
+													  for(Long goodsid:goodsIdList){
+														   for(HomePageSecKillGoods goods:goodsLists ){
+															   if(goodsid.longValue() == goods.getGoodsId().longValue()){
+																   goodsList.add(goods);
+															   }
+														   }
+													  }
+												  }
+											    
+											    List<Map<String, Object>> activityGoodsInfoList = getGoodsInfoList(goodsList,HOME_SEL,null);
 												//没有商品整块不显示
 												String imageUrl = activityDo.getValue3();
 												String type = activityDo.getValue4();
