@@ -9,17 +9,51 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
-import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
+import com.ald.fanbei.api.common.enums.*;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.ald.fanbei.api.biz.bo.risk.ReqFromRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromSecondaryRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromStrongRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
+import com.ald.fanbei.api.biz.service.AfAuthRaiseStatusService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -64,6 +98,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     AfUserAccountSenceService afUserAccountSenceService;
     @Resource
     AfAuthRaiseStatusService afAuthRaiseStatusService;
+    @Resource
+    AfBorrowCashService afBorrowCashService;
+
+    @Resource
+    TransactionTemplate transactionTemplate;
 
     @Override
     public int addUserAuth(AfUserAuthDo afUserAuthDo) {
@@ -122,13 +161,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	return afUserAuthDao.getUserAuthListWithIvs_statusIsY(query);
     }
 
-    public Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene) {
+    public Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene,AfResourceDo zhimaConfigResource) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	Map<String, Object> creditModel = new HashMap<String, Object>();
 	Map<String, Object> zmModel = new HashMap<String, Object>();
 	Map<String, Object> locationModel = new HashMap<String, Object>();
 	Map<String, Object> contactorModel = new HashMap<String, Object>();
 	long between = 0l;
+
 	AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
 	JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 	Integer sorce = userDto.getCreditScore();
@@ -173,9 +213,18 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	creditModel.put("creditAssessTime", authDo.getGmtModified());
 	creditModel.put("allowConsume", getConsumeStatus(authDo.getUserId(), appVersion));
+
+
 	zmModel.put("zmStatus", authDo.getZmStatus());
 	zmModel.put("zmScore", authDo.getZmScore());
-	if (StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())) {
+	zmModel.put("isShow", zhimaConfigResource.getValue());
+	Date zmReAuthDatetime = DateUtil.parseDateyyyyMMddHHmmss(zhimaConfigResource.getValue4());
+	if(zmReAuthDatetime==null){
+		//默认值处理
+		zmReAuthDatetime = DateUtil.getStartDate();
+	}
+	if (YesNoStatus.YES.getCode().equals(zhimaConfigResource.getValue())  &&
+			(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) || (StringUtil.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) && (authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())) ))) {
 	    String authParamUrl = ZhimaUtil.authorize(userDto.getIdNumber(), userDto.getRealName());
 	    AfResourceDo zhimaNewUrl = afResourceService.getSingleResourceBytype("zhimaNewUrl");
 
@@ -184,6 +233,25 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    } else {
 		zmModel.put("zmxyAuthUrl", zhimaNewUrl.getValue() + "?userId=" + AesUtil.encryptToBase64(authDo.getUserId().toString(), "123"));
 	    }
+	}else{
+		zmModel.put("zmxyAuthUrl", "");
+	}
+
+	//展示给用户的芝麻认证描述文案
+	if(StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())){
+		if(YesNoStatus.YES.getCode().equals(authDo.getBasicStatus())){
+			zmModel.put("zmDesc", "重新认证");
+		}else{
+			zmModel.put("zmDesc", "未认证");
+		}
+	}else if(authDo.getZmScore()==0 || DateUtil.compareDate(zmReAuthDatetime,authDo.getGmtZm())){
+		zmModel.put("zmDesc", "重新认证");
+	}else{
+		if(NumberUtil.objToIntDefault(zhimaConfigResource.getValue1(), 0)==1){
+			zmModel.put("zmDesc", authDo.getZmScore());
+		}else{
+			zmModel.put("zmDesc", "已认证");
+		}
 	}
 
 	locationModel.put("locationStatus", authDo.getLocationStatus());
@@ -594,7 +662,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    }
 	}
 	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
-	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date()), afterTenDay);
 	data.put("title", "");
 	logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
 	if (between < 0) {
@@ -603,6 +671,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
 	return true;
     }
+
 
     private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo) {
 	Map<String, Object> supplementAuth = new HashMap<String, Object>();
@@ -775,4 +844,189 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	return whiteIdsList.contains(userName);
     }
+
+
+    /* ---------------------------------
+	 * start 此区域内 处理风控主动调用       |
+	 * --------------------------------- */
+    /**
+     * 处理来自风控主动推送的强风控回调
+     */
+	@Override
+	public void dealFromStrongRiskForcePush(final ReqFromStrongRiskBo reqBo) {
+		final Long userId = reqBo.consumerNo;
+
+		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
+			throw new FanbeiException("ConsumerNo=" + userId + " have deal borrow cash");
+		}
+
+		if (StringUtils.equals("10", reqBo.result)) {
+			if (SceneType.CASH.getCode().equals(reqBo.scene)) { // 认证通过
+				transactionTemplate.execute(new TransactionCallback<Boolean>() {
+					public Boolean doInTransaction(TransactionStatus arg0) {
+						logger.info("dealFromStrongRiskForcePush start totalAmount ="+reqBo.totalAmount.toString()+",userId="+userId+",loanType=LOAN_TOTAL");
+						AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, "LOAN_TOTAL", reqBo.totalAmount.toString());
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+
+						updateRiskStatus(RiskStatus.YES, userId);
+
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(userId);
+						accountDo.setAuAmount(reqBo.amount);
+						afUserAccountService.updateUserAccount(accountDo);
+						return true;
+					}
+				});
+			}
+		} else if (StringUtils.equals("30", reqBo.result)) {   // 认证未通过
+			if (SceneType.CASH.getCode().equals(reqBo.scene)) {
+				this.updateRiskStatus(RiskStatus.NO, userId);
+			}
+		}
+	}
+
+	@Override
+	public void dealFromSecondaryRiskForcePush(final ReqFromSecondaryRiskBo reqBo) {
+		final Long userId = reqBo.consumerNo;
+
+		if(afBorrowCashService.haveDealingBorrowCash(userId)) {
+			throw new FanbeiException("ConsumerNo=" + userId + " have deal borrow cash");
+		}
+		for (RiskQuotaRespBo.Result result:reqBo.results) {
+			final String authType = result.getScene();
+			final AuthType at = RiskSceneAuthType.findByCode(authType);
+			final String raiseStatus = result.getResult();
+
+			transactionTemplate.execute(new TransactionCallback<Boolean>() {
+				public Boolean doInTransaction(TransactionStatus arg0) {
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setUserId(userId);
+						afUserAccountDo.setAuAmount(reqBo.amount);
+						afUserAccountService.updateUserAccount(afUserAccountDo);
+
+						AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), reqBo.totalAmount.toEngineeringString());
+						afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
+
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, LoanType.CASH.getCode(), "Y", reqBo.amount, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+
+						updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, reqBo.results[0].getScene(), LoanType.CASH.getCode(), "F", BigDecimal.ZERO, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+
+						updateSecAuthStatus(userId, at, SecAuthStatus.YES);
+					}
+					return true;
+				}
+			});
+		}
+
+	}
+
+	@Override
+	public RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo) {
+		AfUserAuthDo info = getUserAuthInfoByUserId(reqBo.consumerNo);
+		if(info == null) {
+			throw new FanbeiException("None exist consumerNo = " + reqBo.consumerNo);
+		}
+		RespSecAuthInfoToRiskBo resp = new RespSecAuthInfoToRiskBo();
+		resp.isAlipayAuthed = !SecAuthStatus.INIT.getCode().equals(info.getAlipayStatus());
+		resp.isBankAuthed = !SecAuthStatus.INIT.getCode().equals(info.getOnlinebankStatus());
+		resp.isCardEmailAuthed = !SecAuthStatus.INIT.getCode().equals(info.getCreditStatus());
+		resp.isChsiAuthed = !SecAuthStatus.INIT.getCode().equals(info.getChsiStatus());
+		resp.isFundAuthed = !SecAuthStatus.INIT.getCode().equals(info.getFundStatus());
+		resp.isInsuranceAuthed = !SecAuthStatus.INIT.getCode().equals(info.getJinpoStatus());
+		resp.isZhengxinAuthed = !SecAuthStatus.INIT.getCode().equals(info.getZhengxinStatus());
+		return resp;
+	}
+
+
+	@Override
+	public void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj) {
+		try {
+			String riskStatus = dataObj.getString("riskStatus");
+
+			String secAlipayStatus = dataObj.getString("secAlipayStatus");
+			String secBankStatus = dataObj.getString("secBankStatus");
+			String secCardEmailStatus = dataObj.getString("secCardEmailStatus");
+			String secChsiStatus = dataObj.getString("secChsiStatus");
+			String secFundStatus = dataObj.getString("secFundStatus");
+			String secInsuranceStatus = dataObj.getString("secInsuranceStatus");
+			String secZhengxinStatus = dataObj.getString("secZhengxinStatus");
+
+			this.checkStatusLegality(riskStatus, secAlipayStatus, secBankStatus, secCardEmailStatus,
+									 secChsiStatus, secFundStatus,secInsuranceStatus, secZhengxinStatus);
+
+			afUserAuthDo.setRiskStatus(riskStatus);
+
+			afUserAuthDo.setAlipayStatus(secAlipayStatus);
+			afUserAuthDo.setOnlinebankStatus(secBankStatus);
+			afUserAuthDo.setCreditStatus(secCardEmailStatus);
+			afUserAuthDo.setChsiStatus(secChsiStatus);
+			afUserAuthDo.setFundStatus(secFundStatus);
+			afUserAuthDo.setJinpoStatus(secInsuranceStatus);
+			afUserAuthDo.setZhengxinStatus(secZhengxinStatus);
+
+			updateUserAuth(afUserAuthDo);
+		}catch (Exception e) {
+			logger.error("dealRaiseQuota error, consumerNo=" + afUserAuthDo.getUserId() + "dataObj="+ dataObj.toJSONString() +","+e.getMessage(), e);
+		}
+	}
+	private void checkStatusLegality(String... statuses) {
+		for(String status : statuses) {
+			if(SecAuthStatus.YES.getCode().equals(status) || SecAuthStatus.NO.getCode().equals(status)) {
+			}else {
+				throw new FanbeiException("Illegal status value = " + status);
+			}
+		}
+	}
+	private void updateRiskStatus(RiskStatus status, Long userId) {
+    	AfUserAuthDo authDo = new AfUserAuthDo();
+    	Date cur = new Date(System.currentTimeMillis());
+		authDo.setUserId(userId);
+		authDo.setRiskStatus(status.getCode());
+		authDo.setBasicStatus(status.getCode());
+		authDo.setGmtBasic(cur);
+		authDo.setGmtRisk(cur);
+		updateUserAuth(authDo);
+    }
+	private void updateSecAuthStatus(Long userId, AuthType authType, SecAuthStatus secAuthstatus) {
+		Date cur = new Date();
+		AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+		afUserAuthDo.setUserId(userId);
+
+		if(AuthType.ALIPAY.equals(authType)) {
+			afUserAuthDo.setAlipayStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtAlipay(cur);
+		}else if(AuthType.BANK.equals(authType)) {
+			afUserAuthDo.setOnlinebankStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtCredit(cur);
+		}else if(AuthType.CARDEMAIL.equals(authType)) {
+			afUserAuthDo.setCreditStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtCredit(cur);
+		}else if(AuthType.CHSI.equals(authType)) {
+			afUserAuthDo.setChsiStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtChsi(cur);
+		}else if(AuthType.FUND.equals(authType)) {
+			afUserAuthDo.setFundStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtFund(cur);
+		}else if(AuthType.INSURANCE.equals(authType)) {
+			afUserAuthDo.setJinpoStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtJinpo(cur);
+		}else if(AuthType.ZHENGXIN.equals(authType)) {
+			afUserAuthDo.setZhengxinStatus(secAuthstatus.getCode());
+			afUserAuthDo.setGmtZhengxin(cur);
+		}else {
+			throw new FanbeiException("Illegal sec auth type=" + authType);
+		}
+
+		afUserAuthDo.setRiskStatus(RiskStatus.YES.getCode());
+		updateUserAuth(afUserAuthDo);
+	}
+	/* ---------------------------------
+	 * end 此区域内处理风控主动调用   		|
+	 * --------------------------------- */
+
 }
