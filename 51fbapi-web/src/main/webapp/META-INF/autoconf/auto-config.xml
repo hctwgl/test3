@@ -160,6 +160,7 @@
 		<property name="mongo.credentials" defaultValue="root:123456@test"  description="认证"/>
 		<property name="mongo.dbname" defaultValue="test"  description="认证"/>
 
+		<property name="solrServer.address" defaultValue="http://testfind.51fanbei.com"  description="solr服务器地址"/>
 	</group>
 
 	<script>

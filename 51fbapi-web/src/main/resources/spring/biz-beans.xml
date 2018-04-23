@@ -170,6 +170,6 @@
 	
 	<!-- solrServer -->
 	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
-		<constructor-arg name="baseURL" value="Http://47.98.118.225:8080/solr"/>
+		<constructor-arg name="baseURL" value="${solrServer.address}"/>
 	</bean>
 </beans>
