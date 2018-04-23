@@ -479,6 +479,10 @@
 		<foreach collection="ids" item="item" index="index" separator="," >
 			#{item}
 		</foreach>
+		) ORDER BY field(a.id,
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
 		)
 	</select>
 
