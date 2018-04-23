@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201803051715")
+    #set($version="201804231102")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
@@ -160,6 +160,13 @@
             <div class="goodCont"></div><div class="goodCont"></div><div class="goodCont"></div>
         </div>
     #end
+    <!--样式18--start-->
+    #if($!{style}==18)
+        <div class="theme18">
+
+        </div>
+    #end
+    <!--样式18--end-->
 </div>
 <script type="text/javascript">
     var _saber={};
