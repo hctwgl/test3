@@ -95,6 +95,8 @@ public class AppH5EnjoyLifeController extends BaseController {
     ActivityGoodsUtil activityGoodsUtil;
     @Resource
     AfActivityUserSmsService afActivityUserSmsService;
+    @Resource
+    AfBorrowBillService afBorrowBillService;
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -155,16 +157,35 @@ public class AppH5EnjoyLifeController extends BaseController {
             jsonObj.put("activityGoodsList", activityResource);
             //获取可用额度
             AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
-            if(userDo!=null){
-                userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
-            }else{
-                userAccountInfo.setAuAmount(new BigDecimal(5000));
-                userAccountInfo.setUsedAmount(new BigDecimal(0));
-            }
-            if(userAccountInfo==null){
-                userAccountInfo = new AfUserAccountSenceDo();
-                userAccountInfo.setAuAmount(new BigDecimal(5000));
-                userAccountInfo.setUsedAmount(new BigDecimal(0));
+            try{
+                if(userDo!=null){
+                    userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
+                    if(userAccountInfo==null){
+                        userAccountInfo = new AfUserAccountSenceDo();
+                        userAccountInfo.setAuAmount(new BigDecimal(5000));
+                        userAccountInfo.setUsedAmount(new BigDecimal(0));
+                    }else{
+                        // 通过强风控审核
+                        // 授予的额度
+                        BigDecimal onlineAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount());
+                        // 临时额度
+                        AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userDo.getRid());
+                        if (interimAuDo != null
+                                && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
+                            onlineAmount = onlineAmount.add(interimAuDo.getInterimAmount()).subtract(interimAuDo.getInterimUsed());
+                        }
+                        if(onlineAmount.compareTo(BigDecimal.ZERO)<0){
+                            onlineAmount = BigDecimal.ZERO;
+                        }
+                        userAccountInfo.setAuAmount(onlineAmount.setScale(2, BigDecimal.ROUND_HALF_UP));
+                        userAccountInfo.setUsedAmount(new BigDecimal(0));
+                    }
+                }else{
+                    userAccountInfo.setAuAmount(new BigDecimal(5000));
+                    userAccountInfo.setUsedAmount(new BigDecimal(0));
+                }
+            }catch (Exception e){
+                logger.error("partActivityInfoV2 get account error for:" + e);
             }
             jsonObj.put("userAccountInfo", userAccountInfo);
             AfSeckillActivityQuery query = new AfSeckillActivityQuery();
@@ -376,7 +397,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                     return H5CommonResponse.getNewInstance(false, "活动已结束").toString();
                 }
                 startTime = afSeckillActivityDo.getGmtStart();
-                sendTime = DateUtil.addMins(startTime,-10);
+                sendTime = DateUtil.addMins(startTime,-20);
             }
             AfActivityUserSmsDo afActivityUserSmsDo = new AfActivityUserSmsDo();
             afActivityUserSmsDo.setGoodsId(goodsId);
