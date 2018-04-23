@@ -7,20 +7,20 @@ import java.util.HashMap;
 public class CuiShouBackMoney  extends AbstractSerial{
     private HashMap<Integer,String> errorCodeMap = new HashMap<Integer, String>();
     public CuiShouBackMoney(){
-        errorCodeMap.put(200,"成功");
-        errorCodeMap.put(201,"验签错误");
-        errorCodeMap.put(202,"类型错误");
-        errorCodeMap.put(500,"内部错误");
-        errorCodeMap.put(203,"还款金额为 0");
-        errorCodeMap.put(204,"帐单为空");
-        errorCodeMap.put(205,"帐单 对不上");
-        errorCodeMap.put(206,"处理中");
-        errorCodeMap.put(207,"类型错误");
+        errorCodeMap.put(200,"success");
+        errorCodeMap.put(201,"sign error");
+        errorCodeMap.put(202,"type error");
+        errorCodeMap.put(500,"error");
+        errorCodeMap.put(203,"backmoney  0");
+        errorCodeMap.put(204,"bill is null");
+        errorCodeMap.put(205,"bill error");
+        errorCodeMap.put(206,"process");
+        errorCodeMap.put(207,"type error");
 
-        errorCodeMap.put(301,"借款记录不存在");
-        errorCodeMap.put(302,"第三方交易单号已被使用，不要进行重复操作");
-        errorCodeMap.put(303,"请求参数缺失");
-        errorCodeMap.put(304,"平帐失败");
+        errorCodeMap.put(301,"borrow not exists");
+        errorCodeMap.put(302,"third tradeNo exists");
+        errorCodeMap.put(303,"params not exists");
+        errorCodeMap.put(304,"balance error");
 
     }
 

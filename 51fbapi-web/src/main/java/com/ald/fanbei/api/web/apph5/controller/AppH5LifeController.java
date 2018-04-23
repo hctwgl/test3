@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -80,17 +81,29 @@ public class AppH5LifeController extends BaseController {
     @Autowired
     private AfInterestFreeRulesService afInterestFreeRulesService;
 
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
+
     @RequestMapping(value = "/categoryAndBanner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getCategoryAndBanner(HttpServletRequest request) {
         try {
-            doWebCheck(request, false);
+            //doWebCheck(request, false);
+            String cacheKey = "life:categoryAndBanner";
+            Object cacheResult = bizCacheUtil.getObject(cacheKey);
+            String result = "";
+            if (cacheResult != null) {
+                result = cacheResult.toString();
+            }
+            if (StringUtils.isBlank(result)) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("shopList", findShopList());
+                data.put("bannerList", findBannerList());
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("shopList", findShopList());
-            data.put("bannerList", findBannerList());
-
-            return H5CommonResponse.getNewInstance(true, "成功","",data).toString();
+                result = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+                bizCacheUtil.saveObject(cacheKey,result,120);
+            }
+            return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/categoryAndBanner error = {}", e.getStackTrace());
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
@@ -101,16 +114,27 @@ public class AppH5LifeController extends BaseController {
     @ResponseBody
     public String findH5ResourceList(HttpServletRequest request) {
         try {
-            doWebCheck(request, false);
-
-            List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
-                    .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
-            if (CollectionUtil.isEmpty(resourceH5Dtos)) {
-                logger.error("Cannot find tag:" + BottomGoodsPageFlag.LIFE.getCode() + " , please check H5Resource config.");
-                return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
+            //doWebCheck(request, false);
+            String cacheKey = "life:h5ResourceList";
+            Object cacheResult = bizCacheUtil.getObject(cacheKey);
+            String result = "";
+            if (cacheResult != null) {
+                result = cacheResult.toString();
             }
-            return H5CommonResponse
-                    .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
+            if (StringUtils.isBlank(result)) {
+                List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
+                        .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
+                if (CollectionUtil.isEmpty(resourceH5Dtos)) {
+                    logger.error("Cannot find tag:" + BottomGoodsPageFlag.LIFE.getCode() + " , please check H5Resource config.");
+                    return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
+                }
+
+                result = H5CommonResponse
+                        .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
+                bizCacheUtil.saveObject(cacheKey, result, 120);
+            }
+
+            return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/h5ResourceList error={}", e.getStackTrace());
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
@@ -121,13 +145,23 @@ public class AppH5LifeController extends BaseController {
     @ResponseBody
     public String findBottomGoods(HttpServletRequest request, @RequestParam("pageNo") Integer pageNo) {
         try {
-            doWebCheck(request, false);
+            //doWebCheck(request, false);
+            String cacheKey = "life:goods:" + pageNo;
+            Object cacheResult = bizCacheUtil.getObject(cacheKey);
+            String result = "";
+            if (cacheResult != null) {
+                result = cacheResult.toString();
+            }
+            if (StringUtils.isBlank(result)) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("floorImage", getFloorImage());
+                data.put("list", doFindBottomGoods(pageNo));
+                data.put("pageNo", pageNo);
+                result = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+                bizCacheUtil.saveObject(cacheKey, result, 120);
+            }
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("floorImage", getFloorImage());
-            data.put("list", doFindBottomGoods(pageNo));
-            data.put("pageNo", pageNo);
-            return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+            return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/goods error={}", e.getStackTrace());
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
