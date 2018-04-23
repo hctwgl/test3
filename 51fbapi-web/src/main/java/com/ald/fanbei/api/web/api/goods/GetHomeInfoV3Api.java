@@ -623,7 +623,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			    	 }
 	     }		 
 				 
-		if(searchBackground != null){
+		if(searchBackground != null && searchBackground.getValue() != null){
 						Map<String, Object> searchBoxBgImage = new HashMap<String, Object>();
 						searchBoxBgImage.put("backgroundImage", searchBackground.getValue());
 						searchBoxBgImage.put("color", searchBackground.getValue3());
@@ -844,31 +844,29 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		List<Object> navigationList = new ArrayList<Object>();
 		int navCount = navResclist.size();
-		for (int i = 0; i < navCount; i++) {
-			// 如果配置大于5个，小于10个，则只显示5个
-			if (navCount > 5 && navCount < 10) {
-				if (i >= 5) {
-					break;
-				}
-			} else if (navCount > 10) {
-				// 如果配置大于10个，则只显示10个
-				if (i >= 10) {
-					break;
-				}
+		int count = 0;
+		if (navCount > 5 && navCount < 10) {
+			count = 5;
+		} else if (navCount > 10) {
+			count = 10;
+		}
+		if(count > 0){
+			for (int i = 0; i < count; i++) {
+				// 如果配置大于5个，小于10个，则只显示5个
+				AfResourceDo afResourceDo = navResclist.get(i);
+				String secType = afResourceDo.getSecType();
+				Map<String, Object> dataMap = new HashMap<String, Object>();
+				dataMap.put("imageUrl", afResourceDo.getValue());
+				dataMap.put("titleName", afResourceDo.getName());
+				dataMap.put("type", secType);
+				dataMap.put("content", afResourceDo.getValue2());
+				dataMap.put("sort", afResourceDo.getSort());
+				dataMap.put("color", afResourceDo.getValue3());
+				navigationList.add(dataMap);
 			}
-			AfResourceDo afResourceDo = navResclist.get(i);
-			String secType = afResourceDo.getSecType();
-			Map<String, Object> dataMap = new HashMap<String, Object>();
-			dataMap.put("imageUrl", afResourceDo.getValue());
-			dataMap.put("titleName", afResourceDo.getName());
-			dataMap.put("type", secType);
-			dataMap.put("content", afResourceDo.getValue2());
-			dataMap.put("sort", afResourceDo.getSort());
-			dataMap.put("color", afResourceDo.getValue3());
-			navigationList.add(dataMap);
+		navigationInfo.put("navigationList", navigationList);
 		}
 		
-		navigationInfo.put("navigationList", navigationList);
 		return navigationInfo;
 	}
 
