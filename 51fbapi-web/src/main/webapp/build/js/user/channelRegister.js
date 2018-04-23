@@ -267,7 +267,7 @@ $(function(){
         $('body,html').animate({scrollTop:0},300);
     })
 
-    //样式18
+    /*//样式18
     if(style=='18'){
         $('.applyBtn').click(function(){
             toMaidian('applyBtn');
@@ -280,7 +280,7 @@ $(function(){
             }
         })
 
-    }
+    }*/
 });
 
 
