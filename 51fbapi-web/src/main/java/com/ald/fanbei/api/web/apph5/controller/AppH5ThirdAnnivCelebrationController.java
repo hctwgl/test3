@@ -1,19 +1,21 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.ActivityGoodsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.RandomUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -21,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.Arrays;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,9 +31,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author luoxiao @date 2018/4/16 14:26
@@ -69,40 +71,49 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     private AfInterestFreeRulesService afInterestFreeRulesService;
 
     @Resource
-    private AfUserGoodsSmsService afUserGoodsSmsService;
+    private AfActivityService afActivityService;
+
+    @Resource
+    AfActivityGoodsService afActivityGoodsService;
 
     @Resource
     private AfSeckillActivityService afSeckillActivityService;
 
-    /**
-     * 预热商品列表
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "initWarmUpGoodList", method = RequestMethod.POST)
-    public String initWarmUpPage(HttpServletRequest request, HttpServletResponse response) {
-        JSONObject data = new JSONObject();
-        try {
-            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.TAC_WARM_UP_GOODS, Constants.DEFAULT);
-            if (null != afResourceDo) {
-                String value = afResourceDo.getValue();
-                if (!StringUtils.isEmpty(value)) {
-                    List<Map<String, Object>> goodList = getGoodMapList(value);
-                    if (null == goodList || goodList.isEmpty()) {
-                        return H5CommonResponse.getNewInstance(false, "获取商品列表为空", "", "").toString();
-                    }
-                    data.put("goodList", goodList);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("initWarmUpGoodList exception", e);
-            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", "").toString();
-        }
-        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
-    }
+    @Resource
+    private BizCacheUtil bizCacheUtil;
+
+    @Resource
+    private AfSchemeGoodsService afSchemeGoodsService;
+
+//    /**
+//     * 预热商品列表
+//     *
+//     * @param request
+//     * @param response
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping(value = "initWarmUpGoodList", method = RequestMethod.POST,  produces = "application/json;charset=UTF-8")
+//    public String initWarmUpPage(HttpServletRequest request, HttpServletResponse response) {
+//        JSONObject data = new JSONObject();
+//        try {
+//            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.TAC_WARM_UP_GOODS, Constants.DEFAULT);
+//            if (null != afResourceDo) {
+//                String value = afResourceDo.getValue();
+//                if (!StringUtils.isEmpty(value)) {
+//                    List<Map<String, Object>> goodList = getGoodMapList(value);
+//                    if (null == goodList || goodList.isEmpty()) {
+//                        return H5CommonResponse.getNewInstance(false, "获取商品列表为空", "", "").toString();
+//                    }
+//                    data.put("goodList", goodList);
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error("initWarmUpGoodList exception", e);
+//            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", "").toString();
+//        }
+//        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
+//    }
 
     /**
      * 每天首次分享成功，随机赠送优惠券（优惠券类型不限定领取数量）
@@ -110,11 +121,12 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "sendCouponAfterSuccessShare", method = RequestMethod.POST)
+    @RequestMapping(value = "sendCouponAfterSuccessShare", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String sendCouponAfterSuccessShare(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String userName = context.getUserName();
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        Map<String, Object> data = Maps.newHashMap();
         try {
             if (null != afUserDo) {
                 Integer sharedTimes = afRecommendUserService.getTodayShareTimes(afUserDo.getRid());
@@ -141,6 +153,8 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
                     userCoupon.setSourceType(CouponSenceRuleType.RESERVATION.getCode());
                     afUserCouponService.addUserCoupon(userCoupon);
+
+                    data.put("couponName", couponDo.getName());
                 }
             }
         } catch (Exception e) {
@@ -148,7 +162,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", "").toString();
         }
 
-        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", "").toString();
+        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
     }
 
     /**
@@ -158,7 +172,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getCurrentSecKillGoods", method = RequestMethod.POST)
+    @RequestMapping(value = "getCurrentSecKillGoods", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getCurrentSecKillGoods(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityName = "";
@@ -171,10 +185,19 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         Date now = new Date();
         Date gmtStart = DateUtil.getStartOfDate(now);
         Date gmtEnd = DateUtil.getEndOfDate(now);
-        List<String> activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
+        List<String> activityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode());
+        if(null == activityIds){
+            activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
+            bizCacheUtil.saveListForever(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds);
+        }
 
         // 查询每日活动场次
-        List<String> todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
+        List<String> todayActivityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode());
+        if(null == todayActivityIds){
+            todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
+            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(),todayActivityIds,Constants.SECOND_OF_TEN_MINITS);
+        }
+
         if (null != todayActivityIds && !todayActivityIds.isEmpty()) {
             Long userId = null;
             if (context.getUserName() != null) {
@@ -243,7 +266,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST)
+    @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getNextSecKillGoodList(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
@@ -262,6 +285,103 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         }
         buildSecKillGoodList(data, userId, Long.parseLong(activityId));
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+    }
+
+    /**
+     * 获取“活动管理-H5配置页面”活动商品列表
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getH5PageGoodList", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    public String getH5PageGoodList(HttpServletRequest request, HttpServletResponse response){
+        Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
+        if(0 == activityId){
+            return H5CommonResponse.getNewInstance(false, "活动不存在").toString();
+        }
+
+        AfActivityDo activityInfo =afActivityService.getActivityById(activityId);
+        if(activityInfo == null) {
+            return H5CommonResponse.getNewInstance(false, "活动信息不存在！id=" + activityId).toString();
+        }
+
+        Map<String, Object> data = Maps.newHashMap();
+        data.put("validStartTime", activityInfo.getGmtStart().getTime());
+        data.put("validEndTime", activityInfo.getGmtEnd().getTime());
+        getH5PageActivityGoodList(data, activityId);
+        return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+    }
+
+    /**
+     * @param data
+     * @param activityId
+     */
+    private void getH5PageActivityGoodList(Map<String, Object> data, Long activityId){
+        String key = CacheConstants.CACHE_KEY_H5_PAGE_ACTIVITY_GOODS_PREFIX + activityId;
+        List<Map<String, Object>> goodList = bizCacheUtil.getObjectList(key);
+
+        if(null == goodList){
+            List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService.listNewEncoreGoodsByActivityId(activityId);
+            if(null == activityGoodsDoList){
+                return;
+            }
+
+            //获取借款分期配置信息
+            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            JSONArray array = JSON.parseArray(resource.getValue());
+            //删除2分期
+            if (array == null) {
+                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+            }
+
+            goodList = Lists.newArrayList();
+            for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
+                Map<String, Object> goodsInfo = new HashMap<String, Object>();
+                goodsInfo.put("goodName", goodsDo.getName());
+                goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+                goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+                goodsInfo.put("goodsId", goodsDo.getRid());
+                goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+                goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+                goodsInfo.put("source", goodsDo.getSource());
+                String doubleRebate = goodsDo.getDoubleRebate();
+                goodsInfo.put("doubleRebate", "0".equals(doubleRebate) ? "N" : "Y");
+                goodsInfo.put("goodsType", "0");
+                goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+                // 如果是分期免息商品，则计算分期
+                Long goodsId = goodsDo.getRid();
+                AfSchemeGoodsDo schemeGoodsDo = null;
+                try {
+                    schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                } catch (Exception e) {
+                    logger.error(e.toString());
+                }
+                JSONArray interestFreeArray = null;
+                if (schemeGoodsDo != null) {
+                    AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+                    String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                    if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                        interestFreeArray = JSON.parseArray(interestFreeJson);
+                    }
+                }
+                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(), goodsId, "0");
+
+                if (nperList != null) {
+                    goodsInfo.put("goodsType", "1");
+                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                    goodsInfo.put("nperMap", nperMap);
+                }
+
+                goodList.add(goodsInfo);
+            }
+            bizCacheUtil.saveListByTime(key,goodList,Constants.SECOND_OF_TEN_MINITS);
+        }
+
+        data.put("goodList", goodList);
     }
 
     /**
@@ -333,73 +453,30 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     }
 
     // TODO 秒杀商品预约短信提醒
-    @RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String ReserveGoods(HttpServletRequest request, HttpServletResponse response) {
-        H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        FanbeiWebContext context = new FanbeiWebContext();
-        try {
-            if (StringUtils.isBlank(request.getParameter("goodsId")) || StringUtils.isBlank(request.getParameter("activityId")))
-                throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-
-            context = doWebCheck(request, true);
-            String userName = context.getUserName();
-            Long userId = convertUserNameToUserId(userName);
-            Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0l);
-            Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0l);
-            String goodsName = "商品名称";
-            AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-            if (null != afGoodsDo) {
-                goodsName = afGoodsDo.getName();
-            }
-            AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
-            afUserGoodsSmsDo.setGoodsId(goodsId);
-            afUserGoodsSmsDo.setUserId(userId);
-            afUserGoodsSmsDo.setIsDelete(0l);
-            afUserGoodsSmsDo.setGoodsName(goodsName);
-//            afUserGoodsSmsDo.setActivityId(activityId);
-            AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectBookingByGoodsIdAndUserId(afUserGoodsSmsDo);
-            if (null != afUserGoodsSms) {
-                return H5CommonResponse.getNewInstance(false, "商品已预约").toString();
-            }
-            try {
-                int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
-                if (flag <= 0) {
-                    return H5CommonResponse.getNewInstance(false, "预约失败").toString();
-                }
-            } catch (Exception e) {
-                return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
-            }
-            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
-        } catch (FanbeiException e) {
-            String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
-            return H5CommonResponse.getNewInstance(false, "登陆之后才能进行查看", notifyUrl, null).toString();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
-        }
-
-    }
-
-    private Long convertUserNameToUserId(String userName) {
-        Long userId = null;
-        if (!StringUtils.isBlank(userName)) {
-            AfUserDo user = afUserService.getUserByUserName(userName);
-            if (null != user) {
-                userId = user.getRid();
-            }
-
-        }
-        return userId;
-    }
+//    reserveGoods
 
 
-    // TODO 商品列表
-
-    // TODO 人气畅销
     // TODO 我的活动会场
-    // 优惠券列表
-    //
+    @ResponseBody
+    @RequestMapping(value = "mineActivityInfo", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    public String mineActivityInfo(HttpServletRequest request, HttpServletResponse response){
+        // 我的信息
+
+
+        // 获取购物额度
+
+        // 我的优惠券数量
+
+        // 猜你喜欢商品
+
+
+
+
+
+
+        return null;
+    }
+
 
     /**
      * 根据商品ID获取商品信息
