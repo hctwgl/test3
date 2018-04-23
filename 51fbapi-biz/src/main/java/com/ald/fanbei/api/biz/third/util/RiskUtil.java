@@ -332,6 +332,7 @@ public class RiskUtil extends AbstractThird {
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+
 			return url;
 		}
 		return url;
@@ -900,43 +901,44 @@ public class RiskUtil extends AbstractThird {
 			    else {
 				    summaryOrderData.put("boluomeDetails", "");
 			    }
-			    //额度占比
-				BigDecimal uaAmount = new BigDecimal(0);
-				BigDecimal uaAmountUsed = new BigDecimal(0);
-				BigDecimal uaAmountTemp = new BigDecimal(0);
-				BigDecimal uaAmountTempUsed = new BigDecimal(0);
+			   }
+			//额度占比
+			BigDecimal uaAmount = new BigDecimal(0);
+			BigDecimal uaAmountUsed = new BigDecimal(0);
+			BigDecimal uaAmountTemp = new BigDecimal(0);
+			BigDecimal uaAmountTempUsed = new BigDecimal(0);
 
 
-				AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",orderDo.getUserId());
-				if (afUserAccountSenceDo != null){
-					uaAmount = afUserAccountSenceDo.getAuAmount();
-					uaAmountUsed = afUserAccountSenceDo.getUsedAmount();
-				}
-				AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(orderDo.getUserId());
-				if(afInterimAuDo.getGmtFailuretime().getTime()>= new Date().getTime()){
-					uaAmountTemp = afInterimAuDo.getInterimAmount();
-					uaAmountTempUsed = afInterimAuDo.getInterimUsed();
-				}
-				BigDecimal totalAmount = uaAmount.subtract(uaAmountUsed).add(uaAmountTemp).subtract(uaAmountTempUsed);
-				BigDecimal borrowAmount = orderDo.getBorrowAmount();
-				borrowAmount=borrowAmount == null?BigDecimal.ZERO:borrowAmount;
-				if (totalAmount.compareTo(BigDecimal.ZERO)>0){
-					summaryOrderData.put("unpayedCanUseRatio",borrowAmount.divide(totalAmount,2,BigDecimal.ROUND_HALF_UP));
-					BigDecimal userThisOrderSum = borrowAmount.compareTo(uaAmount.subtract(uaAmountUsed))<=0?BigDecimal.ZERO:borrowAmount.subtract(uaAmount.subtract(uaAmountUsed));
-					summaryOrderData.put("userThisOrderSum",userThisOrderSum);
-					summaryOrderData.put("userTemporaryLimitRatio",userThisOrderSum.add(uaAmountTempUsed).divide(uaAmountTemp,2,BigDecimal.ROUND_HALF_UP));
-				}
-				String thisOrderUnanimous = (String)summaryOrderData.get("thisOrderUnanimous");
-				summaryOrderData.put("thisOrderUnanimous",thisOrderUnanimous.equals(orderDo.getConsigneeMobile())?"true":"false");
-				summaryOrderData.put("GPSUnanimous",(orderDo.getGpsAddress()==null||"".equals(orderDo.getGpsAddress()))?"true":orderDo.getGpsAddress().equals(orderDo.getProvince())?"true":"false");
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",orderDo.getUserId());
+			if (afUserAccountSenceDo != null){
+				uaAmount = afUserAccountSenceDo.getAuAmount();
+				uaAmountUsed = afUserAccountSenceDo.getUsedAmount();
 			}
+			AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(orderDo.getUserId());
+			if(afInterimAuDo != null && afInterimAuDo.getGmtFailuretime().getTime()>= new Date().getTime()){
+				uaAmountTemp = afInterimAuDo.getInterimAmount();
+				uaAmountTempUsed = afInterimAuDo.getInterimUsed();
+			}
+			BigDecimal totalAmount = uaAmount.subtract(uaAmountUsed).add(uaAmountTemp).subtract(uaAmountTempUsed);
+			BigDecimal borrowAmount = orderDo.getBorrowAmount();
+			borrowAmount=borrowAmount == null?BigDecimal.ZERO:borrowAmount;
+			if (totalAmount.compareTo(BigDecimal.ZERO)>0){
+				summaryOrderData.put("unpayedCanUseRatio",borrowAmount.divide(totalAmount,2,BigDecimal.ROUND_HALF_UP));
+				BigDecimal userThisOrderSum = borrowAmount.compareTo(uaAmount.subtract(uaAmountUsed))<=0?BigDecimal.ZERO:borrowAmount.subtract(uaAmount.subtract(uaAmountUsed));
+				summaryOrderData.put("userThisOrderSum",userThisOrderSum);
+				summaryOrderData.put("userTemporaryLimitRatio",uaAmountTemp.compareTo(BigDecimal.ZERO)>0?(userThisOrderSum.add(uaAmountTempUsed).divide(uaAmountTemp,2,BigDecimal.ROUND_HALF_UP)):BigDecimal.ZERO);
+			}
+			String thisOrderUnanimous = (String)summaryOrderData.get("thisOrderUnanimous");
+			summaryOrderData.put("thisOrderUnanimous",thisOrderUnanimous.equals(orderDo.getConsigneeMobile())?"true":"false");
+			summaryOrderData.put("gpsUnanimous",(orderDo.getGpsAddress()==null||"".equals(orderDo.getGpsAddress()))?"true":orderDo.getGpsAddress().contains(orderDo.getProvince())?"true":"false");
+
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
 		reqBo.setReqExt("");
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+		String url =  getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 
 		// String url = "http://192.168.110.16:8080" +
 		// "/modules/api/risk/weakRiskVerify.htm";

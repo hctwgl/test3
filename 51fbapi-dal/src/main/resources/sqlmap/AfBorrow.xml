@@ -298,11 +298,12 @@ o.`ip` ,o.`lat` ,o.`lng`
 (SELECT br.`card_number`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardNumber,
 (SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName,
 (SELECT COUNT(uu.`id`)  FROM `af_user` uu WHERE uu.`user_name` = o.`consignee_mobile` and `is_delete` =0) phoneCorrespondingPersion
-'' unpayedCanUseRatio
+,'' unpayedCanUseRatio
 ,'' userThisOrderSum
 ,'' userTemporaryLimitRatio
+,'0' oilRechargeNum
 ,(SELECT af_user.user_name from af_user where af_user.id=o.user_id) thisOrderUnanimous
-,o.gps_address GPSUnanimous
+,o.gps_address gpsUnanimous
 FROM `af_order` o  WHERE o.`id`  =#{id}
 	</select>
 	<select id="getBolumeSumDataById" resultType="java.util.HashMap">
