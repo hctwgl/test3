@@ -475,10 +475,10 @@ public class VisualH5Controller extends BaseController {
 //            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/html", IOUtils.toByteArray(targetStream));
 //            OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
 //            String url = ossUploadResult.getUrl();
-            AfVisualH5Do visualH5Do = new AfVisualH5Do();
-            visualH5Do.setRid(id);
-            visualH5Do.setUrl(url + "/h5/activity/201804/visualization.html?id=" + id);
-            afVisualH5Service.updateById(visualH5Do);
+//            AfVisualH5Do visualH5Do = new AfVisualH5Do();
+//            visualH5Do.setRid(id);
+//            visualH5Do.setUrl(url + "/h5/activity/201804/visualization.html?id=" + id);
+//            afVisualH5Service.updateById(visualH5Do);
             return H5CommonResponse.getNewInstance(true, "生成成功").toString();
         }catch (Exception e){
             logger.error("doHtml  error",e);
