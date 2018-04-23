@@ -1814,10 +1814,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 								orderInfo.setIagentStatus("A");
-							}else if (bklResult.equals("v3")){
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v3 orderInfo ="+JSON.toJSONString(orderInfo));
-								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
-								orderInfo.setIagentStatus("B");
 							}
 						}catch (Exception e){
 							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
