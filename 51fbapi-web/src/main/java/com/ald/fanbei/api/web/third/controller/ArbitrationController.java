@@ -367,6 +367,8 @@ public class ArbitrationController {
         } finally {
             // 返回的结果
             String result_msg = JSON.toJSONString(result);
+            logger.info("返回信息:"+result_msg);
+
             // 返回结果
             returnMsg(response, StringCompressUtils.compress(result_msg));
         }
