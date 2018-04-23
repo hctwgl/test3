@@ -83,7 +83,6 @@ public class AfBklServiceImpl implements AfBklService {
             //白名单开启
             String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
             Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-            logger.info("afBklService bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
             if (bklWhiteResource.getValue3() != null && !bklWhiteResource.getValue3().equals("")){
                 if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
                     result = "v0";//不在白名单用户不走电核，并且没有电核状态
@@ -117,7 +116,7 @@ public class AfBklServiceImpl implements AfBklService {
             logger.info("afBklService bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
             if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
                 logger.info("afBklService bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
-                if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
+                if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3().trim())){
                     afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
                     Map<String,String> qmap = new HashMap<>();
                     qmap.put("orderNo",orderInfo.getOrderNo());
@@ -127,7 +126,7 @@ public class AfBklServiceImpl implements AfBklService {
                     YFSmsUtil.pool.execute(new Runnable() {
                         @Override
                         public void run() {
-                            logger.info("checkTodayOrders closeOrderAndBorrow isBklResult info ="+orderNo);
+                            logger.info("bklUtils submitBklInfo closeOrderAndBorrow isBklResult info ="+orderNo);
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
                         }
                     });
