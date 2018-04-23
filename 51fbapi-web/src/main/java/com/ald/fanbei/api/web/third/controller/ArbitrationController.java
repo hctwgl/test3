@@ -306,7 +306,7 @@ public class ArbitrationController {
                 // 签名
                 String signCode = paramsInfo.getSignCode();
                 // 通过参数本地生成签名
-                String sign = this.generateSign(paramsInfo);
+                String sign =MD5.md5(this.generateSign(paramsInfo)) ;
                 logger.info("参数签名：" + signCode + ", 本地签名：" + sign);
                 if (!signCode.equals(sign)) {
                     throw new ArbitramentException("1002", "参数【signCode】数据错误");
