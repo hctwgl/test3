@@ -504,7 +504,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (!pdfCreate(map))
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
-            logger.info(JSON.toJSONString(map));
         } catch (Exception e) {
             logger.error("protocolRenewal error 续借合同生成失败 =>{}", e);
         }
@@ -792,7 +791,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         String html = null;
         try {
             html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseWithoutSealTemplate.vm"));
-            logger.info("lease html ="+html);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -830,7 +828,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         data.put("gmtLeaseStart",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
         c.setTime((Date) data.get("gmtEnd"));
         data.put("gmtLeaseEnd",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
-        logger.info(JSON.toJSONString(data));
         return data;
     }
 
@@ -842,7 +839,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         data.put("userPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
-        logger.info("lease data ="+data);
         stream = borrowerCreateSeal(result,stream,data);//借款人签章
 //
         stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
@@ -1445,7 +1441,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             map.put("protocolCashType","2");
             map.put("borrowId", String.valueOf(afBorrowDo.getRid()));
         }
-        logger.info("getPdfInfoWithOutSeal html ="+html);
         String outFilePath = src + accountDo.getUserName() + type + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         map.put("personKey", "borrower");//借款人印章定位关键字
@@ -1632,7 +1627,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 }
             }
         }
-        logger.info(JSON.toJSONString(map));
         return map;
     }
 
