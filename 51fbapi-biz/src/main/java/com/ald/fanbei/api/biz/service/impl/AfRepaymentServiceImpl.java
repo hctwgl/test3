@@ -491,7 +491,11 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
         if (null != coupon) {
             repay.setUserCouponId(coupon.getRid());
             repay.setCouponAmount(coupon.getAmount());
+        }else{
+            repay.setUserCouponId(0l);
+            repay.setCouponAmount(BigDecimal.ZERO);
         }
+
         repay.setName(name);
         repay.setUserId(userId);
         if (cardId == -2) {
