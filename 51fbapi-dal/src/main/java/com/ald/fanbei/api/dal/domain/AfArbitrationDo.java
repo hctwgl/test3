@@ -20,8 +20,10 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
-    
-
+    /**
+     * 批次号
+     */
+    private String batchNo;
     /**
      * 创建时间
      */
@@ -295,4 +297,11 @@ import java.math.BigDecimal;
       this.value2 = value2;
     }
 
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
 }

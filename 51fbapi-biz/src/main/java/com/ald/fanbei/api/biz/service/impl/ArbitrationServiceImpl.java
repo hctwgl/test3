@@ -749,5 +749,12 @@ public class ArbitrationServiceImpl extends BaseService implements
 	return afArbitrationDao.updateByloanBillNo(afArbitrationDo);
     }
 
+    @Override
+    public AfArbitrationDo getByBorrowNo(String borrowNo) {
+    	AfArbitrationDo query=new AfArbitrationDo();
+    	query.setLoanBillNo(borrowNo);
+        return afArbitrationDao.getByCommonCondition(query);
+    }
+
 }
 

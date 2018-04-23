@@ -87,4 +87,6 @@ public interface ArbitrationService {
 	int saveRecord(AfArbitrationDo afArbitrationDo);
 	
 	 int updateByloanBillNo(AfArbitrationDo afArbitrationDo);
+
+	AfArbitrationDo getByBorrowNo(String borrowNo);
 }

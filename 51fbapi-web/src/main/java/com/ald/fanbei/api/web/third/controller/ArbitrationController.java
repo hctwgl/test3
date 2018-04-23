@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.RiskTrackerService;
 import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.alibaba.fastjson.JSON;
 
+import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -125,7 +126,17 @@ public class ArbitrationController {
             AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
             JSONObject resultJson = JSON.parseObject(result);
             if (resultJson.getString("errCode").equals("0000")) {
-                afArbitrationDo.setValue1(resultJson.getJSONObject("result").getString("batchNo"));
+                JSONArray resultArr=resultJson.getJSONArray("result");
+                if(resultArr.size()>0){
+                   JSONObject firstData= resultArr.getJSONObject(0);
+                   if(firstData.getString("errCode").equals("0000")){
+                       afArbitrationDo.setValue1(firstData.getString("batchNo"));
+                   }else{
+                       logger.info("submit error errorMsg "+firstData.getString("errMsg"));
+                   }
+                }else{
+                    logger.info("submit error resultJson size zero");
+                }
                 afArbitrationDo.setProcessCode("100");
                 afArbitrationDo.setProcess("仲裁申请");
                 afArbitrationDo.setStatusCode("0");
@@ -199,6 +210,7 @@ public class ArbitrationController {
         printParams();
         // String borrowNo = "jq2018041910202400260";
         try {
+            AfArbitrationDo afArbitrationDo= arbitrationService.getByBorrowNo(borrowNo);
             //立案申请
             ThirdParamsInfo paramsInfo = new ThirdParamsInfo();
             paramsInfo.setBusiCode("APPLICATION");
@@ -221,14 +233,6 @@ public class ArbitrationController {
 
             String result = StringCompressUtils.decompress(HttpClientUtils.postWithString(URL, jsonParam));
             logger.info(result);
-
-            RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
-            riskTrackerDo.setGmtCreate(new Date());
-            riskTrackerDo.setParams(JSON.toJSONString(paramsInfo));
-            riskTrackerDo.setTrackId(trackId);
-            riskTrackerDo.setUrl(URL);
-            riskTrackerDo.setResult(result);
-            trackerService.saveRecord(riskTrackerDo);
             return "success";
         } catch (Exception e) {
             logger.info("application error :", e);
@@ -316,14 +320,15 @@ public class ArbitrationController {
                 if (actualParamString == null) {
                     throw new ArbitramentException("1002", "参数【param】数据错误");
                 }
+                JSONObject actualParamJSON=JSON.parseObject(actualParamString);
+                String loanBillNo=actualParamJSON.getString("loanBillNo");
                 // 商户编码
                 String merchantCode = paramsInfo.getMerchantCode();
-                if (!merchantCode.equals(ArbitramentConfig.getString("merchant.code"))) {
-                    throw new ArbitramentException("1002", "参数【merchantCode】数据错误");
-                }
+//                if (!merchantCode.equals(ArbitramentConfig.getString("merchant.code"))) {
+//                    throw new ArbitramentException("1002", "参数【merchantCode】数据错误");
+//                }
                 // 业务编码
                 String busiCode = paramsInfo.getBusiCode();
-                String loanBillNo = paramsInfo.getLoanBillNo();
                 if (BusiCodeEnum.GETCREDITAGREEMENT.getCode().equalsIgnoreCase(busiCode)) {// 2.获取借款协议
                     // 借款协议查询
                     String jsonString = JSON.toJSONString(arbitrationService.getCreditAgreement(loanBillNo));
@@ -349,10 +354,30 @@ public class ArbitrationController {
                     String jsonString = JSON.toJSONString(arbitrationService.getOrderInfo(loanBillNo));
                     result.setResult(jsonString);// 将结果添加到返回信息里面
                 } else if (BusiCodeEnum.SETSTATUS.getCode().equalsIgnoreCase(busiCode)) {// 9.案件订单状态通知
-                    // TO_DO 需要自己处理此处业务
+                    // TO_DO 需要自己处理此处业务\
+                    String processCode =actualParamJSON.getString("processCode");
+                    String process = actualParamJSON.getString("process");
+                    String statusCode = actualParamJSON.getString("statusCode");
+                    String status =actualParamJSON.getString("status");
+                    String message =actualParamJSON.getString("message");
 
+                    if ("0".equals(status)) {
+                        //进行案件申请
+                        application(loanBillNo);
+
+                        AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
+                        afArbitrationDo.setGmtModified(new Date());
+                        afArbitrationDo.setLoanBillNo(loanBillNo);
+                        afArbitrationDo.setProcess(process);
+                        afArbitrationDo.setProcessCode(processCode);
+                        afArbitrationDo.setStatus(status);
+                        afArbitrationDo.setStatusCode(statusCode);
+                        afArbitrationDo.setMessage(message);
+                        arbitrationService.updateByloanBillNo(afArbitrationDo);
+                    }
                 } else if (BusiCodeEnum.GETLITIGANTS.getCode().equalsIgnoreCase(busiCode)) {// 10.获取案件订单相关当事人信息
-                    String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo, paramsInfo.getLtype()));
+                    String ltype=actualParamJSON.getString("ltype");
+                    String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo,ltype));
                     result.setResult(jsonString);// 将结果添加到返回信息里面
                 } else {
                     throw new ArbitramentException("1002", "参数【busiCode】数据错误");
