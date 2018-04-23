@@ -479,7 +479,7 @@
     FROM
       af_goods  g
           JOIN af_bottom_goods  m ON  m.`goods_id` = g.`id`
-          JOIN af_bottom_goods_page ap ON ap.id = m.page_id
+          JOIN af_bottom_goods_page ap ON ap.id = m.page_id 
           
          LEFT JOIN(
             SELECT ag.activity_id,ag.special_price,ag.type,ag.goods_id,ac.id yid ,ag.limit_count,ag.price_id
@@ -504,6 +504,7 @@
 	          AND g.status = 'PUBLISH'
 	   AND    ap.`is_delete` = 0
 	   AND    m.`is_delete` = 0
+	   and    ap.is_disable = 0
 	   AND    ap.page_flag = #{pageFlag}
 	   GROUP BY m.goods_id
 	   ORDER  BY m.sort DESC
