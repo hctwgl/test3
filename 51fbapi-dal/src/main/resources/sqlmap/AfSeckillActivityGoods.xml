@@ -355,10 +355,10 @@
     <!-- ResourceH5配置的商品较少（可能超过10个），未进行分页   -->
      <select id="getHomePageSecKillGoodsByConfigureResourceH5" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods">
 	SELECT
-      y.id as activityId,
+      a.yid AS activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      sum(a.limit_count) AS total,
+      SUM(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
@@ -370,11 +370,20 @@
       g.remark,
       g.source,
       c.interest_free_id,
-         SUM(t.cc) as volume
+         SUM(t.cc) AS volume
     FROM
       af_goods  g
-          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+         <!--  LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY) -->
+         
+         LEFT JOIN(
+            SELECT ag.activity_id,ag.special_price,ag.type,ag.goods_id,ac.id yid ,ag.limit_count,ag.price_id
+            FROM  af_seckill_activity_goods ag JOIN af_seckill_activity ac ON ac.id =  ag.activity_id
+     
+             WHERE ac.is_delete = 0  AND ac.gmt_start<![CDATA[>=]]> CURDATE()  AND ac.gmt_end <![CDATA[<=]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+            AND ag.is_delete = 0  AND ag.type = 2     AND ag.special_price > 0
+		)a ON g.`id` = a.`goods_id`  
+          
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           left join
@@ -396,29 +405,40 @@
 
     </select>
      <select id="getHomePageSecKillGoodsByActivityModel" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery">
-	SELECT
-      y.id as activityId,
+	select 
+	a.yid AS activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      sum(a.limit_count) AS total,
+      SUM(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
       g.goods_url AS goodsUrl,
       g.price_amount,
       g.sale_amount,
-      g.source,
       g.rebate_amount,
       g.rebate_rate,
       g.remark,
+      g.source,
       c.interest_free_id,
-        SUM(t.cc) as volume
+         SUM(t.cc) AS volume
     FROM
       af_goods  g
           JOIN af_activity_model  m ON  m.`goods_id` = g.`id`
           JOIN af_activity ac ON ac.id = m.activity_id
+          
+         LEFT JOIN(
+            SELECT ag.activity_id,ag.special_price,ag.type,ag.goods_id,ac.id yid ,ag.limit_count,ag.price_id
+            FROM  af_seckill_activity_goods ag JOIN af_seckill_activity ac ON ac.id =  ag.activity_id
+     
+              WHERE ac.is_delete = 0  AND ac.gmt_start<![CDATA[>=]]> CURDATE()  AND ac.gmt_end <![CDATA[<=]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+            AND ag.is_delete = 0  AND ag.type = 2     AND ag.special_price > 0
+	)a ON g.`id` = a.`goods_id`  
+          
+<!--           
           LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
           LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]> CURDATE()  AND y.gmt_start <![CDATA[<]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+           -->
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           left join
@@ -440,10 +460,10 @@
 
      <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
 	SELECT
-      y.id as activityId,
+     a.yid AS activityId,
       MIN(a.special_price) activityAmount,
       g.id goods_id,
-      sum(a.limit_count) AS total,
+      SUM(a.limit_count) AS total,
       g.`name` AS goodName,
       g.goods_icon AS goodsIcon,
       g.thumbnail_icon,
@@ -455,13 +475,23 @@
       g.remark,
       g.source,
       c.interest_free_id,
-        SUM(t.cc) as volume
+         SUM(t.cc) AS volume
     FROM
       af_goods  g
           JOIN af_bottom_goods  m ON  m.`goods_id` = g.`id`
           JOIN af_bottom_goods_page ap ON ap.id = m.page_id
-          LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
-          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+          
+         LEFT JOIN(
+            SELECT ag.activity_id,ag.special_price,ag.type,ag.goods_id,ac.id yid ,ag.limit_count,ag.price_id
+            FROM  af_seckill_activity_goods ag JOIN af_seckill_activity ac ON ac.id =  ag.activity_id
+     
+              WHERE ac.is_delete = 0  AND ac.gmt_start<![CDATA[>=]]> CURDATE()  AND ac.gmt_end <![CDATA[<=]]>  DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+            AND ag.is_delete = 0  AND ag.type = 2     AND ag.special_price > 0
+	)a ON g.`id` = a.`goods_id`  
+          
+          
+          <!-- LEFT JOIN  af_seckill_activity_goods  a ON g.`id` = a.`goods_id`  AND a.type = 2    AND a.is_delete = 0   AND a.special_price > 0
+          LEFT JOIN  af_seckill_activity Y ON  y.id = a.`activity_id`  AND y.is_delete = 0  AND y.gmt_end <![CDATA[>=]]>  CURDATE()  AND y.gmt_start <![CDATA[<]]> DATE_ADD(CURDATE(),INTERVAL 1 DAY) -->
           LEFT JOIN af_goods_price b ON (a.price_id = b.id)   AND b.is_delete = 0  AND b.is_sale = 'Y'
           LEFT JOIN af_scheme_goods c ON g.id = c.goods_id
           left join
