@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201803051715")
+    #set($version="201804231450")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
@@ -160,6 +160,32 @@
             <div class="goodCont"></div><div class="goodCont"></div><div class="goodCont"></div>
         </div>
     #end
+    <!--样式18--start-->
+    #if($!{style}==18)
+        <div class="theme18">
+            <div class="title">
+                <img src="$commonUrl/theme18_01.png">
+            </div>
+            <img class="banner" src="$commonUrl/theme18_02.jpg">
+            <p class="word01">贷款人资料</p>
+            <div class="word02"><i>联系人:</i><input type="text" placeholder="请输入真实姓名" /></div>
+            <div class="word03"><i>手 机:</i><input type="text" placeholder="请输入手机号" /></div>
+            <p class="applyBtn">贷款申请</p>
+            <div class="des">
+                <i>本平台郑重承诺：</i>
+                <p>所有贷款申请在未成功放款前不收取任何费用，且不承诺一定可放贷成功，谨防电信诈骗，请警惕需要您付款的来电。</p>
+            </div>
+            <div class="steps">
+                <p>放贷流程</p>
+                <img src="$commonUrl/theme18_03.png">
+                <img src="$commonUrl/theme18_04.png">
+                <img src="$commonUrl/theme18_05.png">
+                <img src="$commonUrl/theme18_06.png">
+            </div>
+            <p class="footerWord">重庆市猪八戒宜创小额贷款有限公司<br/>蜀ICP备17028913号-1</p>
+        </div>
+    #end
+    <!--样式18--end-->
 </div>
 <script type="text/javascript">
     var _saber={};
