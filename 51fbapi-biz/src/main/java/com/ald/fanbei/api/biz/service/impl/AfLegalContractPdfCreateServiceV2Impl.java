@@ -915,7 +915,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     private byte[] createByte(Map<String, Object> map,boolean result) throws IOException {
         OutputStream fos = null;
-        ByteArrayOutputStream bos = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             return PdfCreateUtil.createByte(map, fos, bos);
         } catch (Exception e) {

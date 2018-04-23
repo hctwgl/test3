@@ -70,7 +70,7 @@ public class AfBklServiceImpl implements AfBklService {
     @Override
     public String  isBklResult(AfOrderDo orderInfo) {
 
-        AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
+        final AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
         String result = "v2";//需电核
         //种子名单
 		AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
@@ -84,9 +84,11 @@ public class AfBklServiceImpl implements AfBklService {
             String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
             Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
             logger.info("afBklService bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
-            if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-                result = "v0";//不在白名单用户不走电核，并且没有电核状态
-                return result;
+            if (bklWhiteResource.getValue3() != null && !bklWhiteResource.getValue3().equals("")){
+                if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
+                    result = "v0";//不在白名单用户不走电核，并且没有电核状态
+                    return result;
+                }
             }
         }
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
@@ -125,11 +127,11 @@ public class AfBklServiceImpl implements AfBklService {
                     YFSmsUtil.pool.execute(new Runnable() {
                         @Override
                         public void run() {
+                            String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
+                            smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
                         }
                     });
-                    String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
-                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                 }else {
                     result = "v2";//需电核
                 }
