@@ -126,25 +126,28 @@ public class ArbitrationController {
             AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
             JSONObject resultJson = JSON.parseObject(result);
             if (resultJson.getString("errCode").equals("0000")) {
-                JSONArray resultArr=resultJson.getJSONArray("result");
-                if(resultArr.size()>0){
-                   JSONObject firstData= resultArr.getJSONObject(0);
-                   if(firstData.getString("errCode").equals("0000")){
-                       afArbitrationDo.setValue1(firstData.getString("batchNo"));
-                   }else{
-                       logger.info("submit error errorMsg "+firstData.getString("errMsg"));
-                   }
-                }else{
+                String batchNo = resultJson.getString("batchNo");
+                afArbitrationDo.setBatchNo(batchNo);
+                JSONArray resultArr = resultJson.getJSONArray("result");
+                if (resultArr.size() > 0) {
+                    JSONObject firstData = resultArr.getJSONObject(0);
+                    if (firstData.getString("errCode").equals("0000")) {
+                        afArbitrationDo.setProcessCode("100");
+                        afArbitrationDo.setProcess("仲裁申请");
+                        afArbitrationDo.setStatusCode("0");
+                        afArbitrationDo.setStatus("案件待提交");
+                        afArbitrationDo.setValue2(result);
+                        afArbitrationDo.setLoanBillNo(loanBillNo);
+                        arbitrationService.saveRecord(afArbitrationDo);
+                    } else {
+                        logger.info("submit error errorMsg " + firstData.getString("errMsg"));
+                    }
+                } else {
                     logger.info("submit error resultJson size zero");
                 }
-                afArbitrationDo.setProcessCode("100");
-                afArbitrationDo.setProcess("仲裁申请");
-                afArbitrationDo.setStatusCode("0");
-                afArbitrationDo.setStatus("案件待提交");
+                ;
             }
-            afArbitrationDo.setValue2(result);
-            afArbitrationDo.setLoanBillNo(loanBillNo);
-            arbitrationService.saveRecord(afArbitrationDo);
+
 //            errCode	错误码	varchar(4)	Y
 //            errMsg	错误信息	varchar(100)	N
 //            result	OBJECT		Y	JSON格式
@@ -210,7 +213,7 @@ public class ArbitrationController {
         printParams();
         // String borrowNo = "jq2018041910202400260";
         try {
-            AfArbitrationDo afArbitrationDo= arbitrationService.getByBorrowNo(borrowNo);
+            AfArbitrationDo afArbitrationDo = arbitrationService.getByBorrowNo(borrowNo);
             //立案申请
             ThirdParamsInfo paramsInfo = new ThirdParamsInfo();
             paramsInfo.setBusiCode("APPLICATION");
@@ -221,7 +224,7 @@ public class ArbitrationController {
             paramsInfo.setTime(sdf.format(new Date()));
             //-----
             ThirdOrderInfo orderInfo = new ThirdOrderInfo();
-            orderInfo.setBatchNo(borrowNo);
+            orderInfo.setBatchNo(afArbitrationDo.getBatchNo());
 
             paramsInfo.setParam(URLEncoder.encode(JSON.toJSONString(orderInfo), "UTF-8"));
             //-----
@@ -230,7 +233,8 @@ public class ArbitrationController {
             String jsonParam = StringCompressUtils.compress(JSON.toJSONString(paramsInfo));
             logger.info("jsonParam=" + jsonParam);
             String trackId = TRACK_PREFIX + new Date().getTime();
-
+            String respResult = HttpClientUtils.postWithString(URL, jsonParam);
+            logger.info("resp un zip result " + respResult);
             String result = StringCompressUtils.decompress(HttpClientUtils.postWithString(URL, jsonParam));
             logger.info(result);
             return "success";
@@ -283,6 +287,7 @@ public class ArbitrationController {
         }
         return map;
     }
+
     @ResponseBody
     @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
     public void getData(HttpServletResponse response) throws Exception {
@@ -302,7 +307,7 @@ public class ArbitrationController {
 
             //需要通过解压来获取相应的json对象
             String deCompressString = StringCompressUtils.decompress(paramString);
-            logger.info("参数信息："+deCompressString);
+            logger.info("参数信息：" + deCompressString);
             // 将参数转化成对象
             paramsInfo = JSON.parseObject(deCompressString, ThirdParamsInfo.class);
             // 参数验证
@@ -310,7 +315,7 @@ public class ArbitrationController {
                 // 签名
                 String signCode = paramsInfo.getSignCode();
                 // 通过参数本地生成签名
-                String sign =MD5.md5(this.generateSign(paramsInfo)) ;
+                String sign = MD5.md5(this.generateSign(paramsInfo));
                 logger.info("参数签名：" + signCode + ", 本地签名：" + sign);
                 if (!signCode.equals(sign)) {
                     throw new ArbitramentException("1002", "参数【signCode】数据错误");
@@ -320,8 +325,8 @@ public class ArbitrationController {
                 if (actualParamString == null) {
                     throw new ArbitramentException("1002", "参数【param】数据错误");
                 }
-                JSONObject actualParamJSON=JSON.parseObject(actualParamString);
-                String loanBillNo=actualParamJSON.getString("loanBillNo");
+                JSONObject actualParamJSON = JSON.parseObject(actualParamString);
+                String loanBillNo = actualParamJSON.getString("loanBillNo");
                 // 商户编码
                 String merchantCode = paramsInfo.getMerchantCode();
 //                if (!merchantCode.equals(ArbitramentConfig.getString("merchant.code"))) {
@@ -355,11 +360,11 @@ public class ArbitrationController {
                     result.setResult(jsonString);// 将结果添加到返回信息里面
                 } else if (BusiCodeEnum.SETSTATUS.getCode().equalsIgnoreCase(busiCode)) {// 9.案件订单状态通知
                     // TO_DO 需要自己处理此处业务\
-                    String processCode =actualParamJSON.getString("processCode");
+                    String processCode = actualParamJSON.getString("processCode");
                     String process = actualParamJSON.getString("process");
                     String statusCode = actualParamJSON.getString("statusCode");
-                    String status =actualParamJSON.getString("status");
-                    String message =actualParamJSON.getString("message");
+                    String status = actualParamJSON.getString("status");
+                    String message = actualParamJSON.getString("message");
 
                     if ("0".equals(status)) {
                         //进行案件申请
@@ -376,8 +381,8 @@ public class ArbitrationController {
                         arbitrationService.updateByloanBillNo(afArbitrationDo);
                     }
                 } else if (BusiCodeEnum.GETLITIGANTS.getCode().equalsIgnoreCase(busiCode)) {// 10.获取案件订单相关当事人信息
-                    String ltype=actualParamJSON.getString("ltype");
-                    String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo,ltype));
+                    String ltype = actualParamJSON.getString("ltype");
+                    String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo, ltype));
                     result.setResult(jsonString);// 将结果添加到返回信息里面
                 } else {
                     throw new ArbitramentException("1002", "参数【busiCode】数据错误");
@@ -392,7 +397,7 @@ public class ArbitrationController {
         } finally {
             // 返回的结果
             String result_msg = JSON.toJSONString(result);
-            logger.info("返回信息:"+result_msg);
+            logger.info("返回信息:" + result_msg);
 
             // 返回结果
             returnMsg(response, StringCompressUtils.compress(result_msg));

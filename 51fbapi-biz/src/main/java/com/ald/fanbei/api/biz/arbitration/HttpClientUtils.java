@@ -7,6 +7,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * http请求类
@@ -17,7 +19,7 @@ import org.apache.http.util.EntityUtils;
  * @Description：
  */
 public class HttpClientUtils {
-	
+
 	/**
 	 * 发送json流数据
 	 * @param url
