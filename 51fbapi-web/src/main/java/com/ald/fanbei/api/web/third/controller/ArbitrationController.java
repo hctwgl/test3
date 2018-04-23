@@ -1,6 +1,12 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,6 +21,7 @@ import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.alibaba.fastjson.JSON;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -66,7 +73,25 @@ public class ArbitrationController {
     private static final String MERCHANTCODE = "150778004447";
     private static final String URL = "http://test.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
+    //分页查询返回结果
+    public static final String MAP_VALUE_COUNT = "count";
+    public static final String MAP_VALUE_LIST = "result";
 
+    //默认每页数量
+    public static final int DEFAULT_PAGESIZE = 10;
+    //默认页码
+    public static final int DEFAULT_PAGENUM = 1;
+    //100的BigDecimal类型
+    public static final BigDecimal BIGDECIMAL_100 = new BigDecimal(100);
+    public static final BigDecimal BIGDECIMAL_ZERO = new BigDecimal(0);
+
+    //----------error code----------//
+    //系统异常
+    public static final String SYS_EXCEPTION_CODE = "9999";//系统异常code
+    public static final String SYS_EXCEPTION_MSG = "系统异常";//系统异常msg
+    //成功
+    public static final String RET_CODE_SUCC = "0000";//成功编码
+    public static final String RET_MSG_SUCC = "success";//成功信息
     @Resource
     RiskTrackerService trackerService;
 
@@ -97,9 +122,9 @@ public class ArbitrationController {
             String trackId = TRACK_PREFIX + new Date().getTime();
             String result = HttpClientUtils.postWithString(URL, jsonParam);
             logger.info(result);
-            AfArbitrationDo afArbitrationDo =new AfArbitrationDo();
-            JSONObject resultJson=  JSON.parseObject(result);
-            if(resultJson.getString("errCode").equals("0000")){
+            AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
+            JSONObject resultJson = JSON.parseObject(result);
+            if (resultJson.getString("errCode").equals("0000")) {
                 afArbitrationDo.setValue1(resultJson.getJSONObject("result").getString("batchNo"));
                 afArbitrationDo.setProcessCode("100");
                 afArbitrationDo.setProcess("仲裁申请");
@@ -123,17 +148,19 @@ public class ArbitrationController {
             return "error";
         }
     }
+
     /**
      * 该API接口由客户提供，互仲向客户平台发起该请求，客户回应并返回相应结果信息。通过该订单杭州互仲将订单状态推送给客户
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = {"/setStatus"}, method = RequestMethod.POST)
     public String setStatus() {
         printParams();
-        Map resultMap=new HashMap<String,String>();
-        resultMap.put("errCode","0000");
-        resultMap.put("errMsg","");
+        Map resultMap = new HashMap<String, String>();
+        resultMap.put("errCode", "0000");
+        resultMap.put("errMsg", "");
         try {
             String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
             String processCode = ObjectUtils.toString(request.getParameter("processCode"));
@@ -142,11 +169,11 @@ public class ArbitrationController {
             String status = ObjectUtils.toString(request.getParameter("status"));
             String message = ObjectUtils.toString(request.getParameter("message"));
 
-            if("0".equals(statusCode)){
+            if ("0".equals(statusCode)) {
                 //进行案件申请
                 application(loanBillNo);
-                
-                AfArbitrationDo afArbitrationDo =new AfArbitrationDo();
+
+                AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
                 afArbitrationDo.setGmtModified(new Date());
                 afArbitrationDo.setLoanBillNo(loanBillNo);
                 afArbitrationDo.setProcess(process);
@@ -157,9 +184,9 @@ public class ArbitrationController {
                 arbitrationService.updateByloanBillNo(afArbitrationDo);
             }
             return JSON.toJSONString(resultMap);
-        }catch (Exception e){
-            logger.info("setStatus error :",e);
-            resultMap.put("errMsg",e.getMessage());
+        } catch (Exception e) {
+            logger.info("setStatus error :", e);
+            resultMap.put("errMsg", e.getMessage());
             return JSON.toJSONString(resultMap);
         }
 
@@ -168,9 +195,9 @@ public class ArbitrationController {
 
     @ResponseBody
     @RequestMapping(value = "/application", method = RequestMethod.GET)
-    public String application( String borrowNo) {
+    public String application(String borrowNo) {
         printParams();
-       // String borrowNo = "jq2018041910202400260";
+        // String borrowNo = "jq2018041910202400260";
         try {
             //立案申请
             ThirdParamsInfo paramsInfo = new ThirdParamsInfo();
@@ -204,11 +231,10 @@ public class ArbitrationController {
             trackerService.saveRecord(riskTrackerDo);
             return "success";
         } catch (Exception e) {
-            logger.info("application error :",e);
+            logger.info("application error :", e);
             return "error";
         }
     }
-
 
 
     /**
@@ -253,49 +279,191 @@ public class ArbitrationController {
         }
         return map;
     }
-
-    
     @ResponseBody
     @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
-    public ArbitrationRespBo getData(HttpServletResponse response) {
+    public void getData(HttpServletResponse response) throws Exception {
         printParams();
-	 String busiCode = ObjectUtils.toString(request.getParameter("busiCode"));
-	 String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
-	 
-	 if("GETORDERINFO".equals(busiCode)) {
-	     return arbitrationService.getOrderInfo(loanBillNo);
-	 } else if("GETFUNDINFO".equals(busiCode)){
-	     return arbitrationService.getFundInfo(loanBillNo);
-	 } else if("SETSTATUS".equals(busiCode)){
-	     setStatus();
-	 } else if("GETLITIGANTS".equals(busiCode)){
-	     String ltype = ObjectUtils.toString(request.getParameter("ltype"));
-	     return arbitrationService.getLitiGants(loanBillNo,ltype);
-	 } else if("GETCREDITAGREEMENT".equals(busiCode)){
-	     return arbitrationService.getCreditAgreement(loanBillNo);
-	 } else if("GETCREDITINFO".equals(busiCode)){
-	     return arbitrationService.getCreditInfo(loanBillNo);
-	 } else if("GETREFUNDINFO".equals(busiCode)){
-	     return arbitrationService.getRefundInfo(loanBillNo);
-	 } else if("GETPAYVOUCHER".equals(busiCode)){
-	     return arbitrationService.getPayVoucher(loanBillNo);
-	 } 
-	    logger.info("type is Undefined,loanBillNo= "+loanBillNo);
-	    ArbitrationRespBo resp = new ArbitrationRespBo();
-	    List result = new ArrayList();
-	    resp.setErrCode(ArbitrationStatus.FAILURE.getCode());
-	    resp.setErrMsg(ArbitrationStatus.FAILURE.getName());
-	    resp.setResult(result);
-	    return resp;
-	
+
+        ThirdParamsInfo paramsInfo = null;
+        // 默认返回成功
+        Result result = new Result(RET_CODE_SUCC, RET_MSG_SUCC);
+        try {
+            // 获取请求的参数
+            String paramString = this.getParamString(request);
+            logger.info("paramString=" + paramString);
+            if (paramString == null) {
+                throw new ArbitramentException("1001", "参数不能为空");
+            }
+            logger.info("paramString.length() = " + paramString.length());
+
+            //需要通过解压来获取相应的json对象
+            String deCompressString = StringCompressUtils.decompress(paramString);
+            logger.info("参数信息："+deCompressString);
+            // 将参数转化成对象
+            paramsInfo = JSON.parseObject(deCompressString, ThirdParamsInfo.class);
+            // 参数验证
+            if (this.validate(paramsInfo)) {
+                // 签名
+                String signCode = paramsInfo.getSignCode();
+                // 通过参数本地生成签名
+                String sign = this.generateSign(paramsInfo);
+                logger.info("参数签名：" + signCode + ", 本地签名：" + sign);
+                if (!signCode.equals(sign)) {
+                    throw new ArbitramentException("1002", "参数【signCode】数据错误");
+                }
+                String param = paramsInfo.getParam();
+                String actualParamString = URLDecoder.decode(param, "UTF-8");
+                if (actualParamString == null) {
+                    throw new ArbitramentException("1002", "参数【param】数据错误");
+                }
+                // 商户编码
+                String merchantCode = paramsInfo.getMerchantCode();
+                if (!merchantCode.equals(ArbitramentConfig.getString("merchant.code"))) {
+                    throw new ArbitramentException("1002", "参数【merchantCode】数据错误");
+                }
+                // 业务编码
+                String busiCode = paramsInfo.getBusiCode();
+                String loanBillNo = paramsInfo.getLoanBillNo();
+                if (BusiCodeEnum.GETCREDITAGREEMENT.getCode().equalsIgnoreCase(busiCode)) {// 2.获取借款协议
+                    // 借款协议查询
+                    String jsonString = JSON.toJSONString(arbitrationService.getCreditAgreement(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.GETCREDITINFO.getCode().equalsIgnoreCase(busiCode)) {// 3.获取借款信息
+                    // 借款信息查询
+                    String jsonString = JSON.toJSONString(arbitrationService.getCreditInfo(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.GETREFUNDINFO.getCode().equalsIgnoreCase(busiCode)) {// 4.获取还款信息
+                    // 还款信息查询
+                    String jsonString = JSON.toJSONString(arbitrationService.getRefundInfo(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.GETPAYVOUCHER.getCode().equalsIgnoreCase(busiCode)) {// 5.获取打款凭证
+                    // 打款凭证查询
+                    String jsonString = JSON.toJSONString(arbitrationService.getPayVoucher(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.GETFUNDINFO.getCode().equalsIgnoreCase(busiCode)) {// 7.获取案件订单相关金额
+                    // 案件相关获取金额
+                    String jsonString = JSON.toJSONString(arbitrationService.getFundInfo(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.GETORDERINFO.getCode().equalsIgnoreCase(busiCode)) {// 8.获取案件订单信息
+                    // 获取案件订单信息
+                    String jsonString = JSON.toJSONString(arbitrationService.getOrderInfo(loanBillNo));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else if (BusiCodeEnum.SETSTATUS.getCode().equalsIgnoreCase(busiCode)) {// 9.案件订单状态通知
+                    // TO_DO 需要自己处理此处业务
+
+                } else if (BusiCodeEnum.GETLITIGANTS.getCode().equalsIgnoreCase(busiCode)) {// 10.获取案件订单相关当事人信息
+                    String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo, paramsInfo.getLtype()));
+                    result.setResult(jsonString);// 将结果添加到返回信息里面
+                } else {
+                    throw new ArbitramentException("1002", "参数【busiCode】数据错误");
+                }
+            }
+        } catch (ArbitramentException e) {
+            logger.error("第三方对外接口-Arbexpress异常", e);
+            result = new Result(e.getErr_code(), e.getErr_msg());
+        } catch (Exception e) {
+            logger.error("第三方对外接口-异常", e);
+            result = new Result(SYS_EXCEPTION_CODE, SYS_EXCEPTION_MSG);
+        } finally {
+            // 返回的结果
+            String result_msg = JSON.toJSONString(result);
+            // 返回结果
+            returnMsg(response, StringCompressUtils.compress(result_msg));
+        }
+
     }
-    
+
+
+    /* 从请求流中获取参数json串
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    private String getParamString(HttpServletRequest request) throws IOException {
+        final int BUFFER_SIZE = 8 * 1024;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        InputStream sis = request.getInputStream();
+        int length = 0;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while ((length = sis.read(buffer)) > 0) {
+            baos.write(buffer, 0, length);
+        }
+        String bodyData = new String(baos.toByteArray(), "UTF-8");
+        return bodyData;
+    }
+
+    /**
+     * 接口参数验证
+     *
+     * @param thirdParamsInfo
+     * @return
+     * @throws ArbitramentException
+     */
+    private boolean validate(ThirdParamsInfo thirdParamsInfo) throws ArbitramentException {
+        String merchantCode = thirdParamsInfo.getMerchantCode();
+        if (StringUtils.isBlank(merchantCode)) {
+            throw new ArbitramentException("1001", "参数不能为空");
+        }
+        String format = thirdParamsInfo.getFormat();
+        if (StringUtils.isBlank(format)) {
+            thirdParamsInfo.setFormat("JSON");
+        }
+        if (!"JSON".equalsIgnoreCase(format)) {
+            throw new ArbitramentException("1002", "参数【format】数据错误");
+        }
+        String encode = thirdParamsInfo.getEncode();
+        if (StringUtils.isBlank(encode)) {
+            thirdParamsInfo.setEncode("UTF-8");
+        }
+        if (!"UTF-8".equalsIgnoreCase(encode)) {
+            throw new ArbitramentException("1002", "参数【encode】数据错误");
+        }
+        String busiCode = thirdParamsInfo.getBusiCode();
+        if (StringUtils.isBlank(busiCode)) {
+            throw new ArbitramentException("1001", "参数不能为空");
+        }
+        String param = thirdParamsInfo.getParam();
+        if (StringUtils.isBlank(param)) {
+            throw new ArbitramentException("1001", "参数不能为空");
+        }
+        String time = thirdParamsInfo.getTime();
+        if (StringUtils.isBlank(time)) {
+            throw new ArbitramentException("1001", "参数不能为空");
+        }
+        String signType = thirdParamsInfo.getSignType();
+        if (StringUtils.isBlank(signType)) {
+            thirdParamsInfo.setSignType("MD5");
+        }
+        if (!"MD5".equalsIgnoreCase(signType)) {
+            throw new ArbitramentException("1002", "参数【signType】数据错误");
+        }
+        String signCode = thirdParamsInfo.getSignCode();
+        if (StringUtils.isBlank(signCode)) {
+            throw new ArbitramentException("1001", "参数【signCode】不能为空");
+        }
+        return true;
+    }
+
+
+    /**
+     * 返回的信息
+     *
+     * @param response
+     * @param msg
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
+    private void returnMsg(HttpServletResponse response, String msg) throws UnsupportedEncodingException, IOException {
+        response.getOutputStream().write(msg.getBytes("utf-8"));
+    }
+
     /**
      * 测试时打印所有参数
      */
-    public void printParams(){
+    public void printParams() {
         StringBuilder sb = new StringBuilder();
-        sb.append("---arbit begin:"+request.getRequestURI());
+        sb.append("---arbit begin:" + request.getRequestURI());
         sb.append("---arbit begin params:");
         Map<String, String[]> paramMap = request.getParameterMap();
         for (String key : paramMap.keySet()) {

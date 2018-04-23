@@ -9,6 +9,10 @@ package com.ald.fanbei.api.biz.arbitration;
  */
 public class ThirdParamsInfo{
 
+	//订单号
+	private String ltype;
+	//订单号
+	private String loanBillNo;
 	//商户号
 	private String merchantCode;
 	//请求数据格式（JSON）
@@ -102,5 +106,20 @@ public class ThirdParamsInfo{
 		this.result = result;
 	}
 
+	public String getLoanBillNo() {
+		return loanBillNo;
+	}
+
+	public void setLoanBillNo(String loanBillNo) {
+		this.loanBillNo = loanBillNo;
+	}
+
+	public String getLtype() {
+		return ltype;
+	}
+
+	public void setLtype(String ltype) {
+		this.ltype = ltype;
+	}
 }
 
