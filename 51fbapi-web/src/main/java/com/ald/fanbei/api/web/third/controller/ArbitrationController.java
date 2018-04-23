@@ -64,7 +64,7 @@ public class ArbitrationController {
     AfUserAccountService afUserAccountService;
     public static final String Y_M_D_H_M_S = "yyyy-MM-dd HH:mm:ss";
     private static final String MERCHANTCODE = "150778004447";
-    private static final String URL = "http://localhost:8080/ArbInterface/v1/third.htm";
+    private static final String URL = "http://test.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
 
     @Resource
@@ -97,22 +97,18 @@ public class ArbitrationController {
             String trackId = TRACK_PREFIX + new Date().getTime();
             String result = HttpClientUtils.postWithString(URL, jsonParam);
             logger.info(result);
-            
             AfArbitrationDo afArbitrationDo =new AfArbitrationDo();
+            JSONObject resultJson=  JSON.parseObject(result);
+            if(resultJson.getString("errCode").equals("0000")){
+                afArbitrationDo.setValue1(resultJson.getJSONObject("result").getString("batchNo"));
+                afArbitrationDo.setProcessCode("100");
+                afArbitrationDo.setProcess("仲裁申请");
+                afArbitrationDo.setStatusCode("0");
+                afArbitrationDo.setStatus("案件待提交");
+            }
+            afArbitrationDo.setValue2(result);
             afArbitrationDo.setLoanBillNo(loanBillNo);
-            afArbitrationDo.setProcessCode("100");
-            afArbitrationDo.setProcess("仲裁申请");
-            afArbitrationDo.setStatusCode("0");
-            afArbitrationDo.setStatus("案件待提交");
             arbitrationService.saveRecord(afArbitrationDo);
-            
-            RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
-            riskTrackerDo.setGmtCreate(new Date());
-            riskTrackerDo.setParams(JSON.toJSONString(paramsInfo));
-            riskTrackerDo.setTrackId(trackId);
-            riskTrackerDo.setUrl(URL);
-            riskTrackerDo.setResult(result);
-            trackerService.saveRecord(riskTrackerDo);
 //            errCode	错误码	varchar(4)	Y
 //            errMsg	错误信息	varchar(100)	N
 //            result	OBJECT		Y	JSON格式
@@ -262,6 +258,7 @@ public class ArbitrationController {
     @ResponseBody
     @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
     public ArbitrationRespBo getData(HttpServletResponse response) {
+        printParams();
 	 String busiCode = ObjectUtils.toString(request.getParameter("busiCode"));
 	 String loanBillNo = ObjectUtils.toString(request.getParameter("loanBillNo"));
 	 

@@ -120,7 +120,7 @@ public enum AfResourceType {
 
 	
 	ARBITRATION_TYPE("ARBITRATION_TYPE","在线仲裁系统相关配置"),
-	ARBITRATION_SEC_TYPE("ARBITRATION_SEC_TYPE","在线仲裁系统相关配置");
+	ARBITRATION_SEC_TYPE("ARBITRATION_SEC_TYPE","在线仲裁系统相关配置"),
 
 	//芝麻信用认证相关配置
 
