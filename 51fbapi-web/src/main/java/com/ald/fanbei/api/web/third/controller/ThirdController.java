@@ -235,8 +235,8 @@ public class ThirdController extends AbstractThird{
                     qmap.put("orderNo",afOrderDo.getOrderNo());
                     //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
                     String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
-//                    YFSmsUtil.send(userDo.getMobile(),content,YFSmsUtil.NOTITION);
-                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
+                    YFSmsUtil.send(userDo.getMobile(),content,YFSmsUtil.NOTITION);
+//                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                     HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
                 }
                 List<AfOrderDo> orderList = afOrderService.selectTodayIagentStatusCOrders(afOrderDo.getUserId());
@@ -244,8 +244,6 @@ public class ThirdController extends AbstractThird{
                     for (AfOrderDo temp:orderList){
                         afOrderService.updateIagentStatusByOrderId(temp.getRid(),iagentstate);
                         if ("PAID".equals(temp.getStatus())&&"E".equals(iagentstate)){
-                            String content = "尊敬的用户，非常遗憾您未通过本次电核，请务必确认本次借款业务由您本人申请、本人使用并按时还款，珍惜您的个人信用。请24小时之后再次下单，祝您生活愉快！";
-                            smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+temp.getOrderNo(),JSONObject.toJSONString(new HashMap<>()));
 
                         }
