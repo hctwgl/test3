@@ -683,4 +683,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		// TODO Auto-generated method stub
 		     return afBorrowBillDao.getOverdueBorrowBillInfoByUserId(userId);
 	}
+
+    @Override
+    public int updateBorrowBillFaildWhenNotY(List<Long> billIdList) {
+        return afBorrowBillDao.updateBorrowBillFaildWhenNotY(billIdList);
+    }
 }

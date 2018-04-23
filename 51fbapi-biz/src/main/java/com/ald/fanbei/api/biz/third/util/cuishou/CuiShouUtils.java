@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.third.util.cuishou;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -604,7 +606,8 @@ public class CuiShouUtils {
     AfLoanPeriodsDao loanPeriodsDao;
     @Resource
     AfLoanDao loanDao;
-
+    @Resource
+    KafkaSync kafkaSync;
     /**
      * 强行平帐
      *
@@ -612,7 +615,8 @@ public class CuiShouUtils {
      * @param sign
      * @return
      */
-    public String finishBorrow(String data, String sign) {
+    public String
+    finishBorrow(String data, String sign) {
         try {
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
@@ -620,6 +624,7 @@ public class CuiShouUtils {
 
             JSONObject jsonObject = JSONObject.parseObject(data);
             String type = jsonObject.getString("type");
+
             if (type.equals("BORROW")) {
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
                 Long billId = jsonObject.getLong("ref_id");
@@ -647,9 +652,16 @@ public class CuiShouUtils {
                     afBorrowBillDao.updateTotalBillStatus(afBorrowBillDo.getBillYear(), afBorrowBillDo.getBillMonth(), afBorrowBillDo.getUserId(), BorrowBillStatus.YES.getCode());
                 }
                 cuiShouBackMoney.setCode(200);
+                try{
+                    kafkaSync.syncEvent(afBorrowBillDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                    kafkaSync.syncEvent(afBorrowBillDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                }catch (Exception e){
+                    thirdLog.info("消息同步失败:",e);
+                }
                 return JSONObject.toJSONString(cuiShouBackMoney);
             } else if (type.equals("BORROW_CASH")) {
                 Long borrowId = jsonObject.getLong("ref_id");
+                thirdLog.info("direct finish borrow cash "+borrowId);
                 AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
                 afBorrowCashDo.setSumRate(null);
@@ -664,6 +676,13 @@ public class CuiShouUtils {
 
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
+                    try{
+                       AfBorrowCashDo borrowCashDo= afBorrowCashDao.getBorrowCashByrid(borrowId);
+                        kafkaSync.syncEvent(borrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                        kafkaSync.syncEvent(borrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                    }catch (Exception e){
+                        thirdLog.info("消息同步失败:",e);
+                    }
                     return JSONObject.toJSONString(cuiShouBackMoney);
                 }
                 cuiShouBackMoney.setCode(304);
@@ -686,6 +705,12 @@ public class CuiShouUtils {
                 }
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
+                    try{
+                        kafkaSync.syncEvent(periodsDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                        kafkaSync.syncEvent(periodsDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                    }catch (Exception e){
+                        thirdLog.info("消息同步失败:",e);
+                    }
                     return JSONObject.toJSONString(cuiShouBackMoney);
                 }
                 cuiShouBackMoney.setCode(304);
@@ -698,6 +723,8 @@ public class CuiShouUtils {
         } catch (Exception e) {
             thirdLog.error("cuishou finishBorrow error", e);
             return JSON.toJSONString(new CuiShouBackMoney(500, "error"));
+        }finally {
+
         }
     }
 
