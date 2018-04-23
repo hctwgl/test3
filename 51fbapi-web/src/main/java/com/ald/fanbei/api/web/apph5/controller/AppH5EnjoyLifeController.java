@@ -420,7 +420,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             }catch (Exception e){
                 return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
             }
-            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
+            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢前将通过短信通知您", "", goodsId).toString();
         } catch(FanbeiException e){
             String opennative = "/fanbei-web/opennative?name=";
             String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
