@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201804231102")
+    #set($version="201804231450")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
