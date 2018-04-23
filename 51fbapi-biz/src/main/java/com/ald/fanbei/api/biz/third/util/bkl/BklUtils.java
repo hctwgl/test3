@@ -151,6 +151,7 @@ private boolean checkTodayOrders(AfBklDo bklDo){
                 //HttpUtil.doHttpPost("https://admin.51fanbei.com/orderClose/closeOrderAndBorrow",JSONObject.toJSONString(qmap));
                 final String  orderNo = afOrderClose.getOrderNo();
                 final String json = JSONObject.toJSONString(qmap);
+                logger.info("checkTodayOrders closeOrderAndBorrow checkTodayOrders info ="+orderNo);
                 YFSmsUtil.pool.execute(new Runnable() {
                     @Override
                     public void run() {

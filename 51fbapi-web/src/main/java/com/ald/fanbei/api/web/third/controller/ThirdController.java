@@ -169,6 +169,7 @@ public class ThirdController extends AbstractThird{
 
         String result_code= result.getString("result_code");
         String wr = RESULT_CODE.get(result_code)==null?"6":RESULT_CODE.get(result_code);
+        logger.info("thirdApi dealOrder result ="+result+",job_id="+job_id);
         if ("45".contains(wr)){
             Map<String,Integer> answers = new HashMap<>();
             answers.put("baseR",0);
@@ -227,7 +228,7 @@ public class ThirdController extends AbstractThird{
                     afOrderService.updateIagentStatusByOrderId(afOrderDo.getRid(),iagentstate);
                 }
                 AfUserDo userDo = afUserService.getUserById(afOrderDo.getUserId());
-                logger.info("thirdApi dealOrder info ="+JSONObject.toJSONString(afOrderDo));
+                logger.info("thirdApi closeOrderAndBorrow dealOrder info ="+JSONObject.toJSONString(afOrderDo));
                 if ("close".equals(checkstate)&&"PAID".equals(afOrderDo.getStatus())&&"C".equals(afOrderDo.getIagentStatus())){
                     Map<String,String> qmap = new HashMap<>();
                     qmap.put("orderNo",afOrderDo.getOrderNo());
@@ -252,6 +253,7 @@ public class ThirdController extends AbstractThird{
                 }
             }
         }else{
+            logger.info("thirdApi dealOrder result end ="+result+",job_id="+job_id);
             AfIagentResultDo resultDo = new AfIagentResultDo();
             resultDo.setWorkId(job_id);
             resultDo.setCheckResult("2");

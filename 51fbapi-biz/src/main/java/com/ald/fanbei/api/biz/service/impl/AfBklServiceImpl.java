@@ -127,6 +127,7 @@ public class AfBklServiceImpl implements AfBklService {
                     YFSmsUtil.pool.execute(new Runnable() {
                         @Override
                         public void run() {
+                            logger.info("checkTodayOrders closeOrderAndBorrow isBklResult info ="+orderNo);
                             HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
                         }
                     });
