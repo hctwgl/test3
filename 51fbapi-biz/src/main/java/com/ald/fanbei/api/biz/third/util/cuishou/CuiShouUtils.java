@@ -69,6 +69,12 @@ public class CuiShouUtils {
     @Resource
     AfLoanRepaymentService afLoanRepaymentService;
 
+    @Resource
+    AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+
+    @Resource
+    private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+
     /**
      * 线下还款
      *
@@ -256,6 +262,11 @@ public class CuiShouUtils {
             }
             redisTemplate.expire(key, 30, TimeUnit.SECONDS);
 
+            if( checkBorrowCash(afRepaymentDo.getTradeNo())){
+                cuiShouBackMoney.setCode(302);
+                return cuiShouBackMoney;
+            }
+
             List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(afRepaymentDo.getPayTradeNo());
             if (repaymentlist == null || repaymentlist.size() == 0) {
                 afRepaymentDao.addRepayment(afRepaymentDo);
@@ -336,6 +347,15 @@ public class CuiShouUtils {
                     thirdLog.error("offlineRepaymentNotify error borrowNo =" + borrowNo);
                     return cuiShouBackMoney;
                 }
+
+
+                List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(tradeNo);
+                if(repaymentlist !=null && repaymentlist.size()>0){
+                    cuiShouBackMoney.setCode(302);
+                    thirdLog.error("offlineRepaymentNotify error borrowNo =" + borrowNo);
+                    return cuiShouBackMoney;
+                }
+
 
                 String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
                 Long borrowId = afBorrowCashDo.getRid();
@@ -732,5 +752,15 @@ public class CuiShouUtils {
 
     public static Boolean getIsXianXiaHuangKuang() {
         return isXianXiaHuangKuang.get();
+    }
+
+
+
+    private Boolean checkBorrowCash(String tradeNo){
+        Boolean ret =false;
+        ret = afBorrowLegalOrderRepaymentDao.tuchByOutTradeNo(tradeNo) != null;
+        if(ret) return ret;
+        ret = afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, tradeNo) != null;
+        return ret;
     }
 }
