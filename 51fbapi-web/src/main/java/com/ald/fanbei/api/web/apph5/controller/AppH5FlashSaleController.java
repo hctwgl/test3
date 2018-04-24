@@ -95,107 +95,108 @@ public class AppH5FlashSaleController extends BaseController {
     @RequestMapping(value = "/getFlashSaleGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String GetFlashSaleGoods(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			FanbeiWebContext context = doWebCheck(request, false);
 
-	FanbeiWebContext context = doWebCheck(request, false);
-	
-	Integer activityDay = 0;
-	if(request.getParameter("activityDay")!=null)
-	{
-	    activityDay = Integer.parseInt(request.getParameter("activityDay").toString());
-	}
-	Integer pageNo = 1;
-	if(request.getParameter("pageNo")!=null)
-	{
-	    pageNo = Integer.parseInt(request.getParameter("pageNo").toString());
-	}
-	
-	H5CommonResponse resp = null;
-	Map<String, Object> data = new HashMap<String, Object>();
-	List<Object> topBannerList = new ArrayList<Object>();
-	String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-	int count = 0;
-	// 正式环境和预发布环境区分，banner轮播图展示
-	if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-	    // 新版,旧版,banner图不一样
-	    String homeBanner = AfResourceType.LimitedPurchaseBanner.getCode();
-	    topBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(homeBanner));
-	} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
-	    // 新版,旧版,banner图不一样
-	    String homeBanner = AfResourceType.LimitedPurchaseBanner.getCode();
-	    topBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
-	}
-	data.put("BannerList", topBannerList);
+			Integer activityDay = 0;
+			if (request.getParameter("activityDay") != null) {
+				activityDay = Integer.parseInt(request.getParameter("activityDay").toString());
+			}
+			Integer pageNo = 1;
+			if (request.getParameter("pageNo") != null) {
+				pageNo = Integer.parseInt(request.getParameter("pageNo").toString());
+			}
 
-	// 商品展示
-	Long userId = null;
-	if (context.getUserName() != null) {
-		AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-		if (userDo != null)
-			userId = userDo.getRid();
-	}
-	AfResourceDo afResourceHomeSecKillDo = afResourceService.getSingleResourceBytype("HOME_SECKILL_CONFIG");
-	List<HomePageSecKillGoods> list = afSeckillActivityService.getHomePageSecKillGoods(userId, afResourceHomeSecKillDo.getValue(),activityDay, pageNo);
+			H5CommonResponse resp = null;
+			Map<String, Object> data = new HashMap<String, Object>();
+			List<Object> topBannerList = new ArrayList<Object>();
+			String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+			int count = 0;
+			// 正式环境和预发布环境区分，banner轮播图展示
+			if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+				// 新版,旧版,banner图不一样
+				String homeBanner = AfResourceType.LimitedPurchaseBanner.getCode();
+				topBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(homeBanner));
+			} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+				// 新版,旧版,banner图不一样
+				String homeBanner = AfResourceType.LimitedPurchaseBanner.getCode();
+				topBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
+			}
+			data.put("BannerList", topBannerList);
 
-	if(list.size()>0) {
-		data.put("startTime", list.get(0).getActivityStart().getTime());
-		data.put("endTime", list.get(0).getActivityEnd().getTime());
-	}
-	data.put("currentTime", new Date().getTime());
-	
-	List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
-	// 获取借款分期配置信息
-	AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-	JSONArray array = JSON.parseArray(resource.getValue());
-	if (array == null) {
-	    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-	}
+			// 商品展示
+			Long userId = null;
+			if (context.getUserName() != null) {
+				AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+				if (userDo != null)
+					userId = userDo.getRid();
+			}
+			AfResourceDo afResourceHomeSecKillDo = afResourceService.getSingleResourceBytype("HOME_SECKILL_CONFIG");
+			List<HomePageSecKillGoods> list = afSeckillActivityService.getHomePageSecKillGoods(userId, afResourceHomeSecKillDo.getValue(), activityDay, pageNo);
 
-	for (HomePageSecKillGoods homePageSecKillGoods : list) {
-	    Map<String, Object> goodsInfo = new HashMap<String, Object>();
-	    goodsInfo.put("goodsName", homePageSecKillGoods.getGoodName());
-	    goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());
-	    goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());
-	    goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());
-	    goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
-	    goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());
-	    goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());
-	    goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());
-	    goodsInfo.put("goodsType", "0");
-	    goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
-	    goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-	    goodsInfo.put("total", homePageSecKillGoods.getTotal());	    
-	    goodsInfo.put("source", homePageSecKillGoods.getSource());
-		goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
-		// 如果是分期免息商品，则计算分期
-	    Long goodsId = homePageSecKillGoods.getGoodsId();
-	    JSONArray interestFreeArray = null;
-	    if (homePageSecKillGoods.getInterestFreeId() != null) {
-		AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(homePageSecKillGoods.getInterestFreeId().longValue());
-		String interestFreeJson = interestFreeRulesDo.getRuleJson();
-		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-		    interestFreeArray = JSON.parseArray(interestFreeJson);
+			if (list.size() > 0) {
+				data.put("startTime", list.get(0).getActivityStart().getTime());
+				data.put("endTime", list.get(0).getActivityEnd().getTime());
+			}
+			data.put("currentTime", new Date().getTime());
+
+			List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
+			// 获取借款分期配置信息
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+			JSONArray array = JSON.parseArray(resource.getValue());
+			if (array == null) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+			}
+
+			for (HomePageSecKillGoods homePageSecKillGoods : list) {
+				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				goodsInfo.put("goodsName", homePageSecKillGoods.getGoodName());
+				goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());
+				goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());
+				goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());
+				goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
+				goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());
+				goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());
+				goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());
+				goodsInfo.put("goodsType", "0");
+				goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
+				goodsInfo.put("volume", homePageSecKillGoods.getVolume());
+				goodsInfo.put("total", homePageSecKillGoods.getTotal());
+				goodsInfo.put("source", homePageSecKillGoods.getSource());
+				goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
+				// 如果是分期免息商品，则计算分期
+				Long goodsId = homePageSecKillGoods.getGoodsId();
+				JSONArray interestFreeArray = null;
+				if (homePageSecKillGoods.getInterestFreeId() != null) {
+					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(homePageSecKillGoods.getInterestFreeId().longValue());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+				}
+
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						homePageSecKillGoods.getActivityAmount(), resource.getValue1(), resource.getValue2(), goodsId, "0");
+				if (nperList != null) {
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					String isFree = (String) nperMap.get("isFree");
+					if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+						nperMap.put("freeAmount", nperMap.get("amount"));
+					}
+					goodsInfo.put("nperMap", nperMap);
+				}
+
+				goodsList.add(goodsInfo);
+			}
+			data.put("goodsList", goodsList);
+			resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+			return resp.toString();
+		} catch (Exception e) {
+			logger.error("/fanbei-web/activity/getFlashSaleGoods error:", e);
+			return H5CommonResponse.getNewInstance(false, "获取数据失败", null, "").toString();
 		}
-	    }
-	    
-	    List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), 
-		    homePageSecKillGoods.getActivityAmount(), resource.getValue1(), resource.getValue2(), goodsId, "0");
-	    if (nperList != null) {
-		goodsInfo.put("goodsType", "1");
-		Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-		String isFree = (String) nperMap.get("isFree");
-		if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-		    nperMap.put("freeAmount", nperMap.get("amount"));
-		}
-		goodsInfo.put("nperMap", nperMap);
-	    }
-
-	    goodsList.add(goodsInfo);
 	}
-	data.put("goodsList", goodsList);
-	resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
-	return resp.toString();
-
-    }
 
     private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
 	List<Object> bannerList = new ArrayList<Object>();

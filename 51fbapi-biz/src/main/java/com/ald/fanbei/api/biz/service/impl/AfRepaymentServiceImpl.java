@@ -491,7 +491,11 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
         if (null != coupon) {
             repay.setUserCouponId(coupon.getRid());
             repay.setCouponAmount(coupon.getAmount());
+        }else{
+            repay.setUserCouponId(0l);
+            repay.setCouponAmount(BigDecimal.ZERO);
         }
+
         repay.setName(name);
         repay.setUserId(userId);
         if (cardId == -2) {
@@ -881,8 +885,10 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
                         }
                     });
                     // 变更账单状态
-                    afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
-
+                    int successCount=afBorrowBillService.updateBorrowBillFaildWhenNotY(billIdList);
+                    if(successCount!=billIdList.size()){
+                        logger.info("trigger some bill has success repaymentId= "+repayment.getRid());
+                    }
                     // 变更还款记录未还款状态
                     afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), tradeNo, repayment.getRid());
 

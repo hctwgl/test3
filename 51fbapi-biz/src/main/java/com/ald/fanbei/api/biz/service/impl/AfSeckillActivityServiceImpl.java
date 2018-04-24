@@ -200,7 +200,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 
 	@Override
 	public Map<String, Object> getMoreGoodsByBottomGoodsTable(
-			Long userId, Integer pageNo, String pageFlag) {
+			Long userId, Integer pageNo, String pageFlag,String source) {
 		// TODO Auto-generated method stub
 	     Map<String, Object> homePageSecKillGoods = new HashMap<String, Object>();
 		HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery = new HomePageSecKillByBottomGoodsQuery();
@@ -208,7 +208,12 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		homePageSecKillByBottomGoodsQuery.setUserId(userId);
 		homePageSecKillByBottomGoodsQuery.setPageNo(pageNo);
 		homePageSecKillByBottomGoodsQuery.setPageFlag(pageFlag);
-		homePageSecKillByBottomGoodsQuery.setPageSize(20);
+		if("H5".equals(source)){
+			homePageSecKillByBottomGoodsQuery.setPageSize(30);
+		}else{
+			homePageSecKillByBottomGoodsQuery.setPageSize(20);
+		}
+		
 		List<HomePageSecKillGoods> homePageSecKillGoodsList =  afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 		homePageSecKillByBottomGoodsQuery.setFull(true);
 		homePageSecKillGoods.put("query", homePageSecKillByBottomGoodsQuery);

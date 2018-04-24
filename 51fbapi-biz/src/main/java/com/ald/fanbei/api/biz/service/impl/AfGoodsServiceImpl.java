@@ -1,14 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
@@ -201,32 +200,40 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(
 			AfGoodsQuery goodsQuery) {
-		String key = "categoryDetailVolume"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+"desc";
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_GET_GOODS_BY_CATEGORYID_AND_VOLUME.getCode()+ goodsQuery.getCategoryId() +"DESC"+ goodsQuery.getPageNo();
 		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
 		if (CollectionUtil.isEmpty(goodsList)){
 			goodsList = afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
-			bizCacheUtil.saveObjectList(key, goodsList);
+			if (CollectionUtil.isNotEmpty(goodsList)){
+				bizCacheUtil.saveObjectList(key, goodsList);
+			}
 		}
 		return goodsList;
 	}
 	
 	@Override
 	public List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId) {
-		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList("brandAllGoods" + brandId);
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_RESULT_ALLGOODS_THE_BRAND.getCode()+brandId;
+		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList(key);
 		if (CollectionUtil.isEmpty(brandGoodsList)){
 			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
-			bizCacheUtil.saveObjectListExpire("brandAllGoods" + brandId, brandGoodsList,Constants.MINITS_OF_FIVE);
+			if (CollectionUtil.isNotEmpty(brandGoodsList)){
+				bizCacheUtil.saveObjectListExpire(key, brandGoodsList,Constants.MINITS_OF_FIVE);
+			}
 		}
 		return brandGoodsList;
 	}
 	@Override
 	public List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
 			AfGoodsQuery goodsQuery) {// 页面+第几页+升序还是排序
-		String key = "categoryDetailPrice"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+goodsQuery.getSort();
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_RESULT_GET_GOODS_BY_CATEGORYID_AND_PRICE.getCode() + goodsQuery.getCategoryId() + goodsQuery.getSort()+goodsQuery.getPageNo() ;
+	//  String key = "categoryDetailPrice"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+goodsQuery.getSort();
 		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
 		if (CollectionUtil.isEmpty(goodsList)){
 			goodsList = afGoodsDao.getGoodsByCategoryIdAndPrice(goodsQuery);
-			bizCacheUtil.saveObjectList(key, goodsList);
+			if (CollectionUtil.isNotEmpty(goodsList)){
+				bizCacheUtil.saveObjectList(key, goodsList);
+			}
 		}
 		return goodsList;
 	}

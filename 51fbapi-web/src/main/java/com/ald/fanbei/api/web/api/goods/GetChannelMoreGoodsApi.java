@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -140,6 +141,14 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		//更多商品
 		 Map<String, Object> moreGoodsInfo = new HashMap<String, Object>();
 	 try{
+		 Map<String, Object> moreGoodsTemp = new HashMap<String, Object>();
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_CHANNEL_GOODS_PAGENO.getCode()+"tabId:"+ tabId+"pageNo"+pageNo;
+		 moreGoodsTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		   if(moreGoodsTemp != null){
+			   moreGoodsInfo = moreGoodsTemp;
+		   }	
+		   if(moreGoodsTemp == null || moreGoodsTemp.isEmpty()){
+		 
 		  Integer activityType = 5;
 		 // List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
 		  Map<String, Object> goodsListMap = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,HOME_CHANNEL_MORE_GOODS,activityType,tabId,pageNo);
@@ -174,10 +183,15 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 					 moreGoodsInfo.put("moreGoodsList", moreGoodsInfoList);
 				 }
 	    	 }
+		     bizCacheUtil.saveMap(cacheKey, moreGoodsInfo, Constants.MINITS_OF_TWO);	 	
+		   
+		   }
+		   
 		 }catch(Exception e){
 			 logger.error("get chaannel moreGoodsInfo goodsInfo error "+ e);
 		 }
 		 
+	
 		 if (!moreGoodsInfo.isEmpty()) {
 				data.put("moreGoodsInfo", moreGoodsInfo);
 			}

@@ -61,42 +61,7 @@ public class InterestFreeUitl {
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
-        if (goodsid != null && goodsid >0l){
-	    if ("1".equals(method)) {
-		afResourceService = (AfResourceService) SpringBeanContextUtil.getBean("afResourceService");
-		AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);// 资源配置中的品牌利率
-		if (resource1 != null) {
 
-		    Set<String> set = new HashSet<>();
-		    JSONArray temparray = JSON.parseArray(resource1.getValue());
-		    for (Object temp1 : array) {
-			JSONObject tempobj1 = (JSONObject) temp1;
-			set.add(tempobj1.getString("nper"));
-		    }
-		    JSONArray arr = new JSONArray();
-		    for (Object temp : temparray) {
-			JSONObject tempobj = (JSONObject) temp;
-			String nper = tempobj.getString("nper");
-			if (set.contains(nper)) {
-			    arr.add(tempobj);
-			}
-		    }
-		    array = arr;
-		} else {
-		    array = JSON.parseArray(resource1.getValue());
-		}
-
-	    }
-        /*    afInterestReduceGoodsService = (AfInterestReduceGoodsService)SpringBeanContextUtil.getBean("afInterestReduceGoodsService");
-
-            	JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(goodsid);
-                if (newArray != null) {
-                	array = newArray;
-
-			}*/
-
-
-        }
         array = checkNper(goodsid,method,array);
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);

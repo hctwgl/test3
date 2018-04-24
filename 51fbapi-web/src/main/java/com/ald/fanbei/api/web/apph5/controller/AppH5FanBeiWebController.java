@@ -42,6 +42,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -1263,7 +1264,17 @@ public class AppH5FanBeiWebController extends BaseController {
 	try{
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
-		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 Map<String, Object> moreGoodsTemp = new HashMap<String, Object>();
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO.getCode()+ pageNo;
+		 moreGoodsTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		   if(moreGoodsTemp != null){
+			   goodsInfo = moreGoodsTemp;
+		   }	
+		   if(moreGoodsTemp == null || moreGoodsTemp.isEmpty()){
+		 
+		 
+		 
+		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"H5");
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
@@ -1295,6 +1306,8 @@ public class AppH5FanBeiWebController extends BaseController {
 						 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 					 }
 				}
+				 bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);	 	
+		   }
 		     
 			 if (!goodsInfo.isEmpty()) {
 					returnData.put("moreGoodsInfo", goodsInfo);

@@ -71,7 +71,7 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 			Long userId, String tag, Integer type, Long tabId, Integer pageNo);
 
 	Map<String, Object> getMoreGoodsByBottomGoodsTable(Long userId,
-			Integer pageNo, String pageFlag);
+			Integer pageNo, String pageFlag,String source);
 
     Integer getSecKillGoodsStock(Long goodsId, Long activityId);
 
@@ -82,4 +82,6 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
 
     List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
+
+	
 }

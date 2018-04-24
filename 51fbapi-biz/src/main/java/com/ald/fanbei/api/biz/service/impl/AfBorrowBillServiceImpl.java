@@ -694,4 +694,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(Long userId) {
 		return afBorrowBillDao.getLatestOverdueBorrowBillInfoByUserId(userId);
 	}
+
+    @Override
+    public int updateBorrowBillFaildWhenNotY(List<Long> billIdList) {
+        return afBorrowBillDao.updateBorrowBillFaildWhenNotY(billIdList);
+    }
 }
