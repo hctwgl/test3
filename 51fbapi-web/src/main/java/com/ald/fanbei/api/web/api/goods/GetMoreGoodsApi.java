@@ -131,7 +131,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 Map<String, Object> goodsInfoTemp = new HashMap<String, Object>();
-		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO.getCode()+ pageNo;
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO.getCode()+ ":"+pageFlag+":"+pageNo;
 		 goodsInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
 		   if(goodsInfoTemp != null){
 			   goodsInfo = goodsInfoTemp;

@@ -1265,7 +1265,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
 		 Map<String, Object> moreGoodsTemp = new HashMap<String, Object>();
-		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO.getCode()+ pageNo;
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO.getCode()+ ":"+pageFlag+":"+pageNo;
 		 moreGoodsTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
 		   if(moreGoodsTemp != null){
 			   goodsInfo = moreGoodsTemp;
