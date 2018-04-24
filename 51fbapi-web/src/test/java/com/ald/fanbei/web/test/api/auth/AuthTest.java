@@ -14,10 +14,10 @@ public class AuthTest  extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 //	String urlBase = "https://testapp.51fanbei.com";
-	String urlBase = "http://localhost:8080";
-//	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
+	String urlBase = "http://localhost:8081";
+	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
-	String userName = "13958004662";	//胡潮永 支付密码123456
+//	String userName = "13958004662";	//胡潮永 支付密码123456
 //	String userName = "13460011555";	//张飞凯 支付密码123456
 //	String userName = "15293971826";	//秦继强 支付密码888888
 //	String userName = "13370127054";	//王卿 	支付密码123456
@@ -84,7 +84,18 @@ public class AuthTest  extends BaseTest{
 		
 		testApi(url, params, userName, true);
 	}
-	
+
+	/**
+	 * 认证提额接口
+	 */
+	@Test
+	public void authRaiseQuota() {
+		String url = urlBase + "/auth/authRaiseQuota";
+		Map<String,String> params = new HashMap<>();
+		params.put("authItem", "bubble");
+		testApi(url, params, userName, true);
+	}
+
 	/*----------------
 	 *  绑卡业务 end
 	 *---------------- */
