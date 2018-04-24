@@ -156,8 +156,12 @@ public class AppH5AllSearchController extends BaseController {
 				totalCount = query.getTotalCount();
 				totalPage = query.getTotalPage();
 			}else {
-				query.setGoodsIds(solrSearchResult.getGoodsIds());
-				orgSelfGoodlist = afGoodsService.getAvaliableSelfGoodsBySolr(query);
+				List<Long> goodsIds = solrSearchResult.getGoodsIds();
+				for (int i = 0; i < goodsIds.size(); i++) {
+					query.setGoodsId(goodsIds.get(i));
+					AfGoodsDo goodsDo = afGoodsService.getAvaliableSelfGoodsBySolr(query);
+					orgSelfGoodlist.add(goodsDo);
+				}
 				totalCount = solrSearchResult.getTotalCount();
 				totalPage = solrSearchResult.getTotalPage();
 			}

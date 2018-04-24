@@ -416,11 +416,8 @@
 			is_delete = 0
 		AND `status` = 'PUBLISH'
 		AND source = 'SELFSUPPORT'		
-		<if test="goodsIds != null and goodsIds.size() > 0">  
-            AND id IN  
-            <foreach item="item" index="index" collection="goodsIds" open="(" separator="," close=")">  
-                #{goodsIds[${index}],jdbcType=BIGINT}
-            </foreach>  
+		<if test="goodsId != null">  
+            AND id =#{goodsId}             
   		</if>
 		<if test="sortword != null and sortword != ''">
 		order by ${sortword}

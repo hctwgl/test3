@@ -22,18 +22,18 @@ public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 	private String keyword;
 	private String sortword;
 	private String sort;
-	private List<Long> goodsIds;
+	private Long goodsId;
 	
 	public String getKeyword() {
 		return keyword;
 	}
 
-	public List<Long> getGoodsIds() {
-		return goodsIds;
+	public Long getGoodsId() {
+		return goodsId;
 	}
 
-	public void setGoodsIds(List<Long> goodsIds) {
-		this.goodsIds = goodsIds;
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 
 	public void setKeyword(String keyword) {
