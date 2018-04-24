@@ -45,7 +45,6 @@ public class PdfCreateUtil {
     public static byte[] createByte(Map<String, Object> data,OutputStream fos,ByteArrayOutputStream bos) throws IOException, DocumentException {
         String templatePath = data.get("templatePath").toString();//模板路径
         PdfReader reader = new PdfReader(templatePath);
-        bos = new ByteArrayOutputStream();
             /* 将要生成的目标PDF文件名称 */
         PdfStamper ps = new PdfStamper(reader, bos);
         PdfContentByte under = ps.getUnderContent(1);
@@ -61,12 +60,6 @@ public class PdfCreateUtil {
 	        /* 必须要调用这个，否则文档不会生成的 */
         ps.setFormFlattening(true);
         ps.close();
-        //文件存储的路径（需要先创建好文件夹）
-        /*fos = new FileOutputStream(newPDFPath);
-        fos.write(bos.toByteArray());
-        fos.flush();
-        fos.close();
-        bos.close();*/
         return bos.toByteArray();
     }
 
@@ -87,7 +80,7 @@ public class PdfCreateUtil {
          * @param urlStr
          * @throws IOException
          */
-        public static byte[]  downLoadByUrl(String urlStr) throws IOException{
+        public static byte[]  downLoadByUrl(String urlStr,ByteArrayOutputStream bos) throws IOException{
             URL url = new URL(urlStr);
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             //设置超时间为3秒
@@ -97,7 +90,7 @@ public class PdfCreateUtil {
             //得到输入流
             InputStream inputStream = conn.getInputStream();
             //获取自己数组
-            byte[] getData = readInputStream(inputStream);
+            byte[] getData = readInputStream(inputStream,bos);
             return getData;
         }
 
@@ -107,10 +100,9 @@ public class PdfCreateUtil {
      * @return
      * @throws IOException
      */
-    public static  byte[] readInputStream(InputStream inputStream) throws IOException {
+    public static  byte[] readInputStream(InputStream inputStream,ByteArrayOutputStream bos) throws IOException {
         byte[] buffer = new byte[1024];
         int len = 0;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         while((len = inputStream.read(buffer)) != -1) {
             bos.write(buffer, 0, len);
         }

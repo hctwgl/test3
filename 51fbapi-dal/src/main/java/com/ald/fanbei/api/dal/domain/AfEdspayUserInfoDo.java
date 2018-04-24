@@ -67,6 +67,15 @@ import java.math.BigDecimal;
      */
     private String mobile;
 
+    private BigDecimal investorAmount;
+
+    public BigDecimal getInvestorAmount() {
+        return investorAmount;
+    }
+
+    public void setInvestorAmount(BigDecimal investorAmount) {
+        this.investorAmount = investorAmount;
+    }
 
     /**
      * 获取主键Id

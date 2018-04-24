@@ -9,6 +9,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +143,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     YiBaoUtility yiBaoUtility;
-
+	@Resource
+	KafkaSync kafkaSync;
     @Resource
     CuiShouUtils cuiShouUtils;
 
@@ -214,7 +221,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     /**
      * 还款成功后调用
-     * 
+     *
      * @param tradeNo
      *            我方交易流水
      * @param outTradeNo
@@ -254,22 +261,28 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 		}
 	    });
 
-	    if (resultValue == 1L) {
-		try {
-		    notifyUserBySms(repayDealBo, isBalance);
-		    nofityRisk(repayDealBo, cashDo);
-		} catch (Exception e) {
-		    logger.info("notifyUserBySms or nofityRisk has a Exception ,borrowNo = " + cashDo.getBorrowNo() + ", e= " + e);
+            if (resultValue == 1L) {
+            	try {
+	            	notifyUserBySms(repayDealBo,isBalance);
+	            	nofityRisk(repayDealBo,cashDo);
+            	} catch(Exception e) {
+            		logger.info("notifyUserBySms or nofityRisk has a Exception ,borrowNo = "+cashDo.getBorrowNo()+", e= "+e );
+            	}
+            	cuiShouUtils.syncCuiShou(repaymentDo);
+				try{
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+				}catch (Exception e){
+					logger.info("消息同步失败:",e);
+				}
+            }
+    		
+    	}finally {
+    		unLock(tradeNo);
+    		
+    		// 解锁还款
+    		unLockRepay(repaymentDo.getUserId());
 		}
-		cuiShouUtils.syncCuiShou(repaymentDo);
-	    }
-
-	} finally {
-	    unLock(tradeNo);
-
-	    // 解锁还款
-	    unLockRepay(repaymentDo.getUserId());
-	}
     }
 
     @Override
@@ -371,14 +384,14 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 		resultMap = sendKuaiJieSms(bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
 			JSON.toJSONString(bizObject), "afBorrowLegalRepaymentV2Service",Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 	    } else {// 代扣
-		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), 
+		resultMap = doUpsPay(bankChannel, bank.getRid(), bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
 			bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL_V2.getCode());
 	    }
 	} else if (bo.cardId == -2) {// 余额支付
 	    dealRepaymentSucess(bo.tradeNo, "");
 	    resultMap = getResultMap(bo, null);
 	}
-	
+
 	return resultMap;
     }
 
@@ -388,17 +401,17 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 //	afRepaymentBorrowCashDao.status2ProcessKuaijie(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());
 
     }
-    
+
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	
+
     }
-    
+
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 
     }
-    
+
     @Override
     protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 	KuaijieRepayV2Bo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayV2Bo.class);
@@ -429,10 +442,10 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	    //data.put("resp", respBo);
 	    data.put("outTradeNo", respBo.getTradeNo());
 	}
-	
+
 	return data;
     }
-    
+
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
 	if (StringUtils.isNotBlank(payBizObject)) {
@@ -469,7 +482,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     /**
      * 需在事务管理块中调用此函数!
-     * 
+     *
      * @param repayDealBo
      * @param repaymentDo
      */
@@ -520,7 +533,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     /**
      * 处理优惠卷 和 账户余额
-     * 
+     *
      * @param repayDealBo
      */
     private void dealCouponAndRebate(RepayDealBo repayDealBo) {
@@ -562,7 +575,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     /**
      * 代扣现金贷还款成功短信发送
-     * 
+     *
      * @param mobile
      * @param nowRepayAmount
      */
@@ -575,7 +588,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     /**
      * 用户手动现金贷还款成功短信发送
-     * 
+     *
      * @param mobile
      * @param repayMoney
      */

@@ -291,6 +291,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Autowired
 	AfOrderCombinationPayService afOrderCombinationPayService;
 
+	@Resource
+	AfBklService afBklService;
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:" + content);
@@ -1328,36 +1330,36 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    AfBorrowDo borrow = new AfBorrowDo();
 			    // 租赁逻辑
 			    if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
-				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
-				orderInfo.setStatus(OrderStatus.NEW.getCode());
-				merPriv = OrderType.LEASE.getCode();
-				remark = "租赁商品订单支付";
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+					orderInfo.setStatus(OrderStatus.NEW.getCode());
+					merPriv = OrderType.LEASE.getCode();
+					remark = "租赁商品订单支付";
 
-				String cardNo = card.getCardNumber();
-				String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-				orderInfo.setRiskOrderNo(riskOrderNo);
-				borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(), afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
-				borrow.setVersion(1);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String borrowTime = sdf.format(borrow.getGmtCreate());
-				RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-				canPay = verybo.isSuccess();
-				if (canPay) {
-				    String result = verybo.getResult();
-				    if (!result.equals("10")) {
-					canPay = false;
-				    }
+					String cardNo = card.getCardNumber();
+					String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					orderInfo.setRiskOrderNo(riskOrderNo);
+					borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.LEASE, orderInfo.getUserId(), afOrderLeaseDo.getMonthlyRent(), orderInfo.getNper(), BorrowStatus.APPLY.getCode(), orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
+					borrow.setVersion(1);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String borrowTime = sdf.format(borrow.getGmtCreate());
+					RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, OrderType.LEASE.getCode(), StringUtils.EMPTY, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+					canPay = verybo.isSuccess();
+					if (canPay) {
+						String result = verybo.getResult();
+						if (!result.equals("10")) {
+							canPay = false;
+						}
+					}
+					if (!canPay) {
+						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+						resultMap.put("success", false);
+						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
+						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					} else {
+						orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+						orderInfo.setStatus(OrderStatus.DEALING.getCode());
+					}
 				}
-				if (!canPay) {
-				    afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
-				    resultMap.put("success", false);
-				    resultMap.put("verifybo", JSONObject.toJSONString(verybo));
-				    resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-				} else {
-				    orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-				    orderInfo.setStatus(OrderStatus.DEALING.getCode());
-				}
-			    }
 
 			    // 银行卡支付 代收
 			    // 租赁弱风控判断（除租赁外银行卡不需要判断弱风控 canPay=true）
@@ -1396,51 +1398,54 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
-	}
+//	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+//	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+//	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+//	}
     }
 
     @Override
     protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
-	}
+//	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+//	if (kuaijieOrderPayBo.getOrderInfo() != null) {
+//	    orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+//	}
     }
 
     @Override
     protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
-	// 租赁逻辑
-	KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
-	Map<String, Object> resultMap = new HashMap<String, Object>();
-	if (kuaijieOrderPayBo.getOrderInfo() != null) {
-	    if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
-		if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
-		    // 新增借款信息
-		    afBorrowDao.addBorrow(kuaijieOrderPayBo.getBorrow()); // 冻结状态
-		    // 在风控审批通过后额度不变生成账单
-		    AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-		    afBorrowExtendDo.setId(kuaijieOrderPayBo.getBorrow().getRid());
-		    afBorrowExtendDo.setInBill(0);
-		    afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
-		    afBorrowService.updateBorrowStatus(kuaijieOrderPayBo.getBorrow(), kuaijieOrderPayBo.getAfOrderLeaseDo().getUserName(), kuaijieOrderPayBo.getOrderInfo().getUserId());
-		    afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
+		// 租赁逻辑
+		KuaijieOrderPayBo kuaijieOrderPayBo = JSON.parseObject(payBizObject, KuaijieOrderPayBo.class);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if (kuaijieOrderPayBo.getOrderInfo() != null) {
+
+			orderDao.updateOrder(kuaijieOrderPayBo.getOrderInfo());
+
+			if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.LEASE.getCode())) {
+				if (kuaijieOrderPayBo.getBorrow() != null && kuaijieOrderPayBo.getAfOrderLeaseDo() != null) {
+					// 新增借款信息
+					afBorrowDao.addBorrow(kuaijieOrderPayBo.getBorrow()); // 冻结状态
+					// 在风控审批通过后额度不变生成账单
+					AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+					afBorrowExtendDo.setId(kuaijieOrderPayBo.getBorrow().getRid());
+					afBorrowExtendDo.setInBill(0);
+					afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					afBorrowService.updateBorrowStatus(kuaijieOrderPayBo.getBorrow(), kuaijieOrderPayBo.getAfOrderLeaseDo().getUserName(), kuaijieOrderPayBo.getOrderInfo().getUserId());
+					afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
+				}
+			}
+
+			Map<String, Object> newMap = new HashMap<String, Object>();
+			newMap.put("outTradeNo", respBo.getOrderNo());
+			newMap.put("tradeNo", respBo.getTradeNo());
+			newMap.put("cardNo", Base64.encodeString(cardNo));
+			resultMap.put("resp", newMap);
+			resultMap.put("status", PayStatus.DEALING.getCode());
+			resultMap.put("success", true);
 		}
-	    }
 
-	    Map<String, Object> newMap = new HashMap<String, Object>();
-	    newMap.put("outTradeNo", respBo.getOrderNo());
-	    newMap.put("tradeNo", respBo.getTradeNo());
-	    newMap.put("cardNo", Base64.encodeString(cardNo));
-	    resultMap.put("resp", newMap);
-	    resultMap.put("status", PayStatus.DEALING.getCode());
-	    resultMap.put("success", true);
+		return resultMap;
 	}
-
-	return resultMap;
-    }
 
     @Override
     protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
@@ -1799,13 +1804,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 						//新增白名单逻辑
 						try {
-							String bklResult = isBklResult(orderInfo);
+							String bklResult = afBklService.isBklResult(orderInfo);
 							if (bklResult.equals("v2")){//需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
-								submitBklInfo(orderInfo);
-								orderInfo.setIagentStatus("C");
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+								afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
+								if (orderInfo.getIagentStatus()==null)
+									orderInfo.setIagentStatus("C");
 							}else if (bklResult.equals("v1")){//不需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
 								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 								orderInfo.setIagentStatus("A");
 							}
@@ -1926,104 +1932,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			}
 		}
 		return result;
-	}
-
-	private String  isBklResult(AfOrderDo orderInfo) {
-		String result = "v2";
-
-		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
-		if (bklWhiteResource != null) {
-			//白名单开启
-			String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
-			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
-			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v0";
-				return result;
-			}
-		}
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
-		if (afResourceDo != null){
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
-			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
-				result = "v1";
-				return result;
-			}
-			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
-			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckResult("0");//通过审核
-			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
-			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
-			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
-				result = "v1";
-				return result;
-			}
-			AfIagentResultDto resultDto = new AfIagentResultDto();
-			resultDto.setUserId(orderInfo.getUserId());
-			resultDto.setCheckResult("1");
-			resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
-			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
-			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
-				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
-					//直接拒绝
-					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
-					Map<String,String> qmap = new HashMap<>();
-					qmap.put("orderNo",orderInfo.getOrderNo());
-					result = "v3";
-					final String  orderNo = orderInfo.getOrderNo();
-					final String json = JSONObject.toJSONString(qmap);
-					YFSmsUtil.pool.execute(new Runnable() {
-						@Override
-						public void run() {
-							HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
-						}
-					});
-				}else {
-					result = "v2";//需电核
-				}
-			}
-		}
-		return result;
-	}
-
-	public void submitBklInfo(AfOrderDo orderInfo){
-		try {
-			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
-			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
-			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
-			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
-			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
-			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
-			String sex ;
-			if (idNumberDo != null){
-				sex = idNumberDo.getGender();
-			}else {
-				sex = "";
-			}
-			AfBklDo bklDo = new AfBklDo();
-			bklDo.setCsvArn(orderInfo.getOrderNo());
-			bklDo.setCsvPhoneNum(userDo.getMobile());
-			bklDo.setCsvAmt(String.valueOf(orderInfo.getBorrowAmount()));
-			bklDo.setCsvDigit4(csvDigit4);
-			bklDo.setCsvBirthDate(csvBirthDate);
-			bklDo.setCsvName(userDo.getRealName());
-			bklDo.setCsvPayWay("组合支付");
-			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
-			bklDo.setCsvSex(sex);
-			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
-			bklDo.setOrderId(orderInfo.getRid());
-			bklDo.setUserId(orderInfo.getUserId());
-			bklUtils.submitJob(bklDo);
-		}catch (Exception e){
-			logger.error("submitBklInfo error = >{}",e);
-		}
-
-
 	}
 
 	@Override

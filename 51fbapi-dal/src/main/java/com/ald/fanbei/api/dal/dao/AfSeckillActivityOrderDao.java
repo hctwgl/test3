@@ -4,6 +4,8 @@ import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 秒杀活动管理(商品)Dao
  * 
@@ -22,4 +24,6 @@ public interface AfSeckillActivityOrderDao extends BaseDao<AfSeckillActivityOrde
     AfSeckillActivityDo getActivityByOrderId(@Param("orderId") Long orderId);
 
     AfSeckillActivityOrderDo getActivityOrderByGoodsIdAndActId(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId, @Param("userId") Long userId);
+
+    List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
 }
