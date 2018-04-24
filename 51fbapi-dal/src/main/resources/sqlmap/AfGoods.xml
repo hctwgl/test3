@@ -469,7 +469,7 @@
 		where g.is_delete = 0
 		AND g.status = 'PUBLISH'
 		AND g.id in (#{goodsId})
-
+	</select>
 
 	<select id="getAvaliableSelfGoodsBySolr" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo">
 		SELECT
