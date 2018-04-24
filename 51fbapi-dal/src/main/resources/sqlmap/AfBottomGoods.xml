@@ -18,6 +18,6 @@
 		FROM af_bottom_goods bg, af_bottom_goods_page p, af_goods g
 		WHERE g.is_delete = 0 AND p.is_delete = 0 AND p.is_disable = 0
 			AND bg.page_id = p.id AND bg.goods_id = g.id AND p.page_flag = #{pageFlag}
-		ORDER BY bg.sort DESC
+		ORDER BY bg.sort DESC, bg.gmt_create DESC
 	</select>
 </mapper>
