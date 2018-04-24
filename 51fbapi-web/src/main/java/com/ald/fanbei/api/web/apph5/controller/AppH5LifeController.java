@@ -97,11 +97,14 @@ public class AppH5LifeController extends BaseController {
             }
             if (StringUtils.isBlank(result)) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("shopList", findShopList());
+                List<AfShopVo> shopList = findShopList();
+                data.put("shopList", shopList);
+                List<Map<String, Object>> bannerList = findBannerList();
                 data.put("bannerList", findBannerList());
 
                 result = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
-                bizCacheUtil.saveObject(cacheKey,result,120);
+                if (shopList.size() > 0 || bannerList.size() > 0)
+                    bizCacheUtil.saveObject(cacheKey, result, 180);
             }
             return result;
         } catch (Exception e) {
@@ -131,7 +134,7 @@ public class AppH5LifeController extends BaseController {
 
                 result = H5CommonResponse
                         .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
-                bizCacheUtil.saveObject(cacheKey, result, 120);
+                bizCacheUtil.saveObject(cacheKey, result, 180);
             }
 
             return result;
