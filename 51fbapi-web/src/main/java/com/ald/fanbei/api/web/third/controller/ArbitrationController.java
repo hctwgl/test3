@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.arbitration.*;
-import com.ald.fanbei.api.biz.service.RiskTrackerService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.alibaba.fastjson.JSON;
 
@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.ArbitrationRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.ArbitrationService;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ArbitrationStatus;
@@ -95,6 +92,14 @@ public class ArbitrationController {
     public static final String RET_MSG_SUCC = "success";//成功信息
     @Resource
     RiskTrackerService trackerService;
+    @Resource
+    AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
+    @ResponseBody
+    @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
+    public void createPdf(String loanBillNo) throws  Exception {
+        String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
+        logger.info(protocal);
+    }
 
     @ResponseBody
     @RequestMapping(value = "/submit", method = RequestMethod.GET)
@@ -138,6 +143,7 @@ public class ArbitrationController {
                         afArbitrationDo.setStatus("案件待提交");
                         afArbitrationDo.setValue2(result);
                         afArbitrationDo.setLoanBillNo(loanBillNo);
+                        String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
                         arbitrationService.saveRecord(afArbitrationDo);
                     } else {
                         logger.info("submit error errorMsg " + firstData.getString("errMsg"));
