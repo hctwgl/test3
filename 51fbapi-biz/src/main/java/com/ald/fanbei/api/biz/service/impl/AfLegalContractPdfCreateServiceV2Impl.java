@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -1588,7 +1589,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 periods.put("gmtPlanRepay",periodsTime);
                 periods.put("loanAmount", afLoanPeriodsDo.getAmount());
                 periods.put("periods", i);
-                periods.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
+                periods.put("fee", BigDecimalUtil.add(afLoanPeriodsDo.getInterestFee(),afLoanPeriodsDo.getServiceFee(),afLoanPeriodsDo.getRepaidInterestFee(),afLoanPeriodsDo.getRepaidServiceFee()));
                 array.add(periods);
             }
             map.put("nperArray", array);
