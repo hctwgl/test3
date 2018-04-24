@@ -1785,6 +1785,24 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						// afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new
 						// Date());
 						// #endregion
+						if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+							//新增白名单逻辑
+							try {
+								String bklResult = afBklService.isBklResult(orderInfo);
+								if (bklResult.equals("v2")){//需电核
+									logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+									afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
+									if (orderInfo.getIagentStatus()==null)
+										orderInfo.setIagentStatus("C");
+								}else if (bklResult.equals("v1")){//不需电核
+									logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
+									afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+									orderInfo.setIagentStatus("A");
+								}
+							}catch (Exception e){
+								logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+							}
+						}
 					}
 					// 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
                     if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
@@ -1801,24 +1819,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 //TODO 回调方法
-					if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-						//新增白名单逻辑
-						try {
-							String bklResult = afBklService.isBklResult(orderInfo);
-							if (bklResult.equals("v2")){//需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
-								afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
-								if (orderInfo.getIagentStatus()==null)
-									orderInfo.setIagentStatus("C");
-							}else if (bklResult.equals("v1")){//不需电核
-								logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-								orderInfo.setIagentStatus("A");
-							}
-						}catch (Exception e){
-							logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
-						}
-					}
 		    return 1;
 		} catch (Exception e) {
 		    status.setRollbackOnly();
