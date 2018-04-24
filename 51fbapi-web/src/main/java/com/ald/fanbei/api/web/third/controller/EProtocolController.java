@@ -66,9 +66,7 @@ public class EProtocolController {
 		String sign = StringUtil.null2Str(jsonObj.get("sign"));
 		String appId = StringUtil.null2Str(jsonObj.get("appId"));
 		logger.info("EProtocolController giveBackSealInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
-
 		AssetSideRespBo notifyRespBo = edsPayProtocolUtil.giveBackSealInfo(sendTime, data, sign,appId);
-		logger.info("EProtocolController giveBackSealInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 
