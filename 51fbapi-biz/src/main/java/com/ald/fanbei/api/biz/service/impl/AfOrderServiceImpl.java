@@ -1780,30 +1780,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 			afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 			afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
-
-						// #region add by hongzhengpei
-						// afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new
-						// Date());
-						// #endregion
-						/*logger.info("dealBrandOrderSucc bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
-						if ((orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()))) {
-							//新增白名单逻辑
-							try {
-								String bklResult = afBklService.isBklResult(orderInfo);
-								if (bklResult.equals("v2")){//需电核
-									logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
-									afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
-									if (orderInfo.getIagentStatus()==null)
-										orderInfo.setIagentStatus("C");
-								}else if (bklResult.equals("v1")){//不需电核
-									logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-									afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-									orderInfo.setIagentStatus("A");
-								}
-							}catch (Exception e){
-								logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
-							}
-						}*/
 					}
 					// 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
                     if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
