@@ -706,7 +706,7 @@ public class CollectionController {
                 logger.error("getContractProtocolPdf error = >[}",e);
             }
         }
-        AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
+        AfContractPdfDo contractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
         logger.info("getContractProtocolPdf afContractPdfDo end =>{}",afContractPdfDo);
         if (afContractPdfDo == null) {
             logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}", id);
@@ -719,7 +719,7 @@ public class CollectionController {
             updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
             updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
             Map<String, String> map = new HashMap<String, String>();
-            map.put("contractPdfUrl", afContractPdfDo.getContractPdfUrl());
+            map.put("contractPdfUrl", contractPdfDo.getContractPdfUrl());
             String jsonString = JsonUtil.toJSONString(map);
             updteBo.setData(jsonString);
         } else {
