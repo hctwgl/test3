@@ -181,14 +181,14 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         List<String> activityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode());
         if(null == activityIds){
             activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
-            bizCacheUtil.saveListForever(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds);
+            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_ONE_DAY);
         }
 
-        // 查询每日活动场次
+        // 查询每日活动场次(每日第一场时间前为上一场次信息)
         List<String> todayActivityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode());
         if(null == todayActivityIds){
             todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
-            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(),todayActivityIds,Constants.SECOND_OF_TEN_MINITS);
+            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(),todayActivityIds,Constants.SECOND_OF_AN_HOUR_INT);
         }
 
         if (null != todayActivityIds && !todayActivityIds.isEmpty()) {
@@ -199,7 +199,8 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     userId = userDo.getRid();
             }
 
-            int activitySize = todayActivityIds.size();
+            int activitySize = activityIds.size();
+            int todayActivitySize = todayActivityIds.size();
             String activityId = todayActivityIds.get(0);
             String nextActivityId = "";
             if (activitySize > 1) {
@@ -211,12 +212,12 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     String[] activityStartHourArray = activityStartHour.getValue().split(",");
                     int arrayLength = activityStartHourArray.length;
                     if (currentHour > Integer.parseInt(activityStartHourArray[arrayLength - 1])) {
-                        activityId = todayActivityIds.get(activitySize - 1);
+                        activityId = todayActivityIds.get(todayActivitySize - 1);
                     } else {
                         for (int i = 0; i < arrayLength - 1; i++) {
                             if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
-                                if (activitySize < (i + 1)) {
-                                    activityId = todayActivityIds.get(activitySize - 1);
+                                if (todayActivitySize < (i + 1)) {
+                                    activityId = todayActivityIds.get(todayActivitySize - 1);
                                 } else {
                                     activityId = todayActivityIds.get(i + 1);
                                 }
