@@ -2,22 +2,24 @@ package com.ald.fanbei.api.web.h5.api.loan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -50,7 +52,6 @@ import com.google.common.collect.Maps;
  * @Description: 白领贷-还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
- * @param <E>
  * @date 2018年1月22日
  */
 @Component("loanRepayDoApi")
@@ -74,33 +75,17 @@ public class LoanRepayDoApi implements ApiHandle {
 	AfLoanService afLoanService;
 	@Resource
 	AfLoanPeriodsService afLoanPeriodsService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		
+		String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),null);
 		LoanRepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
 		
-		this.afLoanRepaymentService.repay(bo);
-		
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.loanId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", AfLoanRepaymentStatus.SUCC.name());
-		if(bo.userCouponDto != null) {
-			data.put("couponAmount", bo.userCouponDto.getAmount());
-		}
-		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-			data.put("userAmount", bo.rebateAmount);
-		}
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		data.put("jfbAmount", BigDecimal.ZERO);
-		
+		Map<String, Object> data = this.afLoanRepaymentService.repay(bo,bankPayType);		
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);		
 		resp.setResponseData(data);
 		
 		return resp;
@@ -133,10 +118,20 @@ public class LoanRepayDoApi implements ApiHandle {
 			
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
-			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+			//
+			if (!afResourceService.checkThirdPayByType(ThirdBizType.LOAN_REPAYMENT, ThirdPayTypeEnum.WXPAY)) {
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+			
+			//throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 		}
 		if (bo.cardId == -3) {// -3支付宝支付
-			throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+			
+			if (!afResourceService.checkThirdPayByType(ThirdBizType.LOAN_REPAYMENT, ThirdPayTypeEnum.ZFBPAY)) {
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+			
+			//throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
 		}
 		
 		checkPwdAndCard(bo);
@@ -160,7 +155,7 @@ public class LoanRepayDoApi implements ApiHandle {
 				if (null == card) { throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR); }
 				
 				//还款金额是否大于银行单笔限额
-				afUserBankcardService.checkUpsBankLimit(card.getBankCode(), bo.actualAmount);
+				afUserBankcardService.checkUpsBankLimit(card.getBankCode(), card.getBankChannel(), bo.actualAmount);
 				
 				bo.cardName = card.getBankName();
 				bo.cardNo = card.getCardNumber();

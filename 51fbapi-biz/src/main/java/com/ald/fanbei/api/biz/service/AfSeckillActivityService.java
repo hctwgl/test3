@@ -3,7 +3,9 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 
 import java.util.List;
 
@@ -50,4 +52,18 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     AfSeckillActivityDo getStartActivityByPriceId(Long goodsPriceId);
 
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
+
+    List<AfSeckillActivityGoodsDo> getActivityGoodsByGoodsIds(List<Long> goodsIdList);
+
+    List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
+
+    List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId);
+
+    List<AfSeckillActivityGoodsDto> getActivityGoodsByActivityId(Long activityId);
+
+    AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(Long activityId, Long goodsId);
+
+    List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
+
+    List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
 }

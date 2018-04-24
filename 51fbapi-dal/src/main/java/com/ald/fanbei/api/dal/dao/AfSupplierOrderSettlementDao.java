@@ -18,5 +18,11 @@ public interface AfSupplierOrderSettlementDao {
 
 	Integer updateSettlementOrderPayStatus(AfSupplierOrderSettlementDo afSupplierOrderSettlementDo);//修改结算单打款状态
 
+	Integer updateSettlementOrderPayStatusBySettleNo(AfSupplierOrderSettlementDo afSupplierOrderSettlementDo);//修改结算单打款状态
+
+	String selectSettlementNoById(Long rid);//根据id查找结算单
+
+	Long selectSettlementNoBySettleNo(String settleNo);//根据settleNo查找结算单
+
     int updateStatusByOrderId(@Param("rid") Long rid);
 }

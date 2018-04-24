@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
@@ -8,11 +7,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.alibaba.fastjson.JSONArray;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -64,7 +72,8 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox);
+		BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox,String bqsBlackBox,String bankChannel);
+
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -175,13 +184,13 @@ public interface AfOrderService {
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress);
+	Map<String,Object> payBrandOrderOld(Long payId, Long orderId, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal saleAmount, Integer nper,final String appName,final String ipAddress, String bankChannel);
 	
 	/**
 	 * 处理菠萝觅回调订单 成功
@@ -191,7 +200,7 @@ public interface AfOrderService {
 	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
 
 
-	AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType);
+	AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType, String secOrderType);
 
 
 	
@@ -395,5 +404,68 @@ public interface AfOrderService {
 	 * */
 
 	String getTradeBusinessNameByOrderId(Long orderid);
+
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	HashMap checkLeaseOrder(Long userId, Long goodsId);
+
+	/**
+	 * 获取租赁商品是否存在订单
+	 * @return
+	 */
+	JSONObject getLeaseFreeze(Map<String, Object> data, BigDecimal goodsPrice, Long userId);
+
+	/**
+	 * 添加租赁订单
+	 * @return
+	 */
+	int addOrderLease(AfOrderLeaseDo afOrderLeaseDo);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	AfOrderLeaseDo getOrderLeaseByOrderId(Long orderId);
+
+	/**
+	 * 关闭订单
+	 * @return
+	 */
+	int closeOrder(String closedReason,String closedDetail,Long id,Long userId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	LeaseOrderDto getAllOrderLeaseByOrderId(Long orderId,Long userId);
+
+	/**
+	 * 查询租赁订单
+	 * @return
+	 */
+	List<LeaseOrderListDto> getOrderLeaseList(Long pageIndex,Long pageSize,Integer type,Long userId);
+
+	/**
+	 * 修改租赁订单租期开始时间和结束时间
+	 * @return
+	 */
+	int UpdateOrderLeaseTime(Date gmtStart,Date gmtEnd,Long orderId);
+
+	/**
+	 * h5删除订单
+	 * @return
+	 */
+	int UpdateOrderLeaseShow(Long orderId,Long userId);
+
+	/**
+	 * 获取租赁协议
+	 * @return
+	 */
+	HashMap getLeaseProtocol(Long orderId);
+	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
+	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
 
 }

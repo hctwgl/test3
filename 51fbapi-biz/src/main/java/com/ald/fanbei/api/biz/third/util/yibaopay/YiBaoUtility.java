@@ -411,7 +411,7 @@ public class YiBaoUtility  implements ThirdInterface{
             }
         }
         else if(resultStatus.equals("SUCCESS")){
-            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false);
+            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false,null);
 
 
         }

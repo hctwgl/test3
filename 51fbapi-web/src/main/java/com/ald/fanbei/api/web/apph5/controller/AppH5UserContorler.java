@@ -97,6 +97,8 @@ public class AppH5UserContorler extends BaseController {
 
     @Resource
     private AfUserAuthService afUserAuthService;
+    @Resource
+    private AfFacescoreRedService faceScoreService;
 
     @RequestMapping(value = {"invitationGift"}, method = RequestMethod.GET)
     public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
@@ -414,6 +416,18 @@ public class AppH5UserContorler extends BaseController {
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);
             afUserService.updateUser(userDo);
+            // 颜值测试注册
+            Long redId = NumberUtil.objToLong(request.getParameter("rid"));
+            if (redId != null){
+            	AfFacescoreRedDo redDo = faceScoreService.getById(redId);
+            	if (redDo == null){
+            		return H5CommonResponse.getNewInstance(false, "参数非法", null, null).toString();
+            	}else{
+            		return H5CommonResponse.getNewInstance(true, "恭喜您提现成功,快去昭告天下吧", null, redDo).toString();
+            	}
+            	
+            }
+           
 
             // 获取邀请分享地址
             AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
@@ -580,14 +594,15 @@ public class AppH5UserContorler extends BaseController {
             try {
                 tongdunUtil.getPromotionResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {
+                try {
+                    baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
+                }catch (Exception ex){
+                    logger.error("/app/user/commitChannelRegister getRegistResult error => {}",ex.getMessage());
+                }
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-            try {
-                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),mobile,"","","","");
-            }catch (Exception e){
-                logger.error("/app/user/commitChannelRegister getRegistResult error => {}",e.getMessage());
-            }
+
             // 更新为已经验证
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 

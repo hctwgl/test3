@@ -5,6 +5,7 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.api.agencybuy.SubmitAgencyBuyOrderApi;
 import com.ald.fanbei.api.web.api.order.BuySelfGoodsApi;
+import com.ald.fanbei.api.web.api.order.LeaseOrderApi;
 import com.ald.fanbei.api.web.api.order.TradeOrderApi;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -31,6 +32,8 @@ public class PreCashierApi  implements ApiHandle {
     SubmitAgencyBuyOrderApi submitAgencyBuyOrderApi;
     @Resource
     TradeOrderApi tradeOrderApi;
+    @Resource
+    LeaseOrderApi leaseOrderApi;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -43,7 +46,8 @@ public class PreCashierApi  implements ApiHandle {
             bussinessHandle=buySelfGoodsApi;
         }   else if(orderType.equals(OrderType.TRADE.getCode())){
             bussinessHandle=tradeOrderApi;
-            
+        } else if(orderType.equals(OrderType.LEASE.getCode())){
+            bussinessHandle=leaseOrderApi;
         }
         request.setAttribute("fromCashier",1);
         return  bussinessHandle.process(requestDataVo,context,request);

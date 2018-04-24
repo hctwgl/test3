@@ -118,10 +118,10 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
-	
+
 	@Resource
 	AfBorrowDao afBorrowDao;
-	
+
 	@Resource
 	AfBorrowCashDao borrowCashDao;
 
@@ -145,8 +145,8 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	}
 
 	@Override
-	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, 
-			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
+	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
+											AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
 
 		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param),param.getType());
@@ -343,7 +343,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	 */
 	@Override
 	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo,
-			AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param) {
+						  AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param) {
 		this.checkAccount(accountDo, authDo);
 		this.checkAmount(param, rateInfoDo);
 		this.checkPassword(accountDo, param);
@@ -385,7 +385,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Override
 	public void delegatePay(String consumerNo, String orderNo, String result,
-			final AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,final AfBorrowCashDo afBorrowCashDo) {
+							final AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,final AfBorrowCashDo afBorrowCashDo) {
 		Long userId = Long.parseLong(consumerNo);
 		final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 		Date currDate = new Date();
@@ -448,7 +448,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				} catch (Exception e) {
 					logger.error("updateAuAmountByRid is fail;msg=" + e);
 				}
-				// 减少额度，包括搭售商品借款 
+				// 减少额度，包括搭售商品借款
 				afUserAccountSenceService.syncLoanUsedAmount(userId, SceneType.CASH, afBorrowCashDo.getAmount());
 
 				// 增加日志
@@ -463,7 +463,14 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			delegateBorrowCashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
 			// 更新订单状态
 			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
-			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			logger.info("test1 ");
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
+			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
+				jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
+				smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
+			}else{
+				jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			}
 		}
 
 		transactionTemplate.execute(new TransactionCallback<String>() {
@@ -542,27 +549,27 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		});
 	}
 
-	
+
 
 	@Override
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
-			ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo) {
-		
+											 ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo) {
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String borrowTime = sdf.format(new Date());
 		HashMap<String, HashMap> riskDataMap = new HashMap();
 
-        HashMap summaryData = afBorrowDao.getUserSummary(userId);
-        riskDataMap.put("summaryData", summaryData);
-        riskDataMap.put("summaryOrderData", new HashMap<>());
+		HashMap summaryData = afBorrowDao.getUserSummary(userId);
+		riskDataMap.put("summaryData", summaryData);
+		riskDataMap.put("summaryOrderData", new HashMap<>());
 		RiskVerifyRespBo verifyBo = riskUtil.weakRiskForXd(
 				ObjectUtils.toString(userId),
-				afBorrowCashDo.getBorrowNo(), 
-				param.getType(), "50", 
-				afBorrowCashDo.getCardNumber(), 
-				appType, ipAddress, param.getBlackBox(), 
-				riskOrderNo, accountDo.getUserName(), 
-				param.getAmount(), afBorrowCashDo.getPoundage(), 
+				afBorrowCashDo.getBorrowNo(),
+				param.getType(), "50",
+				afBorrowCashDo.getCardNumber(),
+				appType, ipAddress, param.getBlackBox(),
+				riskOrderNo, accountDo.getUserName(),
+				param.getAmount(), afBorrowCashDo.getPoundage(),
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
 				afBorrowCashDo.getCardName(), null, "", riskDataMap,param.getBqsBlackBox(),null);
 		return verifyBo;
@@ -591,5 +598,5 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	}
 
 
-	
+
 }

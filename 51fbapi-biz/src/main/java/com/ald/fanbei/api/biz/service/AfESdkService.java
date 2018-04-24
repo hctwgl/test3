@@ -48,9 +48,15 @@ public interface AfESdkService {
 
     FileDigestSignResult thirdStreamSign(Map<String,Object> map,byte[] stream);//签章
 
+    FileDigestSignResult streamSign(String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream);//签章
+
+    FileDigestSignResult selfStreamSign(String fileName,String type,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream);//签章
+
     FileDigestSignResult selfSign(Map<String,Object> map);//签章
 
     FileDigestSignResult selfStreamSign(Map<String,Object> map,byte[] stream);//签章
+
+    FileDigestSignResult leaseSelfStreamSign(Map<String,Object> map,byte[] stream);//签章
 
     AddAccountResult addPerson(Map<String,String> map);//创建个人账户
 

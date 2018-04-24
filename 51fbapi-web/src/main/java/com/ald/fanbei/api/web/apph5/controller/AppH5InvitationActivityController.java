@@ -884,12 +884,15 @@ public class AppH5InvitationActivityController extends BaseController {
     private NewbieTaskVo assignment(AfResourceDo resource,int count,boolean isLogin) {
 
 	NewbieTaskVo  newbieTaskVo = new NewbieTaskVo();
-	if(resource ==null){
-	    return null;
-	}
+			if(resource ==null){
+			    return null;
+			}
         	String titleName = resource.getValue();
         	String buttonName = resource.getTypeDesc();
         	String urlName = resource.getDescription();
+        	if(titleName == null || buttonName == null || urlName == null){
+        		return null;
+        	}
         	String title[] = titleName.split("@");  
         	String button[] = buttonName.split("@");  
         	String url[] = urlName.split("@");  

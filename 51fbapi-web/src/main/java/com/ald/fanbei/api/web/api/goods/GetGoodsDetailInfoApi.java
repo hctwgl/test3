@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,9 +61,13 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
+	
+	@Resource
+	AfSchemeService afSchemeService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -89,12 +95,24 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			logger.error(e.toString());
 		}
 		JSONArray interestFreeArray = null;
+		String freedesc = null;
+		String iconMark = null;
 		if(schemeGoodsDo != null){
-			AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-			String interestFreeJson = interestFreeRulesDo.getRuleJson();
-			if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-				interestFreeArray = JSON.parseArray(interestFreeJson);
+			AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
+
+			if (afSchemeDo != null){
+				if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+						freedesc = afSchemeDo.getDescr();
+						iconMark = afSchemeDo.getIconMark();
+					}
+				}
+
 			}
+
 		}
 		AfGoodsDetailInfoVo vo = getGoodsVo(goods);
 		//秒杀、促销活动商品信息
@@ -119,7 +137,11 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				Date gmtEnd = afSeckillActivityDo.getGmtEnd();
 				Date gmtPStart = afSeckillActivityDo.getGmtPStart();
 				//返利金额
-				vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
+				BigDecimal secKillRebAmount = BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+				if(goods.getRebateAmount().compareTo(secKillRebAmount)>0){
+					vo.setRebateAmount(secKillRebAmount+"");
+				}
+				//vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
 				vo.setActivityId(activityId);
 				vo.setActivityType(afSeckillActivityDo.getType());
 				vo.setActivityName(afSeckillActivityDo.getName());
@@ -169,7 +191,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setSpecialPrice(BigDecimal.ZERO);
 		}
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				saleAmount, resource.getValue1(), resource.getValue2(),goodsId);
+				saleAmount, resource.getValue1(), resource.getValue2(),goodsId,"0");
 
 		if(nperList!= null){
 			Map nperMap = nperList.get(nperList.size() - 1);
@@ -179,10 +201,30 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNperList(nperList);
 		}
 		vo.setRemark(goods.getRemark());
+		AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
+		if (reflag != null){
+			String value3 = reflag.getValue3();
+			if (value3 != null&&value3.contains(goods.getCategoryId()+"")){
+				vo.setIsShow(1);
+			}
+		}
+		if(context.getAppVersion()>411){
+			AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+			if (afInterestReduceSchemeDo != null){
+				vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
+				vo.setInterestCutMark(afInterestReduceSchemeDo.getIconMark());
+
+			}
+			vo.setInterestFreeDesc(freedesc);
+			vo.setInterestFreeMark(iconMark);
+
+		}else{
+			vo.setIsShow(0);
+		}
 		resp.setResponseData(vo);
 		return resp;
 	}
-	
+
     private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
@@ -267,5 +309,22 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		return vo;
 	}
+private boolean freeflag(Date start,Date end,String isOpen){
+		try {
+			if (!"Y".equals(isOpen)){
+				return false;
+			}
+			if (DateUtil.compareDate(end,new Date()) && DateUtil.compareDate(new Date(),start)){
+				return true;
 
+			}else {
+				return false;
+			}
+		}catch (Exception e){
+			logger.info("freeflag",e);
+			return false;
+
+		}
+
+}
 }

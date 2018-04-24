@@ -1,29 +1,27 @@
 package com.ald.fanbei.api.web.common;
 
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 
 /**
  * 分期业务封装处理工具类
@@ -45,21 +43,10 @@ public class InterestFreeUitl {
      * @param value2            手续费上下限预设值
      * @return
      */
-    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid) {
+    public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        if (goodsid != null && goodsid >0l){
-        	Object obj = SpringBeanContextUtil.getBean("afResourceService");
-        	if(null != obj && obj instanceof AfResourceService){
-        		afResourceService = (AfResourceService)obj;
-        	}else{
-        		System.out.println();
-        	}
-            AfResourceDo resource1 = afResourceService.getBrandRate(goodsid);//资源配置中的品牌利率
-            if(resource1!=null){
-                array = JSON.parseArray(resource1.getValue());
-            }
-        }
 
+        array = checkNper(goodsid,method,array);
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
@@ -94,7 +81,7 @@ public class InterestFreeUitl {
             if (interestFreeArray != null&&interestFreeArray.size()>0) {
                 for (int j=0;j<interestFreeArray.size();j++) {
                     JSONObject item = interestFreeArray.getJSONObject(j);
-                    if(item.getString(Constants.DEFAULT_NPER).equals(key)){
+                    if(item.getString(Constants.DEFAULT_NPER).equals(key)){ // 免息规则有这样的分期数
                         interestFreeObject = item;
                         break;
                     }
@@ -178,6 +165,13 @@ public class InterestFreeUitl {
         }
         return list;
     }
+    public static JSONArray  checkNper(Long goodsid,String method,JSONArray array){
+        if (goodsid != null && goodsid >0l) {
+            AfResourceService afResourceService = (AfResourceService) SpringBeanContextUtil.getBean("afResourceService");
+            array = afResourceService.checkNper(goodsid,method,array);
+        }
+        return array;
+    }
 
     /**
      *
@@ -196,7 +190,7 @@ public class InterestFreeUitl {
         //本金/总期数
         BigDecimal b1 = BigDecimalUtil.divHalfDown(totalGoodsAmount, nPer, Constants.HALFUP_DIGIT);
 
-        //本金*每期利率
+        //本金*每期利率   每一期利息
         BigDecimal b2 = BigDecimalUtil.multiply(totalGoodsAmount,mouthRate);
 
         //总手续费
@@ -206,7 +200,7 @@ public class InterestFreeUitl {
         //每期手续费
         BigDecimal b3 = BigDecimalUtil.divHalfUp(totalPoundage, nPer, Constants.HALFUP_DIGIT);
 
-
+        // 每一期应还的总钱数
         BigDecimal amount = b1.add(b2).add(b3);
         //借款总金额
         BigDecimal totalAmount = amount.multiply(nPer);

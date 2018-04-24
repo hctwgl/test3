@@ -4,9 +4,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.risk.ReqFromRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromSecondaryRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.ReqFromStrongRiskBo;
+import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
+import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类现描述：
@@ -63,7 +70,7 @@ public interface AfUserAuthService {
 	 */
 	List<AfUserAuthDo> getUserAuthListWithIvs_statusIsY(AfUserAuthQuery query);
 
-	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene);
+	Map<String, Object> getCreditPromoteInfo(Long userId, Date now, AfUserAccountDto userDto, AfUserAuthDo authDo, Integer appVersion, String scene,AfResourceDo zhimaConfigResource);
 
 	boolean allBasicAuthPassed(Long userId);
 	boolean allBasicAuthPassed(AfUserAuthDo authInfo);
@@ -77,4 +84,31 @@ public interface AfUserAuthService {
 	 * @return
 	 */
 	boolean passWhiteList(String userName);
+	
+	boolean getAuthRaiseStatus(AfAuthRaiseStatusDo afAuthRaiseStatusDo, String scene, String auth_type, Date authDate);
+	
+	/**
+	 * 处理来自风控其主动发出的强风控回调请求
+	 * @return
+	 */
+	void dealFromStrongRiskForcePush(ReqFromStrongRiskBo reqBo);
+	
+	/**
+	 * 处理来自风控其主动发出的补充认证回调请求
+	 * @return
+	 */
+	void dealFromSecondaryRiskForcePush(ReqFromSecondaryRiskBo reqBo);
+	
+	/**
+	 * 查询补充认证的相关状态
+	 * @return
+	 */
+	RespSecAuthInfoToRiskBo getSecondaryAuthInfo(ReqFromRiskBo reqBo);
+	
+	/**
+	 * 处理主动还款提额后 对 认证状态的处理
+	 * @param afUserAuthDo
+	 * @param dataObj
+	 */
+	void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj);
 }

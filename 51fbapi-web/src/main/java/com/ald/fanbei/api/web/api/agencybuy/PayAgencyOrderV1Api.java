@@ -56,7 +56,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"), "").toString();
-
+	    String bankPayType = ObjectUtils.toString(requestDataVo.getParams().get("payType"),null);
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
@@ -109,7 +109,7 @@ public class PayAgencyOrderV1Api implements ApiHandle {
 			payType = PayType.COMBINATION_PAY.getCode();
 		}		
 		
-		afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress);
+		afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), orderInfo.getActualAmount(), orderInfo.getNper(), appName, ipAddress,bankPayType);
 
 		// String success = result.get("success").toString();
 		// if (StringUtils.isNotBlank(success) && !Boolean.parseBoolean(success)) {

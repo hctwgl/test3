@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.rule.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
@@ -33,6 +35,26 @@ public class AfInterestFreeRulesServiceImpl implements
 			bizCacheUtil.saveObject(cacheKey, freeRulesDo);
 		}
 		return freeRulesDo;
+	}
+
+	@Override
+	public AfInterestReduceSchemeDo getReduceSchemeByGoodId(Long goodsId, Long brandId, Long catogeryId) {
+
+		AfInterestReduceSchemeDo afInterestReduceSchemeDo = null;
+		afInterestReduceSchemeDo = afInterestFreeRulesDao.getReduceSchemeByGoodId(goodsId,null,null);
+		if (afInterestReduceSchemeDo == null){
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,brandId,null);
+		}
+		if (afInterestReduceSchemeDo == null){
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,null,catogeryId);
+		}
+			return afInterestReduceSchemeDo;
+
+	}
+
+	@Override
+	public AfInterestReduceRulesDo getReduceRuleById(Long rid) {
+		return afInterestFreeRulesDao.getReduceRuleById(rid);
 	}
 
 }

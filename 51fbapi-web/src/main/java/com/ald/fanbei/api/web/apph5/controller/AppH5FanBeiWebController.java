@@ -927,19 +927,35 @@ public class AppH5FanBeiWebController extends BaseController {
 	public void mobileOperator(HttpServletRequest request, ModelMap model) throws IOException {
 		Boolean processResult = true;
 		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("---mobileOperator begin:");
+			Map<String, String[]> paramMap = request.getParameterMap();
+			for (String key : paramMap.keySet()) {
+				String[] values = paramMap.get(key);
+				for (String value : values) {
+					sb.append("键:" + key + ",值:" + value);
+				}
+			}
+			sb.append("---mobileOperator end");
+
+			logger.info(sb.toString());
 			String appInfo = request.getParameter("_appInfo");
 			Long mobileReqTimeStamp = NumberUtil.objToLongDefault(request.getParameter("mobileReqTimeStamp"), 0L);
 			Date reqTime = new Date(mobileReqTimeStamp);
 
 			String mxcode = request.getParameter("mxcode");
-			String userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			String userName ="";
+			if(appInfo!=null){
+				userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			}else{
+				userName =request.getParameter("account");
+			}
 			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
 
 			AfUserAuthDo authDo = new AfUserAuthDo();
 			authDo.setUserId(afUserDo.getRid());
 			// 此字段保存该笔认证申请的发起时间，更新时做校验，防止在更新时，风控对这笔认证已经回调处理成功，造成错误更新
 			authDo.setGmtMobile(reqTime);
-
 			if (MoXieResCodeType.ONE.getCode().equals(mxcode) || MoXieResCodeType.TWO.getCode().equals(mxcode)) {
 				// 用户认证处理中
 				authDo.setMobileStatus(MobileStatus.WAIT.getCode());
@@ -948,6 +964,7 @@ public class AppH5FanBeiWebController extends BaseController {
 					logger.info("mobileOperator updateUserAuthMobileStatusWait fail, risk happen before.desStatus="
 							+ MobileStatus.WAIT.getCode() + "userId=" + afUserDo.getRid());
 				}
+				processResult = true;
 			} else if (MoXieResCodeType.FIFTY.getCode().equals(mxcode)) {
 				// 三方不经过强风控，直接通过backUrl返回api告知用户认证失败
 				authDo.setMobileStatus(MobileStatus.NO.getCode());
@@ -962,7 +979,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 			model.put("processResult", processResult);
 		} catch (Exception e) {
-			logger.error("mobileOperator , e = {}", e.getMessage());
+			logger.error("mobileOperator error", e);
 			processResult = false;
 			model.put("processResult", processResult);
 		} finally {

@@ -45,6 +45,8 @@ public class GetGoodsListApi implements ApiHandle {
     AfInterestFreeRulesService afInterestFreeRulesService;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    AfSeckillActivityService afSeckillActivityService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -71,10 +73,29 @@ public class GetGoodsListApi implements ApiHandle {
 //                break;
 //            }
 //        }
-
+        //查找活动商品
+        //判断商品是否处于活动中
+        List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+        List<Long> goodsIdList = new ArrayList<>();
+        for (AfGoodsDo goodsDo : goodList) {
+            goodsIdList.add(goodsDo.getRid());
+        }
+        if(goodsIdList!=null&&goodsIdList.size()>0){
+            activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+        }
         for(AfGoodsDo goodsDo : goodList) {
 //            double volume = new Long(goodsDo.getVolume()).intValue();
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
+            for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+                if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+                    goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+                    BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                        goodsDo.setRebateAmount(secKillRebAmount);
+                    }
+                    break;
+                }
+            }
             String url = "";
             goodsInfo.put("goodName",goodsDo.getName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
@@ -116,7 +137,7 @@ public class GetGoodsListApi implements ApiHandle {
                 }
             }
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                    goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
+                    goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId,"0");
             if(nperList!= null){
                 goodsInfo.put("goodsType", "1");
                 Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -174,7 +195,7 @@ public class GetGoodsListApi implements ApiHandle {
                 }
             }
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                    goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId);
+                    goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsId,"0");
             if(nperList!= null){
                 goodsInfo.put("goodsType", "1");
                 Map<String, Object> nperMap = nperList.get(nperList.size() - 1);

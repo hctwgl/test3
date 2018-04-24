@@ -25,9 +25,9 @@
 		<property name="fbapi.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
 		 
 		 <!-- zhima config -->
-  		<property name="fbapi.zhima.appid" defaultValue="DbEZOAcvoj6WEnRHs2+tcg==" description="zhima appid" />
-		<property name="fbapi.zhima.private.key" defaultValue="4qnrEMXCSqgDI97HhaMx09fcCf3yQ1LddkLpDTVIKor/PxJoc9Uc5AmiOwQBBzVtCkVJaszn6FUyd7mP1OLiG4BCcxrYlxgFaaSykqtF6qfrsH8D+p8f+YzB9HTE584WgJ7Sqk16WMD/2BGtChOqpGtV7brxtpbsdXGLAkyy2I/CN9wPLTEh3Tunzrnv0oTVxIkggrR0Agv99eNvEDgOeVXc2hqiCfNb3QJMS36r6WI6smnN5ndnVsqFVGlC8gw42wsq4/7/r4GhgkbaYnBrSalCTgbSRzOpUz9KeikUCeHwQxCGlhk03k6h7LUORWKTknNFe3uPpRQKZuURI81NnRAa9vrSSKkk3O/+TzXkti6LY/v1scbxkBQ+2xxOqVgprBTlq89tL0J8oeyWCtpImLyvBZ0HjcafWvSYXPtdFGwkEYNM9VnOlfJaDF4MiWXhKPkTU2kh3r3TPpy+3lDMlpwnTslK+Gx4clS3k6sy+Q+P5Xion13iHFCNKKuCIuiXrp4o3lqMbzOqPz6QQYfolH07WIl/q1FniC9dR1UZDt9a8OsrV4CcesPHq0kjfrJqOyvNhsKuU5kNlRkiAgcYD4OSEtQTxfJwNTp/gSbCHHUQ8etpUrsC/0Eg2K8t2SzEu02ISOVWXKf+wSFu5/AChPqdZ1bhzcsCMlYCRaDc05tGFwVOof1TE9UnPJaLEuxWUoy+VxY3+RwhO1NG8qR695+R90/4yiPp+K9+Q0ihlecrLg4LExkbrp1isqetrgdd2qxg8OHIgBu8/YmLXsYrzuW8DZ/lJagVxhFaQwMB07OkfXfGq/6iSaXUHRkLYVHE1XEt+7pyKdVYM1Bce9IumUgUSJbsysahoB1NsmoTjJ4ac6L/9CtuHGwMDnB/O+ZqbhFNouCvQDPU1s6TFvDqWsO1OyegCYINpMYnspcvN1No7lLmRd5meN0aRulDVOFZlQicMZE4QYpDawhv8DdBj++k3yBxczSz/j1ap3AxBlpsOo5GqfSWhvIq1wOJYG89cxTVffSan+td8MW8UHD6C5YGzJnYa7q+z40YmEjW8NfcnZrKSykHplrNrVjLd380OubFclueKlX3qIT2RU5uaaeztT0KUXxPq8UIR2kVRFG6cB5SdY5M1LbHdgXDco5l" description="zhima 私钥" />
-		<property name="fbapi.zhima.public.key" defaultValue="xApjX+tDbdHJF2EwP+PkLu7YQzJy6wpPxG6vACfgrQZqWp3D/TG79Mv68jl2/BenfZ3fh9KtvGZzpVKjDjhmTgI9CY/Dk4GtQtmeejnuDn385gntoDgBf8dDBtIvxBZwI2wjQlie0MrsRN2MkCq0KF7u/EmeZ+EBzyEuQvRjapoWs38PX6TGoNC9w7QdEOAy24ldE9piw4Vo5b2m2QkILQqPmcBwztpvVhIIIfPPDL+mu7k7O54jzVflVrSXoBprr3hBymKdY+OVMEGY5CxEw0gEkz2fjduFlySQ8kZemcY=" description="zhima 公钥" />
+  		<property name="fbapi.zhima.appid" defaultValue="Ypdtogm1CgTlPKHc/KQSAw==" description="zhima appid" />
+		<property name="fbapi.zhima.private.key" defaultValue="l8PASW6egRY/YMsrbRXFxdfcCf3yQ1LddkLpDTVIKopCbqPjWJrD/8ujPVnP5/fhoYrIcb4yXcbLmAK+pYB6Tmc+9HuFt8CuizdK/rS3vbDlECSATTKb3zg2nrMcNdcLIyKgOEmecs/ufU7NUeL4TTaDLRNMprwbPAyekbk4CTsfpU2X+FS3cTKbAW0+LEEvaYwq0Phuqmhk8MjX1iUCe4LYpz57JHuBcaiFNpnPo3W5bz61XAkNuhzNQYZDtdLxYVsmpLjWiB/vkIXJhy8WIDDQfZ0Jxhu1oAgWIcU1g5GxSTOzrGYCnpIDckNWVyOI3E/xlGPkUlv6W6CMzJwyFRE4RpfccNaM7gzx1R3aMgE+ILllOF1YdZUkQznHqE9BWRBD9BV3P5qN6ArOkKAERUZYPggEU2xm8Z3S7Vz8KTpcABgPSzFHeMG5ZoNCvOz7S6Rbc5J23YWM7Mmw3HVcU9919Yf9aTZJm6w3fi2AsAD9WddLM4e1DrOWM9WOBkZhCFZrSrKXY4KId+b6xWSmqeGioV+cyrevARDgwZikP4IAkv+911F81yXbQeZmH0qCjhkbtUDB0lj/Fzi+MnTTYEDorRfaJ1tLhDI0nl/tpTtHlAfOcr8T1DjPB1gM2n1kO95sapuV+lCOHVbWjZYwq8b1q1d0Qr/+SzGjnnF9kOcWq5B3AI4xKGhT2fGgVH6PfoXwDkHGN0dRlMavoux5qDKqVx2+oibJ4UG6J5yVhZdjUrmZDnK2CgKhRCX78nTkEgn0FCeBYswsvSOeRFrTXdXloXMo4MLvtc2x/HF5cXzrpukLEQ5r5qIdKL+u3LI8dl4nkbKcNHrR5bCSkZ651LDeptMuXlTt4Y544qLoMliDSfgZu6gWWiHqbvYtWEPU/1wKjJAothSGPlA1tsUyeCVYG8v7K0n+/1OoHTifUhzh8Rg4JMXmcolFPJz01lsu3q1soc68kUggGYcpSXcCR8Nf9ocqDZ8z3v73Y4oHYRCuhlzHxzhdUTkbR5t9E07z3lKP2GopeCEQsiYBLiVXA1tJs8jj1826/uRR+1PbcSCrln4EW9Aq4OW6aFOgjyrovk08W1kT3EhxCJeoTRaR37mv1WXQlE8CQsNgoMqKkaXQroYLtEIaqFC8Jmft4E4B" description="zhima 私钥" />
+		<property name="fbapi.zhima.public.key" defaultValue="xApjX+tDbdHJF2EwP+PkLu7YQzJy6wpPxG6vACfgrQaOSotXQx/KeRUFJ4Pe1OJsiRNwZDY1mzT77wDLjPNzhLtRh6AeXMZk5PvHOLLvsgJvy924tGegBQFkbaLezbXCicMMtKUFyJ5NJf9NfM38GGlV99m0qqc7DJSDPL4XsvQJ479boaKclnATtX0uFPigTzo9y/6RLYq1X9EMFnZw5BbIFdA0/zDhr+9lB9g2Il2TvKIZiEPHro2/RFZkXzTA8LWqZ8KsQl812E3HC2hTsCKs4MBSCko1pP+h5J9/RD8=" description="zhima 公钥" />
 		
 		<!-- tongdun -->
 		<property name="fbapi.tongdun.partner.host" defaultValue="https://api.tongdun.cn" description="铜盾商户接口host" />
@@ -63,7 +63,14 @@
 		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
-		
+		<property name="loan.fbapi.db.url" defaultValue="PvzY3h3bN62tdXiZuoyeiwDN/oawHeuXr1tqgO3eu7XRm7CXgslV3VhAqelsOW65" description="dburl" />
+		<property name="loan.fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
+		<property name="loan.fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
+
+		<property name="fbapi.bkl.url" defaultValue="http://221.133.225.245:18080/worksheetAPI/requestJob" description="bkl url" />
+		<property name="fbapi.admin.url" defaultValue="http://ctestadmin.51fanbei.com" description="admin url"/>
+		<property name="fbapi.bkl.access.token" defaultValue="xCGQF6wNeA1z6Cmz2UMW8F1as" description="bkl token"/>
+
 		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
 		
 		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 

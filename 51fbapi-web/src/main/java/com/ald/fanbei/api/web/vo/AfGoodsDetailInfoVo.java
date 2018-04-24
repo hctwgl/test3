@@ -47,6 +47,46 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private BigDecimal specialPrice;
 	private List<Map<String, Object>> nperList;
 	
+	private String interestCutDesc;
+	private String interestFreeDesc;
+	private String interestCutMark;
+	private String interestFreeMark;
+	private int isShow=0;
+
+	public String getInterestCutMark() {
+		return interestCutMark;
+	}
+
+	public void setInterestCutMark(String interestCutMark) {
+		this.interestCutMark = interestCutMark;
+	}
+
+	public String getInterestFreeMark() {
+		return interestFreeMark;
+	}
+
+	public void setInterestFreeMark(String interestFreeMark) {
+		this.interestFreeMark = interestFreeMark;
+	}
+
+	public String getInterestCutDesc() {
+		return interestCutDesc;
+	}
+	public void setInterestCutDesc(String interestCutDesc) {
+		this.interestCutDesc = interestCutDesc;
+	}
+	public String getInterestFreeDesc() {
+		return interestFreeDesc;
+	}
+	public void setInterestFreeDesc(String interestFreeDesc) {
+		this.interestFreeDesc = interestFreeDesc;
+	}
+	public int getIsShow() {
+		return isShow;
+	}
+	public void setIsShow(int isShow) {
+		this.isShow = isShow;
+	}
 	public Long getGoodsId() {
 		return goodsId;
 	}

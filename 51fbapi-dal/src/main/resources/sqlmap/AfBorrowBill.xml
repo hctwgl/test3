@@ -215,7 +215,22 @@
 			</foreach> 
 		
 	</update>
- 
+	<update id="updateBorrowBillFaildWhenNotY" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		status = 'N'
+		WHERE status!='Y' and
+		is_delete = 0 AND
+		id in
+		<foreach collection="items" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+
+	</update>
+
+
     <update id="updateTotalBillStatus">
 		update af_borrow_total_bill  set gmt_modified=NOW(),status=#{status}
 		WHERE is_delete=0
@@ -860,4 +875,29 @@
 		af_repayment
 		where `status` = 'P'AND is_delete = 0 AND user_id = #{userId}
 	</select>
+
+	<select id="getBillLeaseAmountByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
+		FROM af_borrow_bill b
+		WHERE is_delete = 0  AND status IN ('N','D')
+		AND type='LEASE'
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+	
+	<select id="getOverdueBorrowBillInfoByUserId" resultType="AfBorrowBillDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM 
+			af_borrow_bill 
+		WHERE is_delete = 0
+		AND user_id = #{userId} 
+		AND overdue_status = 'Y'
+		AND status in('N','D')
+		LIMIT 1
+	</select>
+	
 </mapper>

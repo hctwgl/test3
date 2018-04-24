@@ -24,6 +24,38 @@ public class AfSchemeDo extends AbstractSerial {
 	private String isOpen;//【N：禁用 Y：启用】
 	private Long interestFreeId;//免息规则id
 	private String tag;//标签名
+	private String descr;
+	private Date gmtStart;
+	private Date gmtEnd;
+	private String iconMark;
+
+	public String getIconMark() {
+		return iconMark;
+	}
+
+	public void setIconMark(String iconMark) {
+		this.iconMark = iconMark;
+	}
+	
+	public Date getGmtStart() {
+		return gmtStart;
+	}
+	public void setGmtStart(Date gmtStart) {
+		this.gmtStart = gmtStart;
+	}
+	public Date getGmtEnd() {
+		return gmtEnd;
+	}
+	public void setGmtEnd(Date gmtEnd) {
+		this.gmtEnd = gmtEnd;
+	}
+	public String getDescr() {
+		return descr;
+	}
+	public void setDescr(String descr) {
+		this.descr = descr;
+	}
+
 	/**
 	 * @return the id
 	 */

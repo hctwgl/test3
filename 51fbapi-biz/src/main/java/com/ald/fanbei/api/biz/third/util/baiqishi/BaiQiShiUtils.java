@@ -25,6 +25,47 @@ public class BaiQiShiUtils {
     @Resource
     AfUserService afUserService;
 
+    public static void main(String[] args) {
+        getTbResult();
+       // return logger;
+    }
+
+    /**
+     * 验证登录
+     * @param blackBox
+     * @param ip
+     * @param mobile
+     * @param name
+     * @param idNumber
+     * @param cardNumber
+     * @param openId
+     */
+    public static void getTbResult() {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("reqId", "382556fc44ea450295f584be4496b4b3");//用户身份证号
+       params.put("smsCode", "101189");//	银行卡卡号
+        params.put("pwd", "HAPPY235121rcl");//用户在商户端芝麻信用授权ID
+        params.put("userName", "astringa");
+        params.put("loginType", "tb");
+        params.put("mobile", "15990182307");
+        params.put("certNo", "340621198906108755");
+        params.put("name", "任春雷");
+        params.put("verifyKey", "e93f7e5ec79548f3b0932cdc086a5ac3");
+        params.put("partnerId", "fanbei");
+           JSONObject apiResp = null;
+        String apiUrl = "https://credit.baiqishi.com/clweb/api/zm/login";
+        try {
+            String respStr = BaiQiShiInvoker.invoke(params, apiUrl);
+            logger.error("baiQiShiUtils getLoginResult :"+respStr);
+            apiResp = JSONObject.parseObject(respStr);
+        } catch (Exception e) {
+            logger.error("baiQiShiUtils getLoginResult", e);
+            return;
+        }
+        logger.info("baiQiShiUtils getLoginResult info = "+apiResp);
+
+    }
 
     /**
      * 验证登录

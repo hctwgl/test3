@@ -99,7 +99,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
     	"/system/getTabbarInfor","/resource/getResourceConfig","/resource/getFlowFlayerResourceConfig","/system/maidian","/clickAmount/clickAmountNum","/resource/getRedRainRounds" ,"/pushClickAmout/clickPushAmountNum","/resource/getConfigurableNumDay"
-    },method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    ,"/system/zmAuthPopImage"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -136,7 +136,7 @@ public class FanbeiController extends BaseController {
             ,"/borrow/getBillListByMonthAndYear","/borrow/getBorrowDetailV1","/borrow/getMyBorrowListV1","/borrow/getMyBorrowV1"
             ,"/borrow/getMyHistoryBorrowV1","/borrow/getMyRepaymentDetailV1","/borrow/getMyRepaymentHistoryV1","/borrow/getMyRepaymentV1","/borrow/getRepaymentDetailV1"
             ,"/borrow/getRepaymentCalendarV1","/borrow/getMyHistoryBorrowDetailV1"
-            ,"/borrow/getDataView","/borrow/submitClear"
+            ,"/borrow/getDataView","/borrow/submitClear","/repayment/getPayTypeStatus"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -159,7 +159,8 @@ public class FanbeiController extends BaseController {
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authFundNew","/auth/authFundNew/GiveBack","/auth/authFundSwitch","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
-			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota","/auth/authGxb"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota","/auth/authGxb",
+			"/auth/submitBindBankcard","/auth/applyBindBankcard","/auth/submitSuperBindBankcard","/auth/applySuperBindBankcard","/auth/checkUserBasicInfo","/auth/checkUserIdCardInfo"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -311,5 +312,21 @@ public class FanbeiController extends BaseController {
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(body, request, false);
     }
+
+ /**
+  * 支付相关
+  * @param body
+  * @param request
+  * @param response
+  * @return
+  * @throws IOException
+  */
+ @RequestMapping(value = {"/pay/quickPaymentResendCode","/pay/confirmPayment"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+ @ResponseBody
+ public String payRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+     request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+     response.setContentType("application/json;charset=utf-8");
+     return this.processRequest(body, request, false);
+ }
 
 }

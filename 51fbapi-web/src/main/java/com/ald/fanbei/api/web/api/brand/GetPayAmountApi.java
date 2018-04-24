@@ -117,7 +117,7 @@ public class GetPayAmountApi implements ApiHandle {
 			useableAmount = amount;
 		}
 		
-		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), useableAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId());
+		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(), useableAmount, resource.getValue1(), resource.getValue2(),orderInfo.getGoodsId(),"0");
 		
 		resp.addResponseData("nperList", nperList);
 		resp.addResponseData("instalmentAmount", amount);
@@ -133,7 +133,8 @@ public class GetPayAmountApi implements ApiHandle {
 			resp.addResponseData("bankName", afUserBankcardDo.getBankName());
 			resp.addResponseData("bankIcon", afUserBankcardDo.getBankIcon());
 			resp.addResponseData("cardNumber", afUserBankcardDo.getCardNumber());
-			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());			
+			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());	
+			resp.addResponseData("bankPayType", afUserBankcardDo.getPayType());
 		}
 		
 		return resp;

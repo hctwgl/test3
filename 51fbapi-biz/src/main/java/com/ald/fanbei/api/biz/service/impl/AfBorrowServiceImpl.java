@@ -582,9 +582,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
-
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
 	}
 
 	/**
@@ -810,27 +808,37 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			bill.setGmtPayTime((Date) timeMap.get(Constants.PAY_DATETIME));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
-			if (i <= freeNper) {
+			if(borrow.getType().equals(BorrowType.LEASE.getCode())){
 				bill.setInterestAmount(BigDecimal.ZERO);
 				bill.setIsFreeInterest(YesNoStatus.YES.getCode());
 				bill.setPoundageAmount(BigDecimal.ZERO);
-			} else {
-				bill.setInterestAmount(interestAmount);
-				bill.setIsFreeInterest(YesNoStatus.NO.getCode());
-				bill.setPoundageAmount(poundageAmount);
+				bill.setPrincipleAmount(borrow.getNperAmount());
+				bill.setBillAmount(borrow.getNperAmount());
+				bill.setType(BorrowType.LEASE.getCode());
 			}
-			if (i == 1) {
-				bill.setPrincipleAmount(firstPrincipleAmount);
- 			} else {
- 				bill.setPrincipleAmount(principleAmount);
- 			}
-			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
-			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
-				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
-			} else {
-				bill.setStatus(BorrowBillStatus.NO.getCode());
+			else {
+				if (i <= freeNper) {
+					bill.setInterestAmount(BigDecimal.ZERO);
+					bill.setIsFreeInterest(YesNoStatus.YES.getCode());
+					bill.setPoundageAmount(BigDecimal.ZERO);
+				} else {
+					bill.setInterestAmount(interestAmount);
+					bill.setIsFreeInterest(YesNoStatus.NO.getCode());
+					bill.setPoundageAmount(poundageAmount);
+				}
+				if (i == 1) {
+					bill.setPrincipleAmount(firstPrincipleAmount);
+				} else {
+					bill.setPrincipleAmount(principleAmount);
+				}
+				bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
+				if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+					bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+				} else {
+					bill.setStatus(BorrowBillStatus.NO.getCode());
+				}
+				bill.setType(BorrowType.CONSUME.getCode());
 			}
-			bill.setType(BorrowType.CONSUME.getCode());
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
 		}
@@ -957,8 +965,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				return null;
 			}
 		});
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
-		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+		kafkaSync.syncEvent(borrow.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+
 	}
 
 	@Override
@@ -1260,8 +1268,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		}*/
 		if (0l !=resultValue){
-			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_BORROW_CASH,true);
+			kafkaSync.syncEvent(borrow.getUserId(),KafkaConstants.SYNC_SCENE_ONE,true);
 			afBorrowDao.updateBorrowVersion(borrow.getRid(),1);
 //			contractPdfThreadPool.protocolInstalmentPdf(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 		}
@@ -1454,7 +1461,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		}
 		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
 		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
-				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
+				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),
+				afOrderDo.getOrderType(), Constants.ORDER_TYPE_TENEMENT);
 
 		borrow.setNper(nper);
 
@@ -1465,6 +1473,26 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		//return JSON.toJSONString(map);
 		return map;
 	}
+	
+	/**
+     * 适配规则利率（1，2，3，6，9，12期）
+     * @param realNper
+     * @return
+     */
+    private int getTempNperForBorrowRate(int realNper){
+    	int tempNper = realNper;
+    	if(Constants.FOUR == realNper || Constants.FIVE == realNper){
+    		tempNper = Constants.THREE;
+    	}
+    	else if(Constants.SEVEN == realNper || Constants.EIGHT == realNper){
+    		tempNper = Constants.SIX;
+    	}
+    	else if(Constants.TEN == realNper || Constants.ELEVEN == realNper){
+    		tempNper = Constants.NINE;
+    	}
+    	
+    	return tempNper;
+    }
 
 	public int addHomeBorrow(final Long orderId,final int nper){
 		return 1;
@@ -1583,5 +1611,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	@Override
 	public AfBorrowDto getBorrowInfoById(Long borrowId) {
 		return afBorrowDao.getBorrowInfoById(borrowId);
+	}
+	
+	@Override
+	public AfBorrowDo getOverdueBorrowInfoByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return afBorrowDao.getOverdueBorrowInfoByUserId(userId);
 	}
 }

@@ -19,6 +19,15 @@ public  class KafkaConstants {
      */
     public static final String  SYNC_CASH_LOAN = "sync_cash_loan";
     /**
+     * 每天首次登入
+     */
+    public static final String SYNC_FIRST_LOGIN= "sync_first_login";
+
+    /**
+     * 下单完成
+     */
+    public static final String SYNC_PAYED= "sync_payed";
+    /**
      * 现金贷逾期
      */
     public static final String SYNV_CASH_LOAN_OVERDUE = "sync_cash_loan_overdue";
@@ -30,6 +39,8 @@ public  class KafkaConstants {
      * 用户的基本信息
      */
     public static final String SYNC_USER_BASIC_DATA= "sync_user_basic_data";
+
+    public static final String SYNC_SCENE_ONE= "sync_scene_one";
     //endregion kafka 事件
 
     //region kafka 主题
@@ -39,6 +50,7 @@ public  class KafkaConstants {
     //region kafka 是否打开
     public static final String KAFKA_OPEN= "KAFKA_OPEN";
     public static final String REFRESH_TIME= "refreshTime";
+    public static final String SYNC_SCENE_WEEK = "sync_scene_week";
     //endregion
 
 }

@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -123,7 +124,16 @@ public interface AfResourceService {
 	 * 获取借款手续费等信息
 	 */
 
-	BorrowRateBo borrowRateWithResource(Integer realTotalNper,String userName);
+	BorrowRateBo borrowRateWithResource(Integer realTotalNper,String userName,Long goodId);
+
+	/**
+	 * 降息校验
+	 * @param goodsid
+	 * @param method
+	 * @param array
+	 * @return
+	 */
+	public JSONArray checkNper(Long goodsid, String method, JSONArray array);
 	  	/*
 	 * 获取信用支付手续费等信息
 	 */
@@ -261,4 +271,8 @@ public interface AfResourceService {
 	List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType);
 
 	List<AfResourceDo> getNewSpecialResource(String type);//获取新的专场信息(未出账单列表页|已出账单列表页)
+	
+	String getCashProductName();
+
+	int getIsShow(Long goodsId);
 }

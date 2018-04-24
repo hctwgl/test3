@@ -12,6 +12,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +37,6 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.supplier.AfSearchItemDo;
 import com.ald.fanbei.api.dal.domain.supplier.AfSolrSearchResultDo;
@@ -81,10 +79,12 @@ public class AppH5AllSearchController extends BaseController {
 
 	@Resource
 	AfUserService afUserService;
-	
+
 	@Resource
 	private AfSearchItemService afSearchItemService;
 
+	@Resource
+	AfSeckillActivityService afSeckillActivityService;
 	@RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
 	public String get(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
@@ -165,16 +165,22 @@ public class AppH5AllSearchController extends BaseController {
 				totalCount = solrSearchResult.getTotalCount();
 				totalPage = solrSearchResult.getTotalPage();
 			}
-			
-			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
-			//int totalCount = query.getTotalCount();
-			//int totalPage = query.getTotalPage();
 
-			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
-				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
-				goodsList.add(vo);
-			}			 
+			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
+			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+			List<Long> goodsIdList = new ArrayList<>();
 			
+			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+				goodsIdList.add(goodsDo.getRid());
+			}
+			if(goodsIdList!=null&&goodsIdList.size()>0){
+				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+			}
+			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo,activityGoodsDos);
+				goodsList.add(vo);
+			}
+
 			data.put("goodsList", goodsList);
 			data.put("totalCount", totalCount);
 			data.put("totalPage", totalPage);
@@ -190,15 +196,25 @@ public class AppH5AllSearchController extends BaseController {
 		return result;
 	}
 
-	private AfSearchGoodsVo convertFromSelfToVo(AfGoodsDo goodsDo) {
+	private AfSearchGoodsVo convertFromSelfToVo(AfGoodsDo goodsDo,List<AfSeckillActivityGoodsDo> activityGoodsDos) {
 		AfSearchGoodsVo goodsVo = new AfSearchGoodsVo();
 		if (goodsDo != null) {
+			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+				if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+					goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+					if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDo.setRebateAmount(secKillRebAmount);
+					}
+					break;
+				}
+			}
 			goodsVo.setGoodsIcon(goodsDo.getGoodsIcon());
 			goodsVo.setGoodsName(goodsDo.getName());
 			goodsVo.setGoodsUrl(goodsDo.getGoodsUrl());
 			goodsVo.setSource("SELFSUPPORT");
 
-			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount()));
+			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount(),goodsDo.getRid()));
 
 			goodsVo.setNumId(goodsDo.getRid().toString());
 			goodsVo.setRealAmount(goodsDo.getSaleAmount().toString());
@@ -209,13 +225,15 @@ public class AppH5AllSearchController extends BaseController {
 		return goodsVo;
 	}
 
-	public Map<String, Object> getNper(BigDecimal saleAmount) {
+	public Map<String, Object> getNper(BigDecimal saleAmount,Long goodsid) {
 		Map<String, Object> result = new HashMap<>();
 		// 获取借款分期配置信息
 		AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
 				Constants.RES_BORROW_CONSUME);
 		JSONArray array = JSON.parseArray(res.getValue());
-
+		if (goodsid != null && goodsid >0l) {
+			array = afResourceService.checkNper(goodsid,"0",array);
+		}
 		final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 		List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
 				saleAmount, resource.getValue1(), resource.getValue2());
@@ -254,7 +272,7 @@ public class AppH5AllSearchController extends BaseController {
 		vo.setGoodsUrl(item.getItemUrl());
 		vo.setSource("TAOBAO");
 
-		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice())));
+		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice()),null));
 
 		vo.setVolume(item.getVolume());
 		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).toString());

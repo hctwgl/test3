@@ -1,4 +1,3 @@
-
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
@@ -24,6 +23,8 @@ import com.alibaba.fastjson.JSONArray;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayStatus;
@@ -60,6 +62,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("payOrderV1Api")
 public class PayOrderV1Api implements ApiHandle {
 
+	Logger logger = LoggerFactory.getLogger(ApiHandle.class);
     @Resource
     AfUserCouponService afUserCouponService;
     @Resource
@@ -127,8 +130,9 @@ public class PayOrderV1Api implements ApiHandle {
         String county = ObjectUtils.toString(requestDataVo.getParams().get("county"),"");
         String province = ObjectUtils.toString(requestDataVo.getParams().get("province"),"");
         String gpsAddress = ObjectUtils.toString(requestDataVo.getParams().get("address"),"");
+        String bankChannel = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),"");
         logger.info(province+":"+city+":"+county+":"+gpsAddress);
-
+        
         VersionCheckUitl.setVersion( context.getAppVersion());//addby hongzhengpei
 
 
@@ -209,23 +213,20 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
-        
-	String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
-	if (bizCacheUtil.getObject(lockKey) == null) {
-	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
-	} else {
-	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+	    if (bizCacheUtil.getObject(lockKey) == null) {
+		bizCacheUtil.saveObject(lockKey, lockKey, 30);
+	    } else {
+		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	    }
 	}
-        
-        
+
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
-            if (nper == 1) {
-                //信用支付
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResourceCredit(nper);
-                orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
-            } else {
+
                 //分期支付
                 BorrowRateBo borrowRate = null;
                 if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
@@ -270,11 +271,11 @@ public class PayOrderV1Api implements ApiHandle {
                         orderInfo.setRebateAmount(rebateAmount);
                     }
                 } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName());
+                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName(),orderInfo.getGoodsId());
                     orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
 
-            }
+
 
         }
 
@@ -328,10 +329,10 @@ public class PayOrderV1Api implements ApiHandle {
 
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
-            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
+            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode()) || StringUtils.equals(type, OrderType.LEASE.getCode())) {
                 saleAmount = orderInfo.getActualAmount();
             }
-            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || nper == null)) {
+            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.LEASE.getCode()) || nper == null)) {
                 nper = orderInfo.getNper();
             }
 
@@ -370,7 +371,7 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
@@ -388,7 +389,7 @@ public class PayOrderV1Api implements ApiHandle {
                 		
 					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
-*/                	
+*/
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {
