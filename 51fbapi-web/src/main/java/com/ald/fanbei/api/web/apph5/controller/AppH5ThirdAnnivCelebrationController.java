@@ -146,7 +146,8 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     userCoupon.setSourceType(CouponSenceRuleType.RESERVATION.getCode());
                     afUserCouponService.addUserCoupon(userCoupon);
 
-                    data.put("couponName", couponDo.getName());
+                    data.put("couponCondititon", couponDo.getLimitAmount());
+                    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
                 }
             }
         } catch (Exception e) {
@@ -154,7 +155,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", "").toString();
         }
 
-        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
+        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", "").toString();
     }
 
     /**
@@ -280,14 +281,14 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     }
 
     /**
-     * 获取“活动管理-H5配置页面”活动商品列表
+     * 获取“活动管理-新增活动”活动商品列表
      * @param request
      * @param response
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getH5PageGoodList", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String getH5PageGoodList(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "getActivityGoodList", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String getActivityGoodList(HttpServletRequest request, HttpServletResponse response){
         FanbeiWebContext context = doWebCheck(request, false);
         Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
         if(0 == activityId){

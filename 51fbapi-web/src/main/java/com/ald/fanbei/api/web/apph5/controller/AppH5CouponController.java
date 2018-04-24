@@ -568,14 +568,14 @@ public class AppH5CouponController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "pickActivityCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String pickCoupon(HttpServletRequest request, ModelMap model){
+	public String pickActivityCoupon(HttpServletRequest request, ModelMap model){
 		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		String key = "";
 		try {
 			Map<String, Object> data = Maps.newHashMap();
 
 			FanbeiWebContext context = doWebCheck(request, false);
-			AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
+			AfUserDo afUserDo = afUserService.getUserByUserName("15295517409");
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
 			if (StringUtils.isEmpty(couponId)) {
 				throw new IllegalArgumentException("couponId can't be null");
@@ -652,7 +652,7 @@ public class AppH5CouponController extends BaseController {
 				couponDoT.setQuotaAlready(1);
 				afCouponService.updateCouponquotaAlreadyById(couponDoT);
 
-				data.put("couponName", couponDo.getName());
+				data.put("couponCondititon", couponDo.getLimitAmount());
 				data.put("status", CouponWebFailStatus.COUPONCONTEXT7.getCode());
 				logger.info("pick coupon success", couponDoT);
 				return H5CommonResponse.getNewInstance(true, "领取成功", "", data).toString();
