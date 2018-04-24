@@ -366,13 +366,32 @@ public class AppH5BillController extends BaseController {
 
         // 待还未逾期
         if (waitRepayPeriods.size() > 0) {
-            result.put("amount", waitRepayAmount);
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(gmtLastPlanRepay));
-            result.put("status", STATUS_WAITREFUND);
-            return result;
+            // 当前期
+            AfLoanPeriodsDo nowLoanPeriodsDo = waitRepayPeriods.get(waitRepayPeriods.size() - 1);
+            // 本月已结清，下月还款时间还没开始
+            if(!afLoanRepaymentService.canRepay(nowLoanPeriodsDo)){
+                result.put("amount", "0.00");
+                result.put("billDesc", "提前结清可减免手续费哦!");
+                result.put("status", STATUS_NEXTWAITREFUND);
+
+                result.put("loanRepaymentType", "forwardSettle");
+                BigDecimal unChargeAmount = BigDecimal.ZERO;
+                List<AfLoanPeriodsDo> unps = afLoanPeriodsService.listUnChargeRepayPeriods(lastLoanDo.getRid());
+                for(AfLoanPeriodsDo p : unps) {
+                    unChargeAmount = unChargeAmount.add(p.getAmount());
+                }
+                result.put("periodsUnChargeAmount",
+                        unChargeAmount.setScale(2, RoundingMode.HALF_UP).toString());
+                return result;
+            } else {
+                result.put("amount", waitRepayAmount);
+                result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(gmtLastPlanRepay));
+                result.put("status", STATUS_WAITREFUND);
+                return result;
+            }
         } else {
             // 本月已结清，下月还款时间还没开始
-            if (gmtLastPlanRepay.after(new Date())) {
+            if(lastLoanDo.getStatus().equals(AfLoanStatus.TRANSFERRED.name())){
                 result.put("amount", "0.00");
                 result.put("billDesc", "提前结清可减免手续费哦!");
                 result.put("status", STATUS_NEXTWAITREFUND);
