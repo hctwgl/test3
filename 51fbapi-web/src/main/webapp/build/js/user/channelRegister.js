@@ -266,6 +266,21 @@ $(function(){
     $('.goodCont').click(function(){
         $('body,html').animate({scrollTop:0},300);
     })
+
+    /*//样式18
+    if(style=='18'){
+        $('.applyBtn').click(function(){
+            toMaidian('applyBtn');
+            let userVal=$('.word02 input').val();
+            let mobileVal=$('.word03 input').val();
+            if((userVal!='')&&(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileVal))){
+                 requestMsg('申请成功！');
+            }else{
+                requestMsg('请输入正确格式的联系人或手机号！');
+            }
+        })
+
+    }*/
 });
 
 
