@@ -369,7 +369,7 @@ public class AppH5BillController extends BaseController {
             // 当前期
             AfLoanPeriodsDo nowLoanPeriodsDo = waitRepayPeriods.get(waitRepayPeriods.size() - 1);
             // 本月已结清，下月还款时间还没开始
-            if(!afLoanRepaymentService.canRepay(nowLoanPeriodsDo)){
+            if(!afLoanRepaymentService.canRepay(nowLoanPeriodsDo)) {
                 result.put("amount", "0.00");
                 result.put("billDesc", "提前结清可减免手续费哦!");
                 result.put("status", STATUS_NEXTWAITREFUND);
