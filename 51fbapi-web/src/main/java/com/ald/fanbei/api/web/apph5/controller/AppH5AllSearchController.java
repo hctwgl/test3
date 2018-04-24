@@ -2,8 +2,6 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,19 +24,15 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.supplier.AfSearchItemService;
-import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
-import com.ald.fanbei.api.dal.domain.supplier.AfSearchItemDo;
 import com.ald.fanbei.api.dal.domain.supplier.AfSolrSearchResultDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -48,9 +42,6 @@ import com.ald.fanbei.api.web.vo.AfSearchGoodsVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ald.fanbei.api.common.util.Converter;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-import com.taobao.api.domain.NTbkItem;
 
 /**
  * @Title: AppH5AllSearchController.java
@@ -64,24 +55,16 @@ import com.taobao.api.domain.NTbkItem;
 @RestController
 @RequestMapping(value = "/appH5Goods", produces = "application/json;charset=UTF-8")
 public class AppH5AllSearchController extends BaseController {
-
-	@Resource
-	TaobaoApiUtil taobaoApiUtil;
-
 	@Resource
 	AfResourceService afResourceService;
-
 	@Resource
 	AfUserSearchService afUserSearchService;
-
 	@Resource
 	AfGoodsService afGoodsService;
-
 	@Resource
 	AfUserService afUserService;
-
 	@Resource
-	private AfSearchItemService afSearchItemService;
+	AfSearchItemService afSearchItemService;
 
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
@@ -131,18 +114,14 @@ public class AppH5AllSearchController extends BaseController {
 					query.setSortword("sale_count");
 				}
 			}
-
 			query.setFull(true);
-//			query.setPageNo(pageNo);
 			query.setPageSize(20);
-
 			List<AfSearchGoodsVo> goodsList = new ArrayList<AfSearchGoodsVo>();
-
 			// get selfSupport goods
 			//查询分词搜索开关
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SOLR_SERVER_KEY", "SOLR_SERVER_KEY");
 			AfSolrSearchResultDo solrSearchResult = null;
-			if (StringUtils.equals(resourceDo.getValue(), "Y")) {
+			if (StringUtils.equals(resourceDo.getValue(), "Y")) {//从solr服务器搜索
 				Integer pageSize = 20;
 				solrSearchResult = afSearchItemService.getSearchList(keyword,pageNo,pageSize);
 				logger.info("/appH5Goods/searchGoods from solrServer with resultData = {}", solrSearchResult);
@@ -150,7 +129,7 @@ public class AppH5AllSearchController extends BaseController {
 			List<AfGoodsDo> orgSelfGoodlist = new ArrayList<AfGoodsDo>();
 			Integer totalCount = null;
 			Integer totalPage = null;
-			if (solrSearchResult == null) {
+			if (solrSearchResult == null) {//从数据库搜索
 				query.setPageNo(pageNo);
 				orgSelfGoodlist = afGoodsService.getAvaliableSelfGoods(query);
 				totalCount = query.getTotalCount();
@@ -169,11 +148,11 @@ public class AppH5AllSearchController extends BaseController {
 			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
 			List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
 			List<Long> goodsIdList = new ArrayList<>();
-			
+
 			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
 				goodsIdList.add(goodsDo.getRid());
 			}
-			if(goodsIdList!=null&&goodsIdList.size()>0){
+			if(CollectionUtils.isNotEmpty(goodsIdList)){
 				activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
 			}
 			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
@@ -259,32 +238,6 @@ public class AppH5AllSearchController extends BaseController {
 
 		}
 		return userId;
-	}
-
-	private AfSearchGoodsVo convertFromTaobaoToVo(NTbkItem item, BigDecimal minRate, BigDecimal maxRate) {
-		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
-		BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2, BigDecimal.ROUND_HALF_UP);
-		BigDecimal maxRebateAmount = saleAmount.multiply(maxRate).setScale(2, BigDecimal.ROUND_HALF_UP);
-		AfSearchGoodsVo vo = new AfSearchGoodsVo();
-		vo.setNumId(item.getNumIid() + "");
-		vo.setGoodsIcon(item.getPictUrl());
-		vo.setGoodsName(item.getTitle());
-		vo.setGoodsUrl(item.getItemUrl());
-		vo.setSource("TAOBAO");
-
-		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice()),null));
-
-		vo.setVolume(item.getVolume());
-		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).toString());
-		vo.setRebateAmount(new StringBuffer("").append(maxRebateAmount).toString());
-		vo.setSaleAmount(saleAmount);
-		List<String> icons = item.getSmallImages();
-		if (icons != null && icons.size() > 0) {
-			vo.setThumbnailIcon(icons.get(0));
-		} else {
-			vo.setThumbnailIcon(item.getPictUrl());
-		}
-		return vo;
 	}
 
 	private AfUserSearchDo getUserSearchDo(Long userId, String keyword) {
