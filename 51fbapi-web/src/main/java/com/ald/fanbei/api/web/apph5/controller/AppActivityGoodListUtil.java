@@ -59,7 +59,7 @@ public class AppActivityGoodListUtil {
      * @param activityId
      */
     public void getH5PageActivityGoodList(Map<String, Object> data, Long activityId){
-        String key = CacheConstants.CACHE_KEY_H5_PAGE_ACTIVITY_GOODS_PREFIX + activityId;
+        String key = CacheConstants.CACHE_KEY_NEW_ACTIVITY_GOODS_PREFIX + activityId;
         List<Map<String, Object>> goodList = bizCacheUtil.getObjectList(key);
 
         if(null == goodList){

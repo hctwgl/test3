@@ -155,6 +155,11 @@ public class CacheConstants {
 	/**
 	 * 保存活动对应商品信息的前缀
 	 */
-	public static final String CACHE_KEY_H5_PAGE_ACTIVITY_GOODS_PREFIX = "H5_PAGE_ACTIVITY_ID:";
+	public static final String CACHE_KEY_NEW_ACTIVITY_GOODS_PREFIX = "CACHE_KEY_NEW_ACTIVITY_GOODS_PREFIX:";
+
+	/**
+	 * 活动优惠券组对应的优惠券前缀
+	 */
+	public static final String CACHE_KEY_ACTIVITY_COUPON_PREFIX = "CACHE_KEY_ACTIVITY_COUPON_PREFIX:";
 
 }
