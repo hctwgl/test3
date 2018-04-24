@@ -183,25 +183,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 			resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderCombinationPayService", Constants.DEFAULT_BRAND_SHOP, remark, orderType);
 		} else {// 代扣
 			resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, bankAmount, userId, userAccountInfo.getRealName(), userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, orderType);
-			logger.info("combinationPay bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
-			if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
-				//新增白名单逻辑
-				try {
-					String bklResult = afBklService.isBklResult(orderInfo);
-					if (bklResult.equals("v2")){//需电核
-						logger.info("combinationPay bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
-						afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
-						if (orderInfo.getIagentStatus()==null)
-							orderInfo.setIagentStatus("C");
-					}else if (bklResult.equals("v1")){//不需电核
-						logger.info("combinationPay bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-						orderInfo.setIagentStatus("A");
-					}
-				}catch (Exception e){
-					logger.error("combinationPay bklUtils submitBklInfo error",e);
-				}
-			}
 		}
 
 		return resultMap;
@@ -268,6 +249,25 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 			riskUtil.updateUsedAmount(orderInfo, borrow);
 			logger.info("updateOrder orderInfo = {}", afOrder);
             afOrderDao.updateOrder(afOrder);
+			logger.info("upsPaySuccess bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+			if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+				//新增白名单逻辑
+				try {
+					String bklResult = afBklService.isBklResult(orderInfo);
+					if (bklResult.equals("v2")){//需电核
+						logger.info("upsPaySuccess bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+						afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("C");
+					}else if (bklResult.equals("v1")){//不需电核
+						logger.info("upsPaySuccess bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+						orderInfo.setIagentStatus("A");
+					}
+				}catch (Exception e){
+					logger.error("upsPaySuccess bklUtils submitBklInfo error",e);
+				}
+			}
 		}
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
