@@ -100,6 +100,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     AfOrderDao afOrderDao;
     @Resource
     AfEdspayUserInfoDao edspayUserInfoDao;
+    @Resource
+    AfLoanPeriodsService afLoanPeriodsService;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -716,7 +718,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             if (orderNo.substring(0,2).equals("dk")){
                 AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
                 if (loanDo == null) {
-                    logger.error("白领贷借款信息不存在 => {}", orderNo);
+                    logger.error("分期借款信息不存在 => {}", orderNo);
                     throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
                 }
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
@@ -765,14 +767,14 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     @Override
     public String getProtocalLegalByTypeWithoutSeal(Integer debtType, String orderNo) throws IOException {
-        if (debtType == 0) {//借款
+        if (debtType == 1) {//借款
             AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
             if (afBorrowCashDo == null) {
                 logger.error("借款信息不存在 => {}", orderNo);
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
             }
             return getPdfInfoWithOutSeal(afBorrowCashDo.getUserId(), null, afBorrowCashDo, "cashLoan");
-        } else if (debtType == 1) {//分期
+        } else if (debtType == 2) {//分期
             AfBorrowDo afBorrowDo = afBorrowDao.getBorrowInfoByBorrowNo(orderNo);
             if (afBorrowDo == null) {
                 AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByCashNo(orderNo);
@@ -784,6 +786,46 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
             return getPdfInfoWithOutSeal(afBorrowDo.getUserId(), afBorrowDo, null, "instalment");
         }
         return null;
+    }
+
+    @Override
+    public String whiteLoanProtocolPdf(Integer debtType, String loanNo) throws IOException {
+        long time = new Date().getTime();
+        AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
+        if (loanDo == null){
+            logger.error("白领贷订单不存在 => {}", loanNo);
+            throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
+        }
+        Map<String, Object> map = new HashMap();
+        AfUserAccountDo accountDo = getUserInfo(loanDo.getUserId(), map, null);
+        if (accountDo == null) {
+            logger.error("account not exist => {}" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
+        if (afUserDo == null) {
+            logger.error("user not exist => {}" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        String html = "";
+        String type = "whiteLoan";
+        html = getWhiteVelocityHtml(afUserDo.getUserName(),loanDo.getAmount(),loanDo.getPeriods(),loanDo.getRid(),"protocolWhiteLoanProtocolTemplate.vm");
+        String outFilePath = src + accountDo.getUserName() + type + time + ".pdf";
+        HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
+        map.put("borrowId", String.valueOf(loanDo.getRid()));
+        map.put("protocolCashType","5");
+        map.put("personKey", "borrower");//借款人印章定位关键字
+        map.put("posType",1);
+        map.put("signType", "Key");
+        map.put("firstPartyKey", "borrower");//用户签章关键字
+        map.put("secondPartyKey", "ald");//阿拉丁签章关键字
+        map.put("sealWidth", "60");
+        map.put("PDFPath", outFilePath);
+        map.put("userPath", src + accountDo.getUserName() + type + time  + 1+".pdf");
+        map.put("selfPath", src + accountDo.getUserName() + type + time  + 2+".pdf");
+        map.put("secondPath", src + accountDo.getUserName() + type + time + 3 + ".pdf");
+        map.put("thirdPath", src + accountDo.getUserName() + type + time + 4 + ".pdf");
+        return getLegalContractPdf(map);
     }
 
     @Override
@@ -1299,10 +1341,12 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                     List<AfContractPdfEdspaySealDto> seal = afContractPdfEdspaySealDao.getByPDFId(pdf.getId());
                     if (seal == null || seal.size() == 0) {
                         List<AfContractPdfEdspaySealDo> edspaySealDoList = (List<AfContractPdfEdspaySealDo>) map.get("edspaySealDoList");
-                        for (AfContractPdfEdspaySealDo edspaySealDo : edspaySealDoList) {
-                            edspaySealDo.setPdfId(afContractPdfDo.getId());
+                        if (edspaySealDoList != null && edspaySealDoList.size() > 0){
+                            for (AfContractPdfEdspaySealDo edspaySealDo : edspaySealDoList) {
+                                edspaySealDo.setPdfId(afContractPdfDo.getId());
+                            }
+                            afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
                         }
-                        afContractPdfEdspaySealDao.batchInsert(edspaySealDoList);
                     }
                 } else {
                     afContractPdfDao.insert(afContractPdfDo);
@@ -1476,6 +1520,105 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return null;
     }
 
+    private String getWhiteVelocityHtml(String userName,BigDecimal amount,Integer nper,long loanId,String pdfTemplate) {
+        try {
+            String html = VelocityUtil.getHtml(whiteLoanProtocol(userName, amount, nper, loanId,pdfTemplate));
+            return html;
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("getWhiteVelocityHtml IOException",e);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+            logger.error("getWhiteVelocityHtml DocumentException",e);
+        }
+        return null;
+    }
+
+    public Map<String,Object> whiteLoanProtocol(String userName,BigDecimal amount,Integer nper,long loanId,String pdfTemplate) throws IOException {
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        Map<String, Object> map = new HashMap();
+        if (afUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        map.put("templateSrc",pdfTemplate);
+        map.put("idNumber", accountDo.getIdNumber());
+        map.put("realName", accountDo.getRealName());
+        map.put("email", afUserDo.getEmail());//电子邮箱
+        map.put("mobile", afUserDo.getUserName());// 联系电话
+        map.put("amountCapital", toCapital(amount.doubleValue()));//大写本金金额
+        map.put("amount", amount);//借钱本金
+        getModelLoanId(map, nper, loanId);
+        return map;
+    }
+
+    private void getModelLoanId(Map<String,Object> map, Integer nper, long loanId) {
+        AfLoanDo afLoanDo = afLoanService.selectById(loanId);
+        Calendar c = Calendar.getInstance();
+        c.setTime(afLoanDo.getGmtCreate());
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DATE);
+        int year = c.get(Calendar.YEAR);
+        String time = year + "年" + month + "月" + day + "日";
+        map.put("time", time);// 签署日期
+        map.put("gmtStart", time);
+        map.put("loanNo", afLoanDo.getLoanNo());//原始借款协议编号
+        List<AfLoanPeriodsDo> afLoanPeriodsDoList = afLoanPeriodsService.listByLoanId(loanId);
+        if (null != afLoanPeriodsDoList && afLoanPeriodsDoList.size() > 0) {
+            List<Object> array = new ArrayList<Object>();
+            for (int i = 1; i <= afLoanDo.getPeriods(); i++) {
+                Map<String, Object> periods = new HashMap<String, Object>();
+                AfLoanPeriodsDo afLoanPeriodsDo = afLoanPeriodsDoList.get(i - 1);
+                c.setTime(afLoanPeriodsDo.getGmtPlanRepay());
+                int periodsMonth = c.get(Calendar.MONTH) + 1;
+                int periodsDay = c.get(Calendar.DATE);
+                int periodsYear = c.get(Calendar.YEAR);
+                String periodsTime = periodsYear + "年" + periodsMonth + "月" + periodsDay + "日";
+                if (i == nper) {
+                    map.put("gmtEnd", periodsTime);
+                    map.put("days", periodsDay);
+                }
+                periods.put("days", day);
+                periods.put("gmtPlanRepay",periodsTime);
+                periods.put("loanAmount", afLoanPeriodsDo.getAmount());
+                periods.put("periods", i);
+                periods.put("fee", afLoanPeriodsDo.getInterestFee().add(afLoanPeriodsDo.getServiceFee()));
+                array.add(periods);
+            }
+            map.put("nperArray", array);
+        }
+        map.put("repayRemark", afLoanDo.getRepayRemark());//还款方式
+        map.put("loanRemark", afLoanDo.getLoanRemark());//借钱用途
+        map.put("totalPeriods", afLoanDo);//总借钱信息
+        map.put("interestRate", afLoanDo.getInterestRate().multiply(BigDecimal.valueOf(100))+"%");
+        getEdspayInfo(map, loanId, (byte) 5);
+    }
+
+    private void getEdspayInfo(Map<String,Object> map, Long borrowId, byte type) {
+        AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+        afContractPdfDo.setTypeId(borrowId);
+        afContractPdfDo.setType(type);
+        afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
+        List<AfEdspayUserInfoDo> userInfoDoList = edspayUserInfoDao.getInfoByTypeAndTypeId(type,borrowId);
+        if (userInfoDoList != null && userInfoDoList.size() > 0){
+            for (AfEdspayUserInfoDo userInfoDo:userInfoDoList) {
+                userInfoDo.setInvestorAmount(userInfoDo.getAmount());
+            }
+            map.put("edspaySealDoList", userInfoDoList);
+        }else {
+            if (afContractPdfDo != null){
+                List<AfContractPdfEdspaySealDto> edspaySealDoList = afContractPdfEdspaySealDao.getByPDFId(afContractPdfDo.getId());
+                map.put("edspaySealDoList", edspaySealDoList);
+            }
+        }
+    }
+
     private String getInstalmentVelocityHtml(String userName,Long borrowId,Integer nper,BigDecimal borrowAmount,String pdfTemplate) {
         try {
             String html = VelocityUtil.getHtml(protocolLegalInstalmentV2WithoutSeal(userName,borrowId,nper,borrowAmount,pdfTemplate));
@@ -1632,7 +1775,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 }
             }
         }
-        logger.info(JSON.toJSONString(map));
         return map;
     }
 
