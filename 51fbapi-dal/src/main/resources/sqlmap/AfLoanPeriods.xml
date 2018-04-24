@@ -416,12 +416,4 @@
         ORDER BY nper ASC
         LIMIT 1
     </select>
-
-    <select id="getCurrMonthPeriod" resultType="AfLoanPeriodsDo">
-        SELECT 
-          <include refid="queryFields"/>
-        FROM af_loan_periods
-        WHERE is_delete = 0 AND loan_id = #{loanId} AND NOW() <![CDATA[<=]]> gmt_plan_repay
-        ORDER BY nper LIMIT 1
-    </select>
 </mapper>

@@ -304,34 +304,49 @@ public class AppH5BillController extends BaseController {
             result.put("status", STATUS_NOBILL);
             return result;
         }
-        AfLoanPeriodsDo currMonthPeriodsDo = afLoanPeriodsService.getCurrMonthPeriod(lastLoanDo.getRid());
-        if (currMonthPeriodsDo == null) {
-            result.put("status", STATUS_NOBILL);
-            return result;
-        }
 
+        // 待还分期
+        List<AfLoanPeriodsDo> waitRepayPeriods = afLoanPeriodsService.listCanRepayPeriods(lastLoanDo.getRid());
         // 待还金额
-        BigDecimal waitRepaymentAmount = afLoanPeriodsService.calcuRestAmount(currMonthPeriodsDo);
-
-        // 还款所需信息
-        result.put("borrowId", lastLoanDo.getRid().toString());
-        result.put("shouldRepaymentAmount", waitRepaymentAmount);
-        result.put("rebateAmount", rebateAmount);
+        BigDecimal waitRepayAmount = BigDecimal.ZERO;
+        // 是否逾期
+        boolean isOverdue = false;
+        // 逾期金额
+        BigDecimal overdueAmount = BigDecimal.ZERO;
+        // 待还款最后还款日
+        Date gmtLastPlanRepay = null;
+        // 逾期最后还款日
+        Date overdueGmtLastPlanRepay = null;
+        // 待还期数id
         String loanPeriodsId = "";
-        List<AfLoanPeriodsDo> canRepayPeriods = afLoanPeriodsService.listCanRepayPeriods(lastLoanDo.getRid());
-        for (int i = 0; i < canRepayPeriods.size(); i++) {
-            loanPeriodsId += canRepayPeriods.get(i).getRid().toString();
-            if (i < canRepayPeriods.size() - 1) {
+        for (int i = 0; i < waitRepayPeriods.size(); i++) {
+            AfLoanPeriodsDo e = waitRepayPeriods.get(i);
+
+            waitRepayAmount = waitRepayAmount.add(afLoanPeriodsService.calcuRestAmount(e));
+            gmtLastPlanRepay = e.getGmtPlanRepay();
+            if(YesNoStatus.YES.getCode().equals(e.getOverdueStatus())) {
+                isOverdue = true;
+                overdueAmount = overdueAmount.add(e.getOverdueAmount());
+                overdueGmtLastPlanRepay = e.getGmtLastRepay();
+            }
+
+            loanPeriodsId += e.getRid().toString();
+            if (i < waitRepayPeriods.size() - 1) {
                 loanPeriodsId += ",";
             }
         }
+
+        // 还款所需信息
+        result.put("borrowId", lastLoanDo.getRid().toString());
+        result.put("shouldRepaymentAmount", waitRepayAmount);
+        result.put("rebateAmount", rebateAmount);
         result.put("loanPeriodsId", loanPeriodsId);
         result.put("loanRepaymentType", "commonSettle");
 
         // 还款中
         AfLoanRepaymentDo processLoanRepayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
         if (processLoanRepayment != null) {
-            result.put("amount", waitRepaymentAmount);
+            result.put("amount", waitRepayAmount);
 
             int processNum = afLoanRepaymentService.getProcessLoanRepaymentNumByLoanId(lastLoanDo.getRid());
             result.put("billDesc", "您有<span>" + processNum + "</span>还款正在处理中");
@@ -339,43 +354,40 @@ public class AppH5BillController extends BaseController {
             result.put("status", STATUS_REFUNDING);
             return result;
         }
-        // 待还
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.AWAIT_REPAY.name())
-                || currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.PART_REPAY.name())) {
-            // 已逾期
-            if (currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
-                result.put("amount", waitRepaymentAmount);
-                result.put("billDesc", "<i>(含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
-                        + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
-                result.put("status", STATUS_OVERDUE);
-                return result;
-            } else {
-                // 未逾期
-                result.put("amount", waitRepaymentAmount);
-                result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(
-                        currMonthPeriodsDo.getGmtPlanRepay()));
-                result.put("status", STATUS_WAITREFUND);
-                return result;
-            }
-        }
-        // 本月已结清，下月还款时间还没开始
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.FINISHED.name())
-                && currMonthPeriodsDo.getGmtPlanRepay().after(new Date())) {
-            result.put("amount", "0.00");
-            result.put("billDesc", "提前结清可减免手续费哦!");
-            result.put("status", STATUS_NEXTWAITREFUND);
 
-            result.put("loanRepaymentType", "forwardSettle");
-            BigDecimal unChargeAmount = BigDecimal.ZERO;
-            List<AfLoanPeriodsDo> unps = afLoanPeriodsService.listUnChargeRepayPeriods(lastLoanDo.getRid());
-            for(AfLoanPeriodsDo p : unps) {
-                unChargeAmount = unChargeAmount.add(p.getAmount());
-            }
-            result.put("periodsUnChargeAmount",
-                    unChargeAmount.setScale(2, RoundingMode.HALF_UP).toString());
+        // 逾期
+        if (isOverdue) {
+            result.put("amount", waitRepayAmount);
+            result.put("billDesc", "<i>(含逾期费" + overdueAmount.setScale(2, RoundingMode.HALF_UP)
+                    + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(overdueGmtLastPlanRepay));
+            result.put("status", STATUS_OVERDUE);
             return result;
         }
 
+        // 待还未逾期
+        if (waitRepayPeriods.size() > 0) {
+            result.put("amount", waitRepayAmount);
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(gmtLastPlanRepay));
+            result.put("status", STATUS_WAITREFUND);
+            return result;
+        } else {
+            // 本月已结清，下月还款时间还没开始
+            if (gmtLastPlanRepay.after(new Date())) {
+                result.put("amount", "0.00");
+                result.put("billDesc", "提前结清可减免手续费哦!");
+                result.put("status", STATUS_NEXTWAITREFUND);
+
+                result.put("loanRepaymentType", "forwardSettle");
+                BigDecimal unChargeAmount = BigDecimal.ZERO;
+                List<AfLoanPeriodsDo> unps = afLoanPeriodsService.listUnChargeRepayPeriods(lastLoanDo.getRid());
+                for(AfLoanPeriodsDo p : unps) {
+                    unChargeAmount = unChargeAmount.add(p.getAmount());
+                }
+                result.put("periodsUnChargeAmount",
+                        unChargeAmount.setScale(2, RoundingMode.HALF_UP).toString());
+                return result;
+            }
+        }
         return result;
     }
 

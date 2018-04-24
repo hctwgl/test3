@@ -393,15 +393,14 @@ public class MineHomeApi implements ApiHandle {
     }
 
     private BigDecimal getLoanWaitRepaymentAmount(Long userId) {
+        BigDecimal result = BigDecimal.ZERO;
         AfLoanDo lastLoanDo = afLoanService.getLastByUserIdAndPrdType(userId, LoanType.BLD_LOAN.getCode());
         if (lastLoanDo != null) {
-            // 本月待还  TODO:确认本月待还怎么取
-            AfLoanPeriodsDo currMonthPeriodsDo = afLoanPeriodsService.getCurrMonthPeriod(lastLoanDo.getRid());
-            if (currMonthPeriodsDo != null
-                    && !currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.FINISHED.name())) {
-                return afLoanPeriodsService.calcuRestAmount(currMonthPeriodsDo);
+            List<AfLoanPeriodsDo> waitRepayPeriods = afLoanPeriodsService.listCanRepayPeriods(lastLoanDo.getRid());
+            for (AfLoanPeriodsDo e : waitRepayPeriods) {
+                result = result.add(afLoanPeriodsService.calcuRestAmount(e));
             }
         }
-        return new BigDecimal(0);
+        return result;
     }
 }

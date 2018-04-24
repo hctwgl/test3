@@ -28,12 +28,4 @@ public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 	List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId);
 
 	AfLoanPeriodsDo getOneByLoanId(Long loanId);
-
-	/**
-	 * 获取本月借款分期
-	 *
-	 * @author wangli
-	 * @date 2018/4/17 13:52
-	 */
-	AfLoanPeriodsDo getCurrMonthPeriod(@Param("loanId") Long loanId);
 }

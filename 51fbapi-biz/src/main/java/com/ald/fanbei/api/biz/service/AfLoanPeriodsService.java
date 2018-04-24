@@ -44,14 +44,6 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 	AfLoanPeriodsDo getOneByLoanId(Long loanId);
 
 	/**
-	 * 获取本月分期
-	 *
-	 * @author wangli
-	 * @date 2018/4/14 12:38
-	 */
-	AfLoanPeriodsDo getCurrMonthPeriod(Long loanId);
-	
-	/**
 	 * 
 	 * 
 	 * @author wangli
