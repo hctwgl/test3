@@ -791,7 +791,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     @Override
     public String whiteLoanProtocolPdf(Integer debtType, String loanNo) throws IOException {
         long time = new Date().getTime();
-        AfLoanDo loanDo = afLoanService.getByLoanNo(loanNo);
+        AfLoanDo loanDo = afLoanService.getById(Long.valueOf(loanNo));
         if (loanDo == null){
             logger.error("白领贷订单不存在 => {}", loanNo);
             throw new FanbeiException(FanbeiExceptionCode.CONTRACT_NOT_FIND.getDesc());
