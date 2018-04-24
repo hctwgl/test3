@@ -131,10 +131,9 @@ public class GetTabbarInforApi implements ApiHandle {
 			}
 			data.put("titleColor", afResourceDo.getValue1());
 			//兼容原版本
-			if (appVersion >= 413) {
-			 data.put("content", afResourceDo.getValue3());
-			 data.put("status", afResourceDo.getValue2());
-			}
+//			if (appVersion >= 413) {
+//			 data.put("content", afResourceDo.getValue3());
+//			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
 				index.put("homeNomal", data);
 			}
@@ -170,6 +169,8 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("borrowSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION")){
+				data.put("content", afResourceDo.getValue3());
+				data.put("status", afResourceDo.getValue2());
 				index.put("operationPositionNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION_SELECTED")){
