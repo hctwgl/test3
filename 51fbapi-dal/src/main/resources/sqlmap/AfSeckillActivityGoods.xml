@@ -454,7 +454,7 @@
 	   AND    ac.`tag` = #{tag}
 	   AND    ac.`title1` = #{tabId}
 	   GROUP BY m.goods_id
-	   ORDER  BY  m.sort desc
+	   ORDER  BY m.sort DESC,m.id  DESC
     </select>
 
      <select id="getMoreGoodsByBottomGoodsTable" resultType="com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods" parameterType="com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery">
@@ -506,7 +506,7 @@
 	   and    ap.is_disable = 0
 	   AND    ap.page_flag = #{pageFlag}
 	   GROUP BY m.goods_id
-	   ORDER  BY m.sort DESC
+	   ORDER  BY m.sort DESC,m.id  DESC
     </select>
 
     <select id="getActivityGoodsByActivityId" resultType="AfSeckillActivityGoodsDto">
