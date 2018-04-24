@@ -1785,7 +1785,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						// afRecommendUserService.updateRecommendByBorrow(afBorrowDo.getUserId(),new
 						// Date());
 						// #endregion
-						if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+						logger.info("dealBrandOrderSucc bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+						if ((orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) && (orderInfo.getPayType().equals(PayType.COMBINATION_PAY.getCode()))) {
 							//新增白名单逻辑
 							try {
 								String bklResult = afBklService.isBklResult(orderInfo);

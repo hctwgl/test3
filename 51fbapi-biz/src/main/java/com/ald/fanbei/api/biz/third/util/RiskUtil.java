@@ -1289,8 +1289,8 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-		//TODO 电核
-		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+		logger.info("payOrder bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+		if ((orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()))) {
 			//新增白名单逻辑
 			try {
 				try {
