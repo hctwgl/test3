@@ -185,7 +185,7 @@
 		SELECT
 			<include refid="queryFields"/>
 		FROM
-			af_user_bankcardb b
+			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
 		WHERE
 			b.is_delete=0 
@@ -199,7 +199,7 @@
 		SELECT
 			<include refid="queryFields"/>
 		FROM
-			af_user_bankcardb b
+			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
 		WHERE
 			b.is_delete=0 
@@ -229,7 +229,7 @@
 		SELECT
 			<include refid="queryFields"/>
 		FROM
-			af_user_bankcardb b
+			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
 		WHERE
 			b.is_delete=0
@@ -244,7 +244,7 @@
 		SELECT
 		<include refid="queryFields"/>
 		FROM
-			af_user_bankcardb b
+			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
 		WHERE
 		b.is_delete=0
