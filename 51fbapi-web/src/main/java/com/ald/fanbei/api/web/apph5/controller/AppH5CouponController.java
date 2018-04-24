@@ -572,7 +572,7 @@ public class AppH5CouponController extends BaseController {
 		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		String key = "";
 		try {
-			Map<String, Object> returnData = Maps.newHashMap();
+			Map<String, Object> data = Maps.newHashMap();
 
 			FanbeiWebContext context = doWebCheck(request, false);
 			AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
@@ -583,24 +583,26 @@ public class AppH5CouponController extends BaseController {
 
 			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
 			if (couponDo == null) {
-				returnData.put("status", CouponWebFailStatus.CouponNotExist.getCode());
+				data.put("status", CouponWebFailStatus.CouponNotExist.getCode());
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(),
-						"", returnData).toString();
+						"", data).toString();
 			}
 
 			if(new Date().before(couponDo.getGmtStart())){
+				data.put("status", CouponWebFailStatus.COUPONCONTEXT4.getCode());
 				return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, "").toString();
 			}
 			if(new Date().after(couponDo.getGmtEnd())){
+				data.put("status", CouponWebFailStatus.COUPONCONTEXT8.getCode());
 				return H5CommonResponse.getNewInstance(false, "活动已结束", null, "").toString();
 			}
 
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
-				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
+				data.put("status", CouponWebFailStatus.UserNotexist.getCode());
 				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(),
-						notifyUrl, returnData).toString();
+						notifyUrl, data).toString();
 			}
 
 			key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + afUserDo.getRid() + ":" + couponId;
@@ -610,18 +612,18 @@ public class AppH5CouponController extends BaseController {
 				Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponId(afUserDo.getRid(),
 						NumberUtil.objToLongDefault(couponId, 1l));
 				if (limitCount <= myCount) {
-					returnData.put("status", CouponWebFailStatus.COUPONCONTEXT5.getCode());
+					data.put("status", CouponWebFailStatus.COUPONCONTEXT5.getCode());
 
 					return H5CommonResponse.getNewInstance(false,
-							FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", returnData)
+							FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", data)
 							.toString();
 				}
 				Long totalCount = couponDo.getQuota();
 				if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
-					returnData.put("status", CouponWebFailStatus.COUPONCONTEXT3.getCode());
+					data.put("status", CouponWebFailStatus.COUPONCONTEXT3.getCode());
 
 					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(),
-							"", returnData).toString();
+							"", data).toString();
 				}
 
 				AfUserCouponDo userCoupon = new AfUserCouponDo();
@@ -649,11 +651,15 @@ public class AppH5CouponController extends BaseController {
 				couponDoT.setRid(couponDo.getRid());
 				couponDoT.setQuotaAlready(1);
 				afCouponService.updateCouponquotaAlreadyById(couponDoT);
+
+				data.put("couponName", couponDo.getName());
+				data.put("status", CouponWebFailStatus.COUPONCONTEXT7.getCode());
 				logger.info("pick coupon success", couponDoT);
-				return H5CommonResponse.getNewInstance(true, "领取成功", "", null).toString();
+				return H5CommonResponse.getNewInstance(true, "领取成功", "", data).toString();
 			}
 			else{
-				return H5CommonResponse.getNewInstance(true, "领取成功", "", null).toString();
+				data.put("status", CouponWebFailStatus.COUPONCONTEXT6.getCode());
+				return H5CommonResponse.getNewInstance(false, "正在领取中，请稍后", "", data).toString();
 			}
 		} catch (Exception e) {
 			logger.error("pick coupon error", e);
