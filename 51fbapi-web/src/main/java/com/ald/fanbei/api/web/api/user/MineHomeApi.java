@@ -398,7 +398,7 @@ public class MineHomeApi implements ApiHandle {
             // 本月待还  TODO:确认本月待还怎么取
             AfLoanPeriodsDo currMonthPeriodsDo = afLoanPeriodsService.getCurrMonthPeriod(lastLoanDo.getRid());
             if (currMonthPeriodsDo != null
-                    && !currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.FINISHED.getCode())) {
+                    && !currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.FINISHED.name())) {
                 return afLoanPeriodsService.calcuRestAmount(currMonthPeriodsDo);
             }
         }

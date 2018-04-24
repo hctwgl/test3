@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BottomGoodsPageFlag;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -377,10 +378,11 @@ public class AppH5LifeController extends BaseController {
                             goodsId,"0");
             if (nperList != null) {
                 Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-                /*String isFree = (String) nperMap.get("isFree");
+                String isFree = (String) nperMap.get("isFree");
                 if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
                     nperMap.put("freeAmount", nperMap.get("amount"));
-                }*/
+                }
+                e.put("isFree", isFree);
                 e.put("price", nperMap.get("amount"));
                 e.put("nperNum", nperMap.get("nper"));
             }

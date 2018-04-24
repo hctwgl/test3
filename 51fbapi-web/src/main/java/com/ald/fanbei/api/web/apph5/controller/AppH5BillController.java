@@ -329,7 +329,8 @@ public class AppH5BillController extends BaseController {
         result.put("loanRepaymentType", "commonSettle");
 
         // 还款中
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.REPAYING.getCode())) {
+        AfLoanRepaymentDo processLoanRepayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
+        if (processLoanRepayment != null) {
             result.put("amount", waitRepaymentAmount);
 
             int processNum = afLoanRepaymentService.getProcessLoanRepaymentNumByLoanId(lastLoanDo.getRid());
@@ -338,26 +339,27 @@ public class AppH5BillController extends BaseController {
             result.put("status", STATUS_REFUNDING);
             return result;
         }
-        // 已逾期
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.AWAIT_REPAY.getCode())
-                && currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
-            result.put("amount", waitRepaymentAmount);
-            result.put("billDesc", "<i>(含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
-                    + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
-            result.put("status", STATUS_OVERDUE);
-            return result;
-        }
-        // 待还未逾期
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.AWAIT_REPAY.getCode()) ||
-                currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.PART_REPAY.getCode())) {
-            result.put("amount", waitRepaymentAmount);
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(
-                    currMonthPeriodsDo.getGmtPlanRepay()));
-            result.put("status", STATUS_WAITREFUND);
-            return result;
+        // 待还
+        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.AWAIT_REPAY.name())
+                || currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.PART_REPAY.name())) {
+            // 已逾期
+            if (currMonthPeriodsDo.getOverdueStatus().equals(YesNoStatus.YES.getCode())) {
+                result.put("amount", waitRepaymentAmount);
+                result.put("billDesc", "<i>(含逾期费" + currMonthPeriodsDo.getOverdueAmount().setScale(2, RoundingMode.HALF_UP)
+                        + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthPeriodsDo.getGmtPlanRepay()));
+                result.put("status", STATUS_OVERDUE);
+                return result;
+            } else {
+                // 未逾期
+                result.put("amount", waitRepaymentAmount);
+                result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(
+                        currMonthPeriodsDo.getGmtPlanRepay()));
+                result.put("status", STATUS_WAITREFUND);
+                return result;
+            }
         }
         // 本月已结清，下月还款时间还没开始
-        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatusNew.FINISHED.getCode())
+        if (currMonthPeriodsDo.getStatus().equals(AfLoanPeriodStatus.FINISHED.name())
                 && currMonthPeriodsDo.getGmtPlanRepay().after(new Date())) {
             result.put("amount", "0.00");
             result.put("billDesc", "提前结清可减免手续费哦!");
