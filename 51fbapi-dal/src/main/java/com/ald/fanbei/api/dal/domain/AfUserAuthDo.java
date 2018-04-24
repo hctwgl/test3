@@ -64,6 +64,24 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String onlinebankStatus;
 	private Date gmtEcommerce;
 	private String ecommerceStatus;//公信宝电商认证
+	private String bubbleStatus;
+	private Date gtmBubble;
+
+	public String getBubbleStatus() {
+		return bubbleStatus;
+	}
+
+	public void setBubbleStatus(String bubbleStatus) {
+		this.bubbleStatus = bubbleStatus;
+	}
+
+	public Date getGtmBubble() {
+		return gtmBubble;
+	}
+
+	public void setGtmBubble(Date gtmBubble) {
+		this.gtmBubble = gtmBubble;
+	}
 
 	public String getBasicStatus() {
 		return basicStatus;
