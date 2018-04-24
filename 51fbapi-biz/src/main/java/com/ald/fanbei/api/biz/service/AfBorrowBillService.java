@@ -395,4 +395,6 @@ public interface AfBorrowBillService {
 	int getOnRepaymentCountByUserId(Long userId);
 
 	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId);
+
+	int updateBorrowBillFaildWhenNotY(List<Long> billIdList);
 }

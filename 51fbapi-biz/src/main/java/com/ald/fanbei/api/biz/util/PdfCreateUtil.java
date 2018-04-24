@@ -60,13 +60,6 @@ public class PdfCreateUtil {
 	        /* 必须要调用这个，否则文档不会生成的 */
         ps.setFormFlattening(true);
         ps.close();
-        bos.close();
-        //文件存储的路径（需要先创建好文件夹）
-        /*fos = new FileOutputStream(newPDFPath);
-        fos.write(bos.toByteArray());
-        fos.flush();
-        fos.close();
-        bos.close();*/
         return bos.toByteArray();
     }
 
