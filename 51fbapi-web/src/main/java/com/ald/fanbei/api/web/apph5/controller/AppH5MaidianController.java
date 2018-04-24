@@ -4,7 +4,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.impl.MaidianRunnable;
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +33,10 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/fanbei-web")
 public class AppH5MaidianController extends BaseController {
-	
+
+    @Autowired
+    ThreadPoolTaskExecutor threadPoolMaidianTaskExecutor;
+
     @RequestMapping(value = "postMaidianInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String postMaidianInfo(HttpServletRequest request, ModelMap model) throws IOException {
@@ -43,7 +49,8 @@ public class AppH5MaidianController extends BaseController {
     		
         	// 获取埋点标识
     		H5CommonResponse resp = H5CommonResponse.getNewInstance(true,"","",model);
-    		doMaidianLog(request, resp,maidianInfo,maidianInfo1,maidianInfo2,maidianInfo3);
+            MaidianRunnable maidianRunnable = new MaidianRunnable(request, resp.getData().toString(), true,maidianInfo, maidianInfo1, maidianInfo2, maidianInfo3);
+            threadPoolMaidianTaskExecutor.execute(maidianRunnable);
     		return resp.toString();
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
