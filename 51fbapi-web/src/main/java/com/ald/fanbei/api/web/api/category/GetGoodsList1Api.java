@@ -9,13 +9,10 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
-import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -29,7 +26,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.*;
 /**
  * 爱上街分类详情页
@@ -55,9 +51,6 @@ public class GetGoodsList1Api implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Map<String, Object> data = new HashMap<String, Object>();
-       // Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
-      // Map<String,Object> activityData = new HashMap<String,Object> ();
-      //  AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
         String volumeSortValue = ObjectUtils.toString(requestDataVo.getParams().get("volumeSort"));
         String priceSortValue = ObjectUtils.toString(requestDataVo.getParams().get("priceSort"));
         int pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);

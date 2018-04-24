@@ -177,5 +177,31 @@ public static enum ASJ_HOME_PAGE{
 		}
 	}
 
-	
+	public static enum ASJ_CATEGORY{
+		ASJ_CATEGORY_DETAIL_GET_GOODS_BY_CATEGORYID_AND_VOLUME("ASJ_CATEGORY_DETAIL_GOODS_BY_CID_AND_VOLUME","爱尚街分类详情页商品按照类目ID和销量降序"),
+		ASJ_CATEGORY_DETAIL_RESULT_GET_GOODS_BY_CATEGORYID_AND_PRICE("ASJ_CATEGORY_DETAIL_GOODS_BY_CID_AND_PRICE","爱尚街分类详情页商品按照类目和价格排序"),
+		ASJ_CATEGORY_DETAIL_RESULT_ALLGOODS_THE_BRAND("ASJ_CATEGORY_DETAIL_ALLGOODS_THE_BRAND","爱尚街分类品牌结果页该品牌下所有的商品");
+		
+		
+		private String code;
+		private String name;
+		
+		private ASJ_CATEGORY(String code, String name) {
+			this.code = code;
+			this.name = name;
+		}
+		public String getCode() {
+			return code;
+		}
+		public void setCode(String code) {
+			this.code = code;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+	}
 }

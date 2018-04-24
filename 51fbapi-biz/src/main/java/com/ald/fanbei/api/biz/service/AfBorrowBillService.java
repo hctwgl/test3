@@ -404,4 +404,6 @@ public interface AfBorrowBillService {
 	 * @author wangli
 	 * @date 2018/4/13 18:09
 	 */	AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(Long userId);
+
+	int updateBorrowBillFaildWhenNotY(List<Long> billIdList);
 }

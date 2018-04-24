@@ -24,6 +24,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +49,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/fanbei-web/life")
 public class AppH5LifeController extends BaseController {
+
+    Logger logger = LoggerFactory.getLogger(AppH5LifeController.class);
 
     // 商城默认返回数量
     private static final int SHOP_NUM = 10;
@@ -97,15 +101,18 @@ public class AppH5LifeController extends BaseController {
             }
             if (StringUtils.isBlank(result)) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("shopList", findShopList());
+                List<AfShopVo> shopList = findShopList();
+                data.put("shopList", shopList);
+                List<Map<String, Object>> bannerList = findBannerList();
                 data.put("bannerList", findBannerList());
 
                 result = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
-                bizCacheUtil.saveObject(cacheKey,result,120);
+                if (shopList.size() > 0 || bannerList.size() > 0)
+                    bizCacheUtil.saveObject(cacheKey, result, 180);
             }
             return result;
         } catch (Exception e) {
-            logger.error("/fanbei-web/life/categoryAndBanner error = {}", e.getStackTrace());
+            logger.error("/fanbei-web/life/categoryAndBanner error：", e);
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
         }
     }
@@ -131,12 +138,12 @@ public class AppH5LifeController extends BaseController {
 
                 result = H5CommonResponse
                         .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
-                bizCacheUtil.saveObject(cacheKey, result, 120);
+                bizCacheUtil.saveObject(cacheKey, result, 180);
             }
 
             return result;
         } catch (Exception e) {
-            logger.error("/fanbei-web/life/h5ResourceList error={}", e.getStackTrace());
+            logger.error("/fanbei-web/life/h5ResourceList error：", e);
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
         }
     }
@@ -163,7 +170,7 @@ public class AppH5LifeController extends BaseController {
 
             return result;
         } catch (Exception e) {
-            logger.error("/fanbei-web/life/goods error={}", e.getStackTrace());
+            logger.error("/fanbei-web/life/goods error：", e);
             return H5CommonResponse.getNewInstance(false, "获取资源失败", null, "").toString();
         }
     }
