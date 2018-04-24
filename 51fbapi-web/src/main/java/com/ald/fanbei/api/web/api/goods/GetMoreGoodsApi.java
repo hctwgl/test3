@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.HomePageType;
@@ -46,6 +47,7 @@ import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
@@ -101,7 +103,9 @@ public class GetMoreGoodsApi implements ApiHandle {
 	AfSeckillActivityService afSeckillActivityService;
 	@Resource
 	AfResourceH5ItemService afResourceH5ItemService;
-	@Override
+	private static final	 String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+	private static final    String GUESS_YOU_LIKE_TOP_IMAGE =   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
+	
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -124,9 +128,17 @@ public class GetMoreGoodsApi implements ApiHandle {
 		
 		//更多商品
 	 try{
-		 String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
-		 String GUESS_YOU_LIKE_TOP_IMAGE = 		   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
+		
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		 Map<String, Object> goodsInfoTemp = new HashMap<String, Object>();
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO.getCode()+ pageNo;
+		 goodsInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		   if(goodsInfoTemp != null){
+			   goodsInfo = goodsInfoTemp;
+		   }	
+		   if(goodsInfoTemp == null || goodsInfoTemp.isEmpty()){
+			   
+		 
 		 //更换查询表
 		 //List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
 		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
@@ -158,6 +170,10 @@ public class GetMoreGoodsApi implements ApiHandle {
 								 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
 							 }
 		         }
+						 
+						 bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);	 		 
+						 
+		   }
 		     
 			 if (!goodsInfo.isEmpty()) {
 					data.put("moreGoodsInfo", goodsInfo);
