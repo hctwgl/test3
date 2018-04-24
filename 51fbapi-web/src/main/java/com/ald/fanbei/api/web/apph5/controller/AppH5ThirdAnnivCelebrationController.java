@@ -113,7 +113,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "sendCouponAfterSuccessShare", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "sendCouponAfterSuccessShare", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String sendCouponAfterSuccessShare(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String userName = context.getUserName();
@@ -164,7 +164,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getCurrentSecKillGoods", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "getCurrentSecKillGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getCurrentSecKillGoods(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityName = "";
@@ -258,7 +258,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getNextSecKillGoodList(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
@@ -286,7 +286,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getH5PageGoodList", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "getH5PageGoodList", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String getH5PageGoodList(HttpServletRequest request, HttpServletResponse response){
         FanbeiWebContext context = doWebCheck(request, false);
         Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
@@ -313,7 +313,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "mineActivityInfo", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "mineActivityInfo", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String mineActivityInfo(HttpServletRequest request, HttpServletResponse response){
         FanbeiWebContext context = doWebCheck(request, false);
         AfUserDo afUserDo = null;

@@ -565,11 +565,10 @@ public class AppH5CouponController extends BaseController {
 	 * @param request
 	 * @param model
 	 * @return
-	 * @throws IOException
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+	@RequestMapping(value = "pickActivityCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickCoupon(HttpServletRequest request, ModelMap model){
 		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		String key = "";
 		try {

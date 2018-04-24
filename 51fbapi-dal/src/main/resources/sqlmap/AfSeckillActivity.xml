@@ -81,10 +81,10 @@
           WHERE a.is_delete = 0 AND a.is_disable=0
             AND a.name like CONCAT(#{name}, '%')
         <if test="gmtStart != null and gmtStart != ''">
-            AND a.gmt_pstart <![CDATA[>=]]> #{gmtStart}
+            AND a.gmt_start <![CDATA[>=]]> #{gmtStart}
         </if>
         <if test="gmtEnd != null and gmtEnd != ''">
-            AND a.gmt_end <![CDATA[<=]]> #{gmtEnd}
+            AND a.gmt_start <![CDATA[<=]]> #{gmtEnd}
         </if>
         ORDER BY a.name
     </select>
