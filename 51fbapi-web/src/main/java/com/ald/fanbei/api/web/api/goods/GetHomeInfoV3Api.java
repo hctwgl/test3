@@ -875,7 +875,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		int count = 0;
 		if (navCount > 5 && navCount < 10) {
 			count = 5;
-		} else if (navCount > 10) {
+		} else if (navCount >= 10) {
 			count = 10;
 		}
 		if(count > 0){
