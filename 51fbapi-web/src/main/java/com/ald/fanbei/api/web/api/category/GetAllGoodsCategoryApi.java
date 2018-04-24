@@ -92,6 +92,7 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                     }
                 }
                 objFirst.put("name",name);
+                objFirst.put("rid", rid);// 前端统计
                 objFirst.put("categoryRunData", categoryRunData);
                 objFirst.put("secondLevelList",secondLevelList);
                 oneLevelList.add(objFirst);
