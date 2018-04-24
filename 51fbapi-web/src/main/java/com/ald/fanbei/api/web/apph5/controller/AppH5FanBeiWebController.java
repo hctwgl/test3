@@ -1274,7 +1274,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		 
 		 
 		 
-		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"H5");
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);

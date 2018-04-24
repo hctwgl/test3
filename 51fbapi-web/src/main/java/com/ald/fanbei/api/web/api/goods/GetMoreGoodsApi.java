@@ -141,7 +141,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 		 
 		 //更换查询表
 		 //List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
-		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"app");
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
 		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
 		     String imageUrl = "";

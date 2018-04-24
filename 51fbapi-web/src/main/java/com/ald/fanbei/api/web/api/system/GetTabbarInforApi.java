@@ -133,6 +133,7 @@ public class GetTabbarInforApi implements ApiHandle {
 			//兼容原版本
 			if (appVersion >= 413) {
 			 data.put("content", afResourceDo.getValue3());
+			 data.put("status", afResourceDo.getValue2());
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
 				index.put("homeNomal", data);
