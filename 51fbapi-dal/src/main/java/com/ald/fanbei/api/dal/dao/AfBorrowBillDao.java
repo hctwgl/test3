@@ -503,4 +503,6 @@ public interface AfBorrowBillDao {
 	 * @date 2018/4/13 18:10
 	 */
     AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(@Param("userId") Long userId);
+
+    int updateBorrowBillFaildWhenNotY(@Param("items")List<Long> billIds);
 }
