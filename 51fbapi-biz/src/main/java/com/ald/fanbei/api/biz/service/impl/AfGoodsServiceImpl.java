@@ -192,5 +192,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId){
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
 	}
+	@Override
+	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
+	}
 
 }

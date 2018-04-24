@@ -120,5 +120,7 @@ public interface AfGoodsDao {
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
 
+	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
+
 
 }
