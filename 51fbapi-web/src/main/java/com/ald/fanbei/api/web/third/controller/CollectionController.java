@@ -690,7 +690,7 @@ public class CollectionController {
             id = afBorrowDo.getRid();
         } else if (type == 5){//白领贷协议
             try {
-                AfLoanDo loanDo = loanDao.getByLoanNo(borrowNo);
+                AfLoanDo loanDo = loanDao.getById(Long.valueOf(borrowNo));
                 logger.info("getContractProtocolPdf afBorrowDo =>{}",afBorrowDo);
                 if (loanDo == null) {
                     logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}", borrowNo);
