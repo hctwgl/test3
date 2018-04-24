@@ -675,7 +675,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
         if(result==1){
             try{
                 kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
-                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
+                kafkaSync.syncEvent(repayment.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
             }catch (Exception e){
                 logger.info("消息同步失败:",e);
             }

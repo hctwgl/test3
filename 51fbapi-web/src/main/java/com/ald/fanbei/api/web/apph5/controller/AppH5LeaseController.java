@@ -1118,8 +1118,7 @@ public class AppH5LeaseController extends BaseController {
                 afBorrowService.updateBorrowStatus(afBorrowDo, afUser.getUserName(), afOrderDo.getUserId());
             }
         }
-        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+        kafkaSync.syncEvent(afOrderDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
     }
 
     private List<Object> getBannerObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
