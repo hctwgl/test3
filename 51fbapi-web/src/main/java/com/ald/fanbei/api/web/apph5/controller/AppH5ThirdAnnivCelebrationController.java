@@ -207,7 +207,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                 // 获取当前场次的活动ID
                 Calendar calendar = Calendar.getInstance();
                 int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_NAME);
+                AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
                 if (null != activityStartHour) {
                     String[] activityStartHourArray = activityStartHour.getValue().split(",");
                     int arrayLength = activityStartHourArray.length;
