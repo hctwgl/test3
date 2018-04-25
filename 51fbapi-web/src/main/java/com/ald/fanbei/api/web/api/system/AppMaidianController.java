@@ -36,6 +36,8 @@ public class AppMaidianController{
     @RequestMapping(value = "postMaidianInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ApiHandleResponse process(@RequestBody AppMaidianDto appMaidianDto, HttpServletRequest request) {
         try {
+            logger.info("fanbei-app postMaidianInfo:"+appMaidianDto.toString());
+
             String maidianInfo = ObjectUtils.toString(appMaidianDto.getMaidianInfo(), "").toString();
             String maidianInfo1 = ObjectUtils.toString(request.getHeader("appVersion"), "").toString();
             String maidianInfo2 = ObjectUtils.toString(appMaidianDto.getMaidianInfo2(), "").toString();
