@@ -128,6 +128,7 @@ public class MaidianRunnable implements Runnable {
             }
 
         } catch (Exception e) {
+            logger.info("maidian logger:"+request.toString());
             logger.error("maidian logger error", e);
         }
     }
