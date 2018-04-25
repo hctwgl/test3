@@ -44,6 +44,10 @@ import java.math.BigDecimal;
      * 资金方（钱包）的处理结果【reviewFail：浙商审核失败，payFail：打款失败，paySuccess：打款成功】
      */
     private String status;
+    
+    private BigDecimal borrowRate;
+    
+    private BigDecimal profitRate;
 
 
     /**
@@ -155,4 +159,32 @@ import java.math.BigDecimal;
       this.status = status;
     }
 
+	/**
+	 * @return the borrowRate
+	 */
+	public BigDecimal getBorrowRate() {
+		return borrowRate;
+	}
+
+	/**
+	 * @param borrowRate the borrowRate to set
+	 */
+	public void setBorrowRate(BigDecimal borrowRate) {
+		this.borrowRate = borrowRate;
+	}
+
+	/**
+	 * @return the profitRate
+	 */
+	public BigDecimal getProfitRate() {
+		return profitRate;
+	}
+
+	/**
+	 * @param profitRate the profitRate to set
+	 */
+	public void setProfitRate(BigDecimal profitRate) {
+		this.profitRate = profitRate;
+	}
+    
 }
