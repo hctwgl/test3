@@ -188,4 +188,9 @@
 		<!-- 线程池维护线程所允许的空闲时间，默认为60s -->
 		<property name="keepAliveSeconds" value="300" />
 	</bean>
+
+	<!-- solrServer -->
+	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+		<constructor-arg name="baseURL" value="${solrServer.address}"/>
+	</bean>
 </beans>

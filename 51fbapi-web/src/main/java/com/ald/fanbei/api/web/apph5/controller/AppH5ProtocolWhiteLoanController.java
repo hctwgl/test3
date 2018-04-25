@@ -290,8 +290,9 @@ public class AppH5ProtocolWhiteLoanController extends BaseController {
                     userInfoDo.setUserName(name + "**");
                 }
                 userInfoDo.setInvestorAmount(userInfoDo.getAmount());
-                String cardId = userInfoDo.getEdspayUserCardId().substring(0, 10);
-                userInfoDo.setEdspayUserCardId(cardId + "*********");
+                String firstCardId = userInfoDo.getEdspayUserCardId().substring(0, 4);
+                String secondCardId = userInfoDo.getEdspayUserCardId().substring(14, userInfoDo.getEdspayUserCardId().length());
+                userInfoDo.setEdspayUserCardId(firstCardId + "***********"+secondCardId);
             }
             model.put("edspaySealDoList", userInfoDoList);
         }else {

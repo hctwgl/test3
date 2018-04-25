@@ -117,21 +117,17 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
 	
-	private boolean cacheSwitch =		          false; 
-	private String OPERATE =		              HomePageType.OPERATE.getCode(); 
-	private String TABBAR_HOME_TOP =		      HomePageType.TABBAR_HOME_TOP.getCode(); 
-	private String NEW_EXCLUSIVE =		          HomePageType.NEW_EXCLUSIVE.getCode(); 
-	private String TABBAR =		                  HomePageType.TABBAR.getCode(); 
-	private String HOME_IAMGE_SLOGAN =		      HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
-	private String ASJ_IMAGES =		   			  HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
-	private String TOP_IMAGE = 		  		      HomePageType.TOP_IMAGE.getCode(); 
-	private String GOODS = 		  			      HomePageType.GOODS.getCode(); 
-	private String GOODS_ID =   			      HomePageType.GOODS_ID.getCode(); 
-	private String H5_URL =          		      HomePageType.H5_URL.getCode(); 
-	private String NEW_GOODS =   			 	  HomePageType.NEW_GOODS.getCode();    //品质新品
-	private String HOME_SEL = 				 	  HomePageType.HOME_SEL.getCode();     // 精选活动
-	private String MAJOR_SUIT =		  		 	  HomePageType.MAJOR_SUIT.getCode();    //大牌汇聚
-	private String HOME_FLASH_SALE_FLOOR_IMAGE =  HomePageType.HOME_FLASH_SALE_FLOOR_IMAGE.getCode();   //限时抢购楼层图
+	private static final String OPERATE =		              HomePageType.OPERATE.getCode(); 
+	private static final String NEW_EXCLUSIVE =		          HomePageType.NEW_EXCLUSIVE.getCode(); 
+	private static final String HOME_IAMGE_SLOGAN =		      HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
+	private static final String ASJ_IMAGES =		   			  HomePageType.ASJ_IMAGES.getCode();    //爱上街图片组
+	private static final String TOP_IMAGE = 		  		      HomePageType.TOP_IMAGE.getCode(); 
+	private static final String GOODS = 		  			      HomePageType.GOODS.getCode(); 
+	private static final String H5_URL =          		      HomePageType.H5_URL.getCode(); 
+	private static final String NEW_GOODS =   			 	  HomePageType.NEW_GOODS.getCode();    //品质新品
+	private static final String HOME_SEL = 				 	  HomePageType.HOME_SEL.getCode();     // 精选活动
+	private static final String MAJOR_SUIT =		  		 	  HomePageType.MAJOR_SUIT.getCode();    //大牌汇聚
+	private static final String HOME_FLASH_SALE_FLOOR_IMAGE =  HomePageType.HOME_FLASH_SALE_FLOOR_IMAGE.getCode();   //限时抢购楼层图
 	
 	
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -148,25 +144,19 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		}
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode();
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		 
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
-         }else {
+         }else 
+          {
 		
 		         AfResourceDo   searchBackground = new  AfResourceDo();
 		         AfResourceDo   nineBackground   =   new  AfResourceDo();
 		         AfResourceDo   navigationBackground = new  AfResourceDo();
 				// 背景图配置
 		         List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
-		//         if(cacheSwitch){
-		//     	    backgroundList = bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_CUBE_HOMEPAGE_BACKGROUND.getCode());
-		//         }
-		//     	if(backgroundList == null || backgroundList.size()<1){
-		     		backgroundList = afResourceService
-						.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
-		//     		 bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_CUBE_HOMEPAGE_BACKGROUND.getCode(), backgroundList, Constants.MINITS_OF_TWO);
-		//     	}
-				
+		     	 backgroundList = afResourceService
+						.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
+
 				// 背景图
 				if (backgroundList != null && !backgroundList.isEmpty()) {
 					  for(AfResourceDo background: backgroundList ){
@@ -197,13 +187,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				
 				// tabList[]
 		    	List<AfHomePageChannelDo> channelList =   new ArrayList<AfHomePageChannelDo>();
-		//    	  if(cacheSwitch){
-		//    		  channelList = bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TAB_LIST.getCode());
-		//           }
-		 //   	  if(channelList == null || channelList.size()<1){
 		    		  channelList =  afHomePageChannelService.getListOrderBySortDesc();
-//		    		  bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TAB_LIST.getCode(), channelList, Constants.MINITS_OF_TWO);
-//		    	  }
 				List<AfHomePageChannelVo> tabList = new ArrayList<AfHomePageChannelVo>();
 				try{
 					if (CollectionUtil.isNotEmpty(channelList)) {
@@ -218,133 +202,60 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					logger.error("channelList convertToListFromList error"+e);
 				}
 				 List<AfResourceH5ItemDo> tabbarList  = new ArrayList<AfResourceH5ItemDo>();
-		//		  if(cacheSwitch){  
-		//			  tabbarList =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TABBAR_LIST.getCode());
-		//		  }
-//				  if(tabbarList == null ||tabbarList.size()<1 ){
-					  tabbarList = afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
-//				     		 bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TABBAR_LIST.getCode(), tabbarList, Constants.MINITS_OF_TWO);
-//				  }
 				
 				// 顶部导航信息
 				List<Object> topBannerList = new ArrayList<Object>();
 		
 				String topBanner = AfResourceType.HomeBannerV401.getCode();
-		//		if (StringUtils.equals(deviceType, "IPHONEX")) {
-		//			topBanner = AfResourceType.HomeBannerV401iPhoneX.getCode();
-		//		}
 				// 正式环境和预发布环境区分
 				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-		//			  if(cacheSwitch){  
-		//				  topBannerList =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TOP_BANNER_LIST_ONLINE.getCode());
-		//			  }
-//					  if(topBannerList == null || topBannerList.size()<1){
 						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
-//					      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TOP_BANNER_LIST_ONLINE.getCode(), topBannerList, Constants.MINITS_OF_TWO);
-//					  }
 					
 				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-		//			  if(cacheSwitch){  
-		//				  topBannerList =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TOP_BANNER_LIST_PRE.getCode());
-		//			  }
-//					  if(topBannerList == null || topBannerList.size()<1){
 						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
-//					      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_TOP_BANNER_LIST_PRE.getCode(), topBannerList, Constants.MINITS_OF_TWO);
-//					  }
 					
 				}
 		
 				   String sloganImage = "";
 				   List<AfResourceH5ItemDo> sloganList = new ArrayList<AfResourceH5ItemDo>();
-		//		   if(cacheSwitch){  
-		//			       sloganList =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_SLOGAN_LIST.getCode());
-		//			  }
-//					  if(sloganList == null || sloganList.size()<1){
 						  sloganList =    afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_IAMGE_SLOGAN);
-//					      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_SLOGAN_LIST.getCode(), sloganList, Constants.MINITS_OF_TWO);
-//					  }
-				  
 				     if(sloganList != null && sloganList.size() >0){
 				    	 sloganImage = sloganList.get(0).getValue3();
 				     }
 				// 快速导航信息
 				Map<String, Object> navigationInfo =  new  HashMap<String, Object>();
 				
-		//		 if(cacheSwitch){  
-		//			 navigationInfo =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_INFO.getCode());
-		//		  }
-//				  if(navigationInfo == null || navigationInfo.isEmpty()){
 					  navigationInfo = getNavigationInfoWithResourceDolist(
 								afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()),navigationBackground);
-//				      bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_INFO.getCode(), navigationInfo, Constants.MINITS_OF_TWO);
-//				  }
 //				
 				// 新增运营位1,快捷导航上方活动专场
 				List<Object> navigationUpOne = new  ArrayList<Object>();
-		//		  if(cacheSwitch){  
-		//			  navigationUpOne =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_UP_ONE.getCode());
-		//		  }
 //				  if(navigationUpOne == null || navigationUpOne.size()<1){
 					  navigationUpOne = 	getNavigationUpOneResourceDoList(
 								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
-//				      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_UP_ONE.getCode(), navigationUpOne, Constants.MINITS_OF_TWO);
-//				  }
-				
 		
 				// 新增运营位2,快捷导航下方活动专场
 					List<Object> navigationDownOne = new  ArrayList<Object>();
-		//			if(cacheSwitch){  
-		//				navigationDownOne =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_DOWN_ONE.getCode());
-		//			  }
-//					  if(navigationDownOne == null ||  navigationDownOne.size()<1){
 						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
 									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
-//					      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NAVIGATION_DOWN_ONE.getCode(), navigationDownOne, Constants.MINITS_OF_TWO);
-//					  }
 //				
 				
 				
 				// 获取金融服务入口
 				
 				 Map<String, Object> financialEntranceInfo =  new  HashMap<String, Object>();
-		//		 if(cacheSwitch){  
-		//			 financialEntranceInfo =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_FINANCIAL_ENTRANC_INFO.getCode());
-		//		  }
-//				  if(financialEntranceInfo == null || financialEntranceInfo.isEmpty()){
 						financialEntranceInfo = getFinancialEntranceInfo();
-//				        bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_FINANCIAL_ENTRANC_INFO.getCode(), financialEntranceInfo, Constants.MINITS_OF_TWO);
-//				  }
-				
 				//九宫3,6,9
 				 Map<String, Object> gridViewInfo =  new  HashMap<String, Object>();
-		//		 if(cacheSwitch){  
-		//			    gridViewInfo =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_GRID_VIEW_INFO.getCode());
-		//		  }
-//				  if(gridViewInfo == null || gridViewInfo.isEmpty()){
 					    gridViewInfo = getGridViewInfoList();
-//				        bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_GRID_VIEW_INFO.getCode(), gridViewInfo, Constants.MINITS_OF_TWO);
-//				  }
 				   //电商运营位
 				 Map<String, Object> ecommerceAreaInfo =  new  HashMap<String, Object>();
-		//		 if(cacheSwitch){  
-		//			 ecommerceAreaInfo =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_ECOMMERCE_AREA_INFO.getCode());
-		//		  }
-//				  if(ecommerceAreaInfo == null || ecommerceAreaInfo.isEmpty()){
 					  ecommerceAreaInfo = getEcommerceAreaInfo();
-//				        bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_ECOMMERCE_AREA_INFO.getCode(), ecommerceAreaInfo, Constants.MINITS_OF_TWO);
-//				  }
 				
 				// 获取常驻运营位信息
 		     
 				List<Object> homeNomalPositionList = new  ArrayList<Object>();
-		//		if(cacheSwitch){  
-		//			homeNomalPositionList =  bizCacheUtil.getObjectList(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NOMAL_POSITION_LIST.getCode());
-		//		  }
-//				  if(homeNomalPositionList == null || homeNomalPositionList.size()<1){
 					  homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(afResourceService.getHomeNomalPositionList());
-//				      bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NOMAL_POSITION_LIST.getCode(), homeNomalPositionList, Constants.MINITS_OF_TWO);
-//				  }
-//				
 						
 				  	Map<String, Object> flashSaleInfo = new HashMap<String, Object>();
 					   //限时抢购。有活动时间，整体不加入缓存。可部分加入缓存
@@ -391,14 +302,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					    Map<String, Object> newProduct = new HashMap<String, Object>();
 					    //整体缓存取
 					try{
-		//				  Map<String, Object> newProductTemp = new HashMap<String, Object>();
-		//				 if(cacheSwitch){  
-		//					 newProductTemp =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NEW_PRODUCT_INFO.getCode());
-		//					 if(newProductTemp != null){
-		//						 newProduct = newProductTemp;
-		//					 }
-		//				 }
-//						 if(newProduct == null || newProduct.isEmpty()){
 					      //数据库查
 						  List<Object> newProductGoodsIdList = new ArrayList<Object>();
 						  List<AfResourceH5ItemDo>  newProductList =  afResourceH5ItemService.getByTag(NEW_GOODS);
@@ -440,10 +343,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 									}
 							 }
 						 }
-						  //加入缓存
-//						    bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_NEW_PRODUCT_INFO.getCode(), newProduct, Constants.MINITS_OF_TWO);
-//						}
-						  
 						  
 					}catch(Exception e){
 							logger.error("get newProduct error"+e);
@@ -451,14 +350,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 							     Map<String, Object> activityGoodsInfo = new HashMap<String, Object>();
 						    // 精选活动
 						 try{
-		//					     Map<String, Object> activityGoodsInfoTemp = new HashMap<String, Object>();
-		//						 if(cacheSwitch){  
-		//							 activityGoodsInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_ACTIVITY_GOODS_INFO.getCode());
-		//						    if(activityGoodsInfoTemp != null){
-		//						    	activityGoodsInfo = activityGoodsInfoTemp;
-		//						    }
-		//						 }
-//								 if(activityGoodsInfo == null ||activityGoodsInfo.isEmpty()){
 									 List<AfResourceH5ItemDo>  activityList =  afResourceH5ItemService.getByTag(HOME_SEL);
 									 if(activityList != null && activityList.size() >0 ){
 										 List<Object> activityGoodsInfoList1 = new ArrayList<Object>(); 
@@ -517,23 +408,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 											 activityGoodsInfo.put("activityGoodsList", activityGoodsInfoList1);
 										 }
 								    }
-//									 bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_ACTIVITY_GOODS_INFO.getCode(), activityGoodsInfo, Constants.MINITS_OF_TWO);	 
-//									 
-//								}
 						 }catch(Exception e){
 							 logger.error("activityGoodsList goodsInfo error "+ e);
 						 }
 						 Map<String, Object> brandInfo = new HashMap<String, Object>();
 						 // 大牌汇聚
 						 try{
-		//					  Map<String, Object> brandInfoTemp = new HashMap<String, Object>();
-		//					 if(cacheSwitch){  
-		//						 brandInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_BRAND_INFO.getCode());
-		//					   if(brandInfoTemp != null){
-		//						   brandInfo = brandInfoTemp;
-		//					   }
-		//					 }
-		//					 if(brandInfo == null || brandInfo.isEmpty()){
 							 
 						        List<Object> brandList1 = new ArrayList<Object>(); 
 								List<AfResourceH5ItemDo>  brandGoodsList =  afResourceH5ItemService.getByTag(MAJOR_SUIT);
@@ -587,7 +467,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 											 brandInfo.put("brandList", brandList1);
 										 }
 								}
-//								 bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_BRAND_INFO.getCode(), brandInfo, Constants.MINITS_OF_TWO);	 
 //						 }
 						 }catch(Exception e){
 							logger.error("home brandList error = "+e); 
@@ -763,7 +642,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 	public Map<String, Object> getEcommerceAreaInfo() {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
-		// 获取上方4个电商运营位,如果配置不全，则不显示
+		// 获取上方3个电商运营位,如果配置不全，则不显示
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUp();
 		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 3) {
 			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);

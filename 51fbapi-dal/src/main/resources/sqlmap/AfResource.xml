@@ -379,7 +379,16 @@
 		WHERE
 		is_delete = 0 AND type = #{type} AND sec_type = '1'
 	</select>
-	
+	<select id="getBackGroundByTypeAndStatusOrder" resultType="AfResourceDo">
+		SELECT
+		name,value,sec_type,value_1,value_3,sort,value_4
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} 
+		and value_4 = 1
+		order by  id desc
+	</select>
 	<select id="getBackGroundByTypeOrder" resultType="AfResourceDo">
 		SELECT
 		name,value,sec_type,value_1,value_3,sort
@@ -642,6 +651,7 @@
 		AND r1.is_delete = 0
 		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
+		ORDER BY  r1.sort ASC
 	</select>
 	
 	<select id="getGridViewInfoCenterList" resultType="AfResourceDo">
@@ -661,6 +671,7 @@
 		AND r1.is_delete = 0
 		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
+		ORDER BY  r1.sort ASC
 	</select>
 	<select id="getGridViewInfoDownList" resultType="AfResourceDo">
 	
@@ -679,6 +690,7 @@
 		AND r1.is_delete = 0
 		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
+		ORDER BY  r1.sort ASC
 	</select>
 	
 	<select id="getEcommercePositionUp" resultType="AfResourceDo">
@@ -698,6 +710,7 @@
 		AND r1.is_delete = 0
 		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
+			ORDER BY  r1.sort ASC
 	</select>
 	<select id="getEcommercePositionDown" resultType="AfResourceDo">
 		SELECT
@@ -715,5 +728,6 @@
 		AND r1.is_delete = 0
 		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
+		ORDER BY  r1.sort ASC
 	</select>
 </mapper>

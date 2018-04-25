@@ -175,6 +175,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByItem(categoryId);
 	}
 	@Override
+	public AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsBySolr(query);
+	}
+	@Override
 	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
 		return afGoodsDao.getGoodsListByGoodsId(goodsId);
 	}
@@ -210,7 +214,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		}
 		return goodsList;
 	}
-	
+
 	@Override
 	public List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId) {
 		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_RESULT_ALLGOODS_THE_BRAND.getCode()+brandId;
@@ -237,6 +241,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		}
 		return goodsList;
 	}
-	
+
+	@Override
+	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
+	}
 
 }
