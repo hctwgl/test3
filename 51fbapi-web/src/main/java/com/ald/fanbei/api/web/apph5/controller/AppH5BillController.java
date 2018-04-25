@@ -134,8 +134,10 @@ public class AppH5BillController extends BaseController {
                         H5OpenNativeType.AppLogin.getCode());
                 return H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
             }
+
+            logger.error("/borrow/allWaitRepayments, error={}", e);
+            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
         }
-        return null;
     }
 
     @Override
