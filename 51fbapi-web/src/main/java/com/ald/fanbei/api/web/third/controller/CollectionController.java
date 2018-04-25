@@ -631,26 +631,20 @@ public class CollectionController {
         int type = NumberUtil.objToIntDefault(object.getString("type"), 0);//1:现金借款协议 2:旧版商品分期协议 3:续借协议 4：搭售V1商品分期协议 //5白领贷借款协议
         String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
         String sign = ObjectUtils.toString(request.getParameter("sign"));
-        logger.info("getContractProtocolPdf id=" + borrowNo + ",timestamp=" + timestamp + ",sign1=" + sign + ",type=" + type);
+        logger.info("getContractProtocolPdf borrowNo=" + borrowNo + ",timestamp=" + timestamp + ",sign1=" + sign + ",type=" + type);
         CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
         Long id = 0l;
-        String version;
-        AfBorrowDo afBorrowDo = null;
-        AfBorrowCashDo afBorrowCashDo = null;
-        String contractPdfUrl = "";
-        AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
         if (type == 1) {//现金借款协议
-            afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
-            logger.info("getContractProtocolPdf afBorrowCashDo =>{}",afBorrowCashDo);
+            AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+            logger.info("getContractProtocolPdf afBorrowCashDo ="+JSON.toJSONString(afBorrowCashDo));
             if (afBorrowCashDo == null) {
                 logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
                 updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
                 return updteBo;
             }else {
-                if (afContractPdfDo != null){
-                    contractPdfUrl = afContractPdfDo.getContractPdfUrl();
-                }else {
+                AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(), (byte) type);
+                if (afContractPdfDo == null){
                     if (afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
                         afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());//v1
                     }//合规线下还款V2
@@ -667,14 +661,15 @@ public class CollectionController {
             }
             id = afBorrowCashDo.getRid();
         } else if (type == 2) {//商品分期协议
-            afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-            logger.info("getContractProtocolPdf afBorrowDo =>{}",afBorrowDo);
+            AfBorrowDo afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+            logger.info("getContractProtocolPdf afBorrowDo ="+JSON.toJSONString(afBorrowDo));
             if (afBorrowDo == null) {
                 logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}", borrowNo);
                 updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
                 updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
                 return updteBo;
             }else {
+                AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowDo.getRid(), (byte) type);
                 if (afContractPdfDo == null){
                     if (afBorrowDo.getVersion() == 1){
                         try {
@@ -691,25 +686,27 @@ public class CollectionController {
         } else if (type == 5){//白领贷协议
             try {
                 AfLoanDo loanDo = loanDao.getById(Long.valueOf(borrowNo));
-                logger.info("getContractProtocolPdf afBorrowDo =>{}",afBorrowDo);
+                logger.info("getContractProtocolPdf loanDo ="+JSON.toJSONString(loanDo));
                 if (loanDo == null) {
-                    logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}", borrowNo);
+                    logger.error("getContractProtocolPdf loanDo is null,no =>{}", borrowNo);
                     updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
                     updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
                     return updteBo;
                 }else {
+                    AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(loanDo.getRid(), (byte) type);
                     if (afContractPdfDo == null){
                         afLegalContractPdfCreateServiceV2.whiteLoanProtocolPdf(type, borrowNo);
                     }
                 }
+                id = loanDo.getRid();
             } catch (IOException e) {
                 logger.error("getContractProtocolPdf error = >[}",e);
             }
         }
         AfContractPdfDo contractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id, (byte) type);
-        logger.info("getContractProtocolPdf afContractPdfDo end =>{}",afContractPdfDo);
-        if (afContractPdfDo == null) {
-            logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}", id);
+        logger.info("getContractProtocolPdf afContractPdfDo end ="+JSON.toJSONString(contractPdfDo));
+        if (contractPdfDo == null) {
+            logger.error("getContractProtocolPdf afContractPdfDo is null,id ="+id+",type="+type);
             updteBo.setCode(FanbeiThirdRespCode.COLLECTION_CONTRACT_PDF_CREATE_ERROR.getCode());
             updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_CONTRACT_PDF_CREATE_ERROR.getMsg());
             return updteBo;
