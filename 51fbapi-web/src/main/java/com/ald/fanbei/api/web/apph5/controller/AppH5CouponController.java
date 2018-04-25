@@ -573,7 +573,7 @@ public class AppH5CouponController extends BaseController {
 			Map<String, Object> data = Maps.newHashMap();
 
 			FanbeiWebContext context = doWebCheck(request, false);
-			AfUserDo afUserDo = afUserService.getUserByUserName("15295517409");
+			AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
 			if (StringUtils.isEmpty(couponId)) {
 				throw new IllegalArgumentException("couponId can't be null");
