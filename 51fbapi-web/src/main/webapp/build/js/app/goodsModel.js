@@ -60,11 +60,16 @@ new Vue({
             })
         },
         goGoodsDetail(item){
-            if ( item.source=="SELFSUPPORT" ) {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
-            } else {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            if(getUrl('spread')=='app'){
+                if ( item.source=="SELFSUPPORT" ) {
+                    window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+                } else {
+                    window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+                }
+            }else{
+                window.location.href='https://app.51fanbei.com/app/user/channelRegister?channelCode=Ddsdx&pointCode=Ddsdx'
             }
+
         }
     }
 });

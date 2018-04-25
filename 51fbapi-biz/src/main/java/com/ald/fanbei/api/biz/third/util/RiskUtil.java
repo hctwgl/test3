@@ -1289,27 +1289,27 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-		//TODO 电核
-		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+		logger.info("payOrder bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+		if ((orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()))) {
 			//新增白名单逻辑
 			try {
 				try {
 					String bklResult = afBklService.isBklResult(orderInfo);
 					if (bklResult.equals("v2")){//需电核
-						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+						logger.info("payOrder bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
 						afBklService.submitBklInfo(orderInfo,"分期付款",orderInfo.getActualAmount());
 						if (orderInfo.getIagentStatus()==null)
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
-						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
+						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
 						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 						orderInfo.setIagentStatus("A");
 					}
 				}catch (Exception e){
-					logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+					logger.error("payOrder bklUtils submitBklInfo error",e);
 				}
 			}catch (Exception e){
-				logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+				logger.error("payOrder bklUtils submitBklInfo error",e);
 			}
 		}
 		logger.info("updateOrder orderInfo = {}", orderInfo);

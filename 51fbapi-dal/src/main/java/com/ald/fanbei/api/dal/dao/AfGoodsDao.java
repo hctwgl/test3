@@ -107,6 +107,8 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 
+	AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query);
+	
 	List<AfGoodsDo> getGoodsByItem(@Param("categoryId") Long categoryId);
 
 
@@ -117,6 +119,8 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(@Param("goodsId")String goodsId);
+
+	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 
 
 }

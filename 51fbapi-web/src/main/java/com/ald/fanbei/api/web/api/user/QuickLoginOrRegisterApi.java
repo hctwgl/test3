@@ -117,12 +117,12 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		if (afUserDo == null){
 			login.setResult("quick register start");
 			afUserLoginLogService.addUserLoginLog(login);//埋点
+			smsUtil.checkSmsByMobileAndType(context.getUserName(), verifyCode, SmsType.QUICK_REGIST);// 短信验证码判断
 		}else {
 			login.setResult("quick login start");
 			afUserLoginLogService.addUserLoginLog(login);//埋点
+			smsUtil.checkSmsByMobileAndType(context.getUserName(), verifyCode, SmsType.QUICK_LOGIN);// 短信验证码判断
 		}
-
-		smsUtil.checkSmsByMobileAndType(context.getUserName(), verifyCode, SmsType.QUICK_LOGIN);// 短信验证码判断
 
 		if (afUserDo == null) {
 			afUserDo = quickRegister(requestDataVo, context, request);
@@ -131,13 +131,6 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
-		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(),
-				SmsType.QUICK_LOGIN.getCode());
-		if (smsDo == null) {
-			logger.error("sms record is empty");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-
 
 		Integer failCount = afUserDo.getFailCount();
 		// add user login record
