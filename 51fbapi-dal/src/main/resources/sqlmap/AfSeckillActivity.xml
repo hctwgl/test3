@@ -86,7 +86,7 @@
         <if test="gmtEnd != null and gmtEnd != ''">
             AND a.gmt_start <![CDATA[<=]]> #{gmtEnd}
         </if>
-        ORDER BY a.name
+        ORDER BY a.gmt_start
     </select>
 
 

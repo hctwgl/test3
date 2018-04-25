@@ -158,8 +158,8 @@ public class CacheConstants {
 	public static final String CACHE_KEY_NEW_ACTIVITY_GOODS_PREFIX = "CACHE_KEY_NEW_ACTIVITY_GOODS_PREFIX:";
 
 	/**
-	 * 活动优惠券组对应的优惠券前缀
+	 * 秒杀活动每日开始时间数组
 	 */
-	public static final String CACHE_KEY_ACTIVITY_COUPON_PREFIX = "CACHE_KEY_ACTIVITY_COUPON_PREFIX:";
+	public static final String CACHE_KEY_ACTIVITY_START_HOUR_ARRAY = "CACHE_KEY_ACTIVITY_START_HOUR_ARRAY:";
 
 }

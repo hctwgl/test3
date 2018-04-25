@@ -161,6 +161,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
 
     /**
      * 当前秒杀活动商品列表和下一场秒杀活动ID
+     *
      * @param request
      * @param response
      * @return
@@ -180,79 +181,87 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         Date gmtStart = DateUtil.getStartOfDate(now);
         Date gmtEnd = DateUtil.getEndOfDate(now);
         List<String> activityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode());
-        if(null == activityIds){
+        if (null == activityIds) {
             activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
             bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_ONE_DAY);
         }
 
         // 查询每日活动场次(每日第一场时间前为上一场次信息)
         List<String> todayActivityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode());
-        if(null == todayActivityIds){
+        if (null == todayActivityIds) {
             todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
-            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(),todayActivityIds,Constants.SECOND_OF_AN_HOUR_INT);
+            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(), todayActivityIds, Constants.SECOND_OF_AN_HOUR_INT);
         }
 
-        if (null != todayActivityIds && !todayActivityIds.isEmpty()) {
-            Long userId = null;
-            if (context.getUserName() != null) {
-                AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-                if (userDo != null)
-                    userId = userDo.getRid();
-            }
+        String activityId = "";
+        String nextActivityId = "";
+        if (null == activityIds || activityIds.isEmpty()) {
+            return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待", "", "").toString();
+        }
 
+        Long userId = null;
+        if (context.getUserName() != null) {
+            AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+            if (userDo != null)
+                userId = userDo.getRid();
+        }
 
-
-            int activitySize = activityIds.size();
-            int todayActivitySize = todayActivityIds.size();
-            String activityId = todayActivityIds.get(0);
-            String nextActivityId = "";
-            if (activitySize > 1) {
-                // 获取当前场次的活动ID
+        // 活动未开始，取第一场活动（不考虑活动结束）
+        if (null == todayActivityIds || todayActivityIds.isEmpty()) {
+            activityId = activityIds.get(0);
+            nextActivityId = activityIds.get(1);
+        } else {
+            if (StringUtils.equals(activityIds.get(0), todayActivityIds.get(0))) {
+                activityId = activityIds.get(0);
+                nextActivityId = activityIds.get(1);
+            } else {
                 Calendar calendar = Calendar.getInstance();
                 int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
-                if (null != activityStartHour) {
-                    String[] activityStartHourArray = activityStartHour.getValue().split(",");
-                    int arrayLength = activityStartHourArray.length;
-                    if (currentHour > Integer.parseInt(activityStartHourArray[arrayLength - 1])) {
-                        activityId = todayActivityIds.get(todayActivitySize - 1);
+
+                String startHourKey = CacheConstants.CACHE_KEY_ACTIVITY_START_HOUR_ARRAY + activityName;
+                String[] activityStartHourArray = (String[]) bizCacheUtil.getObject(startHourKey);
+                if (null == activityStartHourArray) {
+                    AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
+                    if (null != activityStartHour) {
+                        activityStartHourArray = activityStartHour.getValue().split(",");
+                        bizCacheUtil.saveObject(startHourKey, activityStartHourArray, Constants.SECOND_OF_ONE_MONTH);
                     } else {
-                        for (int i = 0; i < arrayLength - 1; i++) {
-                            if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
-                                if (todayActivitySize < (i + 1)) {
-                                    activityId = todayActivityIds.get(todayActivitySize - 1);
-                                } else {
-                                    activityId = todayActivityIds.get(i + 1);
-                                }
-                            }
-                        }
+                        activityStartHourArray = new String[]{"10", "14", "18"};
                     }
-                    int index = activityIds.indexOf(activityId);
-                    // 非第一场，直到第二天前均展示前一天的最后一场
-                    if(index > 0){
-                        if(currentHour < Integer.parseInt(activityStartHourArray[0])){
-                            nextActivityId = activityId;
-                            activityId = activityIds.get(index - 1);
-                        }
-                        else{
-                            if (index < (activityIds.size() - 1)) {
-                                nextActivityId = todayActivityIds.get(index + 1);
+                }
+
+                int arrayLength = activityStartHourArray.length;
+                if (currentHour < Integer.parseInt(activityStartHourArray[0])) {
+                    nextActivityId = todayActivityIds.get(0);
+                    int index = activityIds.indexOf(nextActivityId);
+                    activityId = activityIds.get(index - 1);
+                } else {
+                    int todayActivitySize = todayActivityIds.size();
+                    int activitySize = activityIds.size();
+                    for (int i = 0; i < arrayLength - 1; i++) {
+                        if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
+                            if (todayActivitySize < (i + 1)) {
+                                activityId = todayActivityIds.get(todayActivitySize - 1);
                             } else {
-                                nextActivityId = "";
+                                activityId = todayActivityIds.get(i);
+                                int index = activityIds.indexOf(activityId);
+                                if (index < activitySize - 1) {
+                                    nextActivityId = activityIds.get(index + 1);
+                                } else {
+                                    nextActivityId = "";
+                                }
                             }
                         }
                     }
                 }
             }
+        }
 
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("nextActivityId", nextActivityId);
-            appActivityGoodListUtil.getSecKillGoodList(userId, Long.parseLong(activityId), data);
-            return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
-        }
-        else{
-            return H5CommonResponse.getNewInstance(true, "活动已结束", "", null).toString();
-        }
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("activityId", activityId);
+        data.put("nextActivityId", nextActivityId);
+        appActivityGoodListUtil.getSecKillGoodList(userId, Long.parseLong(activityId), data);
+        return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
     }
 
     /**
@@ -263,8 +272,8 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getNextSecKillGoodList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String getNextSecKillGoodList(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "getSecKillGoodListByActivityId", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getSecKillGoodListByActivityId(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
         if (StringUtils.isEmpty(activityId)) {
