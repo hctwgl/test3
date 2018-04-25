@@ -290,5 +290,7 @@ public interface AfResourceService {
 
 	List<AfResourceDo> getBackGroundByTypeOrder(String code);
 
+	List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code);
+
 
 }

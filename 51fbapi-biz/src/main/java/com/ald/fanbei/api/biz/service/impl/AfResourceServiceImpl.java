@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -1038,6 +1039,12 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public List<AfResourceDo> getBackGroundByTypeOrder(String code) {
 		// TODO Auto-generated method stub
 		return afResourceDao.getBackGroundByTypeOrder(code);
+	}
+
+	@Override
+	public List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
 	}
 
 }
