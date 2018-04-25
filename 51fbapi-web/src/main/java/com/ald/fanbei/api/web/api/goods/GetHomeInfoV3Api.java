@@ -163,7 +163,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		//         }
 		//     	if(backgroundList == null || backgroundList.size()<1){
 		     		backgroundList = afResourceService
-						.getBackGroundByTypeOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
+						.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
 		//     		 bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_CUBE_HOMEPAGE_BACKGROUND.getCode(), backgroundList, Constants.MINITS_OF_TWO);
 		//     	}
 				
