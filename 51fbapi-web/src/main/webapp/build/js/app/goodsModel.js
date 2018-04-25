@@ -9,7 +9,8 @@ new Vue({
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
         content:[],
         iconShow:getUrl('activityId'),
-        iconTxt:['券后价：4388','券后价：699','券后价：959']
+        spread:getUrl('spread')||'',
+        iconTxt:[4388,689,959,1899,2499,699,890,999,219,699]
 
     },
     created:function () {
@@ -60,14 +61,14 @@ new Vue({
             })
         },
         goGoodsDetail(item){
-            if(getUrl('spread')=='app'){
+            if(this.spread=='other'){
+                window.location.href='https://app.51fanbei.com/app/user/channelRegister?channelCode=Ddsdx&pointCode=Ddsdx'
+            }else{
                 if ( item.source=="SELFSUPPORT" ) {
                     window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
                 } else {
                     window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
                 }
-            }else{
-                window.location.href='https://app.51fanbei.com/app/user/channelRegister?channelCode=Ddsdx&pointCode=Ddsdx'
             }
 
         }
