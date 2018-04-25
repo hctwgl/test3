@@ -747,7 +747,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 return pdf.getContractPdfUrl();
             }
             return getPdfInfoWithOutLender(protocolUrl, map, afBorrowDo.getUserId(), afBorrowDo.getRid(), "instalment", "2", investorList);
-        } else if (debtType == 5){//白领贷借款
+        } else if (debtType == 2){//白领贷借款
             AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
             if (loanDo == null) {
                 logger.error("白领贷借款信息不存在 => {}", orderNo);
