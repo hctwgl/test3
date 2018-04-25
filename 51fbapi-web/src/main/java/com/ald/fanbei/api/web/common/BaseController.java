@@ -722,7 +722,7 @@ public abstract class BaseController {
 	 */
 	protected void doMaidianLog(HttpServletRequest request,H5CommonResponse response, String... extInfo) {
 
-		MaidianRunnable maidianRunnable = new MaidianRunnable(request, response.getData().toString(),response.getSuccess(), extInfo);
+		MaidianRunnable maidianRunnable = new MaidianRunnable(request, ObjectUtils.toString(response.getData(),""),response.getSuccess(), extInfo);
 		threadPoolMaidianTaskExecutor.execute(maidianRunnable);
 	}
 
