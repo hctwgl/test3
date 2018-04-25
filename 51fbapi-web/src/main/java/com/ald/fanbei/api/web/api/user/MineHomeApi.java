@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -241,13 +242,13 @@ public class MineHomeApi implements ApiHandle {
 
         // 本月待还
         // 购物账单待还金额
-        BigDecimal borrowBillAmount = getCurrMonthBorrowBillWaitRepaymentAmount(userId);
+        BigDecimal borrowBillAmount = getOutBorrowBillWaitRepayAmount(userId);
         // 极速贷账单待还金额
         BigDecimal borrowCashAmount = getBorrowCashWaitRepaymentAmount(userId);
         // 白领贷账单待还
         BigDecimal loanAmount = getLoanWaitRepaymentAmount(userId);
         BigDecimal outMoney = borrowBillAmount.add(borrowCashAmount).add(loanAmount);
-        data.setOutMoney(outMoney.setScale(2, RoundingMode.HALF_UP).toEngineeringString());
+        data.setOutMoney(outMoney.setScale(2, RoundingMode.HALF_UP).toString());
     }
 
     // 填充订单信息
@@ -361,20 +362,12 @@ public class MineHomeApi implements ApiHandle {
         return listString;
     }
 
-    private BigDecimal getCurrMonthBorrowBillWaitRepaymentAmount(Long userId) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        // 本月账单所属年
-        int currBillYear = cal.get(Calendar.YEAR);
-        // 本月账单所属月
-        int currBillMonth = cal.get(Calendar.MONTH) + 1;  
-        // 已出账待还款金额
-        BigDecimal waitRepaymentOutMoney = afBorrowBillService.getMonthlyBillByStatusNew(userId, currBillYear,
-                currBillMonth, BorrowBillStatus.NO.getCode());
-        // 逾期金额
-        BigDecimal overdueAmount = afBorrowBillService
-                .getMonthlyBillByStatusNewV1(userId, BorrowBillStatus.OVERDUE.getCode());
-        return waitRepaymentOutMoney.add(overdueAmount);
+    private BigDecimal getOutBorrowBillWaitRepayAmount(Long userId) {
+        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
+        query.setUserId(userId);
+        query.setIsOut(1);
+        query.setStatus(BorrowBillStatus.NO.getCode());
+        return afBorrowBillService.getUserBillMoneyByQuery(query);
     }
 
     private BigDecimal getBorrowCashWaitRepaymentAmount(Long userId) {
@@ -384,10 +377,7 @@ public class MineHomeApi implements ApiHandle {
             borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
         if (borrowCashDo != null && !borrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
-            BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(),
-                    borrowCashDo.getOverdueAmount(), borrowCashDo.getRateAmount(), borrowCashDo.getSumRate(),
-                    borrowCashDo.getPoundage(), borrowCashDo.getSumRenewalPoundage());
-            return BigDecimalUtil.subtract(allAmount, borrowCashDo.getRepayAmount());
+            return afBorrowCashService.calculateLegalRestAmount(borrowCashDo);
         }
         return new BigDecimal(0);
     }

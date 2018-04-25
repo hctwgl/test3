@@ -11,7 +11,6 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -119,7 +118,6 @@ public class AppH5BillController extends BaseController {
                 rebateAmount = amount.setScale(2, RoundingMode.HALF_UP).toString();
             }
 
-
             List<Map<String, Object>> data = new ArrayList<>();
             data.add(getBorrowBill(userId));
             data.add(getBorrowCash(userId, rebateAmount));
@@ -169,63 +167,69 @@ public class AppH5BillController extends BaseController {
     private Map<String,Object> getBorrowBill(Long userId) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", BILL_TYPE_BILL);
+        result.put("status", STATUS_NOBILL);
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        // 本月账单所属年
-        int currBillYear = cal.get(Calendar.YEAR);
-        // 本月账单所属月
-        int currBillMonth = cal.get(Calendar.MONTH) + 1;
-        // 已出账待还款金额
-        BigDecimal waitRepaymentOutMoney = afBorrowBillService.getMonthlyBillByStatusNew(userId, currBillYear,
-                currBillMonth, BorrowBillStatus.NO.getCode());
+        // 暂无账单
+        int allBillCount = getAllBorrowBillCount(userId);
+        if (allBillCount < 1) {
+            result.put("status", STATUS_NOBILL);
+            return result;
+        }
+
+        // 已出待还金额
+        BigDecimal waitRepayAmount = getOutBorrowBillWaitRepayAmount(userId);
+        String waitRepayAmountStr = waitRepayAmount.setScale(2, RoundingMode.HALF_UP).toString();
 
         // 还款中
         int refundingNum = afBorrowBillService.getOnRepaymentCountByUserId(userId);
         if (refundingNum > 0) {
-            result.put("amount", waitRepaymentOutMoney.setScale(2, RoundingMode.HALF_UP).toString());
+            result.put("amount", waitRepayAmountStr);
             result.put("billDesc", "您有<span>" + refundingNum + "</span>笔还款正在处理中");
             result.put("status", STATUS_REFUNDING);
             return  result;
         }
-        // 逾期
-        // 逾期金额
-        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
-        query.setStatus(BorrowBillStatus.NO.getCode());
-        query.setOverdueStatus(YesNoStatus.YES.getCode());
-        query.setUserId(userId);
-        BigDecimal overdueAmount = afBorrowBillService.getUserBillMoneyByQuery(query);
-        overdueAmount = overdueAmount == null ? BigDecimal.ZERO : overdueAmount;
+
         // 逾期月数
         int overdueMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
+        // 逾期
         if (overdueMonth > 0) {
-            result.put("amount", overdueAmount.add(waitRepaymentOutMoney)
-                    .setScale(2, RoundingMode.HALF_UP).toString());
+            result.put("amount", waitRepayAmountStr);
             result.put("billDesc", "您有<span>" + overdueMonth + "</span>个月的逾期账单");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
-        // 本月已出
-        AfBorrowBillDo currMonthChildBill = getOneChildBill(userId, 1, currBillYear, currBillMonth);
-        if (currMonthChildBill != null && waitRepaymentOutMoney.compareTo(BigDecimal.ZERO) > 0) {
-            result.put("amount", overdueAmount.add(waitRepaymentOutMoney)
-                    .setScale(2, RoundingMode.HALF_UP).toString());
-            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(currMonthChildBill.getGmtPayTime()));
+
+        // 本月出账日开始和结束范围
+        Date currMonthStartOutDay =  DateUtil.addHoures(DateUtil.getFirstOfMonth(new Date()), -12);
+        Date currMonthEndOutDay = DateUtil.addMonths(currMonthStartOutDay, 1);
+
+        // 本月账单已出
+        int currMonthOutBillCount = getCurrMonthBorrowBillCount(userId, currMonthStartOutDay, currMonthEndOutDay, 1);
+        if (currMonthOutBillCount > 0 && waitRepayAmount.compareTo(BigDecimal.ZERO) > 0) {
+            result.put("amount", waitRepayAmountStr);
+
+            Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(lastPayDay));
+
             result.put("status", STATUS_WAITREFUND);
             return result;
         }
-        // 下月未出账单
-        AfBorrowBillDo nextMonthBill = getNextMonthNotOutBorrowBill(userId);
-        if (nextMonthBill != null) {
-            result.put("amount", nextMonthBill.getBillAmount());
-            result.put("billDesc", "将于" + DateUtil.formatMonthAndDay(nextMonthBill.getGmtOutDay()) + "出账");
+
+        // 下月未出账
+        boolean isSetSuccess = false;
+        if (currMonthOutBillCount > 0) {
+            isSetSuccess = fillNotOutBorrowBillInfo(result, userId, currMonthStartOutDay, currMonthEndOutDay);
+        } else {
+            Date nextMonthStartOutDay = DateUtil.addMonths(currMonthStartOutDay, 1);
+            Date nextMonthEndOutDay = DateUtil.addMonths(currMonthEndOutDay, 1);
+            isSetSuccess = fillNotOutBorrowBillInfo(result, userId, nextMonthStartOutDay, nextMonthEndOutDay);
+        }
+        if (isSetSuccess) {
             result.put("status", STATUS_NEXTWAITREFUND);
             return result;
+        } else {
+            return result;
         }
-
-        // 暂无账单
-        result.put("status", STATUS_NOBILL);
-        return result;
     }
 
     // 获取极速贷账单
@@ -234,31 +238,26 @@ public class AppH5BillController extends BaseController {
         result.put("type", BILL_TYPE_CASH);
 
         // 查询最早的待还记录
-        AfBorrowCashDo borrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
-        if (borrowCashDo == null) {
+        AfBorrowCashDo lastBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
+        if (lastBorrowCashDo == null) {
             // 没有最早的待还，查询最后一笔借款信息
-            borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+            lastBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
 
         // 暂无
-        if (borrowCashDo == null || borrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
+        if (lastBorrowCashDo == null || lastBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
             result.put("status", STATUS_NOBILL);
             return result;
         }
 
         // 计算待还金额
-        /*BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(),
-                borrowCashDo.getOverdueAmount(), borrowCashDo.getRateAmount(), borrowCashDo.getSumRate(),
-                borrowCashDo.getPoundage(), borrowCashDo.getSumRenewalPoundage());
-        String waitRepaymentAmount = BigDecimalUtil.subtract(allAmount, borrowCashDo.getRepayAmount())
-                .setScale(2, RoundingMode.HALF_UP).toString();*/
-        String waitRepaymentAmount = afBorrowCashService.calculateLegalRestAmount(borrowCashDo)
+        String waitRepaymentAmountStr = afBorrowCashService.calculateLegalRestAmount(lastBorrowCashDo)
                 .setScale(2, RoundingMode.HALF_UP).toString();
-        result.put("amount", waitRepaymentAmount);
+        result.put("amount", waitRepaymentAmountStr);
 
         // 还款所需信息
-        result.put("borrowId", borrowCashDo.getRid().toString());
-        result.put("shouldRepaymentAmount", waitRepaymentAmount);
+        result.put("borrowId", lastBorrowCashDo.getRid().toString());
+        result.put("shouldRepaymentAmount", waitRepaymentAmountStr);
         result.put("rebateAmount", rebateAmount);
         // 极速贷和白领贷走了相同接口，所以传默认值
         result.put("loanPeriodsId", "");
@@ -267,28 +266,29 @@ public class AppH5BillController extends BaseController {
 
         // 还款中
         BigDecimal repayingMoney = afRepaymentBorrowCashService
-                .getRepayingTotalAmountByBorrowId(borrowCashDo.getRid());
-        BigDecimal repayingOrderMoney = afBorrowLegalOrderRepaymentDao
-                .getOrderRepayingTotalAmountByBorrowId(borrowCashDo.getRid());
-        repayingMoney = repayingMoney.add(repayingOrderMoney);
+                .getRepayingTotalAmountByBorrowId(lastBorrowCashDo.getRid());
+        /*BigDecimal repayingOrderMoney = afBorrowLegalOrderRepaymentDao
+                .getOrderRepayingTotalAmountByBorrowId(lastBorrowCashDo.getRid());
+        repayingMoney = repayingMoney.add(repayingOrderMoney);*/
         if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
-            int repayingNum = afRepaymentBorrowCashService.getRepayingTotalNumByBorrowId(borrowCashDo.getRid());
+            int repayingNum = afRepaymentBorrowCashService.getRepayingTotalNumByBorrowId(lastBorrowCashDo.getRid());
             result.put("billDesc", "您有<span>" + repayingNum + "</span>笔还款正在处理中");
             result.put("status", STATUS_REFUNDING);
             return result;
         }
+
         // 逾期 如果预计还款日在今天之前，且为待还款状态，则已逾期
         Date now = DateUtil.getEndOfDate(new Date());
-        if (StringUtils.equals(borrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
-                && borrowCashDo.getGmtPlanRepayment().before(now)) {
+        if (StringUtils.equals(lastBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
+                && lastBorrowCashDo.getGmtPlanRepayment().before(now)) {
             result.put("billDesc", "<i>逾期将产生逾期费,并上报征信,请尽快还款</i>");
             result.put("status", STATUS_OVERDUE);
             return result;
         }
-        // 待还未逾期
-        result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(borrowCashDo.getGmtPlanRepayment()));
-        result.put("status", STATUS_WAITREFUND);
 
+        // 待还未逾期
+        result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(lastBorrowCashDo.getGmtPlanRepayment()));
+        result.put("status", STATUS_WAITREFUND);
         return result;
     }
 
@@ -296,8 +296,10 @@ public class AppH5BillController extends BaseController {
     private Map<String, Object> getLoan(Long userId, String rebateAmount) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", BILL_TYPE_LOAN);
+        result.put("status", STATUS_NOBILL);
 
         AfLoanDo lastLoanDo = afLoanService.getLastByUserIdAndPrdType(userId, LoanType.BLD_LOAN.getCode());
+
         // 暂无
         if (lastLoanDo == null || AfLoanStatus.FINISHED.name().equals(lastLoanDo.getStatus())
                 || AfLoanStatus.CLOSED.name().equals(lastLoanDo.getStatus())) {
@@ -335,10 +337,11 @@ public class AppH5BillController extends BaseController {
                 loanPeriodsId += ",";
             }
         }
+        String waitRepayAmountStr = waitRepayAmount.setScale(2, RoundingMode.HALF_UP).toString();
 
         // 还款所需信息
         result.put("borrowId", lastLoanDo.getRid().toString());
-        result.put("shouldRepaymentAmount", waitRepayAmount);
+        result.put("shouldRepaymentAmount", waitRepayAmountStr);
         result.put("rebateAmount", rebateAmount);
         result.put("loanPeriodsId", loanPeriodsId);
         result.put("loanRepaymentType", "commonSettle");
@@ -346,7 +349,7 @@ public class AppH5BillController extends BaseController {
         // 还款中
         AfLoanRepaymentDo processLoanRepayment = afLoanRepaymentService.getProcessLoanRepaymentByLoanId(lastLoanDo.getRid());
         if (processLoanRepayment != null) {
-            result.put("amount", waitRepayAmount);
+            result.put("amount", waitRepayAmountStr);
 
             int processNum = afLoanRepaymentService.getProcessLoanRepaymentNumByLoanId(lastLoanDo.getRid());
             result.put("billDesc", "您有<span>" + processNum + "</span>还款正在处理中");
@@ -357,7 +360,7 @@ public class AppH5BillController extends BaseController {
 
         // 逾期
         if (isOverdue) {
-            result.put("amount", waitRepayAmount);
+            result.put("amount", waitRepayAmountStr);
             result.put("billDesc", "<i>(含逾期费" + overdueAmount.setScale(2, RoundingMode.HALF_UP)
                     + "元)</i><br/>最后还款日 " + DateUtil.formatDateForPatternWithHyhen(overdueGmtLastPlanRepay));
             result.put("status", STATUS_OVERDUE);
@@ -366,29 +369,10 @@ public class AppH5BillController extends BaseController {
 
         // 待还未逾期
         if (waitRepayPeriods.size() > 0) {
-            // 当前期
-            AfLoanPeriodsDo nowLoanPeriodsDo = waitRepayPeriods.get(waitRepayPeriods.size() - 1);
-            // 本月已结清，下月还款时间还没开始
-            if(!afLoanRepaymentService.canRepay(nowLoanPeriodsDo)) {
-                result.put("amount", "0.00");
-                result.put("billDesc", "提前结清可减免手续费哦!");
-                result.put("status", STATUS_NEXTWAITREFUND);
-
-                result.put("loanRepaymentType", "forwardSettle");
-                BigDecimal unChargeAmount = BigDecimal.ZERO;
-                List<AfLoanPeriodsDo> unps = afLoanPeriodsService.listUnChargeRepayPeriods(lastLoanDo.getRid());
-                for(AfLoanPeriodsDo p : unps) {
-                    unChargeAmount = unChargeAmount.add(p.getAmount());
-                }
-                result.put("periodsUnChargeAmount",
-                        unChargeAmount.setScale(2, RoundingMode.HALF_UP).toString());
-                return result;
-            } else {
-                result.put("amount", waitRepayAmount);
-                result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(gmtLastPlanRepay));
-                result.put("status", STATUS_WAITREFUND);
-                return result;
-            }
+            result.put("amount", waitRepayAmountStr);
+            result.put("billDesc", "最后还款日 " + DateUtil.formatDateForPatternWithHyhen(gmtLastPlanRepay));
+            result.put("status", STATUS_WAITREFUND);
+            return result;
         } else {
             // 本月已结清，下月还款时间还没开始
             if(lastLoanDo.getStatus().equals(AfLoanStatus.TRANSFERRED.name())){
@@ -407,35 +391,52 @@ public class AppH5BillController extends BaseController {
                 return result;
             }
         }
+
         return result;
     }
 
-    // 获取一个本月已出账单
-    private AfBorrowBillDo getOneChildBill(Long userId, int isOut, int billYear, int billMonth) {
-        AfBorrowBillQuery query = new AfBorrowBillQuery();
-        query.setPageSize(1);
-        query.setBillYear(billYear);
-        query.setBillMonth(billMonth);
-        query.setUserId(userId);
-        query.setIsOut(isOut);
-        List<AfBorrowBillDo> list = afBorrowBillService.getMonthBillList(query);
-        return list.size() > 0 ? list.get(0) : null;
-    }
-
-    // 获取下个月未出账单
-    private AfBorrowBillDo getNextMonthNotOutBorrowBill(Long userId) {
+    // 填充未出账账单信息
+    private boolean fillNotOutBorrowBillInfo(Map<String, Object> result, Long userId, Date startOutDay, Date endOutDay) {
         AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
         query.setUserId(userId);
         query.setIsOut(0);
-
-        Date strOutDay = DateUtil.getFirstOfMonth(new Date());
-        strOutDay = DateUtil.addHoures(strOutDay, -12);
-        strOutDay = DateUtil.addMonths(strOutDay, 1);
-        Date endOutDay = DateUtil.addMonths(strOutDay, 1);
-        query.setOutDayStr(strOutDay);
+        query.setOutDayStr(startOutDay);
         query.setOutDayEnd(endOutDay);
-        List<AfBorrowBillDo> nextMonthBills = afBorrowBillService.getUserBillListByQuery(query);
 
-        return nextMonthBills.size() > 0 ? nextMonthBills.get(0) : null;
+        BigDecimal notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+        List<AfBorrowBillDo> list = afBorrowBillService.getUserBillListByQuery(query);
+        if (notOutMoney.equals(BigDecimal.ZERO) || list.size() == 0) {
+            return false;
+        }
+
+        result.put("amount", notOutMoney.setScale(2, RoundingMode.HALF_UP).toString());
+        result.put("billDesc",  "将于" + DateUtil.formatMonthAndDay(list.get(0).getGmtOutDay()) + "出账");
+        return true;
+    }
+
+    // 获取本月购物账单数量
+    private int getCurrMonthBorrowBillCount(Long userId, Date currMonthStartOutDay, Date currMonthEndOutDay, int isOut) {
+        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
+        query.setUserId(userId);
+        query.setIsOut(isOut);
+        query.setOutDayStr(currMonthStartOutDay);
+        query.setOutDayEnd(currMonthEndOutDay);
+        return afBorrowBillService.countBillByQuery(query);
+    }
+
+    // 获取购物账单已出待还金额
+    private BigDecimal getOutBorrowBillWaitRepayAmount(Long userId) {
+        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
+        query.setUserId(userId);
+        query.setIsOut(1);
+        query.setStatus(BorrowBillStatus.NO.getCode());
+        return afBorrowBillService.getUserBillMoneyByQuery(query);
+    }
+
+    // 获取所有购物账单数量
+    private int getAllBorrowBillCount(Long userId) {
+        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
+        query.setUserId(userId);
+        return afBorrowBillService.countBillByQuery(query);
     }
 }

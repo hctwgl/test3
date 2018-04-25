@@ -2,17 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
-import org.apache.ibatis.annotations.Param;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayType;
@@ -30,6 +19,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -688,11 +679,6 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		     return afBorrowBillDao.getOverdueBorrowBillInfoByUserId(userId);
-	}
-
-	@Override
-	public AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(Long userId) {
-		return afBorrowBillDao.getLatestOverdueBorrowBillInfoByUserId(userId);
 	}
 
     @Override

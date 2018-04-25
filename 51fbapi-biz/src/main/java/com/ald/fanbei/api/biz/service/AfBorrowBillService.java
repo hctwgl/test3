@@ -398,12 +398,5 @@ public interface AfBorrowBillService {
 
 	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(Long userId);
 
-	/**
-	 * 获取用户最新的逾期账单
-	 *
-	 * @author wangli
-	 * @date 2018/4/13 18:09
-	 */	AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(Long userId);
-
 	int updateBorrowBillFaildWhenNotY(List<Long> billIdList);
 }

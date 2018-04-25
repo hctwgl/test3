@@ -496,13 +496,5 @@ public interface AfBorrowBillDao {
 
 	AfBorrowBillDo getOverdueBorrowBillInfoByUserId(@Param("userId")Long userId);
 
-	/**
-	 * 获取用户最新的逾期账单
-	 *
-	 * @author wangli
-	 * @date 2018/4/13 18:10
-	 */
-    AfBorrowBillDo getLatestOverdueBorrowBillInfoByUserId(@Param("userId") Long userId);
-
     int updateBorrowBillFaildWhenNotY(@Param("items")List<Long> billIds);
 }
