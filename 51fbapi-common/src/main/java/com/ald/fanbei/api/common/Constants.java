@@ -31,7 +31,7 @@ public class Constants {
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	
-	public static final long MINITS_OF_TWO = 2*60l;//2分钟
+	public static final long MINITS_OF_TWO = 30l;//2分钟
 
 	//51公积金token失效时间
 	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
