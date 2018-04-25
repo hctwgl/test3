@@ -308,12 +308,12 @@ FROM `af_order` o  WHERE o.`id`  =#{id}
 	</select>
 	<select id="getBolumeSumDataById" resultType="java.util.HashMap">
 		SELECT wm.`restaurant_name` shopName,wm.`contact_addr` address, wm.`contact_mobile` consigneeMobile,wm.`contact_name` consignee ,wm.`quantity`   quantity,
-(SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = wm.`third_order_no`   LIMIT 1) area,
-(SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = wm.`third_order_no`   LIMIT 1) phone,
-(SELECT jy.`phone`  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = wm.`third_order_no`   LIMIT 1) gasPhone,
-(SELECT (SELECT count(DISTINCT(jy1.user_id))  FROM `af_boluome_jiayouka` jy1 WHERE jy1.card_id = jy.card_id)  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = wm.`third_order_no`   LIMIT 1) oilRechargeNum,
+(SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = oo.`third_order_no`   LIMIT 1) area,
+(SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` =oo.`third_order_no`  LIMIT 1) phone,
+(SELECT jy.`phone`  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = oo.`third_order_no`   LIMIT 1) gasPhone,
+(SELECT (SELECT count(DISTINCT(jy1.user_id))  FROM `af_boluome_jiayouka` jy1 WHERE jy1.card_id = jy.card_id)  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = oo.`third_order_no`  LIMIT 1) oilRechargeNum,
 (SELECT fo.`type`  FROM `af_trade_order` tr LEFT JOIN `af_trade_business_info` fo on tr.`business_id`   = fo.`business_id` WHERE  tr.`order_id` = #{id}   LIMIT 1 ) typeName
-FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no`  FROM `af_order` o WHERE `id` =#{id})  LIMIT 1
+FROM `af_order` oo LEFT JOIN `af_boluome_waimai` wm on wm.`third_order_no` =oo.`third_order_no`  WHERE oo.`id` =#{id}  LIMIT 1
 	</select>
 
 	<select id="countNperRepaymentByBorrowId" resultType="java.lang.Integer">
