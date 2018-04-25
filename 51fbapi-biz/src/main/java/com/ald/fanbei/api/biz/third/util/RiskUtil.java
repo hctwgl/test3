@@ -920,7 +920,7 @@ public class RiskUtil extends AbstractThird {
 				uaAmountTempUsed = afInterimAuDo.getInterimUsed();
 			}
 			BigDecimal totalAmount = uaAmount.subtract(uaAmountUsed).add(uaAmountTemp).subtract(uaAmountTempUsed);
-			BigDecimal borrowAmount = orderDo.getBorrowAmount();
+			BigDecimal borrowAmount = amount;
 			borrowAmount=borrowAmount == null?BigDecimal.ZERO:borrowAmount;
 			if (totalAmount.compareTo(BigDecimal.ZERO)>0){
 				summaryOrderData.put("unpayedCanUseRatio",borrowAmount.divide(totalAmount,2,BigDecimal.ROUND_HALF_UP));
@@ -930,7 +930,7 @@ public class RiskUtil extends AbstractThird {
 			}
 			String thisOrderUnanimous = (String)summaryOrderData.get("thisOrderUnanimous");
 			summaryOrderData.put("thisOrderUnanimous",thisOrderUnanimous.equals(orderDo.getConsigneeMobile())?"true":"false");
-			summaryOrderData.put("gpsUnanimous",(orderDo.getGpsAddress()==null||"".equals(orderDo.getGpsAddress()))?"true":orderDo.getGpsAddress().contains(orderDo.getProvince())?"true":"false");
+			summaryOrderData.put("gpsUnanimous",(summaryOrderData.get("gpsUnanimous")==null||"".equals(summaryOrderData.get("gpsUnanimous")))?"true":((String)summaryOrderData.get("gpsUnanimous")).contains(orderDo.getProvince())?"true":"false");
 
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
