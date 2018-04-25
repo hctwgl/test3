@@ -296,7 +296,7 @@ o.`ip` ,o.`lat` ,o.`lng`
 (SELECT br.`nper_amount`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) nperAmount,
 (SELECT br.`card_number`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardNumber,
 (SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName,
-(SELECT COUNT(distinct(uu.`user_id`))   FROM `af_order`   uu WHERE uu.`consignee_mobile` = o.`consignee_mobile` and uu.`is_delete` =0 ) phoneCorrespondingPersion
+if(o.`consignee_mobile`=NULL OR o.`consignee_mobile`='',0,(SELECT COUNT(distinct(uu.`user_id`))   FROM `af_order`   uu WHERE uu.`consignee_mobile` = o.`consignee_mobile` and uu.`is_delete` =0 )) phoneCorrespondingPersion
 FROM `af_order` o  WHERE o.`id`  =#{id}
 	</select>
 	<select id="getBolumeSumDataById" resultType="java.util.HashMap">
