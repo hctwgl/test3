@@ -565,7 +565,7 @@ public class AppH5CouponController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "pickActivityCoupon", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "pickActivityCoupon", method= RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickActivityCoupon(HttpServletRequest request, ModelMap model){
 		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		String key = "";
