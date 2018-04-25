@@ -33,4 +33,15 @@ public class AfBorrowPushServiceImpl extends ParentServiceImpl<AfBorrowPushDo, L
 	public BaseDao<AfBorrowPushDo, Long> getDao() {
 		return afBorrowPushDao;
 	}
+
+	@Override
+	public void saveOrUpdate(AfBorrowPushDo borrowPush) {
+		AfBorrowPushDo borrowPushTemp = afBorrowPushDao.getByBorrowId(borrowPush.getBorrowId());
+		if (borrowPushTemp == null) {
+			afBorrowPushDao.saveRecord(borrowPush);
+		} else {
+			borrowPush.setRid(borrowPushTemp.getRid());
+			afBorrowPushDao.updateById(borrowPush);
+		}
+	}
 }

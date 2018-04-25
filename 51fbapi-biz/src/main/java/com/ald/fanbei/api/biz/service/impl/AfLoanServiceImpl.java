@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
+import com.ald.fanbei.api.biz.service.AfLoanPushService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -87,6 +88,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -178,6 +180,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	AssetSideEdspayUtil assetSideEdspayUtil;
 	@Resource
 	AfAssetSideInfoService afAssetSideInfoService;
+	@Resource
+	AfLoanPushService afLoanPushService;
 	
 	@Override
 	public List<LoanHomeInfoBo> getHomeInfo(Long userId){
@@ -253,6 +257,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 						afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
 						// 增加日志
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
+						AfLoanPushDo loanPush = buildLoanPush(loanDo.getRid(),whiteCollarBorrowInfo.get(0).getApr(), whiteCollarBorrowInfo.get(0).getManageFee());
+						afLoanPushService.saveOrUpdateLoanPush(loanPush);
 					}
 				}else{
 					// 调用UPS打款
@@ -293,6 +299,18 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			this.unlockLoan(userId);
 		}
 	}
+	private AfLoanPushDo buildLoanPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfLoanPushDo loanPushDo =new AfLoanPushDo();
+		Date now = new Date();
+		loanPushDo.setGmtCreate(now);
+		loanPushDo.setGmtModified(now);
+		loanPushDo.setLoanId(rid);
+		loanPushDo.setBorrowRate(apr);
+		loanPushDo.setProfitRate(manageFee);
+		return loanPushDo;
+		
+	}
+
 	private void doLoanCheck(ApplyLoanBo bo){
 		String prdType = bo.reqParam.prdType;
 		Long userId = bo.userId;

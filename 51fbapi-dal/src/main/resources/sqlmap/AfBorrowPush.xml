@@ -144,4 +144,11 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByBorrowId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowPushDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_push 
+        where borrow_id=#{borrowId ,jdbcType=BIGINT} and is_delete=0
+    </select>
+    
 </mapper>

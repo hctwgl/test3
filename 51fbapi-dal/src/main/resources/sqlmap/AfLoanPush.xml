@@ -144,4 +144,11 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByLoanId" resultType="com.ald.fanbei.api.dal.domain.AfLoanPushDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_push
+    	where loan_id=#{loanId ,jdbcType=BIGINT} and is_delete=0
+    </select>
+    
 </mapper>

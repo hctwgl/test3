@@ -161,6 +161,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -328,6 +329,8 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	JdbcTemplate loanJdbcTemplate;
+	@Resource
+	AfBorrowPushService afBorrowPushService;
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -1273,6 +1276,9 @@ public class RiskUtil extends AbstractThird {
 					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (resp) {
 						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+						//记录push表
+						AfBorrowPushDo borrowPush = buildBorrowPush(borrow.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
+						afBorrowPushService.saveOrUpdate(borrowPush);
 					}
 				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
@@ -1326,6 +1332,17 @@ public class RiskUtil extends AbstractThird {
 		resultMap.put("success", true);
 		return resultMap;
 	}
+	private AfBorrowPushDo buildBorrowPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfBorrowPushDo borrowPush =new AfBorrowPushDo();
+		Date now = new Date();
+		borrowPush.setGmtCreate(now);
+		borrowPush.setGmtModified(now);
+		borrowPush.setBorrowId(rid);
+		borrowPush.setBorrowRate(apr);
+		borrowPush.setProfitRate(manageFee);
+		return borrowPush;
+	}
+
 	/**
 	   * 生成线下商圈结算单，
 	   * 和产品王鲁迪沟通过，线下商圈暂时只生成一条结算单（因为订单没有结束时间，无法算每期结算金额），按照原模式结算

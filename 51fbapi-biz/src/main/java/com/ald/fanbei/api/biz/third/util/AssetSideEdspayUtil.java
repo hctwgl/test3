@@ -1027,12 +1027,26 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 			if (result) {
 				logger.info("borrowCashCurPush suceess,borrowId="+borrowId);
+				//记录push表
+				AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
+				afBorrowPushService.saveOrUpdate(borrowPush);
 			}
 		} catch (Exception e) {
 			logger.error("tenementPushEdspay error"+e);
 			return 1;
 		}
 		return 0;
+	}
+
+	private AfBorrowPushDo buildBorrowPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfBorrowPushDo borrowPush =new AfBorrowPushDo();
+		Date now = new Date();
+		borrowPush.setGmtCreate(now);
+		borrowPush.setGmtModified(now);
+		borrowPush.setBorrowId(rid);
+		borrowPush.setBorrowRate(apr);
+		borrowPush.setProfitRate(manageFee);
+		return borrowPush;
 	}
 
 	public int repushMaxApiHandle(String orderNo) {
