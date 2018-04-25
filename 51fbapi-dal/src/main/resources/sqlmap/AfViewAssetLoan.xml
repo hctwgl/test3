@@ -48,7 +48,7 @@
             AND nper = #{nper,jdbcType=INTEGER}
         </if>
         <if test="interestRate != null and interestRate != ''">
-            AND interest_rate = #{interestRate,jdbcType=VARCHAR}
+            AND interest_rate = #{interestRate,jdbcType=DECIMAL}
         </if>
     </sql>
 
@@ -139,7 +139,7 @@
 		       #{nper,jdbcType=INTEGER},
 		    </if>
 		    <if test="interestRate != null" >
-		       #{interestRate,jdbcType=VARCHAR},
+		       #{interestRate,jdbcType=DECIMAL},
 		    </if>
         </trim>
     </insert>
@@ -184,7 +184,7 @@
                 nper = #{nper,jdbcType=INTEGER}                
             </if>
             <if test="interestRate != null and interestRate != '' ">        
-                interest_rate = #{interestRate,jdbcType=VARCHAR}                
+                interest_rate = #{interestRate,jdbcType=DECIMAL}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}

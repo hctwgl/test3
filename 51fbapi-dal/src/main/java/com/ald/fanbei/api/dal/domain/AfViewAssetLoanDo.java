@@ -76,7 +76,7 @@ import java.math.BigDecimal;
      */
     private Integer nper;
     
-    private String interestRate;
+    private BigDecimal interestRate;
 
 
     /**
@@ -298,14 +298,14 @@ import java.math.BigDecimal;
 	/**
 	 * @return the interestRate
 	 */
-	public String getInterestRate() {
+	public BigDecimal getInterestRate() {
 		return interestRate;
 	}
 
 	/**
 	 * @param interestRate the interestRate to set
 	 */
-	public void setInterestRate(String interestRate) {
+	public void setInterestRate(BigDecimal interestRate) {
 		this.interestRate = interestRate;
 	}
     

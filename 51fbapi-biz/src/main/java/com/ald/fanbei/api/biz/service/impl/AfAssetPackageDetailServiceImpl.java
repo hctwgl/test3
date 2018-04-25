@@ -997,7 +997,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setBankNo(afViewAssetLoanDo.getBankno());
 		creditRespBo.setAcctName(bankInfo.getAcctName());
 		creditRespBo.setMoney(afViewAssetLoanDo.getAmount());
-		creditRespBo.setApr(BigDecimalUtil.multiply(new BigDecimal(afViewAssetLoanDo.getInterestRate()) , new BigDecimal(100)));
+		creditRespBo.setApr(BigDecimalUtil.multiply(afViewAssetLoanDo.getInterestRate(),new BigDecimal(100)));
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afViewAssetLoanDo.getGmtCreate(), lastLoanPeriodsGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetLoanDo.getGmtCreate()));
 		creditRespBo.setPurpose("个人消费");

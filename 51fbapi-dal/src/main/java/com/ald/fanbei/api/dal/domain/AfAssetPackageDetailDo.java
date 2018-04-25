@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
@@ -59,6 +60,10 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 备注，当资产方撤回时等情况下备注说明
      */
     private String remark;
+    
+    private BigDecimal borrowRate;
+    
+    private BigDecimal profitRate;
 
 
     /**
@@ -214,4 +219,32 @@ import com.ald.fanbei.api.common.AbstractSerial;
 		this.isDelete = isDelete;
 	}
 
+	/**
+	 * @return the borrowRate
+	 */
+	public BigDecimal getBorrowRate() {
+		return borrowRate;
+	}
+
+	/**
+	 * @param borrowRate the borrowRate to set
+	 */
+	public void setBorrowRate(BigDecimal borrowRate) {
+		this.borrowRate = borrowRate;
+	}
+
+	/**
+	 * @return the profitRate
+	 */
+	public BigDecimal getProfitRate() {
+		return profitRate;
+	}
+
+	/**
+	 * @param profitRate the profitRate to set
+	 */
+	public void setProfitRate(BigDecimal profitRate) {
+		this.profitRate = profitRate;
+	}
+	
 }
