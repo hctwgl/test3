@@ -763,7 +763,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 	public Map<String, Object> getEcommerceAreaInfo() {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
-		// 获取上方4个电商运营位,如果配置不全，则不显示
+		// 获取上方3个电商运营位,如果配置不全，则不显示
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUp();
 		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 3) {
 			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
