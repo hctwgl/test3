@@ -16,8 +16,8 @@ public class LoanTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:80";
-//	String urlBase = "http://localhost:8080";
+//	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8081";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
