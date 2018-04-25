@@ -61,7 +61,7 @@ public class RSAUtil {
 			RSAPublicKeyStructure struct = RSAPublicKeyStructure.getInstance(info.getPublicKey());
 			if (aIn != null)
 				aIn.close();
-			return byteArr2HexString(struct.getDERObject().getEncoded());
+			return byteArr2HexString(struct.getEncoded());
 		} catch (IOException e) {
 			return null;
 		}

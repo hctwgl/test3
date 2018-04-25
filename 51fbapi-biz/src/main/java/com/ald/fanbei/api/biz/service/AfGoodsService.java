@@ -116,6 +116,8 @@ public interface AfGoodsService {
 
 	List<AfGoodsDo> getGoodsByItem(Long categoryId);
 
+	AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query);
+
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
@@ -131,7 +133,7 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
-	
+
 	/**
 	 * 品牌结果页 查询该品牌下的所有商品按照销量进行降序
 	 * @param brandId
@@ -141,6 +143,8 @@ public interface AfGoodsService {
 
 	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
 			AfGoodsQuery goodsQuery);
-	
+
+
+	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 }
 
