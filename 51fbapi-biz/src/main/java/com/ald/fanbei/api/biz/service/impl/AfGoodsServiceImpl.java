@@ -170,6 +170,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByItem(categoryId);
 	}
 	@Override
+	public AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsBySolr(query);
+	}
+	@Override
 	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
 		return afGoodsDao.getGoodsListByGoodsId(goodsId);
 	}
@@ -187,6 +191,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	public List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId){
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
+	}
+	@Override
+	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
 	}
 
 }

@@ -120,8 +120,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "（借款人）：";
@@ -144,9 +144,7 @@ public class AfESdkServiceImpl implements AfESdkService {
     public FileDigestSignResult userSign(Map<String, Object> map) {
         // 待签署文 档路径
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
-        logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        logger.info("sign dstFile: " + dstFile);
         String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
@@ -164,8 +162,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1"));
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70"));
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("personKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
@@ -181,7 +179,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         fileBean.setDstPdfFile(dstFile);
         fileBean.setFileName(fileName);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
-        logger.info("r cfp = " + JSON.toJSONString(r));
         // 使用用户印章签名
         return r;
     }
@@ -211,8 +208,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
         int posX = 170;
         int posY = 540;
-        int posType = 0;
-        int width = 159;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
@@ -261,8 +258,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
         int posX = 420;
         int posY = 685;
-        int posType = 0;
-        int width = 159;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
@@ -310,8 +307,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
         int posX = 170;
         int posY = 685;
-        int posType = 0;
-        int width = 159;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
@@ -453,13 +450,12 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-        int posType = 1;
-        int width = 80;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "80").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk secondSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -499,8 +495,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-        int posType = 1;
-        int width = 30;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "30").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
@@ -551,9 +547,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
-        int posType = 1;
-        int width = 70;
-
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "楚橡信息科技股份有限公司";
@@ -685,8 +680,8 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "商务股份有限公司";
@@ -730,8 +725,8 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
         key = "商务股份有限公司";
@@ -773,8 +768,8 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("selfKey"), "").toString();
         String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();

@@ -176,4 +176,9 @@
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
 	</bean>
 	<!-- MONGODB -->
+	
+	<!-- solrServer -->
+	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+		<constructor-arg name="baseURL" value="${solrServer.address}"/>
+	</bean>
 </beans>
