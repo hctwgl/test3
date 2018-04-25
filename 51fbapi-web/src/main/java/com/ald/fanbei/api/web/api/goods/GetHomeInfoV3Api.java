@@ -149,9 +149,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode();
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
 		 
-         if (cacheResult != null) {
-             data =  (Map<String, Object>) cacheResult;
-         }else {
+//         if (cacheResult != null) {
+//             data =  (Map<String, Object>) cacheResult;
+//         }else 
+         {
 		
 		         AfResourceDo   searchBackground = new  AfResourceDo();
 		         AfResourceDo   nineBackground   =   new  AfResourceDo();
@@ -163,7 +164,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		//         }
 		//     	if(backgroundList == null || backgroundList.size()<1){
 		     		backgroundList = afResourceService
-						.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
+						.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
 		//     		 bizCacheUtil.saveObjectListExpire(CacheConstants.ASJ_HOME_PAGE.ASJ_CUBE_HOMEPAGE_BACKGROUND.getCode(), backgroundList, Constants.MINITS_OF_TWO);
 		//     	}
 				

@@ -1022,4 +1022,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getBackGroundByTypeOrder(code);
 	}
 
+	@Override
+	public List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
+	}
+
 }
