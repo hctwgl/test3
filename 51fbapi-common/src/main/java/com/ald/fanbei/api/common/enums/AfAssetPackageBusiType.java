@@ -8,7 +8,8 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfAssetPackageBusiType {
 	BORROWCASH(0, "现金贷"), 
-	BORROW(1, "消费分期");
+	BORROW(1, "消费分期"),
+	LOAN(2, "白领贷");
 	
 	private Integer code;
 

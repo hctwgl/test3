@@ -23,9 +23,11 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfViewAssetBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfViewAssetBorrowService;
+import com.ald.fanbei.api.biz.service.AfViewAssetLoanService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfAssetOperaLogChangeType;
@@ -56,12 +58,15 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideOperaLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfViewAssetLoanDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowQuery;
+import com.ald.fanbei.api.dal.domain.query.AfViewAssetLoanQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -112,6 +117,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
     private AfBorrowDao  afBorrowDao;
 	@Resource
 	private AfResourceService  afResourceService;
+	@Resource
+	private AfViewAssetLoanService  afViewAssetLoanService;
+	@Resource
+	private AfLoanPeriodsService  afLoanPeriodsService;
 	
 	@Override
 	public BaseDao<AfAssetPackageDetailDo, Long> getDao() {
@@ -865,6 +874,198 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		}else{
 			return new ArrayList<EdspayGetCreditRespBo>();
 		}
+	}
+
+	@Override
+	public List<EdspayGetCreditRespBo> getLoanBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart, final Date gmtCreateEnd) {
+		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
+		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
+	        @Override
+            public Long doInTransaction(TransactionStatus status) {
+            	List<AfViewAssetLoanDo> debtList= new ArrayList<AfViewAssetLoanDo>();
+            	try {
+        			//加锁Lock
+        			boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(Constants.CACHEKEY_ASSETPACKAGE_LOCK, Constants.CACHEKEY_ASSETPACKAGE_LOCK_VALUE,10, Constants.SECOND_OF_TEN_MINITS);
+        			if (isLock) {
+        				//校验现在金额是否满足
+        				BigDecimal sumAmount = afViewAssetLoanService.getSumAmount(gmtCreateStart,gmtCreateEnd);
+    					if (totalMoney.compareTo(sumAmount) > 0) {
+    						logger.error("getLoanBatchCreditInfo  error,该时间段内白领贷资产金额不足，共"+sumAmount+"元");
+    						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+    						return 0L;
+    					}
+    					debtList = matchingLoanDebt(totalMoney,gmtCreateStart, gmtCreateEnd);
+        				//生成资产包
+        				Date cur = new Date();
+        				AfAssetPackageDo afAssetPackageDo = new AfAssetPackageDo();
+        				afAssetPackageDo.setGmtCreate(cur);
+        				afAssetPackageDo.setGmtModified(cur);
+        				afAssetPackageDo.setStatus(AfAssetPackageStatus.SENDED.getCode());
+        				String packageName = "";
+        				if(totalMoney.intValue()/10000>0){
+        					packageName = afAssetSideInfoDo.getName()+totalMoney.intValue()/10000+"万白领贷资产包"+DateUtil.formatDate(cur);
+        				}else{
+        					packageName = afAssetSideInfoDo.getName()+totalMoney+"元白领贷资产包"+DateUtil.formatDate(cur);
+        				}
+        				afAssetPackageDo.setAssetName(packageName);
+        				afAssetPackageDo.setAssetNo("zcb"+System.currentTimeMillis());
+        				afAssetPackageDo.setAssetSideId(afAssetSideInfoDo.getRid());
+        				afAssetPackageDo.setBeginTime(gmtCreateStart);
+        				afAssetPackageDo.setEndTime(gmtCreateEnd);
+        				afAssetPackageDo.setTotalMoney(totalMoney);
+        				afAssetPackageDo.setBorrowRate(afAssetSideInfoDo.getBorrowRate());
+        				afAssetPackageDo.setAnnualRate(afAssetSideInfoDo.getAnnualRate());
+        				afAssetPackageDo.setRepaymentMethod(afAssetSideInfoDo.getRepaytType());
+        				afAssetPackageDo.setValidStatus(YesNoStatus.YES.getCode());
+        				afAssetPackageDo.setSendMode(AfAssetPackageSendMode.INTERFACE.getCode());
+        				afAssetPackageDo.setType(AfAssetPackageType.ASSET_REQ.getCode());
+        				afAssetPackageDo.setBusiType(AfAssetPackageBusiType.LOAN.getCode());
+        				int result=afAssetPackageDao.saveRecord(afAssetPackageDo);
+        				
+        				BigDecimal realAmount = BigDecimal.ZERO;
+        				for (AfViewAssetLoanDo afViewAssetLoanDo : debtList) {
+        					realAmount = realAmount.add(afViewAssetLoanDo.getAmount());
+        					creditInfos.add(buildCreditLoanRespBo(afAssetPackageDo,bankInfo,afViewAssetLoanDo));
+        					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
+        					afAssetPackageDetailDo.setGmtCreate(cur);
+        					afAssetPackageDetailDo.setGmtModified(cur);
+        					afAssetPackageDetailDo.setBorrowCashId(afViewAssetLoanDo.getLoanId());
+        					afAssetPackageDetailDo.setBorrowNo(afViewAssetLoanDo.getLoanNo());
+        					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
+        					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
+        					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
+        					//标记重新分配记录
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetLoanDo.getLoanNo());
+        				}
+        				//更新实际金额
+        				afAssetPackageDo.setRealTotalMoney(realAmount);
+        				afAssetPackageDao.updateById(afAssetPackageDo);
+        				
+        				//资产方操作日志添加
+        				AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), cur, AfAssetOperaLogChangeType.GET_ASSET.getCode(), afAssetPackageDo.getRealTotalMoney(), afAssetPackageDo.getRid()+"","", "请求消费分期资产包金额totalMoney="+totalMoney+",实际金额："+realAmount);
+        				afAssetSideOperaLogDao.saveRecord(operaLogDo);
+        				
+        				bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+        				return 1l;
+        			}else{
+        				 logger.error("getLoanBatchCreditInfo  get lock fail");
+        			}
+        		} catch (Exception e) {
+        			status.setRollbackOnly();
+        			logger.error("getLoanBatchCreditInfo error:"+e);
+        			bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+        		}
+            	return 0l;
+            }
+	    });
+		//释放锁Lock完成,结束
+		if (result == 1) {
+			return creditInfos;
+		}else{
+			return new ArrayList<EdspayGetCreditRespBo>();
+		}
+	}
+
+	protected EdspayGetCreditRespBo buildCreditLoanRespBo(AfAssetPackageDo afAssetPackageDo, FanbeiBorrowBankInfoBo bankInfo,AfViewAssetLoanDo afViewAssetLoanDo) {
+		AfAssetPackageRepaymentType repayTypeEnum = AfAssetPackageRepaymentType.findEnumByCode(afAssetPackageDo.getRepaymentMethod());
+		//借款人平台逾期信息
+		AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afViewAssetLoanDo.getUserId());
+		List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
+		List<AfLoanPeriodsDo> loanPeriodsList = afLoanPeriodsService.getAllLoanPeriodsByLoanId(afViewAssetLoanDo.getLoanId());
+		Date lastLoanPeriodsGmtPayTime=null;
+		for (int i = 0; i < loanPeriodsList.size(); i++) {
+			RepaymentPlan repaymentPlan = new RepaymentPlan();
+			repaymentPlan.setRepaymentNo(loanPeriodsList.get(i).getRid()+"");
+			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(loanPeriodsList.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(afViewAssetLoanDo.getGmtCreate(), loanPeriodsList.get(i).getGmtPlanRepay()));
+			repaymentPlan.setRepaymentAmount(loanPeriodsList.get(i).getAmount());
+			repaymentPlan.setRepaymentInterest(loanPeriodsList.get(i).getInterestFee());
+			repaymentPlan.setRepaymentPeriod(loanPeriodsList.get(i).getNper()-1);
+			repaymentPlans.add(repaymentPlan);
+			if (i == loanPeriodsList.size() - 1) {
+				lastLoanPeriodsGmtPayTime= loanPeriodsList.get(i).getGmtPlanRepay();
+			}
+		}
+		Integer nper = afViewAssetLoanDo.getNper();
+		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		creditRespBo.setPackageNo(afAssetPackageDo.getAssetNo());
+		creditRespBo.setOrderNo(afViewAssetLoanDo.getLoanNo());
+		creditRespBo.setUserId(afViewAssetLoanDo.getUserId());
+		creditRespBo.setName(afViewAssetLoanDo.getRealName());
+		creditRespBo.setCardId(afViewAssetLoanDo.getIdNumber());
+		creditRespBo.setMobile(afViewAssetLoanDo.getMobile());
+		creditRespBo.setBankNo(afViewAssetLoanDo.getBankno());
+		creditRespBo.setAcctName(bankInfo.getAcctName());
+		creditRespBo.setMoney(afViewAssetLoanDo.getAmount());
+		creditRespBo.setApr(BigDecimalUtil.multiply(new BigDecimal(afViewAssetLoanDo.getInterestRate()) , new BigDecimal(100)));
+		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afViewAssetLoanDo.getGmtCreate(), lastLoanPeriodsGmtPayTime));
+		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetLoanDo.getGmtCreate()));
+		creditRespBo.setPurpose("个人消费");
+		creditRespBo.setRepaymentStatus(0);
+		creditRespBo.setRepaymentType(repayTypeEnum!=null?repayTypeEnum.getEdsCode():afAssetPackageDo.getRepaymentMethod());
+		creditRespBo.setRepayName(bankInfo.getRepayName());
+		creditRespBo.setRepayAcct(bankInfo.getRepayAcct());
+		creditRespBo.setRepayAcctBankNo(bankInfo.getRepayAcctBankNo());
+		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
+		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
+		creditRespBo.setManageFee(afAssetPackageDo.getAnnualRate());
+		creditRespBo.setRepaymentSource("工资收入");
+		creditRespBo.setDebtType(AfAssetPackageBusiType.LOAN.getCode());
+		creditRespBo.setIsPeriod(1);
+		creditRespBo.setTotalPeriod(afViewAssetLoanDo.getNper());
+		creditRespBo.setLoanerType(0);
+		creditRespBo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
+		creditRespBo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
+		creditRespBo.setRepaymentPlans(repaymentPlans);
+		creditRespBo.setIsCur(1);//非实时推送
+		return creditRespBo;
+	}
+
+	protected List<AfViewAssetLoanDo> matchingLoanDebt(BigDecimal totalMoney,Date gmtCreateStart, Date gmtCreateEnd) {
+		//匹配初始记录;
+		Integer limitNums = totalMoney.intValue()/Constants.AVG_LOAN_AMOUNT;
+		AfViewAssetLoanQuery query = new AfViewAssetLoanQuery();
+		query.setGmtCreateStart(gmtCreateStart);
+		query.setGmtCreateEnd(gmtCreateEnd);
+		query.setLimitNums(limitNums == 0 ? 1 : limitNums);
+		AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+		if (pushWhiteResource != null) {
+			String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
+			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+			//推送白名单开启,白名单的userid不推送，仅用于实时推送
+			query.setUserIds(Arrays.asList(whiteUserIds));
+			/*for (int i = 0; i < debtList.size(); i++) {
+				if (Arrays.asList(whiteUserId).contains(debtList.get(i).getUserId())) {
+					debtList.remove(i);
+				}
+			}*/
+		}
+		List<AfViewAssetLoanDo> debtList = afViewAssetLoanService.getListByQueryCondition(query);
+		if(debtList==null || debtList.size()==0){
+			return new ArrayList<AfViewAssetLoanDo>();
+		}
+		query.setMinLoanId(debtList.get(debtList.size()-1).getLoanId());
+		BigDecimal checkAmount=afViewAssetLoanService.checkAmount(query);
+		if (checkAmount.compareTo(totalMoney) < 0) {
+			//初始金额不足，逐个债权补充记录直到刚好满足
+			while (checkAmount.compareTo(totalMoney) < 0) {
+				AfViewAssetLoanDo afViewAssetLoanDo = afViewAssetLoanService.getByQueryCondition(query);
+				debtList.add(afViewAssetLoanDo);
+				query.setMinLoanId(afViewAssetLoanDo.getLoanId());
+				checkAmount = afViewAssetLoanService.checkAmount(query);
+			}
+		}else{
+			//非查库方式进行
+			for(int i=debtList.size()-1;i>0 && checkAmount.compareTo(totalMoney)>0;i--){
+				if(checkAmount.subtract(debtList.get(i).getAmount()).compareTo(totalMoney)>=0){
+					checkAmount = checkAmount.subtract(debtList.get(i).getAmount());
+					debtList.remove(i);
+				}else{
+					break;
+				}
+			}
+		}
+		return debtList;
 	}
 
 
