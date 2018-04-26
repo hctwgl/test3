@@ -46,6 +46,7 @@ public class AppMaidianController{
 
             if(StringUtils.isBlank(maidianInfo) || StringUtils.isBlank(maidianInfo3))
             {
+                logger.error("app postMaidianInfo params error:"+appMaidianDto.toString());
                 return new ApiHandleResponse(request.getHeader("id"),  FanbeiExceptionCode.SYSTEM_ERROR,"埋点参数异常");
             }
 
