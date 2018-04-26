@@ -577,7 +577,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					} catch (Exception e) {
 						logger.error("borrowCashCurPush fail:"+e);
 					}
-					
 					return true;
 				}else {
 					//钱包处理错误
@@ -1054,14 +1053,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
 			if (borrowCashDo!=null) {
 				//现金贷
-				//维护拓展表
-				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
-				afBorrowCashPushDo.setGmtCreate(now);
-				afBorrowCashPushDo.setGmtModified(now);
-				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
-				afBorrowCashPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
+				AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowCashPushService.saveOrUpdate(borrowCashPush);
 				AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
 				AfUserDo afUserDo = afUserService.getUserById(borrowCashDo.getUserId());
 				AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
@@ -1090,13 +1083,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(orderNo);
 				if (null!=borrowDo) {
 					//分期 
-					AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-					borrowPushDo.setGmtCreate(now);
-					borrowPushDo.setGmtModified(now);
-					borrowPushDo.setBorrowId(borrowDo.getRid());
-					borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-					borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-					afBorrowPushService.saveRecord(borrowPushDo);
+					AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+					afBorrowPushService.saveOrUpdate(borrowPush);
 				}else{
 					//白领贷
 					AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
@@ -1133,6 +1121,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			return 1;
 		}
 		return 0;
+	}
+
+	private AfBorrowPushDo buildBorrowPush(Long rid,String assetSideFanbeiFlag, String status) {
+		AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
+		Date now = new Date();
+		borrowPushDo.setGmtCreate(now);
+		borrowPushDo.setGmtModified(now);
+		borrowPushDo.setBorrowId(rid);
+		borrowPushDo.setStatus(status);
+		return borrowPushDo;
 	}
 
 	private AfLoanPushDo buildLoanPush(Long loanId, String assetSideFlag,String status) {
