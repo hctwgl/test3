@@ -32,11 +32,11 @@ new Vue({
             }
         },
         priceTxt(data){
-          if(data.remark){
-              return data.remark
-          }else{
-              return '原价'
-          }
+            if(data.remark){
+                return data.remark
+            }else{
+                return '原价'
+            }
         },
         logData (){
             let self=this;
