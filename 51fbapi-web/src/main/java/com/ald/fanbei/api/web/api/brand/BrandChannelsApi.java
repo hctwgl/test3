@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +63,7 @@ public class BrandChannelsApi implements ApiHandle {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandChannels"+tag);
-		Map<String,List<AfBrandDto>> mapBrandList = new HashMap<>(26);
+		Map<String,List<AfBrandDto>> mapBrandList = new LinkedHashMap<>(26);
 		List<AfBrandListVo> allBrandInfo = new ArrayList<AfBrandListVo>();
 		if (data == null){
 			data = new HashMap<String, Object>();
