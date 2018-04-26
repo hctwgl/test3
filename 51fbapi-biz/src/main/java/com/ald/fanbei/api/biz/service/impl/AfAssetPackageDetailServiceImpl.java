@@ -396,7 +396,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				BigDecimal realMaxAmount = BigDecimal.ZERO;
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : minDebtList) {
         					realMinAmount = realMinAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
+        					EdspayGetCreditRespBo edspayGetCreditRespBo = buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime);
+        					creditInfos.add(edspayGetCreditRespBo);
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(currDate);
         					afAssetPackageDetailDo.setGmtModified(currDate);
@@ -404,13 +405,16 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setBorrowNo(afViewAssetBorrowCashDo.getBorrowNo());
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
+        					afAssetPackageDetailDo.setBorrowRate(edspayGetCreditRespBo.getApr());
+        					afAssetPackageDetailDo.setProfitRate(edspayGetCreditRespBo.getManageFee());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
         					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
         				}
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : maxDebtList) {
         					realMaxAmount = realMaxAmount.add(afViewAssetBorrowCashDo.getAmount());
-        					creditInfos.add(buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime));
+        					EdspayGetCreditRespBo edspayGetCreditRespBo=buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime);
+        					creditInfos.add(edspayGetCreditRespBo);
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(new Date());
         					afAssetPackageDetailDo.setGmtModified(new Date());
@@ -418,6 +422,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setBorrowNo(afViewAssetBorrowCashDo.getBorrowNo());
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
+        					afAssetPackageDetailDo.setBorrowRate(edspayGetCreditRespBo.getApr());
+        					afAssetPackageDetailDo.setProfitRate(edspayGetCreditRespBo.getManageFee());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
         					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
@@ -613,7 +619,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setMobile(afViewAssetBorrowCashDo.getMobile());
 		creditRespBo.setBankNo(afViewAssetBorrowCashDo.getCardNumber());
 		creditRespBo.setAcctName(bankInfo.getAcctName());
-		creditRespBo.setMoney(afViewAssetBorrowCashDo.getAmount());
+		creditRespBo.setMoney(afViewAssetBorrowCashDo.getArrivalAmount());
 		creditRespBo.setApr(borrowRate);
 		creditRespBo.setTimeLimit(timeLimit.intValue());
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowCashDo.getGmtCreate()));
@@ -847,7 +853,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				BigDecimal realAmount = BigDecimal.ZERO;
         				for (AfViewAssetBorrowDo afViewAssetBorrowDo : debtList) {
         					realAmount = realAmount.add(afViewAssetBorrowDo.getAmount());
-        					creditInfos.add(buildCreditBorrowRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowDo));
+        					EdspayGetCreditRespBo edspayGetCreditRespBo = buildCreditBorrowRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowDo);
+        					creditInfos.add(edspayGetCreditRespBo);
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(currDate);
         					afAssetPackageDetailDo.setGmtModified(currDate);
@@ -855,6 +862,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setBorrowNo(afViewAssetBorrowDo.getBorrowNo());
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
+        					afAssetPackageDetailDo.setBorrowRate(edspayGetCreditRespBo.getApr());
+        					afAssetPackageDetailDo.setProfitRate(edspayGetCreditRespBo.getManageFee());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
         					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowDo.getBorrowNo());
@@ -892,7 +901,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	public List<EdspayGetCreditRespBo> getLoanBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart, final Date gmtCreateEnd) {
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
 		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
-	        @Override
+	        private EdspayGetCreditRespBo buildCreditLoanRespBo;
+
+			@Override
             public Long doInTransaction(TransactionStatus status) {
             	List<AfViewAssetLoanDo> debtList= new ArrayList<AfViewAssetLoanDo>();
             	try {
@@ -937,7 +948,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				BigDecimal realAmount = BigDecimal.ZERO;
         				for (AfViewAssetLoanDo afViewAssetLoanDo : debtList) {
         					realAmount = realAmount.add(afViewAssetLoanDo.getAmount());
-        					creditInfos.add(buildCreditLoanRespBo(afAssetPackageDo,bankInfo,afViewAssetLoanDo));
+        					EdspayGetCreditRespBo edspayGetCreditRespBo = buildCreditLoanRespBo(afAssetPackageDo,bankInfo,afViewAssetLoanDo);
+        					creditInfos.add(edspayGetCreditRespBo);
         					AfAssetPackageDetailDo afAssetPackageDetailDo = new AfAssetPackageDetailDo();
         					afAssetPackageDetailDo.setGmtCreate(cur);
         					afAssetPackageDetailDo.setGmtModified(cur);
@@ -945,6 +957,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setBorrowNo(afViewAssetLoanDo.getLoanNo());
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
+        					afAssetPackageDetailDo.setBorrowRate(edspayGetCreditRespBo.getApr());
+        					afAssetPackageDetailDo.setProfitRate(edspayGetCreditRespBo.getManageFee());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
         					afAssetPackageDetailDao.updateReDisTri(afViewAssetLoanDo.getLoanNo());

@@ -1225,7 +1225,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}else {
 			creditRespBo.setRepaymentSource("工资收入");
 		}
-		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
+		creditRespBo.setDebtType(AfAssetPackageBusiType.LOAN.getCode());
 		creditRespBo.setIsPeriod(1);
 		creditRespBo.setTotalPeriod(afLoanDto.getPeriods());
 		creditRespBo.setLoanerType(0);
