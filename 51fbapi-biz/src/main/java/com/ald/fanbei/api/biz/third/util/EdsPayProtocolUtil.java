@@ -251,7 +251,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
                 return notifyRespBo;
             }
-            logger.info("eProtocolUtil giveBackSealInfo newSealList=", newSealList + ",appId=" + appId + ",sendTime=" + timestamp);
+            logger.info("eProtocolUtil giveBackSealInfo newSealList=", JSON.toJSONString(newSealList) + ",appId=" + appId + ",sendTime=" + timestamp);
             notifyRespBo.setData(JSON.toJSONString(newSealList));
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
         } catch (Exception e) {

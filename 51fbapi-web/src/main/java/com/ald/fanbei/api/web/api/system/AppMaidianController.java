@@ -5,6 +5,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.dto.AppMaidianDto;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ public class AppMaidianController{
             String maidianInfo1 = ObjectUtils.toString(request.getHeader("appVersion"), "").toString();
             String maidianInfo2 = ObjectUtils.toString(appMaidianDto.getMaidianInfo2(), "").toString();
             String maidianInfo3 = ObjectUtils.toString(appMaidianDto.getMaidianInfo3(), "").toString();
+
+            if(StringUtils.isBlank(maidianInfo) || StringUtils.isBlank(maidianInfo3))
+            {
+                logger.error("app postMaidianInfo params error:"+appMaidianDto.toString());
+                return new ApiHandleResponse(request.getHeader("id"),  FanbeiExceptionCode.SYSTEM_ERROR,"埋点参数异常");
+            }
 
             MaidianRunnable maidianRunnable = new MaidianRunnable(request, "",true, maidianInfo, maidianInfo1, maidianInfo2, maidianInfo3);
             threadPoolMaidianTaskExecutor.execute(maidianRunnable);
