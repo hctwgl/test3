@@ -1422,13 +1422,6 @@
 		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
 	</update>
 
-	<select id="countStatusNum" resultType="HashMap">
-		SELECT status, IFNULL(COUNT(1), 0) num
-		FROM af_order
-		WHERE is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
-		GROUP BY status
-	</select>
-
 	<select id="getSelfsupportPaySuccessOrderByUserId" resultType="java.lang.Integer">
 		SELECT
 		count(0)

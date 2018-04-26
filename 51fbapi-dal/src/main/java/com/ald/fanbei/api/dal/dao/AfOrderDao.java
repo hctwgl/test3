@@ -320,13 +320,5 @@ public interface AfOrderDao {
 	AfOrderDo selectTodayIagentStatus(@Param("userId") Long userId,@Param("amount") BigDecimal amount);
 	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
 
-	/**
-	 * 统计各个状态的订单数
-	 *
-	 * @author wangli
-	 * @date 2018/4/13 9:59
-	 */
-    List<Map<String, Object>> countStatusNum(@Param("userId") Long userId);
-
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
 }

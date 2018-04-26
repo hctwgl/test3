@@ -1,12 +1,8 @@
 package com.ald.fanbei.api.dal.domain.dto;
 
 import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.common.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author wangli
@@ -28,19 +24,4 @@ public class AfOrderCountDto extends AbstractSerial {
     // 待返利订单数
     private Integer finishedOrderNum = 0;
 
-    public AfOrderCountDto(List<Map<String, Object>> data) {
-        for (Map<String, Object> e : data) {
-            int num = ((Long) e.get("num")).intValue();
-            String status = (String) e.get("status");
-            if (status.equals(OrderStatus.NEW.getCode())) {
-                newOrderNum = num;
-            } else if (status.equals(OrderStatus.PAID.getCode())) {
-                paidOrderNum = num;
-            } else if (status.equals(OrderStatus.DELIVERED.getCode())) {
-                deliveredOrderNum = num;
-            } else if (status.equals(OrderStatus.FINISHED.getCode())) {
-                finishedOrderNum = num;
-            }
-        }
-    }
 }
