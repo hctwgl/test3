@@ -60,12 +60,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     private AfResourceService afResourceService;
 
     @Resource
-    private AfGoodsService afGoodsService;
-
-    @Resource
-    private AfInterestFreeRulesService afInterestFreeRulesService;
-
-    @Resource
     private AfActivityService afActivityService;
 
     @Resource
@@ -76,36 +70,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
 
     @Resource
     private AppActivityGoodListUtil appActivityGoodListUtil;
-
-//    /**
-//     * 预热商品列表
-//     *
-//     * @param request
-//     * @param response
-//     * @return
-//     */
-//    @ResponseBody
-//    @RequestMapping(value = "initWarmUpGoodList", method = RequestMethod.POST,  produces = "application/json;charset=UTF-8")
-//    public String initWarmUpPage(HttpServletRequest request, HttpServletResponse response) {
-//        JSONObject data = new JSONObject();
-//        try {
-//            AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(Constants.TAC_WARM_UP_GOODS, Constants.DEFAULT);
-//            if (null != afResourceDo) {
-//                String value = afResourceDo.getValue();
-//                if (!StringUtils.isEmpty(value)) {
-//                    List<Map<String, Object>> goodList = getGoodMapList(value);
-//                    if (null == goodList || goodList.isEmpty()) {
-//                        return H5CommonResponse.getNewInstance(false, "获取商品列表为空", "", "").toString();
-//                    }
-//                    data.put("goodList", goodList);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("initWarmUpGoodList exception", e);
-//            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", "").toString();
-//        }
-//        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
-//    }
 
     /**
      * 每天首次分享成功，随机赠送优惠券（优惠券类型不限定领取数量）
@@ -129,26 +93,28 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     }
 
                     AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
-                    String coupons = couponCategory.getCoupons();
-                    JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
-                    int size = couponsArray.size();
-                    int index = RandomUtil.getRandomInt(size - 1);
-                    Long couponId = Long.parseLong(couponsArray.getString(index));
+                    if(null != couponCategory){
+                        String coupons = couponCategory.getCoupons();
+                        JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+                        int size = couponsArray.size();
+                        int index = RandomUtil.getRandomInt(size - 1);
+                        Long couponId = Long.parseLong(couponsArray.getString(index));
 
-                    AfCouponDo couponDo = afCouponService.getCouponById(couponId);
-                    AfUserCouponDo userCoupon = new AfUserCouponDo();
-                    userCoupon.setCouponId(couponDo.getRid());
-                    userCoupon.setGmtCreate(new Date());
-                    userCoupon.setGmtStart(couponDo.getGmtStart());
-                    userCoupon.setGmtEnd(couponDo.getGmtEnd());
-                    userCoupon.setUserId(afUserDo.getRid());
-                    userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
-                    userCoupon.setSourceType(CouponSenceRuleType.RESERVATION.getCode());
-                    afUserCouponService.addUserCoupon(userCoupon);
+                        AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+                        AfUserCouponDo userCoupon = new AfUserCouponDo();
+                        userCoupon.setCouponId(couponDo.getRid());
+                        userCoupon.setGmtCreate(new Date());
+                        userCoupon.setGmtStart(couponDo.getGmtStart());
+                        userCoupon.setGmtEnd(couponDo.getGmtEnd());
+                        userCoupon.setUserId(afUserDo.getRid());
+                        userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
+                        userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
+                        afUserCouponService.addUserCoupon(userCoupon);
 
-                    data.put("couponCondititon", couponDo.getLimitAmount());
-                    data.put("couponAmount", couponDo.getAmount());
-                    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
+                        data.put("couponCondititon", couponDo.getLimitAmount());
+                        data.put("couponAmount", couponDo.getAmount());
+                        return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", data).toString();
+                    }
                 }
             }
         } catch (Exception e) {

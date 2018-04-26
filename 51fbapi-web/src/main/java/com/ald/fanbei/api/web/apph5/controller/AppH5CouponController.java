@@ -588,11 +588,11 @@ public class AppH5CouponController extends BaseController {
 
 			if(new Date().before(couponDo.getGmtStart())){
 				data.put("status", CouponWebFailStatus.COUPONCONTEXT4.getCode());
-				return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, "").toString();
+				return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, data).toString();
 			}
 			if(new Date().after(couponDo.getGmtEnd())){
 				data.put("status", CouponWebFailStatus.COUPONCONTEXT8.getCode());
-				return H5CommonResponse.getNewInstance(false, "活动已结束", null, "").toString();
+				return H5CommonResponse.getNewInstance(false, "活动已结束", null, data).toString();
 			}
 
 			if (afUserDo == null) {
