@@ -125,7 +125,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			afBorrowCashDo.getSumRenewalPoundage(),
 			afBorrowLegalOrderDo.getPriceAmount())
 			.subtract(afBorrowCashDo.getRepayAmount()))
-			.multiply(BigDecimalUtil.ONE_HUNDRED)); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
+			.multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
 	    }
 	    // 旧版借款
 	    else {
@@ -144,7 +144,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			afBorrowCashDo.getSumOverdue(),
 			afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo
 			.getRepayAmount()))
-			.multiply(BigDecimalUtil.ONE_HUNDRED)); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
+			.multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
 
 	    }
 
@@ -180,7 +180,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		result.put("lender", lenderDo.getValue()); // 出借人
 	    }
 	    result.put("amtCapital", afBorrowCashDo.getArrivalAmount()
-		    .multiply(BigDecimalUtil.ONE_HUNDRED)); // 实际打款金额
+		    .multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 实际打款金额
 	    result.put("serviceType", serviceType); // 服务费预扣标识符
 	    result.put("applicateDate", DateUtil
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
@@ -191,7 +191,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    result.put(
 		    "amtLimit",
 		    userAccountDo.getAuAmount().multiply(
-			    BigDecimalUtil.ONE_HUNDRED)); // 可借款总额度
+			    BigDecimalUtil.ONE_HUNDRED).intValue()); // 可借款总额度
 	    result.put("productId", productId); // 产品编码
 	    result.put("platName", platName); // 所属平台
 	    result.put("negotiatePhone", negotiatePhone); // 调解协商电话
@@ -320,19 +320,20 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    result.put(
 		    "amtBorrowed",
 		    userAccountDo.getAuAmount().multiply(
-			    BigDecimalUtil.ONE_HUNDRED));// 授信金额
-	    result.put("amtCapital", afBorrowCashDo.getAmount());// 实际借款本金
-	    result.put("amtInterest", afBorrowCashDo.getRateAmount());// 利息
+			    BigDecimalUtil.ONE_HUNDRED).intValue());// 授信金额
+	    result.put("amtCapital", afBorrowCashDo.getAmount().multiply(
+		    BigDecimalUtil.ONE_HUNDRED).intValue());// 实际借款本金
+	    result.put("amtInterest", afBorrowCashDo.getRateAmount().intValue());// 利息
 	    
 	    if("N".equals(afBorrowCashDo.getOverdueStatus())) {
-		result.put("amtPenalty", afBorrowCashDo.getOverdueAmount());// 罚息
+		result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().intValue());// 罚息
 	    } else {
-		result.put("amtPenalty",afBorrowCashOverdueService.getOverdueAmountByBorrowId(afBorrowCashDo.getRid()));
+		result.put("amtPenalty",afBorrowCashOverdueService.getOverdueAmountByBorrowId(afBorrowCashDo.getRid()).intValue());
 	    }
-	    result.put("amtService", afBorrowCashDo.getPoundage());// 服务费
+	    result.put("amtService", afBorrowCashDo.getPoundage().intValue());// 服务费
 
 	    result.put("amtOther", "");// 其他费用
-	    result.put("amtRefund", afBorrowCashDo.getRepayAmount());// 已还费用
+	    result.put("amtRefund", afBorrowCashDo.getRepayAmount().intValue());// 已还费用
 	    result.put("rateRefund", "");// 分期还款利率
 	    result.put("periodsType", ArbitrationStatus.PERIODSTYPE.getCode());// 期数类型
 	    result.put("countPeriods", countPeriods);// 期数
@@ -571,7 +572,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    map.put("borrowNo", afBorrowCashDo.getBorrowNo()); // 借款编号
 	    map.put("amtBorrow",
 		    afBorrowCashDo.getAmount().multiply(
-			    BigDecimalUtil.ONE_HUNDRED)); // 借款金额
+			    BigDecimalUtil.ONE_HUNDRED).intValue()); // 借款金额
 	    map.put("borrowDate", DateUtil
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtCreate())); // 借款时间
@@ -656,7 +657,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    afBorrowCashDo.getPoundage(),
 			    afBorrowCashDo.getSumRenewalPoundage())
 			    .subtract(afBorrowCashDo.getRepayAmount()))
-			    .multiply(BigDecimalUtil.ONE_HUNDRED)); // 需还金额
+			    .multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 需还金额
 		}
 		// 旧版借款
 		else {
@@ -667,7 +668,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    afBorrowCashDo.getRateAmount(),
 			    afBorrowCashDo.getSumRate())
 			    .subtract(afBorrowCashDo.getRepayAmount()))
-			    .multiply(BigDecimalUtil.ONE_HUNDRED)); // 需还金额
+			    .multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 需还金额
 
 		}
 
