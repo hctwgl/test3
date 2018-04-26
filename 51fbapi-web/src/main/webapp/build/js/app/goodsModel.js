@@ -8,7 +8,7 @@ new Vue({
     data:{
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
         content:[],
-        iconShow:getUrl('activityId'),
+        iconShow:getUrl('activityId')||'',
         spread:getUrl('spread')||'',
         iconTxt:[4388,689,959,1899,2499,699,890,999,219,699]
 
