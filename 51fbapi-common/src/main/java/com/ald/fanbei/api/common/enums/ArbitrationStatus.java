@@ -13,9 +13,9 @@ public enum ArbitrationStatus {
     	
     	ZERO("0","ZERO","識別狀態"),
     
-	SUCCESS("200","SUCCESS","成功"),
+	SUCCESS("0000","SUCCESS","成功"),
 	
-	FAILURE("201","FAILURE","失败"),
+	FAILURE("9999","FAILURE","失败"),
 	
 	REPAYSUCCESS("Y","REPAYSUCCESS","还款成功"),
 	
