@@ -117,6 +117,11 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
 	
+	
+	
+
+	private static final String TABBAR =		              HomePageType.TABBAR.getCode(); 
+	private static final String TABBAR_HOME_TOP =		          HomePageType.TABBAR_HOME_TOP.getCode(); 
 	private static final String OPERATE =		              HomePageType.OPERATE.getCode(); 
 	private static final String NEW_EXCLUSIVE =		          HomePageType.NEW_EXCLUSIVE.getCode(); 
 	private static final String HOME_IAMGE_SLOGAN =		      HomePageType.HOME_IAMGE_SLOGAN.getCode(); 
@@ -202,7 +207,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					logger.error("channelList convertToListFromList error"+e);
 				}
 				 List<AfResourceH5ItemDo> tabbarList  = new ArrayList<AfResourceH5ItemDo>();
-				
+				  tabbarList = afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
+				 
 				// 顶部导航信息
 				List<Object> topBannerList = new ArrayList<Object>();
 		
