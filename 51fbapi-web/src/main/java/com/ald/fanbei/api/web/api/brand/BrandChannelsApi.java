@@ -3,18 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfBrandService;
 import com.ald.fanbei.api.biz.service.AfResourceH5ItemService;
 import com.ald.fanbei.api.biz.service.AfResourceH5Service;
@@ -34,6 +22,15 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBrandListVo;
 import com.ald.fanbei.api.web.vo.AfBrandVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * 爱尚街 分类品牌页面 app客户端
  * @author liutengyuan 
@@ -60,6 +57,7 @@ public class BrandChannelsApi implements ApiHandle {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandChannels"+tag);
+		Map<String,List<AfBrandDto>> mapBrandList = new HashMap<>(26);
 		if (data == null){
 			data = new HashMap<String, Object>();
 			List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
@@ -112,38 +110,27 @@ public class BrandChannelsApi implements ApiHandle {
 					}
 				}
 				allBrandList = afBrandService.getAllAndNameSort();
-				char[] str = new char[26];
 				for (int i = 0; i < 26; i++) {
-				str[i]= (char)(65 + i );
+					mapBrandList.put( String.valueOf((char)(65 + i )),new ArrayList<AfBrandDto>());
 				}
-				for (int i = 0; i < str.length; i++) {
-					AfBrandListVo brandListVo = new AfBrandListVo(str[i]+"", new ArrayList<AfBrandDto>());
-					allBrandInfo2.add(brandListVo);
-				}
+
 				for (AfBrandDto  afBrandDto :allBrandList){
-					String initName = afBrandDto.getNameIndex();// get the first key of name
-					for (AfBrandListVo brandListVo :allBrandInfo2){
-						if (brandListVo.getKey() .equals(initName)){
-							brandListVo.getBrandsList().add(afBrandDto);
-						}
-						
+					if(mapBrandList.containsKey(afBrandDto.getNameIndex())) {
+						mapBrandList.get(afBrandDto.getNameIndex()).add(afBrandDto);
 					}
-					/*if (CollectionUtil.isNotEmpty(allBrandInfo.get(initName)) ){
-						 List<AfBrandDto> relatedBrandList = allBrandInfo.get(initName);
-						 relatedBrandList.add(afBrandDto);
-						 allBrandInfo.put(initName,relatedBrandList );
-					}else{
-						ArrayList<AfBrandDto> relatedBrandList = new ArrayList<AfBrandDto>();
-						relatedBrandList.add(afBrandDto);
-						allBrandInfo.put(initName, relatedBrandList);
-					}*/
+					else
+					{
+						List<AfBrandDto> listBrand = new ArrayList<>();
+						listBrand.add(afBrandDto);
+						mapBrandList.put(afBrandDto.getNameIndex(),listBrand);
+					}
 				}
 				
 			}
 			data.put("imageUrl", imageUrl);
 			data.put("h5LinkUrl", h5LinkUrl);
 			data.put("hotBrandList", hotBrands);
-			data.put("allBrandInfo", allBrandInfo2);
+			data.put("allBrandInfo", mapBrandList);
 			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.MINITS_OF_FIVE);
 		}
 		resp.setResponseData(data);
