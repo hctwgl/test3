@@ -22,15 +22,20 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBrandListVo;
 import com.ald.fanbei.api.web.vo.AfBrandVo;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 /**
  * 爱尚街 分类品牌页面 app客户端
  * @author liutengyuan 
@@ -58,6 +63,7 @@ public class BrandChannelsApi implements ApiHandle {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandChannels"+tag);
 		Map<String,List<AfBrandDto>> mapBrandList = new HashMap<>(26);
+		List<AfBrandListVo> allBrandInfo = new ArrayList<AfBrandListVo>();
 		if (data == null){
 			data = new HashMap<String, Object>();
 			List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
@@ -67,7 +73,7 @@ public class BrandChannelsApi implements ApiHandle {
 			List<AfBrandVo> hotBrands = new ArrayList<AfBrandVo>();
 			List<AfBrandDto> allBrandList = new ArrayList<AfBrandDto>();
 		//	Map<String, List<AfBrandDto>> allBrandInfo = new HashMap<String,List<AfBrandDto>>();
-			List<AfBrandListVo> allBrandInfo2 = new ArrayList<AfBrandListVo>();
+	//		List<AfBrandListVo> allBrandInfo2 = new ArrayList<AfBrandListVo>();
 			if (CollectionUtil.isNotEmpty(list)){
 				AfResourceH5Dto afResourceH5Dto = list.get(0);
 				Long modelId = afResourceH5Dto.getId();
@@ -109,7 +115,24 @@ public class BrandChannelsApi implements ApiHandle {
 						}
 					}
 				}
-				allBrandList = afBrandService.getAllAndNameSort();
+				
+				
+			}
+			allBrandList = afBrandService.getAllAndNameSort();
+//			char[] str = new char[26];
+//			for (int i = 0; i < 26; i++) {
+//			str[i]= (char)(65 + i );
+//			}
+//			for (int i = 0; i < str.length; i++) {
+//				AfBrandListVo brandListVo = new AfBrandListVo(str[i]+"", new ArrayList<AfBrandDto>());
+//				allBrandInfo2.add(brandListVo);
+//			}
+//			for (AfBrandDto  afBrandDto :allBrandList){
+//				String initName = afBrandDto.getNameIndex();// get the first key of name
+//				for (AfBrandListVo brandListVo :allBrandInfo2){
+//					if (brandListVo.getKey() .equals(initName)){
+//						brandListVo.getBrandsList().add(afBrandDto);
+//				allBrandList = afBrandService.getAllAndNameSort();
 				for (int i = 0; i < 26; i++) {
 					mapBrandList.put( String.valueOf((char)(65 + i )),new ArrayList<AfBrandDto>());
 				}
@@ -125,12 +148,22 @@ public class BrandChannelsApi implements ApiHandle {
 						mapBrandList.put(afBrandDto.getNameIndex(),listBrand);
 					}
 				}
-				
-			}
+			//  bian li map
+				Set<Entry<String,List<AfBrandDto>>> entrySet = mapBrandList.entrySet();
+				Iterator<Entry<String, List<AfBrandDto>>> it = entrySet.iterator();
+				while (it.hasNext()){
+					AfBrandListVo brandListVo = new AfBrandListVo();
+					Entry<String, List<AfBrandDto>> entry = it.next();
+					String key = entry.getKey();
+					List<AfBrandDto> brandList = entry.getValue();
+					brandListVo.setKey(key);
+					brandListVo.setBrandsList(brandList);
+					allBrandInfo.add(brandListVo);
+				}
 			data.put("imageUrl", imageUrl);
 			data.put("h5LinkUrl", h5LinkUrl);
 			data.put("hotBrandList", hotBrands);
-			data.put("allBrandInfo", mapBrandList);
+			data.put("allBrandInfo", allBrandInfo);
 			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.MINITS_OF_FIVE);
 		}
 		resp.setResponseData(data);
