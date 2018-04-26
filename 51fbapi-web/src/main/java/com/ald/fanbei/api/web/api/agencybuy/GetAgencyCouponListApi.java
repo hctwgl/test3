@@ -253,7 +253,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		List<AfUserCouponDto> specialGoodsCouponList = afUserCouponService.getSpecialGoodsCouponByAmount(userId,actualAmount);//商品专用券
 		if(CollectionUtils.isNotEmpty(specialGoodsCouponList)){
 			for(AfUserCouponDto specialGoodsCouponDo : specialGoodsCouponList){
-				String goodsIds = specialGoodsCouponDo.getGoodsIds();//当券信息为商品专用时，shop_url存放的信息为特定商品的goodsId集合，延用原来的表字段
+				String goodsIds = specialGoodsCouponDo.getGoodsIds();//当券信息为商品专用时，goods_ids存放的信息为特定商品的goodsId集合
 				if(StringUtils.isNotBlank(goodsIds)){//当前券信息中的goodsId不为空
 					goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
 					if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(goodsId))){//当前商品id被包含在券信息的商品id集合里面

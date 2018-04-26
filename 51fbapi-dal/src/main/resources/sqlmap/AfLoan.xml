@@ -606,4 +606,25 @@
         and id = #{loanId}
     </select>
     
+    <select id="getBorrowInfoById" parameterType="com.ald.fanbei.api.dal.domain.AfLoanDo" resultType="com.ald.fanbei.api.dal.domain.dto.AfLoanDto">
+		SELECT
+			al.loan_no orderNo,
+			al.user_id userId,
+			au.real_name NAME,
+			aua.id_number cardId,
+			au.user_name mobile,
+			al.card_no bankNo,
+			al.card_name cardName,
+			al.amount money,
+			al.loan_remark ,
+			al.repay_remark,
+			al.gmt_create loanStartTime,
+			al.periods
+		FROM
+			af_loan al
+		LEFT JOIN af_user au ON au.id = al.user_id
+		LEFT JOIN af_user_account aua ON aua.user_id = au.id
+	    WHERE al.is_delete = 0 AND al.id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+	</select>
 </mapper>

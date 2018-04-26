@@ -119,8 +119,12 @@ public interface AfGoodsService {
 
 	List<AfGoodsDo> getGoodsByItem(Long categoryId);
 
+	AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query);
+
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+
+	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 }
 

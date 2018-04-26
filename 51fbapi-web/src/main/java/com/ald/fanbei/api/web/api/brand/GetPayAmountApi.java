@@ -133,7 +133,8 @@ public class GetPayAmountApi implements ApiHandle {
 			resp.addResponseData("bankName", afUserBankcardDo.getBankName());
 			resp.addResponseData("bankIcon", afUserBankcardDo.getBankIcon());
 			resp.addResponseData("cardNumber", afUserBankcardDo.getCardNumber());
-			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());			
+			resp.addResponseData("isValid", afUserBankcardDo.getIsValid());	
+			resp.addResponseData("bankPayType", afUserBankcardDo.getPayType());
 		}
 		
 		return resp;

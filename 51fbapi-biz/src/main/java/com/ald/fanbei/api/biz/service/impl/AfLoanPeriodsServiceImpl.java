@@ -100,7 +100,11 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     		serviceFeePerPeriod = incomePerPeriod.subtract(interestFeePerPeriod).setScale(2, RoundingMode.HALF_UP);
     		
     		// 计算还款时间
-    		Date gmtPlanRepay = new Date();
+			Date gmtPlanRepay = new Date();
+    		if (j != 1){
+    			gmtPlanRepay = DateUtil.setDayZeroTime(new Date());//非第一期时间修改为23:59:59
+			}
+			logger.info("afLoanPeriodsService resolvePeriods gmtPlanRepay="+gmtPlanRepay);
     		gmtPlanRepay = DateUtil.addMonths(gmtPlanRepay, j);
     		int today = DateUtil.getTodayNoInMonth(gmtPlanRepay);
     		if(today > MAX_DAY_NO) {

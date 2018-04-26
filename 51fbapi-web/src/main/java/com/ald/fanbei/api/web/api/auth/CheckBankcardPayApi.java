@@ -49,7 +49,7 @@ public class CheckBankcardPayApi implements ApiHandle {
 		if(PayOrderSource.ORDER.getCode().equals(type)){
 			afOrderService.dealMobileChargeOrder(outTradeNo, upsResult.getTradeNo());
 		}else{
-			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,false);
+			afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,false,null);
 		}
 		return resp;
 	}

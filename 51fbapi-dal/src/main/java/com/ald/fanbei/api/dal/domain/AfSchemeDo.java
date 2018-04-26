@@ -27,7 +27,15 @@ public class AfSchemeDo extends AbstractSerial {
 	private String descr;
 	private Date gmtStart;
 	private Date gmtEnd;
-	
+	private String iconMark;
+
+	public String getIconMark() {
+		return iconMark;
+	}
+
+	public void setIconMark(String iconMark) {
+		this.iconMark = iconMark;
+	}
 	
 	public Date getGmtStart() {
 		return gmtStart;

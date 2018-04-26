@@ -80,9 +80,16 @@ public class AfInterestReduceSchemeDo extends AbstractSerial {
      * 规则描述，用于展示
      */
     private String descr;
+    private String iconMark;
 
+    public String getIconMark() {
+        return iconMark;
+    }
 
-    /**
+    public void setIconMark(String iconMark) {
+        this.iconMark = iconMark;
+    }
+/**
      * 获取主键Id
      *
      * @return id

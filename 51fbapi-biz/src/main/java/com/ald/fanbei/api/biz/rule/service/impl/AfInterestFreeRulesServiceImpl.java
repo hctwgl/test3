@@ -37,5 +37,24 @@ public class AfInterestFreeRulesServiceImpl implements
 		return freeRulesDo;
 	}
 
+	@Override
+	public AfInterestReduceSchemeDo getReduceSchemeByGoodId(Long goodsId, Long brandId, Long catogeryId) {
+
+		AfInterestReduceSchemeDo afInterestReduceSchemeDo = null;
+		afInterestReduceSchemeDo = afInterestFreeRulesDao.getReduceSchemeByGoodId(goodsId,null,null);
+		if (afInterestReduceSchemeDo == null){
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,brandId,null);
+		}
+		if (afInterestReduceSchemeDo == null){
+			afInterestReduceSchemeDo=afInterestFreeRulesDao.getReduceSchemeByGoodId(null,null,catogeryId);
+		}
+			return afInterestReduceSchemeDo;
+
+	}
+
+	@Override
+	public AfInterestReduceRulesDo getReduceRuleById(Long rid) {
+		return afInterestFreeRulesDao.getReduceRuleById(rid);
+	}
 
 }
