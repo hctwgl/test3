@@ -98,7 +98,19 @@ public class ArbitrationController {
     @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
     public void createPdf(String loanBillNo) throws  Exception {
         String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
-        logger.info(protocal);
+         AfArbitrationDo arbitrationDo=  arbitrationService.getByBorrowNo(loanBillNo);
+        if(arbitrationDo!=null){
+            arbitrationDo= new AfArbitrationDo();
+            arbitrationDo.setLoanBillNo(loanBillNo);
+            arbitrationDo.setValue1(protocal);
+            arbitrationDo.setGmtCreate(new Date());
+            arbitrationService.saveRecord(arbitrationDo);
+        }else{
+            arbitrationDo.setValue1(protocal);
+            arbitrationDo.setGmtModified(new Date());
+            arbitrationService.updateByloanBillNo(arbitrationDo);
+        }
+        logger.info("aaaaaa---"+protocal);
     }
 
     @ResponseBody
