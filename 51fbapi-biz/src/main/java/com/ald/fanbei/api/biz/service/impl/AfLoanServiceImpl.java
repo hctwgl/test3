@@ -258,7 +258,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 						// 增加日志
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
 						AfLoanPushDo loanPush = buildLoanPush(loanDo.getRid(),whiteCollarBorrowInfo.get(0).getApr(), whiteCollarBorrowInfo.get(0).getManageFee());
-						afLoanPushService.saveOrUpdateLoanPush(loanPush);
+						afLoanPushService.saveOrUpdate(loanPush);
 					}
 				}else{
 					// 调用UPS打款
