@@ -50,6 +50,7 @@ import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDetailDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideOperaLogDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDo;
@@ -58,6 +59,7 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideOperaLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo;
@@ -121,6 +123,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	private AfViewAssetLoanService  afViewAssetLoanService;
 	@Resource
 	private AfLoanPeriodsService  afLoanPeriodsService;
+	@Resource
+	private AfLoanDao  afLoanDao;
 	
 	@Override
 	public BaseDao<AfAssetPackageDetailDo, Long> getDao() {
@@ -178,7 +182,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		        				return 0;
 		        			}
 		        			cancelMoney=BorrowDo.getAmount();
-						}else{
+						}else if(debtType == 0){
 							//现金贷
 							AfBorrowCashDo borrowCashDo = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
 							if(borrowCashDo==null){
@@ -186,6 +190,14 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 								return 0;
 							}
 							cancelMoney=borrowCashDo.getAmount();
+						}else{
+							//白领贷
+							AfLoanDo loanDo = afLoanDao.getLoanById(afAssetPackageDetail.getBorrowCashId());
+							if(loanDo == null){
+								logger.error("batchGiveBackCreditInfo error ,loan not exists,id="+afAssetPackageDetail.getBorrowCashId());
+								return 0;
+							}
+							cancelMoney=loanDo.getAmount();
 						}
 			    		
 			    		//更新此债权相关明细

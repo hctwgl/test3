@@ -627,4 +627,15 @@
 	    WHERE al.is_delete = 0 AND al.id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
 	</select>
+	
+	<select id="getLoanById" parameterType="java.lang.Long"resultType="com.ald.fanbei.api.dal.domain.AfLoanDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan
+		WHERE
+		is_delete = 0
+		AND
+		id = #{rid}
+	</select>
 </mapper>
