@@ -825,6 +825,9 @@ public class AppH5LeaseController extends BaseController {
                 if(lease.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
                     AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), afUser.getRid());
                     BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                    if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+                        useableAmount = BigDecimal.ZERO;
+                    }
                     if(useableAmount.compareTo(lease.getFreezeAmount()) >= 0){
                         lease.setQuotaDeposit(lease.getFreezeAmount());
                         lease.setCashDeposit(new BigDecimal(0));

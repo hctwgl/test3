@@ -1152,6 +1152,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (saleAmount.compareTo(BigDecimal.ZERO) == 0) {
 			    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
 			    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+				if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+					useableAmount = BigDecimal.ZERO;
+				}
 			    if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0) {
 				afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
 				afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
