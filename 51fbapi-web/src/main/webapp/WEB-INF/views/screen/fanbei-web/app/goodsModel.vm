@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170823011")
+    #set($version="20170823016")
     <meta charset="UTF-8">
     <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css?version=$version">
     <script>

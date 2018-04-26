@@ -6,12 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
-import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.apache.commons.lang.StringUtils;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -27,16 +21,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * 分期业务封装处理工具类
