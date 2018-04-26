@@ -2967,19 +2967,19 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		query.setPageSize(Integer.MAX_VALUE);
 		List<AfOrderDo> list = null;
 
-		query.setOrderStatus(OrderStatus.NEW.getCode());
+		query.setOrderStatus(AppOrderSearchStatus.NEW.getCode());
 		list = orderDao.getOrderListByStatus(query);
 		result.setNewOrderNum(list.size());
 
-		query.setOrderStatus(OrderStatus.PAID.getCode());
+		query.setOrderStatus(AppOrderSearchStatus.TODELIVER.getCode());
 		list = orderDao.getOrderListByStatus(query);
 		result.setPaidOrderNum(list.size());
 
-		query.setOrderStatus(OrderStatus.DELIVERED.getCode());
+		query.setOrderStatus(AppOrderSearchStatus.DELIVERED.getCode());
 		list = orderDao.getOrderListByStatus(query);
 		result.setDeliveredOrderNum(list.size());
 
-		query.setOrderStatus(OrderStatus.FINISHED.getCode());
+		query.setOrderStatus(AppOrderSearchStatus.TOREBATE.getCode());
 		list = orderDao.getOrderListByStatus(query);
 		result.setFinishedOrderNum(list.size());
 
