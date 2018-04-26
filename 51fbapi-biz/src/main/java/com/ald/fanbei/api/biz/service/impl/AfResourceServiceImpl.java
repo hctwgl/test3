@@ -21,7 +21,6 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 
-import org.bouncycastle.jce.provider.asymmetric.ec.KeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
