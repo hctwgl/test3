@@ -1237,6 +1237,20 @@ public class DateUtil {
         cal.set(Calendar.DAY_OF_MONTH, dayNo);
         return cal.getTime();
     }
+
+    /**
+     * 设置日期23:59:59
+     * @param date
+     * @return
+     */
+    public static Date setDayZeroTime(Date date) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY,cal.getActualMaximum(Calendar.HOUR_OF_DAY));
+        cal.set(Calendar.MINUTE,cal.getActualMaximum(Calendar.MINUTE));
+        cal.set(Calendar.SECOND,cal.getActualMaximum(Calendar.SECOND));
+        return cal.getTime();
+    }
     
 
     /**

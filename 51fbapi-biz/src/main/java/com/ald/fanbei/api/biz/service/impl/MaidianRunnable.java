@@ -57,7 +57,7 @@ public class MaidianRunnable implements Runnable {
             }
 
             // 第三方链接进入
-            if (request.getRequestURI().equals("/fanbei-web/thirdPartyLink")) {
+            if ("/fanbei-web/thirdPartyLink".equals(request.getRequestURI())) {
                 String channel = null;
                 String referer = request.getHeader("Referer");
                 if (StringUtils.isNotBlank(referer)) {
@@ -128,6 +128,7 @@ public class MaidianRunnable implements Runnable {
             }
 
         } catch (Exception e) {
+            logger.info("maidian logger:"+request.toString());
             logger.error("maidian logger error", e);
         }
     }

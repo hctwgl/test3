@@ -344,7 +344,7 @@
 		limit 1
     </select>
 
-    <select id="getProcessLoanRepaymentNumByLoanId" parameterType="java.lang.Long">
+    <select id="getProcessLoanRepaymentNumByLoanId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM  af_loan_repayment
         WHERE is_delete = 0 AND loan_id = #{loanId} AND status IN ('PROCESSING','APPLY')
