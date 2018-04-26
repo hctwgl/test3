@@ -301,7 +301,12 @@ public class ArbitrationController {
 
         ThirdParamsInfo paramsInfo = null;
         // 默认返回成功
+
         Result result = new Result(RET_CODE_SUCC, RET_MSG_SUCC);
+        ArbitrationRespBo defaultBo=new ArbitrationRespBo();
+        defaultBo.setErrCode(RET_CODE_SUCC);
+        defaultBo.setErrMsg(RET_MSG_SUCC);
+        result.setResult(JSON.toJSONString(defaultBo));
         try {
             // 获取请求的参数
             String paramString = this.getParamString(request);
@@ -386,6 +391,7 @@ public class ArbitrationController {
                         afArbitrationDo.setMessage(message);
                         arbitrationService.updateByloanBillNo(afArbitrationDo);
                     }
+
                 } else if (BusiCodeEnum.GETLITIGANTS.getCode().equalsIgnoreCase(busiCode)) {// 10.获取案件订单相关当事人信息
                     String ltype = actualParamJSON.getString("ltype");
                     String jsonString = JSON.toJSONString(arbitrationService.getLitiGants(loanBillNo, ltype));
@@ -403,7 +409,6 @@ public class ArbitrationController {
         } finally {
             // 返回的结果
             //String result_msg = JSON.toJSONString(result);
-            //logger.info("返回信息:" + result_msg);
 
             // 返回结果
             returnMsg(response, StringCompressUtils.compress(result.getResult()));
