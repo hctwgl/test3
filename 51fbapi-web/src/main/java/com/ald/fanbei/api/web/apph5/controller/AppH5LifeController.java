@@ -391,12 +391,45 @@ public class AppH5LifeController extends BaseController {
                 Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
                 String isFree = (String) nperMap.get("isFree");
                 if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-                    nperMap.put("freeAmount", nperMap.get("amount"));
+                    //不影响其他业务，此处加
+                    Object oAmount =  nperMap.get("amount");
+                    String amount = "";
+                    if(oAmount != null){
+                        amount = oAmount.toString();
+                    }
+                    nperMap.put("amount",substringAmount(amount));
+                    nperMap.put("freeAmount",substringAmount(amount));
                 }
-                e.put("isFree", isFree);
-                e.put("price", nperMap.get("amount"));
-                e.put("nperNum", nperMap.get("nper"));
+                e.put("nperMap", nperMap);
             }
         }
+    }
+
+    private  BigDecimal substringAmount(String amount) {
+        BigDecimal substringAmount = new BigDecimal(0);
+        try{
+            //判断小数点后面的是否是00,10.分别去掉两位，一位。去掉之后大于等于8位，则截取前8位。
+            String tempNumber = "0";
+            String afterNumber =  amount.substring(amount.indexOf(".")+1,amount.length());
+            if("00".equals(afterNumber)){
+                tempNumber = amount.substring(0,amount.length()-3);
+            } else if("10".equals(afterNumber)){
+                tempNumber = amount.substring(0,amount.length()-1);
+            }else{
+                tempNumber = amount;
+            }
+            if(tempNumber.length() >8 ){
+                tempNumber =  tempNumber.substring(0,8);
+                String t = tempNumber.substring(tempNumber.length()-1, tempNumber.length());
+                if(".".equals(t)){
+                    tempNumber =  tempNumber.substring(0,tempNumber.length()-1);
+                }
+            }
+            substringAmount = new BigDecimal(tempNumber);
+
+        }catch(Exception e){
+            logger.error("substringAmount error"+e);
+        }
+        return substringAmount;
     }
 }
