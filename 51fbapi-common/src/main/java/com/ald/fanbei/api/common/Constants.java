@@ -565,9 +565,9 @@ public class Constants {
 	public static final String TAC_SEC_KILL_ACTIVITY_START_TIME = "TAC_SEC_KILL_ACTIVITY_START_TIME";
 
 	/**
-	 * 三周年庆典活动开始结束时间
+	 * 三周年庆典活动
 	 */
-	public static final String TAC_FORMAL_TIME = "TAC_FORMAL_TIME";
+	public static final String TAC_ACTIVITY = "TAC_ACTIVITY";
 
 	//乐享生活节
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";

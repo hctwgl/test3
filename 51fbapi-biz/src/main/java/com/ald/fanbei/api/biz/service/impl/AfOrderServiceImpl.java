@@ -12,12 +12,8 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.*;
 
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,12 +28,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
-import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -62,7 +56,6 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -1249,7 +1242,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
 					// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 					if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_FORMAL_TIME);
+						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
 					// end by luoxiao
@@ -1816,7 +1809,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	if (result == 1) {
 		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_FORMAL_TIME);
+			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 		}
 		// end by luoxiao

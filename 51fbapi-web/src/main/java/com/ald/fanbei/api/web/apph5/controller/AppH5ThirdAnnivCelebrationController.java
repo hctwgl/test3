@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -282,7 +283,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         Map<String, Object> data = Maps.newHashMap();
         data.put("validStartTime", activityInfo.getGmtStart().getTime());
         data.put("validEndTime", activityInfo.getGmtEnd().getTime());
-        appActivityGoodListUtil.getH5PageActivityGoodList(data, activityId);
+        appActivityGoodListUtil.getActivityGoodList(data, activityId);
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
     }
 
@@ -318,70 +319,58 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         return H5CommonResponse.getNewInstance(true, "","",data).toString();
     }
 
-//    /**
-//     * 根据商品ID获取商品信息
-//     *
-//     * @param value
-//     * @return
-//     */
-//    private List<Map<String, Object>> getGoodMapList(String value) {
-//        List<Map<String, Object>> goodList = Lists.newArrayList();
-//
-//        // 获取商品ID集合
-//        List<Long> goodIdList = Lists.newArrayList();
-//        if (StringUtils.isNotEmpty(value)) {
-//            String[] goodArray = value.split(",");
-//            if (null != goodArray && goodArray.length > 0) {
-//                for (String goodId : goodArray) {
-//                    goodIdList.add(Long.parseLong(StringUtils.trim(goodId)));
-//                }
-//            }
-//
-//            if (goodIdList.isEmpty()) {
-//                return goodList;
-//            }
-//
-//            // 批量查询到商品信息
-//            List<Map<String, Object>> goodsInfoList = afGoodsService.getGoodsByIds(goodIdList);
-//
-//            String stockCount;
-//            Long interestFreeId;
-//            for (Map<String, Object> goodInfo : goodsInfoList) {
-//                interestFreeId = (Long) goodInfo.get("interestFreeId");
-//
-//                // 获取借款分期配置信息
-//                AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-//                JSONArray array = JSON.parseArray(resource.getValue());
-//                if (array == null) {
-//                    throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-//                }
-//
-//                // 如果是分期免息商品，则计算分期
-//                JSONArray interestFreeArray = null;
-//                if (interestFreeId != null) {
-//                    AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId.longValue());
-//                    String interestFreeJson = interestFreeRulesDo.getRuleJson();
-//                    if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-//                        interestFreeArray = JSON.parseArray(interestFreeJson);
-//                    }
-//                }
-//
-//                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-//                        (BigDecimal) goodInfo.get("saleAmount"), resource.getValue1(), resource.getValue2(), (Long) goodInfo.get("rid"), "0");
-//                if (nperList != null) {
-//                    goodInfo.put("goodsType", "1");
-//                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-//                    String isFree = (String) nperMap.get("isFree");
-//                    if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-//                        nperMap.put("freeAmount", nperMap.get("amount"));
-//                    }
-//                    goodInfo.put("nperMap", nperMap);
-//                }
-//                goodList.add(goodInfo);
-//            }
-//        }
-//        return goodList;
-//    }
+    @ResponseBody
+    @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        FanbeiWebContext context = new FanbeiWebContext();
+
+        Calendar calStart = Calendar.getInstance();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try {
+            context = doWebCheck(request, false);
+            String modelId = org.apache.commons.lang.ObjectUtils.toString(request.getParameter("modelId"), null);
+            if(modelId == null || "".equals(modelId)) {
+                resp = H5CommonResponse.getNewInstance(false, "模版id不能为空！");
+                return resp.toString();
+            }
+            // 数据埋点
+            request.setAttribute("context", context);
+
+            AfResourceDo activity = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+            String activityName = "";
+            String activityStartTime = "";
+            if (null != activity) {
+                activityName = StringUtils.trim(activity.getValue2());
+                activityStartTime = activity.getValue().split(",")[0];
+                if(StringUtils.isEmpty(activityName)){
+                    activityName = "三周年庆典";
+                }
+                if(StringUtils.isEmpty(activityStartTime)){
+                    activityStartTime = "2018-05-08 00:00:00";
+                }
+            }
+
+            JSONObject data = appActivityGoodListUtil.partActivityInfoV2(modelId, context.getUserName(),activityName,activityStartTime);
+            String error = data.getString("error");
+            if(StringUtils.isNotEmpty(error)){
+                resp = H5CommonResponse.getNewInstance(false, error);
+            }
+            else{
+                resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+            }
+        }catch(FanbeiException e){
+            resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
+            logger.error("请求失败"+context,e);
+        }catch(Exception e){
+            resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
+            logger.error("请求失败"+context,e);
+        }finally{
+            Calendar calEnd = Calendar.getInstance();
+            doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+        }
+        return resp.toString();
+    }
+
 
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
