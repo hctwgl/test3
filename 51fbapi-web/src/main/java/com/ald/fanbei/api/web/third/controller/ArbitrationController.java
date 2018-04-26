@@ -402,11 +402,11 @@ public class ArbitrationController {
             result = new Result(SYS_EXCEPTION_CODE, SYS_EXCEPTION_MSG);
         } finally {
             // 返回的结果
-            String result_msg = JSON.toJSONString(result);
-            logger.info("返回信息:" + result_msg);
+            //String result_msg = JSON.toJSONString(result);
+            //logger.info("返回信息:" + result_msg);
 
             // 返回结果
-            returnMsg(response, StringCompressUtils.compress(result_msg));
+            returnMsg(response, StringCompressUtils.compress(result.getResult()));
         }
 
     }
