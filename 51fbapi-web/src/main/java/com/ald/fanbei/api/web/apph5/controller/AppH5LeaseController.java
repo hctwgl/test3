@@ -652,6 +652,9 @@ public class AppH5LeaseController extends BaseController {
                 if(afUserAuthStatusDo.getStatus().equals("Y")){
                     AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE", afUser.getUserId());
                     useableAmount = afUserAccountSenceOnline.getAuAmount().subtract(afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
+                    if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+                        useableAmount = BigDecimal.ZERO;
+                    }
                     Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
                     dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
                     String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
@@ -825,7 +828,6 @@ public class AppH5LeaseController extends BaseController {
                 if(lease.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
                     AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), afUser.getRid());
                     BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
-                    logger.info("getLeaseOrder", useableAmount.compareTo(BigDecimal.ZERO));
                     if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
                         useableAmount = BigDecimal.ZERO;
                     }
