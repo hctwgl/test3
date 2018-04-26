@@ -60,7 +60,7 @@ public class BrandChannelsApi implements ApiHandle {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandChannels"+tag);
-		if (data == null){
+		if (data == null || CollectionUtil.isEmpty((List<AfBrandListVo>) data.get("allBrandInfo2"))){
 			data = new HashMap<String, Object>();
 			List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
 			String imageUrl = "";
@@ -111,34 +111,34 @@ public class BrandChannelsApi implements ApiHandle {
 						}
 					}
 				}
-				allBrandList = afBrandService.getAllAndNameSort();
-				char[] str = new char[26];
-				for (int i = 0; i < 26; i++) {
-				str[i]= (char)(65 + i );
-				}
-				for (int i = 0; i < str.length; i++) {
-					AfBrandListVo brandListVo = new AfBrandListVo(str[i]+"", new ArrayList<AfBrandDto>());
-					allBrandInfo2.add(brandListVo);
-				}
-				for (AfBrandDto  afBrandDto :allBrandList){
-					String initName = afBrandDto.getNameIndex();// get the first key of name
-					for (AfBrandListVo brandListVo :allBrandInfo2){
-						if (brandListVo.getKey() .equals(initName)){
-							brandListVo.getBrandsList().add(afBrandDto);
-						}
-						
-					}
-					/*if (CollectionUtil.isNotEmpty(allBrandInfo.get(initName)) ){
-						 List<AfBrandDto> relatedBrandList = allBrandInfo.get(initName);
-						 relatedBrandList.add(afBrandDto);
-						 allBrandInfo.put(initName,relatedBrandList );
-					}else{
-						ArrayList<AfBrandDto> relatedBrandList = new ArrayList<AfBrandDto>();
-						relatedBrandList.add(afBrandDto);
-						allBrandInfo.put(initName, relatedBrandList);
-					}*/
-				}
 				
+				
+			}
+			allBrandList = afBrandService.getAllAndNameSort();
+			char[] str = new char[26];
+			for (int i = 0; i < 26; i++) {
+			str[i]= (char)(65 + i );
+			}
+			for (int i = 0; i < str.length; i++) {
+				AfBrandListVo brandListVo = new AfBrandListVo(str[i]+"", new ArrayList<AfBrandDto>());
+				allBrandInfo2.add(brandListVo);
+			}
+			for (AfBrandDto  afBrandDto :allBrandList){
+				String initName = afBrandDto.getNameIndex();// get the first key of name
+				for (AfBrandListVo brandListVo :allBrandInfo2){
+					if (brandListVo.getKey() .equals(initName)){
+						brandListVo.getBrandsList().add(afBrandDto);
+					}
+				}
+				/*if (CollectionUtil.isNotEmpty(allBrandInfo.get(initName)) ){
+					 List<AfBrandDto> relatedBrandList = allBrandInfo.get(initName);
+					 relatedBrandList.add(afBrandDto);
+					 allBrandInfo.put(initName,relatedBrandList );
+				}else{
+					ArrayList<AfBrandDto> relatedBrandList = new ArrayList<AfBrandDto>();
+					relatedBrandList.add(afBrandDto);
+					allBrandInfo.put(initName, relatedBrandList);
+				}*/
 			}
 			data.put("imageUrl", imageUrl);
 			data.put("h5LinkUrl", h5LinkUrl);
