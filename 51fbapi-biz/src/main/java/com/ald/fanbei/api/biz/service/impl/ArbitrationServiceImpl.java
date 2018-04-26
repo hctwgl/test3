@@ -713,7 +713,7 @@ public class ArbitrationServiceImpl extends BaseService implements
         arbitrationRespBo.setErrCode("0000");
         arbitrationRespBo.setErrMsg("");
         HashMap dataMap=new HashMap();
-        dataMap.put("voucherUrl","http://www.baidu.com");
+        dataMap.put("voucherUrl","http://f.51fanbei.com/online/21d2d3ab93112940.jpg");
         dataMap.put("voucherNo","jq001");
         dataMap.put("voucherOffer","宝付");
         dataMap.put("provedObject","");
