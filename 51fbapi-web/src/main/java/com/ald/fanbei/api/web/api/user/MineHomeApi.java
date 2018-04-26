@@ -314,6 +314,9 @@ public class MineHomeApi implements ApiHandle {
             Map<String, Object> dataMap = new HashMap<String, Object>();
             dataMap.put("imageUrl", nr.getValue());
             dataMap.put("type", nr.getSecType());
+            dataMap.put("titleName", nr.getName());
+            dataMap.put("sort", nr.getSort());
+            dataMap.put("color", nr.getValue3());
             if (nr.getSecType().equals("NAVIGATION_NATIVE")) {
                 String model =  appModel.substring(0, 1);
                 if (model.equalsIgnoreCase("a")) {
