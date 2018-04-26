@@ -379,7 +379,7 @@ public class MineHomeApi implements ApiHandle {
             // 没有最早的待还，查询最后一笔借款信息
             borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
-        if (borrowCashDo != null && !borrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
+        if (borrowCashDo != null && borrowCashDo.getStatus().equals(AfBorrowCashStatus.transed.getCode())) {
             return afBorrowCashService.calculateLegalRestAmount(borrowCashDo);
         }
         return new BigDecimal(0);
@@ -388,7 +388,8 @@ public class MineHomeApi implements ApiHandle {
     private BigDecimal getLoanWaitRepaymentAmount(Long userId) {
         BigDecimal result = BigDecimal.ZERO;
         AfLoanDo lastLoanDo = afLoanService.getLastByUserIdAndPrdType(userId, LoanType.BLD_LOAN.getCode());
-        if (lastLoanDo != null) {
+        if (lastLoanDo != null && (AfLoanStatus.TRANSFERRED.name().equals(lastLoanDo.getStatus())
+                || AfLoanStatus.REPAYING.name().equals(lastLoanDo.getStatus()))) {
             List<AfLoanPeriodsDo> waitRepayPeriods = afLoanPeriodsService.listCanRepayPeriods(lastLoanDo.getRid());
             for (AfLoanPeriodsDo e : waitRepayPeriods) {
                 result = result.add(afLoanPeriodsService.calcuRestAmount(e));
