@@ -137,9 +137,13 @@ public class AppH5LifeController extends BaseController {
                     return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
                 }
 
+                List<Map<String, Object>> data = buildResourceList(resourceH5Dtos);
                 result = H5CommonResponse
-                        .getNewInstance(true, "成功", "", buildResourceList(resourceH5Dtos)).toString();
-                bizCacheUtil.saveObject(cacheKey, result, 180);
+                        .getNewInstance(true, "成功", "", data).toString();
+
+                if (data.size() > 0) {
+                    bizCacheUtil.saveObject(cacheKey, result, 180);
+                }
             }
 
             return result;
@@ -262,7 +266,7 @@ public class AppH5LifeController extends BaseController {
     }
 
     // 构建结果数据
-    private List<Map<String, Object>>  buildResourceList(List<AfResourceH5Dto> resourceH5Dtos) {
+    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos) {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (AfResourceH5Dto resource : resourceH5Dtos) {
