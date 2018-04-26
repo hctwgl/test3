@@ -682,7 +682,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				.getGmtPlanRepayment())); // 到期时间
 		map.put("daysInstalment", countPeriods); // 当前期数
 
-		map.put("amtActural", afRepaymentBorrowCashDo.getActualAmount()); // 实际还款
+		map.put("amtActural", afRepaymentBorrowCashDo.getActualAmount().multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 实际还款
 		map.put("refundType", afRepaymentBorrowCashDo.getName()); // 还款方式
 		if (afRepaymentBorrowCashDo.getCardNumber() == "") {
 		    map.put("bankNo", afRepaymentBorrowCashDo.getCardNumber()); // 还款银行卡号
