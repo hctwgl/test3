@@ -25,7 +25,7 @@
 
             ##                 v-if="iconShow==593&&index<10"
                 <div style="width: .8rem;height: .8rem;position: absolute;background: url(https://f.51fanbei.com/h5/app/activity/06/iconM.png) no-repeat center center;background-size: 100%;
-                            font-size: .18rem;color: white;text-align: center;overflow: hidden"><span style="display: block;margin:.3rem 0 .0.04rem 0">活动价</span>{{iconTxt[index]}}</div>
+                            font-size: .18rem;color: white;text-align: center;overflow: hidden"><span style="display: block;margin:.8rem 0 .0.04rem 0">活动价</span>{{iconTxt[index]}}</div>
                 <img class="lazy" :data-original="data.goodsIcon">
                 <div class="txtContent">
                     <p>{{txtFix(data.goodName,20)}}</p>
