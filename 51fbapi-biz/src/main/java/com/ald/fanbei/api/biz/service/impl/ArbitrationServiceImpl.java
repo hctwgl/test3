@@ -520,7 +520,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    map.put("type", protocolType); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
 	    map.put("signOffer", signOffer); // 电子签提供商
-	    map.put("agreeUrl", protocolURL + param); // 协议地址
+	    map.put("agreeUrl", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-04-25/13/13656648524cashLoan15246342281754.pdf"); // 协议地址
 	    map.put("agreeNo", afBorrowCashDo.getBorrowNo()); // 协议编号
 	    map.put("provedObject", provedObject); // 证明对象
 	    map.put("pageSize", pageSize); // 协议页数·
