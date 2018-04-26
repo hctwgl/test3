@@ -1009,6 +1009,7 @@ public class AppH5LeaseController extends BaseController {
         try{
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
             Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
+            Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0);
             if(orderId != 0){
                 HashMap data = afOrderService.getLeaseProtocol(orderId);
                 //拿到日利率快照Bo
@@ -1039,9 +1040,8 @@ public class AppH5LeaseController extends BaseController {
                 if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
                     data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
                 }
-                AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
                 // 保存手续费信息
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),afOrderDo.getGoodsId());
+                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),goodsId);
                 data.put("overdueRate",borrowRate.getOverdueRate());
                 data.put("realName",accountDo.getRealName());
                 data.put("userName",accountDo.getUserName());

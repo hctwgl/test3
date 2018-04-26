@@ -869,7 +869,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
         if (null == afUserSealDo) {// 第一次创建个人印章
             Map<String, String> map = new HashMap<>();
-            map.put("name", accountDo.getRealName());
+            map.put("name", afUserDo.getRealName());
             map.put("idno", accountDo.getIdNumber());
             map.put("email", afUserDo.getEmail());
             map.put("mobile", afUserDo.getMobile());
