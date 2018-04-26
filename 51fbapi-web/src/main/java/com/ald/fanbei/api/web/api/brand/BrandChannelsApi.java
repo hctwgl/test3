@@ -63,7 +63,7 @@ public class BrandChannelsApi implements ApiHandle {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> data = (Map<String, Object>) bizCacheUtil.getMap("ASJbrandChannels"+tag);
 		Map<String,List<AfBrandDto>> mapBrandList = new HashMap<>(26);
-		List<AfBrandListVo> allBrandInfo2 = new ArrayList<AfBrandListVo>();
+		List<AfBrandListVo> allBrandInfo = new ArrayList<AfBrandListVo>();
 		if (data == null){
 			data = new HashMap<String, Object>();
 			List<AfResourceH5Dto> list = afResourceH5Service.selectByStatus(tag);
@@ -158,12 +158,12 @@ public class BrandChannelsApi implements ApiHandle {
 					List<AfBrandDto> brandList = entry.getValue();
 					brandListVo.setKey(key);
 					brandListVo.setBrandsList(brandList);
-					allBrandInfo2.add(brandListVo);
+					allBrandInfo.add(brandListVo);
 				}
 			data.put("imageUrl", imageUrl);
 			data.put("h5LinkUrl", h5LinkUrl);
 			data.put("hotBrandList", hotBrands);
-			data.put("allBrandInfo", mapBrandList);
+			data.put("allBrandInfo", allBrandInfo);
 			bizCacheUtil.saveMap("ASJbrandChannels"+tag, data,Constants.MINITS_OF_FIVE);
 		}
 		resp.setResponseData(data);
