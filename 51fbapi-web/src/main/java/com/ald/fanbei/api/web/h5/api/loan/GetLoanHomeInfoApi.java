@@ -6,7 +6,6 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.SuperMarketTabAlias;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.enums.SceneType;

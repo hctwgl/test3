@@ -57,6 +57,7 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 		for(AfLoanSupermarketDo afLoanSupermarketDo:afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType)){
 			Map<String,String> map=new HashMap<>();
 			map.put("lsmNo",afLoanSupermarketDo.getLsmNo());
+			map.put("iconUrl",afLoanSupermarketDo.getIconUrl());
 			map.put("lsmIntro",afLoanSupermarketDo.getLsmIntro());
 			map.put("lsmName",afLoanSupermarketDo.getLsmName());
 			map.put("marketPoint",afLoanSupermarketDo.getMarketPoint());
