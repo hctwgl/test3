@@ -217,7 +217,7 @@ public class PayOrderV1Api implements ApiHandle {
 	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
 	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
 	    if (bizCacheUtil.getObject(lockKey) == null) {
-		bizCacheUtil.saveObject(lockKey, lockKey, 30);
+		bizCacheUtil.saveObject(lockKey, lockKey, 45);
 	    } else {
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 	    }
