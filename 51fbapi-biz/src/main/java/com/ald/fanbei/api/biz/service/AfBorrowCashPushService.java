@@ -14,4 +14,6 @@ public interface AfBorrowCashPushService extends ParentService<AfBorrowCashPushD
 
 	void saveOrUpdate(AfBorrowCashPushDo borrowCashPush);
 
+	AfBorrowCashPushDo getByBorrowCashId(Long rid);
+
 }

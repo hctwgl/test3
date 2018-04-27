@@ -831,30 +831,6 @@ public class CuiShouUtils {
 	}
 
 
-	private Boolean isPush(Object obj) {
-		Long id = null;
-		String borrowNo = null;
-		if (obj instanceof AfLoanDo) {
-			AfLoanDo loanDo = (AfLoanDo) obj;
-			id = loanDo.getRid();
-			borrowNo = loanDo.getLoanNo();
-		}else if (obj instanceof AfBorrowCashDo) {
-			AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
-			id = borrowCashDo.getRid();
-			borrowNo = borrowCashDo.getBorrowNo();
-		}else if (obj instanceof AfBorrowDo) {
-			AfBorrowDo borrowDo=(AfBorrowDo) obj;
-			id = borrowDo.getRid();
-			borrowNo = borrowDo.getBorrowNo();
-		}
-		List<AfAssetPackageDetailDo> AssetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByLoanId(id);
-		AfRetryTemplDo afRetryTemplDo = afRetryTemplService.getCurPushDebt(borrowNo,RetryEventType.QUERY.getCode());
-		if ((AssetPackageDetailList != null&&AssetPackageDetailList.size() > 0) || afRetryTemplDo!=null) {
-			return true;
-		}
-		return false;
-	}
-
     private Boolean checkHasNoPayBill(List<AfBorrowBillDo> list) {
         if (list == null) {
             return false;

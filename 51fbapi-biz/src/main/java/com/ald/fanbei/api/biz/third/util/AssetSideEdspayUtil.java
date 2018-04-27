@@ -38,6 +38,7 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
@@ -198,6 +199,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfLoanPeriodsService afLoanPeriodsService;
 	@Resource
 	AfCommitRecordService afCommitRecordService;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -1309,22 +1312,18 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	}
 	
 	public Boolean isPush(Object obj) {
-		Long id = null;
 		String borrowNo = null;
 		if (obj instanceof AfLoanDo) {
 			AfLoanDo loanDo = (AfLoanDo) obj;
-			id = loanDo.getRid();
 			borrowNo = loanDo.getLoanNo();
 		}else if (obj instanceof AfBorrowCashDo) {
 			AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
-			id = borrowCashDo.getRid();
 			borrowNo = borrowCashDo.getBorrowNo();
 		}else if (obj instanceof AfBorrowDo) {
 			AfBorrowDo borrowDo=(AfBorrowDo) obj;
-			id = borrowDo.getRid();
 			borrowNo = borrowDo.getBorrowNo();
 		}
-		List<AfAssetPackageDetailDo> AssetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByLoanId(id);
+		List<AfAssetPackageDetailDo> AssetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByBorrowNo(borrowNo);
 		AfRetryTemplDo afRetryTemplDo = afRetryTemplService.getCurPushDebt(borrowNo,RetryEventType.QUERY.getCode());
 		if ((AssetPackageDetailList != null&&AssetPackageDetailList.size() > 0) || afRetryTemplDo!=null) {
 			return true;
@@ -1334,13 +1333,13 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	
 	public List<ModifiedBorrowInfoVo> buildModifiedInfo(Object obj, Integer RepaymentStatus) {
 		List<ModifiedBorrowInfoVo> modifiedDebtList= new ArrayList<ModifiedBorrowInfoVo>();
+		ModifiedBorrowInfoVo modifiedDebt = new ModifiedBorrowInfoVo();
+		List<ModifiedRepaymentPlan> repaymentPlanList=new ArrayList<ModifiedRepaymentPlan>();
 		if (obj instanceof AfLoanDo) {
 			AfLoanDo loanDo = (AfLoanDo) obj;
-			ModifiedBorrowInfoVo modifiedDebt = new ModifiedBorrowInfoVo();
 			modifiedDebt.setUserId(loanDo.getUserId());
 			modifiedDebt.setOrderNo(loanDo.getLoanNo());
 			modifiedDebt.setIsPeriod(1);
-			List<ModifiedRepaymentPlan> repaymentPlanList=new ArrayList<ModifiedRepaymentPlan>();
 			List<AfLoanPeriodsDo> loanPeriodsList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
 			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriodsList) {
 				 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
@@ -1354,9 +1353,54 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				 modifiedRepaymentPlan.setRepaymentPeriod(afLoanPeriodsDo.getNper());
 				 repaymentPlanList.add(modifiedRepaymentPlan);
 			}
-			modifiedDebt.setRepaymentPlans(repaymentPlanList);
-			modifiedDebtList.add(modifiedDebt);
+		}else if (obj instanceof AfBorrowCashDo) {
+			 AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
+			 modifiedDebt.setUserId(borrowCashDo.getUserId());
+			 modifiedDebt.setOrderNo(borrowCashDo.getBorrowNo());
+			 modifiedDebt.setIsPeriod(0);
+			 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
+			 modifiedRepaymentPlan.setRepaymentNo(borrowCashDo.getRid()+"");
+			 modifiedRepaymentPlan.setRepaymentAmount(borrowCashDo.getArrivalAmount());
+			 BigDecimal borrowRate =BigDecimal.ZERO;
+			 List<AfAssetPackageDetailDo> assetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByBorrowNo(borrowCashDo.getBorrowNo());
+			 if (assetPackageDetailList != null&&assetPackageDetailList.size() > 0) {
+				 borrowRate =assetPackageDetailList.get(0).getBorrowRate();
+			 }else{
+				 AfRetryTemplDo afRetryTemplDo = afRetryTemplService.getCurPushDebt(borrowCashDo.getBorrowNo(),RetryEventType.QUERY.getCode());
+				 if (afRetryTemplDo != null) {
+					AfBorrowCashPushDo afBorrowCashPushDo = afBorrowCashPushService.getByBorrowCashId(borrowCashDo.getRid());
+					borrowRate = afBorrowCashPushDo.getBorrowRate();
+				}
+			 }
+			Integer timeLimit = NumberUtil.objToIntDefault(borrowCashDo.getType(), null);
+			 modifiedRepaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(borrowCashDo.getArrivalAmount(), new BigDecimal(borrowRate.doubleValue()*timeLimit/ 36000d)));
+			 modifiedRepaymentPlan.setRepaymentStatus(RepaymentStatus);
+			 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
+			 modifiedRepaymentPlan.setIsOverdue(0);
+			 modifiedRepaymentPlan.setIsPrepayment(1);
+			 modifiedRepaymentPlan.setRepaymentPeriod(0);
+			 repaymentPlanList.add(modifiedRepaymentPlan);
+		}else if (obj instanceof AfBorrowDo) {
+			AfBorrowDo borrowDo=(AfBorrowDo) obj;
+			modifiedDebt.setUserId(borrowDo.getUserId());
+			modifiedDebt.setOrderNo(borrowDo.getBorrowNo());
+			modifiedDebt.setIsPeriod(1);
+			List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowDo.getRid());
+			for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDos) {
+				 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
+				 modifiedRepaymentPlan.setRepaymentNo(afBorrowBillDo.getRid()+"");
+				 modifiedRepaymentPlan.setRepaymentAmount(afBorrowBillDo.getPrincipleAmount());
+				 modifiedRepaymentPlan.setRepaymentInterest(afBorrowBillDo.getInterestAmount());
+				 modifiedRepaymentPlan.setRepaymentStatus(RepaymentStatus);
+				 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
+				 modifiedRepaymentPlan.setIsOverdue(0);
+				 modifiedRepaymentPlan.setIsPrepayment(1);
+				 modifiedRepaymentPlan.setRepaymentPeriod(afBorrowBillDo.getBillNper()-1);
+				 repaymentPlanList.add(modifiedRepaymentPlan);
+			}
 		}
+		modifiedDebt.setRepaymentPlans(repaymentPlanList);
+		modifiedDebtList.add(modifiedDebt);
 		return modifiedDebtList;
 	}
 	
@@ -1365,6 +1409,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		if (obj instanceof AfLoanDo) {
 			AfLoanDo loanDo = (AfLoanDo) obj;
 			id = loanDo.getRid();
+		}else if (obj instanceof AfBorrowCashDo) {
+			AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
+			id=borrowCashDo.getRid();
+		}else if (obj instanceof AfBorrowDo) {
+			AfBorrowDo borrowDo=(AfBorrowDo) obj;
+			id=borrowDo.getRid();
 		}
 		thirdLog.error("trans modified loan Info fail,borrowId ="+id);
 		Date cur = new Date();

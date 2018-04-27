@@ -26,5 +26,5 @@ public interface AfAssetPackageDetailDao extends BaseDao<AfAssetPackageDetailDo,
 
 	int invalidPackageDetail(@Param("borrowNo")String borrowNo);
 
-	List<AfAssetPackageDetailDo> getPackageDetailByLoanId(Long loanId);
+	List<AfAssetPackageDetailDo> getPackageDetailByBorrowNo(@Param("borrowNo")String borrowNo);
 }
