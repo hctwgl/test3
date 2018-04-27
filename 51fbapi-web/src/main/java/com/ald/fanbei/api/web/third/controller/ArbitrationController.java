@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.third.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
@@ -17,14 +14,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.arbitration.*;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
+import com.ald.fanbei.api.biz.util.HtmlToPdfUtil;
+import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.biz.util.VelocityUtil;
+import com.ald.fanbei.api.dal.dao.AfUserSealDao;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfLenderInfoDto;
 import com.alibaba.fastjson.JSON;
 
 import com.alibaba.fastjson.JSONArray;
+import com.itextpdf.text.DocumentException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,11 +45,8 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfArbitrationDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
-import com.ald.fanbei.api.dal.domain.AfArbitrationDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author fanmanfu
@@ -61,6 +63,10 @@ public class ArbitrationController {
     HttpServletRequest request;
     @Resource
     ArbitrationService arbitrationService;
+    @Resource
+    AfBorrowCashService afBorrowCashService;
+    @Resource
+    AfContractPdfService afContractPdfService;
     @Resource
     AfBorrowCashDao afBorrowCashDao;
     @Resource
@@ -95,23 +101,79 @@ public class ArbitrationController {
     RiskTrackerService trackerService;
     @Resource
     AfLegalContractPdfCreateServiceV2 afLegalContractPdfCreateServiceV2;
+    @Resource
+    AfESdkService afESdkService;
+    @Resource
+    AfUserService afUserService;
+    @ResponseBody
+    @RequestMapping(value = "/lenderTest", method = RequestMethod.GET)
+    public String lenderTest(Long pdfId) throws  Exception {
+        List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(pdfId);
+       AfUserDo afUserDo= afUserService.getUserByUserName("15990182307");
+        AfUserAccountDo accountDo= afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
+        HashMap map= new HashMap<String, Object>();
+        map.put("userName","15990182307");
+        map.put("gmtCreate",new Date());
+
+        afUserService.getUserByUserName("15990182307");
+        AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+        map.put("personUserSeal", afUserSealDo.getUserSeal());
+        map.put("accountId", afUserSealDo.getUserAccountId());
+        String url= afLegalContractPdfCreateServiceV2.receptProtocolPdf(map);
+        return JSON.toJSONString(lenders);
+    }
     @ResponseBody
     @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
-    public void createPdf(String loanBillNo) throws  Exception {
-        String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
-         AfArbitrationDo arbitrationDo=  arbitrationService.getByBorrowNo(loanBillNo);
-        if(arbitrationDo!=null){
-            arbitrationDo= new AfArbitrationDo();
+    public String createPdf(String loanBillNo,String receipt) throws  Exception {
+        AfArbitrationDo arbitrationDo=  arbitrationService.getByBorrowNo(loanBillNo);
+        if(arbitrationDo==null){
+            arbitrationDo=new AfArbitrationDo();
+        }
+        AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
+        //借款协议
+        if(StringUtil.isEmpty(arbitrationDo.getValue1()) ){
+            AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
+            if(afContractPdfDo!=null){
+                arbitrationDo.setValue1(afContractPdfDo.getContractPdfUrl());
+                //收据
+                if(StringUtil.isEmpty(arbitrationDo.getValue3())){
+                    if(!StringUtil.isEmpty(receipt)){
+                        //获取出借人
+                        List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(afContractPdfDo.getId());
+
+                    }
+                }
+            }else{
+                String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
+                arbitrationDo.setValue1(protocal);
+            }
+        }
+        //平台服务协议
+        if(StringUtil.isEmpty(arbitrationDo.getValue2())){
+
+            AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)4);
+            if(afContractPdfDo!=null){
+                arbitrationDo.setValue2(afContractPdfDo.getContractPdfUrl());
+            }else{
+                afLegalContractPdfCreateServiceV2.platformServiceProtocol(afBorrowCashDo.getRid(),afBorrowCashDo.getType(),afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());
+                Thread.sleep(1000);//1秒之后在查询
+                AfContractPdfDo retryContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)4);
+                if(retryContractPdfDo!=null){
+                    arbitrationDo.setValue2(retryContractPdfDo.getContractPdfUrl());
+                }
+            }
+        }
+
+
+       if(arbitrationDo.getRid()<=0){
             arbitrationDo.setLoanBillNo(loanBillNo);
-            arbitrationDo.setValue1(protocal);
             arbitrationDo.setGmtCreate(new Date());
             arbitrationService.saveRecord(arbitrationDo);
         }else{
-            arbitrationDo.setValue1(protocal);
             arbitrationDo.setGmtModified(new Date());
             arbitrationService.updateByloanBillNo(arbitrationDo);
         }
-        logger.info("协议地址:---"+protocal);
+        return JSON.toJSONString(arbitrationDo);
     }
 
     @ResponseBody
