@@ -556,6 +556,21 @@ public class Constants {
     //芝麻认证引导弹窗缓存处理对应key标识
   	public static final String ZM_AUTH_POP_GUIDE_CACHE_KEY = "zm_auth_pop_guide_";
 
+	/**
+	 * 三周年庆典秒杀活动名称前缀
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_NAME = "TAC_SEC_KILL_ACTIVITY_NAME";
+
+	/**
+	 * 三周年庆典秒杀活动每日开始时间（小时）
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_START_TIME = "TAC_SEC_KILL_ACTIVITY_START_TIME";
+
+	/**
+	 * 三周年庆典活动
+	 */
+	public static final String TAC_ACTIVITY = "TAC_ACTIVITY";
+
 	//乐享生活节
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";

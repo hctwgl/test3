@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
+
+
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -150,5 +154,7 @@ public interface AfGoodsService {
 
 
 	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
+
+	List<Map<String, Object>> getGoodsByIds(List<Long> goodList);
 }
 

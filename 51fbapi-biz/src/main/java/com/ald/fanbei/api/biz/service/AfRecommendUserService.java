@@ -124,4 +124,6 @@ public interface AfRecommendUserService {
     int updateRecommendUserById(AfRecommendUserDo afRecommendUserDo);
 
     AfRecommendUserDo getARecommendUserById(Long userId);
+
+    int getTodayShareTimes(Long userId);
 }
