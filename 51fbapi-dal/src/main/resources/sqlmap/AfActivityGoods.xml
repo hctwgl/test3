@@ -245,7 +245,7 @@
 		AND now() > b.gmt_start
 		AND b.gmt_end > now()
 		AND
-		goods_id = 156048
+		goods_id = #{goodsId}
 		ORDER BY a.`special_price` LIMIT 1
 	</select>
 </mapper>
