@@ -10,6 +10,9 @@ import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 /**
  * 贷款业务Service
  * 
@@ -59,6 +62,14 @@ public interface AfLoanRepaymentService{
 	public List<AfLoanPeriodsDo> getLoanPeriodsIds(Long loanId, BigDecimal repaymentAmount);
 
 	AfLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
-	
+
+	/**
+	 * 获取还款处理中的数量
+	 *
+	 * @author wangli
+	 * @date 2018/4/14 12:23
+	 */
+	int getProcessLoanRepaymentNumByLoanId(Long loanId);
+
 	List<AfLoanRepaymentDo> listDtoByLoanId(Long loanId);
 }

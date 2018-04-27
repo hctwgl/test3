@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.util.Date;
 import java.util.List;
+
 import java.util.Map;
 
 
@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
@@ -124,6 +125,29 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+	/**
+	 * 爱尚街根据品牌id查询出所有的商品
+	 * @param brandId
+	 * @return
+	 */
+	List<AfGoodsDo> getGoodsListByBrandId(Long brandId);
+	/**
+	 * 根据三级分类ID查询所有商品按照销量排序
+	 * @param goodsQuery
+	 * @return
+	 */
+	List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(AfGoodsQuery goodsQuery);
+
+	/**
+	 * 品牌结果页 查询该品牌下的所有商品按照销量进行降序
+	 * @param brandId
+	 * @return
+	 */
+	List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId);
+
+	List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
+			AfGoodsQuery goodsQuery);
+
 
 	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 

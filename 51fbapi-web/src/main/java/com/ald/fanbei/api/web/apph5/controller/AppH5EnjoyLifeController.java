@@ -373,8 +373,7 @@ public class AppH5EnjoyLifeController extends BaseController {
     @RequestMapping(value = "/reserveGoodsV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
-        H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        FanbeiWebContext context = new FanbeiWebContext();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();FanbeiWebContext context = new FanbeiWebContext();
         try{
             context = doWebCheck(request,true);
             String userName = context.getUserName();

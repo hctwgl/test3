@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -36,6 +38,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -44,6 +47,7 @@ import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.AfLoanRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
@@ -53,12 +57,15 @@ import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.AfLoanRepaymentDao;
@@ -81,6 +88,20 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
@@ -825,7 +846,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
 		
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
-		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
+		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+ JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
 		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
 			loanPeriodsDo.setStatus(AfLoanPeriodStatus.FINISHED.name());
         } else if (minus.compareTo(BigDecimal.ZERO) < 0) {	// 部分还款
@@ -1147,7 +1168,12 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		return afLoanRepaymentDao.getProcessLoanRepaymentByLoanId(loanId);
 	}
 
-	 /**
+	@Override
+	public int getProcessLoanRepaymentNumByLoanId(Long loanId) {
+		return afLoanRepaymentDao.getProcessLoanRepaymentNumByLoanId(loanId);
+	}
+
+	/**
      * 计算本期需还金额
      */
     @Override

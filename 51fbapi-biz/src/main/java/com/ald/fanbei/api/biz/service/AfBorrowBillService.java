@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
@@ -44,6 +45,7 @@ public interface AfBorrowBillService {
 	BigDecimal getMonthlyBillByStatusNew(Long userId, int billYear, int billMonth, String status);
 
 	BigDecimal getMonthlyBillByStatusNewV1(Long userId, String status);
+
 	/**
 	 * 用户全部账单
 	 */
@@ -181,7 +183,7 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<AfBorrowBillDo> getBorrowBillByIds(List<Long> billIdList);
-	
+
 	/**
 	 * 判断是否存在当月正在还款中的账单
 	 * 

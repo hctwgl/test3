@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.impl.MaidianRunnable;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
  * @author 陈金虎 2017年1月16日 下午11:56:17 @类描述：
@@ -670,6 +672,7 @@ public abstract class BaseController {
 	 */
 	private void compareSign(String signStrBefore, String sign) {
 		String sha256Value = DigestUtil.getDigestStr(signStrBefore);
+
 		if (logger.isDebugEnabled())
 			logger.info("signStrBefore=" + signStrBefore + ",sha256Value=" + sha256Value + ",sign=" + sign);
 		if (!StringUtils.equals(sign, sha256Value)) {
@@ -711,97 +714,17 @@ public abstract class BaseController {
 		return StringUtils.EMPTY;
 	}
 
+	@Autowired
+	ThreadPoolTaskExecutor threadPoolMaidianTaskExecutor;
 	/**
 	 * 记录埋点相关日志日志
 	 *
 	 * @param request
-	 * @param respData
-	 * @param exeT
 	 */
-	protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String... extInfo) {
-		try {
-			JSONObject param = new JSONObject();
-			Enumeration<String> enu = request.getParameterNames();
-			while (enu.hasMoreElements()) {
-				String paraName = (String) enu.nextElement();
-				param.put(paraName, request.getParameter(paraName));
-			}
-			String userName = "no user";
-			if (param.getString("_appInfo") != null) {
-				userName = (String) JSONObject.parseObject(param.getString("_appInfo")).get("userName");
-			}
-			// 第三方链接进入
-			if (request.getRequestURI().equals("/fanbei-web/thirdPartyLink")) {
-				String channel = null;
-				String referer = request.getHeader("Referer");
-				if (StringUtils.isNotBlank(referer)) {
-					int index = referer.indexOf("?");
-					if (index != -1) {
-						String paramStrs = referer.substring(++index);
-						String[] params = paramStrs.split("&");
-						for (String urlParam : params) {
-							if (StringUtils.isNotBlank(urlParam)) {
-								String vals[] = urlParam.split("=");
-								if ("channel".equals(vals[0])) {
-									if (vals.length == 1) {
-										channel = ThirdPartyLinkChannel.DEFAULT.getCode(); // 防止人为的设置过大的数值
-									} else {
-										channel = ThirdPartyLinkChannel.getChannel(vals[1]);
-									}
-								}
-							}
-						}
-					}
-				}
-				maidianNewLog
-						.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-								"	", "h", "	", CommonUtil.getIpAddr(request), "	", userName, "	", 0, "	",
-								request.getRequestURI(), "	", respData == null ? false : respData.getSuccess(), "	",
-								DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	",
-								request.getParameter("lsmNo"), "	", request.getParameter("linkType"), "	", channel,
-								"	", "", "	", param == null ? "{}" : param.toString(), "	",
-								respData == null ? "{}" : respData.toString()));
+	protected void doMaidianLog(HttpServletRequest request,H5CommonResponse response, String... extInfo) {
 
-				maidianLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-						"	", "h", "	rmtIP=", CommonUtil.getIpAddr(request), "	userName=", userName, "	", 0, "	",
-						request.getRequestURI(), "	result=", respData == null ? false : respData.getSuccess(), "	",
-						DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	lsmNo=",
-						request.getParameter("lsmNo"), "	linkType=", request.getParameter("linkType"), "	channel=",
-						channel, "	", "", "	reqD=", param.toString(), "	resD=",
-						respData == null ? "null" : respData.toString()));
-			} else {
-				// 获取可变参数
-				String ext1 = "";
-				String ext2 = "";
-				String ext3 = "";
-				String ext4 = "";
-				try {
-					ext1 = extInfo[0];
-					ext2 = extInfo[1];
-					ext3 = extInfo[2];
-					ext4 = extInfo[3];
-				} catch (Exception e) {
-					// ignore error
-				}
-				maidianNewLog
-						.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-								"	", "h", "	", CommonUtil.getIpAddr(request), "	", userName, "	", 0, "	",
-								request.getRequestURI(), "	", respData == null ? false : respData.getSuccess(), "	",
-								DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	", ext1,
-								"	", ext2, "	", ext3, "	", ext4, "	", param == null ? "{}" : param.toString(),
-								"	", respData == null ? "{}" : respData.toString()));
-
-				maidianLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-						"	", "h", "	rmtIP=", CommonUtil.getIpAddr(request), "	userName=", userName, "	", 0, "	",
-						request.getRequestURI(), "	result=", respData == null ? false : respData.getSuccess(), "	",
-						DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	", ext1, "	", ext2,
-						"	", ext3, "	", ext4, "	reqD=", param.toString(), "	resD=",
-						respData == null ? "null" : respData.toString()));
-			}
-
-		} catch (Exception e) {
-			logger.error("maidian logger error", e);
-		}
+		MaidianRunnable maidianRunnable = new MaidianRunnable(request, ObjectUtils.toString(response.getData(),""),response.getSuccess(), extInfo);
+		threadPoolMaidianTaskExecutor.execute(maidianRunnable);
 	}
 
 	/**
@@ -869,7 +792,6 @@ public abstract class BaseController {
 	 *            执行时间
 	 * @param inter
 	 *            接口
-	 * @param userName用户名
 	 * @param ext1
 	 *            扩展参数1
 	 * @param ext2
@@ -1001,7 +923,6 @@ public abstract class BaseController {
 	 * 解析request
 	 *
 	 * @param reqData
-	 * @param httpServletRequest
 	 * @return
 	 */
 	protected String processTradeWeiXinRequest(String reqData, HttpServletRequest request, boolean isForQQ) {

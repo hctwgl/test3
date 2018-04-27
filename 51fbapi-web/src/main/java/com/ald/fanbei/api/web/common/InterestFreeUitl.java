@@ -46,6 +46,7 @@ public class InterestFreeUitl {
     public static List<Map<String, Object>> getConsumeList(JSONArray array, JSONArray interestFreeArray, int goodsNum, BigDecimal goodsAmount, String value1, String value2,Long goodsid,String method) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
+
         array = checkNper(goodsid,method,array);
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);

@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
@@ -62,6 +65,20 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 
     List<AfActGoodsDto> getActivityGoodsByGoodsIdsAndActId(List<Long> goodsIdList, Long activityId);
 
+    List<HomePageSecKillGoods> getHomePageSecKillGoods(Long userId, String activityName, Integer activityDay, Integer pageNo);
+
+	List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(
+			Long userId, List<Long> goodsIdList);
+
+
+	Map<String, Object> getHomePageSecKillGoodsByActivityModel(
+			Long userId, String tag, Integer type, Long tabId, Integer pageNo);
+
+	Map<String, Object> getMoreGoodsByBottomGoodsTable(Long userId,
+			Integer pageNo, String pageFlag,String source);
+
+    Integer getSecKillGoodsStock(Long goodsId, Long activityId);
+
     List<HomePageSecKillGoods> getHomePageSecKillGoodsById(Long userId, Long activityId);
 
     List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd);
@@ -73,4 +90,6 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
     List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
 
     List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
+
+
 }

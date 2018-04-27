@@ -8,7 +8,7 @@ new Vue({
     data:{
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
         content:[],
-        iconShow:getUrl('activityId'),
+        iconShow:getUrl('activityId')||'',
         spread:getUrl('spread')||'',
         iconTxt:[4388,689,959,1899,2499,699,890,999,219,699]
 
@@ -32,11 +32,11 @@ new Vue({
             }
         },
         priceTxt(data){
-          if(data.remark){
-              return data.remark
-          }else{
-              return '原价'
-          }
+            if(data.remark){
+                return data.remark
+            }else{
+                return '原价'
+            }
         },
         logData (){
             let self=this;

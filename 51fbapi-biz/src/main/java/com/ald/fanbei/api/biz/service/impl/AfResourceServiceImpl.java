@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -13,6 +14,14 @@ import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
 import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,22 +34,32 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
+import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author Xiaotianjian 2017年1月20日上午10:27:48
@@ -987,6 +1006,54 @@ public class AfResourceServiceImpl implements AfResourceService {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public List<AfResourceDo> getGridViewInfoUpList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoUpList();
+	}
+
+	@Override
+	public List<AfResourceDo> getGridViewInfoCenterList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoCenterList();
+	}
+
+	@Override
+	public List<AfResourceDo> getGridViewInfoDownList() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getGridViewInfoDownList();
+	}
+
+//	@Override
+//	public AfResourceDo getEcommerceFloor() {
+//		// TODO Auto-generated method stub
+//		return afResourceDao.getEcommerceFloor();
+//	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionUp() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getEcommercePositionUp();
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionDown() {
+		// TODO Auto-generated method stub
+		return afResourceDao.getEcommercePositionDown();
+	}
+
+	@Override
+	public List<AfResourceDo> getBackGroundByTypeOrder(String code) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getBackGroundByTypeOrder(code);
+	}
+
+	@Override
+	public List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
 	}
 
 }

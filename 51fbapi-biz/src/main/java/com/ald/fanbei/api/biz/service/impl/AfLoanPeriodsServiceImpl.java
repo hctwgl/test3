@@ -1,15 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
@@ -21,6 +11,14 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 
@@ -153,5 +151,10 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	public AfLoanPeriodsDo getOneByLoanId(Long loanId) {
 		return afLoanPeriodsDao.getOneByLoanId(loanId);
 	}
-	
+
+	@Override
+	public List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId) {
+		return afLoanPeriodsDao.listUnChargeRepayPeriods(loanId);
+	}
+
 }

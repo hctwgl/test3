@@ -730,4 +730,9 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	}
 
 
+	@Override
+	public AfLoanDo getLastByUserIdAndPrdType(Long userId, String prdType) {
+		return afLoanDao.getLastByUserIdAndPrdType(userId, prdType);
+	}
+
 }
