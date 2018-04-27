@@ -275,4 +275,22 @@ public interface AfResourceService {
 	String getCashProductName();
 
 	int getIsShow(Long goodsId);
+
+	List<AfResourceDo> getGridViewInfoUpList();
+
+	List<AfResourceDo> getGridViewInfoCenterList();
+
+	List<AfResourceDo> getGridViewInfoDownList();
+
+//	AfResourceDo getEcommerceFloor();
+
+	List<AfResourceDo> getEcommercePositionUp();
+
+	List<AfResourceDo> getEcommercePositionDown();
+
+	List<AfResourceDo> getBackGroundByTypeOrder(String code);
+
+	List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code);
+
+
 }

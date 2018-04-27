@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.third.util.cuishou;
 
+import com.ald.fanbei.api.biz.kafka.KafkaConstants;
+import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -68,6 +70,12 @@ public class CuiShouUtils {
     AfLoanService afLoanService;
     @Resource
     AfLoanRepaymentService afLoanRepaymentService;
+
+    @Resource
+    AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+
+    @Resource
+    private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 
     /**
      * 线下还款
@@ -256,6 +264,11 @@ public class CuiShouUtils {
             }
             redisTemplate.expire(key, 30, TimeUnit.SECONDS);
 
+            if( checkBorrowCash(afRepaymentDo.getTradeNo())){
+                cuiShouBackMoney.setCode(302);
+                return cuiShouBackMoney;
+            }
+
             List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(afRepaymentDo.getPayTradeNo());
             if (repaymentlist == null || repaymentlist.size() == 0) {
                 afRepaymentDao.addRepayment(afRepaymentDo);
@@ -336,6 +349,15 @@ public class CuiShouUtils {
                     thirdLog.error("offlineRepaymentNotify error borrowNo =" + borrowNo);
                     return cuiShouBackMoney;
                 }
+
+
+                List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(tradeNo);
+                if(repaymentlist !=null && repaymentlist.size()>0){
+                    cuiShouBackMoney.setCode(302);
+                    thirdLog.error("offlineRepaymentNotify error borrowNo =" + borrowNo);
+                    return cuiShouBackMoney;
+                }
+
 
                 String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
                 Long borrowId = afBorrowCashDo.getRid();
@@ -584,7 +606,8 @@ public class CuiShouUtils {
     AfLoanPeriodsDao loanPeriodsDao;
     @Resource
     AfLoanDao loanDao;
-
+    @Resource
+    KafkaSync kafkaSync;
     /**
      * 强行平帐
      *
@@ -592,7 +615,8 @@ public class CuiShouUtils {
      * @param sign
      * @return
      */
-    public String finishBorrow(String data, String sign) {
+    public String
+    finishBorrow(String data, String sign) {
         try {
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
@@ -600,6 +624,7 @@ public class CuiShouUtils {
 
             JSONObject jsonObject = JSONObject.parseObject(data);
             String type = jsonObject.getString("type");
+
             if (type.equals("BORROW")) {
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
                 Long billId = jsonObject.getLong("ref_id");
@@ -627,9 +652,16 @@ public class CuiShouUtils {
                     afBorrowBillDao.updateTotalBillStatus(afBorrowBillDo.getBillYear(), afBorrowBillDo.getBillMonth(), afBorrowBillDo.getUserId(), BorrowBillStatus.YES.getCode());
                 }
                 cuiShouBackMoney.setCode(200);
+                try{
+                    kafkaSync.syncEvent(afBorrowBillDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                    kafkaSync.syncEvent(afBorrowBillDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                }catch (Exception e){
+                    thirdLog.info("消息同步失败:",e);
+                }
                 return JSONObject.toJSONString(cuiShouBackMoney);
             } else if (type.equals("BORROW_CASH")) {
                 Long borrowId = jsonObject.getLong("ref_id");
+                thirdLog.info("direct finish borrow cash "+borrowId);
                 AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
                 afBorrowCashDo.setSumRate(null);
@@ -644,6 +676,13 @@ public class CuiShouUtils {
 
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
+                    try{
+                       AfBorrowCashDo borrowCashDo= afBorrowCashDao.getBorrowCashByrid(borrowId);
+                        kafkaSync.syncEvent(borrowCashDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                        kafkaSync.syncEvent(borrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                    }catch (Exception e){
+                        thirdLog.info("消息同步失败:",e);
+                    }
                     return JSONObject.toJSONString(cuiShouBackMoney);
                 }
                 cuiShouBackMoney.setCode(304);
@@ -666,6 +705,12 @@ public class CuiShouUtils {
                 }
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
+                    try{
+                        kafkaSync.syncEvent(periodsDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+                        kafkaSync.syncEvent(periodsDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+                    }catch (Exception e){
+                        thirdLog.info("消息同步失败:",e);
+                    }
                     return JSONObject.toJSONString(cuiShouBackMoney);
                 }
                 cuiShouBackMoney.setCode(304);
@@ -678,6 +723,8 @@ public class CuiShouUtils {
         } catch (Exception e) {
             thirdLog.error("cuishou finishBorrow error", e);
             return JSON.toJSONString(new CuiShouBackMoney(500, "error"));
+        }finally {
+
         }
     }
 
@@ -732,5 +779,15 @@ public class CuiShouUtils {
 
     public static Boolean getIsXianXiaHuangKuang() {
         return isXianXiaHuangKuang.get();
+    }
+
+
+
+    private Boolean checkBorrowCash(String tradeNo){
+        Boolean ret =false;
+        ret = afBorrowLegalOrderRepaymentDao.tuchByOutTradeNo(tradeNo) != null;
+        if(ret) return ret;
+        ret = afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, tradeNo) != null;
+        return ret;
     }
 }

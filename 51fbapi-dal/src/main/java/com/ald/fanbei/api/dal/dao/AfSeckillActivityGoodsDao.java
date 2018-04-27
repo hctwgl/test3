@@ -1,13 +1,17 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
-import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
+import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
 
 /**
  * 秒杀活动管理(商品)Dao
@@ -43,4 +47,18 @@ public interface AfSeckillActivityGoodsDao extends BaseDao<AfSeckillActivityGood
     AfSeckillActivityDo getSaleInfoByGoodsIdAndActId(@Param("activityId") Long activityId, @Param("goodsId") Long goodsId);
 
     List<AfSeckillActivityDo> getActivityGoodsCountList(Long activityId);
+
+
+    List<HomePageSecKillGoods> getHomePageSecKillGoods(HomePageSecKillQuery homePageSecKillQuery);
+
+    Integer getSecKillGoodsStock(@Param("goodsId") Long goodsId, @Param("activityId") Long activityId);
+
+	List<HomePageSecKillGoods> getHomePageSecKillGoodsByConfigureResourceH5(
+			@Param("userId")Long userId,@Param("items") List<Long> goodsIdList);
+
+	List<HomePageSecKillGoods> getHomePageSecKillGoodsByActivityModel(
+			HomePageSecKillByActivityModelQuery homePageSecKillByActivityModelQuery);
+
+	List<HomePageSecKillGoods> getMoreGoodsByBottomGoodsTable(
+			HomePageSecKillByBottomGoodsQuery homePageSecKillByBottomGoodsQuery);
 }

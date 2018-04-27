@@ -60,4 +60,12 @@ public interface AfLoanService extends ParentService<AfLoanDo, Long>{
 
 	AfLoanDo getByLoanNo(String loanNo);
 
+	/**
+	 * 根据用户id和产品类型获取最新一条
+	 *
+	 * @author wangli
+	 * @date 2018/4/14 12:13
+	 */
+	AfLoanDo getLastByUserIdAndPrdType(Long userId, String prdType);
+
 }

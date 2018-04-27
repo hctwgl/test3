@@ -18,7 +18,7 @@ public class AfGoodsVo extends AbstractSerial{
 	private String openId;
 	private String priceAmount;
 	private String saleAmount;
-	private String realAmount;
+	private String realAmount;//到手价
 	private String rebateAmount;
 	private String goodsName;
 	private String goodsIcon;

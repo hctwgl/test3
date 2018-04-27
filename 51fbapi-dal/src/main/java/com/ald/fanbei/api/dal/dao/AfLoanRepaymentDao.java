@@ -1,8 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 贷款业务Dao
@@ -22,4 +23,11 @@ public interface AfLoanRepaymentDao extends BaseDao<AfLoanRepaymentDo, Long> {
 
 	AfLoanRepaymentDo getLoanRepaymentByTradeNo(String outTradeNo);
 
+	/**
+	 * 获取还款处理中的数量
+	 *
+	 * @author wangli
+	 * @date 2018/4/14 12:24
+	 */
+    int getProcessLoanRepaymentNumByLoanId(@Param("loanId") Long loanId);
 }

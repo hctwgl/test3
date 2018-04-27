@@ -8,8 +8,9 @@ new Vue({
     data:{
         tableUrl:"/fanbei-web/newEncoreActivityInfo",
         content:[],
-        iconShow:getUrl('activityId'),
-        iconTxt:['券后价：4388','券后价：699','券后价：959']
+        iconShow:getUrl('activityId')||'',
+        spread:getUrl('spread')||'',
+        iconTxt:[4388,689,959,1899,2499,699,890,999,219,699]
 
     },
     created:function () {
@@ -31,11 +32,11 @@ new Vue({
             }
         },
         priceTxt(data){
-          if(data.remark){
-              return data.remark
-          }else{
-              return '原价'
-          }
+            if(data.remark){
+                return data.remark
+            }else{
+                return '原价'
+            }
         },
         logData (){
             let self=this;
@@ -60,11 +61,16 @@ new Vue({
             })
         },
         goGoodsDetail(item){
-            if ( item.source=="SELFSUPPORT" ) {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
-            } else {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+            if(this.spread=='other'){
+                window.location.href='https://app.51fanbei.com/app/user/channelRegister?channelCode=Ddsdx&pointCode=Ddsdx'
+            }else{
+                if ( item.source=="SELFSUPPORT" ) {
+                    window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+                } else {
+                    window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
+                }
             }
+
         }
     }
 });

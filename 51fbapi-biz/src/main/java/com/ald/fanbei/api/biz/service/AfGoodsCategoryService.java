@@ -65,6 +65,7 @@ public interface AfGoodsCategoryService {
 	 * @return
 	 */
 	List<AfGoodsCategoryDo> listByParentIdAndLevel(AfGoodsCategoryDo queryAfGoodsCategory);
+	AfGoodsCategoryDo getGoodsCategoryById(Long categoryId);
 
 
 	

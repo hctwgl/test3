@@ -1421,6 +1421,17 @@
 	<update id="updatepdfUrlByOrderId">
 		UPDATE af_order_lease set lease_pdf_url = #{url},gmt_modified = now() where is_delete = 0 and order_id = #{orderId}
 	</update>
+
+	<select id="getSelfsupportPaySuccessOrderByUserId" resultType="java.lang.Integer">
+		SELECT
+		count(0)
+		FROM af_order
+		WHERE  is_delete=0
+		AND order_type = 'SELFSUPPORT'
+		AND user_id = #{userId}
+		and pay_status in('P','R') 
+	</select>
+
 	<select id="selectTodayIagentStatus" resultType="AfOrderDo" >
 		SELECT
 		<include refid="queryAllFields" />
