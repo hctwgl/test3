@@ -39,7 +39,7 @@ public class AfThirdAnnivCelebrationServiceImpl implements AfThirdAnnivCelebrati
                 userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
                 if(userAccountInfo==null){
                     userAccountInfo = new AfUserAccountSenceDo();
-                    userAccountInfo.setAuAmount(new BigDecimal(5000));
+                    userAccountInfo.setAuAmount(new BigDecimal(0));
                     userAccountInfo.setUsedAmount(new BigDecimal(0));
                 }else{
                     // 通过强风控审核
@@ -55,10 +55,9 @@ public class AfThirdAnnivCelebrationServiceImpl implements AfThirdAnnivCelebrati
                         onlineAmount = BigDecimal.ZERO;
                     }
                     userAccountInfo.setAuAmount(onlineAmount.setScale(2, BigDecimal.ROUND_HALF_UP));
-                    userAccountInfo.setUsedAmount(new BigDecimal(0));
                 }
             }else{
-                userAccountInfo.setAuAmount(new BigDecimal(5000));
+                userAccountInfo.setAuAmount(new BigDecimal(0));
                 userAccountInfo.setUsedAmount(new BigDecimal(0));
             }
         }catch (Exception e){

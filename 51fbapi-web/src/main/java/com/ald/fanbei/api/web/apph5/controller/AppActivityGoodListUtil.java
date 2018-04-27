@@ -277,14 +277,7 @@ public class AppActivityGoodListUtil {
         }
         jsonObj.put("nowDate", new Date());
         jsonObj.put("couponList", couponList);
-        //获取配置商品信息
-        List<AfResourceDo> activityResource = new ArrayList<>();
-        try {
-            activityResource = afResourceService.getConfigByTypes(Constants.ENJOYLIFE_ACTIVITY_GOODSINFO);
-        } catch (Exception e) {
-            logger.error("get activityGoodsList error" + e);
-        }
-        jsonObj.put("activityGoodsList", activityResource);
+
         //获取可用额度
         AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
         try {

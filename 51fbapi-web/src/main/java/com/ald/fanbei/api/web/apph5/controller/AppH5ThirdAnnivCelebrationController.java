@@ -310,6 +310,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             data.put("loginUrl", loginUrl);
             return H5CommonResponse.getNewInstance(false, "用户未登陆").toString();
         }
+        data.put("afUserDo", afUserDo);
 
         // 购物额度
         afThirdAnnivCelebrationService.getUserAuAmountInfo(afUserDo, data);
