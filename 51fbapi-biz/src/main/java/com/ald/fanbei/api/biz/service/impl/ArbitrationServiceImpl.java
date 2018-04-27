@@ -579,10 +579,10 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    .getGmtCreate())); // 借款时间
 	    map.put("bankNo", afBorrowCashDo.getCardNumber()); // 借款银行卡号
 	    map.put("billStatus",
-		    afBorrowCashDo.getStatus() == ArbitrationStatus.TRANSED
-			    .getCode() ? ArbitrationStatus.TRANSED.getDec()
-			    : (afBorrowCashDo.getStatus() == ArbitrationStatus.FINSH
-				    .getCode() ? ArbitrationStatus.FINSH
+		    afBorrowCashDo.getStatus().equals(ArbitrationStatus.TRANSED
+					.getCode() ) ? ArbitrationStatus.TRANSED.getDec()
+			    : (afBorrowCashDo.getStatus().equals(ArbitrationStatus.FINSH
+					.getCode()) ? ArbitrationStatus.FINSH
 				    .getDec() : ArbitrationStatus.CLOSED
 				    .getDec())); // 借款状态
 	    map.put("refundStatus", ""); // 还款状态
