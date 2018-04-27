@@ -227,4 +227,16 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getPackageDetailByLoanId" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
+     	SELECT
+			apd.*
+		FROM
+			af_asset_package_detail apd
+		LEFT JOIN af_loan b ON l.id = apd.borrow_cash_id
+		WHERE
+			b.id = #{loanId}
+		AND 
+			apd.is_delete=0 and apd.`status` ='Y';
+    </select>
+    
 </mapper>

@@ -1360,5 +1360,9 @@ public class DateUtil {
 		}
 		return result;
 	}
+	
+    public static boolean isBefore(final Date date1, final Date date2) {
+    	return date1.before(date2);
+    }
 
 }
