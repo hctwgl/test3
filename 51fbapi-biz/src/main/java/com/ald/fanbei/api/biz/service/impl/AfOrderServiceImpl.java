@@ -1259,6 +1259,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					}
 					if (!canPay) {
 						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+						orderDao.updateOrder(orderInfo);
 						resultMap.put("success", false);
 						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
