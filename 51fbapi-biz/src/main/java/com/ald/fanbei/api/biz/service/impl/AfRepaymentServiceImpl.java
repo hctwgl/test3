@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -209,6 +212,8 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     AfUserAccountSenceDao afUserAccountSenceDao;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    AssetSideEdspayUtil assetSideEdspayUtil;
 
     @Autowired
     KafkaSync kafkaSync;
@@ -782,6 +787,24 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
                 }
 
                 afBorrowService.updateBorrowStatus(afBorrow.getRid(), BorrowStatus.FINISH.getCode());
+				
+                try {
+		    		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrow.getRid());
+					boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+					if (isBefore) {
+						if (assetSideEdspayUtil.isPush(afBorrow)) {
+							List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrow,1);
+							boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+							if (result) {
+								logger.info("trans modified borrow Info success,loanId="+afBorrow.getRid());
+							}else{
+								assetSideEdspayUtil.transFailRecord(afBorrow, modifiedLoanInfo);
+							}
+						}
+					}
+				} catch (Exception e) {
+					logger.error("preFinishNotifyEds error="+e);
+				}
 
             }
         }

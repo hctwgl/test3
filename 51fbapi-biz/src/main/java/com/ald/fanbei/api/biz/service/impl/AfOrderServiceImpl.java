@@ -38,6 +38,7 @@ import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -250,6 +251,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	AfInterimDetailDao afInterimDetailDao;
 	@Resource
 	AfCheckoutCounterService afCheckoutCounterService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 
 	@Autowired
 	private AfShopDao afShopDao;
@@ -2076,6 +2079,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+						preFinishNotifyEds(borrowInfo);
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -2167,6 +2171,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								UserAccountLogType.CP_REFUND, afBorrowDo.getAmount(), userId, afBorrowDo.getRid()));
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.FINISH.getCode());
+						preFinishNotifyEds(afBorrowDo);
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(afBorrowDo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -2861,6 +2866,23 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					if (borrowInfo != null) {
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+						try {
+				    		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
+							boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+							if (isBefore) {
+								if (assetSideEdspayUtil.isPush(borrowInfo)) {
+									List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);
+									boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+									if (result) {
+										logger.info("trans modified borrow Info success,loanId="+borrowInfo.getRid());
+									}else{
+										assetSideEdspayUtil.transFailRecord(borrowInfo, modifiedLoanInfo);
+									}
+								}
+							}
+						} catch (Exception e) {
+							logger.error("preFinishNotifyEds error="+e);
+						}
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -3138,6 +3160,26 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId){
 		return orderDao.selectTodayIagentStatusCOrders(userId);
+	}
+
+	private void preFinishNotifyEds(AfBorrowDo borrowInfo) {
+		try {
+			List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
+			boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+			if (isBefore) {
+				if (assetSideEdspayUtil.isPush(borrowInfo)) {
+					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);
+					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("trans modified borrow Info success,loanId="+borrowInfo.getRid());
+					}else{
+						assetSideEdspayUtil.transFailRecord(borrowInfo, modifiedLoanInfo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("preFinishNotifyEds error="+e);
+		}
 	}
 
 }
