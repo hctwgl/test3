@@ -69,6 +69,7 @@ public class ArbitrationController {
     AfUserAccountService afUserAccountService;
     public static final String Y_M_D_H_M_S = "yyyy-MM-dd HH:mm:ss";
     private static final String MERCHANTCODE = "150778004447";
+    //线上地址:https://api.arbexpress.cn/arbinter/v1/third.htm
     private static final String URL = "http://test.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
     //分页查询返回结果
@@ -110,7 +111,7 @@ public class ArbitrationController {
             arbitrationDo.setGmtModified(new Date());
             arbitrationService.updateByloanBillNo(arbitrationDo);
         }
-        logger.info("aaaaaa---"+protocal);
+        logger.info("协议地址:---"+protocal);
     }
 
     @ResponseBody
@@ -140,7 +141,8 @@ public class ArbitrationController {
             String trackId = TRACK_PREFIX + new Date().getTime();
             String result = HttpClientUtils.postWithString(URL, jsonParam);
             logger.info(result);
-            AfArbitrationDo afArbitrationDo = new AfArbitrationDo();
+            AfArbitrationDo afArbitrationDo =  arbitrationService.getByBorrowNo(loanBillNo);
+
             JSONObject resultJson = JSON.parseObject(result);
             if (resultJson.getString("errCode").equals("0000")) {
                 String batchNo = resultJson.getString("batchNo");
@@ -149,14 +151,24 @@ public class ArbitrationController {
                 if (resultArr.size() > 0) {
                     JSONObject firstData = resultArr.getJSONObject(0);
                     if (firstData.getString("errCode").equals("0000")) {
-                        afArbitrationDo.setProcessCode("100");
-                        afArbitrationDo.setProcess("仲裁申请");
-                        afArbitrationDo.setStatusCode("0");
-                        afArbitrationDo.setStatus("案件待提交");
-                        afArbitrationDo.setValue2(result);
-                        afArbitrationDo.setLoanBillNo(loanBillNo);
-                        String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
-                        arbitrationService.saveRecord(afArbitrationDo);
+                        if(afArbitrationDo==null){
+                            afArbitrationDo=new AfArbitrationDo();
+                            afArbitrationDo.setProcessCode("100");
+                            afArbitrationDo.setProcess("仲裁申请");
+                            afArbitrationDo.setStatusCode("0");
+                            afArbitrationDo.setStatus("案件待提交");
+                            afArbitrationDo.setValue2(result);
+                            afArbitrationDo.setLoanBillNo(loanBillNo);
+                            arbitrationService.saveRecord(afArbitrationDo);
+                        }else{
+                            afArbitrationDo.setProcessCode("100");
+                            afArbitrationDo.setProcess("仲裁申请");
+                            afArbitrationDo.setStatusCode("0");
+                            afArbitrationDo.setStatus("案件待提交");
+                            afArbitrationDo.setValue2(result);
+                            arbitrationService.updateByloanBillNo(afArbitrationDo);
+                        }
+
                     } else {
                         logger.info("submit error errorMsg " + firstData.getString("errMsg"));
                     }

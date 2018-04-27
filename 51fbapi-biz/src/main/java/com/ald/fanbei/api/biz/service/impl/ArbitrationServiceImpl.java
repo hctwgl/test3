@@ -520,7 +520,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    map.put("type", protocolType); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
 	    map.put("signOffer", signOffer); // 电子签提供商
-	    map.put("agreeUrl", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/2018-04-25/13/13656648524cashLoan15246342281754.pdf"); // 协议地址
+		AfArbitrationDo arbitrationDo =getByBorrowNo(borrowNo);
+	    map.put("agreeUrl", arbitrationDo.getValue1()); // 协议地址
 	    map.put("agreeNo", afBorrowCashDo.getBorrowNo()); // 协议编号
 	    map.put("provedObject", provedObject); // 证明对象
 	    map.put("pageSize", pageSize); // 协议页数·
@@ -714,8 +715,9 @@ public class ArbitrationServiceImpl extends BaseService implements
         arbitrationRespBo.setErrCode("0000");
         arbitrationRespBo.setErrMsg("");
         HashMap dataMap=new HashMap();
-        dataMap.put("voucherUrl","http://f.51fanbei.com/online/21d2d3ab93112940.jpg");
-        dataMap.put("voucherNo","jq001");
+		AfArbitrationDo arbitrationDo=  getByBorrowNo(loanBillNo);
+        dataMap.put("voucherUrl",arbitrationDo.getPayVoucher());
+        dataMap.put("voucherNo","jq"+System.currentTimeMillis());
         dataMap.put("voucherOffer","宝付");
         dataMap.put("provedObject","");
         List dataList=new ArrayList();
