@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.system;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,16 @@ public class GetTabbarInforApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		List<AfResourceDo> resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
+		//4.1.3之前的版本用原先的，之后的用新的
+		List<AfResourceDo> resourceList = new  ArrayList<AfResourceDo>();
+		Integer appVersion = context.getAppVersion();
+		if (appVersion < 413) {
+			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
+		} else{
+			resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.ASJHomeTabbar.getCode());
+		}
+	
+		
 		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(context,resourceList,requestDataVo);
 		//resp.setResponseData(tabbarInfor);
 
@@ -97,9 +108,18 @@ public class GetTabbarInforApi implements ApiHandle {
 	
 	private Map<String, Object> getObjectWithResourceDolist(FanbeiContext context,List<AfResourceDo> tabbarlist,RequestDataVo requestDataVo) {
 		//是否使用后台传来的图片，否的话菜单图片用app本地图片
-		AfResourceDo useImgDo = afResourceService
-				.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
-				//app 在appstore 审核信息，如果还未审核，则用后台传的图片
+		Integer appVersion = context.getAppVersion();
+		
+		AfResourceDo useImgDo = new AfResourceDo();
+		if (appVersion >= 413) {
+			useImgDo = afResourceService
+					.getConfigByTypesAndSecType(AfResourceType.ASJ_IS_USE_IMG.getCode(), AfResourceSecType.ASJ_IS_USE_IMG.getCode());
+		}else{
+			useImgDo = afResourceService
+					.getConfigByTypesAndSecType(AfResourceType.IS_USE_IMG.getCode(), AfResourceSecType.IS_USE_IMG.getCode());
+		}
+		
+		//app 在appstore 审核信息，如果还未审核，则用后台传的图片
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_IS_FOR_AUTH);
 		boolean use = this.useImg(useImgDo, requestDataVo, context);
 		Map<String, Object> index = new HashMap<String, Object>();
@@ -110,7 +130,10 @@ public class GetTabbarInforApi implements ApiHandle {
 			data.put("imageUrl", afResourceDo.getValue());
 			}
 			data.put("titleColor", afResourceDo.getValue1());
-			
+			//兼容原版本
+//			if (appVersion >= 413) {
+//			 data.put("content", afResourceDo.getValue3());
+//			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "HOME_NOMAL")){
 				index.put("homeNomal", data);
 			}
@@ -144,6 +167,38 @@ public class GetTabbarInforApi implements ApiHandle {
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_SELECTED")){
 				handleIosBorow(context,requestDataVo,data,resourceInfo);
 				index.put("borrowSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION")){
+				data.put("content", afResourceDo.getValue3());
+				data.put("status", afResourceDo.getValue2());
+				index.put("operationPositionNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_OPERATION_POSITION_SELECTED")){
+				index.put("operationPositionSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_LIFE")){
+				index.put("asjLifeNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_LIFE_SELECTED")){
+				index.put("asjLifeSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_FIND")){
+				index.put("asjFindNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_FIND_SELECTED")){
+				index.put("asjFindSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_HOME_NOMAL")){
+				index.put("asjHomeNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_HOME_SELECTED")){
+				index.put("asjHomeSelected", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_NOMAL")){
+				index.put("asjMainNomal", data);
+			}
+			if(StringUtils.equals(afResourceDo.getSecType(), "ASJ_MAIN_SELECTED")){
+				index.put("asjMainSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "BORROW_HIGHLIGHT")){
 				handleIosBorow(context,requestDataVo,data,resourceInfo);

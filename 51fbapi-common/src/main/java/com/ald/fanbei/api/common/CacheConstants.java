@@ -122,4 +122,86 @@ public class CacheConstants {
 		}
 	}
 
+public static enum ASJ_HOME_PAGE{
+		
+		ASJ_CUBE_HOMEPAGE_BACKGROUND("ASJ_CUBE_HOMEPAGE_BACKGROUND","爱上街首页背景list"),
+		ASJ_HOME_PAGE_CHANNEL_TAB_LIST("HOME_PAGE_CHANNEL_TAB_LIST","频道list"),
+		ASJ_HOME_PAGE_TABBAR_LIST("ASJ_HOME_PAGE_TABBAR_LIST","tabbar list"),
+		ASJ_HOME_PAGE_TOP_BANNER_LIST_PRE("ASJ_HOME_PAGE_TOP_BANNER_LIST_PRE","首页顶部轮播list(预发)"),
+		
+		ASJ_HOME_SLOGAN_LIST("ASJ_HOME_SLOGAN_LIST","首页SLOGAN_LIST"),
+		ASJ_HOME_NAVIGATION_UP_ONE("ASJ_HOME_NAVIGATION_UP_ONE","NAVIGATION上部分"),
+		ASJ_HOME_NAVIGATION_DOWN_ONE("ASJ_HOME_NAVIGATION_DOWN_ONE","NAVIGATION下部分"),
+		ASJ_HOME_NEW_EXCLUSIVE("ASJ_HOME_NEW_EXCLUSIVE","新人专享运营位"),
+		ASJ_HOME_NOMAL_POSITION_LIST("ASJ_HOME_NOMAL_POSITION_LIST","常驻运营位"),
+		
+		ASJ_HOME_NAVIGATION_INFO("ASJ_HOME_NAVIGATION_INFO","首页NAVIGATION"),
+		ASJ_HOME_FINANCIAL_ENTRANC_INFO("ASJ_HOME_FINANCIAL_ENTRANC_INFO","金融服务入口"),
+		ASJ_HOME_GRID_VIEW_INFO("ASJ_HOME_GRID_VIEW_INFO","九宫格"),
+		ASJ_HOME_ECOMMERCE_AREA_INFO("ASJ_HOME_ECOMMERCE_AREA_INFO","电商运营位"),
+		
+		ASJ_HOME_NEW_PRODUCT_INFO("ASJ_HOME_NEW_PRODUCT_INFO","品质新品"),
+		ASJ_HOME_ACTIVITY_GOODS_INFO("ASJ_HOME_ACTIVITY_GOODS_INFO","活动商品"),
+		ASJ_HOME_BRAND_INFO("ASJ_HOME_BRAND_INFO","大牌汇聚"),
+		ASJ_HOME_MORE_GOODS_PAGENO("ASJ_HOME_MORE_GOODS_PAGENO","首页更多商品（猜你喜欢）"),
+		ASJ_HOME_MORE_CHANNEL_GOODS_PAGENO("ASJ_HOME_MORE_CHANNEL_GOODS_PAGENO","频道页更多商品（猜你喜欢）"),
+		ASJ_PAY_SESULT_PAGE_GOODS_PAGENO("ASJ_PAY_SESULT_PAGE_GOODS_PAGENO","支付结果页（猜你喜欢）"),
+		ASJ_HOME_PAGE_CHANNEL_TABID("ASJ_HOME_PAGE_CHANNEL_TABID","频道页"),
+		
+		ASJ_HOME_PAGE_INFO("ASJ_HOME_PAGE_INFO","首页"),
+		ASJ_HOME_PAGE_TOP_BANNER_LIST_ONLINE("ASJ_HOME_PAGE_TOP_BANNER_LIST_ONLINE","首页顶部轮播list(线上/测试)");
+		
+		
+		private String code;
+		private String name;
+
+		private ASJ_HOME_PAGE(String code, String name) {
+			this.code = code;
+			this.name = name;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	public static enum ASJ_CATEGORY{
+		ASJ_CATEGORY_DETAIL_GET_GOODS_BY_CATEGORYID_AND_VOLUME("ASJ_CATEGORY_DETAIL_GOODS_BY_CID_AND_VOLUME","爱尚街分类详情页商品按照类目ID和销量降序"),
+		ASJ_CATEGORY_DETAIL_RESULT_GET_GOODS_BY_CATEGORYID_AND_PRICE("ASJ_CATEGORY_DETAIL_GOODS_BY_CID_AND_PRICE","爱尚街分类详情页商品按照类目和价格排序"),
+		ASJ_CATEGORY_DETAIL_RESULT_ALLGOODS_THE_BRAND("ASJ_CATEGORY_DETAIL_ALLGOODS_THE_BRAND","爱尚街分类品牌结果页该品牌下所有的商品");
+		
+		
+		private String code;
+		private String name;
+		
+		private ASJ_CATEGORY(String code, String name) {
+			this.code = code;
+			this.name = name;
+		}
+		public String getCode() {
+			return code;
+		}
+		public void setCode(String code) {
+			this.code = code;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+	}
 }

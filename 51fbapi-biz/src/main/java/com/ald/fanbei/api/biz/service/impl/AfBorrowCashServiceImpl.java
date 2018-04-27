@@ -311,11 +311,11 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
         }
 
         if (resultValue == 1) {
-            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_CASH_LOAN,true);
+            kafkaSync.syncEvent(afBorrowCashDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
             logger.info("contractPdfThreadPool PlatformServiceProtocolPdf start afBorrowCashDo ="+JSONObject.toJSONString(afBorrowCashDo));
             contractPdfThreadPool.PlatformServiceProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getPoundage(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
-            logger.info("contractPdfThreadPool createGoodsInstalmentProtocolPdf start afBorrowCashDo ="+JSONObject.toJSONString(afBorrowCashDo));
+
             contractPdfThreadPool.createGoodsInstalmentProtocolPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getType(),
                     afBorrowCashDo.getUserId());// 生成凭据纸质帐单
         }
@@ -529,7 +529,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	    // TODO Auto-generated method stub
 	    return afBorrowCashDao.getCashBorrowByUserIdAndActivity(userId,activityTime);
 	}
-
+	
 	@Override
 	public boolean haveDealingBorrowCash(Long userId) {
 		return afBorrowCashDao.tuchDealingBorrowCash(userId) != null;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201804231450")
+    #set($version="201804241530")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
@@ -182,7 +182,7 @@
                 <img src="$commonUrl/theme18_05.png">
                 <img src="$commonUrl/theme18_06.png">
             </div>
-            <p class="footerWord">重庆市猪八戒宜创小额贷款有限公司<br/>蜀ICP备17028913号-1</p>
+            <p class="footerWord">重庆市猪八戒宜创小额贷款有限公司<br/>浙ICP备16001312-4</p>
         </div>
     #end
     <!--样式18--end-->
