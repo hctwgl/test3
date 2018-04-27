@@ -2973,7 +2973,35 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		orderDao.updateIagentStatusByOrderId(orderId,iagentStatus);
 	}
 
-    @Override
+	@Override
+	public AfOrderCountDto countStatusNum(Long userId) {
+		AfOrderCountDto result = new AfOrderCountDto();
+
+		AfOrderQuery query = new AfOrderQuery();
+		query.setUserId(userId);
+		query.setPageSize(Integer.MAX_VALUE);
+		List<AfOrderDo> list = null;
+
+		query.setOrderStatus(AppOrderSearchStatus.NEW.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setNewOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.TODELIVER.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setPaidOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.DELIVERED.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setDeliveredOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.TOREBATE.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setFinishedOrderNum(list.size());
+
+		return result;
+	}
+
+	@Override
     public HashMap checkLeaseOrder(Long userId, Long goodsId) {
         return orderDao.checkLeaseOrder(userId,goodsId);
     }
