@@ -19,6 +19,8 @@ import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
@@ -28,6 +30,14 @@ import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByActivityModelQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
+import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
+
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -213,7 +223,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 		}else{
 			homePageSecKillByBottomGoodsQuery.setPageSize(20);
 		}
-		
+
 		List<HomePageSecKillGoods> homePageSecKillGoodsList =  afSeckillActivityGoodsDao.getMoreGoodsByBottomGoodsTable(homePageSecKillByBottomGoodsQuery);
 		homePageSecKillByBottomGoodsQuery.setFull(true);
 		homePageSecKillGoods.put("query", homePageSecKillByBottomGoodsQuery);
@@ -224,6 +234,16 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public Integer getSecKillGoodsStock(Long goodsId, Long activityId) {
 		return afSeckillActivityGoodsDao.getSecKillGoodsStock(goodsId,activityId);
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getHomePageSecKillGoodsById(Long userId, Long activityId) {
+		return afSeckillActivityGoodsDao.getHomePageSecKillGoodsById(userId, activityId);
+	}
+
+	@Override
+	public List<String> getActivityListByName(String name, Date gmtStart, Date gmtEnd){
+		return afSeckillActivityDao.getActivityListByName(name, gmtStart, gmtEnd);
 	}
 
 	@Override
