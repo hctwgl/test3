@@ -266,7 +266,6 @@ public class MineHomeApi implements ApiHandle {
     private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-        logger.info("getDrainageBannerListApi and type = {}", invelomentType);
 
         List<AfResourceDo> bannerResources = null;
         if (Constants.INVELOMENT_TYPE_ONLINE.equals(invelomentType)
