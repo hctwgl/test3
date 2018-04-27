@@ -667,18 +667,21 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
-			
-	       boolean isBefore = DateUtil.isBefore(new Date(), loanPeriodsDo.getGmtPlanRepay());
-           if (isBefore) {
-           	  if (assetSideEdspayUtil.isPush(loanDo)) {
-           		 List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
-           		 boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
-           		 if (result) {
-           			 logger.info("trans modified loan Info success,loanId="+loanDo.getRid());
-					}else{
-						assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
+			try {
+				boolean isBefore = DateUtil.isBefore(new Date(), loanPeriodsDo.getGmtPlanRepay());
+				if (isBefore) {
+					if (assetSideEdspayUtil.isPush(loanDo)) {
+						List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
+						boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+						if (result) {
+							logger.info("trans modified loan Info success,loanId="+loanDo.getRid());
+						}else{
+							assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
+						}
 					}
 				}
+			} catch (Exception e) {
+				logger.error("preFinishNotifyEds error="+e);
 			}
 			
 			loanRepayDealBo.loanDo.setStatus(AfLoanStatus.FINISHED.name());

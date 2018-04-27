@@ -678,6 +678,7 @@ public class CuiShouUtils {
                 return JSONObject.toJSONString(cuiShouBackMoney);
             } else if (type.equals("BORROW_CASH")) {
                 Long borrowId = jsonObject.getLong("ref_id");
+                AfBorrowCashDo borrowCashExist = afBorrowCashService.getBorrowCashByrid(borrowId);
                 thirdLog.info("direct finish borrow cash "+borrowId);
                 AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
@@ -687,6 +688,22 @@ public class CuiShouUtils {
                 afBorrowCashDo.setSumRebate(null);
                 afBorrowCashDo.setSumJfb(null);
                 afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                try {
+        			boolean isBefore = DateUtil.isBefore(new Date(), borrowCashExist.getGmtPlanRepayment());
+        			if (isBefore) {
+        				if (assetSideEdspayUtil.isPush(borrowCashExist)) {
+        					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowCashExist,1);
+        					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+        					if (result) {
+        						thirdLog.info("trans modified loan Info success,loanId="+borrowCashExist.getRid());
+        					}else{
+        						assetSideEdspayUtil.transFailRecord(borrowCashExist, modifiedLoanInfo);
+        					}
+        				}
+        			}
+        		} catch (Exception e) {
+        			thirdLog.error("preFinishNotifyEds error="+e);
+        		}
 
                 Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
@@ -719,18 +736,21 @@ public class CuiShouUtils {
                     loanDo.setRid(periodsDo.getLoanId());
                     loanDo.setStatus(AfLoanStatus.FINISHED.name());
                     loanDao.updateById(loanDo);
-                    
-                    boolean isBefore = DateUtil.isBefore(new Date(), periodsDo.getGmtPlanRepay());
-                    if (isBefore) {
-                    	  if (assetSideEdspayUtil.isPush(loanDo)) {
-                    		 List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
-                    		 boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
-                    		 if (result) {
-                    			 thirdLog.info("trans modified loan Info success,loanId="+loanDo.getRid());
-							}else{
-								assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
-							}
-						}
+                    try {
+                    	boolean isBefore = DateUtil.isBefore(new Date(), periodsDo.getGmtPlanRepay());
+                    	if (isBefore) {
+                    		if (assetSideEdspayUtil.isPush(loanDo)) {
+                    			List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
+                    			boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+                    			if (result) {
+                    				thirdLog.info("trans modified loan Info success,loanId="+loanDo.getRid());
+                    			}else{
+                    				assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
+                    			}
+                    		}
+                    	}
+					} catch (Exception e) {
+						thirdLog.error("preFinishNotifyEds error="+e);
 					}
                     
                 }
