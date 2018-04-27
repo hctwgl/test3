@@ -165,6 +165,9 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         if (null == activityIds || activityIds.isEmpty()) {
             return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待", "", "").toString();
         }
+        else if(null == todayActivityIds || todayActivityIds.isEmpty()){
+            return H5CommonResponse.getNewInstance(false, "活动已结束，请关注我们下次活动", "", "").toString();
+        }
 
         Long userId = null;
         if (context.getUserName() != null) {
@@ -198,13 +201,22 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                 }
 
                 int arrayLength = activityStartHourArray.length;
+                int todayActivitySize = todayActivityIds.size();
+                int activitySize = activityIds.size();
                 if (currentHour < Integer.parseInt(activityStartHourArray[0])) {
                     nextActivityId = todayActivityIds.get(0);
                     int index = activityIds.indexOf(nextActivityId);
                     activityId = activityIds.get(index - 1);
-                } else {
-                    int todayActivitySize = todayActivityIds.size();
-                    int activitySize = activityIds.size();
+                }
+                else if(currentHour > Integer.parseInt(activityStartHourArray[arrayLength - 1])){
+                    activityId = todayActivityIds.get(todayActivitySize - 1);
+                    int index = activityIds.indexOf(activityId);
+                    if (index < activitySize - 1) {
+                        nextActivityId = activityIds.get(index + 1);
+                    } else {
+                        nextActivityId = "";
+                    }
+                }else {
                     for (int i = 0; i < arrayLength - 1; i++) {
                         if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
                             if (todayActivitySize < (i + 1)) {
