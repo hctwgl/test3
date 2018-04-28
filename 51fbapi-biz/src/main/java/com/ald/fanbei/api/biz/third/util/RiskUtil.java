@@ -3743,7 +3743,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param userId
 	 * @return
 	 */
-	public RiskQuotaRespBo newFundInfoNotify(String data, String userId) {
+	public RiskQuotaRespBo newFundInfoNotify(String data, String userId,String orderSn) {
 		RiskQuotaRespBo riskResp = null;
 		newFundNotifyReqBo reqBo = new newFundNotifyReqBo();
 		reqBo.setConsumerNo(userId);
@@ -3757,6 +3757,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
+		reqBo.setOrderSn(orderSn);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String url = getUrl() +  "/modules/api/thrid/receiveData.htm";
 //		String url = "http://122.224.88.51:18080" +  "/modules/api/thrid/receiveData.htm";

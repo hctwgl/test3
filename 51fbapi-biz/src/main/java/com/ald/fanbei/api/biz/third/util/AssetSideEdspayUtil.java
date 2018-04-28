@@ -96,6 +96,7 @@ import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.AfNotifyRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
@@ -110,6 +111,7 @@ import com.ald.fanbei.api.dal.domain.AfCommitRecordDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
+import com.ald.fanbei.api.dal.domain.AfNotifyRecordDo;
 import com.ald.fanbei.api.dal.domain.AfRecordMaxDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -201,6 +203,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	AfCommitRecordService afCommitRecordService;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfNotifyRecordDao afNotifyRecordDao;
 	
 	public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
@@ -1282,6 +1286,15 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			map.put("appId", platFlag);
 			String url = afResourceDo.getValue1();
 			String jsonParam = JSON.toJSONString(map);
+			//记录通知记录
+			AfNotifyRecordDo notifyRecord = new AfNotifyRecordDo(); 
+			Date cur = new Date();
+			notifyRecord.setGmtCreate(cur);
+			notifyRecord.setGmtModified(cur);
+			notifyRecord.setOrderNo(modifiedBorrowInfoList.get(0).getOrderNo());
+			notifyRecord.setUserId(modifiedBorrowInfoList.get(0).getUserId());
+			notifyRecord.setAssetSide(Constants.ASSET_SIDE_EDSPAY_FLAG);
+			afNotifyRecordDao.saveRecord(notifyRecord);
 			logger.info("transBorrowerInfo to wallet  url = {},originBorrowerJson = {}, request = {}",url,borrowJson,jsonParam);
 			String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/debtOrderInfoPush", jsonParam);
 			logger.info("transBorrowerInfo to wallet response = {}", respResult);
