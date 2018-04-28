@@ -104,8 +104,6 @@ public class H5ApplyLegalBorrowCashController extends BaseController {
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
-	AfBorrowLegalOrderService afBorrowLegalOrderService;
-	@Resource
 	ApplyLegalBorrowCashServiceImpl applyLegalBorrowCashServiceImpl;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
@@ -227,12 +225,11 @@ public class H5ApplyLegalBorrowCashController extends BaseController {
 				// 业务加锁处理
 				applyLegalBorrowCashService.checkLock(lockKey);
 
-				final AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildBorrowCashDo(
+				final AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildRecycleBorrowCashDo(
 						mainCard, userId, rateInfoDo, paramBo);
 				// 用户借钱时app来源区分
 				String appName = getAppName(requestDataVo);
 				afBorrowCashDo.setMajiabaoName(appName);
-				// 搭售商品订单
 				// 数据库中新增借钱记录
 				Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo);
 				// 生成借款信息失败
@@ -270,147 +267,8 @@ public class H5ApplyLegalBorrowCashController extends BaseController {
 					}
 					Date currDate = new Date();
 					if((verifyBo.isSuccess()&&StringUtils.equals("10", verifyBo.getResult()))||whiteIdsList.contains(afUserDo.getUserName())) {
-						//风控审核通过,根据开关判断是否推送钱包打款
-						Boolean flag=true;
-						//新增白名单逻辑
-						AfResourceDo pushWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
-						if (pushWhiteResource != null) {
-							//白名单开启
-							String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
-							Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-							if(!Arrays.asList(whiteUserIds).contains(userId)){
-								//不在白名单不推送
-								flag=false;
-							}
-						}
-						AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
-						AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
-						//浙商是否维护中逻辑
-						Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
-						if (StringUtil.equals(assetPushType.getBorrowCash(), YesNoStatus.YES.getCode())
-								&&(StringUtil.equals(afBorrowCashDo.getMajiabaoName(), "www")||StringUtil.equals(afBorrowCashDo.getMajiabaoName(), ""))
-								&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&flag&&!bankIsMaintaining) {
-							//开关开启，非马甲包的现金贷推送
-							AfBorrowCashDto afBorrowCashDto= applyLegalBorrowCashService.getBorrowCashInfoById(afBorrowCashDo.getRid());
-							List<EdspayGetCreditRespBo> borrowCashInfos= new ArrayList<EdspayGetCreditRespBo>();
-							EdspayGetCreditRespBo borrowCashInfo =new EdspayGetCreditRespBo();
-							borrowCashInfo.setDebtType(0);
-							borrowCashInfo.setOrderNo(afBorrowCashDto.getOrderNo());
-							//获取借款利率配置
-							AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
-							String minBorrowTime = afResourceDo.getTypeDesc().split(",")[0];
-							String maxBorrowTime = afResourceDo.getTypeDesc().split(",")[1];
-							Integer timeLimit = NumberUtil.objToIntDefault(afBorrowCashDto.getType(), null);
-							JSONObject jsonObject=new JSONObject();
-							if (afResourceDo!=null &&  afResourceDo.getValue2() != null) {
-								JSONArray array= JSONObject.parseArray(afResourceDo.getValue2());
-								for (int i = 0; i < array.size(); i++) {
-									if (StringUtils.equals((String)array.getJSONObject(i).get("borrowTag"), AfResourceSecType.INTEREST_RATE.getCode())) {
-										jsonObject = array.getJSONObject(i);
-										break;
-									}
-								}
-							}
-							BigDecimal borrowRate=BigDecimal.ZERO;
-							if (StringUtils.equals(afBorrowCashDto.getType(), minBorrowTime)) {
-								borrowRate=new BigDecimal((String)jsonObject.get("borrowFirstType"));
-							}else{
-								borrowRate=new BigDecimal((String)jsonObject.get("borrowSecondType")) ;
-							}
-							borrowCashInfo.setUserId(afBorrowCashDto.getUserId());
-							borrowCashInfo.setName(afBorrowCashDto.getName());
-							borrowCashInfo.setCardId(afBorrowCashDto.getCardId());
-							borrowCashInfo.setMobile(afBorrowCashDto.getMobile());
-							borrowCashInfo.setBankNo(afBorrowCashDto.getBankNo());
-							borrowCashInfo.setAcctName("");
-							borrowCashInfo.setMoney(afBorrowCashDto.getMoney());
-							borrowCashInfo.setApr(borrowRate);
-							borrowCashInfo.setTimeLimit(timeLimit);
-							borrowCashInfo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afBorrowCashDto.getLoanStartTime()));
-							if (StringUtil.isNotBlank(afBorrowCashDto.getBorrowRemark())) {
-								borrowCashInfo.setPurpose(afBorrowCashDto.getBorrowRemark());
-							}else {
-								borrowCashInfo.setPurpose("个人消费");
-							}
-							borrowCashInfo.setRepaymentStatus(0);
-							borrowCashInfo.setRepayName(afBorrowCashDto.getName());
-							borrowCashInfo.setRepayAcct(afBorrowCashDto.getBankNo());
-							borrowCashInfo.setRepayAcctBankNo("");
-							borrowCashInfo.setRepayAcctType(0);
-							if (StringUtil.equals(afBorrowCashDto.getCardName(),"浙商银行")) {
-								borrowCashInfo.setIsRepayAcctOtherBank(0);
-							}else{
-								borrowCashInfo.setIsRepayAcctOtherBank(1);
-							}
-							//获取资产方的分润利率
-							AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
-							borrowCashInfo.setManageFee(afAssetSideInfoDo.getAnnualRate());
-							if (StringUtil.isNotBlank(afBorrowCashDto.getRefundRemark())) {
-								borrowCashInfo.setRepaymentSource(afBorrowCashDto.getRefundRemark());
-							}else {
-								borrowCashInfo.setRepaymentSource("工资收入");
-							}
-							borrowCashInfo.setIsPeriod(0);
-							borrowCashInfo.setTotalPeriod(1);
-							borrowCashInfo.setLoanerType(0);
-							//借款人平台逾期信息
-							AfUserBorrowCashOverdueInfoDto overdueInfoByUserId = afBorrowCashDao.getOverdueInfoByUserId(afBorrowCashDto.getUserId());
-							borrowCashInfo.setOverdueTimes(overdueInfoByUserId.getOverdueNums());
-							borrowCashInfo.setOverdueAmount(overdueInfoByUserId.getOverdueAmount());
-							//还款计划
-							List<RepaymentPlan> repaymentPlans=new ArrayList<RepaymentPlan>();
-							RepaymentPlan repaymentPlan = new RepaymentPlan();
-							repaymentPlan.setRepaymentNo(afBorrowCashDto.getOrderNo());
-							repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afBorrowCashDto.getLoanStartTime(), timeLimit-1)));
-							repaymentPlan.setRepaymentDays(timeLimit.longValue());
-							repaymentPlan.setRepaymentAmount(afBorrowCashDto.getMoney());
-							repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afBorrowCashDto.getMoney(), new BigDecimal(afAssetSideInfoDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
-							repaymentPlan.setRepaymentPeriod(0);
-							repaymentPlans.add(repaymentPlan);
-							borrowCashInfo.setRepaymentPlans(repaymentPlans);
-							borrowCashInfo.setIsCur(0);
-							borrowCashInfos.add(borrowCashInfo);
-
-							//债权实时推送
-							boolean result = assetSideEdspayUtil.borrowCashCurPush(borrowCashInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
-							if (result) {
-								logger.info("borrowCashCurPush suceess,orderNo="+borrowCashInfo.getOrderNo());
-								//老ups逻辑
-								final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-								delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
-								jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-								String bankNumber = mainCard.getCardNumber();
-								String lastBank = bankNumber.substring(bankNumber.length() - 4);
-								smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
-								String title = "恭喜您，审核通过啦！";
-								String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
-								msgContent = msgContent.replace("&bankCardNo", lastBank);
-								jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
-								// 审核通过
-								delegateBorrowCashDo.setGmtArrival(currDate);
-								delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-								delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
-								Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
-								Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
-								Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-								delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-
-								transactionTemplate.execute(new TransactionCallback<String>() {
-									@Override
-									public String doInTransaction(TransactionStatus status) {
-										// 更新借款状态
-										afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
-										// 更新订单状态
-										applyLegalBorrowCashServiceImpl.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-										return "success";
-									}
-								});
-							}
-						}else{
-							// 不需推送或者马甲包的债权，提交ups进行打款处理
-							applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
-									verifyBo.getResult(), mainCard, afBorrowCashDo);
-						}
+						applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
+								verifyBo.getResult(), mainCard, afBorrowCashDo);
 						// 增加借款埋点信息
 						doMaidianLog(httpServletRequest, afBorrowCashDo, requestDataVo, context);
 						//百度智能地址

@@ -19,6 +19,9 @@ public interface ApplyLegalBorrowCashService {
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
 											AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
 
+	AfBorrowCashDo buildRecycleBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
+											AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
+
 	public void checkLock(String lockKey);
 
 	BigDecimal calculateMaxAmount(BigDecimal usableAmount);

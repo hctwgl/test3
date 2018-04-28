@@ -219,6 +219,51 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		return afBorrowCashDo;
 	}
 
+	@Override
+	public AfBorrowCashDo buildRecycleBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, AfResourceDo rateInfoDo, ApplyLegalBorrowCashBo param) {
+		// 获取用户分层利率
+
+		BigDecimal oriRate = riskUtil.getRiskOriRate(userId,(JSONObject)JSONObject.toJSON(param),param.getType());
+		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
+		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		Map<String, Object> rate = riskUtil.getObjectWithResourceDolist(list);
+		this.checkSwitch(rate, currentDay);
+		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
+
+		Integer day = NumberUtil.objToIntDefault(param.getType(), 0);
+		String type = param.getType();
+
+		BigDecimal borrowAmount = param.getAmount();
+		// 计算手续费和利息
+		String borrowRate = rateInfoDo.getValue2();
+		JSONArray array = JSONObject.parseArray(borrowRate);
+		BigDecimal rateAmount = oriRate.multiply(borrowAmount).multiply(new BigDecimal(day))
+				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+
+		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+		afBorrowCashDo.setAmount(borrowAmount);
+		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
+		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
+		afBorrowCashDo.setLatitude(param.getLatitude());
+		afBorrowCashDo.setLongitude(param.getLongitude());
+		afBorrowCashDo.setCity(ObjectUtils.toString(param.getCity()));
+		afBorrowCashDo.setProvince(ObjectUtils.toString(param.getProvince()));
+		afBorrowCashDo.setCounty(ObjectUtils.toString(param.getCounty()));
+		afBorrowCashDo.setType(type);
+		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
+		afBorrowCashDo.setUserId(userId);
+		afBorrowCashDo.setRateAmount(rateAmount);
+		afBorrowCashDo.setPoundage(BigDecimal.ZERO);
+		afBorrowCashDo.setAddress(param.getAddress());
+		// 借款金额支付商品后剩余金额为到账金额
+		afBorrowCashDo.setArrivalAmount(borrowAmount.subtract(param.getGoodsAmount()));
+		afBorrowCashDo.setPoundageRate(BigDecimal.ZERO);
+		afBorrowCashDo.setBaseBankRate(bankRate);
+		afBorrowCashDo.setRiskDailyRate(oriRate);
+		afBorrowCashDo.setRecycleId(param.getRecycleId());
+		return afBorrowCashDo;
+	}
+
 	/**
 	 * 检查放款开关
 	 *
@@ -489,7 +534,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	}
 
 	@Override
-	public void delegatePay(String consumerNo, String orderNo, String result, AfUserBankcardDo mainCard, AfBorrowCashDo afBorrowCashDo) {
+	public void delegatePay(String consumerNo, String orderNo, String result, AfUserBankcardDo mainCard, final AfBorrowCashDo afBorrowCashDo) {
 		Long userId = Long.parseLong(consumerNo);
 		final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 		Date currDate = new Date();
