@@ -7,6 +7,8 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -78,6 +80,12 @@ public class MineHomeApi implements ApiHandle {
 
     @Autowired
     private AfLoanPeriodsService afLoanPeriodsService;
+
+    @Autowired
+    private AfBorrowCashDao afBorrowCashDao;
+
+    @Autowired
+    private AfLoanDao afLoanDao;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -209,15 +217,38 @@ public class MineHomeApi implements ApiHandle {
             data.setDesc(DESC_AMOUNT_AUTH);
         } else if (StringUtil.equals(cashAuthStatus.getRiskStatus(), RiskStatus.YES.getCode())) {
             // 已认证，通过强风控
-            AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService
-                    .getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
-            if (loanTotalSenceDo != null) {
-                data.setShowAmount(
-                        loanTotalSenceDo.getAuAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-                data.setDesc(DESC_AMOUNT_AUTH);
+            AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+            if (userAccount == null || userAccount.getRid() == null) {
+                logger.error("getMyBorrowV1Api error ; userAccount is null and userId = " + userId);
+                return;
             }
-        }
+            // 信用额度
+            BigDecimal auAmount = userAccount.getAuAmount();
+            // 可用额度
+            BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
 
+            BigDecimal cashUsedAmount=BigDecimal.ZERO;
+            AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(userId);
+            List<AfLoanDo> listLoan = afLoanDao.listDealingLoansByUserId(userId);
+            if(listLoan != null && listLoan.size()>0){
+                for (AfLoanDo afLoanDo : listLoan) {
+                    cashUsedAmount = cashUsedAmount.add(afLoanDo.getAmount());
+                }
+            }
+            if(afBorrowCashDo!=null)
+            {
+                cashUsedAmount = cashUsedAmount.add(afBorrowCashDo.getAmount());
+            }
+
+            AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+            if (loanTotalSenceDo != null) {
+                if (BigDecimal.ZERO.compareTo(auAmount) != 0) {
+                    auAmount = loanTotalSenceDo.getAuAmount();
+                }
+            }
+            data.setShowAmount(auAmount.subtract(cashUsedAmount).setScale(2, RoundingMode.HALF_UP).toString());
+            data.setDesc(DESC_AMOUNT_AUTH);
+        }
     }
 
     // 填充账户信息
