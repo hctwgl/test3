@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.HtmlToPdfUtil;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
 import com.ald.fanbei.api.biz.util.VelocityUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfLenderInfoDto;
@@ -107,20 +108,43 @@ public class ArbitrationController {
     AfUserService afUserService;
     @ResponseBody
     @RequestMapping(value = "/lenderTest", method = RequestMethod.GET)
-    public String lenderTest(Long pdfId) throws  Exception {
+    public String createLender(String loanBillNo) throws  Exception {
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日");
+        AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
+        AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
+        Long pdfId=afContractPdfDo.getId();
         List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(pdfId);
-       AfUserDo afUserDo= afUserService.getUserByUserName("15990182307");
+        AfUserDo afUserDo= afUserService.getUserById(afBorrowCashDo.getUserId());
         AfUserAccountDo accountDo= afUserAccountService.getUserAccountByUserId(afUserDo.getRid());
         HashMap map= new HashMap<String, Object>();
-        map.put("userName","15990182307");
+        map.put("userName",afUserDo.getUserName());
         map.put("gmtCreate",new Date());
-
-        afUserService.getUserByUserName("15990182307");
+        String receiptNo="REC"+System.currentTimeMillis();
+        map.put("orderNo",receiptNo);
+        String lender="";
+        String lenderAmountInfo="";
+        for (AfLenderInfoDto lenderInfoDto:lenders) {
+            lender=lender+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+"</span>（身份证号：<span style=\"color:red;\">"+lenderInfoDto.getEdspayUserCardId()+"</span>）、";
+            lenderAmountInfo=lenderAmountInfo+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元</span>，";
+        }
+        if(lender.contains("、")){
+            lender= lender.substring(0,lender.lastIndexOf("、"));
+        }
+        if(lenderAmountInfo.contains("，")){
+            lenderAmountInfo= lenderAmountInfo.substring(0,lenderAmountInfo.lastIndexOf("，"));
+        }
+        lenderAmountInfo=lenderAmountInfo+"。";
+        map.put("lender",lender);
+        map.put("borrowUserInfo","<span style=\"color:red;\">"+afUserDo.getRealName()+"</span>（身份证号：<span style=\"color:red;\">"+accountDo.getIdNumber()+"</span>）");
+        map.put("amount",afBorrowCashDo.getAmount());
+        map.put("cnAmount",NumberUtil.number2CNMontrayUnit(afBorrowCashDo.getAmount()));
+        map.put("receptDate",simpleDateFormat.format(afBorrowCashDo.getGmtCreate()));
+        map.put("lenderAmountInfo",lenderAmountInfo);
         AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
         map.put("personUserSeal", afUserSealDo.getUserSeal());
         map.put("accountId", afUserSealDo.getUserAccountId());
         String url= afLegalContractPdfCreateServiceV2.receptProtocolPdf(map);
-        return JSON.toJSONString(lenders);
+            return url;
     }
     @ResponseBody
     @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
