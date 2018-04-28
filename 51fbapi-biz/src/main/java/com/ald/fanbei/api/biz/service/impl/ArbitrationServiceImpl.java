@@ -624,6 +624,13 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    List<AfRepaymentBorrowCashDo> list = afRepaymentBorrowCashService
 		    .getRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+	    if(list.size()<1 || list == null) {
+	    	logger.info("AfRepaymentBorrowCashDo not exist,borrowNo= " + borrowNo);
+	    	resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
+			resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
+			return resp;
+	    }
+	    
 	    AfResourceDo resource = afResourceService
 		    .getConfigByTypesAndSecType(
 			    AfResourceType.ARBITRATION_TYPE.getCode(),
