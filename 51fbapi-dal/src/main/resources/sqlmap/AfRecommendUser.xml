@@ -242,6 +242,12 @@
 		       gmt_modified = now()
 		where id = #{id}
 	</update>
-	
+
+	<select id="getTodayShareTimes" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		select  count(1)
+		from af_recommend_shared
+		where user_id = #{userId}
+		and to_days(gmt_create) = to_days(now())
+	</select>
 	
 </mapper>

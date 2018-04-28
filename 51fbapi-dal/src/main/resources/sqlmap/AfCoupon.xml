@@ -225,5 +225,19 @@
 		AND
 		name = #{name}
 	</select>
-	
+
+	<select id="getCouponByIds" resultType="AfCouponDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_coupon
+		WHERE
+		is_delete = 0
+		AND
+		id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
 </mapper>

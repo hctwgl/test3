@@ -622,4 +622,46 @@
 	</select>
 
 
+	<select id="getGoodsByIds" parameterType="list" resultType="java.util.HashMap">
+		SELECT
+		    a.id as rid,
+			a.name as goodsName,
+			a.goods_icon as goodsIcon,
+			a.thumbnail_icon as thumbnailIcon,
+			a.goods_url as goodsUrl,
+			a.open_id as openId,
+			a.num_id as numId,
+			a.price_amount as priceAmount,
+			a.sale_amount as saleAmount,
+			a.source as source,
+			a.rebate_amount as rebateAmount,
+			(a.sale_amount-a.rebate_amount) realAmount,
+			a.stock_count as stockCount,
+			b.interest_free_id as interestFreeId
+		FROM
+			af_goods a
+		LEFT JOIN af_scheme_goods b on a.id = b.goods_id
+		WHERE
+			a.is_delete=0
+	    AND a.id IN
+		<foreach item="item" collection="list" separator="," open="("
+				 close=")">
+			#{item, jdbcType=BIGINT}
+		</foreach>
+	</select>
+
+	<select id="getVisualGoodsByGoodsId" resultType="HashMap">
+		SELECT a.name,a.rebate_amount,a.price_amount,a.sale_amount,a.goods_icon,a.id FROM af_goods as a
+		WHERE  a.is_delete = 0 AND a.status = 'PUBLISH'
+		AND a.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		) ORDER BY field(a.id,
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+
 </mapper>

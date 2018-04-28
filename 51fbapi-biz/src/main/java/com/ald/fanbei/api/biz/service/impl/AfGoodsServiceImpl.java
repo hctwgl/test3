@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -245,6 +248,16 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
 		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
+	}
+
+	@Override
+	public List<Map<String, Object>> getGoodsByIds(List<Long> goodList){
+		return afGoodsDao.getGoodsByIds(goodList);
+	}
+
+	@Override
+	public List<HashMap> getVisualGoodsByGoodsId(List<String> ids) {
+		return afGoodsDao.getVisualGoodsByGoodsId(ids);
 	}
 
 }

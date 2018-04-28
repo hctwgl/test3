@@ -119,7 +119,8 @@ public class HuichaoUtility implements ThirdInterface {
         String stringsignTemp=stringA+"&key="+key;
         String sign= getMD5(stringsignTemp);
         String stringB = stringA+"&sign=" +sign;
-        String ret= "http://jh.yizhibank.com/api/createOrder?"+stringB;
+//        String ret= "http://jh.yizhibank.com/api/createOrder?"+stringB;
+        String ret = "https://alipay.3c-buy.com/api/createOrder?"+stringB;
         map.put("urlscheme",ret);
 
 //        String firstStr = getFirstString(thirdNo,orderMoney,String.valueOf( new Date().getTime()));
