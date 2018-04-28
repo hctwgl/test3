@@ -159,6 +159,7 @@
             <br>
         </div>
     #elseif($!{style}==20)
+        <img src="$commonUrl/channel$!{style}_03.jpg">
         <div class="copyright_20">
             <p>浙江阿拉丁电子商务有限公司版权所有</p>
             <p>All Right Reserved. 浙ICP备16001312-4号</p>
