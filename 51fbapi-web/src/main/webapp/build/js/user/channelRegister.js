@@ -192,7 +192,7 @@ $(function(){
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
         toMaidian('registerBtn');
-        if(style!='8'&&style!='9'&&style!='10'&&style!='11'&&style!='12'&&style!='13'&&style!='14'&&style!='15'){ //样式8,9无密码
+        if(style!='8'&&style!='9'&&style!='10'&&style!='11'&&style!='12'&&style!='13'&&style!='14'&&style!='15'&&style!='19'){ //样式8,9无密码
             // md5加密
             var register_password = $("#register_password").val();
             var password_md5 = String(CryptoJS.MD5(register_password));
