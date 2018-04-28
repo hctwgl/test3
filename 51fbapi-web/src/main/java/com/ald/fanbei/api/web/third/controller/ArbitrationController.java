@@ -173,16 +173,7 @@ public class ArbitrationController {
             AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
             if(afContractPdfDo!=null){
                 arbitrationDo.setValue1(afContractPdfDo.getContractPdfUrl());
-                //收据
-                if(StringUtil.isEmpty(arbitrationDo.getValue3())){
-                    try{
-                        String lenderUrl= createLender(loanBillNo);
-                        arbitrationDo.setValue3(lenderUrl);
-                    }catch (Exception ex){
-                        logger.info("create lender error：",ex);
-                    }
 
-                }
             }else{
                 String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
                 arbitrationDo.setValue1(protocal);
@@ -204,7 +195,16 @@ public class ArbitrationController {
             }
         }
 
+        //收据
+        if(StringUtil.isEmpty(arbitrationDo.getValue3())){
+            try{
+                String lenderUrl= createLender(loanBillNo);
+                arbitrationDo.setValue3(lenderUrl);
+            }catch (Exception ex){
+                logger.info("create lender error：",ex);
+            }
 
+        }
        if(arbitrationDo.getRid()==null||arbitrationDo.getRid()<=0){
             arbitrationDo.setLoanBillNo(loanBillNo);
             arbitrationDo.setGmtCreate(new Date());
