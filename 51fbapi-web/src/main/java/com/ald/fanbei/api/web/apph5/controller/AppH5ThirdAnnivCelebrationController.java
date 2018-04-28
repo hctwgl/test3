@@ -111,6 +111,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                         userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
                         userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
                         afUserCouponService.addUserCoupon(userCoupon);
+                        AfCouponDo couponDoT = new AfCouponDo();
+                        couponDoT.setRid(couponDo.getRid());
+                        couponDoT.setQuotaAlready(1);
+                        afCouponService.updateCouponquotaAlreadyById(couponDoT);
 
                         data.put("couponCondititon", couponDo.getLimitAmount());
                         data.put("couponAmount", couponDo.getAmount());
