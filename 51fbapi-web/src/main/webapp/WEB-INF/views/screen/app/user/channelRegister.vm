@@ -85,6 +85,7 @@
 
     #if($!{style}==20)
     <div class="form">
+        <div id="register_codeBtn" style="display: none;"></div>
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <div class="to_loadapp_btn" id="toLoadAppBtn"></div>
     </div>
