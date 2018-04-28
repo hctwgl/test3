@@ -650,15 +650,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				afBorrowLegalOrderDo.setGmtClosed(cur);
 				afBorrowLegalOrderDo.setGmtModified(cur);
 				applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-				//维护拓展表
-				AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
-				Date now = new Date();
-				afBorrowCashPushDo.setGmtCreate(now);
-				afBorrowCashPushDo.setGmtModified(now);
-				afBorrowCashPushDo.setBorrowCashId(borrowCashDo.getRid());
-				afBorrowCashPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-				afBorrowCashPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-				afBorrowCashPushService.saveRecord(afBorrowCashPushDo);
+				AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowCashPushService.saveOrUpdate(borrowCashPush);
 			}else{
 				//调ups打款
 				applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
@@ -668,14 +661,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			//分期
 			AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowCashInfo.getOrderNo());
 			if (null != borrowDo) {
-				AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-				Date now = new Date();
-				borrowPushDo.setGmtCreate(now);
-				borrowPushDo.setGmtModified(now);
-				borrowPushDo.setBorrowId(borrowDo.getRid());
-				borrowPushDo.setAssetSideFlag(Constants.ASSET_SIDE_FANBEI_FLAG);
-				borrowPushDo.setStatus(PushEdspayResult.PUSHFAIL.getCode());
-				afBorrowPushService.saveRecord(borrowPushDo);
+				AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PUSHFAIL.getCode());
+				afBorrowPushService.saveOrUpdate(borrowPush);
 			}
 		}else{
 			//白领贷

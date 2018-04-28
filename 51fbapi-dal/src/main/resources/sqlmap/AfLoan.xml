@@ -629,7 +629,7 @@
         LIMIT 0,1
 	</select>
 	
-	<select id="getLoanById" parameterType="java.lang.Long"resultType="com.ald.fanbei.api.dal.domain.AfLoanDo">
+	<select id="getLoanById" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfLoanDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
