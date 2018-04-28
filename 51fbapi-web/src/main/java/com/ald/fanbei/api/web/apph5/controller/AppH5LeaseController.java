@@ -652,6 +652,9 @@ public class AppH5LeaseController extends BaseController {
                 if(afUserAuthStatusDo.getStatus().equals("Y")){
                     AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE", afUser.getUserId());
                     useableAmount = afUserAccountSenceOnline.getAuAmount().subtract(afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
+                    if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+                        useableAmount = BigDecimal.ZERO;
+                    }
                     Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
                     dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
                     String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
@@ -825,6 +828,9 @@ public class AppH5LeaseController extends BaseController {
                 if(lease.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
                     AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), afUser.getRid());
                     BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+                    if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+                        useableAmount = BigDecimal.ZERO;
+                    }
                     if(useableAmount.compareTo(lease.getFreezeAmount()) >= 0){
                         lease.setQuotaDeposit(lease.getFreezeAmount());
                         lease.setCashDeposit(new BigDecimal(0));
@@ -1003,6 +1009,7 @@ public class AppH5LeaseController extends BaseController {
         try{
             Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0);
             Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
+            Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), 0);
             if(orderId != 0){
                 HashMap data = afOrderService.getLeaseProtocol(orderId);
                 //拿到日利率快照Bo
@@ -1033,9 +1040,8 @@ public class AppH5LeaseController extends BaseController {
                 if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
                     data.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
                 }
-                AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
                 // 保存手续费信息
-                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),afOrderDo.getGoodsId());
+                BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName(),goodsId);
                 data.put("overdueRate",borrowRate.getOverdueRate());
                 data.put("realName",accountDo.getRealName());
                 data.put("userName",accountDo.getUserName());

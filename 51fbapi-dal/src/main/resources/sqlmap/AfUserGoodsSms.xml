@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserGoodsSmsDao">
 	
 	<sql id="smsSqlField">
-		id rid,is_delete,gmt_create,gmt_modified,goods_name,user_id,goods_id
+		id rid,is_delete,gmt_create,gmt_modified,goods_name,user_id,goods_id,activity_id
 	</sql>
 	
 	<select id="selectByGoodsIdAndUserId" parameterType="AfUserGoodsSmsDo" resultType="AfUserGoodsSmsDo">
@@ -13,7 +13,7 @@
 
 	<select id="selectBookingByGoodsIdAndUserId" parameterType="AfUserGoodsSmsDo" resultType="AfUserGoodsSmsDo">
 		select <include refid="smsSqlField" /> FROM  af_user_goods_sms where is_delete = 0 and goods_id = #{goodsId} and user_id = #{userId}
-		and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+		and activity_id = #{activityId}
 	</select>
 
 	<insert id="insertByGoodsIdAndUserId" parameterType="AfUserGoodsSmsDo" useGeneratedKeys="true" keyProperty="rid">
@@ -25,7 +25,8 @@
 				gmt_modified,
 				goods_name,
 				goods_id,
-				user_id
+				user_id,
+				activity_id
 			)
 			VALUES(
 				#{isDelete},
@@ -33,7 +34,8 @@
 				NOW(),
 				#{goodsName},
 				#{goodsId},
-				#{userId}
+				#{userId},
+				#{activityId}
 			)
 	</insert>
 

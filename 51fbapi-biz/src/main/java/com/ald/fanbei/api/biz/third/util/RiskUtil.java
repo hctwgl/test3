@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.third.util;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -318,16 +319,23 @@ public class RiskUtil extends AbstractThird {
 	AfUserSeedService afUserSeedService;
 	
 	@Resource
-	  AfTradeSettleOrderService afTradeSettleOrderService;
+	AfTradeSettleOrderService afTradeSettleOrderService;
+	
+	@Resource
+	AfTradeBusinessInfoService afTradeBusinessInfoService;
 
-	  @Resource
-	  AfTradeBusinessInfoService afTradeBusinessInfoService;
+	@Resource
+	AfBklService afBklService;
 
 	@Resource
 	JdbcTemplate loanJdbcTemplate;
+	@Resource
+	AfInterimAuService afInterimAuService;
+
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+
 			return url;
 		}
 		return url;
@@ -850,11 +858,13 @@ public class RiskUtil extends AbstractThird {
 			summaryData.put("lastOverdueDay", "0");
 			summaryData.put("maxOverdueDay", "0");
 		}
+
 		reqBo.setSummaryData(JSON.toJSONString(summaryData));
 		// 12-13 弱风控加入订单信息
 		HashMap summaryOrderData = new HashMap();
 		if (orderid > 0) {
 			summaryOrderData = riskDataMap.get("summaryOrderData");
+
 		}
 		if (borrow != null && orderDo != null) {
 			summaryOrderData.put("calculateMethod", borrow.getCalculateMethod());
@@ -894,14 +904,44 @@ public class RiskUtil extends AbstractThird {
 			    else {
 				    summaryOrderData.put("boluomeDetails", "");
 			    }
+			   }
+			//额度占比
+			BigDecimal uaAmount = new BigDecimal(0);
+			BigDecimal uaAmountUsed = new BigDecimal(0);
+			BigDecimal uaAmountTemp = new BigDecimal(0);
+			BigDecimal uaAmountTempUsed = new BigDecimal(0);
+
+
+			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",orderDo.getUserId());
+			if (afUserAccountSenceDo != null){
+				uaAmount = afUserAccountSenceDo.getAuAmount();
+				uaAmountUsed = afUserAccountSenceDo.getUsedAmount();
 			}
+			AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(orderDo.getUserId());
+			if(afInterimAuDo != null && afInterimAuDo.getGmtFailuretime().getTime()>= new Date().getTime()){
+				uaAmountTemp = afInterimAuDo.getInterimAmount();
+				uaAmountTempUsed = afInterimAuDo.getInterimUsed();
+			}
+			BigDecimal totalAmount = uaAmount.subtract(uaAmountUsed).add(uaAmountTemp).subtract(uaAmountTempUsed);
+			BigDecimal borrowAmount = amount;
+			borrowAmount=borrowAmount == null?BigDecimal.ZERO:borrowAmount;
+			if (totalAmount.compareTo(BigDecimal.ZERO)>0){
+				summaryOrderData.put("unpayedCanUseRatio",borrowAmount.divide(totalAmount,2,BigDecimal.ROUND_HALF_UP));
+				BigDecimal userThisOrderSum = borrowAmount.compareTo(uaAmount.subtract(uaAmountUsed))<=0?BigDecimal.ZERO:borrowAmount.subtract(uaAmount.subtract(uaAmountUsed));
+				summaryOrderData.put("userThisOrderSum",userThisOrderSum);
+				summaryOrderData.put("userTemporaryLimitRatio",uaAmountTemp.compareTo(BigDecimal.ZERO)>0?(userThisOrderSum.add(uaAmountTempUsed).divide(uaAmountTemp,2,BigDecimal.ROUND_HALF_UP)):BigDecimal.ZERO);
+			}
+			String thisOrderUnanimous = (String)summaryOrderData.get("thisOrderUnanimous");
+			summaryOrderData.put("thisOrderUnanimous",thisOrderUnanimous.equals(orderDo.getConsigneeMobile())?"true":"false");
+			summaryOrderData.put("gpsUnanimous",(summaryOrderData.get("gpsUnanimous")==null||"".equals(summaryOrderData.get("gpsUnanimous")))?"true":((String)summaryOrderData.get("gpsUnanimous")).contains(orderDo.getProvince())?"true":"false");
+
 		}
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
 		reqBo.setReqExt("");
 
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+		String url =  getUrl() + "/modules/api/risk/weakRiskVerify.htm";
 
 		// String url = "http://192.168.110.16:8080" +
 		// "/modules/api/risk/weakRiskVerify.htm";
@@ -1286,27 +1326,27 @@ public class RiskUtil extends AbstractThird {
 		}
 		// 更新拆分场景使用额度
 		updateUsedAmount(orderInfo, borrow);
-		//TODO 电核
-		if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+		logger.info("payOrder bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+		if ((orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode()))) {
 			//新增白名单逻辑
 			try {
 				try {
-					String bklResult = isBklResult(orderInfo);
+					String bklResult = afBklService.isBklResult(orderInfo);
 					if (bklResult.equals("v2")){//需电核
-						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult true orderInfo ="+JSON.toJSONString(orderInfo));
-						submitBklInfo(orderInfo);
+						logger.info("payOrder bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+						afBklService.submitBklInfo(orderInfo,"分期付款",orderInfo.getActualAmount());
 						if (orderInfo.getIagentStatus()==null)
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
-						logger.info("dealBrandOrderSucc bklUtils submitBklInfo result isBklResult false orderInfo ="+JSON.toJSONString(orderInfo));
+						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
 						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
 						orderInfo.setIagentStatus("A");
 					}
 				}catch (Exception e){
-					logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+					logger.error("payOrder bklUtils submitBklInfo error",e);
 				}
 			}catch (Exception e){
-				logger.error("dealBrandOrderSucc bklUtils submitBklInfo error",e);
+				logger.error("payOrder bklUtils submitBklInfo error",e);
 			}
 		}
 		logger.info("updateOrder orderInfo = {}", orderInfo);
@@ -1374,116 +1414,6 @@ public class RiskUtil extends AbstractThird {
 	    return extractableDate;
 	  }
 
-	private String  isBklResult(AfOrderDo orderInfo) {
-		String result = "v2";
-		//种子名单
-		/*AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
-		if (userSeedDo != null){
-			result = false;
-			return result;
-		}*/
-		//开关
-		/*AfResourceDo bklSwitch = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_CONF_SWITCH.getCode(), AfResourceSecType.BKL_CONF_SWITCH.getCode());
-		if (bklSwitch == null || "N".equals(bklSwitch.getValue())){
-			result = false;
-			return result;
-		}*/
-		AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
-		if (bklWhiteResource != null) {
-			//白名单开启
-			String[] whiteUserIdStrs = bklWhiteResource.getValue3().split(",");
-			Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo whiteUserIds = "+ Arrays.toString(whiteUserIds) + ",orderInfo userId = "+orderInfo.getUserId());
-			if(!Arrays.asList(whiteUserIds).contains(orderInfo.getUserId())){//不在白名单不走电核
-				result = "v0";
-				return result;
-			}
-		}
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.ORDER_MOBILE_VERIFY_SET.getCode(), AfResourceSecType.ORDER_MOBILE_VERIFY_SET.getCode());
-		if (afResourceDo != null){
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo actualAmount ="+orderInfo.getActualAmount()+",afResourceDo value="+afResourceDo.getValue());
-			if (orderInfo.getActualAmount().compareTo(BigDecimal.valueOf(Long.parseLong(afResourceDo.getValue()))) <= 0){//借款金额<=订单直接通过
-				result = "v1";
-				return result;
-			}
-			AfIagentResultDto iagentResultDo = new AfIagentResultDto();
-			iagentResultDo.setUserId(orderInfo.getUserId());
-			iagentResultDo.setCheckResult("0");//通过审核
-			iagentResultDo.setDayNum(Integer.parseInt(afResourceDo.getValue1()));
-			List<AfIagentResultDo> iagentResultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(iagentResultDo);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList  ="+JSON.toJSONString(iagentResultDoList));
-			if (iagentResultDoList != null && iagentResultDoList.size() > 0){//x天内已电核过且存在通过订单用户不需电核直接通过
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo iagentResultDoList size ="+iagentResultDoList.size());
-				result = "v1";
-				return result;
-			}
-			AfIagentResultDto resultDto = new AfIagentResultDto();
-			resultDto.setUserId(orderInfo.getUserId());
-			resultDto.setCheckResult("1");
-			resultDto.setDayNum(Integer.parseInt(afResourceDo.getValue2()));
-			List<AfIagentResultDo> resultDoList = iagentResultDao.getIagentByUserIdAndStatusTime(resultDto);
-			logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList ="+JSON.toJSONString(resultDoList)+",iagentResultDo="+JSON.toJSONString(resultDto));
-			if (resultDoList != null && resultDoList.size() > 0){//天已电核过且拒绝订单>=2直接拒绝
-				logger.info("dealBrandOrderSucc bklUtils submitBklInfo resultDoList size ="+resultDoList.size()+",afResourceDo value3 ="+afResourceDo.getValue3());
-				if (resultDoList.size() >= Integer.parseInt(afResourceDo.getValue3())){
-					//直接拒绝
-					afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"B");
-					Map<String,String> qmap = new HashMap<>();
-					qmap.put("orderNo",orderInfo.getOrderNo());
-					result = "v3";
-					final String  orderNo = orderInfo.getOrderNo();
-					final String json = JSONObject.toJSONString(qmap);
-					YFSmsUtil.pool.execute(new Runnable() {
-						@Override
-						public void run() {
-							HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+orderNo,json);
-						}
-					});
-
-				}else {
-					result = "v2";//需电核
-				}
-			}
-		}
-		return result;
-	}
-
-	public void submitBklInfo(AfOrderDo orderInfo){
-		try {
-			AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
-			AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
-			AfIdNumberDo idNumberDo = idNumberDao.getIdNumberInfoByUserId(userDo.getRid());
-			AfGoodsCategoryDo afGoodsCategoryDo = afGoodsCategoryDao.getGoodsCategoryById(goods.getPrimaryCategoryId());
-			String csvDigit4 = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-4,accountDo.getIdNumber().length());
-			String csvBirthDate = accountDo.getIdNumber().substring(accountDo.getIdNumber().length()-12,accountDo.getIdNumber().length()-4);
-			String sex ;
-			if (idNumberDo != null){
-				sex = idNumberDo.getGender();
-			}else {
-				sex = "";
-			}
-			AfBklDo bklDo = new AfBklDo();
-			bklDo.setCsvArn(orderInfo.getOrderNo());
-			bklDo.setCsvPhoneNum(userDo.getMobile());
-			bklDo.setCsvAmt(String.valueOf(orderInfo.getActualAmount()));
-			bklDo.setCsvDigit4(csvDigit4);
-			bklDo.setCsvBirthDate(csvBirthDate);
-			bklDo.setCsvName(userDo.getRealName());
-			bklDo.setCsvPayWay("分期付款");
-			bklDo.setCsvProductCategory(afGoodsCategoryDo.getName());
-			bklDo.setCsvSex(sex);
-			bklDo.setCsvStaging(String.valueOf(orderInfo.getNper()));
-			bklDo.setOrderId(orderInfo.getRid());
-			bklDo.setUserId(orderInfo.getUserId());
-			bklUtils.submitJob(bklDo);
-			orderInfo.setIagentStatus(bklDo.getIagentState());
-		}catch (Exception e){
-			logger.error("submitBklInfo error = >{}",e);
-		}
-
-
-	}
 
 	public List<EdspayGetCreditRespBo> pushEdsPayBorrowInfo(final AfBorrowDo borrow) {
 		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();

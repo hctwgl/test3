@@ -47,4 +47,6 @@ public interface AfRecommendUserDao {
     
     int getSumSubmitRealname(@Param("pid")long pid);
     int updateRecommendUserById(AfRecommendUserDo afRecommendUserDo);
+
+    int getTodayShareTimes(@Param("userId") Long userId);
 }

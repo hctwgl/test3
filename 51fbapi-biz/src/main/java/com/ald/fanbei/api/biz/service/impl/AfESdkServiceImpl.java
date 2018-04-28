@@ -103,12 +103,16 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "（借款人）：").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -118,16 +122,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "（借款人）：";
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("userStreamSign sign account id: " + accountId);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -144,15 +139,17 @@ public class AfESdkServiceImpl implements AfESdkService {
     public FileDigestSignResult userSign(Map<String, Object> map) {
         // 待签署文 档路径
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
-        logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        logger.info("sign dstFile: " + dstFile);
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1"));
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70"));
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("personKey"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -162,15 +159,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("personKey"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk userSign sign account id = " + accountId+",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -181,7 +170,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         fileBean.setDstPdfFile(dstFile);
         fileBean.setFileName(fileName);
         FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
-        logger.info("r cfp = " + JSON.toJSONString(r));
         // 使用用户印章签名
         return r;
     }
@@ -195,10 +183,17 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();
         SignType signType = null;
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();
-        type = "Multi";
+        String type = ObjectUtils.toString(map.get("signType"), "Multi").toString();
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posX = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "170").toString());
+        int posY = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "540").toString());
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "5").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -208,17 +203,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posX = 170;
-        int posY = 540;
-        int posType = 0;
-        int width = 159;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sign account id: " + accountId);
-        fileName = "反呗合同";
-        posPage = "5";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setPosX(posX);
@@ -241,13 +226,18 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Multi").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("secondSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
-        type = "Multi";
+        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
+        int posX = Integer.valueOf(ObjectUtils.toString(map.get("posX"), "420").toString());
+        int posY = Integer.valueOf(ObjectUtils.toString(map.get("posY"), "685").toString());
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "5").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -257,17 +247,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-        int posX = 420;
-        int posY = 685;
-        int posType = 0;
-        int width = 159;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sign account id: " + accountId);
-        posPage = "5";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setPosX(posX);
@@ -308,15 +288,14 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
 
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posX = 170;
-        int posY = 685;
-        int posType = 0;
-        int width = 159;
+        int posX =Integer.valueOf(ObjectUtils.toString(map.get("posX"), "170").toString());
+        int posY = Integer.valueOf(ObjectUtils.toString(map.get("posY"), "685").toString());
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "0").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "159").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "5").toString();
         logger.info("sign account id: " + accountId);
-        posPage = "5";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setPosX(posX);
@@ -340,11 +319,15 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), ""));
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), ""));
+        String key = ObjectUtils.toString(map.get("firstPartyKey"), "");
+        String posPage = ObjectUtils.toString(map.get("posPage"), "5").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -354,14 +337,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-         int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), ""));
-         float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), ""));
-        String key = ObjectUtils.toString(map.get("firstPartyKey"), "");
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk firstPartySign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "5";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setPosPage(posPage);
@@ -382,11 +358,15 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("companySelfSeal"), "");// 签章数据
-        fileName = "反呗合同";
+        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
+        String key = ObjectUtils.toString(map.get("secondPartyKey"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -396,13 +376,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-         int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
-         float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
-        String key = ObjectUtils.toString(map.get("secondPartyKey"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk secondPartySign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -435,13 +409,17 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
 
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("secondSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
+        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "80").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -452,14 +430,7 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
 
-        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-        int posType = 1;
-        int width = 80;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk secondSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -481,13 +452,15 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
-        SignType signType = null;
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         String sealData = ObjectUtils.toString(map.get("secondSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
+        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "30").toString());
+        String key = ObjectUtils.toString(map.get("key"), "").toString();
+        boolean isQrcodeSign = false;
+        SignType signType = null;
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -497,13 +470,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
-        int posType = 1;
-        int width = 30;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk secondStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
         PosBean pos = new PosBean();
         pos.setPosType(posType);
@@ -533,13 +499,16 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("thirdPath"), "");// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
+        String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "楚橡信息科技股份有限公司").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("thirdSeal"), "");// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -550,16 +519,7 @@ public class AfESdkServiceImpl implements AfESdkService {
             signType = SignType.Key;
         }
 
-        String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
-        int posType = 1;
-        int width = 70;
-
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "楚橡信息科技股份有限公司";
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("thirdSign sign account id: " + accountId);
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -576,12 +536,16 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream) {//钱包字节流签章
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();// 文档显示名字
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
-        SignType signType = null;
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("thirdPartyKey"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
+        String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
         String sealData = ObjectUtils.toString(map.get("thirdSeal"), "");// 签章数据
-        fileName = "反呗合同";
-        type = "Key";
+        SignType signType = null;
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -591,14 +555,6 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-
-        String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
-
-        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
-        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("thirdPartyKey"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("thirdStreamSign sign account id: " + accountId);
         PosBean pos = new PosBean();
         pos.setPosType(posType);
@@ -671,10 +627,14 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "商务股份有限公司").toString();
         SignType signType = null;
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();
-        type = "Key";
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "商务股份有限公司").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -684,16 +644,8 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "商务股份有限公司";
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
+
         logger.info("selfSign sign account id: " + accountId);
-        fileName = "反呗合同";
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -715,11 +667,14 @@ public class AfESdkServiceImpl implements AfESdkService {
         // 待签署文档路径
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
-        String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();
         SignType signType = null;
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();
-        type = "Key";
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("key"), "商务股份有限公司").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -729,16 +684,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("key"), "").toString();
-        key = "商务股份有限公司";
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk selfStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        fileName = "反呗合同";
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -759,10 +705,15 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();
         SignType signType = null;
-        String type = ObjectUtils.toString(map.get("signType"), "").toString();
-        type = "Key";
+        String type = ObjectUtils.toString(map.get("signType"), "Key").toString();
+        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
+        boolean isQrcodeSign = false;
+        String key = ObjectUtils.toString(map.get("selfKey"), "").toString();
+        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -772,15 +723,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         } else if ("Key".equalsIgnoreCase(type)) {
             signType = SignType.Key;
         }
-        String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
-        int posType = 1;
-        int width = 70;
-        boolean isQrcodeSign = false;
-        String key = ObjectUtils.toString(map.get("selfKey"), "").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "").toString();
         logger.info("sdk selfStreamSign sign account id = " + accountId,",key =" + key + ",borrowId = " + map.get("borrowId")+",srcFile = "+srcFile);
-        fileName = "反呗合同";
-        posPage = "6";
         PosBean pos = new PosBean();
         pos.setPosType(posType);
         pos.setWidth(width);
@@ -869,7 +812,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
         if (null == afUserSealDo) {// 第一次创建个人印章
             Map<String, String> map = new HashMap<>();
-            map.put("name", afUserDo.getRealName());
+            map.put("name", accountDo.getRealName());
             map.put("idno", accountDo.getIdNumber());
             map.put("email", afUserDo.getEmail());
             map.put("mobile", afUserDo.getMobile());

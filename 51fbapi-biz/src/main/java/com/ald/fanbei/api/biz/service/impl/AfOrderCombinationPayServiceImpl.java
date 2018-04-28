@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,16 +14,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.bo.KuaijieOrderCombinationPayBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderCombinationPayService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -50,6 +41,8 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import javax.annotation.Resource;
 
 @Service("afOrderCombinationPayService")
 public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstract implements AfOrderCombinationPayService {
@@ -97,6 +90,9 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
 	@Autowired
 	RiskUtil riskUtil;
+
+	@Resource
+	AfBklService afBklService;
 
 	/**
 	 * 风控通过后组合支付
@@ -253,6 +249,25 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 			riskUtil.updateUsedAmount(orderInfo, borrow);
 			logger.info("updateOrder orderInfo = {}", afOrder);
             afOrderDao.updateOrder(afOrder);
+			logger.info("upsPaySuccess bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
+			if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
+				//新增白名单逻辑
+				try {
+					String bklResult = afBklService.isBklResult(orderInfo);
+					if (bklResult.equals("v2")){//需电核
+						logger.info("upsPaySuccess bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
+						afBklService.submitBklInfo(orderInfo,"组合支付",orderInfo.getBorrowAmount());
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("C");
+					}else if (bklResult.equals("v1")){//不需电核
+						logger.info("upsPaySuccess bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
+						orderInfo.setIagentStatus("A");
+					}
+				}catch (Exception e){
+					logger.error("upsPaySuccess bklUtils submitBklInfo error",e);
+				}
+			}
 		}
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();

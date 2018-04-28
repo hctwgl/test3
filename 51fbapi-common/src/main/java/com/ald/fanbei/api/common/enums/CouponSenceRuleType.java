@@ -19,7 +19,9 @@ public enum CouponSenceRuleType {
     INVITE("INVITE", "邀请"),
     RESERVATION("RESERVATION","预约活动"),
     CREDITAUTH("CREDITAUTH", "信用认证"),
-    DOUBLE_EXCHANGE("DOUBLE_EXCHANGE", "翻倍兑换优惠券")
+    DOUBLE_EXCHANGE("DOUBLE_EXCHANGE", "翻倍兑换优惠券"),
+    SHARE_ACTIVITY("SHARE_ACTIVITY", "活动分享"),
+    SELFSUPPORT_PAID("SELFSUPPORT_PAID", "自营成功购物")
     ;
   
     

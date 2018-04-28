@@ -110,6 +110,19 @@ public class BizCacheUtil extends AbstractThird {
 		
 	}
 	
+	public void saveMap(final String key, final Map<?, ?> valMap,final long expire ) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
+			return;
+		}
+		try{
+			redisTemplate.opsForHash().putAll(key, valMap);
+			redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			logger.error("redis save map error, error info=>{}",e.getMessage());
+		}
+		
+	}
+	
 	public void saveMapForever(final String key, final Map<?, ?> valMap) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
 			return;

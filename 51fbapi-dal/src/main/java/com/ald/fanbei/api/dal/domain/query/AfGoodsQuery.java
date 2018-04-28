@@ -27,8 +27,18 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 	
 	private Integer appVersion;//版本号
 	
+	private String sort;
+	
 	public Long getCategoryId() {
 		return categoryId;
+	}
+
+	public String getSort() {
+		return sort;
+	}
+
+	public void setSort(String sort) {
+		this.sort = sort;
 	}
 
 	public void setCategoryId(Long categoryId) {

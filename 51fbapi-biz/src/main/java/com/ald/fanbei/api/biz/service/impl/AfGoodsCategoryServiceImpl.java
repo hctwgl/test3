@@ -68,4 +68,9 @@ public class AfGoodsCategoryServiceImpl implements AfGoodsCategoryService {
 	    // TODO Auto-generated method stub
 	    	return afGoodsCategoryDao.listByParentIdAndLevel(queryAfGoodsCategory);
 	}
+
+	@Override
+	public AfGoodsCategoryDo getGoodsCategoryById(Long categoryId) {
+		return afGoodsCategoryDao.getGoodsCategoryById(categoryId);
+	}
 }

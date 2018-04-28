@@ -1,35 +1,34 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.util.*;
-
-import javax.annotation.Resource;
-
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.dao.AfUserSeedDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 
@@ -95,14 +94,28 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfBorrowBillDo getBillAmountByIds(String ids) {
 		return afBorrowBillDao.getBillAmountByIds(StringUtil.splitToList(ids, ","));
 	}
+
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	/**
 	 * update by fumeiai 在af_borrow_bill表里增加了coupon_amount(优惠减免),jfb_amount(集分宝抵扣),rebate_amount(返利抵扣)
 	 * 在还款成功的时候，将优惠值平分到每个账单里
 	 */
 	@Override
 	public int updateBorrowBillStatusByIds(String ids, String status, Long repaymentId, BigDecimal couponAmount, BigDecimal jfbAmount, BigDecimal rebateAmount) {
+		logger.info("borrow bill couponAmount:"+couponAmount);
 		List<String> idsList = StringUtil.splitToList(ids, ",");
 		BigDecimal billNum = new BigDecimal(idsList.size());
+		logger.info("borrow bill billNum:"+billNum);
+		if(couponAmount == null){
+			couponAmount = BigDecimal.ZERO;
+		}
+		if(jfbAmount ==null){
+			jfbAmount = BigDecimal.ZERO;
+		}
+		if(rebateAmount ==null){
+			rebateAmount = BigDecimal.ZERO;
+		}
+
 		BigDecimal couponAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal jfbAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
 		BigDecimal rebateAmountAvg = couponAmount.divide(billNum, 0, BigDecimal.ROUND_HALF_EVEN);
@@ -667,4 +680,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		// TODO Auto-generated method stub
 		     return afBorrowBillDao.getOverdueBorrowBillInfoByUserId(userId);
 	}
+
+    @Override
+    public int updateBorrowBillFaildWhenNotY(List<Long> billIdList) {
+        return afBorrowBillDao.updateBorrowBillFaildWhenNotY(billIdList);
+    }
 }

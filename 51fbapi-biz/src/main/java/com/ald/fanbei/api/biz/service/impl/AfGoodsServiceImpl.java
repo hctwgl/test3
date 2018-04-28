@@ -2,15 +2,20 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.common.CacheConstants;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-
+import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.dto.LeaseGoods;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +23,7 @@ import com.ald.fanbei.api.biz.bo.TaobaoItemInfoBo;
 import com.ald.fanbei.api.biz.bo.TaobaoResultBo;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
@@ -35,6 +41,8 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Resource
 	AfGoodsDao afGoodsDao;
+	@Resource
+	private BizCacheUtil bizCacheUtil;
 	@Override
 	public List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query) {
 		return afGoodsDao.getCateGoodsList(query);
@@ -170,6 +178,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getGoodsByItem(categoryId);
 	}
 	@Override
+	public AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsBySolr(query);
+	}
+	@Override
 	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
 		return afGoodsDao.getGoodsListByGoodsId(goodsId);
 	}
@@ -187,6 +199,65 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	public List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId){
 		return afGoodsDao.getGoodsDoByGoodsId(goodsId);
+	}
+	@Override
+	public List<AfGoodsDo> getGoodsListByBrandId(Long brandId) {
+		return afGoodsDao.getGoodsListByBrandId(brandId);
+	}
+	@Override
+	public List<HomePageSecKillGoods> getGoodsVerifyByCategoryIdAndVolume(
+			AfGoodsQuery goodsQuery) {
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_GET_GOODS_BY_CATEGORYID_AND_VOLUME.getCode()+ goodsQuery.getCategoryId() +"DESC"+ goodsQuery.getPageNo();
+		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
+		if (CollectionUtil.isEmpty(goodsList)){
+			goodsList = afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
+			if (CollectionUtil.isNotEmpty(goodsList)){
+				bizCacheUtil.saveObjectList(key, goodsList);
+			}
+		}
+		return goodsList;
+	}
+
+	@Override
+	public List<HomePageSecKillGoods> getAllByBrandIdAndVolume(Long brandId) {
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_RESULT_ALLGOODS_THE_BRAND.getCode()+brandId;
+		List<HomePageSecKillGoods> brandGoodsList = bizCacheUtil.getObjectList(key);
+		if (CollectionUtil.isEmpty(brandGoodsList)){
+			brandGoodsList = afGoodsDao.getAllByBrandIdAndVolume(brandId);
+			if (CollectionUtil.isNotEmpty(brandGoodsList)){
+				bizCacheUtil.saveObjectListExpire(key, brandGoodsList,Constants.MINITS_OF_FIVE);
+			}
+		}
+		return brandGoodsList;
+	}
+	@Override
+	public List<HomePageSecKillGoods> getGoodsByCategoryIdAndPrice(
+			AfGoodsQuery goodsQuery) {// 页面+第几页+升序还是排序
+		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_RESULT_GET_GOODS_BY_CATEGORYID_AND_PRICE.getCode() + goodsQuery.getCategoryId() + goodsQuery.getSort()+goodsQuery.getPageNo() ;
+	//  String key = "categoryDetailPrice"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+goodsQuery.getSort();
+		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
+		if (CollectionUtil.isEmpty(goodsList)){
+			goodsList = afGoodsDao.getGoodsByCategoryIdAndPrice(goodsQuery);
+			if (CollectionUtil.isNotEmpty(goodsList)){
+				bizCacheUtil.saveObjectList(key, goodsList);
+			}
+		}
+		return goodsList;
+	}
+
+	@Override
+	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
+		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
+	}
+
+	@Override
+	public List<Map<String, Object>> getGoodsByIds(List<Long> goodList){
+		return afGoodsDao.getGoodsByIds(goodList);
+	}
+
+	@Override
+	public List<HashMap> getVisualGoodsByGoodsId(List<String> ids) {
+		return afGoodsDao.getVisualGoodsByGoodsId(ids);
 	}
 
 }
