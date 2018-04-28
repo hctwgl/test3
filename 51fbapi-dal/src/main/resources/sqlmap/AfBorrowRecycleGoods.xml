@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- af_recycle_goods表 -->
-<mapper namespace="com.ald.fanbei.api.dal.dao.AfRecycleGoodsDao">
+<!-- af_borrow_recycle_goods表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowRecycleGoodsDao">
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
@@ -41,12 +41,12 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo" keyProperty="rid">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
     
-        INSERT INTO af_recycle_goods
+        INSERT INTO af_borrow_recycle_goods
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
 	            gmt_create,
@@ -102,8 +102,8 @@
         </trim>
     </insert>
     
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo">
-        UPDATE af_recycle_goods
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
+        UPDATE af_borrow_recycle_goods
           <set>
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
@@ -133,26 +133,26 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo">
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_recycle_goods
+        FROM af_borrow_recycle_goods
         WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo">
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_recycle_goods
+        FROM af_borrow_recycle_goods
         <include refid="commonCondition"/> 
         limit 0,1
     </select>
                
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfRecycleGoodsDo">
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_recycle_goods
+        FROM af_borrow_recycle_goods
         <include refid="commonCondition"/>
     </select>
     

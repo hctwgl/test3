@@ -9,10 +9,10 @@ import java.math.BigDecimal;
  * 
  * @author guoshuaiqiang
  * @version 1.0.0 初始化
- * @date 2018-04-28 14:00:36
+ * @date 2018-04-28 14:08:11
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfRecycleGoodsDo extends AbstractSerial {
+ public class AfBorrowRecycleGoodsDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
 
