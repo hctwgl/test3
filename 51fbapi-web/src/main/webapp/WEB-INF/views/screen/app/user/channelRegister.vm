@@ -5,11 +5,9 @@
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
-        <title>51返呗-用不完注册</title>
-    #elseif( $!{style}==19 ||$!{style}==20)
-        <title>爱上街-花更少·买更好</title>
+        <title>注册</title>
     #else
-        <title>51返呗注册</title>
+        <title>注册</title>
     #end
     <!--转化代码-->
     <script type="text/javascript">
@@ -84,19 +82,19 @@
             </div>
         </div>
     #end
+
     #if($!{style}==20)
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <div class="to_loadapp_btn" id="toLoadAppBtn"></div>
     </div>
-
     #else
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <ul class="iform clearfix">
             <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="toMaidian('phone')"></li>
 
-            #if($!{style}==1||$!{style}==8||$!{style}==9||$!{style}==17||$!{style}==12||$!{style}==13||$!{style}==14 ||$!{style}==15  || $!{style}==19)
+            #if($!{style}==1||$!{style}==8||$!{style}==9||$!{style}==17||$!{style}==12||$!{style}==13||$!{style}==14 ||$!{style}==15 || $!{style}==19)
                 #if($!{style}!=8&&$!{style}!=9&&$!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15&&$!{style}!=19)
                     <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
                 #end
@@ -155,7 +153,7 @@
     #end
 
     #if( $!{style}==1 )
-        <div class=" ">
+        <div class="copyright">
             版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
             <br>
         </div>
@@ -164,12 +162,11 @@
             <p>浙江阿拉丁电子商务有限公司版权所有</p>
             <p>All Right Reserved. 浙ICP备16001312-4号</p>
         </div>
-
     #else
         <img src="$commonUrl/channel$!{style}_03.jpg">
         <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
     #end
-    #if( $!{style}==12 || $!{style}==13|| $!{style}==14 || $!{style}==15 )
+    #if( $!{style}==12 || $!{style}==13|| $!{style}==14 || $!{style}==15)
         <img class="goTop" src="$commonUrl/addRegister06.png">
     #end
     #if($!{style}==15)
