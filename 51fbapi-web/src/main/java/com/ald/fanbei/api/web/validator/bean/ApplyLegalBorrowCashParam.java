@@ -55,6 +55,17 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	@Pattern(regexp = "^[1-9]{1}[0-9]{5,10}$")
 	private String deliveryPhone;
+
+	private Long recycleId;
+
+	public Long getRecycleId() {
+		return recycleId;
+	}
+
+	public void setRecycleId(Long recycleId) {
+		this.recycleId = recycleId;
+	}
+
 	public BigDecimal getAmount() {
 		return amount;
 	}

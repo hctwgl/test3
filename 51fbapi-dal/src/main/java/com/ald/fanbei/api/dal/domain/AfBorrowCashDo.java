@@ -63,6 +63,15 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private BigDecimal baseBankRate;// 央行基准利率
 	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
 	private BigDecimal riskDailyRate;
+	private Long recycleId;
+
+	public Long getRecycleId() {
+		return recycleId;
+	}
+
+	public void setRecycleId(Long recycleId) {
+		this.recycleId = recycleId;
+	}
 
 	public BigDecimal getRiskDailyRate() {
 		return riskDailyRate;

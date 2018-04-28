@@ -45,13 +45,20 @@ public interface ApplyLegalBorrowCashService {
 	public void delegatePay(String consumerNo, String orderNo, String result,
 							AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
 
+	public void delegatePay(String consumerNo, String orderNo, String result,
+							 AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
+
 	public void checkRiskRefused(Long userId);
 
 	public void checkCardNotEmpty(AfUserBankcardDo mainCard);
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
+	public void updateBorrowStatus(AfBorrowCashDo cashDo);
+
 	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
+
+	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo);
 
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
 											 ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo);
