@@ -281,6 +281,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getSecKillGoodListByActivityId", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSecKillGoodListByActivityId(HttpServletRequest request, HttpServletResponse response) {
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
         if (StringUtils.isEmpty(activityId)) {
