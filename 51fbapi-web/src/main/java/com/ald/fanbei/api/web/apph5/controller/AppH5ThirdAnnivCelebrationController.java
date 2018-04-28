@@ -212,7 +212,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     int index = activityIds.indexOf(nextActivityId);
                     activityId = activityIds.get(index - 1);
                 }
-                else if(currentHour > Integer.parseInt(activityStartHourArray[arrayLength - 1])){
+                else if(currentHour >= Integer.parseInt(activityStartHourArray[arrayLength - 1])){
                     activityId = todayActivityIds.get(todayActivitySize - 1);
                     int index = activityIds.indexOf(activityId);
                     if (index < activitySize - 1) {
@@ -222,9 +222,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     }
                 }else {
                     for (int i = 0; i < arrayLength - 1; i++) {
-                        if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
+                        if ((currentHour > Integer.parseInt(activityStartHourArray[i])) && (currentHour <= Integer.parseInt(activityStartHourArray[i + 1]))) {
                             if (todayActivitySize < (i + 1)) {
-                                activityId = todayActivityIds.get(todayActivitySize - 1);
+                                logger.error("活动配置异常，请查看");
+                                return H5CommonResponse.getNewInstance(false, "当前没有活动了", "", "").toString();
                             } else {
                                 activityId = todayActivityIds.get(i);
                                 int index = activityIds.indexOf(activityId);
@@ -244,6 +245,29 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         data.put("activityId", activityId);
         data.put("nextActivityId", nextActivityId);
         appActivityGoodListUtil.getSecKillGoodList(userId, Long.parseLong(activityId), data);
+        List<Map<String, Object>> goodsList = (List<Map<String, Object>>) data.get("goodsList");
+
+        List<AfSeckillActivityDo> afSeckillActivityDos1 = afSeckillActivityService.getActivityGoodsCountList(Long.parseLong(activityId));
+        List<AfSeckillActivityDo> afSeckillActivityDos2 = afSeckillActivityService.getActivitySaleCountList(Long.parseLong(activityId));
+        int size = goodsList.size();
+        for(int i =0;i<size;i++){
+            Map<String, Object> afActGoodsDto = goodsList.get(i);
+            Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("goodsId")));
+            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos1){
+                if(afSeckillActivityDo.getRid().equals(goodsId)){
+                    afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
+                }
+            }
+            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos2){
+                if(afSeckillActivityDo.getRid().equals(goodsId)){
+                    afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
+                }
+                else{
+                    afActGoodsDto.put("saleCount",0);
+                }
+            }
+        }
+
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
     }
 

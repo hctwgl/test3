@@ -514,13 +514,13 @@
             y.id as activityId,
             min(a.special_price) activityAmount,
             a.goods_id,
-            a.limit_count as total,
+            sum(a.limit_count) as total,
             g.`name` as goodName,
             g.goods_icon as goodsIcon,
             g.thumbnail_icon,
             g.goods_url as goodsUrl,
             g.price_amount,
-            g.sale_amount,
+            min(b.actual_amount) as saleAmount,
             g.rebate_amount,
             g.rebate_rate,
             g.remark,
@@ -528,8 +528,8 @@
             IFNULL(COUNT(DISTINCT o.id), 0) AS volume,
             IF(s.id is null ,0,1) as subscribe,
             c.interest_free_id,
-            min(y.gmt_start) as activityStart,
-            max(y.gmt_end) as activityEnd
+            y.gmt_start as activityStart,
+            y.gmt_end as activityEnd
         FROM
           af_seckill_activity y
         JOIN af_seckill_activity_goods a ON y.id = a.activity_id

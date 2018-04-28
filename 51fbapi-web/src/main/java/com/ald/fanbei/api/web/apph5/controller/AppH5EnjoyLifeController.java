@@ -377,7 +377,6 @@ public class AppH5EnjoyLifeController extends BaseController {
         try{
             context = doWebCheck(request,true);
             String userName = context.getUserName();
-            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
             Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
             Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"),0l);
