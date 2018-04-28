@@ -133,10 +133,10 @@
                 status = #{status,jdbcType=VARCHAR},                
             </if>
             <if test="remark != null and remark != '' ">        
-                remark = #{remark,jdbcType=VARCHAR}                
+                remark = #{remark,jdbcType=VARCHAR},                
             </if>
             <if test="borrowRate != null and borrowRate != '' ">        
-                borrow_rate = #{borrowRate,jdbcType=DECIMAL}                
+                borrow_rate = #{borrowRate,jdbcType=DECIMAL},               
             </if>
             <if test="profitRate != null and profitRate != '' ">        
                 profit_rate = #{profitRate,jdbcType=DECIMAL}                

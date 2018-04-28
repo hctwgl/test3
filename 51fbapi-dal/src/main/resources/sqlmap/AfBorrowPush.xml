@@ -109,10 +109,10 @@
                 asset_side_flag = #{assetSideFlag,jdbcType=VARCHAR},                
             </if>
             <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=VARCHAR}                
+                status = #{status,jdbcType=VARCHAR},                
             </if>
              <if test="borrowRate != null and borrowRate != '' ">        
-                borrow_rate = #{borrowRate,jdbcType=DECIMAL}                
+                borrow_rate = #{borrowRate,jdbcType=DECIMAL},                
             </if>
             <if test="profitRate != null and profitRate != '' ">        
                 profit_rate = #{profitRate,jdbcType=DECIMAL}                
