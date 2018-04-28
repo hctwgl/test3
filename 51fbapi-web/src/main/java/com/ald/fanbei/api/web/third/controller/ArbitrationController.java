@@ -106,6 +106,13 @@ public class ArbitrationController {
     AfESdkService afESdkService;
     @Resource
     AfUserService afUserService;
+
+    /**
+     * 收据生成
+     * @param loanBillNo 收据编号
+     * @return 收据阿里云地址
+     * @throws Exception
+     */
     @ResponseBody
     @RequestMapping(value = "/lenderTest", method = RequestMethod.GET)
     public String createLender(String loanBillNo) throws  Exception {
@@ -146,6 +153,13 @@ public class ArbitrationController {
         String url= afLegalContractPdfCreateServiceV2.receptProtocolPdf(map);
             return url;
     }
+
+    /**
+     * 协议生成
+     * @param loanBillNo 借款编号
+     * @return
+     * @throws Exception
+     */
     @ResponseBody
     @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
     public String createPdf(String loanBillNo) throws  Exception {
@@ -194,7 +208,7 @@ public class ArbitrationController {
        if(arbitrationDo.getRid()==null||arbitrationDo.getRid()<=0){
             arbitrationDo.setLoanBillNo(loanBillNo);
             arbitrationDo.setGmtCreate(new Date());
-                arbitrationService.saveRecord(arbitrationDo);
+            arbitrationService.saveRecord(arbitrationDo);
         }else{
             arbitrationDo.setGmtModified(new Date());
             arbitrationService.updateByloanBillNo(arbitrationDo);

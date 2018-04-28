@@ -811,7 +811,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        String outFilePath = "C:\\home\\aladin\\project\\" + data.get("userName") + "recept" + time + 1 + ".pdf";
+        String outFilePath = src + data.get("userName") + "recept" + time + 1 + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
         return getReceptContractPdf(data,outFilePath);
 
@@ -819,7 +819,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     private String getReceptContractPdf(Map<String, Object> data,String outFilePath) throws IOException {
         long time = new Date().getTime();
         data.put("PDFPath", outFilePath);
-        String dstFile = String.valueOf("C:\\home\\aladin\\project\\" + data.get("userName") + "recept" + time + 2 + ".pdf");
+        String dstFile = String.valueOf(src + data.get("userName") + "recept" + time + 2 + ".pdf");
         data.put("userPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
@@ -828,7 +828,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 //
         stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
 
-        File file = new File("C:\\home\\aladin\\project\\" + data.get("userName") + "recept" + time +3 + ".pdf");
+        File file = new File(src + data.get("userName") + "recept" + time +3 + ".pdf");
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(stream);
         outputStream.flush();

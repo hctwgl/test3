@@ -482,7 +482,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		return resp;
 	    }
 
-	    Map<String, Object> map = new HashMap<String, Object>();
+	    Map<String, Object> borrowMap = new HashMap<String, Object>();
 
 	    AfUserAccountDo userAccountDo = afUserAccountService
 		    .getUserAccountByUserId(afBorrowCashDo.getUserId());
@@ -518,15 +518,34 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    + afBorrowCashDo.getRid() + "&borrowAmount="
 		    + afBorrowCashDo.getAmount();
 
-	    map.put("type", protocolType); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
-	    map.put("signOffer", signOffer); // 电子签提供商
+		borrowMap.put("type", 1); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
+		borrowMap.put("signOffer", signOffer); // 电子签提供商
 		AfArbitrationDo arbitrationDo =getByBorrowNo(borrowNo);
-	    map.put("agreeUrl", arbitrationDo.getValue1()); // 协议地址
-	    map.put("agreeNo", afBorrowCashDo.getBorrowNo()); // 协议编号
-	    map.put("provedObject", provedObject); // 证明对象
-	    map.put("pageSize", pageSize); // 协议页数·
+		borrowMap.put("agreeUrl", arbitrationDo.getValue1()); // 协议地址
+		borrowMap.put("agreeNo", afBorrowCashDo.getBorrowNo()); // 协议编号
+		borrowMap.put("provedObject", provedObject); // 证明对象
+		borrowMap.put("pageSize", pageSize); // 协议页数·
 
-	    result.add(map);
+	    result.add(borrowMap);
+
+		Map<String, Object> panformMap = new HashMap<String, Object>();
+		panformMap.put("type", 2); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
+		panformMap.put("signOffer", signOffer); // 电子签提供商
+		panformMap.put("agreeUrl", arbitrationDo.getValue2()); // 协议地址
+		panformMap.put("agreeNo", "pl"+afBorrowCashDo.getBorrowNo()); // 协议编号
+		panformMap.put("provedObject", provedObject); // 证明对象
+		panformMap.put("pageSize", pageSize); // 协议页数·
+
+		result.add(panformMap);
+		Map<String, Object> lenderMap = new HashMap<String, Object>();
+		lenderMap.put("type", 3); // 协议类型 0 网站注册协议，1 借款协议，2 借款咨询服务协议
+		lenderMap.put("signOffer", signOffer); // 电子签提供商
+		lenderMap.put("agreeUrl", arbitrationDo.getValue3()); // 协议地址
+		lenderMap.put("agreeNo", "rc"+afBorrowCashDo.getBorrowNo()); // 协议编号
+		lenderMap.put("provedObject", provedObject); // 证明对象
+		lenderMap.put("pageSize", 2); // 协议页数·
+
+		result.add(lenderMap);
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
