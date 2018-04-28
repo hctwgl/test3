@@ -1445,7 +1445,7 @@
 		<include refid="queryAllFields" />
 		FROM af_order
 		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND status='PAID'
-		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(#{gmtCreate,jdbcType=TIMESTAMP},'%Y-%m-%d')
 		and iagent_status ='C'
 	</select>
 </mapper>
