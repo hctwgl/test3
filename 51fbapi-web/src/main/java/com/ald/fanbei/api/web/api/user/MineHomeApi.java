@@ -152,7 +152,6 @@ public class MineHomeApi implements ApiHandle {
         data.setDesc(DESC_AMOUNT_NOAUTH);
         data.setOnlineShowAmount(consumeDescs.get(0));
         data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
-        System.out.println("======");
 
         // 未登录
         if (userId == null) {
