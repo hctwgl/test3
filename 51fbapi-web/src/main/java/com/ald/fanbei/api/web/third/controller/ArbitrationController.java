@@ -148,7 +148,7 @@ public class ArbitrationController {
     }
     @ResponseBody
     @RequestMapping(value = "/createPdf", method = RequestMethod.GET)
-    public String createPdf(String loanBillNo,String receipt) throws  Exception {
+    public String createPdf(String loanBillNo) throws  Exception {
         AfArbitrationDo arbitrationDo=  arbitrationService.getByBorrowNo(loanBillNo);
         if(arbitrationDo==null){
             arbitrationDo=new AfArbitrationDo();
@@ -161,11 +161,13 @@ public class ArbitrationController {
                 arbitrationDo.setValue1(afContractPdfDo.getContractPdfUrl());
                 //收据
                 if(StringUtil.isEmpty(arbitrationDo.getValue3())){
-                    if(!StringUtil.isEmpty(receipt)){
-                        //获取出借人
-                        List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(afContractPdfDo.getId());
-
+                    try{
+                        String lenderUrl= createLender(loanBillNo);
+                        arbitrationDo.setValue3(lenderUrl);
+                    }catch (Exception ex){
+                        logger.info("create lender error：",ex);
                     }
+
                 }
             }else{
                 String protocal= afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal((1-1), loanBillNo);
@@ -189,10 +191,10 @@ public class ArbitrationController {
         }
 
 
-       if(arbitrationDo.getRid()<=0){
+       if(arbitrationDo.getRid()==null||arbitrationDo.getRid()<=0){
             arbitrationDo.setLoanBillNo(loanBillNo);
             arbitrationDo.setGmtCreate(new Date());
-            arbitrationService.saveRecord(arbitrationDo);
+                arbitrationService.saveRecord(arbitrationDo);
         }else{
             arbitrationDo.setGmtModified(new Date());
             arbitrationService.updateByloanBillNo(arbitrationDo);
