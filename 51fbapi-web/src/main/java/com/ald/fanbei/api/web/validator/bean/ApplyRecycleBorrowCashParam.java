@@ -1,16 +1,15 @@
 package com.ald.fanbei.api.web.validator.bean;
 
-import java.math.BigDecimal;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 
-import org.springframework.stereotype.Component;
-
-@Component("applyLegalBorrowCashParam")
-public class ApplyLegalBorrowCashParam {
+@Component("applyRecycleBorrowCashParam")
+public class ApplyRecycleBorrowCashParam {
 
 	@NotNull
 	@DecimalMin("0")
@@ -40,21 +39,16 @@ public class ApplyLegalBorrowCashParam {
 	private String borrowRemark;
 	@NotNull
 	private String refundRemark;
-	@NotNull
-	@Min(0)
-	private Long goodsId;
-	@NotNull
-	private String goodsName;
-	@NotNull
-	@DecimalMin("0")
-	private BigDecimal goodsAmount;
-	@NotNull
-	private String deliveryAddress;
-	@NotNull
-	private String deliveryUser;
-	@NotNull
-	@Pattern(regexp = "^[1-9]{1}[0-9]{5,10}$")
-	private String deliveryPhone;
+
+	private Long recycleId;
+
+	public Long getRecycleId() {
+		return recycleId;
+	}
+
+	public void setRecycleId(Long recycleId) {
+		this.recycleId = recycleId;
+	}
 
 	public BigDecimal getAmount() {
 		return amount;
@@ -127,42 +121,6 @@ public class ApplyLegalBorrowCashParam {
 	}
 	public void setRefundRemark(String refundRemark) {
 		this.refundRemark = refundRemark;
-	}
-	public Long getGoodsId() {
-		return goodsId;
-	}
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
-	public String getGoodsName() {
-		return goodsName;
-	}
-	public void setGoodsName(String goodsName) {
-		this.goodsName = goodsName;
-	}
-	public BigDecimal getGoodsAmount() {
-		return goodsAmount;
-	}
-	public void setGoodsAmount(BigDecimal goodsAmount) {
-		this.goodsAmount = goodsAmount;
-	}
-	public String getDeliveryAddress() {
-		return deliveryAddress;
-	}
-	public void setDeliveryAddress(String deliveryAddress) {
-		this.deliveryAddress = deliveryAddress;
-	}
-	public String getDeliveryUser() {
-		return deliveryUser;
-	}
-	public void setDeliveryUser(String deliveryUser) {
-		this.deliveryUser = deliveryUser;
-	}
-	public String getDeliveryPhone() {
-		return deliveryPhone;
-	}
-	public void setDeliveryPhone(String deliveryPhone) {
-		this.deliveryPhone = deliveryPhone;
 	}
 
 	public String getBqsBlackBox() {

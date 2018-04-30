@@ -256,7 +256,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setPoundage(BigDecimal.ZERO);
 		afBorrowCashDo.setAddress(param.getAddress());
 		// 借款金额支付商品后剩余金额为到账金额
-		afBorrowCashDo.setArrivalAmount(borrowAmount.subtract(param.getGoodsAmount()));
+		afBorrowCashDo.setArrivalAmount(borrowAmount);
 		afBorrowCashDo.setPoundageRate(BigDecimal.ZERO);
 		afBorrowCashDo.setBaseBankRate(bankRate);
 		afBorrowCashDo.setRiskDailyRate(oriRate);
