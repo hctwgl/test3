@@ -237,9 +237,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		// 计算手续费和利息
 		String borrowRate = rateInfoDo.getValue2();
 		JSONArray array = JSONObject.parseArray(borrowRate);
-		BigDecimal rateAmount = oriRate.multiply(borrowAmount).multiply(new BigDecimal(day))
-				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-
+		BigDecimal rateAmount = oriRate.multiply(borrowAmount).multiply(new BigDecimal(day)).multiply(oriRate);
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
 		afBorrowCashDo.setAmount(borrowAmount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
