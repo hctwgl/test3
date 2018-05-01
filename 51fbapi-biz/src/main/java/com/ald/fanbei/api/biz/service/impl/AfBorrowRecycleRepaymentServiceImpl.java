@@ -95,7 +95,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
  * @version 1.0.0 初始化
  * @date 2017-4-30 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Service("afBorrowLegalRepaymentV2Service")
+@Service("afBorrowRecycleRepaymentService")
 public class AfBorrowRecycleRepaymentServiceImpl implements AfBorrowRecycleRepaymentService {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
