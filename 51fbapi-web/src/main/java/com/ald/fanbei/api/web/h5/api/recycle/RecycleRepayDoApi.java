@@ -114,6 +114,7 @@ public class RecycleRepayDoApi implements H5Handle {
 
         RecycleRepayDoParam param = (RecycleRepayDoParam) context.getParamEntity();
         bo.repaymentAmount = param.repaymentAmount;
+        bo.actualAmount = param.repaymentAmount;
         bo.payPwd = param.payPwd;
         bo.cardId = param.cardId;
         bo.borrowId = param.borrowId;
@@ -138,7 +139,7 @@ public class RecycleRepayDoApi implements H5Handle {
 
     private void checkFrom(RepayBo bo) {
         AfBorrowCashDo cashDo = null;
-        if (bo.borrowId < 0  && (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) == null) {
+        if (bo.borrowId > 0  && (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         }
         bo.cashDo = cashDo;

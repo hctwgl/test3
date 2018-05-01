@@ -147,10 +147,10 @@ public class RecycleTest extends BaseTest{
 	public void repayDo() {
 		String url = urlBase + "/h5/recycle/recycleRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 1023.33+"");//351.27
+		params.put("repaymentAmount", 50+"");//351.27
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
-		params.put("borrowId", "1260148");		
+		params.put("borrowId", "3340038");		
 		
 		testH5(url, params, userName, true);
 	}
@@ -159,9 +159,9 @@ public class RecycleTest extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018030614245200365";
+		String orderNo = "hq2018050115005300463";
 		String merPriv = PayOrderSource.BORROW_RECYCLE_REPAY.getCode();
-		String tradeNo = "xianFenghq2018030614245200365";
+		String tradeNo = "xianFenghq2018050115005300463";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
