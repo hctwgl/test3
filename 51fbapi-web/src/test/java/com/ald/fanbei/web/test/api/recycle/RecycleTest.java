@@ -17,7 +17,7 @@ public class RecycleTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8080";
 //	String urlBase = "http://localhost:8080";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
@@ -71,9 +71,9 @@ public class RecycleTest extends BaseTest{
 	 */
 	@Test
 	public void getAllBorrowList() {
-		String url = urlBase + "/borrow/loanShop";
+		String url = urlBase + "/h5/recycle/borrowRecycleRepayment";
 		Map<String,String> params = new HashMap<>();
-		params.put("systemType", "1");
+		params.put("borrowId", "3340038");
 		testH5(url, params, userName, true);
 	}
 	
