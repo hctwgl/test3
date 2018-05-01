@@ -52,6 +52,15 @@ public interface AfBorrowCashDao {
 	 */
 	List<AfBorrowCashDo> getBorrowCashListByUserId(@Param("userId") Long userId, @Param("start") Integer start);
 
+
+	/**
+	 * 回收信息
+	 *
+	 * @param userId
+	 * @param 开始条数
+	 * @return
+	 */
+	List<AfBorrowCashDo> getBorrowRecycleListByUserId(@Param("userId") Long userId, @Param("start") Integer start);
 	/**
 	 * 获取已经完成的借钱记录
 	 * @param userId
@@ -246,6 +255,8 @@ public interface AfBorrowCashDao {
 	AfBorrowCashDto getBorrowCashInfoById(@Param("borrowCashId")Long borrowCashId);
 
 	AfBorrowCashDo fetchLastByUserId(@Param("userId")Long userId);
-	
+
+	AfBorrowCashDo fetchLastRecycleByUserId(@Param("userId")Long userId);
+
 	Long tuchDealingBorrowCash(@Param("userId")Long userId);
 }

@@ -267,6 +267,14 @@ public interface AfResourceService {
 	 */
 	List<Object> getLoanHomeListByType();
 
+	/**
+	 * @param type (banner的类型)
+	 * @param envType (区分预发和线上)
+	 * @return
+	 */
+	List<Object> getBorrowRecycleHomeListByType();
+
+
 	List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType);
 	List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType);
 

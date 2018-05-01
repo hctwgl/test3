@@ -41,7 +41,7 @@ import java.util.List;
  * @类描述：申请借钱V2
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("applyRecycleBorrowCashApi")
+@Component("applyBorrowRecycleCashApi")
 @Validator("applyRecycleBorrowCashParam")
 public class ApplyRecycleBorrowCashApi implements H5Handle {
 
@@ -67,6 +67,8 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 	SmsUtil smsUtil;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowRecycleGoodsService recycleGoodsService;
 	// [end]
 
 	private void doMaidianLog(HttpServletRequest request, AfBorrowCashDo afBorrowCashDo, RequestDataVo requestDataVo,
@@ -104,10 +106,13 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		BeanUtil.copyProperties(paramBo,param);
 		paramBo.setIpAddress(ipAddress);
 		paramBo.setAppName(appName);
+		AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
+		recycleOrderDo.setPropertyValue(paramBo.getPropertyValue());
+		recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
+		recycleOrderDo.setGoodsName(paramBo.getGoodsName());
 		// 获取用户账户和认证信息
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-
 		// 获取后台配置借款利率信息
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
 				Constants.BORROW_CASH_INFO_LEGAL_NEW);
@@ -125,7 +130,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 			// 用户借钱时app来源区分
 			afBorrowCashDo.setMajiabaoName(appName);
 			// 数据库中新增借钱记录
-			Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo);
+			Long borrowId = applyLegalBorrowCashService.addBorrowRecord(afBorrowCashDo,recycleOrderDo);
 			// 生成借款信息失败
 			applyLegalBorrowCashService.checkGenRecordError(borrowId);
 

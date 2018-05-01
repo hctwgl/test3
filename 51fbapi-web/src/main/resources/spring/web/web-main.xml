@@ -613,8 +613,13 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
+
+				<!--回收业务接口-->
+				<entry key="/h5/recycle/borrowRecycleRecord" value-ref="borrowRecycleRecordApi" />
+				<entry key="/h5/recycle/getBorrowRecycleHomeInfo" value-ref="getBorrowRecycleHomeInfoApi" />
+
 				<!-- 回收业务接口 -->
-				<entry key="/h5/recycle/applyRecycleBorrowCash" value-ref="applyRecycleBorrowCashApi" />
+				<entry key="/h5/recycle/applyBorrowRecycleCash" value-ref="applyBorrowRecycleCashApi" />
 			</map>
 		</constructor-arg>
 	</bean>
