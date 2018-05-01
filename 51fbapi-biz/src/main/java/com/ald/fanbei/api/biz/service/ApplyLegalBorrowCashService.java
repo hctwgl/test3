@@ -4,12 +4,7 @@ import java.math.BigDecimal;
 
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 public interface ApplyLegalBorrowCashService {
@@ -61,7 +56,7 @@ public interface ApplyLegalBorrowCashService {
 
 	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
-	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo);
+	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowRecycleOrderDo recycleOrderDo);
 
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
 											 ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo);

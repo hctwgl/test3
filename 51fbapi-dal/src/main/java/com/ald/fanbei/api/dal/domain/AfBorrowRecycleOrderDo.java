@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 回收商品借款关联记录实体
+ * 回收商品记录表实体
  * 
  * @author guoshuaiqiang
  * @version 1.0.0 初始化
- * @date 2018-05-01 11:00:24
+ * @date 2018-05-01 11:29:38
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfBorrowRecycleOrderDo extends AbstractSerial {
@@ -33,19 +33,14 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
     /**
-     * 创建者
+     * 原借款Id
      */
-    private String creator;
-
-    /**
-     * 最后修改者
-     */
-    private String modifier;
+    private Long borrowId;
 
     /**
      * 商品名称
      */
-    private String name;
+    private String goodsName;
 
     /**
      * 商品属性组合，json字符串
@@ -114,39 +109,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取创建者
+     * 获取原借款Id
      *
-     * @return 创建者
+     * @return 原借款Id
      */
-    public String getCreator(){
-      return creator;
+    public Long getBorrowId(){
+      return borrowId;
     }
 
     /**
-     * 设置创建者
+     * 设置原借款Id
      * 
-     * @param creator 要设置的创建者
+     * @param borrowId 要设置的原借款Id
      */
-    public void setCreator(String creator){
-      this.creator = creator;
-    }
-
-    /**
-     * 获取最后修改者
-     *
-     * @return 最后修改者
-     */
-    public String getModifier(){
-      return modifier;
-    }
-
-    /**
-     * 设置最后修改者
-     * 
-     * @param modifier 要设置的最后修改者
-     */
-    public void setModifier(String modifier){
-      this.modifier = modifier;
+    public void setBorrowId(Long borrowId){
+      this.borrowId = borrowId;
     }
 
     /**
@@ -154,17 +131,17 @@ import java.math.BigDecimal;
      *
      * @return 商品名称
      */
-    public String getName(){
-      return name;
+    public String getGoodsName(){
+      return goodsName;
     }
 
     /**
      * 设置商品名称
      * 
-     * @param name 要设置的商品名称
+     * @param goodsName 要设置的商品名称
      */
-    public void setName(String name){
-      this.name = name;
+    public void setGoodsName(String goodsName){
+      this.goodsName = goodsName;
     }
 
     /**

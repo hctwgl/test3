@@ -13,11 +13,11 @@ import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
 
 
 /**
- * 回收商品借款关联记录ServiceImpl
+ * 回收商品记录表ServiceImpl
  * 
  * @author guoshuaiqiang
  * @version 1.0.0 初始化
- * @date 2018-05-01 11:00:24
+ * @date 2018-05-01 11:29:38
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  
