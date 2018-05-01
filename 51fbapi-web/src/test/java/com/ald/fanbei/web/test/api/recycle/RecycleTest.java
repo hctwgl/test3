@@ -170,6 +170,14 @@ public class RecycleTest extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
+	// 获取银行卡
+	@Test
+	public void  getUserBankList() {
+		String url = urlBase + "/h5/recycle/getUserBankList";
+		testH5(url, null, userName, true);
+	}
+	
+	
 	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		
