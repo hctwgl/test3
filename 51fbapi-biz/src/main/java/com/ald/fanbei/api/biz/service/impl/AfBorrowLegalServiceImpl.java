@@ -89,11 +89,23 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.minQuota = cfgBean.minAmount;
 		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+		if (cashDo == null){
+			bo.isBorrowOverdue = false;
+			return bo;
+		}
+		AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		Map<String,String> goodsMap=JsonUtils.fromJsonString(orderDo.getPropertyValue(),Map.class);
+		if (goodsMap != null){
+			bo.goodsName=orderDo.getGoodsName();
+			bo.goodsModel=goodsMap.get("goodsModel");
+			bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
+		}
 		bo.recycleStatus=cashDo.getStatus();
 		bo.borrowGmtApply=cashDo.getGmtCreate();
 		bo.borrowGmtPlanRepayment=cashDo.getGmtPlanRepayment();
 		bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(),cashDo.getOverdueAmount());
 		bo.repayingAmount = cashDo.getRepayAmount();
+		bo.borrowAmount = cashDo.getAmount();
 		bo.restUseDays=(int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000*3600*24);
 		if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday())> 0) {
 			bo.isBorrowOverdue = true;
