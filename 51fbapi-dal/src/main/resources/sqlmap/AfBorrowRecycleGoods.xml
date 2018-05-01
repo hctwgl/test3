@@ -40,6 +40,16 @@
         </if>
     </sql>
 
+    <select id="getAllRecycleGoods" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        af_borrow_recycle_goods
+        WHERE
+        is_delete = 0
+        ORDER BY
+        gmt_create DESC
+    </select>
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
@@ -133,11 +143,12 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
+	<select id="getRecycleGoodsById" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo">
         SELECT
         <include refid="queryFields" />
         FROM af_borrow_recycle_goods
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0
+        AND id=#{id}
         LIMIT 0,1
     </select>
 

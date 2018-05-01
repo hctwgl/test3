@@ -109,11 +109,11 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo">
+	<select id="getBorrowRecycleOrderById" resultType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo">
         SELECT
         <include refid="queryFields" />
         FROM af_borrow_recycle_order
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND id=#{id}
         LIMIT 0,1
     </select>
 
