@@ -2,6 +2,8 @@ package com.ald.fanbei.web.test.api.recycle;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.web.test.common.BaseTest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
@@ -43,7 +45,27 @@ public class RecycleTest extends BaseTest{
 		String url = urlBase + "/h5/recycle/applyRecycleBorrowCash";
 		testH5(url, null, userName, true);
 	}
-	
+
+	/**
+	 * 获取回收首页详情
+	 */
+	@Test
+	public void getBorrowRecycleHomeInfoApi() {
+		String url = urlBase + "/h5/recycle/getBorrowRecycleHomeInfo";
+		testH5(url, null, userName, true);
+	}
+
+	/**
+	 * 获取回收记录
+	 */
+	@Test
+	public void borrowRecycleRecordApi() {
+		String url = urlBase + "/h5/recycle/borrowRecycleRecord";
+		Map<String,String> params = new HashMap<>();
+		params.put("start", "0");
+		testH5(url, params, userName, true);
+	}
+
 	/**
 	 * 获取所有借钱记录，包含白领贷和小额贷记录
 	 */

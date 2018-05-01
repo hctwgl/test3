@@ -181,11 +181,14 @@
 		is_delete = 0
 		AND
 		user_id = #{userId}
+		AND
+		borrow_no is not null
 		ORDER BY
 		gmt_create DESC
 		LIMIT
 		1
 	</select>
+
 	
 	<select id="getBorrowCashByUserIdDescById" parameterType="java.lang.Long"
 		resultType="AfBorrowCashDo">
@@ -223,6 +226,24 @@
 		is_delete = 0
 		AND
 		user_id = #{userId}
+		AND
+		borrow_no is not null
+		ORDER BY
+		gmt_create DESC
+		LIMIT
+		#{start},20
+	</select>
+	<select id="getBorrowRecycleListByUserId" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		AND
+		recycle_id is not null
 		ORDER BY
 		gmt_create DESC
 		LIMIT
@@ -561,8 +582,19 @@
         FROM af_borrow_cash
         WHERE is_delete = 0
             AND user_id = #{userId}
+			AND borrow_no is not null
         ORDER BY id DESC LIMIT 1
     </select>
+
+	<select id="fetchLastRecycleByUserId" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_borrow_cash
+		WHERE is_delete = 0
+		AND user_id = #{userId}
+		AND recycle_id is not null
+		ORDER BY id DESC LIMIT 1
+	</select>
 <select id="getCashBorrowSuccessByUserId" resultType="java.lang.Integer">
 		SELECT
 			count(1)

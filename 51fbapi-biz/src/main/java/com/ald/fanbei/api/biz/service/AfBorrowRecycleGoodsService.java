@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.biz.bo.AfBorrowRecycleGoodsBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo;
+
+import java.util.List;
 
 /**
  * 回收商品表Service
@@ -12,4 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo;
  */
 public interface AfBorrowRecycleGoodsService extends ParentService<AfBorrowRecycleGoodsDo, Long>{
 
+    List<AfBorrowRecycleGoodsBo> getAllRecycleGoodsInfos();
+
+    AfBorrowRecycleGoodsDo getRecycleGoodsById(Long recycleId);
 }
