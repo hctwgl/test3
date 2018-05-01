@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface AfBorrowRecycleOrderDao extends BaseDao<AfBorrowRecycleOrderDo, Long> {
 
-    AfBorrowRecycleOrderDo getBorrowRecycleOrderById(@Param("id")Long id);
+    AfBorrowRecycleOrderDo getBorrowRecycleOrderById(@Param("borrowId")Long borrowId);
 
     
 

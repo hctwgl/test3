@@ -35,7 +35,7 @@ public class AfBorrowRecycleOrderServiceImpl extends ParentServiceImpl<AfBorrowR
 	}
 
 	@Override
-	public AfBorrowRecycleOrderDo getBorrowRecycleOrderById(Long id) {
-		return afBorrowRecycleOrderDao.getBorrowRecycleOrderById(id);
+	public AfBorrowRecycleOrderDo getBorrowRecycleOrderById(Long borrowId) {
+		return afBorrowRecycleOrderDao.getBorrowRecycleOrderById(borrowId);
 	}
 }

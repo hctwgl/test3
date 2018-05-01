@@ -125,7 +125,7 @@
         SELECT
         <include refid="queryFields" />
         FROM af_borrow_recycle_order
-        WHERE is_delete = 0 AND id=#{id}
+        WHERE is_delete = 0 AND borrow_id=#{borrowId}
         LIMIT 0,1
     </select>
 
