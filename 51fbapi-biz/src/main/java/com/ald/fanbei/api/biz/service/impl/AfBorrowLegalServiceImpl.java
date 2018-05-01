@@ -124,7 +124,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
     void addRecycleGoodsInfos(BorrowLegalHomeInfoBo bo,AfBorrowCashDo cashDo){
 		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderService.getBorrowRecycleOrderById(cashDo.getRecycleId());
 		Map<String,String> goodsMap=JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(),Map.class);
-		bo.goodsName=recycleOrderDo.getName();
+		bo.goodsName=recycleOrderDo.getGoodsName();
 		bo.goodsModel=goodsMap.get("goodsModel");
 		bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
 	}

@@ -197,7 +197,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setPoundageRate(new BigDecimal(serviceRate));
 		afBorrowCashDo.setBaseBankRate(bankRate);
 		afBorrowCashDo.setRiskDailyRate(oriRate);
-		afBorrowCashDo.setRecycleId(param.getRecycleId());
 		return afBorrowCashDo;
 	}
 
@@ -240,7 +239,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		afBorrowCashDo.setPoundageRate(BigDecimal.ZERO);
 		afBorrowCashDo.setBaseBankRate(bankRate);
 		afBorrowCashDo.setRiskDailyRate(oriRate);
-		afBorrowCashDo.setRecycleId(param.getRecycleId());
 		return afBorrowCashDo;
 	}
 

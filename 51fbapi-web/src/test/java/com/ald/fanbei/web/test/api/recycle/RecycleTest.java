@@ -95,7 +95,7 @@ public class RecycleTest extends BaseTest{
 	 */
 	@Test
 	public void applyLoan() {
-		String url = urlBase + "/h5/recycle/applyRecycleBorrowCash";
+		String url = urlBase + "/h5/recycle/applyBorrowRecycleCash";
 		Map<String,String> params = new HashMap<>();
 		params.put("amount", 1000+"");
 		params.put("type", 10+"");
@@ -117,7 +117,7 @@ public class RecycleTest extends BaseTest{
 		params.put("deliveryAddress", "");
 		params.put("deliveryUser", "");
 		params.put("deliveryPhone", "13638668564");
-		params.put("recycleId", "59");
+		params.put("propertyValue", "456456");
 		
 		testH5(url, params, userName, true);
 	}
