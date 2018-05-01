@@ -39,15 +39,34 @@ public class ApplyRecycleBorrowCashParam {
 	private String borrowRemark;
 	@NotNull
 	private String refundRemark;
+	@NotNull
+	private String goodsName;
+	@NotNull
+	private String propertyValue;
+	private String goodsImg;
 
-	private Long recycleId;
-
-	public Long getRecycleId() {
-		return recycleId;
+	public String getPropertyValue() {
+		return propertyValue;
 	}
 
-	public void setRecycleId(Long recycleId) {
-		this.recycleId = recycleId;
+	public void setPropertyValue(String propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+
+	public String getGoodsName() {
+		return goodsName;
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+
+	public String getGoodsImg() {
+		return goodsImg;
+	}
+
+	public void setGoodsImg(String goodsImg) {
+		this.goodsImg = goodsImg;
 	}
 
 	public BigDecimal getAmount() {

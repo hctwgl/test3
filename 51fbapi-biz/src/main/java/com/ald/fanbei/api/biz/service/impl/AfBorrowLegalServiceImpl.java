@@ -10,7 +10,9 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -87,9 +89,23 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.minQuota = cfgBean.minAmount;
 		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+		if (cashDo == null){
+			bo.isBorrowOverdue = false;
+			return bo;
+		}
+		AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		Map<String,String> goodsMap=JsonUtils.fromJsonString(orderDo.getPropertyValue(),Map.class);
+		if (goodsMap != null){
+			bo.goodsName=orderDo.getGoodsName();
+			bo.goodsModel=goodsMap.get("goodsModel");
+			bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
+		}
 		bo.recycleStatus=cashDo.getStatus();
 		bo.borrowGmtApply=cashDo.getGmtCreate();
 		bo.borrowGmtPlanRepayment=cashDo.getGmtPlanRepayment();
+		bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(),cashDo.getOverdueAmount());
+		bo.repayingAmount = cashDo.getRepayAmount();
+		bo.borrowAmount = cashDo.getAmount();
 		bo.restUseDays=(int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000*3600*24);
 		if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday())> 0) {
 			bo.isBorrowOverdue = true;
@@ -103,9 +119,9 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 
 	@Override
 	public List<BorrowLegalHomeInfoBo> getRecycleRecord(Long userId,Integer start) {
-		List<AfBorrowCashDo> doList=afBorrowCashDao.getBorrowRecycleListByUserId(userId,start);
+		List<AfBorrowCashDto> doList=afBorrowCashDao.getBorrowRecycleListByUserId(userId,start);
 		List<BorrowLegalHomeInfoBo> boList=new ArrayList<>();
-		for(AfBorrowCashDo cashDo:doList){
+		for(AfBorrowCashDto cashDo:doList){
 			BorrowLegalHomeInfoBo bo=new BorrowLegalHomeInfoBo();
 			bo.recycleId=cashDo.getRecycleId();
 			bo.borrowGmtApply=cashDo.getGmtCreate();
@@ -122,11 +138,13 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		return boList;
 	}
     void addRecycleGoodsInfos(BorrowLegalHomeInfoBo bo,AfBorrowCashDo cashDo){
-		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderService.getBorrowRecycleOrderById(cashDo.getRecycleId());
-		Map<String,String> goodsMap=JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(),Map.class);
-		bo.goodsName=recycleOrderDo.getName();
-		bo.goodsModel=goodsMap.get("goodsModel");
-		bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
+		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		if (recycleOrderDo != null){
+			Map<String,String> goodsMap=JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(),Map.class);
+			bo.goodsName=recycleOrderDo.getGoodsName();
+			bo.goodsModel=goodsMap.get("goodsModel");
+			bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
+		}
 	}
 	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
 		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
@@ -283,6 +301,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public BigDecimal borrowArrivalAmount;
 		public BigDecimal borrowRestAmount;
 		public BigDecimal repayingAmount;
+		public BigDecimal defaultFine;
 		public Date borrowGmtApply;
 		public Date borrowGmtPlanRepayment;
 		public boolean isBorrowOverdue;

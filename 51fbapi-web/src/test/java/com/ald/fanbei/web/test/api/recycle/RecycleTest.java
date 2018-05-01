@@ -71,9 +71,9 @@ public class RecycleTest extends BaseTest{
 	 */
 	@Test
 	public void getAllBorrowList() {
-		String url = urlBase + "/borrow/loanShop";
+		String url = urlBase + "/h5/recycle/borrowRecycleRepayment";
 		Map<String,String> params = new HashMap<>();
-		params.put("systemType", "1");
+		params.put("borrowId", "3340038");
 		testH5(url, params, userName, true);
 	}
 	
@@ -95,7 +95,7 @@ public class RecycleTest extends BaseTest{
 	 */
 	@Test
 	public void applyLoan() {
-		String url = urlBase + "/h5/recycle/applyRecycleBorrowCash";
+		String url = urlBase + "/h5/recycle/applyBorrowRecycleCash";
 		Map<String,String> params = new HashMap<>();
 		params.put("amount", 1000+"");
 		params.put("type", 10+"");
@@ -117,7 +117,7 @@ public class RecycleTest extends BaseTest{
 		params.put("deliveryAddress", "");
 		params.put("deliveryUser", "");
 		params.put("deliveryPhone", "13638668564");
-		params.put("recycleId", "59");
+		params.put("propertyValue", "456456");
 		
 		testH5(url, params, userName, true);
 	}
@@ -139,103 +139,29 @@ public class RecycleTest extends BaseTest{
 		testH5(url, null, userName ,true);
 	}
 
+	
 	/**
-	 * 获取白领贷协议
-	 */
-	@Test
-	public void getWhiteLoanProtocol() {
-		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
-		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 53+"");//1038.66
-		params.put("totalServiceFee", "30.27");
-		params.put("loanRemark", "0");
-		params.put("repayRemark", "0");
-		params.put("interestRate", "0");
-		params.put("serviceRate", "0");
-		params.put("overdueRate", "0");
-		params.put("amount", "1000");
-		params.put("nper", "3");
-		testH5(url, params, userName, true);
-	}
-
-	/**
-	 * 按期还款
+	 * 按期还款(回收 取消订单)
 	 */
 	@Test
 	public void repayDo() {
-		String url = urlBase + "/loan/loanRepayDo";
+		String url = urlBase + "/h5/recycle/recycleRepayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 1023.33+"");//351.27
-		params.put("couponId", "0");
-		params.put("rebateAmount", "0");
-		
+		params.put("repaymentAmount", 50+"");//351.27
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
-		params.put("actualAmount",1023.33+"");
-		params.put("loanId", 208+"");
-		params.put("loanPeriodsIds", "406");
-		
-		testApi(url, params, userName, true);
-	}
-	
-	/**
-	 * 提前结清还款
-	 */
-	@Test
-	public void allRepayDo() {
-		String url = urlBase + "/loan/loanAllRepayDo";
-		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 675.41+"");
-		params.put("couponId", "0");
-		params.put("rebateAmount", "0");
-		
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("actualAmount", 675.41+"");
-		params.put("loanId", 207+"");
-		
-		testApi(url, params, userName, true);
-	}
-	
-	/**
-	 * 获取贷款详情
-	 */
-	@Test
-	public void getLoanInfo() {
-		String url = urlBase + "/h5/loan/getLoanInfo";
-		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 207+"");
+		params.put("borrowId", "3340038");		
 		
 		testH5(url, params, userName, true);
 	}
 	
-	/**
-	 * 获取贷款还款计划
-	 */
-	@Test
-	public void loanRepayPlan() {
-		String url = urlBase + "/h5/loan/loanRepayPlan";
-		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 189+"");
-		
-		testH5(url, params, userName, true);
-	}
-	
-	@Test
-	public void getLoanRepayments() {
-		String url = urlBase + "/h5/loan/getLoanRepayments";
-		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 9+"");
-		
-		testH5(url, params, userName, true);
-	}
-	
+	// 回调
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018030614245200365";
-		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018030614245200365";
+		String orderNo = "hq2018050115005300463";
+		String merPriv = PayOrderSource.BORROW_RECYCLE_REPAY.getCode();
+		String tradeNo = "xianFenghq2018050115005300463";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
@@ -243,6 +169,14 @@ public class RecycleTest extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		testApi(url, params, userName, true);
 	}
+	
+	// 获取银行卡
+	@Test
+	public void  getUserBankList() {
+		String url = urlBase + "/h5/recycle/getUserBankList";
+		testH5(url, null, userName, true);
+	}
+	
 	
 	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {

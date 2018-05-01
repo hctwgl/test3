@@ -30,7 +30,16 @@ public class AfBorrowCashDto extends AfBorrowCashDo{
 	private Date loanStartTime;//借款开始时间戳（单位：秒）
     private String borrowRemark;//借款用途
     private String refundRemark;//还款来源
-	
+	private Long recycleId;
+
+	public Long getRecycleId() {
+		return recycleId;
+	}
+
+	public void setRecycleId(Long recycleId) {
+		this.recycleId = recycleId;
+	}
+
 	public String getOrderNo() {
 		return orderNo;
 	}

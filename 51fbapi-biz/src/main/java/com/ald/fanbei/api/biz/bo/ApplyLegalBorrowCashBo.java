@@ -44,14 +44,23 @@ public class ApplyLegalBorrowCashBo {
 	private String deliveryPhone;
 	private String ipAddress;
 	private String appName;
-	private Long recycleId;
+	private String propertyValue;
+	private String goodsImg;
 
-	public Long getRecycleId() {
-		return recycleId;
+	public String getPropertyValue() {
+		return propertyValue;
 	}
 
-	public void setRecycleId(Long recycleId) {
-		this.recycleId = recycleId;
+	public void setPropertyValue(String propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+
+	public String getGoodsImg() {
+		return goodsImg;
+	}
+
+	public void setGoodsImg(String goodsImg) {
+		this.goodsImg = goodsImg;
 	}
 
 	public String getIpAddress() {
