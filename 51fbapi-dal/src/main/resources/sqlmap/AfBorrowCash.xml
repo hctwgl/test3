@@ -224,19 +224,23 @@
 		LIMIT
 		#{start},20
 	</select>
-	<select id="getBorrowRecycleListByUserId" resultType="AfBorrowCashDo">
+	<select id="getBorrowRecycleListByUserId" resultType="AfBorrowCashDto">
 		SELECT
-		<include refid="queryFields" />
+		bc.id
+		rid,bc.gmt_create,bc.gmt_modified,bc.borrow_no,bc.user_id,bc.type,bc.amount,bc.status,bc.remark,bc.card_number,bc.card_name,bc.overdue_day,
+		bc.overdue_amount,bc.arrival_amount,bc.gmt_arrival,bc.review_name,bc.review_user_name,bc.review_details,bc.gmt_review,bc.poundage,bc.rate_amount,bc.repay_amount,bc.latitude,bc.longitude,bc.province,bc.city,bc.county,bc.overdue_status,bc.review_status,bc.address,gmt_close,rish_order_no,
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate,majiabao_name,risk_daily_rate,ro.id recycleId
 		FROM
-		af_borrow_cash
+		af_borrow_cash bc
+		LEFT JOIN af_borrow_recycle_order ro on bc.id=ro.borrow_id
 		WHERE
-		is_delete = 0
+		bc.is_delete = 0
 		AND
-		user_id = #{userId}
+		bc.user_id = #{userId}
 		AND
-		recycle_id is not null
+		ro.id is not null
 		ORDER BY
-		gmt_create DESC
+		bc.gmt_create DESC
 		LIMIT
 		#{start},20
 	</select>
@@ -579,12 +583,16 @@
 
 	<select id="fetchLastRecycleByUserId" resultType="AfBorrowCashDo">
 		SELECT
-		<include refid="queryFields" />
-		FROM af_borrow_cash
-		WHERE is_delete = 0
-		AND user_id = #{userId}
-		AND recycle_id is not null
-		ORDER BY id DESC LIMIT 1
+		bc.id
+		rid,bc.gmt_create,bc.gmt_modified,bc.borrow_no,bc.user_id,bc.type,bc.amount,bc.status,bc.remark,bc.card_number,bc.card_name,bc.overdue_day,
+		bc.overdue_amount,bc.arrival_amount,bc.gmt_arrival,bc.review_name,bc.review_user_name,bc.review_details,bc.gmt_review,bc.poundage,bc.rate_amount,bc.repay_amount,bc.latitude,bc.longitude,bc.province,bc.city,bc.county,bc.overdue_status,bc.review_status,bc.address,gmt_close,rish_order_no,
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate,majiabao_name,risk_daily_rate
+		FROM af_borrow_cash bc
+		LEFT JOIN af_borrow_recycle_order ro on bc.id=ro.borrow_id
+		WHERE bc.is_delete = 0
+		AND bc.user_id = #{userId}
+		AND ro.id is not null
+		ORDER BY bc.id DESC LIMIT 1
 	</select>
 <select id="getCashBorrowSuccessByUserId" resultType="java.lang.Integer">
 		SELECT

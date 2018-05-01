@@ -60,7 +60,7 @@ public interface AfBorrowCashDao {
 	 * @param 开始条数
 	 * @return
 	 */
-	List<AfBorrowCashDo> getBorrowRecycleListByUserId(@Param("userId") Long userId, @Param("start") Integer start);
+	List<AfBorrowCashDto> getBorrowRecycleListByUserId(@Param("userId") Long userId, @Param("start") Integer start);
 	/**
 	 * 获取已经完成的借钱记录
 	 * @param userId
