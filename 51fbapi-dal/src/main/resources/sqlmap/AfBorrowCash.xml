@@ -246,8 +246,6 @@
 		recycle_id is not null
 		ORDER BY
 		gmt_create DESC
-		LIMIT
-		#{start},20
 	</select>
 	<select id="listDoneCashsByUserId" resultType="AfBorrowCashDo">
         SELECT
