@@ -123,7 +123,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 		List<BorrowRecycleHomeInfoBo> boList=new ArrayList<>();
 		for(AfBorrowCashDto cashDo:doList){
 			BorrowRecycleHomeInfoBo bo=new BorrowRecycleHomeInfoBo();
-			bo.recycleId=cashDo.getRecycleId();
+			bo.borrowId=cashDo.getRid();
 			bo.borrowGmtApply=cashDo.getGmtCreate();
 			bo.borrowGmtPlanRepayment=cashDo.getGmtPlanRepayment();
 			bo.arrivalGmt=cashDo.getGmtArrival();
@@ -223,7 +223,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 		//回收状态与borrowStatus用同一个数据库属性
 		public int restUseDays;
 		public String recycleStatus;
-		public Long recycleId;
 		public String goodsName;
 		public String goodsModel;
 		public BigDecimal goodsPrice;
