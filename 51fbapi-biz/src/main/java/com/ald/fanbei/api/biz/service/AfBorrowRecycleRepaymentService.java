@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleRepaymentServiceImpl.RepayBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
