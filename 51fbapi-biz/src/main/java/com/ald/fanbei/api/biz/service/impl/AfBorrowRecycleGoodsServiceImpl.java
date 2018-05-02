@@ -47,6 +47,7 @@ public class AfBorrowRecycleGoodsServiceImpl extends ParentServiceImpl<AfBorrowR
 		List<AfBorrowRecycleGoodsBo> boList=new ArrayList<>();
  		for(AfBorrowRecycleGoodsDo recycleGoodsDo:afBorrowRecycleGoodsDos){
 			AfBorrowRecycleGoodsBo bo=new AfBorrowRecycleGoodsBo();
+			bo.setId(recycleGoodsDo.getRid());
 			bo.setName(recycleGoodsDo.getName());
 			bo.setGoodsImg(recycleGoodsDo.getGoodsImg());
 			Map<String,Object> mapPropertyValue=JsonUtils.fromJsonString(recycleGoodsDo.getPropertyValue(),Map.class);
