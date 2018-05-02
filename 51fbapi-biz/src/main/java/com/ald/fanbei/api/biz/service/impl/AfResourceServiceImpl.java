@@ -952,6 +952,19 @@ public class AfResourceServiceImpl implements AfResourceService {
     }
 
     @Override
+    public List<Object> getBorrowFinanceHomeListByType() {
+        String type = "BORROW_FINANCE_HOME";
+        String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        List<Object> list = new ArrayList<Object>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderBy(type));
+        }else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type));
+        }
+        return list;
+    }
+
+    @Override
 	public List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType) {
 
 		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);

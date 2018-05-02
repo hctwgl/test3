@@ -30,7 +30,7 @@ public class RecycleTest extends BaseTest{
 	 */
 	@Test
 	public void getBorrowRecycleHomeInfoApi() {
-		String url = urlBase + "/h5/recycle/getBorrowRecycleHomeInfo";
+		String url = urlBase + "/h5/recycle/borrowRecycleHome";
 		testH5(url, null, userName, true);
 	}
 

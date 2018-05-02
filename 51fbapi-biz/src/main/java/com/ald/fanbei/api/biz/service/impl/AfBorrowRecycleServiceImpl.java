@@ -72,10 +72,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.isBorrowOverdue = false;
             return bo;
         }
-        AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
-        if(processRepayment != null) {
-            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
-        }
+//        AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
+//        if(processRepayment != null) {
+//            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
+//        }
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
         if (goodsMap != null) {
@@ -83,7 +83,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.goodsModel = goodsMap.get("goodsModel");
             bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
-        bo.recycleStatus = cashDo.getStatus();
+        bo.recycleStatus =AfBorrowRecycleStatus.findByCashStatus(cashDo.getStatus()).getCode();
         bo.borrowGmtApply = cashDo.getGmtCreate();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
         bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount());

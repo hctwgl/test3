@@ -12,10 +12,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum AfBorrowRecycleStatus {
 	AUDITING("AUDITING","审核中 ", "APPLY"),
-	
+    LOANING("LOANING","打款中","TRANSEDING"),
+    WAITSEND("WAITSEND","待寄送","TRANSED"),
+    PAYING("REPAYING","支付中","REPAYING"),
+    TRANSEDFAIL("TRANSEDFAIL","打款失败","TRANSEDFAIL"),
+    CLOSE("CLOSE","订单完成","FINSH"),
+    FAIL("FAIL","订单失败","CLOSED")
 	;
-	
-	
 	public String code;
 	public String desc;
 	public String cashStatus;
