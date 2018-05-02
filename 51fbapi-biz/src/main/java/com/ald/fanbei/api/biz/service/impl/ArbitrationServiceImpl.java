@@ -358,11 +358,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashDao
 				.getBorrowCashInfoByBorrowNo(borrowNo);
 			if (afBorrowCashDo == null) {
-			logger.info("afBorrowCashDo not exist,borrowNo= " + borrowNo);
-			resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
-			resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
+				logger.info("afBorrowCashDo not exist,borrowNo= " + borrowNo);
+				resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
+				resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-			return resp;
+				return resp;
 			}
 
 			if(StringUtil.isBlank(type)) {
@@ -382,7 +382,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			String regTime = StringUtil.null2Str(json.get("regTime"));	// 获取注册时间
 			String productId = StringUtil.null2Str(json.get("productId"));	// 获取平台id
 
-			if(ArbitrationStatus.ZERO.getCode().equals(type)) {	// 0申请人1被申请人
+			if(ArbitrationStatus.ONE.getCode().equals(type)) {	// 0申请人1被申请人
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
 				AfIdNumberDo afIdNumberDo = afIdNumberService.selectUserIdNumberByUserId(afBorrowCashDo.getUserId());
 
@@ -405,7 +405,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("regTime", "");	//注册时间
 				result.add(map);
 
-			} else if(ArbitrationStatus.ONE.getCode().equals(type)) {
+			} else if(ArbitrationStatus.ZERO.getCode().equals(type)) {
 				String name=StringUtil.null2Str(json.get("name"));
 				String legalPerson=StringUtil.null2Str(json.get("legalPerson"));
 				String position=StringUtil.null2Str(json.get("position"));
@@ -414,53 +414,26 @@ public class ArbitrationServiceImpl extends BaseService implements
 				String idAddress=StringUtil.null2Str(json.get("idAddress"));
 				String img_01=StringUtil.null2Str(json.get("img_01"));
 				String idcard=StringUtil.null2Str(json.get("idcard"));
-				AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
-				Long pdfId=afContractPdfDo.getId();
-				List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(pdfId);
-				if(lenders.size()==0){
-					map.put("platId", "");	//用户平台id
-					map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
-					map.put("name", name);	//姓名
-					map.put("idtype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//用户证件类型
-					map.put("idcard", idcard);	//证件号
-					map.put("type", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//类型
-					map.put("nation", "");	//民族
-					map.put("legalPerson", legalPerson);	//法定代表人
-					map.put("position", position);	//法定代表人职务
-					map.put("sex", sex);	//性别
-					map.put("phone", phone);	//联系电话
-					map.put("email", "");	//电子邮箱
-					map.put("idAddress", idAddress);	//证件地址
-					map.put("address", "");	//通讯地址
-					map.put("img_01", img_01);	//身份证正面照
-					map.put("img_02", "");	//身份证反面照
-					map.put("regTime", regTime);	//注册时间
-					result.add(map);
-				}else{
-					for (AfLenderInfoDto lenderInfoDto:lenders){
-						map.put("platId", "");	//用户平台id
-						map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
-						map.put("name", lenderInfoDto.getUserName());	//姓名
-						map.put("idtype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//用户证件类型
-						map.put("idcard", lenderInfoDto.getEdspayUserCardId());	//证件号
-						map.put("type", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//类型
-						map.put("nation", "");	//民族
-						map.put("legalPerson", "");	//法定代表人
-						map.put("position", "");	//法定代表人职务
-						map.put("sex", "");	//性别
-						map.put("phone", "");	//联系电话
-						map.put("email", "");	//电子邮箱
-						map.put("idAddress", "");	//证件地址
-						map.put("address", "");	//通讯地址
-						map.put("img_01", "");	//身份证正面照
-						map.put("img_02", "");	//身份证反面照
-						map.put("regTime", "");	//注册时间
-						result.add(map);
-					}
-
-				}
-
+				map.put("platId", "");	//用户平台id
+				map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
+				map.put("name", name);	//姓名
+				map.put("idtype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//用户证件类型
+				map.put("idcard", idcard);	//证件号
+				map.put("type", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//类型
+				map.put("nation", "");	//民族
+				map.put("legalPerson", legalPerson);	//法定代表人
+				map.put("position", position);	//法定代表人职务
+				map.put("sex", sex);	//性别
+				map.put("phone", phone);	//联系电话
+				map.put("email", "");	//电子邮箱
+				map.put("idAddress", idAddress);	//证件地址
+				map.put("address", "");	//通讯地址
+				map.put("img_01", img_01);	//身份证正面照
+				map.put("img_02", "");	//身份证反面照
+				map.put("regTime", regTime);	//注册时间
+				result.add(map);
 			}
+
 
 
 
