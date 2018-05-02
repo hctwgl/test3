@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.impl.MaidianRunnable;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
@@ -32,6 +33,8 @@ import com.ald.fanbei.api.web.vo.AfGameInitVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,6 +112,7 @@ public class AppH5UserContorler extends BaseController {
         model.put("userName", afUserDo.getUserName());
         model.put("recommendCode", afUserDo.getRecommendCode());
         model.put("mobile", afUserDo.getMobile());
+
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, JSON.toJSONString(model)));
     }
 
@@ -118,6 +122,7 @@ public class AppH5UserContorler extends BaseController {
         String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + resourceDo.getValue();
 
         model.put("registerRule", notifyUrl);
+
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, JSON.toJSONString(model)));
     }
 

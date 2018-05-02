@@ -39,6 +39,8 @@ public  class KafkaConstants {
      * 用户的基本信息
      */
     public static final String SYNC_USER_BASIC_DATA= "sync_user_basic_data";
+
+    public static final String SYNC_SCENE_ONE= "sync_scene_one";
     //endregion kafka 事件
 
     //region kafka 主题
@@ -48,6 +50,7 @@ public  class KafkaConstants {
     //region kafka 是否打开
     public static final String KAFKA_OPEN= "KAFKA_OPEN";
     public static final String REFRESH_TIME= "refreshTime";
+    public static final String SYNC_SCENE_WEEK = "sync_scene_week";
     //endregion
 
 }

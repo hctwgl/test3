@@ -232,7 +232,13 @@ public class H5ActivityCommonController extends BaseController {
 	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 
 	    String salt = UserUtil.getSalt();
-	    String password = UserUtil.getPassword(passwordSrc, salt);
+
+	    // modify by luoxiao 避免passwordSrc 为空出现NullPointerException异常
+		String password = "";
+	    if(StringUtils.isNotEmpty(passwordSrc)){
+			password = UserUtil.getPassword(passwordSrc, salt);
+		}
+		// end by luoxiao
 
 	    AfUserDo userDo = new AfUserDo();
 	    userDo.setSalt(salt);

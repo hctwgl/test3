@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.biz.rule.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,5 +76,10 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	@Override
 	public List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list){
 		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndTypeMap(list);
+	}
+
+	@Override
+	public HashMap getVisualActivityGoodsByGoodsId(Long goodsId) {
+		return afActivityGoodsDao.getVisualActivityGoodsByGoodsId(goodsId);
 	}
 }

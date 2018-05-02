@@ -412,7 +412,7 @@ public class PayRoutController {
 				if (PayOrderSource.ORDER.getCode().equals(attach)) {
 					afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId,false);
+					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId,false,null);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach) || PayOrderSource.LEASE_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, transactionId, PayType.WECHAT.getCode());
@@ -461,7 +461,7 @@ public class PayRoutController {
 				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
 					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
-					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
+					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true,null);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
@@ -604,7 +604,7 @@ public class PayRoutController {
 		if (PayOrderSource.ORDER.getCode().equals(attach)) {
 			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
 		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo,false);
+			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo,false,null);
 		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 				|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
@@ -702,7 +702,7 @@ public class PayRoutController {
 							afHuicaoOrderDo.getThirdOrderNo());
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
 					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(),
-							afHuicaoOrderDo.getThirdOrderNo(),false);
+							afHuicaoOrderDo.getThirdOrderNo(),false,null);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 					// afOrderService.dealBrandOrderSucc(afHuicaoOrderDo.getOrderNo(),
@@ -910,8 +910,7 @@ public class PayRoutController {
 					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
 				}
 			}
-			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_CONSUMPTION_PERIOD,true);
-			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_BORROW_CASH,true);
+			kafkaSync.syncEvent(afOrder.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
 
 //			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
 //

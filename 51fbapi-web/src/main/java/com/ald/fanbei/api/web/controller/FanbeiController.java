@@ -1,20 +1,5 @@
 package com.ald.fanbei.api.web.controller;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -22,14 +7,22 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.validator.intercept.ValidationInterceptor;
+import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -51,11 +44,11 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
-	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2",
+	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2","/goods/getHomeInfoV3","/goods/getChannel","/goods/getMoreGoods","/goods/getChannelMoreGoods",
 	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
             "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getHomeGoodsList","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
-	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
+	"/category/getAllGoodsCategory","/category/getGoodsList","/category/getGoodsList1", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo","/category/brandChannels"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -117,7 +110,7 @@ public class FanbeiController extends BaseController {
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
-            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/getUserShareInfo","/user/replaceMainCard"
+            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/getUserShareInfo","/user/replaceMainCard","/user/home"
 
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody

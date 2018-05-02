@@ -208,14 +208,19 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 				vo.setIsShow(1);
 			}
 		}
-		AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
-		if (afInterestReduceSchemeDo != null){
-			vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
-			vo.setInterestCutMark(afInterestReduceSchemeDo.getIconMark());
+		if(context.getAppVersion()>411){
+			AfInterestReduceSchemeDo afInterestReduceSchemeDo = afInterestFreeRulesService.getReduceSchemeByGoodId(goods.getRid(),goods.getBrandId(),goods.getCategoryId());
+			if (afInterestReduceSchemeDo != null){
+				vo.setInterestCutDesc(afInterestReduceSchemeDo.getDescr());
+				vo.setInterestCutMark(afInterestReduceSchemeDo.getIconMark());
 
+			}
+			vo.setInterestFreeDesc(freedesc);
+			vo.setInterestFreeMark(iconMark);
+
+		}else{
+			vo.setIsShow(0);
 		}
-		vo.setInterestFreeDesc(freedesc);
-		vo.setInterestFreeMark(iconMark);
 		resp.setResponseData(vo);
 		return resp;
 	}

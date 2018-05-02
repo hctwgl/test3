@@ -234,4 +234,18 @@
 		</foreach>
 		 GROUP BY goods_id
 	</select>
+
+	<select id="getVisualActivityGoodsByGoodsId" resultType="HashMap">
+		SELECT
+		goods_id,special_price
+		FROM
+		af_seckill_activity_goods as a INNER JOIN af_seckill_activity as b
+		WHERE
+		a.is_delete = 0 AND b.is_delete = 0 AND b.`status` = 1 AND b.`is_disable` =0
+		AND now() > b.gmt_start
+		AND b.gmt_end > now()
+		AND
+		goods_id = #{goodsId}
+		ORDER BY a.`special_price` LIMIT 1
+	</select>
 </mapper>
