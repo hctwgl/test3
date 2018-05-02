@@ -22,9 +22,9 @@ import java.util.Date;
  * @author
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("bubbleAuthCallbackExecutor")
-public class BubbleAuthCallbackExecutor implements Executor {
-    private Logger logger = LoggerFactory.getLogger(BubbleAuthCallbackExecutor.class);
+@Component("userReplenishQuotaExecutor")
+public class UserReplenishQuotaExecutor implements Executor {
+    private Logger logger = LoggerFactory.getLogger(UserReplenishQuotaExecutor.class);
 
 
     @Resource
@@ -59,18 +59,18 @@ public class BubbleAuthCallbackExecutor implements Executor {
             // 首先初始化提额状态
             afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.BUBBLE.getCode());
             // 认证通过，更新支付宝认证状态
-            afUserAuthDo.setBubbleStatus("Y");
+            afUserAuthDo.setAlipayStatus("Y");
             afUserAuthDo.setRiskStatus("Y");
-            afUserAuthDo.setGmtBubble(new Date());
+            afUserAuthDo.setGmtAlipay(new Date());
             afUserAuthService.updateUserAuth(afUserAuthDo);
             // 认证成功,向风控发起提额申请
             AfUserAuthDo afUserAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
             String basicStatus = afUserAuthInfo.getBasicStatus();
             // 根据强风控状态判断提额场景
             AfAuthRaiseStatusDo afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), userId);
-            if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
+            if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtAlipay())) {
                 if (StringUtils.equals("Y", basicStatus)) {
-                    RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { RiskScene.BUBBLE_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
+                    RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.ALIPAY_XJD_PASS.getCode() }, RiskSceneType.XJD.getCode());
                     // 提额成功
                     if (respBo != null && respBo.isSuccess()) {
                         String raiseStatus = respBo.getData().getResults()[0].getResult();
@@ -97,7 +97,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
                     }
 
                 } else if (StringUtils.equals("N", basicStatus)) {
-                    RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { RiskScene.BUBBLE_XJD_UNPASS.getCode() }, RiskSceneType.XJD.getCode());
+                    RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.ALIPAY_XJD_UNPASS.getCode() }, RiskSceneType.XJD.getCode());
                     // 提额成功
                     if (respBo != null && respBo.isSuccess()) {
                         String raiseStatus = respBo.getData().getResults()[0].getResult();
@@ -131,7 +131,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
                 try {
                     afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.LOAN_TOTAL.getName(), AuthType.BUBBLE.getCode(), userId);
                     if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtAlipay())) {
-                        RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { RiskScene.BUBBLE_BLD.getCode() }, RiskSceneType.BLD.getCode());
+                        RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { RiskScene.ALIPAY_BLD.getCode() }, RiskSceneType.BLD.getCode());
                         // 提额成功
                         if (respBo != null && respBo.isSuccess()) {
                             // 获取提额结果
@@ -162,9 +162,9 @@ public class BubbleAuthCallbackExecutor implements Executor {
             }
 
             afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), userId);
-            if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
+            if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtAlipay())) {
                 // 线上分期提额
-                afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.BUBBLE_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.BUBBLE.getCode());
+                afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.ALIPAY_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.BUBBLE.getCode());
             }
         } else {
             // 更新认证状态为失败

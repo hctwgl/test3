@@ -163,12 +163,7 @@ gmt_onlinebank,onlinebank_status
 		<if test="onlinebankStatus != null">
 			,onlinebank_status=#{onlinebankStatus}
 		</if>
-		<if test="bubbleStatus != null">
-			,bubble_status=#{bubbleStatus}
-		</if>
-		<if test="gmtBubble != null">
-			,gmt_bubble=#{gmtBubble}
-		</if>
+
 		WHERE user_id = #{userId}
 	</update>
 	
