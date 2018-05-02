@@ -111,7 +111,7 @@ public class AppH5PayResultController extends BaseController {
                     }
                     // end by luoxiao
 
-                    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", JSONObject.toJSONString(payResultInfoDto)).toString();
+                    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", JSON.toJSON(payResultInfoDto)).toString();
                 }
                 else {
                     return H5CommonResponse.getNewInstance(false, "订单信息不存在").toString();
