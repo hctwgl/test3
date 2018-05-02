@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -10,13 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
 import com.ald.fanbei.api.biz.service.AfBorrowRecycleGoodsService;
 import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
@@ -26,6 +30,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -33,20 +38,20 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 /**
- * 参考 {@link getLegalBorrowCashHomeInfoV2Api}
  * @author ZJF
  * @version 1.0.0 初始化
  * @date 2017-12-10 10:14:21
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowLegalService")
-public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, Long> implements AfBorrowLegalService {
+public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo, Long> implements AfBorrowRecycleService {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -73,76 +78,76 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	@Resource
 	private AfBorrowRecycleOrderService afBorrowRecycleOrderService;
 
+
 	@Override
-	public BorrowLegalHomeInfoBo getHomeInfo(Long userId){
+	@SuppressWarnings("unchecked")
+	public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId) {
 		AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-		if(userAccount != null) {
-			return processLogin(userAccount);
-		}else{
-			return processUnlogin();
-		}
-	}
-
-	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
 		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-		
-		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
-		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
-		bo.isLogin = true;
-		
-		bo.minQuota = cfgBean.minAmount;
-		bo.borrowCashDay = cfgBean.borrowCashDay;
-		
-		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastByUserId(userAccount.getUserId());
-		this.dealBorrow(bo, userAccount, cashDo);  		// 处理 借款/续期 信息
-		AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
-		bo.rejectCode = rejectType.name();
-		
-		BigDecimal maxCfgAmount = cfgBean.maxAmount;
-		BigDecimal maxAmount = BigDecimal.ZERO;
-		if(!AfBorrowCashRejectType.PASS.equals(rejectType)) {
-			maxAmount = maxCfgAmount;
-		} else if(userAccount != null) {
-			BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
-			maxAmount = maxCfgAmount.compareTo(usableAmount) < 0 ? maxCfgAmount : usableAmount;
-		}
-		bo.maxQuota = maxAmount;
 
-		return bo;
-	}
-	
-	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
-		if(lastBorrowCash == null) {
-			bo.hasBorrow = false;
-			return;
+		BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
+		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
+		bo.minQuota = cfgBean.minAmount;
+		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+		if (cashDo == null){
+			bo.isBorrowOverdue = false;
+			return bo;
 		}
-		
-		String status = lastBorrowCash.getStatus();
-		if( AfBorrowCashStatus.finsh.getCode().equals(status) 
-				|| AfBorrowCashStatus.closed.getCode().equals(status)) {
-			bo.hasBorrow = false;
-			return;
+		AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		Map<String,String> goodsMap=JsonUtils.fromJsonString(orderDo.getPropertyValue(),Map.class);
+		if (goodsMap != null){
+			bo.goodsName=orderDo.getGoodsName();
+			bo.goodsModel=goodsMap.get("goodsModel");
+			bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
 		}
-		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(lastBorrowCash.getRid());
-		if(repayment != null) {
-			status = AfBorrowCashStatus.repaying.getCode();
-			bo.repayingAmount = repayment.getRepaymentAmount();
-		}
-		bo.borrowStatus = status;
-		
-		bo.hasBorrow = true;
-		bo.borrowId = lastBorrowCash.getRid();
-		bo.borrowAmount = lastBorrowCash.getAmount();
-		bo.borrowArrivalAmount = lastBorrowCash.getArrivalAmount();
-		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(lastBorrowCash);
-		bo.borrowGmtApply = lastBorrowCash.getGmtCreate();
-		bo.borrowGmtPlanRepayment = lastBorrowCash.getGmtPlanRepayment();
-		if(lastBorrowCash.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
+		bo.recycleStatus=cashDo.getStatus();
+		bo.borrowGmtApply=cashDo.getGmtCreate();
+		bo.borrowGmtPlanRepayment=cashDo.getGmtPlanRepayment();
+		bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(),cashDo.getOverdueAmount());
+		bo.repayingAmount = cashDo.getRepayAmount();
+		bo.borrowAmount = cashDo.getAmount();
+		bo.restUseDays=(int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000*3600*24);
+		if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday())> 0) {
 			bo.isBorrowOverdue = true;
 		}else {
 			bo.isBorrowOverdue = false;
 		}
+		AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
+		bo.rejectCode = rejectType.name();
+		return bo;
 	}
+
+	@Override
+	public List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId,Integer start) {
+		List<AfBorrowCashDto> doList=afBorrowCashDao.getBorrowRecycleListByUserId(userId,start);
+		List<BorrowRecycleHomeInfoBo> boList=new ArrayList<>();
+		for(AfBorrowCashDto cashDo:doList){
+			BorrowRecycleHomeInfoBo bo=new BorrowRecycleHomeInfoBo();
+			bo.recycleId=cashDo.getRecycleId();
+			bo.borrowGmtApply=cashDo.getGmtCreate();
+			bo.borrowGmtPlanRepayment=cashDo.getGmtPlanRepayment();
+			bo.arrivalGmt=cashDo.getGmtArrival();
+			bo.reBankId=cashDo.getCardNumber();
+			bo.reBankName=cashDo.getCardName();
+			bo.borrowStatus=cashDo.getStatus();
+			bo.restUseDays=(int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000*3600*24);
+			addRecycleGoodsInfos(bo,cashDo);
+			bo.overdueAmount=afBorrowCashService.calculateLegalRestOverdue(cashDo);
+			boList.add(bo);
+		}
+		return boList;
+	}
+    @SuppressWarnings("unchecked")
+	private void addRecycleGoodsInfos(BorrowRecycleHomeInfoBo bo,AfBorrowCashDo cashDo){
+		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		if (recycleOrderDo != null){
+			Map<String,String> goodsMap=JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(),Map.class);
+			bo.goodsName=recycleOrderDo.getGoodsName();
+			bo.goodsModel=goodsMap.get("goodsModel");
+			bo.goodsPrice=new BigDecimal(goodsMap.get("maxRecyclePrice"));
+		}
+	}
+    
 	private AfBorrowCashRejectType rejectCheck(BorrowLegalCfgBean cfgBean, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
 		// 借款总开关
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
@@ -184,40 +189,12 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		return AfBorrowCashRejectType.PASS;
 	}
 	
-	private BorrowLegalHomeInfoBo processUnlogin(){
-		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-		
-		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
-		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
-		bo.isLogin = false;
-		bo.maxQuota = this.calculateMaxAmount(cfgBean.maxAmount);
-		bo.minQuota = cfgBean.minAmount;
-		bo.borrowCashDay = cfgBean.borrowCashDay;
-		
-		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
-			bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
-		}
-		
-		return bo;
-	}
-	
-	/**
-	 * 计算最多能计算多少额度 150取100 250.37 取200
-	 * @param usableAmount
-	 * @return
-	 */
-	private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
-		Integer amount = usableAmount.intValue();
-		return new BigDecimal(amount / 100 * 100);
-	}
-
-	
 	@Override
 	public BaseDao<AfBorrowCashDo, Long> getDao() {
 		return null;
 	}
 	
-	public final static class BorrowLegalHomeInfoBo{
+	public final static class BorrowRecycleHomeInfoBo{
 		public String rejectCode; //拒绝码，通过则为 "PASS"
 		
 		public boolean isLogin;
