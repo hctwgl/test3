@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -53,7 +54,7 @@ public class AppH5PayResultController extends BaseController {
     @ResponseBody
     public String newUserGift(HttpServletRequest request, ModelMap model) throws IOException {
         try{
-            FanbeiWebContext context = doWebCheck(request, false);
+            FanbeiWebContext context = doWebCheck(request, true);
 
             String orderId = request.getParameter("orderId");
             if(StringUtils.isBlank(orderId)){
@@ -61,7 +62,6 @@ public class AppH5PayResultController extends BaseController {
             }
 
             String userName = context.getUserName();
-            userName = "15295517409";
             AfUserDo userDo = afUserDao.getUserByUserName(userName);
             if(userDo!=null) {
                 AfOrderDo orderDo = afOrderDao.getOrderById(Long.parseLong(orderId));
@@ -83,29 +83,31 @@ public class AppH5PayResultController extends BaseController {
                     payResultInfoDto.setBannerList(bannerList);
 
                     // add by luoxiao 活动支付成功后赠送优惠券
-                    try{
-                        AfResourceDo activityInfo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-                        if(null != activityInfo){
-                            String activityStartTime = activityInfo.getValue().split(",")[0];
-                            String activityEndTime = activityInfo.getValue().split(",")[1];
+                    if(StringUtils.equals(OrderStatus.PAID.getCode(),orderDo.getStatus())){
+                        try{
+                            AfResourceDo activityInfo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+                            if(null != activityInfo){
+                                String activityStartTime = activityInfo.getValue().split(",")[0];
+                                String activityEndTime = activityInfo.getValue().split(",")[1];
 
-                            if(StringUtils.isNotEmpty(activityStartTime) && StringUtils.isNotEmpty(activityEndTime)){
-                                Date startDate = DateUtil.parseDate(activityStartTime,DateUtil.DATE_TIME_SHORT);
-                                Date endDate = DateUtil.parseDate(activityEndTime, DateUtil.DATE_TIME_SHORT);
-                                Date now = new Date();
-                                // 活动期间
-                                if(DateUtil.compareDate(now, startDate) && (DateUtil.compareDate(endDate, now))){
-                                    // 查询优惠券信息
-                                    AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponAfterPaidSuccess(orderDo.getUserId());
-                                    if(null != userCouponDto){
-                                        payResultInfoDto.setCouponCondition(userCouponDto.getLimitAmount());
-                                        payResultInfoDto.setCouponAmount(userCouponDto.getAmount());
+                                if(StringUtils.isNotEmpty(activityStartTime) && StringUtils.isNotEmpty(activityEndTime)){
+                                    Date startDate = DateUtil.parseDate(activityStartTime,DateUtil.DATE_TIME_SHORT);
+                                    Date endDate = DateUtil.parseDate(activityEndTime, DateUtil.DATE_TIME_SHORT);
+                                    Date now = new Date();
+                                    // 活动期间
+                                    if(DateUtil.compareDate(now, startDate) && (DateUtil.compareDate(endDate, now))){
+                                        // 查询优惠券信息
+                                        AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponAfterPaidSuccess(orderDo.getUserId());
+                                        if(null != userCouponDto){
+                                            payResultInfoDto.setCouponCondition(userCouponDto.getLimitAmount());
+                                            payResultInfoDto.setCouponAmount(userCouponDto.getAmount());
+                                        }
                                     }
                                 }
                             }
+                        }catch(Exception e){
+                            logger.error("unknown exception:", e);
                         }
-                    }catch(Exception e){
-                        logger.error("unknown exception:", e);
                     }
                     // end by luoxiao
 
