@@ -17,26 +17,14 @@ public class RecycleTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
+	String urlBase = "http://localhost:8080";
 	String userName = AccountOfTester.田建成.mobile;
 	
-	/**
-	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
-	 */
 	@Before
 	public void init(){
 		super.init(userName);
 	}
 	
-	/**
-	 * 获取借钱首页详情
-	 */
-	@Test
-	public void getHomeInfo() {
-		String url = urlBase + "/h5/recycle/applyRecycleBorrowCash";
-		testH5(url, null, userName, true);
-	}
-
 	/**
 	 * 获取回收首页详情
 	 */
@@ -56,36 +44,12 @@ public class RecycleTest extends BaseTest{
 		params.put("start", "0");
 		testH5(url, params, userName, true);
 	}
-
-	/**
-	 * 获取所有借钱记录，包含白领贷和小额贷记录
-	 */
-	@Test
-	public void getAllBorrowList() {
-		String url = urlBase + "/h5/recycle/borrowRecycleRepayment";
-		Map<String,String> params = new HashMap<>();
-		params.put("borrowId", "3340038");
-		testH5(url, params, userName, true);
-	}
 	
 	/**
-	 * 贷款前确认
+	 * 发起回收申请
 	 */
 	@Test
-	public void confirmLoan() {
-		String url = urlBase + "/h5/loan/confirmLoan";
-		Map<String,String> params = new HashMap<>();
-		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 1000+"");
-		params.put("periods", 1+"");
-		testH5(url, params, userName, true);
-	}
-	
-	/**
-	 * 发起贷款申请
-	 */
-	@Test
-	public void applyLoan() {
+	public void applyBorrowRecycleCash() {
 		String url = urlBase + "/h5/recycle/applyBorrowRecycleCash";
 		Map<String,String> params = new HashMap<>();
 		params.put("amount", 1000+"");
@@ -114,7 +78,23 @@ public class RecycleTest extends BaseTest{
 	}
 
 	/**
-	 * 贷款申请成功后，模拟 UPS 回调 返呗API
+	 * 回收 取消订单
+	 */
+	@Test
+	public void repayDo() {
+		String url = urlBase + "/h5/recycle/recycleRepayDo";
+		Map<String,String> params = new HashMap<>();
+		params.put("repaymentAmount", 50+"");//351.27
+		params.put("payPwd", DigestUtils.md5Hex("123456"));
+		params.put("cardId", "3111464125");
+		params.put("borrowId", "3340038");		
+		
+		testH5(url, params, userName, true);
+	}
+	
+	/* 模拟三方系统回调 */
+	/**
+	 * 借钱申请成功后，模拟 UPS 回调 返呗API
 	 */
 	@Test
 	public void delegatePay() {
@@ -129,24 +109,9 @@ public class RecycleTest extends BaseTest{
 		
 		testH5(url, null, userName ,true);
 	}
-
-	
 	/**
-	 * 按期还款(回收 取消订单)
+	 * 支付成功后，模拟 UPS 回调 返呗API
 	 */
-	@Test
-	public void repayDo() {
-		String url = urlBase + "/h5/recycle/recycleRepayDo";
-		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 50+"");//351.27
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("borrowId", "3340038");		
-		
-		testH5(url, params, userName, true);
-	}
-	
-	// 回调
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
@@ -160,6 +125,7 @@ public class RecycleTest extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		testApi(url, params, userName, true);
 	}
+	/* 模拟三方系统回调 */
 	
 	// 获取银行卡
 	@Test
