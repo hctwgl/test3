@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -46,5 +49,29 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 	@Override
 	public List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label,String systemType) {
 		return afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
+	}
+
+	@Override
+	public List<Object> getLoanHomeListByLable(String label, String systemType) {
+		List<Object> dcHomeList=new ArrayList<>();
+		for(AfLoanSupermarketDo afLoanSupermarketDo:afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType)){
+			Map<String,String> map=new HashMap<>();
+			map.put("lsmNo",afLoanSupermarketDo.getLsmNo());
+			map.put("iconUrl",afLoanSupermarketDo.getIconUrl());
+			map.put("lsmIntro",afLoanSupermarketDo.getLsmIntro());
+			map.put("lsmName",afLoanSupermarketDo.getLsmName());
+			map.put("marketPoint",afLoanSupermarketDo.getMarketPoint());
+			map.put("payMethod",afLoanSupermarketDo.getPayMethod()+"");
+			map.put("linkUrl",afLoanSupermarketDo.getLinkUrl());
+			map.put("money",afLoanSupermarketDo.getMoney()+"");
+			map.put("moneyMax",afLoanSupermarketDo.getMoneyMax()+"");
+			map.put("moneyMin",afLoanSupermarketDo.getMoneyMin()+"");
+			map.put("registerUrl",afLoanSupermarketDo.getRegisterUrl());
+			map.put("time",afLoanSupermarketDo.getTime()+"");
+			map.put("timeMin",afLoanSupermarketDo.getTimeMin()+"");
+			map.put("timeMax",afLoanSupermarketDo.getMoneyMax()+"");
+			dcHomeList.add(map);
+		}
+		return dcHomeList;
 	}
 }
