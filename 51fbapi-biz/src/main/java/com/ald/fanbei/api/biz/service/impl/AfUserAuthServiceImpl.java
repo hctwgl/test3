@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @类现描述：
@@ -388,15 +389,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 	afResourceDo = afResourceService.getSingleResourceBytype("AUTH_STATUS_DESCRIPTION");
 	if (!SceneType.CASH.getName().equals(scene)) {
-	    // 是否显示补充认证（兼容老版本）
-	    if (appVersion < 411) {
-		data.put("showExtraTab", afResourceDoAuth.getValue());
-	    } 
-	    else {
-		//强风控通过则开启
-		data.put("showExtraTab", "0");
-	    }
-
+	    data.put("showExtraTab", "0");
 	    AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (afUserAuthStatus == null || UserAuthSceneStatus.NO.getCode().equals(afUserAuthStatus.getStatus()) || UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {// 从未认证
 		data.put("basicStatus", "A");
@@ -444,8 +437,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		data.put("useableAmount", userDto.getAuAmount().subtract(userDto.getUsedAmount()));// 剩余可使用额度
 		data.put("title2", afResourceDo.getValue1());
 		data.put("sceneStatus", "4");// 认证成功
-		
-		data.put("showExtraTab", "1");
+
+		// 是否显示补充认证（兼容老版本）
+		if (appVersion < 411) {
+		    data.put("showExtraTab", afResourceDoAuth.getValue());
+		} else {
+		    // 强风控通过则开启
+		    data.put("showExtraTab", "1");
+		}
 	    } else {
 		data.put("basicStatus", "P");
 		data.put("riskStatus", "P");
@@ -523,28 +522,37 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		} else if (between == 1) {
 		    data.put("title", "明天可以重新认证");
 		} else {
-		    day = 0;
-		    JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
-		    for (int i = 0; i < userAuthDayArray.size(); i++) {
-			JSONObject obj = userAuthDayArray.getJSONObject(i);
-			if (obj.getString("type").equals(auth_type)) {
-			    day = obj.getInteger("day");
-			}
-		    }
-		    afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
-		    between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
-		    if (between < 0) {
-			data.put("status", "N");
-		    }
-		    data.put("title", "");
+		    checkUserAuthDay(data,userAuthDay,auth_type,authDate);
 		}
 	    }
 	}
-	if (!isExist) {
-	    data.put("status", "F");
-	    data.put("title", "");
+	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
+		data.put("status", "F");
+		data.put("title", "");
+	    }
 	}
 	return data;
+    }
+
+    private boolean checkUserAuthDay(Map<String, Object> data, AfResourceDo userAuthDay, String auth_type, Date authDate) {
+	Integer day = 0;
+	JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
+	for (int i = 0; i < userAuthDayArray.size(); i++) {
+	    JSONObject obj = userAuthDayArray.getJSONObject(i);
+	    if (obj.getString("type").equals(auth_type)) {
+		day = obj.getInteger("day");
+		break;
+	    }
+	}
+	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
+	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+	data.put("title", "");
+	if (between < 0) {
+	    data.put("status", "N");
+	    return false;
+	}
+	return true;
     }
 
     private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo) {

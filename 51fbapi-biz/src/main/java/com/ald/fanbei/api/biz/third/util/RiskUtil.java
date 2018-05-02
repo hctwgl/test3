@@ -2946,7 +2946,7 @@ public class RiskUtil extends AbstractThird {
 		String reqResult = requestProxy.post(url, reqBo);
 		logThird(reqResult, "updateRentScore", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+			return false;
 		}
 
 		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);

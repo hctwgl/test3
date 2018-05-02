@@ -28,5 +28,5 @@ public interface AfGoodsPriceDao extends BaseDao<AfGoodsPriceDo, Long> {
 
     int updateReturnGoods(@Param("priceId")Long priceId,@Param("count")Long count);
 
-
+    List<AfGoodsPriceDo> getLeaseListByGoodsId(@Param("goodsId")Long goodsId);
 }

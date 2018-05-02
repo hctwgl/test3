@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayInvestorInfoBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -10,6 +11,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -93,6 +95,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     AfUserOutDayDao afUserOutDayDao;
     @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfOrderDao afOrderDao;
 
     private static final String src = "/home/aladin/project/app_contract";
 
@@ -769,19 +773,46 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
 
     @Override
-    public String leaseProtocolPdf(HashMap data)throws IOException{
+    public String leaseProtocolPdf(Map<String,Object> data,Long userId,Long orderId)throws IOException{
         long time = new Date().getTime();
-        String html = "";
-        html = getLeaseHtml(data,"https://atesth5.51fanbei.com/h5/hire/protocol.html?showTitle=false");
+        String html = null;
+        try {
+            html = VelocityUtil.getHtml(protocolLease(data,"protocolLeaseV2WithoutSealTemplate.vm"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         String outFilePath = src + data.get("userName") + "lease" + time  + ".pdf";
         HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
-        data.put("outFilePath",outFilePath);
-        return getLeaseContractPdf(data);
+        return getLeaseContractPdf(data,userId,orderId);
 
     }
 
-    private String getLeaseContractPdf(Map<String, Object> data) throws IOException {
-        AfUserAccountDo accountDo = getUserInfo(1, data, null);
+    public Map protocolLease(Map<String,Object> data,String pdfTemplate) throws IOException {
+        AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
+        if (afUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Map<String, Object> map = new HashMap();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        map.put("templateSrc",pdfTemplate);
+        map.put("idNumber", accountDo.getIdNumber());
+        map.put("realName", accountDo.getRealName());
+        map.put("email", afUserDo.getEmail());//电子邮箱
+        map.put("mobile", afUserDo.getUserName());// 联系电话
+        map.put("personKey","leaser");
+        logger.info(JSON.toJSONString(map));
+        return map;
+    }
+
+    private String getLeaseContractPdf(Map<String, Object> data,Long userId,Long orderId) throws IOException {
+        AfUserAccountDo accountDo = getUserInfo(userId, data, null);
         long time = new Date().getTime();
         boolean result = true;
         byte[] stream = new byte[1024];
@@ -789,7 +820,8 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
         stream = aldCreateSeal(result,stream,data);//阿拉丁签章
 
-        String dstFile = String.valueOf(src + data.get("userName") + "lease" + time  + ".pdf");
+        String dstFile = String.valueOf(src + data.get("userName") + "leaseProtocol" + time  + ".pdf");
+        afOrderDao.updatepdfUrlByOrderId(orderId,dstFile);
         File file = new File(dstFile);
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(stream);
@@ -799,16 +831,6 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
     }
 
-    private String getLeaseHtml(HashMap data,String pdfType) {
-        try {
-            String html = HttpUtil.doGet(pdfType,1);
-            return html;
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("getLeaseHtml Exception",e);
-        }
-        return null;
-    }
 
     private String getPdfInfo(String protocolUrl, Map<String, Object> map, Long userId, Long id, String type, String protocolCashType, List<EdspayInvestorInfoBo> investorList) throws IOException {
         AfUserAccountDo accountDo = getUserInfo(userId, map, investorList);

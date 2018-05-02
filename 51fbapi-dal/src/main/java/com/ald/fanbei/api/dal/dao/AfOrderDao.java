@@ -313,4 +313,6 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	HashMap getLeaseProtocol(@Param("orderId") Long orderId);
+
+	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
 }
