@@ -33,7 +33,7 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
         Long userId = context.getUserId();
 
         boolean loginFlag = userId == null?false:true;
-        resp.addResponseData("loginFlag",loginFlag );
+        resp.addResponseData("isLogin",loginFlag );
         if(loginFlag){
             AfUserAccountDo accInfo = userAccountService.getUserAccountByUserId(userId);
             resp.addResponseData("useableAmount", afUserAccountSenceService.getTotalUsableAmount(accInfo));
