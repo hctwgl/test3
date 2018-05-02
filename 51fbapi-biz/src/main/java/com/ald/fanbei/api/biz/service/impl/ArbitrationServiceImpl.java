@@ -523,8 +523,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 		AfArbitrationDo arbitrationDo =getByBorrowNo(borrowNo);
 		borrowMap.put("agreeUrl", arbitrationDo.getValue1()); // 协议地址
 		borrowMap.put("agreeNo", afBorrowCashDo.getBorrowNo()); // 协议编号
-		borrowMap.put("provedObject", provedObject); // 证明对象
-		borrowMap.put("pageSize", pageSize); // 协议页数·
+		borrowMap.put("provedObject", "借款协议"); // 证明对象
+		borrowMap.put("pageSize", 7); // 协议页数·
 
 	    result.add(borrowMap);
 
@@ -533,8 +533,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 		panformMap.put("signOffer", signOffer); // 电子签提供商
 		panformMap.put("agreeUrl", arbitrationDo.getValue2()); // 协议地址
 		panformMap.put("agreeNo", "pl"+afBorrowCashDo.getBorrowNo()); // 协议编号
-		panformMap.put("provedObject", provedObject); // 证明对象
-		panformMap.put("pageSize", pageSize); // 协议页数·
+		panformMap.put("provedObject", "借款咨询服务协议"); // 证明对象
+		panformMap.put("pageSize", 5); // 协议页数·
 
 		result.add(panformMap);
 		Map<String, Object> lenderMap = new HashMap<String, Object>();
@@ -542,8 +542,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 		lenderMap.put("signOffer", signOffer); // 电子签提供商
 		lenderMap.put("agreeUrl", arbitrationDo.getValue3()); // 协议地址
 		lenderMap.put("agreeNo", "rc"+afBorrowCashDo.getBorrowNo()); // 协议编号
-		lenderMap.put("provedObject", provedObject); // 证明对象
-		lenderMap.put("pageSize", 2); // 协议页数·
+		lenderMap.put("provedObject", "收据"); // 证明对象
+		lenderMap.put("pageSize", 1); // 协议页数·
 
 		result.add(lenderMap);
 
