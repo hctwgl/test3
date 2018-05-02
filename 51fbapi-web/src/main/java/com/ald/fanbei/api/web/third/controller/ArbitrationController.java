@@ -130,6 +130,21 @@ public class ArbitrationController {
         map.put("orderNo",receiptNo);
         String lender="";
         String lenderAmountInfo="";
+        if(lenders.size()==0){
+            AfResourceDo resource = afResourceService
+                    .getConfigByTypesAndSecType(
+                            AfResourceType.ARBITRATION_TYPE.getCode(),
+                            AfResourceType.ARBITRATION_SEC_TYPE.getCode());
+            Map<String, Object> json = (Map<String, Object>) JSONObject
+                    .parse(resource.getValue3());
+            AfLenderInfoDto defaultLender=new AfLenderInfoDto();
+            String legalPerson=StringUtil.null2Str(json.get("legalPerson"));
+            String idcard=StringUtil.null2Str(json.get("idcard"));
+            defaultLender.setEdspayUserCardId(idcard);
+            defaultLender.setUserName(legalPerson);
+            defaultLender.setInvestorAmount(afBorrowCashDo.getAmount().toString());
+            lenders.add(defaultLender);
+        }
         for (AfLenderInfoDto lenderInfoDto:lenders) {
             lender=lender+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+"</span>（身份证号：<span style=\"color:red;\">"+lenderInfoDto.getEdspayUserCardId()+"</span>）、";
             lenderAmountInfo=lenderAmountInfo+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元</span>，";
@@ -151,7 +166,7 @@ public class ArbitrationController {
         map.put("personUserSeal", afUserSealDo.getUserSeal());
         map.put("accountId", afUserSealDo.getUserAccountId());
         String url= afLegalContractPdfCreateServiceV2.receptProtocolPdf(map);
-            return url;
+        return url;
     }
 
     /**
@@ -196,7 +211,7 @@ public class ArbitrationController {
         //}
 
         //收据
-        if(StringUtil.isEmpty(arbitrationDo.getValue3())){
+        //if(StringUtil.isEmpty(arbitrationDo.getValue3())){
             try{
                 String lenderUrl= createLender(loanBillNo);
                 arbitrationDo.setValue3(lenderUrl);
@@ -204,7 +219,7 @@ public class ArbitrationController {
                 logger.info("create lender error：",ex);
             }
 
-        }
+        //}
        if(arbitrationDo.getRid()==null||arbitrationDo.getRid()<=0){
             arbitrationDo.setLoanBillNo(loanBillNo);
             arbitrationDo.setGmtCreate(new Date());
