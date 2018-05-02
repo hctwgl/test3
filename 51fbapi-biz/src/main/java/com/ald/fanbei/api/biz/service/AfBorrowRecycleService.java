@@ -30,7 +30,9 @@ public interface AfBorrowRecycleService extends ParentService<AfBorrowCashDo, Lo
 	 * @return
 	 */
 	List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId);
-	
+
+	BorrowRecycleHomeInfoBo getRecycleRecordByBorrowId(Long borrowId);
+
 	/**
 	 * 判断当前借款是否是回收借款
 	 * @return
