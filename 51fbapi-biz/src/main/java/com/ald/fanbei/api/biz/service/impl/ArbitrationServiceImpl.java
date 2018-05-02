@@ -312,7 +312,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    if("N".equals(afBorrowCashDo.getOverdueStatus())) {
 		    result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 罚息
 	    } else {
-		    result.put("amtPenalty",afBorrowCashOverdueService.getOverdueAmountByBorrowId(afBorrowCashDo.getRid()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());
+		    result.put("amtPenalty",new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay())).multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),3,RoundingMode.HALF_UP));
 	    }
 	    result.put("amtService",  afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getArrivalAmount()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 服务费
 
