@@ -382,12 +382,12 @@ public class ArbitrationServiceImpl extends BaseService implements
 			String regTime = StringUtil.null2Str(json.get("regTime"));	// 获取注册时间
 			String productId = StringUtil.null2Str(json.get("productId"));	// 获取平台id
 
-			if(ArbitrationStatus.ONE.getCode().equals(type)) {	// 0申请人1被申请人
+			if(ArbitrationStatus.ONE.getCode().equals(type)) {
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
 				AfIdNumberDo afIdNumberDo = afIdNumberService.selectUserIdNumberByUserId(afBorrowCashDo.getUserId());
 
 				map.put("platId", "");	//用户平台id
-				map.put("ltype", Integer.parseInt(ArbitrationStatus.ZERO.getCode()));	//当事人类型
+				map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
 				map.put("name", afIdNumberDo.getName());	//姓名
 				map.put("idtype", Integer.parseInt(ArbitrationStatus.ZERO.getCode()));	//用户证件类型  0身份证1营业执照
 				map.put("idcard", afIdNumberDo.getCitizenId());	//证件号
@@ -415,7 +415,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				String img_01=StringUtil.null2Str(json.get("img_01"));
 				String idcard=StringUtil.null2Str(json.get("idcard"));
 				map.put("platId", "");	//用户平台id
-				map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
+				map.put("ltype", Integer.parseInt(ArbitrationStatus.ZERO.getCode()));	//当事人类型
 				map.put("name", name);	//姓名
 				map.put("idtype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//用户证件类型
 				map.put("idcard", idcard);	//证件号
