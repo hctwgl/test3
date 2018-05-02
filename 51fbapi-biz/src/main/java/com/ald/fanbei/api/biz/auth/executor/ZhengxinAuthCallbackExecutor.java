@@ -65,9 +65,9 @@ public class ZhengxinAuthCallbackExecutor implements Executor{
 			// 初始化认证状态
 			afAuthRaiseStatusService.initZhengxinRaiseStatus(userId, AuthType.ZHENGXIN.getCode());
 			
-			afUserAuthDo.setBubbleStatus("Y");
+			afUserAuthDo.setZhengxinStatus("Y");
 			afUserAuthDo.setRiskStatus("Y");
-			afUserAuthDo.setGtmBubble(new Date());
+			afUserAuthDo.setGmtZhengxin(new Date());
 			afUserAuthService.updateUserAuth(afUserAuthDo);
 			// 认证成功,向风控发起提额申请
 			AfUserAuthDo afUserAuthInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
