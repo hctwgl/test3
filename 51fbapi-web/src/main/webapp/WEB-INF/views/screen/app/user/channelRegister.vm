@@ -6,6 +6,8 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
         <title>注册</title>
+    #elseif($!{style}==20)
+        <title>下载</title>
     #else
         <title>注册</title>
     #end
