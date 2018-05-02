@@ -109,7 +109,11 @@
                 <div class="clearfix register_checkbox">
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
                     <label for="input_check"></label>
+                    #if($!{style}==19)
+                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《爱上街用户注册协议》</a></p>
+                    #else
                     <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
+                    #end
                 </div>
                 #if($!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15)
                 <p class="logintxt clearfix" style=" margin: 0 auto;font-size: 0.28rem;">
