@@ -1,0 +1,33 @@
+package com.ald.fanbei.api.biz.service;
+
+import java.util.List;
+
+import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleServiceImpl.BorrowRecycleHomeInfoBo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+
+/**
+ * 回收业务中未归类的函数写入此类
+ * 
+ * @author ZJF
+ * @version 1.0.0 初始化
+ * @date 2018-04-28 14:08:11
+ * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
+public interface AfBorrowRecycleService extends ParentService<AfBorrowCashDo, Long> {
+	
+	/**
+	 * 获取回收首页信息
+	 * @param userId
+	 * @return
+	 */
+	BorrowRecycleHomeInfoBo getRecycleInfo(Long userId);
+
+	/**
+	 * 获取回收记录
+	 * 
+	 * @param userId
+	 * @param start
+	 * @return
+	 */
+	List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId, Integer start);
+}

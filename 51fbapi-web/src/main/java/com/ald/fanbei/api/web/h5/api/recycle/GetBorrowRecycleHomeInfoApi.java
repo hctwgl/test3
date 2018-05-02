@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 @Component("getBorrowRecycleHomeInfoApi")
 public class GetBorrowRecycleHomeInfoApi implements H5Handle {
     @Resource
-    private AfBorrowLegalService afBorrowLegalService;
+    private AfBorrowRecycleService afBorrowRecycleService;
     @Resource
     private AfResourceService afResourceService;
     @Resource
@@ -39,7 +39,7 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
             resp.addResponseData("useableAmount", afUserAccountSenceService.getTotalUsableAmount(accInfo));
         }
         resp.addResponseData("bannerList", afResourceService.getLoanHomeListByType());
-        resp.addResponseData("recycleInfos", afBorrowLegalService.getRecycleInfo(userId));
+        resp.addResponseData("recycleInfos", afBorrowRecycleService.getRecycleInfo(userId));
         resp.addResponseData("recycleGoodInfos", afBorrowRecycleGoodsService.getAllRecycleGoodsInfos());
         return resp;
     }

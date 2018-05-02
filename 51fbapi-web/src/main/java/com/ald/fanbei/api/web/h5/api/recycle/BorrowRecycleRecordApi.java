@@ -1,15 +1,15 @@
 package com.ald.fanbei.api.web.h5.api.recycle;
 
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.H5Handle;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 
 /**
  * @Description: 回收记录
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 public class BorrowRecycleRecordApi implements H5Handle {
 
     @Resource
-    private AfBorrowLegalService afBorrowLegalService;
+    private AfBorrowRecycleService afBorrowRecycleService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -28,7 +28,7 @@ public class BorrowRecycleRecordApi implements H5Handle {
         int start = Integer.parseInt(context.getData("start").toString());
         boolean loginFlag = userId == null?false:true;
         resp.addResponseData("loginFlag",loginFlag );
-        resp.addResponseData("recycleRecords", afBorrowLegalService.getRecycleRecord(userId,start));
+        resp.addResponseData("recycleRecords", afBorrowRecycleService.getRecycleRecord(userId,start));
         return resp;
     }
 
