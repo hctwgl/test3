@@ -118,8 +118,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 	}
 
 	@Override
-	public List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId,Integer start) {
-		List<AfBorrowCashDto> doList=afBorrowCashDao.getBorrowRecycleListByUserId(userId,start);
+	public List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId) {
+		List<AfBorrowCashDto> doList=afBorrowCashDao.getBorrowRecycleListByUserId(userId);
 		List<BorrowRecycleHomeInfoBo> boList=new ArrayList<>();
 		for(AfBorrowCashDto cashDo:doList){
 			BorrowRecycleHomeInfoBo bo=new BorrowRecycleHomeInfoBo();

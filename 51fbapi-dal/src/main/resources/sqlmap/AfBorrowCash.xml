@@ -241,8 +241,6 @@
 		ro.id is not null
 		ORDER BY
 		bc.gmt_create DESC
-		LIMIT
-		#{start},20
 	</select>
 	<select id="listDoneCashsByUserId" resultType="AfBorrowCashDo">
         SELECT
