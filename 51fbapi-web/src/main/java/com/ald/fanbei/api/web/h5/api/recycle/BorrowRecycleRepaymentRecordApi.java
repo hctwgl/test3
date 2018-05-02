@@ -2,16 +2,13 @@ package com.ald.fanbei.api.web.h5.api.recycle;
 
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -34,20 +31,24 @@ public class BorrowRecycleRepaymentRecordApi implements H5Handle {
     @Resource
     private AfBorrowCashService afBorrowCashService;
 
+    @Resource
+    private AfBorrowRecycleService afBorrowRecycleService;
+
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         Long borrowId = Long.parseLong(context.getData("borrowId").toString());
-        if(borrowId == null || borrowId <= 0){
+        if (borrowId == null || borrowId <= 0) {
             throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
         }
 
         BigDecimal totalRepaidAmount = BigDecimal.ZERO;
         AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-        totalRepaidAmount = BigDecimalUtil.add(totalRepaidAmount,borrowCashDo.getRepayAmount());
+        totalRepaidAmount = BigDecimalUtil.add(totalRepaidAmount, borrowCashDo.getRepayAmount());
         resp.addResponseData("totalRepaidAmount", totalRepaidAmount);
         List<AfRepaymentBorrowCashDo> borrowCashDos = repaymentBorrowCashService.getRepaymentBorrowCashByBorrowId(borrowId);
         resp.addResponseData("repayments", borrowCashDos);
+        resp.addResponseData("recycleInfo", afBorrowRecycleService.getRecycleRecordByBorrowId(borrowId));
         return resp;
     }
 
