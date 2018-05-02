@@ -9,6 +9,11 @@ console.log(style);
 var channelCode = getUrl('channelCode');
 var pointCode = getUrl('pointCode');
 
+var protocolRegisterName = '《51返呗用户注册协议》';
+if(style == 19){
+    protocolRegisterName = '《爱上街用户注册协议》';
+};
+
 function toMaidian(data,data2) {
     maidianFnNew(data, channelCode, pointCode, data2);
 }
@@ -192,7 +197,7 @@ $(function(){
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
         toMaidian('registerBtn');
-        if(style!='8'&&style!='9'&&style!='10'&&style!='11'&&style!='12'&&style!='13'&&style!='14'&&style!='15'){ //样式8,9无密码
+        if(style!='8'&&style!='9'&&style!='10'&&style!='11'&&style!='12'&&style!='13'&&style!='14'&&style!='15'&&style!='19'){ //样式8,9无密码
             // md5加密
             var register_password = $("#register_password").val();
             var password_md5 = String(CryptoJS.MD5(register_password));
@@ -210,7 +215,7 @@ $(function(){
         var isState = $("#register_codeBtn").attr("isState");
         if(/^1(3|4|5|6|7|8|9)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
             if ( register_verification != "" ) { // 验证码不能为空
-                if ( style=='8'||style=='9'||style=='10'||style=='11'||style=='12'||style=='13'||style=='14'||style=='15'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
+                if ( style=='8'||style=='9'||style=='10'||style=='11'||style=='12'||style=='13'||style=='14'||style=='15'||style=='19'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
                     if ($("#input_check").is(":checked") || (style=='12'||style=='13'||style=='14'||style=='15')) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
                             //_taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
@@ -251,7 +256,7 @@ $(function(){
                                 error: function(){requestMsg("注册失败");}
                             })
                         }else{requestMsg("请获取验证码");}
-                    }else{requestMsg("请阅读并同意《51返呗用户注册协议》");}
+                    }else{requestMsg("请阅读并同意"+ protocolRegisterName);}
                 }else{requestMsg("请填写6-18位的数字、字母、字符组成的密码");}
             }else{requestMsg("请输入正确的验证码");}
         } else{requestMsg("请填写正确的手机号");}
@@ -327,3 +332,18 @@ $(function(){
             $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
         }
     });
+
+
+    
+// 去下载
+(function (root) {
+        $("#toLoadAppBtn").on('click',function(){
+            let ua = navigator.userAgent.toLowerCase();
+            if (os==1 && ua.match(/MicroMessenger/i)!="micromessenger" && ua.match(/QQ/i) != "qq"){
+                root.location.href='http://sftp.51fanbei.com/51fanbei_app_' + channelCode + '.apk';//安卓除了腾讯系，直接下载apk
+                return;
+            };
+            root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+        })
+   
+})(window);
