@@ -147,12 +147,14 @@ public class MineHomeApi implements ApiHandle {
         List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "one");// 借款最高额度
         List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "one");// 购物最高额度
 
+        // 默认值
+        data.setShowAmount(cashDescs.get(0));
+        data.setDesc(DESC_AMOUNT_NOAUTH);
+        data.setOnlineShowAmount(consumeDescs.get(0));
+        data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
+
         // 未登录
         if (userId == null) {
-            data.setShowAmount(cashDescs.get(0));
-            data.setDesc(DESC_AMOUNT_NOAUTH);
-            data.setOnlineShowAmount(consumeDescs.get(0));
-            data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
             return;
         }
 
@@ -266,7 +268,6 @@ public class MineHomeApi implements ApiHandle {
     private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-        logger.info("getDrainageBannerListApi and type = {}", invelomentType);
 
         List<AfResourceDo> bannerResources = null;
         if (Constants.INVELOMENT_TYPE_ONLINE.equals(invelomentType)
