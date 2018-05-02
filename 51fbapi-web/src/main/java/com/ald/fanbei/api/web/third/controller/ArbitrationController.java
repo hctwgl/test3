@@ -180,7 +180,7 @@ public class ArbitrationController {
             }
         }
         //平台服务协议
-        if(StringUtil.isEmpty(arbitrationDo.getValue2())){
+        //if(StringUtil.isEmpty(arbitrationDo.getValue2())){
 
             AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)4);
             if(afContractPdfDo!=null){
@@ -193,7 +193,7 @@ public class ArbitrationController {
                     arbitrationDo.setValue2(retryContractPdfDo.getContractPdfUrl());
                 }
             }
-        }
+        //}
 
         //收据
         if(StringUtil.isEmpty(arbitrationDo.getValue3())){
@@ -259,7 +259,7 @@ public class ArbitrationController {
                             afArbitrationDo.setProcess("仲裁申请");
                             afArbitrationDo.setStatusCode("0");
                             afArbitrationDo.setStatus("案件待提交");
-                            afArbitrationDo.setValue2(result);
+                            //afArbitrationDo.setValue2(result);
                             afArbitrationDo.setLoanBillNo(loanBillNo);
                             arbitrationService.saveRecord(afArbitrationDo);
                         }else{
@@ -267,7 +267,7 @@ public class ArbitrationController {
                             afArbitrationDo.setProcess("仲裁申请");
                             afArbitrationDo.setStatusCode("0");
                             afArbitrationDo.setStatus("案件待提交");
-                            afArbitrationDo.setValue2(result);
+                           // afArbitrationDo.setValue2(result);
                             arbitrationService.updateByloanBillNo(afArbitrationDo);
                         }
 
