@@ -727,7 +727,7 @@ public class ArbitrationServiceImpl extends BaseService implements
         HashMap dataMap=new HashMap();
 		AfArbitrationDo arbitrationDo=  getByBorrowNo(loanBillNo);
         dataMap.put("voucherUrl",arbitrationDo.getPayVoucher());
-        dataMap.put("voucherNo","jq"+System.currentTimeMillis());
+        dataMap.put("voucherNo","po"+loanBillNo);
         dataMap.put("voucherOffer","宝付");
         dataMap.put("provedObject","");
         List dataList=new ArrayList();
