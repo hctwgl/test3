@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082303")
+    #set($version="20170823012")
     <meta charset="UTF-8">
     <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css?version=$version">
     <script>
@@ -20,8 +20,11 @@
     <div class="recommend">
         <h2 v-if="content.data.oneLevelGoodsInfo.title && content.data.oneLevelGoodsInfo.title!=''">{{content.data.oneLevelGoodsInfo.title}}</h2>
         <ul>
-            <li v-for="data in content.data.oneLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
+            <li v-for="(data,index) in content.data.oneLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
                 <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                <div v-if="iconShow==593&&index<10" style="width: .8rem;height: .8rem;position: absolute;background: url(https://f.51fanbei.com/h5/app/activity/06/iconM.png) no-repeat center center;background-size: 100%;
+                            font-size: .18rem;color: white;text-align: center;overflow: hidden">
+                    <div style="display: block;margin:.1rem 0 .04rem 0">活动价</div>{{iconTxt[index]}}</div>
                 <img class="lazy" :data-original="data.goodsIcon">
                 <div class="txtContent">
                     <p>{{txtFix(data.goodName,20)}}</p>

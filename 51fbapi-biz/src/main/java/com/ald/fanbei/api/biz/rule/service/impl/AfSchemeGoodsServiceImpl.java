@@ -28,7 +28,7 @@ public class AfSchemeGoodsServiceImpl implements AfSchemeGoodsService {
 	public AfSchemeGoodsDo getSchemeGoodsByGoodsId(Long goodsId) {
 		// 每10分钟清除一次缓存
 		String schemeGoodsKey = "GET_SCHEME_GOODS_BY_GOODS_ID_" + goodsId;
-		AfSchemeGoodsDo schemeGoodsDo =  (AfSchemeGoodsDo)bizCacheUtil.getObject(schemeGoodsKey);
+		AfSchemeGoodsDo schemeGoodsDo = (AfSchemeGoodsDo)bizCacheUtil.getObject(schemeGoodsKey);
 		if(schemeGoodsDo == null) {
 			schemeGoodsDo = afSchemeGoodsDao.getSchemeGoodsByGoodsId(goodsId);
 			bizCacheUtil.saveObject(schemeGoodsKey, schemeGoodsDo);

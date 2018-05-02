@@ -23,6 +23,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserSealDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import net.sf.json.JSONArray;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -58,6 +59,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
     public AssetSideRespBo giveBackPdfInfo(String timestamp, String data, String sign, String appId) {
         // 响应数据,默认成功
         AssetSideRespBo notifyRespBo = new AssetSideRespBo();
+        EdspayBackPdfReqBo edspayBackPdfReqBo = null;
         try {
             //获取对应资产方配置信息
             AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
@@ -80,7 +82,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
             }
             //签名验证相关值处理
             String realDataJson = "";
-            EdspayBackPdfReqBo edspayBackPdfReqBo = null;
+
             try {
                 realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
                 edspayBackPdfReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackPdfReqBo.class);
@@ -141,7 +143,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
             logger.info("eProtocolUtil giveBackPdfInfo url=" + url + ",appId=" + appId + ",sendTime=" + timestamp);
         } catch (Exception e) {
             //系统异常
-            logger.error("eProtocolUtil giveBackPdfInfo error,appId=" + appId +",data=" + data +",sendTime=" + timestamp, e);
+            logger.error("eProtocolUtil giveBackPdfInfo error,appId=" + appId +",data=" + JSONObject.toJSONString(edspayBackPdfReqBo) +",sendTime=" + timestamp, e);
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
         }
         return notifyRespBo;
@@ -249,7 +251,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
                 return notifyRespBo;
             }
-            logger.info("eProtocolUtil giveBackSealInfo newSealList=", newSealList + ",appId=" + appId + ",sendTime=" + timestamp);
+            logger.info("eProtocolUtil giveBackSealInfo newSealList=", JSON.toJSONString(newSealList) + ",appId=" + appId + ",sendTime=" + timestamp);
             notifyRespBo.setData(JSON.toJSONString(newSealList));
             notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
         } catch (Exception e) {

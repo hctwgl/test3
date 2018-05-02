@@ -1,16 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
  
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.ald.fanbei.api.biz.service.impl.MaidianRunnable;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -20,6 +10,18 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
  
 /**
  * @类描述：
@@ -30,7 +32,10 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/fanbei-web")
 public class AppH5MaidianController extends BaseController {
-	
+
+    @Autowired
+    ThreadPoolTaskExecutor threadPoolMaidianTaskExecutor;
+
     @RequestMapping(value = "postMaidianInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String postMaidianInfo(HttpServletRequest request, ModelMap model) throws IOException {
@@ -40,10 +45,11 @@ public class AppH5MaidianController extends BaseController {
     		String maidianInfo1 = ObjectUtils.toString(request.getParameter("maidianInfo1"), "").toString();
     		String maidianInfo2 = ObjectUtils.toString(request.getParameter("maidianInfo2"), "").toString();
     		String maidianInfo3 = ObjectUtils.toString(request.getParameter("maidianInfo3"), "").toString();
-    		
+
         	// 获取埋点标识
     		H5CommonResponse resp = H5CommonResponse.getNewInstance(true,"","",model);
-    		doMaidianLog(request, resp,maidianInfo,maidianInfo1,maidianInfo2,maidianInfo3);
+            MaidianRunnable maidianRunnable = new MaidianRunnable(request, resp.getData().toString(), true,maidianInfo, maidianInfo1, maidianInfo2, maidianInfo3);
+            threadPoolMaidianTaskExecutor.execute(maidianRunnable);
     		return resp.toString();
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();

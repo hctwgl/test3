@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.dal.domain.query;
 
+import java.util.List;
+
+
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 
@@ -19,9 +22,27 @@ public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 	private String keyword;
 	private String sortword;
 	private String sort;
+	private Long goodsId;
+	private List<Long> goodsIds;
 	
+	public List<Long> getGoodsIds() {
+		return goodsIds;
+	}
+
+	public void setGoodsIds(List<Long> goodsIds) {
+		this.goodsIds = goodsIds;
+	}
+
 	public String getKeyword() {
 		return keyword;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 
 	public void setKeyword(String keyword) {

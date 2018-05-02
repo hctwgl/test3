@@ -122,13 +122,13 @@ public class GetNperListApi implements ApiHandle {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            AfResourceDo resource1= afResourceService.getBrandRate(orderInfo.getGoodsId());//资源配置中的品牌利率
+           /* AfResourceDo resource1= afResourceService.getBrandRate(orderInfo.getGoodsId());//资源配置中的品牌利率
             if(resource1!=null){
                 String value = resource1.getValue();
                 if (value!=null && !"".equals(value)){
                     array = JSON.parseArray(value);
                 }
-            }
+            }*/
 
            /* JSONArray newArray = afInterestReduceGoodsService.checkIfReduce(orderInfo.getGoodsId());
             if (newArray != null) {

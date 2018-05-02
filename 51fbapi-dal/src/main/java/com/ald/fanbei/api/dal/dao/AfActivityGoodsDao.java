@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +41,6 @@ public interface AfActivityGoodsDao {
 	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(@Param("goodsId") Long goodsId);
 
 	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list);
+
+	HashMap getVisualActivityGoodsByGoodsId(@Param("goodsId") Long goodsId);
 }

@@ -7,15 +7,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.util.RandomUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -25,12 +27,6 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.alibaba.fastjson.JSONArray;
@@ -60,6 +56,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	AfCouponCategoryService afCouponCategoryService;
 	@Resource
 	AfUserCouponService afUserCouponService;
+
+	@Resource
+	private AfResourceService afResourceService;
 	
 	@Override
 	public List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query) {
@@ -321,6 +320,11 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return afUserCouponDao.getUserAcgencyCouponByAmount(userId, amount);
 	}
 
+	@Override
+	public List<AfUserCouponDto> getSpecialGoodsCouponByAmount(Long userId, BigDecimal amount) {
+		return afUserCouponDao.getSpecialGoodsCouponByAmount(userId, amount);
+	}
+
 
 	@Override
 	public int updateUserCouponSatusNouseById(Long rid) {
@@ -373,6 +377,52 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType) {
 	    // TODO Auto-generated method stub
 	    	return afUserCouponDao.getUserCouponByUserIdAndCouponCource(userId,sourceType);
+	}
+
+	@Override
+	public AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo){
+		try {
+			if(null != resourceDo) {
+				String value = resourceDo.getValue();
+				String[] activityPeriodTime = value.split(",");
+				Date startTime = DateUtil.parseDateTimeShortExpDefault(activityPeriodTime[0], null);
+				Date endTime = DateUtil.parseDateTimeShortExpDefault(activityPeriodTime[1], null);
+				if (null != startTime && null != endTime) {
+					Date now = new Date();
+					// 在活动期间
+					if (DateUtil.compareDate(now, startTime) && DateUtil.compareDate(endTime, now)) {
+						String couponGroupId = resourceDo.getValue1();
+						if (StringUtils.isNotEmpty(couponGroupId)) {
+							AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(couponGroupId);
+							if (null != couponCategory) {
+								String coupons = couponCategory.getCoupons();
+								JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+								int size = couponsArray.size();
+								int index = RandomUtil.getRandomInt(size - 1);
+								Long couponId = Long.parseLong(couponsArray.getString(index));
+
+								AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+								AfUserCouponDo userCoupon = new AfUserCouponDo();
+								userCoupon.setCouponId(couponDo.getRid());
+								userCoupon.setGmtCreate(new Date());
+								userCoupon.setGmtStart(couponDo.getGmtStart());
+								userCoupon.setGmtEnd(couponDo.getGmtEnd());
+								userCoupon.setUserId(userId);
+								userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
+								userCoupon.setSourceType(couponSenceRuleType);
+								afUserCouponService.addUserCoupon(userCoupon);
+
+								return userCoupon;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("random send coupon error.", e);
+		}
+
+		return null;
 	}
 
 	

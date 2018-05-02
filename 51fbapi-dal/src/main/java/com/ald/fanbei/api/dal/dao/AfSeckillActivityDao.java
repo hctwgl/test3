@@ -2,6 +2,10 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 import java.util.List;
 
@@ -24,4 +28,7 @@ public interface AfSeckillActivityDao extends BaseDao<AfSeckillActivityDo, Long>
     AfSeckillActivityDo getStartActivityByGoodsId(Long goodsId);
 
     List<AfSeckillActivityDo> getActivityList(AfSeckillActivityQuery query);
+
+
+    List<String> getActivityListByName(@Param("name") String name, @Param("gmtStart") Date gmtStart, @Param("gmtEnd") Date gmtEnd);
 }

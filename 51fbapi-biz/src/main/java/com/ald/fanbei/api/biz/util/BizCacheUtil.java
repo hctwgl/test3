@@ -110,6 +110,19 @@ public class BizCacheUtil extends AbstractThird {
 		
 	}
 	
+	public void saveMap(final String key, final Map<?, ?> valMap,final long expire ) {
+		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
+			return;
+		}
+		try{
+			redisTemplate.opsForHash().putAll(key, valMap);
+			redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			logger.error("redis save map error, error info=>{}",e.getMessage());
+		}
+		
+	}
+	
 	public void saveMapForever(final String key, final Map<?, ?> valMap) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || valMap == null) {
 			return;
@@ -131,6 +144,24 @@ public class BizCacheUtil extends AbstractThird {
 				@Override
 				public Object doInRedis(RedisConnection connection) throws DataAccessException {
 					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serializeList(dataList));
+					return null;
+				}
+			});
+		} catch (Exception e) {
+			logger.error("saveListForever" + key, e);
+
+		}
+	}
+
+	public void saveListByTime(final String key, final List<?> dataList, final long expire) {
+		try {
+			if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || dataList == null || dataList.size() < 1) {
+				return;
+			}
+			redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Object doInRedis(RedisConnection connection) throws DataAccessException {
+					connection.set(redisTemplate.getStringSerializer().serialize(key), SerializeUtil.serializeList(dataList), Expiration.seconds(expire), null);
 					return null;
 				}
 			});

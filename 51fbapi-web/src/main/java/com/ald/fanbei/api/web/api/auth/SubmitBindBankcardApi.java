@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -97,7 +98,7 @@ public class SubmitBindBankcardApi implements ApiHandle {
 						userAccForUpdate.setIdNumber(param.idNumber);
 					}
 				}
-				userAccForUpdate.setBindCard("Y");
+				userAccForUpdate.setBindCard(YesNoStatus.YES.getCode());
 				if(userAccForUpdate.getUserId() != null) { // 可选更新用户账户信息
 					afUserAccountService.updateUserAccount(userAccForUpdate);
 				}
@@ -108,7 +109,7 @@ public class SubmitBindBankcardApi implements ApiHandle {
 
 				//设置用户绑卡状态
 				userAuthUpdate.setUserId(userAccDB.getUserId());
-				userAuthUpdate.setBankcardStatus("Y");
+				userAuthUpdate.setBankcardStatus(YesNoStatus.YES.getCode());
 				afUserAuthService.updateUserAuth(userAuthUpdate);
 				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
