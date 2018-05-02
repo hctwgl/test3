@@ -204,11 +204,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    AfBorrowCashDo afBorrowCashDo = afBorrowCashDao
 		    .getBorrowCashInfoByBorrowNo(borrowNo);
 	    if (afBorrowCashDo == null) {
-		logger.info("afBorrowCashDo not exist,borrowNo= " + borrowNo);
-		resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
-		resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
+            logger.info("afBorrowCashDo not exist,borrowNo= " + borrowNo);
+            resp.setErrCode(ArbitrationStatus.ORDERNOTEXIST.getCode());
+            resp.setErrMsg(ArbitrationStatus.ORDERNOTEXIST.getName());
 
-		return resp;
+            return resp;
 	    }
 
 	    AfUserAccountDo userAccountDo = afUserAccountService
@@ -227,80 +227,80 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    // 搭售V1
 	    if (afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo
 		    .getRid()) != null) {
-		logger.info("order is borrowCashV1,borrowNo= " + borrowNo);
-		resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
-		resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
+            logger.info("order is borrowCashV1,borrowNo= " + borrowNo);
+            resp.setErrCode(ArbitrationStatus.BORROWCASHV1.getCode());
+            resp.setErrMsg(ArbitrationStatus.BORROWCASHV1.getName());
 
-		return resp;
+		    return resp;
 	    }// 搭售V2
 	    else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo
 		    .getRid())) {
 
-		// 从配置文件中获取利率，服务费利率,逾期费率start
-		AfResourceDo afResourceDo = afResourceService
-			.getConfigByTypesAndSecType(ResourceType.BORROW_RATE
-				.getCode(),
-				AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW
-					.getCode());
-		String oneDay = "";
-		String twoDay = "";
-		if (null != afResourceDo) {
-		    oneDay = afResourceDo.getTypeDesc().split(",")[0];
-		    twoDay = afResourceDo.getTypeDesc().split(",")[1];
-		}
-		JSONArray array = JSONObject.parseArray(afResourceDo
-			.getValue2());
-		double interestRate = 0; // 利率
-		double serviceRate = 0; // 手续费率
-		double overdueRate = 0; // 逾期费率
-		for (int i = 0; i < array.size(); i++) {
-		    JSONObject info = array.getJSONObject(i);
-		    String borrowTag = info.getString("borrowTag");
-		    if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-			if (StringUtils
-				.equals(oneDay, afBorrowCashDo.getType())) {
-			    interestRate = info.getDouble("borrowFirstType");
-			} else if (StringUtils.equals(twoDay,
-				afBorrowCashDo.getType())) {
-			    interestRate = info.getDouble("borrowSecondType");
-			}
-		    } else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-			if (StringUtils
-				.equals(oneDay, afBorrowCashDo.getType())) {
-			    serviceRate = info.getDouble("borrowFirstType");
-			} else if (StringUtils.equals(twoDay,
-				afBorrowCashDo.getType())) {
-			    serviceRate = info.getDouble("borrowSecondType");
-			}
-		    } else if (StringUtils.equals("OVERDUE_RATE", borrowTag)) {
-			if (StringUtils
-				.equals(oneDay, afBorrowCashDo.getType())) {
-			    overdueRate = info.getDouble("borrowFirstType");
-			} else if (StringUtils.equals(twoDay,
-				afBorrowCashDo.getType())) {
-			    overdueRate = info.getDouble("borrowSecondType");
-			}
-		    }
-		}
+            // 从配置文件中获取利率，服务费利率,逾期费率start
+            AfResourceDo afResourceDo = afResourceService
+                .getConfigByTypesAndSecType(ResourceType.BORROW_RATE
+                    .getCode(),
+                    AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW
+                        .getCode());
+            String oneDay = "";
+            String twoDay = "";
+            if (null != afResourceDo) {
+                oneDay = afResourceDo.getTypeDesc().split(",")[0];
+                twoDay = afResourceDo.getTypeDesc().split(",")[1];
+            }
+            JSONArray array = JSONObject.parseArray(afResourceDo
+                .getValue2());
+            double interestRate = 0; // 利率
+            double serviceRate = 0; // 手续费率
+            double overdueRate = 0; // 逾期费率
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject info = array.getJSONObject(i);
+                String borrowTag = info.getString("borrowTag");
+                if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+                if (StringUtils
+                    .equals(oneDay, afBorrowCashDo.getType())) {
+                    interestRate = info.getDouble("borrowFirstType");
+                } else if (StringUtils.equals(twoDay,
+                    afBorrowCashDo.getType())) {
+                    interestRate = info.getDouble("borrowSecondType");
+                }
+                } else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+                if (StringUtils
+                    .equals(oneDay, afBorrowCashDo.getType())) {
+                    serviceRate = info.getDouble("borrowFirstType");
+                } else if (StringUtils.equals(twoDay,
+                    afBorrowCashDo.getType())) {
+                    serviceRate = info.getDouble("borrowSecondType");
+                }
+                } else if (StringUtils.equals("OVERDUE_RATE", borrowTag)) {
+                if (StringUtils
+                    .equals(oneDay, afBorrowCashDo.getType())) {
+                    overdueRate = info.getDouble("borrowFirstType");
+                } else if (StringUtils.equals(twoDay,
+                    afBorrowCashDo.getType())) {
+                    overdueRate = info.getDouble("borrowSecondType");
+                }
+                }
+            }
 		// end
 
-		result.put("rateInterest",
-			BigDecimalUtil.divide(interestRate, 100d));// 利息利率
-		result.put("rateService",
-			BigDecimalUtil.divide(serviceRate, 100d));// 服务费利率
-		result.put("rateOverdue",
-			BigDecimalUtil.divide(overdueRate, 100d));// 逾期利率
+            result.put("rateInterest",
+                BigDecimalUtil.divide(interestRate, 36000d));// 利息利率
+            result.put("rateService",
+                BigDecimalUtil.divide(serviceRate, 36000d));// 服务费利率
+            result.put("rateOverdue",
+                BigDecimalUtil.divide(overdueRate, 36000d));// 逾期利率
 	    } else { // 旧版借款
-		AfResourceDo afResourceDo = afResourceService
-			.getConfigByTypesAndSecType(ResourceType.BORROW_RATE
-				.getCode(),
-				AfResourceSecType.BORROW_CASH_OVERDUE_POUNDAGE
-					.getCode());
+            AfResourceDo afResourceDo = afResourceService
+                .getConfigByTypesAndSecType(ResourceType.BORROW_RATE
+                    .getCode(),
+                    AfResourceSecType.BORROW_CASH_OVERDUE_POUNDAGE
+                        .getCode());
 
-		result.put("rateInterest", afBorrowCashDo.getBaseBankRate());// 利息利率
-		result.put("rateService", afBorrowCashDo.getPoundageRate());// 服务费利率
-		result.put("rateOverdue",
-			new BigDecimal(afResourceDo.getValue()));// 逾期利率
+            result.put("rateInterest", afBorrowCashDo.getBaseBankRate());// 利息利率
+            result.put("rateService", 0);// 服务费利率
+            result.put("rateOverdue",
+                new BigDecimal(afResourceDo.getValue()));// 逾期利率
 	    }
 
 	    result.put(
@@ -309,17 +309,17 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    BigDecimalUtil.ONE_HUNDRED).intValue());// 授信金额
 	    result.put("amtCapital", afBorrowCashDo.getAmount().multiply(
 		    BigDecimalUtil.ONE_HUNDRED).intValue());// 实际借款本金
-	    result.put("amtInterest", afBorrowCashDo.getRateAmount().intValue());// 利息
+	    result.put("amtInterest", afBorrowCashDo.getRateAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 利息
 	    
 	    if("N".equals(afBorrowCashDo.getOverdueStatus())) {
-		result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().intValue());// 罚息
+		    result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 罚息
 	    } else {
-		result.put("amtPenalty",afBorrowCashOverdueService.getOverdueAmountByBorrowId(afBorrowCashDo.getRid()).intValue());
+		    result.put("amtPenalty",afBorrowCashOverdueService.getOverdueAmountByBorrowId(afBorrowCashDo.getRid()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());
 	    }
-	    result.put("amtService", afBorrowCashDo.getPoundage().intValue());// 服务费
+	    result.put("amtService",  afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getArrivalAmount()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 服务费
 
-	    result.put("amtOther", "");// 其他费用
-	    result.put("amtRefund", afBorrowCashDo.getRepayAmount().intValue());// 已还费用
+	    result.put("amtOther",afBorrowCashDo.getPoundage().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 其他费用
+	    result.put("amtRefund", afBorrowCashDo.getRepayAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 已还费用
 	    result.put("rateRefund", "");// 分期还款利率
 	    result.put("periodsType", ArbitrationStatus.PERIODSTYPE.getCode());// 期数类型
 	    result.put("countPeriods", countPeriods);// 期数
@@ -396,7 +396,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("legalPerson", "");//法定代表人
 				map.put("position", "");	//法定代表人职务
 				map.put("sex", afIdNumberDo.getGender()=="女"?Integer.parseInt(ArbitrationStatus.ZERO.getCode()):Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//性别
-				map.put("phone", userAccountDo.getUsedAmount());	//联系电话
+				map.put("phone", userAccountDo.getUserName());	//联系电话
 				map.put("email", "");	//电子邮箱
 				map.put("idAddress", afIdNumberDo.getAddress());	//证件地址
 				map.put("address", "");	//通讯地址
