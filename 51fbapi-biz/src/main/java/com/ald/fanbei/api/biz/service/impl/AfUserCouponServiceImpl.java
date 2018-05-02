@@ -429,6 +429,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return null;
 	}
 
-	
+	@Override
+	public AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId){
+		return afUserCouponDao.getUserCouponAfterPaidSuccess(userId);
+	}
 	
 }
