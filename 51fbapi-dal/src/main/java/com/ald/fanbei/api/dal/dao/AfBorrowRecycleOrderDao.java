@@ -15,6 +15,6 @@ public interface AfBorrowRecycleOrderDao extends BaseDao<AfBorrowRecycleOrderDo,
 
     AfBorrowRecycleOrderDo getBorrowRecycleOrderByBorrowId(@Param("id")Long id);
 
-    
+    Long tuchByBorrowId(@Param("borrowId") Long borrowId);
 
 }

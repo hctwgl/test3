@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowRecycleGoodsService;
-import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -34,6 +33,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowRecycleOrderDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
@@ -76,7 +76,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 	@Resource
 	private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
 	@Resource
-	private AfBorrowRecycleOrderService afBorrowRecycleOrderService;
+	private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
 
 
 	@Override
@@ -93,7 +93,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 			bo.isBorrowOverdue = false;
 			return bo;
 		}
-		AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
 		Map<String,String> goodsMap=JsonUtils.fromJsonString(orderDo.getPropertyValue(),Map.class);
 		if (goodsMap != null){
 			bo.goodsName=orderDo.getGoodsName();
@@ -137,9 +137,18 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 		}
 		return boList;
 	}
+	
+	@Override
+	public boolean isRecycleBorrow(Long borrowId) {
+		if(afBorrowRecycleOrderDao.tuchByBorrowId(borrowId) != null) {
+			return true;
+		}
+		return false;
+	}
+	
     @SuppressWarnings("unchecked")
 	private void addRecycleGoodsInfos(BorrowRecycleHomeInfoBo bo,AfBorrowCashDo cashDo){
-		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
+		AfBorrowRecycleOrderDo recycleOrderDo=afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
 		if (recycleOrderDo != null){
 			Map<String,String> goodsMap=JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(),Map.class);
 			bo.goodsName=recycleOrderDo.getGoodsName();
@@ -231,6 +240,5 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 		public String reBankName;
 		public BigDecimal overdueAmount;
 	}
-
 
 }

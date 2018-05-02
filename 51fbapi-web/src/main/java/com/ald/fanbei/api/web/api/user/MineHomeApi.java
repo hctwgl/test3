@@ -278,18 +278,18 @@ public class MineHomeApi implements ApiHandle {
         }
 
         if (CollectionUtil.isNotEmpty(bannerResources)) {
-          List<Map<String, Object>> bannerList = CollectionConverterUtil
-                  .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
-              @Override
-              public Map<String, Object> convert(AfResourceDo source) {
-                  Map<String, Object> map = new HashMap<String, Object>();
-                  map.put("imageUrl", source.getValue());
-                  map.put("type", source.getValue1());
-                  map.put("content", source.getValue2());
-                  return map;
-              }
-          });
-          data.setBannerList(bannerList);
+            List<Map<String, Object>> bannerList = CollectionConverterUtil
+                    .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
+                        @Override
+                        public Map<String, Object> convert(AfResourceDo source) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("imageUrl", source.getValue());
+                            map.put("type", source.getValue1());
+                            map.put("content", source.getValue2());
+                            return map;
+                        }
+                    });
+            data.setBannerList(bannerList);
         }
 
         // navigation

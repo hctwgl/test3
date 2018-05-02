@@ -617,7 +617,7 @@
 				<!--回收业务接口-->
 				<entry key="/h5/recycle/borrowRecycleRecord" value-ref="borrowRecycleRecordApi" />
 				<entry key="/h5/recycle/borrowRecycleRepayment" value-ref="borrowRecycleRepaymentApi" />
-				<entry key="/h5/recycle/getBorrowRecycleHomeInfo" value-ref="getBorrowRecycleHomeInfoApi" />
+				<entry key="/h5/recycle/borrowRecycleHome" value-ref="getBorrowRecycleHomeInfoApi" />
 				<entry key="/h5/recycle/recycleRepayDo" value-ref="recycleRepayDoApi" />
 				<entry key="/h5/recycle/getUserBankList" value-ref="getUserBankListApi" />
 
