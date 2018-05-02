@@ -43,4 +43,14 @@ public interface AfLoanSupermarketService {
 	 */
 	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label,String systemType);
 
+	/**
+	 * 根据标签查询贷款超市
+	 * @param label
+	 * @return
+	 */
+	List<Object> getBorrowHomeListByLable(String label,String systemType);
+
+
+
+
 }
