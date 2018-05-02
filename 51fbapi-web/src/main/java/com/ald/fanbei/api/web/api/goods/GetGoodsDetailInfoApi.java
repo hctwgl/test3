@@ -67,8 +67,6 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
-	@Resource
-	AfInterestReduceGoodsService afInterestReduceGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -187,34 +185,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}
 		vo.setRemark(goods.getRemark());
 		
-		//qiao : begin add interestCutDesc interestFreeDesc isShow Field
-		
-		String interestCutDesc ="";
-		String interestFreeDesc ="";
-		int isShow =0;
-		
-		AfSchemeGoodsDo schemeGoodsDo2 =  afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-		if (schemeGoodsDo2 != null) {
-			AfSchemeDo schemeDo = afSchemeService.getSchemeById(schemeGoodsDo2.getSchemeId());
-			if (schemeDo != null && schemeDo.getIsOpen() == "Y" && DateUtil.isBetweenDateRange(new Date(), schemeDo.getGmtStart(), schemeDo.getGmtEnd()) ) {
-				
-				interestFreeDesc = schemeDo.getDescr();
-			}
-		}
-		
-		interestFreeDesc = afInterestReduceGoodsService.getInterestFreeDesc(goodsId);
-		
-		int temp = afResourceService.getIsShow(goodsId);
-		if (temp == 1) {
-			isShow = 1;
-		}
-		
-		
-		vo.setInterestCutDesc(interestCutDesc);
-		vo.setInterestFreeDesc(interestFreeDesc);
-		vo.setIsShow(isShow);
-		
-		//qiao : begin add interestCutDesc interestFreeDesc isShow Field
+
 		resp.setResponseData(vo);
 		return resp;
 	}
