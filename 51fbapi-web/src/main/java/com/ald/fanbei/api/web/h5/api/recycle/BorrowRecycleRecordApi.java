@@ -25,10 +25,9 @@ public class BorrowRecycleRecordApi implements H5Handle {
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        int start = Integer.parseInt(context.getData("start").toString());
         boolean loginFlag = userId == null?false:true;
         resp.addResponseData("loginFlag",loginFlag );
-        resp.addResponseData("recycleRecords", afBorrowRecycleService.getRecycleRecord(userId,start));
+        resp.addResponseData("recycleRecords", afBorrowRecycleService.getRecycleRecord(userId));
         return resp;
     }
 

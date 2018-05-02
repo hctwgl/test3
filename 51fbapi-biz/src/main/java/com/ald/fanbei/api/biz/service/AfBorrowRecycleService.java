@@ -29,5 +29,5 @@ public interface AfBorrowRecycleService extends ParentService<AfBorrowCashDo, Lo
 	 * @param start
 	 * @return
 	 */
-	List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId, Integer start);
+	List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId);
 }
