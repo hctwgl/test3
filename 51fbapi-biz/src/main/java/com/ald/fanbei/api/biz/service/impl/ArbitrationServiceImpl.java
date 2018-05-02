@@ -285,9 +285,9 @@ public class ArbitrationServiceImpl extends BaseService implements
 		// end
 
             result.put("rateInterest",
-                new BigDecimal(interestRate).divide(new BigDecimal(36000)));// 利息利率
+                new BigDecimal(interestRate).divide(new BigDecimal(36000),3,RoundingMode.HALF_UP));// 利息利率
             result.put("rateService",0);
-            result.put("rateOverdue",new BigDecimal(overdueRate).divide(new BigDecimal(36000)));
+            result.put("rateOverdue",new BigDecimal(overdueRate).divide(new BigDecimal(36000),3,RoundingMode.HALF_UP));
 	    } else { // 旧版借款
             AfResourceDo afResourceDo = afResourceService
                 .getConfigByTypesAndSecType(ResourceType.BORROW_RATE
