@@ -72,6 +72,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.isBorrowOverdue = false;
             return bo;
         }
+        AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
+        if(processRepayment != null) {
+            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
+        }
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
         if (goodsMap != null) {
