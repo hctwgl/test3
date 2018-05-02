@@ -2868,7 +2868,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
 						try {
 				    		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
-							boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+							boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(borrowBillList.get(borrowBillList.size()-1).getGmtPayTime(), -1));
 							if (isBefore) {
 								if (assetSideEdspayUtil.isPush(borrowInfo)) {
 									List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);
@@ -3165,7 +3165,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	private void preFinishNotifyEds(AfBorrowDo borrowInfo) {
 		try {
 			List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
-			boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(borrowBillList.get(borrowBillList.size()-1).getGmtPayTime(), -1) );
 			if (isBefore) {
 				if (assetSideEdspayUtil.isPush(borrowInfo)) {
 					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);

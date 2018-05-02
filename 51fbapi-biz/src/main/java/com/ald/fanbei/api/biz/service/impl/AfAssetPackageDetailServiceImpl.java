@@ -606,8 +606,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		repaymentPlan.setRepaymentNo(afViewAssetBorrowCashDo.getBorrowNo());
 		repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afViewAssetBorrowCashDo.getGmtCreate(), timeLimit.intValue())));
 		repaymentPlan.setRepaymentDays(timeLimit);
-		repaymentPlan.setRepaymentAmount(afViewAssetBorrowCashDo.getAmount());
-		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getAmount(), new BigDecimal(afAssetPackageDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
+		repaymentPlan.setRepaymentAmount(afViewAssetBorrowCashDo.getArrivalAmount());
+		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getArrivalAmount(), new BigDecimal(borrowRate.doubleValue()*timeLimit / 36000d)));
 		repaymentPlan.setRepaymentPeriod(0);
 		repaymentPlans.add(repaymentPlan);
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
@@ -901,8 +901,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	public List<EdspayGetCreditRespBo> getLoanBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart, final Date gmtCreateEnd) {
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
 		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
-	        private EdspayGetCreditRespBo buildCreditLoanRespBo;
-
 			@Override
             public Long doInTransaction(TransactionStatus status) {
             	List<AfViewAssetLoanDo> debtList= new ArrayList<AfViewAssetLoanDo>();

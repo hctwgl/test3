@@ -668,7 +668,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
 			try {
-				boolean isBefore = DateUtil.isBefore(new Date(), loanPeriodsDo.getGmtPlanRepay());
+				boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1) );
 				if (isBefore) {
 					if (assetSideEdspayUtil.isPush(loanDo)) {
 						List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);

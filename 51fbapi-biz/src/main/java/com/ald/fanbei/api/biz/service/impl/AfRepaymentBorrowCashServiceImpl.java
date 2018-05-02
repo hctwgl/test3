@@ -566,7 +566,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         try {
-                			boolean isBefore = DateUtil.isBefore(new Date(), afBorrowCashDo.getGmtPlanRepayment());
+                			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(), -1));
                 			if (isBefore) {
                 				if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
                 					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);
@@ -999,8 +999,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         bcashDo.setRateAmount(BigDecimal.ZERO);
                         bcashDo.setOverdueAmount(BigDecimal.ZERO);
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-                        boolean isBefore = DateUtil.isBefore(new Date(), afBorrowCashDo.getGmtPlanRepayment());
                         try {
+                        	boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(afBorrowCashDo.getGmtPlanRepayment(), -1));
                         	if (isBefore) {
                         		if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
                         			List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);

@@ -793,7 +793,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
 	private void preFinishNotifyEds(AfBorrowCashDo cashDo) {
 		try {
-			boolean isBefore = DateUtil.isBefore(new Date(), cashDo.getGmtPlanRepayment());
+			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(cashDo.getGmtPlanRepayment(), -1));
 			if (isBefore) {
 				if (assetSideEdspayUtil.isPush(cashDo)) {
 					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(cashDo,1);

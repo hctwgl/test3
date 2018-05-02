@@ -509,7 +509,7 @@ public class CollectionController {
                     afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount()));
                     afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                     try {
-            			boolean isBefore = DateUtil.isBefore(new Date(), afBorrowCashDo.getGmtPlanRepayment());
+            			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(afBorrowCashDo.getGmtPlanRepayment(), -1));
             			if (isBefore) {
             				if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
             					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);

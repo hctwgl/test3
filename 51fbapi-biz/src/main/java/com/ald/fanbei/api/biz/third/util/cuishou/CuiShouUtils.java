@@ -689,7 +689,7 @@ public class CuiShouUtils {
                 afBorrowCashDo.setSumJfb(null);
                 afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                 try {
-        			boolean isBefore = DateUtil.isBefore(new Date(), borrowCashExist.getGmtPlanRepayment());
+        			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(borrowCashExist.getGmtPlanRepayment(), -1));
         			if (isBefore) {
         				if (assetSideEdspayUtil.isPush(borrowCashExist)) {
         					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowCashExist,1);

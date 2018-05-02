@@ -790,7 +790,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
 				
                 try {
 		    		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrow.getRid());
-					boolean isBefore = DateUtil.isBefore(new Date(), borrowBillList.get(borrowBillList.size()-1).getGmtPayTime());
+					boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(borrowBillList.get(borrowBillList.size()-1).getGmtPayTime(), -1) );
 					if (isBefore) {
 						if (assetSideEdspayUtil.isPush(afBorrow)) {
 							List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrow,1);
