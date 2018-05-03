@@ -43,9 +43,12 @@ public class SmsUtil extends AbstractThird {
     private final static String MARKETING_ACCOUNT_PASSWORD = "aSZqA6Ub";
     private final static String MARKET_ACCOUNT_EC = "dh15434";
     private final static String MARKET_ACCOUNT_PASSWORD_EC = "aSZqA6Ub";
-//    private final static String MARKET_ACCOUNT_EC = "dh15437";
-//    private final static String MARKET_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
+
+    private final static String CODE_ACCOUNT_EC = "dh15437";
+    private final static String CODE_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
+
     private final static String SIGN = "【爱上街金融】";
+    private final static String SIGN_AISHANGJIE = "【爱上街】";
 
     private static String password = null;
     private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册爱上街，请在30分钟内完成注册";
@@ -479,7 +482,7 @@ public class SmsUtil extends AbstractThird {
         if (SmsType.ZHI_BIND.equals(smsType)){
             content = ZHI_BIND.replace("&param1", verifyCode);
         }
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = sendSmsToDhstAishangjie(mobile, content);
         this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
         return smsResult.isSucc();
     }
@@ -504,7 +507,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = sendSmsToDhstAishangjie(mobile, content);
         this.addSmsRecord(SmsType.SET_PAY_PWD, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -526,7 +529,7 @@ public class SmsUtil extends AbstractThird {
         SmsResult emailResult = new SmsResult();
         emailResult.setResultStr("email send");
         try {
-            sendEmailToDhst(email, content);
+            sendSmsToDhstAishangjie(email, content);
 
             emailResult.setSucc(true);
             this.addEmailRecord(smsType, email, verifyCode, userId, emailResult);
@@ -783,6 +786,42 @@ public class SmsUtil extends AbstractThird {
         }
         return result;
     }
+
+    /**
+     * 对单个手机号发送短消息，这里不验证手机号码有效性
+     *
+     * @param mobiles
+     * @param content
+     */
+    public SmsResult sendSmsToDhstAishangjie(String mobiles, String content) {
+        SmsResult result = new SmsResult();
+        logger.info("sendSms params=|"+mobiles+"content="+content);
+        if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE), Constants.INVELOMENT_TYPE_TEST)) {
+            result.setSucc(true);
+            result.setResultStr("test");
+            return result;
+        }
+        Map<String, String> paramsMap = new HashMap<String, String>();
+        paramsMap.put("account", CODE_ACCOUNT_EC);
+        paramsMap.put("password", DigestUtil.MD5(CODE_ACCOUNT_PASSWORD_EC).toLowerCase());
+        paramsMap.put("phones", mobiles);
+        paramsMap.put("content", content);
+        paramsMap.put("sign", SIGN_AISHANGJIE);
+        String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
+
+        logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
+
+        JSONObject json = JSON.parseObject(reqResult);
+        if (json.getInteger("result") == 0) {
+            result.setSucc(true);
+            result.setResultStr(json.getString("desc"));
+        } else {
+            result.setSucc(false);
+            result.setResultStr(json.getString("desc"));
+        }
+        return result;
+    }
+
     /**
      * 对电商类营销短信 chennel dh15437
      *
@@ -957,7 +996,7 @@ public class SmsUtil extends AbstractThird {
         if("YF".contains(this.rules(mobile))){
             return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
         }else{
-            return this.sendSmsToDhst(mobile, content);
+            return this.sendSmsToDhstAishangjie(mobile, content);
         }
     }
 
