@@ -53,7 +53,7 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 
 	@Override
 	public List<Object> getBorrowHomeListByLable(String label, String systemType) {
-		List<Object> borrowHomeList=new ArrayList<>();
+		List<Object> borrowList=new ArrayList<>();
 		for(AfLoanSupermarketDo afLoanSupermarketDo:afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType)){
 			Map<String,String> map=new HashMap<>();
 			map.put("lsmNo",afLoanSupermarketDo.getLsmNo());
@@ -70,8 +70,8 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 			map.put("time",afLoanSupermarketDo.getTime()+"");
 			map.put("timeMin",afLoanSupermarketDo.getTimeMin()+"");
 			map.put("timeMax",afLoanSupermarketDo.getMoneyMax()+"");
-			borrowHomeList.add(map);
+			borrowList.add(map);
 		}
-		return borrowHomeList;
+		return borrowList;
 	}
 }
