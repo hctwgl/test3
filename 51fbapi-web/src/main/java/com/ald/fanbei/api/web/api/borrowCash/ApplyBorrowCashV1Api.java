@@ -136,8 +136,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        if (context.getAppVersion() < 390) {
-            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        if (context.getAppVersion() < 405) {
+            throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
         }
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
