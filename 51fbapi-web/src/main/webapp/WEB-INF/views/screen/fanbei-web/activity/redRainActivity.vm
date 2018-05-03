@@ -22,10 +22,10 @@
     <div class="gameWard">
         <div class="noWard">
             <a class="goAct" href="doubleTwelve?groupId=26&goBack=false"></a>
-            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
+##            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
         </div>
         <div class="ward">
-            <div class="wardHeader"></div>
+##            <div class="wardHeader"></div>
             <div class="wardContent">
                 <div class="wardCoupon">
                     <span class="wardMoney"><span>￥</span>50</span>
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <a class="goAct" href="doubleTwelve?groupId=26&goBack=false"></a>
-            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
+##            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
 
         </div>
     </div>
