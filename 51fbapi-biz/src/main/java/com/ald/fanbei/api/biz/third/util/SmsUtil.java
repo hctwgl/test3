@@ -802,11 +802,11 @@ public class SmsUtil extends AbstractThird {
             return result;
         }
         Map<String, String> paramsMap = new HashMap<String, String>();
-        paramsMap.put("account", CODE_ACCOUNT_EC);
-        paramsMap.put("password", DigestUtil.MD5(CODE_ACCOUNT_PASSWORD_EC).toLowerCase());
+        paramsMap.put("account", ACCOUNT);
+        paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase());
         paramsMap.put("phones", mobiles);
         paramsMap.put("content", content);
-        paramsMap.put("sign", SIGN_AISHANGJIE);
+        paramsMap.put("sign", SIGN);
         String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
 
         logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
