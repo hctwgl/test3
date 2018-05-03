@@ -8,7 +8,7 @@
 	<select id="queryAll" resultType="AfRedRainPoolDo">
 		SELECT
 		<include refid="queryFields"/>,
-		  c.limit_amount as 'couponLimitAmount', CONCAT(date_format(c.gmt_start, '%Y-%m-%d %H:%i:%s'),'--',DATE_FORMAT(c.gmt_end,'%Y-%m-%d %H:%i:%s')) as 'couponEffectiveTime'
+		  c.limit_amount as 'couponLimitAmount', DATE_FORMAT(c.gmt_end,'%Y年%m月%d日') as 'couponEffectiveTime'
 		FROM af_red_rain_pool p
 		INNER JOIN af_coupon c on p.coupon_id = c.id
 		WHERE p.is_delete = 0 and c.is_delete = 0
