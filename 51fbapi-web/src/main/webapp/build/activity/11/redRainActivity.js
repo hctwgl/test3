@@ -29,7 +29,7 @@ $(document).ready(function() {
         });
         $(".li" + num).css({
             "width": Wh,
-            "height": Wh,
+            "height": Wh+30,
             "transform": "rotate(" + rot + ")",
             "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain" + imgName + ".png) no-repeat center center",
             "background-size":"100%",
