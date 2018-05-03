@@ -115,7 +115,7 @@ $(document).ready(function() {
                         <span class="wardMoney">
                             <span>￥</span>${couponArr[i].amount}
                             <div>
-                                <p>全场通用</p><p>${couponArr[i].couponName}</p>
+                                <p>全场通用</p><p>满${couponArr[i].couponLimitAmount}元可用</p>
                             </div>
                         </span>
                 </div>`;
