@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -43,6 +45,9 @@ public class GetAllBorrowListApi implements ApiHandle  {
 	@Resource
 	private AfLoanProductDao afLoanProductDao;
 	
+	@Resource
+	private AfBorrowRecycleService afBorrowRecycleService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -54,10 +59,15 @@ public class GetAllBorrowListApi implements ApiHandle  {
 		List<Object> doneList = new ArrayList<Object>();
 		//小借
 		List<AfBorrowCashDo> doneCashs = afBorrowCashDao.listDoneCashsByUserId(userId, (pageNo - 1) * PAGE_COUNT);
+		this.shieldRecycle(doneCashs); // 屏蔽 回收借款
 		for(AfBorrowCashDo cashDo : doneCashs) {
 			doneList.add(this.transformBorrowCash(cashDo));
 		}
+		
 		AfBorrowCashDo dealingCash = afBorrowCashDao.getDealingCashByUserId(userId);
+		if(afBorrowRecycleService.isRecycleBorrow(dealingCash.getRid())) { // 屏蔽 回收借款
+			dealingCash = null;
+    	}
 		if(dealingCash != null) {
 			dealingList.add(this.transformBorrowCash(dealingCash));
 		}
@@ -129,6 +139,18 @@ public class GetAllBorrowListApi implements ApiHandle  {
 	private Date extractGmtCreate(Object o) {
 		Map<String, Object> data = (Map<String, Object>)o;
 		return (Date)data.get("gmtCreate");
+	}
+	
+	/**
+	 * 屏蔽 回收借款
+	 */
+	private void shieldRecycle(List<AfBorrowCashDo> cashs) {
+		Iterator<AfBorrowCashDo> it = cashs.iterator();
+        while (it.hasNext()){
+        	if(afBorrowRecycleService.isRecycleBorrow(it.next().getRid())) {
+        		it.remove();
+        	}
+        }
 	}
 	
 }
