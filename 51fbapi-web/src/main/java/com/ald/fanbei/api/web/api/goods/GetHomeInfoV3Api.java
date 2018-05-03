@@ -10,13 +10,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import jodd.util.StringUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
@@ -32,7 +33,9 @@ import com.ald.fanbei.api.biz.service.AfResourceH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -48,6 +51,7 @@ import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -63,6 +67,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfHomePageChannelVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 /**
@@ -116,7 +121,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
-	
+	@Resource
+	JpushService jpushService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 	
 	
 
@@ -141,12 +149,16 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		Long userId = null;
+		Integer appVersion = context.getAppVersion();
+		String userName = context.getUserName();
 		if (context.getUserName() != null) {
 		    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
 		    if(userDo != null){
 		    	userId = userDo.getRid();
 		    }
 		}
+		doStrongRiseAndCoupon(userId,userName,appVersion);
+		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
          if (cacheResult != null) {
@@ -619,6 +631,102 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		return resp;
 	}
 
+	private void doStrongRiseAndCoupon(Long userId, String userName,
+			Integer appVersion) {
+		// TODO Auto-generated method stub
+		
+		try {
+			if (userName != null && userId != null) {
+				// 获取后台配置的注册时间
+				String regTime = "";
+				List<AfResourceDo> regTimeList = afResourceService
+						.getConfigByTypes(ResourceType.APP_UPGRADE_REGISTER_TIME.getCode());
+				if (regTimeList != null && !regTimeList.isEmpty()) {
+					AfResourceDo regTimeInfo = regTimeList.get(0);
+					regTime = regTimeInfo.getValue();
+				}
+				Date regDate = DateUtil.stringToDate(regTime);
+				AfUserDo userDo = afUserService.getUserById(userId);
+				Date gmtCreate = userDo.getGmtCreate();
+				// 用户已登录,将登录信息存放到缓存中
+				String ltStoreKey = "GET_HOME_INFO_LT" + userName;
+				Object ltSaveObj = bizCacheUtil.getObject(ltStoreKey);
+				List<AfResourceDo> resList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_WND.getCode());
+				Integer givenVersion = 0;
+				String onOff = "";
+				if (resList != null && !resList.isEmpty()) {
+					AfResourceDo versionInfoRes = resList.get(0);
+					onOff = versionInfoRes.getValue1();
+					String version = versionInfoRes.getValue();
+					givenVersion = Integer.valueOf(version);
+				}
+				logger.info("GetHomeInfoApi userName=>" + userName);
+				if (ltSaveObj == null) {
+					long secs = DateUtil.getSecsEndOfDay();
+					if (appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
+						jpushService.jPushPopupWnd("LT_GIVEN_VERSION_WND", userName);
+						logger.error("LT_GIVEN_VERSION_WND send success");
+						bizCacheUtil.saveObject(ltStoreKey, "Y", secs); // 单位:秒
+					}
+				}
+				String gtStoreKey = "GET_HOME_INFO_GT" + userName;
+				Object gtSaveObj = bizCacheUtil.getObject(gtStoreKey);
+				// 获取后台配置的优惠券信息
+				List<AfResourceDo> couponsList = null;
+
+				if (gmtCreate.after(regDate)) {
+					// 新用户
+					couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON_NEW.getCode());
+				} else {
+					// 老用户
+					couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
+				}
+				if (couponsList != null && !couponsList.isEmpty()) {
+					AfResourceDo couponInfoRes = couponsList.get(0);
+					String couponIdStr = couponInfoRes.getValue();
+					String[] couponIds = couponIdStr.split(",");
+					boolean sended = false;
+					for (String couponId : couponIds) {
+						String[] tmp = couponId.split(":");
+						if (tmp.length > 1)
+							continue;
+						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,
+								Long.parseLong(couponId));
+						if (count > 0)
+							sended = true;
+						break;
+					}
+					if (!sended && gtSaveObj == null) {
+						if (appVersion.compareTo(givenVersion) >= 0 && "Y".equals(onOff)) {
+							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND", userName);
+							logger.error("GT_GIVEN_VERSION_WND send success");
+							bizCacheUtil.saveObject(gtStoreKey, "Y");
+							for (String couponId : couponIds) {
+								String[] tmp = couponId.split(":");
+								// 用户发券
+								try {
+									if (tmp.length > 1) {
+										String sceneId = tmp[0];
+										grantBoluomiCoupon(Long.parseLong(sceneId), userId);
+									} else {
+										afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize",
+												"home");
+									}
+								} catch (Exception e) {
+									logger.error("grant coupon error=>" + e.getMessage());
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("push wnd error=>" + e.getMessage());
+		}
+		
+	}
+
+
 	private List<Object> getNewProductGoodsIdList(
 			List<Object> newProductGoodsIdList) {
 		// TODO Auto-generated method stub
@@ -985,5 +1093,41 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			logger.error("substringAmount error"+e);
 		}
 		return substringAmount;
+	}
+	private void grantBoluomiCoupon(Long sceneId, Long userId) {
+		logger.info(" pickBoluomeCoupon begin , sceneId = {}, userId = {}", sceneId, userId);
+		if (sceneId == null) {
+			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+		if (resourceInfo == null) {
+			logger.error("couponSceneId is invalid");
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
+
+		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+		bo.setUser_id(userId + StringUtil.EMPTY);
+
+		Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+		Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+
+		if (DateUtil.beforeDay(new Date(), gmtStart)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		if (DateUtil.afterDay(new Date(), gmtEnd)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
+		}
+		String url = resourceInfo.getValue();
+		if (url != null) {
+			url = url.replace(" ", "");
+		}
+		String resultString = HttpUtil.doHttpPostJsonParam(url, JSONObject.toJSONString(bo));
+		logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		if (!"0".equals(resultJson.getString("code"))) {
+			throw new FanbeiException(resultJson.getString("msg"));
+		} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0) {
+			throw new FanbeiException("仅限领取一次，请勿重复领取！");
+		}
 	}
 }
