@@ -1,11 +1,14 @@
 package com.ald.fanbei.api.web.h5.api.recycle;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.yeepay.g3.utils.common.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -26,6 +29,8 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
     private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
     @Resource
     private AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    private AfUserAuthService afUserAuthService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -35,7 +40,16 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
         boolean loginFlag = userId == null?false:true;
         resp.addResponseData("isLogin",loginFlag );
         if(loginFlag){
+            AfUserAuthDo authInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
             AfUserAccountDo accInfo = userAccountService.getUserAccountByUserId(userId);
+            String basicStatus = authInfo.getBasicStatus();
+            if(StringUtils.equals(basicStatus, "A") || StringUtils.isBlank(basicStatus)) {
+                resp.addResponseData("authStatus", false);
+            } else {
+                resp.addResponseData("authStatus", true);
+            }
+            resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getFacesStatus()));
+            resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
             resp.addResponseData("useableAmount", afUserAccountSenceService.getTotalUsableAmount(accInfo));
         }
         resp.addResponseData("bannerList", afResourceService.getBorrowRecycleHomeListByType());
