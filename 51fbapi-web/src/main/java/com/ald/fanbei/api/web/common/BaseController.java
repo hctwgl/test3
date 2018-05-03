@@ -693,7 +693,7 @@ public abstract class BaseController {
 
 	protected String base64Encoded(String baseString) {
 		if (StringUtils.isNotEmpty(baseString)) {
-			return new String(Base64.decode(baseString));
+			return new String(com.ald.fanbei.api.common.util.Base64.decode(baseString));
 		}
 		return StringUtils.EMPTY;
 	}
