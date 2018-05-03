@@ -29,8 +29,8 @@ $(document).ready(function() {
             "left": Left,
         });
         $(".li" + num).css({
-            "width": Wh,
-            "height": Wh+30,
+            "width": Wh-30,
+            "height": Wh,
             "transform": "rotate(" + rot + ")",
             "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain1.png) no-repeat center center",
             "background-size":"100%",
@@ -45,7 +45,6 @@ $(document).ready(function() {
         });
         //点击红包的时候弹出模态层
         $(".li" + num).one('touchstart',function(){
-            console.log(1)
             touch++;
             let self=this;
             if(ward.indexOf(touch)>=0&&couponArr.length<3&&sendAjax){   //概率20%并且总获奖数小于3并且没有并发ajax请求
@@ -112,6 +111,14 @@ $(document).ready(function() {
                           <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
                           <span class="wardTxt">${couponArr[i].couponName}</span>
                       </div>`;
+                str+=`   <div class="wardCoupon">
+                        <span class="wardMoney">
+                            <span>￥</span>${couponArr[i].amount}
+                            <div>
+                                <p>全场通用</p><p>${couponArr[i].couponName}</p>
+                            </div>
+                        </span>
+                </div>`;
             }
             $('.wardContent').html(str);
             $(".gameWard").show();
