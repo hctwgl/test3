@@ -52,6 +52,15 @@ import java.math.BigDecimal;
      */
     private String goodsImg;
 
+    private Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     /**
      * 获取主键Id

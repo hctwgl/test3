@@ -108,6 +108,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		paramBo.setAppName(appName);
 		AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
 		recycleOrderDo.setPropertyValue(paramBo.getPropertyValue());
+		recycleOrderDo.setUserId(userId);
 		recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
 		recycleOrderDo.setGoodsName(paramBo.getGoodsName());
 		// 获取用户账户和认证信息
