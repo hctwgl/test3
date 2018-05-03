@@ -41,13 +41,7 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
         resp.addResponseData("isLogin",loginFlag );
         if(loginFlag){
             AfUserAuthDo authInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
-            AfUserAccountDo accInfo = userAccountService.getUserAccountByUserId(userId);
-            String basicStatus = authInfo.getBasicStatus();
-            if(StringUtils.equals(basicStatus, "A") || StringUtils.isBlank(basicStatus)) {
-                resp.addResponseData("authStatus", false);
-            } else {
-                resp.addResponseData("authStatus", true);
-            }
+            resp.addResponseData("authStatus", authInfo.getBasicStatus());
             resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getFacesStatus()));
             resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
         }
