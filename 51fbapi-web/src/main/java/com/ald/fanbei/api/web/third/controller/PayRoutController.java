@@ -465,8 +465,20 @@ public class PayRoutController {
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+
+
 					if (result <= 0) {
 						return "ERROR";
+					}else {
+						if (OrderType.SELFSUPPORT.getCode().equals(merPriv)){
+							AfOrderDo orderInfo = afOrderService.getOrderInfoByPayOrderNo(outTradeNo);
+							logger.info("bank bkl orderInfo="+JSON.toJSONString(orderInfo));
+							if (orderInfo !=null){
+								//在这里加入电核直接通过代码
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"H");
+							}
+
+						}
 					}
 				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
 					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
@@ -520,6 +532,16 @@ public class PayRoutController {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
 					if (result <= 0) {
 						return "ERROR";
+					}else {
+						if (OrderType.SELFSUPPORT.getCode().equals(merPriv)){
+							AfOrderDo orderInfo = afOrderService.getOrderInfoByPayOrderNo(outTradeNo);
+							logger.info("bank bkl orderInfo="+JSON.toJSONString(orderInfo));
+							if (orderInfo !=null){
+								//在这里加入电核
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),null);
+							}
+
+						}
 					}
 				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORTCP.getCode().equals(merPriv)

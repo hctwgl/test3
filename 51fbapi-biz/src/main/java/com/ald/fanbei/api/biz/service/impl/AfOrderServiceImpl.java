@@ -1352,7 +1352,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
 				}
 			}
-
+			if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
+				//在这里加入电核直接通过代码
+				afOrderService.updateIagentStatusByOrderId(kuaijieOrderPayBo.getOrderInfo().getRid(),"H");
+			}
 			Map<String, Object> newMap = new HashMap<String, Object>();
 			newMap.put("outTradeNo", respBo.getOrderNo());
 			newMap.put("tradeNo", respBo.getTradeNo());

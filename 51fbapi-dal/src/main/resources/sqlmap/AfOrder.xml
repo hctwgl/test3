@@ -1382,7 +1382,7 @@
 			AND a.id = #{orderId}
 	</select>
 	<update id="updateIagentStatusByOrderId">
-		UPDATE af_order SET iagent_status=#{iagentStatus} ,gmt_modified=NOW() WHERE id=#{orderId}
+		UPDATE af_order SET iagent_status=#{iagentStatus,jdbcType=VARCHAR} ,gmt_modified=NOW() WHERE id=#{orderId}
 	</update>
 
 	<select id="getLeaseProtocol" resultType="HashMap">
