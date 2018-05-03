@@ -303,11 +303,11 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
-			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
+		/*	int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGetCreditReqBo edspayGetCreditReqBo = null;
@@ -357,7 +357,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			BigDecimal minMoney = null;//借款期限的较小的 
 			BigDecimal maxMoney = null;//借款期限的较大的 
 			EdspayCreditDetailInfo detailInfo = edspayGetCreditReqBo.getCreditDetails();
-			if(detailInfo != null && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getMinMoney()) && !NumberUtil.isNullOrZeroOrNegative(detailInfo.getMaxMoney())){
+			if(detailInfo != null && !NumberUtil.isNull(detailInfo.getMinMoney()) && !NumberUtil.isNull(detailInfo.getMaxMoney())){
 				minMoney = detailInfo.getMinMoney();
 				maxMoney = detailInfo.getMaxMoney();
 			}
@@ -728,11 +728,11 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
-			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
+			/*int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGiveBackPayResultReqBo PayResultReqBo = null;
