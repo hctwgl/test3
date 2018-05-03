@@ -1058,6 +1058,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (saleAmount.compareTo(BigDecimal.ZERO) == 0) {
 			    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
 			    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+				if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+					useableAmount = BigDecimal.ZERO;
+				}
 			    if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0) {
 				afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
 				afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
@@ -1264,7 +1267,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}
 					}
 					if (!canPay) {
-						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+                        orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+                        orderInfo.setClosedReason("风控审批不通过");
+                        orderDao.updateOrder(orderInfo);
 						resultMap.put("success", false);
 						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -2381,6 +2386,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
 			resultMap.put(Constants.VIRTUAL_RECENT_DAY, response.getData().getRecentDay());
 			resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT, response.getData().getTotalAmount());
+			resultMap.put(Constants.VIRTUAL_DAY_AMOUNT, response.getData().getDayAmount());
 			resultMap.put(Constants.VIRTUAL_CHECK, "TRUE");
 		}
 		return resultMap;

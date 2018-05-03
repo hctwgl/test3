@@ -650,4 +650,18 @@
 		</foreach>
 	</select>
 
+	<select id="getVisualGoodsByGoodsId" resultType="HashMap">
+		SELECT a.name,a.rebate_amount,a.price_amount,a.sale_amount,a.goods_icon,a.id FROM af_goods as a
+		WHERE  a.is_delete = 0 AND a.status = 'PUBLISH'
+		AND a.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		) ORDER BY field(a.id,
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+
 </mapper>

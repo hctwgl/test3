@@ -102,6 +102,16 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                         Long couponId = Long.parseLong(couponsArray.getString(index));
 
                         AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+                        Date gmtStartTime = couponDo.getGmtStart();
+                        Date gmtEndTime = couponDo.getGmtEnd();
+                        Date now = new Date();
+                        if(DateUtil.compareDate(gmtStartTime,now)){
+                            return H5CommonResponse.getNewInstance(true, "优惠券活动未开始", "", "").toString();
+                        }
+                        if(DateUtil.compareDate(now, gmtEndTime)){
+                            return H5CommonResponse.getNewInstance(true, "优惠券已过期", "", "").toString();
+                        }
+
                         AfUserCouponDo userCoupon = new AfUserCouponDo();
                         userCoupon.setCouponId(couponDo.getRid());
                         userCoupon.setGmtCreate(new Date());

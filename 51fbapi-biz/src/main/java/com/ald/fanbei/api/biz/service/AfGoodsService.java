@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
@@ -125,6 +127,8 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsListByGoodsId(List goodsId);
 
 	List<AfActivityGoodsDto> getGoodsDoByGoodsId(String goodsId);
+
+	List<HashMap> getVisualGoodsByGoodsId(List<String> ids);
 	/**
 	 * 爱尚街根据品牌id查询出所有的商品
 	 * @param brandId

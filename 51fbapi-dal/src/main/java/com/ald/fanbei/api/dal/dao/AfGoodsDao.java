@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -144,6 +145,7 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 
+	List<HashMap> getVisualGoodsByGoodsId(@Param("ids")List<String> ids);
 
 	List<Map<String, Object>> getGoodsByIds(@Param("list") List<Long> goodList);
 }

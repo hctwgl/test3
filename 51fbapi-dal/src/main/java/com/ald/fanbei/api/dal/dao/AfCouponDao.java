@@ -43,4 +43,5 @@ public interface AfCouponDao {
 
 	AfCouponDo getCouponByName(@Param("name") String name);//根据名称查找券信息
 
+	List<AfCouponDo> getCouponByIds(@Param("ids")List<String> ids);//根据名称查找券信息
 }
