@@ -5,6 +5,7 @@ let couponArr=[];
 var sendAjax=true;
 var ward=[parseInt(Math.random() * 5+1),parseInt(Math.random() * 5+6),parseInt(Math.random() * 5+11)];
 var touch=0;
+
 //数据统计
 $.ajax({
     url:'/fanbei-web/postMaidianInfo',
@@ -44,6 +45,7 @@ $(document).ready(function() {
         });
         //点击红包的时候弹出模态层
         $(".li" + num).one('touchstart',function(){
+            console.log(1)
             touch++;
             let self=this;
             if(ward.indexOf(touch)>=0&&couponArr.length<3&&sendAjax){   //概率20%并且总获奖数小于3并且没有并发ajax请求
@@ -86,7 +88,9 @@ $(document).ready(function() {
     let backward=()=>{
         numz--;
         if(numz>0){
-            $(".backward span").html(numz);
+            $(".backward span").css({
+                "background":"url(https://f.51fanbei.com/h5/app/activity/11/num" + numz + ".png) no-repeat center center"
+            });
             setTimeout(backward,1000)
         }else{
             $(".backward").remove();
