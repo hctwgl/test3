@@ -28,8 +28,12 @@
 ##            <div class="wardHeader"></div>
             <div class="wardContent">
                 <div class="wardCoupon">
-                    <span class="wardMoney"><span>￥</span>50</span>
-                    <span class="wardTxt">获得50元现金红包</span>
+                        <span class="wardMoney">
+                            <span>￥</span>50
+                            <div>
+                                <p>全场通用</p><p>满100元可用</p>
+                            </div>
+                        </span>
                 </div>
             </div>
             <a class="goAct" href="doubleTwelve?groupId=26&goBack=false"></a>

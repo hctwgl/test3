@@ -32,7 +32,7 @@ $(document).ready(function() {
             "width": Wh,
             "height": Wh+30,
             "transform": "rotate(" + rot + ")",
-            "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain" + imgName + ".png) no-repeat center center",
+            "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain1.png) no-repeat center center",
             "background-size":"100%",
             "-ms-transform": "rotate(" + rot + ")", /* Internet Explorer */
             "-moz-transform": "rotate(" + rot + ")", /* Firefox */
@@ -89,7 +89,8 @@ $(document).ready(function() {
         numz--;
         if(numz>0){
             $(".backward span").css({
-                "background":"url(https://f.51fanbei.com/h5/app/activity/11/num" + numz + ".png) no-repeat center center"
+                "background":"url(https://f.51fanbei.com/h5/app/activity/11/num" + numz + ".png) no-repeat center",
+                "background-size":"100%",
             });
             setTimeout(backward,1000)
         }else{
