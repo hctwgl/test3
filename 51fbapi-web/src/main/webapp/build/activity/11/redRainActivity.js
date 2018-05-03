@@ -107,17 +107,19 @@ $(document).ready(function() {
             $('.redNum span:nth-child(1)').text(0);
             let str='';
             for(let i=0;i<couponArr.length;i++){
-                str+=`<div class="wardCoupon">
-                          <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
-                          <span class="wardTxt">${couponArr[i].couponName}</span>
-                      </div>`;
+                // str+=`<div class="wardCoupon">
+                //           <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
+                //           <span class="wardTxt">${couponArr[i].couponName}</span>
+                //       </div>`;
                 str+=`   <div class="wardCoupon">
                         <span class="wardMoney">
                             <span>￥</span>${couponArr[i].amount}
-                            <div>
-                                <p>全场通用</p><p>满${couponArr[i].couponLimitAmount}元可用</p>
-                            </div>
                         </span>
+                         <div class="wardMsg">
+                                <p>全场通用</p><p>满${couponArr[i].couponLimitAmount}元可用</p>
+                         </div>
+                         <span class="wardTxt">有效期：${couponArr[i].couponEffectiveTime} 不可叠加使用</span>
+
                 </div>`;
             }
             $('.wardContent').html(str);
