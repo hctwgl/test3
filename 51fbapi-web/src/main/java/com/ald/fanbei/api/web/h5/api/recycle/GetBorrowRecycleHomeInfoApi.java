@@ -50,7 +50,6 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
             }
             resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getFacesStatus()));
             resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
-            resp.addResponseData("useableAmount", afUserAccountSenceService.getTotalUsableAmount(accInfo));
         }
         resp.addResponseData("bannerList", afResourceService.getBorrowRecycleHomeListByType());
         resp.addResponseData("recycleInfos", afBorrowRecycleService.getRecycleInfo(userId));

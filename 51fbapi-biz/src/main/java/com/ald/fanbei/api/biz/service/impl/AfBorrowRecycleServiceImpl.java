@@ -55,6 +55,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
 
     @Resource
     private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
+    @Resource
+    private AfUserAccountSenceService afUserAccountSenceService;
 
 
     public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId){
@@ -88,6 +90,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+        bo.borrowId=cashDo.getRid();
         if (cashDo == null) {
             bo.isBorrowOverdue = false;
             return bo;
@@ -96,6 +99,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
         if (goodsMap != null) {
             bo.goodsName = orderDo.getGoodsName();
+            bo.goodsUrl= orderDo.getGoodsImg();
             bo.goodsModel = goodsMap.get("goodsModel");
             bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
@@ -109,7 +113,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount());
         bo.repayingAmount = cashDo.getRepayAmount();
         bo.borrowAmount = cashDo.getAmount();
-        bo.restUseDays = (int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000 * 3600 * 24);
+        bo.restUseDays = -(int) DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday());
         if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday()) > 0) {
             bo.isBorrowOverdue = true;
         } else {
@@ -117,15 +121,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }
         AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
         bo.rejectCode = rejectType.name();
-        BigDecimal maxCfgAmount = cfgBean.maxAmount;
-        BigDecimal maxAmount = BigDecimal.ZERO;
-        if(!AfBorrowCashRejectType.PASS.equals(rejectType)) {
-            maxAmount = maxCfgAmount;
-        } else if(userAccount != null) {
-            BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
-            maxAmount = maxCfgAmount.compareTo(usableAmount) < 0 ? maxCfgAmount : usableAmount;
-        }
-        bo.useableAmount = this.calculateMaxAmount(maxAmount);
+        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         return bo;
     }
 
@@ -285,6 +281,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public BigDecimal overdueAmount;
         public String borrowNo;
         public BigDecimal useableAmount;
+        public String goodsUrl;
+
 
     }
 
