@@ -4,7 +4,7 @@
     #set($src="https://f.51fanbei.com/h5/app/activity/10")
     #set($version="20180306")
     #set($commonUrl="https://img.51fanbei.com/h5/app/images/user/channel")
-    <title>51返呗注册</title>
+    <title>爱上街注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/10/iphonexRegister.css?version=$version">
 </head>
 <body>
@@ -23,7 +23,7 @@
             <div class="checkbox clearfix">
                 <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
                 <label for="inputCheck"></label>
-                <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
+                <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《爱上街用户注册协议》</a></p>
             </div>
             <p class="registered clearfix">
                 <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>

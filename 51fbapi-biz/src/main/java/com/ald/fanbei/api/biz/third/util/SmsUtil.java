@@ -1,23 +1,5 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -28,21 +10,24 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author 陈金虎 2017年2月7日 下午8:49:23
@@ -60,28 +45,29 @@ public class SmsUtil extends AbstractThird {
     private final static String MARKET_ACCOUNT_PASSWORD_EC = "aSZqA6Ub";
 //    private final static String MARKET_ACCOUNT_EC = "dh15437";
 //    private final static String MARKET_ACCOUNT_PASSWORD_EC = "p8AbzB4C";
-    private final static String SIGN = "【51返呗】";
+    private final static String SIGN = "【爱上街金融】";
+
     private static String password = null;
-    private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
+    private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册爱上街，请在30分钟内完成注册";
     private static String LOGIN_TEMPLATE = "验证码:&param1,您正在确认登录，30分钟内输入有效。";
-    private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回51返呗的账户密码，请在30分钟内完成";
-    private static String SET_TEMPLATE = "验证码为:&param1;您正在设置51返呗的账户密码，请在30分钟内完成";
-    private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
-    private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
-    private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
-    private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
+    private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回爱上街的账户密码，请在30分钟内完成";
+    private static String SET_TEMPLATE = "验证码为:&param1;您正在设置爱上街的账户密码，请在30分钟内完成";
+    private static String BIND_TEMPLATE = "验证码为:&param1;您正在爱上街绑定手机号，请在30分钟内完成";
+    private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置爱上街支付密码，请在30分钟内完成";
+    private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置爱上街更换绑定邮箱，请在30分钟内完成";
+    private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在爱上街。回复td退订";
     private static String IPHONE_RESERVATION_SUCCESS = "恭喜你预约成功！9月20日正式发售苹果新机，下单立减100元！分期无忧，返利抵账单！http://t.cn/RI7CSL2 回T退订";
     private static String REGIST_SUCCESS_TEMPLATE = "认证送10元现金，借/还成功再抽现金，100%中奖，最高1888元，最低50元 http://t.cn/RI7CSL2 退订回T";
-    private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录51返呗查看详情";
+    private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录爱上街查看详情";
     private static String DEFAULT_PASSWORD = "您已注册成功，默认密码%s，登录即可领取最高20000额度！";
-    private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
-    private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
+    private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录爱上街核对账单";
+    private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录爱上街核对账单";
     private static String TEST_VERIFY_CODE = "888888";
-    private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
+    private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录爱上街查看详情。";
     private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
     private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
     private static String RECYCLE_REBATE_SUCCESS = "您的回收订单已完成，账户到账返现%s元，其中包含回收订单金额%s元，订单返现%s元，快去我的账户中查看吧~";//回收业务成功返现
-    private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在51返呗回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
+    private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在爱上街回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -873,11 +859,11 @@ public class SmsUtil extends AbstractThird {
         MimeMessage message = new MimeMessage(session);
 
         // 2. From: 发件人
-        message.setFrom(new InternetAddress(sendMail, "51返呗", "UTF-8"));
+        message.setFrom(new InternetAddress(sendMail, "爱上街", "UTF-8"));
 
         // 3. To: 收件人（可以增加多个收件人、抄送、密送）
         message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(receiveMail, "", "UTF-8"));
-        message.setSubject("51返呗邮箱验证吗", "UTF-8");
+        message.setSubject("爱上街邮箱验证吗", "UTF-8");
         message.setContent(content, "text/html;charset=UTF-8");
         message.setSentDate(new Date());
 

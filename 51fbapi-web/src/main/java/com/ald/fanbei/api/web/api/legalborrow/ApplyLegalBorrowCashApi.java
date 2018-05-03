@@ -408,7 +408,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				afBorrowLegalOrderCashDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
 
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
-				// 如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
+				// 如果属于非爱上街自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
 				if (e instanceof FanbeiException) {
 					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 				} else {

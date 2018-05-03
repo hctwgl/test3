@@ -98,7 +98,7 @@ public class LoanTest  extends BaseTest{
 	}
 
 	/**
-	 * 贷款申请成功后，模拟 UPS 回调 返呗API
+	 * 贷款申请成功后，模拟 UPS 回调 爱上街API
 	 */
 	@Test
 	public void delegatePay() {

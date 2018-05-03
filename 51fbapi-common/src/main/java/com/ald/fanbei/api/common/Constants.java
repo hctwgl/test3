@@ -471,7 +471,7 @@ public class Constants {
 	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";
 
 	public static final int ONE_YEAY_DAYS = 360;
-	//返呗与资产方对接时的平台标识
+	//爱上街与资产方对接时的平台标识
 	public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 	public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
 	//资产方查询用户借款及逾期信息redis中的key前缀

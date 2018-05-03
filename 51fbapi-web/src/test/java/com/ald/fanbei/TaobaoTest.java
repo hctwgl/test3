@@ -234,7 +234,7 @@ public class TaobaoTest {
 //		TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23417101", "05b0653d4b7573e38c9ef5d3d16bfd1f");
 //		TmcGroupAddRequest req = new TmcGroupAddRequest();
 //		req.setGroupName("dev_test");
-//		req.setNicks("51返呗");
+//		req.setNicks("爱上街");
 //		TmcGroupAddResponse rsp = client.execute(req);
 //		System.out.println(rsp.getBody());
 		
