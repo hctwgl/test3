@@ -660,7 +660,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					String version = versionInfoRes.getValue();
 					givenVersion = Integer.valueOf(version);
 				}
-				logger.info("GetHomeInfoApi userName=>" + userName);
+				logger.info("GetHomeInfoApi3 userName=>" + userName);
 				if (ltSaveObj == null) {
 					long secs = DateUtil.getSecsEndOfDay();
 					if (appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
