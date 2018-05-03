@@ -52,30 +52,46 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     private AfBorrowCashDao afBorrowCashDao;
     @Resource
     private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-    @Resource
-    private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
+
     @Resource
     private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
 
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId) {
+    public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId){
         AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+        if(userAccount!=null){
+            return processLogin(userAccount);
+        }else {
+            return unLogin();
+        }
+    }
+    public BorrowRecycleHomeInfoBo unLogin() {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
 
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
         bo.rejectCode = AfBorrowCashRejectType.PASS.name();
+        bo.isLogin = false;
+        bo.borrowCashDay=cfgBean.borrowCashDay;
+        bo.useableAmount = this.calculateMaxAmount(cfgBean.maxAmount);
         bo.minQuota = cfgBean.minAmount;
+        if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
+            bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
+        }
+
+        return bo;
+    }
+
+    public BorrowRecycleHomeInfoBo processLogin(AfUserAccountDo userAccount) {
+        BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
+        BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
+        bo.rejectCode = AfBorrowCashRejectType.PASS.name();
+        bo.minQuota = cfgBean.minAmount;
+        bo.borrowCashDay=cfgBean.borrowCashDay;
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
         if (cashDo == null) {
             bo.isBorrowOverdue = false;
             return bo;
         }
-//        AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
-//        if(processRepayment != null) {
-//            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
-//        }
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
         if (goodsMap != null) {
@@ -84,6 +100,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
         bo.recycleStatus =AfBorrowRecycleStatus.findByCashStatus(cashDo.getStatus()).getCode();
+        AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
+        if(processRepayment != null) {
+            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
+        }
         bo.borrowGmtApply = cashDo.getGmtCreate();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
         bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount());
@@ -97,9 +117,32 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }
         AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
         bo.rejectCode = rejectType.name();
+        BigDecimal maxCfgAmount = cfgBean.maxAmount;
+        BigDecimal maxAmount = BigDecimal.ZERO;
+        if(!AfBorrowCashRejectType.PASS.equals(rejectType)) {
+            maxAmount = maxCfgAmount;
+        } else if(userAccount != null) {
+            BigDecimal usableAmount = userAccount.getAuAmount().subtract(userAccount.getUsedAmount());
+            maxAmount = maxCfgAmount.compareTo(usableAmount) < 0 ? maxCfgAmount : usableAmount;
+        }
+        bo.useableAmount = this.calculateMaxAmount(maxAmount);
         return bo;
     }
 
+
+    /**
+     * 计算最多能计算多少额度 150取100 250.37 取200
+     *
+     * @param usableAmount
+     * @return
+     */
+    private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
+        // 可使用额度
+        Integer amount = usableAmount.intValue();
+
+        return new BigDecimal(amount / 100 * 100);
+
+    }
     @Override
     public List<BorrowRecycleHomeInfoBo> getRecycleRecord(Long userId) {
         List<AfBorrowCashDto> doList = afBorrowCashDao.getBorrowRecycleListByUserId(userId);
@@ -241,6 +284,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String reBankName;
         public BigDecimal overdueAmount;
         public String borrowNo;
+        public BigDecimal useableAmount;
+
     }
 
 }

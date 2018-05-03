@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
-import com.ald.fanbei.api.biz.service.AfBorrowRecycleGoodsService;
-import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
@@ -49,29 +47,25 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, Long> implements AfBorrowLegalService {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-	
+
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	RiskUtil riskUtil;
-	
+
 	@Resource
 	private AfUserAccountDao afUserAccountDao;
 	@Resource
 	private AfBorrowCashDao afBorrowCashDao;
 	@Resource
 	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-	@Resource
-	private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
-	@Resource
-	private AfBorrowRecycleOrderService afBorrowRecycleOrderService;
 
 	@Override
 	public BorrowLegalHomeInfoBo getHomeInfo(Long userId){
@@ -85,19 +79,19 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 
 	private BorrowLegalHomeInfoBo processLogin(AfUserAccountDo userAccount) {
 		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-		
+
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = true;
-		
+
 		bo.minQuota = cfgBean.minAmount;
 		bo.borrowCashDay = cfgBean.borrowCashDay;
-		
+
 		AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastByUserId(userAccount.getUserId());
 		this.dealBorrow(bo, userAccount, cashDo);  		// 处理 借款/续期 信息
 		AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
 		bo.rejectCode = rejectType.name();
-		
+
 		BigDecimal maxCfgAmount = cfgBean.maxAmount;
 		BigDecimal maxAmount = BigDecimal.ZERO;
 		if(!AfBorrowCashRejectType.PASS.equals(rejectType)) {
@@ -110,15 +104,15 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 
 		return bo;
 	}
-	
+
 	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
 		if(lastBorrowCash == null) {
 			bo.hasBorrow = false;
 			return;
 		}
-		
+
 		String status = lastBorrowCash.getStatus();
-		if( AfBorrowCashStatus.finsh.getCode().equals(status) 
+		if( AfBorrowCashStatus.finsh.getCode().equals(status)
 				|| AfBorrowCashStatus.closed.getCode().equals(status)) {
 			bo.hasBorrow = false;
 			return;
@@ -129,7 +123,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 			bo.repayingAmount = repayment.getRepaymentAmount();
 		}
 		bo.borrowStatus = status;
-		
+
 		bo.hasBorrow = true;
 		bo.borrowId = lastBorrowCash.getRid();
 		bo.borrowAmount = lastBorrowCash.getAmount();
@@ -137,7 +131,7 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		bo.borrowRestAmount = afBorrowCashService.calculateLegalRestAmount(lastBorrowCash);
 		bo.borrowGmtApply = lastBorrowCash.getGmtCreate();
 		bo.borrowGmtPlanRepayment = lastBorrowCash.getGmtPlanRepayment();
-		if(lastBorrowCash.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) { 
+		if(lastBorrowCash.getOverdueAmount().compareTo(BigDecimal.ZERO) > 0) {
 			bo.isBorrowOverdue = true;
 		}else {
 			bo.isBorrowOverdue = false;
@@ -148,23 +142,23 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
 			return AfBorrowCashRejectType.SWITCH_OFF;
 		}
-		
+
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
 		if(afUserAuthDo == null) {
 			return AfBorrowCashRejectType.NO_AUTHZ;
 		}
-		
+
 		String authStatus = afUserAuthDo.getRiskStatus();
 		if(RiskStatus.A.getCode().equals(authStatus)) {
 			return AfBorrowCashRejectType.NO_AUTHZ;
 		}
-		
+
 		if (RiskStatus.NO.getCode().equals(authStatus)) {
 			return AfBorrowCashRejectType.NO_PASS_STRO_RISK;
 		}
-		
+
 		// 检查上笔贷款
-		if (lastBorrowCash != null && AfBorrowCashStatus.closed.getCode().equals(lastBorrowCash.getStatus()) 
+		if (lastBorrowCash != null && AfBorrowCashStatus.closed.getCode().equals(lastBorrowCash.getStatus())
 					&& AfBorrowCashReviewStatus.refuse.getCode().equals(lastBorrowCash.getReviewStatus()) ) {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
@@ -175,32 +169,32 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 				}
 			}
 		}
-		
+
 		//检查额度
 		if(cfgBean.minAmount.compareTo(userAccount.getAuAmount()) > 0) {
 			return AfBorrowCashRejectType.QUOTA_TOO_SMALL;
 		}
-		
+
 		return AfBorrowCashRejectType.PASS;
 	}
-	
+
 	private BorrowLegalHomeInfoBo processUnlogin(){
 		BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-		
+
 		BorrowLegalHomeInfoBo bo = new BorrowLegalHomeInfoBo();
 		bo.rejectCode = AfBorrowCashRejectType.PASS.name();
 		bo.isLogin = false;
 		bo.maxQuota = this.calculateMaxAmount(cfgBean.maxAmount);
 		bo.minQuota = cfgBean.minAmount;
 		bo.borrowCashDay = cfgBean.borrowCashDay;
-		
+
 		if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
 			bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
 		}
-		
+
 		return bo;
 	}
-	
+
 	/**
 	 * 计算最多能计算多少额度 150取100 250.37 取200
 	 * @param usableAmount
@@ -211,15 +205,15 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		return new BigDecimal(amount / 100 * 100);
 	}
 
-	
+
 	@Override
 	public BaseDao<AfBorrowCashDo, Long> getDao() {
 		return null;
 	}
-	
+
 	public final static class BorrowLegalHomeInfoBo{
 		public String rejectCode; //拒绝码，通过则为 "PASS"
-		
+
 		public boolean isLogin;
 		public String companyName;
 		public String interestRate;
@@ -227,10 +221,10 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public String overdueRate;
 		public String lender;
 		public String borrowCashDay;
-		
+
 		public BigDecimal maxQuota;
 		public BigDecimal minQuota;
-		
+
 		public boolean hasBorrow;
 		public Long borrowId;
 		public String borrowStatus;
@@ -238,23 +232,9 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 		public BigDecimal borrowArrivalAmount;
 		public BigDecimal borrowRestAmount;
 		public BigDecimal repayingAmount;
-		public BigDecimal defaultFine;
 		public Date borrowGmtApply;
 		public Date borrowGmtPlanRepayment;
 		public boolean isBorrowOverdue;
-
-		//回收状态与borrowStatus用同一个数据库属性
-		public int restUseDays;
-		public String recycleStatus;
-		public Long recycleId;
-		public String goodsName;
-		public String goodsModel;
-		public BigDecimal goodsPrice;
-		public Date arrivalGmt;
-		public String reBankId;
-		public String reBankName;
-		public BigDecimal overdueAmount;
 	}
-
 
 }
