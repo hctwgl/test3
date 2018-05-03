@@ -92,7 +92,8 @@ public enum AfResourceSecType {
 		BORROW_CASH_AMOUNT_CHANNEL_ERROR("BORROW_CASH_AMOUNT_CHANNEL_ERROR","用户借钱时渠道包问题给用户的短信内容"),
 		//芝麻信用认证相关配置 芝麻信用认证相关控制,value:认证开放开关Y/N   value1:展示文字为分数或者文字 0:文字  1:分数
 		ZHIMA_VERIFY_RULE_CONFIG("ZHIMA_VERIFY_RULE_CONFIG","芝麻信用认证相关配置"),
-		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
+	    BUBBLE_AUTH_RULE_CONFIG("BUBBLE_AUTH_RULE_CONFIG","芝麻信用认证相关配置"),
+	   ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
 		
 	 	private String code;
 		private String name;

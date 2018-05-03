@@ -4173,7 +4173,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDetails(detailsBase64);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-		String url =  "http://192.168.96.24:8080/modules/api/thrid/userReplenishQuota.htm";
+		String url = getUrl() + "/modules/api/thrid/userReplenishQuota.htm";
 
 		String reqResult = requestProxy.post(url, reqBo);
 		logThird(reqResult, "userSupplementQuota", reqBo);
