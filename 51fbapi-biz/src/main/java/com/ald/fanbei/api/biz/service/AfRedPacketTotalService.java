@@ -37,4 +37,5 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      * @date 2018/5/3 20:23
      */
     List<AfRedPacketTotalDo> findWithdrawList(Long userId, Integer queryNum);
+
 }

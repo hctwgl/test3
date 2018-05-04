@@ -7,7 +7,7 @@ import com.ald.fanbei.api.dal.dao.AfRedPacketSelfOpenDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfRedPacketSelfOpenDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRedPacketSelfOpenDto;
-import com.alibaba.fastjson.JSONObject;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +38,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		List<AfRedPacketSelfOpenDto> result = afRedPacketSelfOpenDao.findOpenRecordList(redPacketTotalId);
 		if (CollectionUtil.isNotEmpty(result)) {
 			// 用户有微信头像和昵称，优先使用微信的
-			JSONObject userWxInfo = afUserThirdInfoService.getUserWxInfo(result.get(0).getUserId());
+			UserWxInfoDto userWxInfo = afUserThirdInfoService.getUserWxInfo(result.get(0).getUserId());
 			if (userWxInfo != null) {
 				for (AfRedPacketSelfOpenDto e : result) {
-					e.setUserAvatar(userWxInfo.getString("headimgurl"));
-					e.setUserNick(userWxInfo.getString("nickname"));
+					e.setUserAvatar(userWxInfo.getAvatar());
+					e.setUserNick(userWxInfo.getNick());
 				}
 			}
 		}

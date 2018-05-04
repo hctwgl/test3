@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
 import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.dal.dao.AfUserThirdInfoDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,23 +25,57 @@ import java.util.List;
  */
  
 @Service("afUserThirdInfoService")
-public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInfoDo, Long> implements AfUserThirdInfoService {
+public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInfoDo, Long>
+		implements AfUserThirdInfoService {
 	
     @Autowired
     private AfUserThirdInfoDao afUserThirdInfoDao;
 
+    @Autowired
+    private AfUserService afUserService;
+
 	@Override
-	public JSONObject getUserWxInfo(Long userId) {
-		AfUserThirdInfoDo thirdInfo = getUserThirdInfo(userId, UserThirdType.WX.getCode());
+	public UserWxInfoDto getUserWxInfo(Long userId) {
+		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
 		if (thirdInfo == null) return null;
 
-		return JSONObject.parseObject(thirdInfo.getThirdInfo());
+		JSONObject jsonInfo = JSONObject.parseObject(thirdInfo.getThirdInfo());
+		return new UserWxInfoDto(jsonInfo);
+	}
+
+	@Override
+	public UserWxInfoDto getWxOrLocalUserInfo(Long userId) {
+		UserWxInfoDto result = getUserWxInfo(userId);
+		if (result == null) {
+			result = new UserWxInfoDto();
+			AfUserDo userDo = afUserService.getUserById(userId);
+			result.setAvatar(userDo.getAvatar());
+			result.setNick(userDo.getNick());
+		}
+		return result;
+	}
+
+	@Override
+	public Long getUserIdByWxOpenId(String openId) {
+		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByThirdId(openId, UserThirdType.WX.getCode());
+		if (thirdInfo == null) return null;
+
+		return thirdInfo.getUserId();
 	}
 
 	// 获取用户第三方信息
-	private AfUserThirdInfoDo getUserThirdInfo(Long userId, String userThirdType) {
+	private AfUserThirdInfoDo getUserThirdInfoByUserId(Long userId, String userThirdType) {
 		AfUserThirdInfoDo query = new AfUserThirdInfoDo();
 		query.setUserId(userId);
+		query.setThirdType(userThirdType);
+		List<AfUserThirdInfoDo> list = getListByCommonCondition(query);
+		return list.size() == 0 ? null : list.get(0);
+	}
+
+	// 获取用户第三方信息
+	private AfUserThirdInfoDo getUserThirdInfoByThirdId(String thirdId, String userThirdType) {
+		AfUserThirdInfoDo query = new AfUserThirdInfoDo();
+		query.setThirdId(thirdId);
 		query.setThirdType(userThirdType);
 		List<AfUserThirdInfoDo> list = getListByCommonCondition(query);
 		return list.size() == 0 ? null : list.get(0);

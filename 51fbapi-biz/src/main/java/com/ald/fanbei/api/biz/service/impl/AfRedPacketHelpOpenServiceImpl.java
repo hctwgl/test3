@@ -22,7 +22,8 @@ import java.util.List;
  */
  
 @Service("afRedPacketHelpOpenService")
-public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacketHelpOpenDo, Long> implements AfRedPacketHelpOpenService {
+public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacketHelpOpenDo, Long>
+		implements AfRedPacketHelpOpenService {
 	
     private static final Logger logger = LoggerFactory.getLogger(AfRedPacketHelpOpenServiceImpl.class);
    
@@ -32,6 +33,14 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	@Override
 	public List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum) {
 		return afRedPacketHelpOpenDao.findOpenRecordList(redPacketTotalId, queryNum);
+	}
+
+	@Override
+	public AfRedPacketHelpOpenDo getByOpenIdAndUserId(String openId, Long userId) {
+		AfRedPacketHelpOpenDo query = new AfRedPacketHelpOpenDo();
+		query.setOpenId(openId);
+		query.setUserId(userId);
+		return getByCommonCondition(query);
 	}
 
 	@Override

@@ -36,4 +36,13 @@ public class AfOpenRedPacketHomeVo extends AbstractSerial {
 
     // 拆红包记录
     private List<Map<String, String>> openList;
+
+    // 当前用户id（站外拆红包使用）
+    private String userId;
+
+    // 帮拆信息（站外拆红包使用）
+    private Map<String, String> helpOpenInfo;
+
+    // 是否可以帮拆红包（站外拆红包使用）
+    private String isCanOpen;
 }

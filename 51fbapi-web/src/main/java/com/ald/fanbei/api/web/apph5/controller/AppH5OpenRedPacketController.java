@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.WxUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -14,7 +17,9 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.AfRedPacketHelpOpenDo;
 import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRedPacketSelfOpenDto;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -30,11 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 拆红包controller
@@ -61,6 +64,18 @@ public class AppH5OpenRedPacketController extends BaseController {
     @Autowired
     private AfRedPacketHelpOpenService afRedPacketHelpOpenService;
 
+    @Autowired
+    private AfUserThirdInfoService afUserThirdInfoService;
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
+
+    /**
+     * 获取红包主页信息（站内）
+     * 
+     * @author wangli
+     * @date 2018/5/4 11:12
+     */
     @RequestMapping(value = "/getHomeInfoInSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getHomeInfoInSite(HttpServletRequest request,
@@ -80,24 +95,153 @@ public class AppH5OpenRedPacketController extends BaseController {
             if (context.isLogin()) {
                 Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
                 data.setRedPacket(getRedPacket(userId, redPacketConfig));
-                data.setWithdrawList(findWithdrawList(userId, 2));
+                data.setWithdrawList(doFindWithdrawList(userId, 2));
                 if (data.getRedPacket() != null) {
                     Long redPacketTotalId = Long.valueOf(data.getRedPacket().get(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID));
-                    data.setOpenList(findOpenList(redPacketTotalId, 2));
+                    data.setOpenList(doFindOpenList(redPacketTotalId, 2));
                 }
             }
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
-        } /*catch (FanbeiException e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-                return H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
-            }
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
-        } */catch (Exception e) {
+        } catch (Exception e) {
             logger.error("/redPacket/getHomeInfoInSite, error={}", e);
             return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
         }
+    }
+
+    /**
+     * 获取红包主页信息（站外）
+     *
+     * @author wangli
+     * @date 2018/5/4 11:13
+     */
+    @RequestMapping(value = "/getHomeInfoOutSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getHomeInfoOutSite(@RequestParam("code") String code,@RequestParam("shareId") Long shareId) {
+        try {
+            AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+            // 判断活动开关是否打开
+            if (config.getValue().trim().equals(YesNoStatus.NO)) {
+                return H5CommonResponse.getNewInstance(false, "活动已结束", "", null).toString();
+            }
+
+            AfOpenRedPacketHomeVo data = new AfOpenRedPacketHomeVo();
+            JSONObject userWxInfo = getUserWxInfoByCode(code);
+            JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+
+            data.setWithdrawTotalNum(getWithdrawTotalNum(redPacketConfig));
+
+            Long userId = afUserThirdInfoService.getUserIdByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+            if (userId != null) {
+                data.setUserId(userId.toString());
+                data.setRedPacket(getRedPacket(userId, redPacketConfig));
+                data.setWithdrawList(doFindWithdrawList(userId, 2));
+                if (data.getRedPacket() != null) {
+                    Long redPacketTotalId = Long.valueOf(data.getRedPacket().get(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID));
+                    data.setOpenList(doFindOpenList(redPacketTotalId, 2));
+                }
+            }
+
+            AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
+            AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService
+                    .getByOpenIdAndUserId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID), shareRedPacket.getUserId());
+            if (helpOpenDo == null) {
+                data.setIsCanOpen(YesNoStatus.YES.getCode());
+            } else {
+                data.setIsCanOpen(YesNoStatus.NO.getCode());
+            }
+
+            Map<String, String> helpOpenInfo = new HashMap<>();
+            helpOpenInfo.put("isOverdue", YesNoStatus.NO.getCode());
+            Integer overdueIntervalHour = redPacketConfig.getInteger("overdueIntervalHour");
+            if (DateUtil.addHoures(shareRedPacket.getGmtCreate(), overdueIntervalHour).before(new Date())) {
+                helpOpenInfo.put("isOverdue", YesNoStatus.YES.getCode());
+            }
+            if (data.getIsCanOpen().equals(YesNoStatus.YES.getCode())) {
+                UserWxInfoDto shareUserWxInfo = afUserThirdInfoService.getWxOrLocalUserInfo(shareRedPacket.getUserId());
+                helpOpenInfo.put("avatar", shareUserWxInfo.getAvatar());
+                helpOpenInfo.put("nick", shareUserWxInfo.getNick());
+            } else if (helpOpenDo.getRedPacketTotalId().equals(shareRedPacket.getRid())) {
+                UserWxInfoDto shareUserWxInfo = afUserThirdInfoService.getWxOrLocalUserInfo(shareRedPacket.getUserId());
+                helpOpenInfo.put("avatar", shareUserWxInfo.getAvatar());
+                helpOpenInfo.put("nick", shareUserWxInfo.getNick());
+                helpOpenInfo.put("amount", helpOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
+            }
+
+            return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+        } catch (Exception e) {
+            logger.error("/redPacket/getHomeInfoOutSite, error={}", e);
+            return H5CommonResponse.getNewInstance(false, "页面失效，请刷新页面重试").toString();
+        }
+    }
+
+    /**
+     * 帮好友拆红包
+     *
+     * @author wangli
+     * @date 2018/5/4 16:21
+     */
+    @RequestMapping(value = "/helpOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String helpOpen(@RequestParam("code") String code, @RequestParam("shareId") Long shareId) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * 获取所有拆红包记录
+     * 
+     * @author wangli
+     * @date 2018/5/4 17:27
+     */
+    @RequestMapping(value = "/findOpenList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String findOpenList(@RequestParam("id") Long id) {
+        Map<String, Object> data = new HashMap<>();
+
+        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(id);
+        Map<String, String> redPacket = new HashMap<>();
+        redPacket.put("id", redPacketTotalDo.getRid().toString());
+        redPacket.put("amount", redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
+        AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+        JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+        BigDecimal restAmount = redPacketConfig.getBigDecimal("thresholdAmount")
+                .subtract(redPacketTotalDo.getAmount());
+        redPacket.put("restAmount", restAmount.compareTo(BigDecimal.ZERO) < 0 ? "0.00" :
+                restAmount.setScale(2, RoundingMode.HALF_UP).toString());
+        data.put("redPacket", redPacket);
+
+        data.put("openList", doFindOpenList(id, null));
+
+        return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+    }
+
+    /**
+     * 获取用户所有提现记录
+     *
+     * @author wangli
+     * @date 2018/5/4 18:11
+     */
+    @RequestMapping(value = "/findWithdrawList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String findWithdrawList(HttpServletRequest request,
+                                   @RequestParam(value = "userId", required = false) Long userId) {
+        if (userId == null) {
+            try {
+                FanbeiWebContext context = doWebCheck(request, true);
+                AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+                userId = userDo.getRid();
+            }catch (FanbeiException e) {
+                logger.error("/redPacket/getHomeInfoInSite, error={}", e);
+                if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+                        || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+                    return H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
+                }
+                return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            }
+        }
+
+        List<Map<String, String>> data = doFindWithdrawList(userId, null);
+        return H5CommonResponse.getNewInstance(true, "", "", data).toString();
     }
 
     @Override
@@ -142,14 +286,14 @@ public class AppH5OpenRedPacketController extends BaseController {
         Map<String, String> result = new HashMap<>();
         result.put(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID, redPacketTotalDo.getRid().toString());
         result.put("amount", redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
-        result.put("withdrawLimitAmount", redPacketConfig.getString("threshold"));
+        result.put("withdrawLimitAmount", redPacketConfig.getString("thresholdAmount"));
         result.put("gmtOverdue",
                 DateUtil.formatDateTime(DateUtil.addHoures(redPacketTotalDo.getGmtCreate(), overdueIntervalHour)));
         return result;
     }
 
     // 查找用户提现记录
-    private List<Map<String,String>> findWithdrawList(Long userId, Integer queryNum) {
+    private List<Map<String,String>> doFindWithdrawList(Long userId, Integer queryNum) {
         List<Map<String, String>> result = new ArrayList<>();
         List<AfRedPacketTotalDo> withdrawList = afRedPacketTotalService.findWithdrawList(userId, queryNum);
         if (CollectionUtil.isNotEmpty(withdrawList)) {
@@ -169,7 +313,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     }
 
     // 查找拆红包记录
-    private List<Map<String,String>> findOpenList(Long redPacketTotalId, Integer queryNum) {
+    private List<Map<String,String>> doFindOpenList(Long redPacketTotalId, Integer queryNum) {
         List<Map<String, String>> result = new ArrayList<>();
 
         List<AfRedPacketHelpOpenDo> helpOpenList = afRedPacketHelpOpenService
@@ -211,5 +355,21 @@ public class AppH5OpenRedPacketController extends BaseController {
             result.add(e);
         }
         return result;
+    }
+
+    // 根据code获取用户微信信息
+    private JSONObject getUserWxInfoByCode(String code) {
+        String key = "openRedPacket:userWxInfo:" + code;
+        JSONObject userWxInfo = (JSONObject) bizCacheUtil.getObject(key);
+        if (userWxInfo == null) {
+            userWxInfo = WxUtil.getUserInfo(WxUtil.getWxAppId(), WxUtil.getWxSecret(), code);
+            if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
+                bizCacheUtil.saveObject(key, userWxInfo, Constants.MINITS_OF_FIVE);
+            } else {
+                String errmsg = userWxInfo.getString("errmsg");
+                throw new RuntimeException(errmsg == null ? "用户微信信息为空" : errmsg);
+            }
+        }
+        return userWxInfo;
     }
 }
