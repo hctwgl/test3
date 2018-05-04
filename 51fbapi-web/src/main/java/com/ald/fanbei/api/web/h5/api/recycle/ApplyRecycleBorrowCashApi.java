@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -116,7 +117,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		// 获取后台配置借款利率信息
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_RECYCLE_INFO_LEGAL_NEW);
+				AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
 		// 获取主卡信息
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		// 业务逻辑校验
