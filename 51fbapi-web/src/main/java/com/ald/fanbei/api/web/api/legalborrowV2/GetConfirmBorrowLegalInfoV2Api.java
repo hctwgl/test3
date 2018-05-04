@@ -147,10 +147,16 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			if (afUserBankcardDo == null) {
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_SWITCH.getCode(),AfResourceSecType.BORROW_CASH_SWITCH.getCode());
 			boolean isCanBorrowCash = afBorrowCashService.isCanBorrowCash(userId);
 			if (!isCanBorrowCash) {
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+			}else if (resourceDo != null && resourceDo.getValue().equals("Y")){
+				if (context.getAppVersion() > 390){
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STOP_ERROR);
+				}else {
+					throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_MAJIABAO_STOP_ERROR);
+				}
 			}
 
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
