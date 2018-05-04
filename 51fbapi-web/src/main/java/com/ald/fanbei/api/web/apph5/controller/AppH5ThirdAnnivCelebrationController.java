@@ -175,9 +175,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         if (null == activityIds || activityIds.isEmpty()) {
             return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待", "", "").toString();
         }
-        else if(null == todayActivityIds || todayActivityIds.isEmpty()){
-            return H5CommonResponse.getNewInstance(false, "活动已结束，请关注我们下次活动", "", "").toString();
-        }
 
         Long userId = null;
         if (context.getUserName() != null) {
