@@ -108,7 +108,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			afBorrowCashDo.getRateAmount(),
 			afBorrowCashDo.getPoundage(),
 				new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()))
-						.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),3,RoundingMode.HALF_UP),
+						.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),2,RoundingMode.HALF_UP),
 			afBorrowLegalOrderDo.getPriceAmount())
 			.subtract(afBorrowCashDo.getRepayAmount()))
 			.multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
@@ -313,7 +313,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 罚息
 	    } else {
 		    result.put("amtPenalty",new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()))
-					.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),3,RoundingMode.HALF_UP).multiply(BigDecimalUtil.ONE_HUNDRED).intValue());
+					.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),2,RoundingMode.HALF_UP).multiply(BigDecimalUtil.ONE_HUNDRED).intValue());
 	    }
 	    result.put("amtService",  afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getArrivalAmount()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 服务费
 
