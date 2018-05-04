@@ -114,7 +114,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }
         bo.borrowGmtApply = cashDo.getGmtCreate();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
-        bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount());
+        bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
         bo.repayingAmount = cashDo.getRepayAmount();
         bo.borrowAmount = cashDo.getAmount();
         bo.restUseDays = -(int) DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday());
