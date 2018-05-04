@@ -3,7 +3,6 @@
  */
 package com.ald.fanbei.api.dal.domain.dto;
 
-import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +18,9 @@ import java.util.List;
 @Getter
 @Setter
 public class AfResourceH5ItemDto extends AfResourceH5ItemDo {
+
+	// update by wangli 2018/04/16 由于数据库查询字段给的是rid，所以增加了rid
+	private Long rid;
 
 	private List goodsList;
 

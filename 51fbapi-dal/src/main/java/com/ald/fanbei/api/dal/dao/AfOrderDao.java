@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
 import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.dto.*;
-
 
 import org.apache.ibatis.annotations.Param;
 
@@ -319,4 +319,6 @@ public interface AfOrderDao {
 
 	AfOrderDo selectTodayIagentStatus(@Param("userId") Long userId,@Param("amount") BigDecimal amount);
 	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
+
+	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
 }

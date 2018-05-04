@@ -30,8 +30,10 @@ public class AfResourceH5ServiceImpl implements AfResourceH5Service {
 	public List<AfResourceH5Dto> selectByStatus(String tag){
 		return afResourceH5Dao.selectByStatus(tag);
 	}
-		
 
+	@Override
+	public AfResourceH5Dto getByPageFlag(String pageFlag) {
+		return afResourceH5Dao.getByPageFlag(pageFlag);
+	}
 
-	
 }

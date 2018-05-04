@@ -1,23 +1,29 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Resource;
-
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
-
-import org.apache.commons.beanutils.ConvertUtils;
+import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.domain.XItem;
+import com.taobao.api.response.TaeItemDetailGetResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -138,6 +144,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 何鑫 2017年16月20日 下午4:20:22 @类描述：
@@ -1157,6 +1169,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (saleAmount.compareTo(BigDecimal.ZERO) == 0) {
 			    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
 			    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+				if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+					useableAmount = BigDecimal.ZERO;
+				}
 			    if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0) {
 				afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
 				afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
@@ -1248,7 +1263,16 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    // #region add by honghzengpei
 			    // afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
 			    // #endregion
-			    return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
+				Map<String, Object> riskReturnMap = riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
+			    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
+					// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+					if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+					}
+					// end by luoxiao
+				}
+				return riskReturnMap;
 			}
 
 			// verybo.getResult()=10,则成功，活动返利
@@ -1354,7 +1378,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}
 					}
 					if (!canPay) {
-						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+                        orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+                        orderInfo.setClosedReason("风控审批不通过");
+                        orderDao.updateOrder(orderInfo);
 						resultMap.put("success", false);
 						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -1808,6 +1834,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	    }
 	});
 	if (result == 1) {
+		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+		}
+		// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger
 			// machine in the certain date---------------------------------
@@ -2467,6 +2499,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
 			resultMap.put(Constants.VIRTUAL_RECENT_DAY, response.getData().getRecentDay());
 			resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT, response.getData().getTotalAmount());
+			resultMap.put(Constants.VIRTUAL_DAY_AMOUNT, response.getData().getDayAmount());
 			resultMap.put(Constants.VIRTUAL_CHECK, "TRUE");
 		}
 		return resultMap;
@@ -3076,7 +3109,35 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		orderDao.updateIagentStatusByOrderId(orderId,iagentStatus);
 	}
 
-    @Override
+	@Override
+	public AfOrderCountDto countStatusNum(Long userId) {
+		AfOrderCountDto result = new AfOrderCountDto();
+
+		AfOrderQuery query = new AfOrderQuery();
+		query.setUserId(userId);
+		query.setPageSize(Integer.MAX_VALUE);
+		List<AfOrderDo> list = null;
+
+		query.setOrderStatus(AppOrderSearchStatus.NEW.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setNewOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.TODELIVER.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setPaidOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.DELIVERED.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setDeliveredOrderNum(list.size());
+
+		query.setOrderStatus(AppOrderSearchStatus.TOREBATE.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setFinishedOrderNum(list.size());
+
+		return result;
+	}
+
+	@Override
     public HashMap checkLeaseOrder(Long userId, Long goodsId) {
         return orderDao.checkLeaseOrder(userId,goodsId);
     }
@@ -3151,6 +3212,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public HashMap getLeaseProtocol(Long orderId) {
 		return orderDao.getLeaseProtocol(orderId);
+	}
+
+	@Override
+	public int getSelfsupportPaySuccessOrderByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getSelfsupportPaySuccessOrderByUserId(userId);
 	}
 
 	@Override

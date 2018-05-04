@@ -1,15 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
@@ -21,6 +11,14 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 
@@ -100,7 +98,11 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     		serviceFeePerPeriod = incomePerPeriod.subtract(interestFeePerPeriod).setScale(2, RoundingMode.HALF_UP);
     		
     		// 计算还款时间
-    		Date gmtPlanRepay = new Date();
+			Date gmtPlanRepay = new Date();
+    		if (j != 1){
+    			gmtPlanRepay = DateUtil.setDayZeroTime(new Date());//非第一期时间修改为23:59:59
+			}
+			logger.info("afLoanPeriodsService resolvePeriods gmtPlanRepay="+gmtPlanRepay);
     		gmtPlanRepay = DateUtil.addMonths(gmtPlanRepay, j);
     		int today = DateUtil.getTodayNoInMonth(gmtPlanRepay);
     		if(today > MAX_DAY_NO) {
@@ -155,4 +157,8 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 		return afLoanPeriodsDao.getAllLoanPeriodsByLoanId(loanId);
 	}
 	
+	public List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId) {
+		return afLoanPeriodsDao.listUnChargeRepayPeriods(loanId);
+	}
+
 }

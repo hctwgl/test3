@@ -31,9 +31,7 @@ public class Create {
 //
 //
 //
-//		// 配置作者及Domain说明
-//		String classAuthor = "liutengyuan";
-//		String functionName = "颜值测试图片表";
+
 
 
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)

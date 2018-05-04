@@ -151,6 +151,9 @@ public class StartCashierApi implements ApiHandle {
 		if(orderInfo.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
 			AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
 			BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+			if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+				useableAmount = BigDecimal.ZERO;
+			}
 			AfOrderLeaseDo afOrderLeaseDo = afOrderService.getOrderLeaseByOrderId(orderInfo.getRid());
 			if(useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0){
 				cashierVo.setAmount(afOrderLeaseDo.getMonthlyRent().add(afOrderLeaseDo.getRichieAmount()));

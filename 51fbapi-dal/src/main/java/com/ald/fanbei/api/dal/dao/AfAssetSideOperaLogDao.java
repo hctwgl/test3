@@ -3,7 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideOperaLogDo;
 
 /**
- * 资金方调用返呗业务日志Dao
+ * 资金方调用爱上街业务日志Dao
  * 
  * @author chengkang
  * @version 1.0.0 初始化

@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 贷款业务Service
@@ -45,4 +45,11 @@ public interface AfLoanPeriodsService extends ParentService<AfLoanPeriodsDo, Lon
 
 	List<AfLoanPeriodsDo> getAllLoanPeriodsByLoanId(Long loanId);
 	
+	/**
+	 * 
+	 * 
+	 * @author wangli
+	 * @date 2018/4/20 15:07
+	 */
+	List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId);
 }

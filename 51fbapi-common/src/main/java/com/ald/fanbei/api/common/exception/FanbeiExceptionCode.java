@@ -383,13 +383,13 @@ public enum FanbeiExceptionCode {
     SHARE_PAYTYPE_ERROR("SHARE_PAYTYPE_ERROR",6005,"shared payType is not agent pay","专享商品支付方式必须是额度支付"),
 
     //系统升级该code不能随便修改
-    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗新版上线啦！\n您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
+    SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "爱上街新版上线啦！\n您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
 
     // SERVICE 9999
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     //7000
     BANKCARD_NOT_EXIST("BANKCARD_NOT_EXIST",7000,"bankcard is null","该用户没绑定银行卡"),
-    
+
     USER_BANKCARD_NOT_EXIST("USER_BANKCARD_NOT_EXIST",7100,"user bankcard is null","未绑定此卡"),
 
     //物流信息不存在
@@ -438,7 +438,9 @@ public enum FanbeiExceptionCode {
     SECKILL_ERROR_PRICE("SECKILL_ERROR_PRICE",9004,"seckill error price is end ","商品价格变动，请重新下单！"),
     SECKILL_ERROR_STOCK("SECKILL_ERROR_STOCK",9001,"seckill error stock is error ","超过购买数量！"),
     SECKILL_ERROR("SECKILL_ERROR",9002,"seckill error seckill is error ","人太多了，被挤爆了！"),
-    
+    BRAND_GOODS_IS_EMPTY("BRAND_GOODS_IS_EMPTY",9005,"goods of this brand is empty","改品牌下的商品信息为空!"),
+    BRAND_RESULT_INIT_SUCCESS("BRAND_RESULT_INIT_SUCCESS",9006,"brand result page init success","品牌结果页初始化成功!"),
+    BRAND_CATEGORY_PAGE_INIT_SUCCESS("BRAND_CATEGORY_PAGE_INIT_SUCCESS",9007,"aishangjie brand category page init success","品牌分类页面初始化成功!"),
     CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9006,"choose bank card pay","请您选择银行卡付款方式");
 
 

@@ -1,10 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.List;
-
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import org.apache.ibatis.annotations.Param;
 
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
+import java.util.List;
 
 /**
  * 贷款业务Dao
@@ -29,7 +28,7 @@ public interface AfLoanPeriodsDao extends BaseDao<AfLoanPeriodsDo, Long> {
 	List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId);
 
 	AfLoanPeriodsDo getOneByLoanId(Long loanId);
-
+	
 	List<AfLoanPeriodsDo> getAllLoanPeriodsByLoanId(Long loanId);
 
 }

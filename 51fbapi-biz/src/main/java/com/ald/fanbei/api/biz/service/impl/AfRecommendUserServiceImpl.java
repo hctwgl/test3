@@ -662,4 +662,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	    return afRecommendUserDao.getARecommendUserById(userId);
 	}
 
+	@Override
+	public int getTodayShareTimes(Long userId){
+		return afRecommendUserDao.getTodayShareTimes(userId);
+	}
+
 }

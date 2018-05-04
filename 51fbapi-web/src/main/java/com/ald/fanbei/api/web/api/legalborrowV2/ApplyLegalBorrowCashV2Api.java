@@ -394,7 +394,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
 				// 更新风控审核状态为拒绝
 				delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
-				// 如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
+				// 如果属于非爱上街自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
 				if (e instanceof FanbeiException) {
 					delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
 				} else {

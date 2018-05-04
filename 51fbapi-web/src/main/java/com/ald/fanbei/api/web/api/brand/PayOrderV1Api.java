@@ -1,26 +1,33 @@
 package com.ald.fanbei.api.web.api.brand;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.VersionCheckUitl;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,31 +35,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.IPTransferBo;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
-import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
-import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.PushStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiaotianjian 2017年3月27日上午10:53:43
@@ -114,8 +101,8 @@ public class PayOrderV1Api implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        if (context.getAppVersion() < 390) {
-            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        if (context.getAppVersion() < 405) {
+            throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
         }
         Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
@@ -217,7 +204,7 @@ public class PayOrderV1Api implements ApiHandle {
 	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
 	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
 	    if (bizCacheUtil.getObject(lockKey) == null) {
-		bizCacheUtil.saveObject(lockKey, lockKey, 30);
+		bizCacheUtil.saveObject(lockKey, lockKey, 45);
 	    } else {
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 	    }

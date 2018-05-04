@@ -24,6 +24,15 @@ public class AfUserGoodsSmsDo extends AbstractSerial{
 	private Long goodsId;
 	private Long userId;
 	private Long isDelete;
+	private Long activityId;
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
 
 	public Long getIsDelete() {
 		return isDelete;

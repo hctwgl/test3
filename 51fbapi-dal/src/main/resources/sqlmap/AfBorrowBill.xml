@@ -20,6 +20,9 @@
 			<include refid="queryFields"/>
 		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status <![CDATA[<>'F']]>
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
     </select>
     
     <select id="existMonthRepayingBill" resultType="java.lang.Integer" >
@@ -899,5 +902,4 @@
 		AND status in('N','D')
 		LIMIT 1
 	</select>
-	
 </mapper>
