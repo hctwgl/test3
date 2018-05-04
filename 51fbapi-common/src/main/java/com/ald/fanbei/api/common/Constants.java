@@ -30,6 +30,8 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
+	
+	public static final long MINITS_OF_TWO = 60*2l;//2分钟
 
 	//51公积金token失效时间
 	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
@@ -414,8 +416,6 @@ public class Constants {
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
 
-	//贷款超市主页标签
-	public static final String DC_LABEL_HOME="home";
 
 	// 借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR = "BORROWCASH_ TO_DRAW";
@@ -525,8 +525,6 @@ public class Constants {
 
 	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
 
-	//芝麻认证引导弹窗缓存处理对应key标识
-	public static final String ZM_AUTH_POP_GUIDE_CACHE_KEY = "zm_auth_pop_guide_";
 	/**
      * 用户租房分期利率
      */
@@ -550,10 +548,31 @@ public class Constants {
     public static final int TEN = 10;
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
-    
+
     /**
      * 线下商圈租房业务类型
      */
     public static final String ORDER_TYPE_TENEMENT = "TENEMENT";
+    //芝麻认证引导弹窗缓存处理对应key标识
+  	public static final String ZM_AUTH_POP_GUIDE_CACHE_KEY = "zm_auth_pop_guide_";
+
+	/**
+	 * 三周年庆典秒杀活动名称前缀
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_NAME = "TAC_SEC_KILL_ACTIVITY_NAME";
+
+	/**
+	 * 三周年庆典秒杀活动每日开始时间（小时）
+	 */
+	public static final String TAC_SEC_KILL_ACTIVITY_START_TIME = "TAC_SEC_KILL_ACTIVITY_START_TIME";
+
+	/**
+	 * 三周年庆典活动
+	 */
+	public static final String TAC_ACTIVITY = "TAC_ACTIVITY";
+
+	//乐享生活节
+	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
+	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
 }

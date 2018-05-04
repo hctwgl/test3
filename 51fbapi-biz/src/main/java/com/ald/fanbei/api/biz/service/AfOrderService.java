@@ -16,11 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
-import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
-import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
+import com.ald.fanbei.api.dal.domain.dto.*;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -465,20 +461,20 @@ public interface AfOrderService {
 	 * @return
 	 */
 	HashMap getLeaseProtocol(Long orderId);
+
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
 	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
 
 	/**
-	 * 检查order是否生效
-	 * @param orderId
+	 * 统计用户各个状态的订单数
+	 *
+	 * @author wangli
+	 * @date 2018/4/13 9:58
 	 */
-	void checkOrderValidity(AfOrderDo order);
+	AfOrderCountDto countStatusNum(Long userId);
 
-	/**
-	 * 根据上送卡号解析出 PayType类型
-	 * @param bankcardId
-	 */
-	PayType resolvePayType(Long bankcardId, String isCombinationPay);
+
+	int getSelfsupportPaySuccessOrderByUserId(Long userId);
 
 }

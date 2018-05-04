@@ -18,10 +18,14 @@ import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.enums.RiskRaiseResult;
 import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
@@ -50,6 +54,10 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     private AfAuthRaiseStatusService afAuthRaiseStatusService;
     @Resource
     private AfUserAuthStatusService afUserAuthStatusService;
+    @Resource
+    private AfBorrowCashDao afBorrowCashDao;
+    @Resource
+    private AfLoanDao afLoanDao;
 
     @Override
     public BaseDao<AfUserAccountSenceDo, Long> getDao() {
@@ -171,23 +179,25 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public BigDecimal getTotalUsableAmount(AfUserAccountDo userAccount, AfUserAccountSenceDo... scenes) {
-	BigDecimal totalUsableAmount = BigDecimal.ZERO;
-	BigDecimal totalAuAmount = userAccount.getAuAmount();
-	BigDecimal totalUsedAmount = userAccount.getUsedAmount();
-
-	AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userAccount.getUserId());
-	if (totalScene != null) {
-	    totalAuAmount = totalScene.getAuAmount();
-	}
-	for (AfUserAccountSenceDo scene : scenes) {
-	    if (scene != null) {
-		totalUsedAmount = totalUsedAmount.add(scene.getUsedAmount());
+    	BigDecimal totalUsedAmount=BigDecimal.ZERO;
+	    AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(userAccount.getUserId());
+	    List<AfLoanDo> listLoan = afLoanDao.listDealingLoansByUserId(userAccount.getUserId());
+	    if(listLoan != null && listLoan.size()>0){
+			for (AfLoanDo afLoanDo : listLoan) {
+				totalUsedAmount = totalUsedAmount.add(afLoanDo.getAmount());
+			}
 	    }
-	}
-
-	totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
-
-	return totalUsableAmount;
+		if(afBorrowCashDo!=null){
+			totalUsedAmount = totalUsedAmount.add(afBorrowCashDo.getAmount());
+		}		    
+		BigDecimal totalUsableAmount = BigDecimal.ZERO;
+		BigDecimal totalAuAmount = userAccount.getAuAmount();
+		AfUserAccountSenceDo totalScene = afUserAccountSenceDao.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userAccount.getUserId());
+		if (totalScene != null) {
+		    totalAuAmount = totalScene.getAuAmount();
+		}
+		totalUsableAmount = totalAuAmount.subtract(totalUsedAmount);
+		return totalUsableAmount;
     }
 
     @Override

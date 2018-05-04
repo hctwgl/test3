@@ -43,6 +43,4 @@ public interface AfLoanSupermarketService {
 	 */
 	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label,String systemType);
 
-	List<Object> getLoanHomeListByLable(String label,String systemType);
-
 }

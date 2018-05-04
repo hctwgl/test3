@@ -17,4 +17,11 @@ public interface AfResourceH5Service {
 
 	List<AfResourceH5Dto> selectByStatus(String tag);
 
+	/**
+	 * 根据页面标识获H5资源
+	 *
+	 * @author wangli
+	 * @date 2018/4/10 20:01
+	 */
+	AfResourceH5Dto getByPageFlag(String lifePageFlag);
 }

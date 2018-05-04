@@ -114,4 +114,5 @@ import java.math.BigDecimal;
     private Integer goodsLimitCount;//没人限购数量
     private String payType;//支付方式
     private Date nowDate;
+    private Integer saleCount;
 }

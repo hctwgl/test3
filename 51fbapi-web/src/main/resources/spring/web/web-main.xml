@@ -27,7 +27,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.kafka" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.service" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.boluome" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
@@ -113,6 +113,10 @@
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
 				<value>/goods/getHomeInfoV2</value>
+				<value>/goods/getHomeInfoV3</value>
+				<value>/goods/getChannel</value>
+				<value>/goods/getMoreGoods</value>
+				<value>/goods/getChannelMoreGoods</value>
 				<value>/goods/getHomeInfoFront</value>
 				<value>/user/loginFront</value>
 				<value>/good/getSearchHome</value>
@@ -146,7 +150,11 @@
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
+				<value>/category/getGoodsList1</value>
+				<value>/category/brandChannels</value>
+
 				<value>/goods/getHomeGoodsList</value>
+				<value>/goods/getHomeGoodsList1</value>
 				<value>/category/getAllGoodsCategory</value>
 
 				<value>/homePage/homeScrollBar</value>
@@ -169,6 +177,7 @@
 				<value>/order/dmNperEnabled</value>
 
 				<value>/user/getMineInfoV1</value>
+				<value>/user/home</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -240,6 +249,7 @@
 
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
+				<entry key="/user/home" value-ref="mineHomeApi" />
 
 
 
@@ -250,6 +260,10 @@
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
 				<entry key="/goods/getHomeInfoV2" value-ref="getHomeInfoV2Api" />
+				<entry key="/goods/getHomeInfoV3" value-ref="getHomeInfoV3Api" />
+				<entry key="/goods/getChannel" value-ref="getHomeChannelApi" />
+				<entry key="/goods/getMoreGoods" value-ref="getMoreGoodsApi" />
+				<entry key="/goods/getChannelMoreGoods" value-ref="getChannelMoreGoodsApi" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
@@ -507,6 +521,8 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<entry key="/category/getGoodsList1" value-ref="getGoodsList1Api" />
+				<entry key="/category/brandChannels" value-ref="brandChannelsApi" />
 				<!-- 漂浮窗信息 -->
 				<entry key="/floatingWindow/floatInfo" value-ref="floatInfo" />
 
@@ -597,7 +613,6 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
-
 			</map>
 		</constructor-arg>
 	</bean>

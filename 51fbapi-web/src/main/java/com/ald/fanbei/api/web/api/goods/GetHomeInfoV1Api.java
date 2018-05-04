@@ -11,22 +11,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfActivityService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
-import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -41,14 +32,6 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAbtestDeviceNewDo;
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -91,8 +74,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
-	@Resource
-	private AfUserAuthService afUserAuthService;
+
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
@@ -109,12 +91,11 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		contextApp = context;
 
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
-		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+
 		Integer appVersion = context.getAppVersion();
 		try {
 			String userName = context.getUserName();
 			Long userId = context.getUserId();
-
 			if (userName != null && userId != null) {
 				// 获取后台配置的注册时间
 				String regTime = "";
@@ -220,7 +201,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "OLD");
-
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());

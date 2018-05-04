@@ -16,29 +16,29 @@ import java.math.BigDecimal;
 public class AfGoodsCategoryDto   {
 
 	private static final long serialVersionUID = -7251547920242357935L;
-	private Long id ;
+	private Long id ; //
 
-	private String name;
+	private String name;//
 
 	private String source;
 
-	private BigDecimal rebateAmount;
+	private BigDecimal rebateAmount;//
 
-	private String goodsIcon;
+	private String goodsIcon;//
 
 	private String numId;
 
-	private BigDecimal priceAmount;
+	private BigDecimal priceAmount; // 供价
 
-	private BigDecimal saleAmount;
+	private BigDecimal saleAmount; // 零售价
 
-	private String goodsUrl;
+	private String goodsUrl;//
 
-	private Integer saleCount;
+	private Integer saleCount;//
 
-	private Long volume;
+	private Long volume; // 月销量
 
-	private String goodsPic1;
+	private String goodsPic1; //
 
 	public String getGoodsPic1() {
 		return goodsPic1;

@@ -10,7 +10,7 @@
     
     <select id="selectByStatus" resultType="AfResourceH5Dto">
         SELECT
-          <include refid="queryFields"/>
+          id id,gmt_create,gmt_modified,creator,modifier,name,status,sort
         FROM
           af_resource_h5
         where is_delete = 0 AND status = 0
@@ -18,7 +18,13 @@
         order by sort desc
     </select>
 
-    
+    <select id="getByPageFlag" resultType="AfResourceH5Dto">
+        SELECT
+          <include refid="queryFields"/>
+        FROM
+          af_resource_h5
+        WHERE is_delete = 0 AND status = 0 and page_flag = #{pageFlag} LIMIT 1
+    </select>
 
     
 </mapper>

@@ -121,7 +121,7 @@
     
     <update id="deleteById">
         UPDATE af_record_max
-        set is_delete=1
+        set is_delete=1,gmt_modified =now()
      	WHERE
 			id = #{id}
     </update>
