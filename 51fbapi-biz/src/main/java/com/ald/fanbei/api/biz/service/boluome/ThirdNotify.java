@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * 
- * @类描述：第三方调用51返呗接口处理类
+ * @类描述：第三方调用爱上街接口处理类
  * @author xiaotianjian 2017年3月24日下午6:16:36
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

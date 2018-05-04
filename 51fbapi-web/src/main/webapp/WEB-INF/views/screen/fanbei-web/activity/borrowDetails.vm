@@ -27,7 +27,7 @@
         <li>8.活动时间：10月9号至12月9号。</li>
         <li>9.活动期间所所有用户只能参与一次活动。</li>
         <li>10.如发现作弊，取消参加活动资格。</li>
-        <li>11.本活动最终解释权归51返呗所有。</li>
+        <li>11.本活动最终解释权归爱上街所有。</li>
     </ul>
     <div class="shadow" v-if="dialog.show"></div>
     <div class="prizeConfirm" v-if="dialog.show">

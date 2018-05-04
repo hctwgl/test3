@@ -9,7 +9,7 @@ console.log(style);
 var channelCode = getUrl('channelCode');
 var pointCode = getUrl('pointCode');
 
-var protocolRegisterName = '《51返呗用户注册协议》';
+var protocolRegisterName = '《爱上街用户注册协议》';
 if(style == 19){
     protocolRegisterName = '《爱上街用户注册协议》';
 };

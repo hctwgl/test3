@@ -3,7 +3,7 @@ package com.ald.fanbei.api.biz.bo.assetside.edspay;
 import java.io.Serializable;
 
 /**
- * 返呗资产包使用的开户银行信息
+ * 爱上街资产包使用的开户银行信息
  * @author chengkang
  */
 public class FanbeiBorrowBankInfoBo implements Serializable {
