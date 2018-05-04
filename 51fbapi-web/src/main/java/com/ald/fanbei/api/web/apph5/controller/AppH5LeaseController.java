@@ -650,36 +650,8 @@ public class AppH5LeaseController extends BaseController {
             data.put("riskStatus","Y");
             if(afUserAuthStatusDo != null){
                 if(afUserAuthStatusDo.getStatus().equals("Y")){
-                    AfUserAccountSenceDo afUserAccountSenceOnline = afUserAccountSenceService.getByUserIdAndScene("ONLINE", afUser.getUserId());
-                    useableAmount = afUserAccountSenceOnline.getAuAmount().subtract(afUserAccountSenceOnline.getUsedAmount()).subtract(afUserAccountSenceOnline.getFreezeAmount());
-                    if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
-                        useableAmount = BigDecimal.ZERO;
-                    }
-                    Map<String, Object> dataLeaseFreeze = new HashMap<String, Object>();
-                    dataLeaseFreeze.put("ipAddress", CommonUtil.getIpAddr(request));
-                    String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
-                    String appName = sysModeId.startsWith("i") ? "alading_ios" : "alading_and";
-                    dataLeaseFreeze.put("appName",appName);
-                    dataLeaseFreeze.put("blackBox",blackBox == null ? "":blackBox);
-                    JSONObject dataObj = afOrderService.getLeaseFreeze(dataLeaseFreeze,priceDo.getLeaseAmount(),afUser.getUserId());
-                    BigDecimal freezeAmount = dataObj.getBigDecimal("freezeAmount");
-                    // -1 只能现金支付（配置规则没匹配）
-                    if(dataObj.getInteger("freeze") == -1){
-                        data.put("freezeAmount",priceDo.getLeaseAmount());//总冻结额度
-                        data.put("quotaDeposit",0);//冻结额度
-                        data.put("cashDeposit", priceDo.getLeaseAmount());//支付金额
-                    }
-                    else {
-                        data.put("freezeAmount",freezeAmount);//总冻结额度
-                        if(useableAmount.compareTo(freezeAmount)>=0){
-                            data.put("quotaDeposit",freezeAmount);//冻结额度
-                            data.put("cashDeposit", 0);//支付金额
-                        }
-                        else {
-                            data.put("quotaDeposit",useableAmount);//冻结额度
-                            data.put("cashDeposit", freezeAmount.subtract(useableAmount));//支付金额
-                        }
-                    }
+
+
                 }
                 else {
                     data.put("riskStatus","N");

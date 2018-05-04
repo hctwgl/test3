@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.recycle;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -24,11 +25,7 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
     @Resource
     private AfResourceService afResourceService;
     @Resource
-    private AfUserAccountService userAccountService;
-    @Resource
     private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
-    @Resource
-    private AfUserAccountSenceService afUserAccountSenceService;
     @Resource
     private AfUserAuthService afUserAuthService;
 
@@ -41,7 +38,12 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
         resp.addResponseData("isLogin",loginFlag );
         if(loginFlag){
             AfUserAuthDo authInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
-            resp.addResponseData("authStatus", authInfo.getBasicStatus());
+            String basicStatus = authInfo.getBasicStatus();
+            if(StringUtils.equals(basicStatus, "A") || StringUtils.isBlank(basicStatus)) {
+                resp.addResponseData("authStatus", false);
+            } else {
+                resp.addResponseData("authStatus", true);
+            }
             resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getFacesStatus()));
             resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
         }
