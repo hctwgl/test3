@@ -58,7 +58,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
         if (StringUtils.equals(authCallbackBo.getResult(), RiskAuthStatus.SUCCESS.getCode())) {
             // 首先初始化提额状态
             afAuthRaiseStatusService.initRaiseStatus(userId, AuthType.BUBBLE.getCode());
-            // 认证通过，更新支付宝认证状态
+            // 认证通过，更冒泡认证状态
             afUserAuthDo.setBubbleStatus("Y");
             afUserAuthDo.setRiskStatus("Y");
             afUserAuthDo.setGmtBubble(new Date());
