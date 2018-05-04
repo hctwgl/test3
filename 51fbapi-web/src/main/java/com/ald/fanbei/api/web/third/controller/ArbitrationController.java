@@ -75,7 +75,10 @@ public class ArbitrationController {
     @Resource
     AfUserAccountService afUserAccountService;
     public static final String Y_M_D_H_M_S = "yyyy-MM-dd HH:mm:ss";
-    private static final String MERCHANTCODE = "150778004447";
+    //线上客户号
+    //private static final String MERCHANTCODE = "150778004447";
+    //测试客户号
+    private static final String MERCHANTCODE = "15254170930";
     //线上地址:https://api.arbexpress.cn/arbinter/v1/third.htm
     private static final String URL = "http://test.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
