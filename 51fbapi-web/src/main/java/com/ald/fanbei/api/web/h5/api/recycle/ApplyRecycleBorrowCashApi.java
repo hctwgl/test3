@@ -116,7 +116,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		// 获取后台配置借款利率信息
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL_NEW);
+				Constants.BORROW_RECYCLE_INFO_LEGAL_NEW);
 		// 获取主卡信息
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		// 业务逻辑校验
