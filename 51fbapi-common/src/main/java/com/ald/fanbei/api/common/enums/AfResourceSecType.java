@@ -97,8 +97,7 @@ public enum AfResourceSecType {
 		ZHIMA_VERIFY_RULE_CONFIG("ZHIMA_VERIFY_RULE_CONFIG","芝麻信用认证相关配置"),
 	    BUBBLE_AUTH_RULE_CONFIG("BUBBLE_AUTH_RULE_CONFIG","芝麻信用认证相关配置"),
 	   ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
-		//val:弹窗图片地址 val2:打开开关Y/N val3:弹窗间隔时间ms
-		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
+
 
 	 	private String code;
 		private String name;
