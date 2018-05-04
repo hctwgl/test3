@@ -430,7 +430,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("address", "");	//通讯地址
 				map.put("img_01", img_01);	//身份证正面照
 				map.put("img_02", "");	//身份证反面照
-				map.put("regTime", regTime);	//注册时间
+				map.put("regTime", "");	//注册时间
 				result.add(map);
 			}
 
