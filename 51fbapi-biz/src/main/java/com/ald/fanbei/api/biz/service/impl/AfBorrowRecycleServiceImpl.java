@@ -167,7 +167,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.borrowNo = cashDo.getBorrowNo();
         bo.borrowId = cashDo.getRid();
         bo.borrowGmtApply = cashDo.getGmtCreate();
-        bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
+        bo.type = cashDo.getType();
         bo.arrivalGmt = cashDo.getGmtArrival();
         bo.reBankId = cashDo.getCardNumber();
         bo.reBankName = cashDo.getCardName();
@@ -267,6 +267,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public BigDecimal defaultFine;
         public Date borrowGmtApply;
         public Date borrowGmtPlanRepayment;
+        public String type;
         public boolean isBorrowOverdue;
 
         //回收状态与borrowStatus用同一个数据库属性
