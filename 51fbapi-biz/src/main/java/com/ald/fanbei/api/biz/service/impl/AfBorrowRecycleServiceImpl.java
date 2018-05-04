@@ -201,6 +201,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.borrowNo = cashDo.getBorrowNo();
         bo.borrowId = cashDo.getRid();
         bo.borrowGmtApply = cashDo.getGmtCreate();
+        bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
         bo.type = cashDo.getType();
         bo.arrivalGmt = cashDo.getGmtArrival();
         bo.reBankId = cashDo.getCardNumber();
