@@ -164,15 +164,11 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         List<String> activityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode());
         if (null == activityIds) {
             activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
-            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_TEN_MINITS);
+            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
         }
 
         // 查询每日活动场次(每日第一场时间前为上一场次信息)
-        List<String> todayActivityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode());
-        if (null == todayActivityIds) {
-            todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
-            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST.getCode(), todayActivityIds, Constants.SECOND_OF_TEN_MINITS);
-        }
+        List<String> todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
 
         String activityId = "";
         String nextActivityId = "";
@@ -208,7 +204,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
                     if (null != activityStartHour) {
                         activityStartHourArray = activityStartHour.getValue().split(",");
-                        bizCacheUtil.saveObject(startHourKey, activityStartHourArray, Constants.SECOND_OF_ONE_MONTH);
+                        bizCacheUtil.saveObject(startHourKey, activityStartHourArray, Constants.SECOND_OF_ONE_DAY);
                     } else {
                         activityStartHourArray = new String[]{"10", "14", "18"};
                     }
@@ -225,6 +221,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                 else if(currentHour >= Integer.parseInt(activityStartHourArray[arrayLength - 1])){
                     activityId = todayActivityIds.get(todayActivitySize - 1);
                     int index = activityIds.indexOf(activityId);
+                    if(index < 0){
+                        activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
+                        bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
+                    }
                     if (index < activitySize - 1) {
                         nextActivityId = activityIds.get(index + 1);
                     } else {
@@ -239,6 +239,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                             } else {
                                 activityId = todayActivityIds.get(i);
                                 int index = activityIds.indexOf(activityId);
+                                if(index < 0){
+                                    activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
+                                    bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
+                                }
                                 if (index < activitySize - 1) {
                                     nextActivityId = activityIds.get(index + 1);
                                 } else {
@@ -295,7 +299,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
         if (StringUtils.isEmpty(activityId)) {
-            return H5CommonResponse.getNewInstance(true, "没有下一场活动了!", "", "").toString();
+            return H5CommonResponse.getNewInstance(false, "没有下一场活动了!", "", "").toString();
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
