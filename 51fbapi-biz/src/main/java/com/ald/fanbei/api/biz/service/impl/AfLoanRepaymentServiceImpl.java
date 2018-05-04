@@ -670,13 +670,13 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			try {
 				boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1) );
 				if (isBefore) {
-					if (assetSideEdspayUtil.isPush(loanRepayDealBo.loanDo.getLoanNo())) {
-						List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
+					if (assetSideEdspayUtil.isPush(loanRepayDealBo.loanDo)) {
+						List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanRepayDealBo.loanDo,1);
 						boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
 						if (result) {
-							logger.info("trans modified loan Info success,loanId="+loanDo.getRid());
+							logger.info("trans modified loan Info success,loanId="+loanRepayDealBo.loanDo.getRid());
 						}else{
-							assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
+							assetSideEdspayUtil.transFailRecord(loanRepayDealBo.loanDo, modifiedLoanInfo);
 						}
 					}
 				}
