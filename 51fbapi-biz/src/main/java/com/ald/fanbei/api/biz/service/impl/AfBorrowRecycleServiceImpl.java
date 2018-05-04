@@ -90,11 +90,11 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
-        bo.borrowId=cashDo.getRid();
         if (cashDo == null) {
             bo.isBorrowOverdue = false;
             return bo;
         }
+        bo.borrowId=cashDo.getRid();
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
         if (goodsMap != null) {

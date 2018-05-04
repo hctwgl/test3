@@ -35,9 +35,7 @@ public class ApplyRecycleBorrowCashParam {
 	private String blackBox;
 	@NotNull
 	private String bqsBlackBox;
-	@NotNull
 	private String borrowRemark;
-	@NotNull
 	private String refundRemark;
 	@NotNull
 	private String goodsName;
