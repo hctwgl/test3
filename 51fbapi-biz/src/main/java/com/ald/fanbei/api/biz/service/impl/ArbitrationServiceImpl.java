@@ -48,6 +48,8 @@ public class ArbitrationServiceImpl extends BaseService implements
     @Resource
     AfBorrowCashDao afBorrowCashDao;
 	@Resource
+	AfUserService afUserService;
+	@Resource
 	AfContractPdfService afContractPdfService;
     @Resource
     AfArbitrationDao afArbitrationDao;
@@ -105,10 +107,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 			afBorrowCashDo.getAmount(),
 			afBorrowCashDo.getRateAmount(),
 			afBorrowCashDo.getPoundage(),
-			afBorrowCashDo.getOverdueAmount(),
-			afBorrowCashDo.getSumOverdue(),
-			afBorrowCashDo.getSumRate(),
-			afBorrowCashDo.getSumRenewalPoundage(),
+				new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()))
+						.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),3,RoundingMode.HALF_UP),
 			afBorrowLegalOrderDo.getPriceAmount())
 			.subtract(afBorrowCashDo.getRepayAmount()))
 			.multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
@@ -382,10 +382,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 			String productId = StringUtil.null2Str(json.get("productId"));	// 获取平台id
 
 			if(ArbitrationStatus.ONE.getCode().equals(type)) {
+				AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
 				AfIdNumberDo afIdNumberDo = afIdNumberService.selectUserIdNumberByUserId(afBorrowCashDo.getUserId());
 
-				map.put("platId", "");	//用户平台id
+				map.put("platId", afUserDo.getRid());	//用户平台id
 				map.put("ltype", Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//当事人类型
 				map.put("name", afIdNumberDo.getName());	//姓名
 				map.put("idtype", Integer.parseInt(ArbitrationStatus.ZERO.getCode()));	//用户证件类型  0身份证1营业执照
@@ -401,7 +402,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("address", "");	//通讯地址
 				map.put("img_01", afIdNumberDo.getIdFrontUrl());	//身份证正面照
 				map.put("img_02", afIdNumberDo.getIdBehindUrl());	//身份证反面照
-				map.put("regTime", "");	//注册时间
+				map.put("regTime", afUserDo.getGmtCreate());	//注册时间
 				result.add(map);
 
 			} else if(ArbitrationStatus.ZERO.getCode().equals(type)) {
