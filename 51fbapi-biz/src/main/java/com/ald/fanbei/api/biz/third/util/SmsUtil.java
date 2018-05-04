@@ -806,7 +806,7 @@ public class SmsUtil extends AbstractThird {
         paramsMap.put("password", DigestUtil.MD5(getPassword()).toLowerCase());
         paramsMap.put("phones", mobiles);
         paramsMap.put("content", content);
-        paramsMap.put("sign", SIGN);
+        paramsMap.put("sign", SIGN_AISHANGJIE);
         String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
 
         logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
