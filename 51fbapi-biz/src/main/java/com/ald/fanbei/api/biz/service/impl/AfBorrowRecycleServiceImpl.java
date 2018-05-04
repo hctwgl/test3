@@ -92,19 +92,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
         if (cashDo == null) {
-            AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
             bo.rejectCode =  AfBorrowCashRejectType.PASS.name();
-            if (afUserAuthDo == null) {
-                bo.rejectCode =  AfBorrowCashRejectType.NO_AUTHZ.name();
-            }
-            String authStatus = afUserAuthDo.getRiskStatus();
-            if (RiskStatus.A.getCode().equals(authStatus)) {
-                bo.rejectCode =  AfBorrowCashRejectType.NO_AUTHZ.name();
-              }
-
-            if (RiskStatus.NO.getCode().equals(authStatus)) {
-                bo.rejectCode =  AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
-            }
             bo.minQuota = cfgBean.minAmount;
             bo.isBorrowOverdue = false;
             bo.recycleStatus ="UNSUBMIT";
