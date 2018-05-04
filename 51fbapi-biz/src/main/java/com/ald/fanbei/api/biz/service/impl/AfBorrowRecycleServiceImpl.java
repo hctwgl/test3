@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
@@ -40,7 +41,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfUserAuthService afUserAuthService;
-
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     BizCacheUtil bizCacheUtil;
     @Resource
@@ -79,19 +81,33 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
             bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
         }
-
         return bo;
     }
 
     public BorrowRecycleHomeInfoBo processLogin(AfUserAccountDo userAccount) {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
-        bo.rejectCode = AfBorrowCashRejectType.PASS.name();
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
+        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
         if (cashDo == null) {
+            AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+            bo.rejectCode =  AfBorrowCashRejectType.PASS.name();
+            if (afUserAuthDo == null) {
+                bo.rejectCode =  AfBorrowCashRejectType.NO_AUTHZ.name();
+            }
+            String authStatus = afUserAuthDo.getRiskStatus();
+            if (RiskStatus.A.getCode().equals(authStatus)) {
+                bo.rejectCode =  AfBorrowCashRejectType.NO_AUTHZ.name();
+              }
+
+            if (RiskStatus.NO.getCode().equals(authStatus)) {
+                bo.rejectCode =  AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
+            }
+            bo.minQuota = cfgBean.minAmount;
             bo.isBorrowOverdue = false;
+            bo.recycleStatus ="UNSUBMIT";
             return bo;
         }
         bo.borrowId=cashDo.getRid();
@@ -106,7 +122,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.recycleStatus =AfBorrowRecycleStatus.findByCashStatus(cashDo.getStatus()).getCode();
         AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
         if(processRepayment != null) {
-            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
+            bo.recycleStatus = AfLoanStatus.REPAYING.name();
         }
         bo.borrowGmtApply = cashDo.getGmtCreate();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
@@ -120,11 +136,41 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.isBorrowOverdue = false;
         }
         AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
+        checkCreditAction(bo,rejectType.name(),userAccount.getUserId());
         bo.rejectCode = rejectType.name();
-        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         return bo;
     }
 
+    void checkCreditAction(BorrowRecycleHomeInfoBo bo,String riskStatus,Long userId){
+        AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, "CASH");
+        AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(userId);
+        if(afUserAuthStatusDo != null){
+            if(!afUserAuthStatusDo.getStatus().equals("Y")){
+                bo.action="DO_PROMOTE_BASIC";
+            }
+        }else {
+            bo.action="DO_SCAN_ID";
+        }
+        if("N".equals(riskStatus)){
+            if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
+                    &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
+                bo.action="DO_SCAN_ID";
+                }
+            else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                    ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
+                bo.action="DO_PROMOTE_BASIC";
+                if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
+                    bo.action="DO_BIND_CARD";
+
+                }
+                if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                    bo.action="DO_SCAN_ID";
+                    }
+            }
+        }
+    }
 
     /**
      * 计算最多能计算多少额度 150取100 250.37 取200
@@ -282,6 +328,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String borrowNo;
         public BigDecimal useableAmount;
         public String goodsUrl;
+
+        public String action;
 
 
     }

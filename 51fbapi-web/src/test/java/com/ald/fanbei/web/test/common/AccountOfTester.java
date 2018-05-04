@@ -9,7 +9,6 @@ public enum AccountOfTester {
 	秦继强("15293971826", 0L, "888888", 0L),
 	王卿("13370127054", 0L, "123456", 0L),
 	俞佳楠("13165995223", 0L, "", 0L);
-	
 	public String mobile;
 	public Long userId;
 	public String payPwd;
