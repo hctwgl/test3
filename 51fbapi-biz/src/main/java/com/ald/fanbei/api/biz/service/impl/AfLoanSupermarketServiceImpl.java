@@ -60,7 +60,6 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 			map.put("iconUrl",afLoanSupermarketDo.getIconUrl());
 			map.put("lsmIntro",afLoanSupermarketDo.getLsmIntro());
 			map.put("lsmName",afLoanSupermarketDo.getLsmName());
-			map.put("marketPoint",afLoanSupermarketDo.getMarketPoint());
 			map.put("payMethod",afLoanSupermarketDo.getPayMethod()+"");
 			map.put("linkUrl",afLoanSupermarketDo.getLinkUrl());
 			map.put("money",afLoanSupermarketDo.getMoney()+"");

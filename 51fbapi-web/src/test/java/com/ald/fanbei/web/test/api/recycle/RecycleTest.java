@@ -55,6 +55,14 @@ public class RecycleTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	/**
+	 * 获取说明
+	 */
+	@Test
+	public void borrowRecycleExplain() {
+		String url = urlBase + "/h5/recycle/borrowRecycleExplain";
+		testH5(url, null, userName, true);
+	}
+	/**
 	 * 发起回收申请
 	 */
 	@Test
