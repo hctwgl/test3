@@ -5,7 +5,16 @@ import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgB
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
+import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowRecycleStatus;
+import com.ald.fanbei.api.common.enums.AfCounponStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -49,6 +58,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     BizCacheUtil bizCacheUtil;
     @Resource
     RiskUtil riskUtil;
+    @Resource
+	TransactionTemplate transactionTemplate;
 
     @Resource
     private AfUserAccountDao afUserAccountDao;
@@ -56,7 +67,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     private AfBorrowCashDao afBorrowCashDao;
     @Resource
     private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-
+    @Resource
+	AfBorrowRecycleOrderDao borrowRecycleOrderDao;
     @Resource
     private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
     @Resource
@@ -96,7 +108,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.reMainBankId=userBankcardDo.getCardNumber();
         bo.reMainBankName= userBankcardDo.getBankName();
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
-        bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         checkCreditAction(bo,userAccount,cfgBean.minAmount);
         if (cashDo == null) {
             bo.minQuota = cfgBean.minAmount;
@@ -234,8 +245,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }
         return false;
     }
-
-
 
     @SuppressWarnings("unchecked")
     private void addRecycleGoodsInfos(BorrowRecycleHomeInfoBo bo, AfBorrowCashDo cashDo) {
