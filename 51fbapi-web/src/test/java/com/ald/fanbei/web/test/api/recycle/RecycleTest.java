@@ -45,6 +45,17 @@ public class RecycleTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	/**
+	 * 获取回收详情
+	 */
+	@Test
+	public void borrowRecycleDetail() {
+		String url = urlBase + "/h5/recycle/borrowRecycleDetail";
+		Map<String,String> params = new HashMap<>();
+		params.put("borrowId", "33399675");
+		testH5(url, params, userName, true);
+	}
+	
+	/**
 	 * 获取金融主页
 	 */
 	@Test
