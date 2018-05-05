@@ -96,8 +96,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.reMainBankId=userBankcardDo.getCardNumber();
         bo.reMainBankName= userBankcardDo.getBankName();
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
-        AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
-        bo.rejectCode = rejectType.name();
         checkCreditAction(bo,userAccount,cfgBean.minAmount);
         if (cashDo == null) {
             bo.minQuota = cfgBean.minAmount;
@@ -129,6 +127,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         } else {
             bo.isBorrowOverdue = false;
         }
+        AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
+        bo.rejectCode = rejectType.name();
         return bo;
     }
 
@@ -251,6 +251,19 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             return AfBorrowCashRejectType.SWITCH_OFF;
         }
 
+        AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+        if (afUserAuthDo == null) {
+            return AfBorrowCashRejectType.NO_AUTHZ;
+        }
+
+        String authStatus = afUserAuthDo.getRiskStatus();
+        if (RiskStatus.A.getCode().equals(authStatus)) {
+            return AfBorrowCashRejectType.NO_AUTHZ;
+        }
+
+        if (RiskStatus.NO.getCode().equals(authStatus)) {
+            return AfBorrowCashRejectType.NO_PASS_STRO_RISK;
+        }
 
         // 检查上笔贷款
         if (lastBorrowCash != null && AfBorrowCashStatus.closed.getCode().equals(lastBorrowCash.getStatus())
@@ -263,6 +276,11 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                     return AfBorrowCashRejectType.NO_PASS_WEAK_RISK;
                 }
             }
+        }
+
+        //检查额度
+        if (cfgBean.minAmount.compareTo(userAccount.getAuAmount()) > 0) {
+            return AfBorrowCashRejectType.QUOTA_TOO_SMALL;
         }
 
         return AfBorrowCashRejectType.PASS;
