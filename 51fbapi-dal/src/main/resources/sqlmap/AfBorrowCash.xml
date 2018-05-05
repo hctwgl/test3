@@ -322,7 +322,7 @@
 		is_delete = 0
 		AND
 		user_id = #{userId}
-		and status not in ('CLOSED','FINSH');
+		and status not in ('CLOSED','FINSH','TRANSEDFAIL');
 	</select>
 	<select id ="getNowTransedBorrowCashByUserId" resultType="AfBorrowCashDo">
 	SELECT

@@ -308,5 +308,9 @@ public interface AfResourceService {
 
 	List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code);
 
-
+	/**
+	 * 获取风控白名单用户
+	 * @return
+	 */
+	List<String> getBorrowCashWhiteList();
 }

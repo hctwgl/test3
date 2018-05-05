@@ -11,12 +11,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.common.enums.*;
-
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +23,16 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -47,9 +51,24 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -360,6 +379,13 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		if (accountBorrow.compareTo(param.getAmount()) < 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 		}
+		
+		AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
+		if(afResourceDo!=null 
+				&& afResourceDo.getValue().equals(YesNoStatus.YES.getCode()) 
+				&& afResourceDo.getValue1().contains(param.getType())){
+			throw new FanbeiException(afResourceDo.getValue2(), true);
+		}
 	}
 
 	/**
@@ -512,101 +538,25 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	}
 
 	@Override
-	public void delegatePay(String consumerNo, String orderNo, String result, AfUserBankcardDo mainCard, final AfBorrowCashDo afBorrowCashDo) {
-		Long userId = Long.parseLong(consumerNo);
-		final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+	public void recycleDelegatePay(final Long userId, String orderNo, AfUserBankcardDo mainCard, final AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
 		AfUserDo afUserDo = afUserService.getUserById(userId);
-		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
 
-		List<String> whiteIdsList = new ArrayList<String>();
-		final int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
-		// 判断是否在白名单里面
-		AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
-		if (whiteListInfo != null) {
-			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
-					new Converter<String, String>() {
-						@Override
-						public String convert(String source) {
-							return source.trim();
-						}
-					});
-		}
-
-		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals(RiskVerifyRespBo.RISK_SUCC_CODE, result)) {
-			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
-			String bankNumber = mainCard.getCardNumber();
-			String lastBank = bankNumber.substring(bankNumber.length() - 4);
-			smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
-			String title = "恭喜您，审核通过啦！";
-			String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
-			msgContent = msgContent.replace("&bankCardNo", lastBank);
-			jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
-			// 审核通过
-			delegateBorrowCashDo.setGmtArrival(currDate);
-			delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-			// 打款
-			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
-					afUserDo.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", mainCard.getMobile(),
-					mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-					UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
-			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
-//			Integer day = NumberUtil
-//					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+		// 打款
+		final UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
+				afUserDo.getRealName(), afBorrowCashDo.getCardNumber(), userId.toString(), mainCard.getMobile(),
+				mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
+				UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
+		
+		if (!upsResult.isSuccess()) {
+			throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+		}else {
+			afBorrowCashDo.setGmtArrival(currDate);
 			Integer day = numberWordFormat.borrowTime(afBorrowCashDo.getType());
-			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
+			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-			delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-			if (!upsResult.isSuccess()) {
-				// 大款失败，更新状态
-				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
-				// 关闭订单
-
-			} else {
-				// 打款成功，更新借款状态、可用额度等信息
-				try {
-					BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(userId);
-					afBorrowCashService.updateAuAmountByRid(delegateBorrowCashDo.getRid(), auAmount);
-				} catch (Exception e) {
-					logger.error("updateAuAmountByRid is fail;msg=" + e);
-				}
-				// 减少额度，包括搭售商品借款
-				afUserAccountSenceService.syncLoanUsedAmount(userId, SceneType.CASH, afBorrowCashDo.getAmount());
-
-				// 增加日志
-				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
-						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
-				afUserAccountLogDao.addUserAccountLog(accountLog);
-			}
-
-		} else {
-			delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
-			delegateBorrowCashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
-			// 更新订单状态
-			logger.info("test1 ");
-			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("extend_koudai");
-			if(afResourceDo!=null&&afResourceDo.getValue().equals("Y")){
-				jpushService.dealBorrowCashApplyFailForKoudai(afUserDo.getUserName(), currDate,afResourceDo.getValue1());
-				smsUtil.sendSms(afUserDo.getUserName(),afResourceDo.getValue2());
-			}else{
-				jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
-			}
+			afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 		}
-
-		transactionTemplate.execute(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				// 更新借款状态
-				afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
-				// 更新订单状态
-				ApplyLegalBorrowCashServiceImpl.this.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-				return "success";
-			}
-
-		});
 	}
 
 	/**
@@ -681,21 +631,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			}
 		});
 	}
-
-	@Override
-	public Long addBorrowRecord(final AfBorrowCashDo afBorrowCashDo, final AfBorrowRecycleOrderDo recycleOrderDo) {
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus ts) {
-				afBorrowCashService.addBorrowCash(afBorrowCashDo);
-				Long borrowId = afBorrowCashDo.getRid();
-				recycleOrderDo.setBorrowId(borrowId);
-				borrowRecycleOrderService.saveRecord(recycleOrderDo);
-				return borrowId;
-			}
-		});
-	}
-
 
 	@Override
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
