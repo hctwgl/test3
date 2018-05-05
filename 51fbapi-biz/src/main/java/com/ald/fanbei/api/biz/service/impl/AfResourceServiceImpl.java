@@ -1066,4 +1066,20 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
 	}
 
+	@Override
+	public List<String> getBorrowCashWhiteList() {
+		List<String> whiteIdsList = new ArrayList<String>();
+		AfResourceDo whiteListInfo = afResourceDao.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		if (whiteListInfo != null) {
+			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
+				new Converter<String, String>() {
+					@Override
+					public String convert(String source) {
+						return source.trim();
+					}
+				});
+		}
+		return whiteIdsList;
+	}
+
 }
