@@ -34,6 +34,7 @@ import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
