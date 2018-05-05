@@ -168,7 +168,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
             }
         } else {
             // 更新认证状态为失败
-            afUserAuthDo.setAlipayStatus("N");
+            afUserAuthDo.setBubbleStatus("N");
             afUserAuthService.updateUserAuth(afUserAuthDo);
         }
     }
