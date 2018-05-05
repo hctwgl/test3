@@ -17,7 +17,7 @@ public class RecycleTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "https://btestapp.51fanbei.com";
 	String userName = AccountOfTester.王卿.mobile;
 	
 	@Before
