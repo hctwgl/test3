@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * @Description: 获取手机回收主页
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  */
-@Component("getBorrowRecycleHomeInfoApi")
+@Component("borrowRecycleHomeInfoApi")
 public class GetBorrowRecycleHomeInfoApi implements H5Handle {
     @Resource
     private AfBorrowRecycleService afBorrowRecycleService;
