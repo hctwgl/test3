@@ -138,6 +138,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.recycleStatus ="UNSUBMIT";
             return bo;
         }
+        bo.hasBorrow=true;
         bo.borrowId=cashDo.getRid();
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
