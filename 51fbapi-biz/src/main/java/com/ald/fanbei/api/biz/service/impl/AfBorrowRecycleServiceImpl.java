@@ -112,7 +112,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.goodsName = orderDo.getGoodsName();
             bo.goodsUrl= orderDo.getGoodsImg();
             bo.goodsModel = goodsMap.get("goodsModel");
-            bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
         bo.recycleStatus =AfBorrowRecycleStatus.findByCashStatus(cashDo.getStatus()).getCode();
         AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
