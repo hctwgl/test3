@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
 
 /**
  * 
@@ -30,7 +31,7 @@ public abstract class AbstractThird {
 	protected static void logThird(Object resp, String methodName, Object... param) {
 		StringBuffer sb = new StringBuffer();
 		for (Object item : param) {
-			sb = sb.append("|").append(item);
+			sb = sb.append("|").append(JSON.toJSONString(item));
 		}
 		thirdLog.info(StringUtil.appendStrs("methodName=", methodName, ";params=", sb.toString().replaceAll("\n", ""), ";resp=", resp == null ? "" : resp));
 	}
