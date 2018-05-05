@@ -82,7 +82,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     @Resource
     RiskUtil riskUtil;
     @Resource
-	TransactionTemplate transactionTemplate;
+    TransactionTemplate transactionTemplate;
 
     @Resource
     private AfUserAccountDao afUserAccountDao;
@@ -91,7 +91,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     @Resource
     private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
     @Resource
-	AfBorrowRecycleOrderDao borrowRecycleOrderDao;
+    AfBorrowRecycleOrderDao borrowRecycleOrderDao;
     @Resource
     private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
     @Resource
@@ -192,7 +192,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                     &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
                 bo.action="DO_SCAN_ID";
-                }
+            }
             else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
                     ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
                     ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
@@ -203,7 +203,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                 }
                 if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
                     bo.action="DO_SCAN_ID";
-                  }
+                }
             }
         }
     }
@@ -374,17 +374,17 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     }
 
     @Override
-	public Long addBorrowRecord(final AfBorrowCashDo afBorrowCashDo, final AfBorrowRecycleOrderDo recycleOrderDo) {
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus ts) {
-				afBorrowCashService.addBorrowCash(afBorrowCashDo);
-				Long borrowId = afBorrowCashDo.getRid();
-				recycleOrderDo.setBorrowId(borrowId);
-				afBorrowRecycleOrderDao.saveRecord(recycleOrderDo);
-				return borrowId;
-			}
-		});
-	}
+    public Long addBorrowRecord(final AfBorrowCashDo afBorrowCashDo, final AfBorrowRecycleOrderDo recycleOrderDo) {
+        return transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus ts) {
+                afBorrowCashService.addBorrowCash(afBorrowCashDo);
+                Long borrowId = afBorrowCashDo.getRid();
+                recycleOrderDo.setBorrowId(borrowId);
+                afBorrowRecycleOrderDao.saveRecord(recycleOrderDo);
+                return borrowId;
+            }
+        });
+    }
 
 }
