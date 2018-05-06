@@ -585,7 +585,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Override
 	public boolean checkRiskRefusedResult(Long userId) {
-		boolean result = false;//
+		boolean result = false;
 		AfBorrowCashDo lastBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		if (lastBorrowCashDo != null && RiskReviewStatus.REFUSE.getCode().equals(lastBorrowCashDo.getReviewStatus())) {
 			// 借款被拒绝
