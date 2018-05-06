@@ -590,6 +590,7 @@
 		WHERE bc.is_delete = 0
 		AND bc.user_id = #{userId}
 		AND ro.id is not null
+		AND bc.status not in ('CLOSED','FINSH')
 		ORDER BY bc.id DESC LIMIT 1
 	</select>
 <select id="getCashBorrowSuccessByUserId" resultType="java.lang.Integer">
