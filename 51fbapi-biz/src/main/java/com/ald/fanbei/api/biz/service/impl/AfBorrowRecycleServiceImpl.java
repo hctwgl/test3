@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,14 +41,6 @@ import com.ald.fanbei.api.dal.dao.AfBorrowRecycleOrderDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 /**
@@ -79,7 +72,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     RiskUtil riskUtil;
     @Resource
     TransactionTemplate transactionTemplate;
-
+    @Resource
+    AfIdNumberService idNumberService;
     @Resource
     private AfUserAccountDao afUserAccountDao;
     @Resource
@@ -169,61 +163,32 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     void checkCreditAction(BorrowRecycleHomeInfoBo bo,AfUserAccountDo userAccount,BigDecimal minAmount,String supuerSwitch){
         AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userAccount.getUserId(), "CASH");
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+        AfIdNumberDo idNumberDo = idNumberService.getIdNumberInfoByUserId(userAccount.getUserId());
         if (YesNoStatus.NO.getCode().equals(supuerSwitch) ) {
             bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
         }
-        if(afUserAuthStatusDo != null){
-            if(afUserAuthStatusDo.getStatus().equals("Y")){
-                bo.rejectCode=AfBorrowCashRejectType.PASS.name();
-                //检查额度
-                if (minAmount.compareTo(userAccount.getAuAmount()) > 0) {
-                    bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
-                }else if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
-                    bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
-                }
-            } else if (afUserAuthStatusDo.getStatus().equals("N")){
-                bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-                if (userAuth!= null && userAuth.getBankcardStatus().equals("N")){
-                    bo.action="DO_BIND_CARD";
-                }else if (userAuth == null){
-                    bo.action="DO_SCAN_ID";
-                }else {
-                    bo.action="DO_PROMOTE_BASIC";
-                }
-            } else if (afUserAuthStatusDo.getStatus().equals("C")){
-                bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
-                bo.action="DO_PROMOTE_BASIC";
-            }else {
-                bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-                bo.action="DO_PROMOTE_BASIC";
-            }
-        }else {
+        if (userAuth == null){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            if (userAuth!= null && userAuth.getBankcardStatus().equals("N")){
-                bo.action="DO_BIND_CARD";
-            }else {
-                bo.action="DO_SCAN_ID";
+            bo.action="DO_SCAN_ID";
+        }else if (userAuth.getFacesStatus().equals("N")){
+            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
+            bo.action="DO_FACE";
+        }else if (userAuth.getBankcardStatus().equals("N")){
+            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
+            bo.action="DO_BIND_CARD";
+            bo.params = "{\"idNumber\":"+idNumberDo.getCitizenId()+",\"realName\":"+idNumberDo.getName()+"'\"}";
+        }else if (userAuth.getRiskStatus().equals("N")){
+            bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
+        }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
+            bo.rejectCode=AfBorrowCashRejectType.PASS.name();
+            //检查额度
+            if (minAmount.compareTo(userAccount.getAuAmount()) > 0) {
+                bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+            }else if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
+                bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
         }
-        /*if("N".equals(riskStatus)){
-            if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
-                    &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
-                    &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
-                bo.action="DO_SCAN_ID";
-            }
-            else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
-                    ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
-                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
-                bo.action="DO_PROMOTE_BASIC";
-                if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
-                    bo.action="DO_BIND_CARD";
 
-                }
-                if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
-                    bo.action="DO_SCAN_ID";
-                }
-            }
-        }*/
     }
 
     /**
@@ -354,7 +319,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String overdueRate;
         public String lender;
         public String borrowCashDay;
-
+        public String params;
         public BigDecimal maxQuota;
         public BigDecimal minQuota;
 
@@ -387,7 +352,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String reMainBankId;
         public String reMainBankName;
         public String action;
-
+        public String
 
     }
 
