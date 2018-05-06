@@ -19,11 +19,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @Description: 回收记录
+ * @Description: 回收详情
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  */
-@Component("borrowRecycleRepaymentApi")
-public class BorrowRecycleRepaymentRecordApi implements H5Handle {
+@Component("borrowRecycleDetailApi")
+public class BorrowRecycleDetailApi implements H5Handle {
 
     @Resource
     private AfRepaymentBorrowCashService repaymentBorrowCashService;

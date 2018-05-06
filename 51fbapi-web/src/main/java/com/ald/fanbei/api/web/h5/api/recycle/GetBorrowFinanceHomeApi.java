@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @Description: 获取金融科技主页
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  */
-@Component("getBorrowFinanceHomeApi")
+@Component("borrowFinanceHomeApi")
 public class GetBorrowFinanceHomeApi implements H5Handle {
 
     @Resource

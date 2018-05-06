@@ -1,27 +1,60 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
+import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowRecycleStatus;
+import com.ald.fanbei.api.common.enums.AfCounponStatus;
+import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.enums.SceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowRecycleOrderDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 /**
  * @author ZJF
@@ -40,11 +73,16 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfUserAuthService afUserAuthService;
-
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
+    @Resource
+    AfUserBankcardService afUserBankcardService;
     @Resource
     BizCacheUtil bizCacheUtil;
     @Resource
     RiskUtil riskUtil;
+    @Resource
+    TransactionTemplate transactionTemplate;
 
     @Resource
     private AfUserAccountDao afUserAccountDao;
@@ -52,7 +90,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     private AfBorrowCashDao afBorrowCashDao;
     @Resource
     private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-
+    @Resource
+    AfBorrowRecycleOrderDao borrowRecycleOrderDao;
     @Resource
     private AfBorrowRecycleOrderDao afBorrowRecycleOrderDao;
     @Resource
@@ -79,21 +118,29 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         if (YesNoStatus.NO.getCode().equals(cfgBean.supuerSwitch) ) {
             bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
         }
-
         return bo;
     }
 
     public BorrowRecycleHomeInfoBo processLogin(AfUserAccountDo userAccount) {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
+        AfUserBankcardDo userBankcardDo=afUserBankcardService.getUserMainBankcardByUserId(userAccount.getUserId());
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
-        bo.rejectCode = AfBorrowCashRejectType.PASS.name();
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
+        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
+        if (userBankcardDo != null){
+            bo.reMainBankId=userBankcardDo.getCardNumber();
+            bo.reMainBankName= userBankcardDo.getBankName();
+        }
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+        checkCreditAction(bo,userAccount,cfgBean.minAmount);
         if (cashDo == null) {
+            bo.minQuota = cfgBean.minAmount;
             bo.isBorrowOverdue = false;
+            bo.recycleStatus ="UNSUBMIT";
             return bo;
         }
+        bo.hasBorrow=true;
         bo.borrowId=cashDo.getRid();
         AfBorrowRecycleOrderDo orderDo = afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(cashDo.getRid());
         Map<String, String> goodsMap = JsonUtils.fromJsonString(orderDo.getPropertyValue(), Map.class);
@@ -101,16 +148,15 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.goodsName = orderDo.getGoodsName();
             bo.goodsUrl= orderDo.getGoodsImg();
             bo.goodsModel = goodsMap.get("goodsModel");
-            bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
         bo.recycleStatus =AfBorrowRecycleStatus.findByCashStatus(cashDo.getStatus()).getCode();
         AfRepaymentBorrowCashDo processRepayment = afRepaymentBorrowCashDao.getProcessingRepaymentByBorrowId(cashDo.getRid());
         if(processRepayment != null) {
-            bo.recycleStatus = AfLoanStatus.REPAYING.desz;
+            bo.recycleStatus = AfLoanStatus.REPAYING.name();
         }
         bo.borrowGmtApply = cashDo.getGmtCreate();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
-        bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount());
+        bo.defaultFine = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
         bo.repayingAmount = cashDo.getRepayAmount();
         bo.borrowAmount = cashDo.getAmount();
         bo.restUseDays = -(int) DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(cashDo.getGmtPlanRepayment()), DateUtil.getToday());
@@ -121,10 +167,49 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }
         AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
         bo.rejectCode = rejectType.name();
-        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         return bo;
     }
 
+    void checkCreditAction(BorrowRecycleHomeInfoBo bo,AfUserAccountDo userAccount,BigDecimal minAmount){
+        AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userAccount.getUserId(), "CASH");
+        AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
+        String riskStatus="Y";
+        if(afUserAuthStatusDo != null){
+            if(afUserAuthStatusDo.getStatus().equals("Y")){
+                bo.rejectCode=AfBorrowCashRejectType.PASS.name();
+                //检查额度
+                if (minAmount.compareTo(userAccount.getAuAmount()) > 0) {
+                    bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+                }
+            }
+            else {
+                riskStatus="N";
+                bo.action="DO_PROMOTE_BASIC";
+            }
+        }else {
+            riskStatus="N";
+            bo.action="DO_SCAN_ID";
+        }
+        if("N".equals(riskStatus)){
+            if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
+                    &&StringUtil.equals(userAuth.getMobileStatus(),"N")&&StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    &&StringUtil.equals(userAuth.getFacesStatus(),"N")) {
+                bo.action="DO_SCAN_ID";
+            }
+            else if(StringUtil.equals(userAuth.getBankcardStatus(),"N")||StringUtil.equals(userAuth.getZmStatus(),"N")
+                    ||StringUtil.equals(userAuth.getMobileStatus(),"N")||StringUtil.equals(userAuth.getTeldirStatus(),"N")
+                    ||StringUtil.equals(userAuth.getFacesStatus(),"N")){
+                bo.action="DO_PROMOTE_BASIC";
+                if (StringUtil.equals(userAuth.getFacesStatus(), "Y") && StringUtil.equals(userAuth.getBankcardStatus(), "N")) {
+                    bo.action="DO_BIND_CARD";
+
+                }
+                if(StringUtil.equals(userAuth.getFacesStatus(),"N")&&StringUtil.equals(userAuth.getBankcardStatus(),"N")){
+                    bo.action="DO_SCAN_ID";
+                }
+            }
+        }
+    }
 
     /**
      * 计算最多能计算多少额度 150取100 250.37 取200
@@ -147,14 +232,14 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
             bo.borrowId = cashDo.getRid();
             bo.borrowGmtApply = cashDo.getGmtCreate();
+            bo.goodsPrice=cashDo.getAmount();
             bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
             bo.arrivalGmt = cashDo.getGmtArrival();
             bo.reBankId = cashDo.getCardNumber();
             bo.reBankName = cashDo.getCardName();
             bo.borrowStatus = cashDo.getStatus();
-            bo.restUseDays = (int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000 * 3600 * 24);
             addRecycleGoodsInfos(bo, cashDo);
-            bo.overdueAmount = afBorrowCashService.calculateLegalRestOverdue(cashDo);
+            bo.overdueAmount = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
             boList.add(bo);
         }
         return boList;
@@ -167,14 +252,15 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.borrowNo = cashDo.getBorrowNo();
         bo.borrowId = cashDo.getRid();
         bo.borrowGmtApply = cashDo.getGmtCreate();
+        bo.goodsPrice=cashDo.getAmount();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
         bo.arrivalGmt = cashDo.getGmtArrival();
+        bo.type = cashDo.getType();
         bo.reBankId = cashDo.getCardNumber();
         bo.reBankName = cashDo.getCardName();
         bo.borrowStatus = cashDo.getStatus();
-        bo.restUseDays = (int) ((bo.borrowGmtPlanRepayment.getTime() - bo.borrowGmtApply.getTime())) / (1000 * 3600 * 24);
         addRecycleGoodsInfos(bo, cashDo);
-        bo.overdueAmount = afBorrowCashService.calculateLegalRestOverdue(cashDo);
+        bo.overdueAmount = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
         return bo;
     }
 
@@ -193,7 +279,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             Map<String, String> goodsMap = JsonUtils.fromJsonString(recycleOrderDo.getPropertyValue(), Map.class);
             bo.goodsName = recycleOrderDo.getGoodsName();
             bo.goodsModel = goodsMap.get("goodsModel");
-            bo.goodsPrice = new BigDecimal(goodsMap.get("maxRecyclePrice"));
         }
     }
 
@@ -267,6 +352,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public BigDecimal defaultFine;
         public Date borrowGmtApply;
         public Date borrowGmtPlanRepayment;
+        public String type;
         public boolean isBorrowOverdue;
 
         //回收状态与borrowStatus用同一个数据库属性
@@ -282,8 +368,25 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String borrowNo;
         public BigDecimal useableAmount;
         public String goodsUrl;
+        public String reMainBankId;
+        public String reMainBankName;
+        public String action;
 
 
+    }
+
+    @Override
+    public Long addBorrowRecord(final AfBorrowCashDo afBorrowCashDo, final AfBorrowRecycleOrderDo recycleOrderDo) {
+        return transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus ts) {
+                afBorrowCashService.addBorrowCash(afBorrowCashDo);
+                Long borrowId = afBorrowCashDo.getRid();
+                recycleOrderDo.setBorrowId(borrowId);
+                afBorrowRecycleOrderDao.saveRecord(recycleOrderDo);
+                return borrowId;
+            }
+        });
     }
 
 }

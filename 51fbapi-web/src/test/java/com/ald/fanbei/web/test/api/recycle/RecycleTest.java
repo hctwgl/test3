@@ -24,7 +24,7 @@ public class RecycleTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = AccountOfTester.田建成.mobile;
+	String userName = AccountOfTester.代秋天.mobile;
 	
 	@Before
 	public void init(){
@@ -50,6 +50,17 @@ public class RecycleTest extends BaseTest{
 		params.put("start", "0");
 		testH5(url, params, userName, true);
 	}
+	/**
+	 * 获取回收详情
+	 */
+	@Test
+	public void borrowRecycleDetail() {
+		String url = urlBase + "/h5/recycle/borrowRecycleDetail";
+		Map<String,String> params = new HashMap<>();
+		params.put("borrowId", "33399675");
+		testH5(url, params, userName, true);
+	}
+	
 	/**
 	 * 获取金融主页
 	 */

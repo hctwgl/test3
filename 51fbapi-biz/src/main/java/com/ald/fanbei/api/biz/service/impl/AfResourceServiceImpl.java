@@ -886,7 +886,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 					cfgBean.amountPerDay = new BigDecimal(v);
 				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
 					cfgBean.showNums = Integer.valueOf(v);
-				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode())) {
 					cfgBean.borrowCashDay = afResourceDo.getTypeDesc();
 					cfgBean.maxAmount = new BigDecimal(afResourceDo.getValue1());
 					cfgBean.minAmount = new BigDecimal(afResourceDo.getValue4());
@@ -1064,6 +1064,22 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code) {
 		// TODO Auto-generated method stub
 		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
+	}
+
+	@Override
+	public List<String> getBorrowCashWhiteList() {
+		List<String> whiteIdsList = new ArrayList<String>();
+		AfResourceDo whiteListInfo = afResourceDao.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		if (whiteListInfo != null) {
+			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
+				new Converter<String, String>() {
+					@Override
+					public String convert(String source) {
+						return source.trim();
+					}
+				});
+		}
+		return whiteIdsList;
 	}
 
 }

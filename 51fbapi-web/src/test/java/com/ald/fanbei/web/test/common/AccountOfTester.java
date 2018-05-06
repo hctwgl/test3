@@ -8,8 +8,9 @@ public enum AccountOfTester {
 	张飞凯("13460011555", 0L, "123456", 0L),
 	秦继强("15293971826", 0L, "888888", 0L),
 	王卿("13370127054", 0L, "123456", 0L),
-	俞佳楠("13165995223", 0L, "", 0L);
-	
+	俞佳楠("13165995223", 0L, "", 0L),
+	代秋天("17612158083  ", 0L, "", 0L);
+
 	public String mobile;
 	public Long userId;
 	public String payPwd;
