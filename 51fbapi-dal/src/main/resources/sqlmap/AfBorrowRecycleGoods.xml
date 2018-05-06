@@ -47,6 +47,7 @@
         af_borrow_recycle_goods
         WHERE
         is_delete = 0
+        and status = 'OPEN'
         ORDER BY
         gmt_create DESC
     </select>
