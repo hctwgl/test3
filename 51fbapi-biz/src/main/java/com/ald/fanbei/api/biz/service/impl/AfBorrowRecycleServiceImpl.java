@@ -128,8 +128,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
         bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
-        bo.reMainBankId=userBankcardDo.getCardNumber();
-        bo.reMainBankName= userBankcardDo.getBankName();
+        if (userBankcardDo != null){
+            bo.reMainBankId=userBankcardDo.getCardNumber();
+            bo.reMainBankName= userBankcardDo.getBankName();
+        }
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
         checkCreditAction(bo,userAccount,cfgBean.minAmount);
         if (cashDo == null) {
