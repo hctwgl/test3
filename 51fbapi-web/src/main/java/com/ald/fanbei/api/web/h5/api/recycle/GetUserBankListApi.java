@@ -34,7 +34,7 @@ public class GetUserBankListApi implements H5Handle  {
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
-		Long userId = context.getUserId();
+		
 		List<AfUserBankcardDo> bankList = afUserBankcardService.getAfUserBankcardDoList(context.getUserId());
 		if(bankList.size()<=0){
 			throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
