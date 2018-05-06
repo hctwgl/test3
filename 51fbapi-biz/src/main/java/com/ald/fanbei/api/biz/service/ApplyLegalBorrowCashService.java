@@ -47,6 +47,8 @@ public interface ApplyLegalBorrowCashService {
 
 	public void checkRiskRefused(Long userId);
 
+	boolean checkRiskRefusedResult(Long userId);
+
 	public void checkCardNotEmpty(AfUserBankcardDo mainCard);
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);

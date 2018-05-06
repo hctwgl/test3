@@ -28,6 +28,8 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
     private AfBorrowRecycleGoodsService afBorrowRecycleGoodsService;
     @Resource
     private AfUserAuthService afUserAuthService;
+    @Resource
+    private ApplyLegalBorrowCashService borrowCashService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -46,6 +48,8 @@ public class GetBorrowRecycleHomeInfoApi implements H5Handle {
                     resp.addResponseData("authStatus", true);
                 }
                 resp.addResponseData("isRealAuthz", YesNoStatus.YES.getCode().equals(authInfo.getFacesStatus()));
+                resp.addResponseData("isRiskAuthz", YesNoStatus.YES.getCode().equals(authInfo.getRiskStatus()));
+                resp.addResponseData("isRiskRefusedAuthz", YesNoStatus.YES.getCode().equals(borrowCashService.checkRiskRefusedResult(userId)));
                 resp.addResponseData("isSecAuthzAllPass", afUserAuthService.allSupplementAuthPassed(authInfo));
             }else {
                 resp.addResponseData("authStatus", false);
