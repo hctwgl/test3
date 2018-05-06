@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowRecycleOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
@@ -37,5 +38,12 @@ public class AfBorrowRecycleOrderServiceImpl extends ParentServiceImpl<AfBorrowR
 	@Override
 	public AfBorrowRecycleOrderDo getBorrowRecycleOrderByBorrowId(Long id) {
 		return afBorrowRecycleOrderDao.getBorrowRecycleOrderByBorrowId(id);
+	}
+
+	@Override
+	public boolean isBorrowRecycel(Long borrowId) {
+		Long orderId= afBorrowRecycleOrderDao.tuchByBorrowId(borrowId);
+		if(orderId != null)return true;
+		return false;
 	}
 }
