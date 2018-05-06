@@ -886,7 +886,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 					cfgBean.amountPerDay = new BigDecimal(v);
 				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
 					cfgBean.showNums = Integer.valueOf(v);
-				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode())) {
 					cfgBean.borrowCashDay = afResourceDo.getTypeDesc();
 					cfgBean.maxAmount = new BigDecimal(afResourceDo.getValue1());
 					cfgBean.minAmount = new BigDecimal(afResourceDo.getValue4());
