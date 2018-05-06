@@ -585,7 +585,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Override
 	public boolean checkRiskRefusedResult(Long userId) {
-		boolean result = true;//
+		boolean result = false;//
 		AfBorrowCashDo lastBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		if (lastBorrowCashDo != null && RiskReviewStatus.REFUSE.getCode().equals(lastBorrowCashDo.getReviewStatus())) {
 			// 借款被拒绝
@@ -597,7 +597,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
 				Date desTime = DateUtil.addDays(lastBorrowCashDo.getGmtCreate(), rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) {
-					result = false;//限制时间内有风控审核拒绝记录
+					result = true;//限制时间内有风控审核拒绝记录
 				}
 			}
 		}

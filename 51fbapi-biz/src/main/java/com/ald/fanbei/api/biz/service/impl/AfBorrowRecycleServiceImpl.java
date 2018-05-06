@@ -255,11 +255,12 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.goodsPrice=cashDo.getAmount();
         bo.borrowGmtPlanRepayment = cashDo.getGmtPlanRepayment();
         bo.arrivalGmt = cashDo.getGmtArrival();
+        bo.type = cashDo.getType();
         bo.reBankId = cashDo.getCardNumber();
         bo.reBankName = cashDo.getCardName();
         bo.borrowStatus = cashDo.getStatus();
         addRecycleGoodsInfos(bo, cashDo);
-        bo.overdueAmount = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());;
+        bo.overdueAmount = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
         return bo;
     }
 
