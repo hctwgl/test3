@@ -183,7 +183,13 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                 }
             } else if (afUserAuthStatusDo.getStatus().equals("N")){
                 bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-                bo.action="DO_BIND_CARD";
+                if (userAuth!= null && userAuth.getBankcardStatus().equals("N")){
+                    bo.action="DO_BIND_CARD";
+                }else if (userAuth == null){
+                    bo.action="DO_SCAN_ID";
+                }else {
+                    bo.action="DO_PROMOTE_BASIC";
+                }
             } else if (afUserAuthStatusDo.getStatus().equals("C")){
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
                 bo.action="DO_PROMOTE_BASIC";
@@ -193,7 +199,11 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             }
         }else {
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_SCAN_ID";
+            if (userAuth!= null && userAuth.getBankcardStatus().equals("N")){
+                bo.action="DO_BIND_CARD";
+            }else {
+                bo.action="DO_SCAN_ID";
+            }
         }
         /*if("N".equals(riskStatus)){
             if(StringUtil.equals(userAuth.getBankcardStatus(),"N")&&StringUtil.equals(userAuth.getZmStatus(),"N")
