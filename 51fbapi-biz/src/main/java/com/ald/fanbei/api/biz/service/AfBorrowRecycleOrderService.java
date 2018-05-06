@@ -13,5 +13,10 @@ import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
 public interface AfBorrowRecycleOrderService extends ParentService<AfBorrowRecycleOrderDo, Long>{
 
     AfBorrowRecycleOrderDo getBorrowRecycleOrderByBorrowId(Long id);
+    
+    /**
+     * 判断是否为回收借款
+     */
+    boolean isBorrowRecycel(Long borrowId);
 
 }
