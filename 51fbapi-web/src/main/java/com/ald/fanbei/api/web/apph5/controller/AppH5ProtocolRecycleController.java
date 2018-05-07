@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -72,10 +73,10 @@ public class AppH5ProtocolRecycleController extends BaseController {
         String goodsName = ObjectUtils.toString(request.getParameter("goodsName"), "").toString();
         String goodsModel = ObjectUtils.toString(request.getParameter("goodsModel"), "").toString();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
-        BigDecimal overdueRate = NumberUtil.objToBigDecimalDefault(request.getParameter("overdueRate"), new BigDecimal(0));
         long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0);
         Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
-
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
+        Map<String, Object> map = afResourceService.getRateInfo(afResourceDo.getValue2(), String.valueOf(type),"borrow","BORROW_RECYCLE_INFO_LEGAL_NEW");
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -99,7 +100,7 @@ public class AppH5ProtocolRecycleController extends BaseController {
         if (borrowId > 0) {//借了钱的借钱协议
             getRecycleProtocolWithBorrowId(model, borrowId);
         } else {//借钱前的借钱协议
-            getRecycleProtocolWithWoutBorrowId(model,overdueRate);
+            getRecycleProtocolWithWoutBorrowId(model, (Double) map.get("overdueRate"));
         }
     }
     private void getRecycleProtocolWithBorrowId(ModelMap model,Long borrowId) {
@@ -109,10 +110,12 @@ public class AppH5ProtocolRecycleController extends BaseController {
         model.put("overdueRate",recycleOrderDo.getOverdueRate());
         model.put("gmtCreate",recycleOrderDo.getGmtCreate());
         model.put("borrowNo",borrowCashDo.getBorrowNo());
+        model.put("goodsName", recycleOrderDo.getGoodsName());//借钱本金
+        model.put("goodsModel",JSON.parseObject(recycleOrderDo.getPropertyValue()).get("goodsModel"));
         AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
         model.put("lender", lenderDo.getValue());// 出借人
     }
-    private void getRecycleProtocolWithWoutBorrowId(ModelMap model,BigDecimal overdueRate) {
+    private void getRecycleProtocolWithWoutBorrowId(ModelMap model,Double overdueRate) {
         model.put("overdueRate",overdueRate);
         AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
         model.put("lender", lenderDo.getValue());// 出借人
