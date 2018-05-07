@@ -84,7 +84,8 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		//任务列表
 
 		//是否有补签
-		supplementSign(afSignRewardExtDo,0);
+		int count = supplementSign(afSignRewardExtDo,0);
+		resp.addResponseData("supplementSignDays",count);
 
 		return resp;
 	}
@@ -124,7 +125,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 				flag = false;
 				int count = afSignRewardService.sumSignDays(afSignRewardExtDo.getUserId(),startTime);
 				Long days = DateUtil.getNumberOfDatesBetween(startTime,new Date());
-				if(days.intValue()>count){
+				if(days.intValue()>=count){
 					countDays = days.intValue()-count;
 				}
 			}else{
