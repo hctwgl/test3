@@ -352,7 +352,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String reMainBankId;
         public String reMainBankName;
         public String action;
-        public String
 
     }
 
