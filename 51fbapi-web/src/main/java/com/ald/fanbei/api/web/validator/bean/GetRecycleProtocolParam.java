@@ -15,9 +15,6 @@ public class GetRecycleProtocolParam {
 	public BigDecimal amount;
 
 	@DecimalMin("0")
-	public BigDecimal interestRate;
-
-	@DecimalMin("0")
 	public BigDecimal overdueRate;
 	
 	@Min(value=0)
@@ -34,6 +31,4 @@ public class GetRecycleProtocolParam {
 
 	public String goodsImg;
 
-	@DecimalMin("0")
-	public BigDecimal riskDailyRate;
 }
