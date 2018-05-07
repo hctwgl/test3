@@ -40,6 +40,8 @@ public interface ApplyLegalBorrowCashService {
 
 	public void checkBorrowFinish(Long userId);
 
+	public void checkRecycleBorrowFinish(Long userId);
+
 	public void delegatePay(String consumerNo, String orderNo, String result,
 							AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
 
