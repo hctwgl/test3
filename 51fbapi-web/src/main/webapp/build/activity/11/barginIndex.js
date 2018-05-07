@@ -173,7 +173,7 @@ let vm = new Vue({
             } else {
                 var dat = {
                     shareAppTitle: "砍价赢免单丨iphone X0元免费领!",
-                    shareAppContent: "来不及解释啦，51返呗想送你iphone X，还差一点点，请帮我砍它~",
+                    shareAppContent: "来不及解释啦，爱上街想送你iphone X，还差一点点，请帮我砍它~",
                     shareAppImage: "http://f.51fanbei.com/online/17f31c95deb17587.png",
                     shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + goodsId + '&productType=share' + goodsType + '&userName=' + getInfo().userName + '&spread=' + spread,
                     isSubmit: 'Y',

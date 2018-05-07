@@ -45,7 +45,7 @@ public class UnionThirdRegisterController extends BaseController {
     @Resource
     private AfUnionThirdRegisterLogService afUnionThirdRegisterLogService;
     /**
-     * 返呗统一联合注册
+     * 爱上街统一联合注册
      *
      * @param lsmNo 渠道 明文
      * @param phone   手机号 明文
@@ -146,7 +146,7 @@ public class UnionThirdRegisterController extends BaseController {
     /**
      * 添加日志
      *
-     * @param channel       返呗渠道号
+     * @param channel       爱上街渠道号
      * @param paramsJsonStr 参数信息
      */
     private void addLogs(String channel, String paramsJsonStr) {

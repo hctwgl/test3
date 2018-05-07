@@ -406,7 +406,7 @@ if(pageName=='ggFix'){
 if(pageName=='ggOverlord'){
     shareInfo = {
         title: "老铁~快来吃霸王餐啦~",
-        desc: "节日剁手不吃土，来51返呗点16元外卖1元购，有福同享，你也快来>>>",
+        desc: "节日剁手不吃土，来爱上街点16元外卖1元购，有福同享，你也快来>>>",
         link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName=ggOverlord'+'&recommendCode='+recommendCode,
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {

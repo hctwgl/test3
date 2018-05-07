@@ -105,7 +105,7 @@ public class YFSmsUtil {
                     break;
 
             }
-            String params = "appKey="+key+"&appSecret="+secret+"&phones="+phones+"&content=【51返呗】"+content;
+            String params = "appKey="+key+"&appSecret="+secret+"&phones="+phones+"&content=【爱上街】"+content;
             String reqResult = HttpUtil.doHttpPost(YFSmsUtil.URL, params);
             logger.info(StringUtil.appendStrs("sendSms params=|", phones, "|", content, "|", reqResult));
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- af_asset_side_opera_log表:资金方调用返呗业务日志模块 -->
+<!-- af_asset_side_opera_log表:资金方调用爱上街业务日志模块 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfAssetSideOperaLogDao">
     
     <!--基本的sql查询字段 公共引用...-->

@@ -136,8 +136,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        if (context.getAppVersion() < 390) {
-            throw new FanbeiException("您使用的app版本过低,请升级", true);
+        if (context.getAppVersion() < 405) {
+            throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
         }
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
@@ -457,7 +457,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                 cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse
                         .getCode());
                 cashDo.setArrivalAmount(orgArrivalAmount);
-                //如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
+                //如果属于非爱上街自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
                 if (e instanceof FanbeiException) {
                     cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
                 } else {

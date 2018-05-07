@@ -48,12 +48,12 @@ import java.math.BigDecimal;
     private String status;
 
     /**
-     * 返呗系统响应码
+     * 爱上街系统响应码
      */
     private String respCode;
 
     /**
-     * 返呗系统响应描述
+     * 爱上街系统响应描述
      */
     private String respDesc;
 
@@ -173,36 +173,36 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取返呗系统响应码
+     * 获取爱上街系统响应码
      *
-     * @return 返呗系统响应码
+     * @return 爱上街系统响应码
      */
     public String getRespCode(){
       return respCode;
     }
 
     /**
-     * 设置返呗系统响应码
+     * 设置爱上街系统响应码
      * 
-     * @param respCode 要设置的返呗系统响应码
+     * @param respCode 要设置的爱上街系统响应码
      */
     public void setRespCode(String respCode){
       this.respCode = respCode;
     }
 
     /**
-     * 获取返呗系统响应描述
+     * 获取爱上街系统响应描述
      *
-     * @return 返呗系统响应描述
+     * @return 爱上街系统响应描述
      */
     public String getRespDesc(){
       return respDesc;
     }
 
     /**
-     * 设置返呗系统响应描述
+     * 设置爱上街系统响应描述
      * 
-     * @param respDesc 要设置的返呗系统响应描述
+     * @param respDesc 要设置的爱上街系统响应描述
      */
     public void setRespDesc(String respDesc){
       this.respDesc = respDesc;

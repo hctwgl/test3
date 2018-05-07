@@ -12,6 +12,7 @@ public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
+	public static final long SECOND_OF_FIVE_MINITS = 5 * 60l;
 	public static final long SECOND_OF_TEN = 10l;//10秒
 	public static final long SECOND_OF_FIFTEEN = 15l;//15秒
 	public static final long SECOND_OF_THREE = 30l;// 30秒
@@ -416,6 +417,8 @@ public class Constants {
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
 
+	//贷款超市主页标签
+	public static final String DC_LABEL_HOME="home";
 
 	// 借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR = "BORROWCASH_ TO_DRAW";
@@ -469,7 +472,7 @@ public class Constants {
 	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";
 
 	public static final int ONE_YEAY_DAYS = 360;
-	//返呗与资产方对接时的平台标识
+	//爱上街与资产方对接时的平台标识
 	public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 	public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
 	//资产方查询用户借款及逾期信息redis中的key前缀
