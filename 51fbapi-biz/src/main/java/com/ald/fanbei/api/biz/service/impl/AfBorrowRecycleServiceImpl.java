@@ -180,7 +180,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         }else if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_BIND_CARD";
+            bo.action="DO_PROMOTE_BASIC";
         }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
             bo.rejectCode=AfBorrowCashRejectType.PASS.name();
             //检查额度
@@ -189,6 +189,9 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             }else if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
+        }else {
+            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
+            bo.action="DO_PROMOTE_BASIC";
         }
         if (idNumberDo != null){
             bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
