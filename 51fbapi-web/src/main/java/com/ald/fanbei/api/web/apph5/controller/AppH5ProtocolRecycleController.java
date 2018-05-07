@@ -55,18 +55,6 @@ public class AppH5ProtocolRecycleController extends BaseController {
     AfUserAccountService afUserAccountService;
     @Resource
     AfRescourceLogService afRescourceLogService;
-    @Resource
-    AfESdkService afESdkService;
-    @Resource
-    AfUserSealDao afUserSealDao;
-    @Resource
-    AfBorrowService afBorrowService;
-    @Resource
-    AfContractPdfDao afContractPdfDao;
-    @Resource
-    AfContractPdfEdspaySealDao afContractPdfEdspaySealDao;
-    @Resource
-    AfEdspayUserInfoDao edspayUserInfoDao;
 
     /**
      * 借钱协议(白领贷)
@@ -100,11 +88,11 @@ public class AppH5ProtocolRecycleController extends BaseController {
         model.put("mobile", afUserDo.getUserName());// 联系电话
         model.put("amountCapital", toCapital(amount.doubleValue()));//大写本金金额
         model.put("amount", amount);//借钱本金
-        if (loanId > 0) {//借了钱的借钱协议
+        /*if (loanId > 0) {//借了钱的借钱协议
             getModelLoanId(model, nper, loanId, afUserDo, accountDo, repayRemark, loanRemark);
         } else {//借钱前的借钱协议
             getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
-        }
+        }*/
         logger.info(JSON.toJSONString(model));
     }
 
