@@ -11,6 +11,7 @@ package com.ald.fanbei.api.common.enums;
 public enum AfResourceType {
 	HomeBanner("HOME_BANNER", "轮播图"),
 	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
+	RewardHomeBanner("REWARD_HOME_BANNER", "每日签到轮播图"),
 	HomeBannerBrand("HOME_BANNER_BRAND","逛逛轮播图"),
 	HomeBannerEcommerce("HOME_BANNER_ECOMMERCE","首页电商轮播图"),
 	HomeBannerNewMost("HOME_BANNER_NEW_MOST", "轮播图（V396）"),

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 分类运营位配置Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
  */
 public interface AfSignRewardExtDao  {
 
-    
+    AfSignRewardExtDo selectByUserId(@Param("userId") Long userId);
 
 }

@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.AfSignRewardDao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
 import com.ald.fanbei.api.biz.service.AfSignRewardService;
 
+import java.util.Date;
 
 
 /**
@@ -30,4 +31,18 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     private AfSignRewardDao afSignRewardDao;
 
 
+    @Override
+    public boolean isExist(Long userId){
+        return  afSignRewardDao.isExist(userId)> 0 ? true :false;
+    }
+
+    @Override
+    public double sumAmount(Long userId){
+        return  afSignRewardDao.sumAmount(userId);
+    }
+
+    @Override
+    public int sumSignDays(Long userId,Date startTime){
+        return  afSignRewardDao.sumSignDays(userId,startTime);
+    }
 }

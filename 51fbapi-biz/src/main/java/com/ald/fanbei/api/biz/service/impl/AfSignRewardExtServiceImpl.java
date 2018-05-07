@@ -29,5 +29,10 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     @Resource
     private AfSignRewardExtDao afSignRewardExtDao;
 
+    @Override
+    public AfSignRewardExtDo selectByUserId(Long userId){
+        return afSignRewardExtDao.selectByUserId(userId);
+    }
+
 
 }

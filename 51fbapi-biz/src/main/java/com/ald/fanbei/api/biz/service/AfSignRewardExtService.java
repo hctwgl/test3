@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
  */
 public interface AfSignRewardExtService {
 
+    AfSignRewardExtDo selectByUserId(Long userId);
+
 }
