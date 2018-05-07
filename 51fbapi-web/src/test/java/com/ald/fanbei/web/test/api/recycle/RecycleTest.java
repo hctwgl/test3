@@ -1,8 +1,7 @@
 package com.ald.fanbei.web.test.api.recycle;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Date;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +11,6 @@ import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
 
@@ -24,7 +19,7 @@ public class RecycleTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = AccountOfTester.朱玲玲.mobile;
+	String userName = AccountOfTester.胡潮永.mobile;
 	
 	@Before
 	public void init(){
@@ -41,6 +36,25 @@ public class RecycleTest extends BaseTest{
 	}
 
 	/**
+	 * 获取白领贷协议
+	 */
+	@Test
+	public void getRecycleProtocol() {
+		String url = urlBase + "/h5/recycle/getRecycleProtocol";
+		Map<String,String> params = new HashMap<>();
+		params.put("borrowId", 33399739+"");//1038.66
+		params.put("riskDailyRate", "10");
+		params.put("goodsModel", "128G");
+		params.put("goodsName", "ipone70");
+		params.put("type", "10");
+		params.put("overdueRate", "0.10");
+		params.put("interestRate", "0.06");
+		params.put("amount", "1000");
+		testH5(url, params, userName, true);
+	}
+
+	/**	"borrowTag": "OVERDUE_RATE"
+
 	 * 获取回收记录
 	 */
 	@Test
@@ -57,7 +71,7 @@ public class RecycleTest extends BaseTest{
 	public void borrowRecycleDetail() {
 		String url = urlBase + "/h5/recycle/borrowRecycleDetail";
 		Map<String,String> params = new HashMap<>();
-		params.put("borrowId", "33399675");
+		params.put("borrowId", "3340038");
 		testH5(url, params, userName, true);
 	}
 	
@@ -171,30 +185,7 @@ public class RecycleTest extends BaseTest{
 	
 	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
-		String url = urlBase + "/third/collection/offlineRepayment?";
-		 
-		String tradeNo = "offline" + System.currentTimeMillis();
-		Map<String,String> params = new HashMap<>();
-		params.put("repay_no", tradeNo);
-		params.put("borrow_no", "jq2017122020002200873");
-		params.put("repay_type", "bank");
-		params.put("repay_time", DateUtil.formatDateTime(new Date()));
-		params.put("repay_amount", "10000.00");
-		params.put("rest_amount", "10000.00");
-//		params.put("repay_cardNum", "6568654646462113"); // 模拟催收则 注解掉
-//		params.put("operator", "测试");// 模拟催收则 注解掉
-		params.put("trade_no", tradeNo);
-		params.put("is_balance", YesNoStatus.NO.getCode());
-//		params.put("is_admin", "Y");// 模拟催收则 注解掉
 		
-		String data = JsonUtil.toJSONString(params);
-		String timestamp = DateUtil.getDateTimeFull(new Date());
-		String sign = DigestUtil.MD5(data);
-		String reqStr = "data=" + URLEncoder.encode(data, "UTF-8") + "&timestamp=" + URLEncoder.encode(timestamp, "UTF-8") +"&sign="+URLEncoder.encode(sign, "UTF-8");
-		url += reqStr;
-		Map<String,String> paramsT = new HashMap<>();
-		
-		testApi(url, paramsT, userName ,false);
 	}
 	
 }

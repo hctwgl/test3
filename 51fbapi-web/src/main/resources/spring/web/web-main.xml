@@ -622,7 +622,7 @@
 				<entry key="/h5/recycle/getUserBankList" value-ref="getUserBankListApi" />
 				<entry key="/h5/recycle/borrowFinanceHome" value-ref="borrowFinanceHomeApi" />
 				<entry key="/h5/recycle/borrowRecycleExplain" value-ref="borrowRecycleExplainApi" />
-
+				<entry key="/h5/recycle/getRecycleProtocol" value-ref="getRecycleProtocolApi" />
 				<!-- 回收业务接口 -->
 				<entry key="/h5/recycle/applyBorrowRecycleCash" value-ref="applyBorrowRecycleCashApi" />
 			</map>

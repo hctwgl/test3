@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,22 +56,27 @@ public class AppH5ProtocolRecycleController extends BaseController {
     AfUserAccountService afUserAccountService;
     @Resource
     AfRescourceLogService afRescourceLogService;
+    @Resource
+    AfBorrowRecycleOrderService borrowRecycleOrderService;
 
     /**
-     * 借钱协议(白领贷)
+     * 回收协议
      *
      * @param request
      * @param model
      * @throws IOException
      */
-    @RequestMapping(value = {"recycleProtocol"}, method = RequestMethod.GET)
-    public void whiteLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
+    @RequestMapping(value = {"goodsRecoverProtocol"}, method = RequestMethod.GET)
+    public void goodsRecoverProtocol(HttpServletRequest request, ModelMap model) throws IOException {
         String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+        String goodsName = ObjectUtils.toString(request.getParameter("goodsName"), "").toString();
+        String goodsModel = ObjectUtils.toString(request.getParameter("goodsModel"), "").toString();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
-        Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
-        long loanId = NumberUtil.objToLongDefault(request.getParameter("loanId"), 0);
-        String loanRemark = ObjectUtils.toString(request.getParameter("loanRemark"), "").toString();
-        String repayRemark = ObjectUtils.toString(request.getParameter("repayRemark"), "").toString();
+        BigDecimal riskDailyRate = NumberUtil.objToBigDecimalDefault(request.getParameter("riskDailyRate"), new BigDecimal(0));
+        BigDecimal overdueRate = NumberUtil.objToBigDecimalDefault(request.getParameter("overdueRate"), new BigDecimal(0));
+        long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0);
+        Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
+
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -88,15 +94,28 @@ public class AppH5ProtocolRecycleController extends BaseController {
         model.put("mobile", afUserDo.getUserName());// 联系电话
         model.put("amountCapital", toCapital(amount.doubleValue()));//大写本金金额
         model.put("amount", amount);//借钱本金
-        /*if (loanId > 0) {//借了钱的借钱协议
-            getModelLoanId(model, nper, loanId, afUserDo, accountDo, repayRemark, loanRemark);
+        model.put("type", type);//借钱本金
+        model.put("goodsName", goodsName);//借钱本金
+        model.put("goodsModel",goodsModel);
+        if (borrowId > 0) {//借了钱的借钱协议
+            getRecycleProtocolWithBorrowId(model, borrowId);
         } else {//借钱前的借钱协议
-            getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
-        }*/
-        logger.info(JSON.toJSONString(model));
+            getRecycleProtocolWithWoutBorrowId(model,overdueRate,riskDailyRate);
+        }
     }
-
-    private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
+    private void getRecycleProtocolWithBorrowId(ModelMap model,Long borrowId) {
+        AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+        AfBorrowRecycleOrderDo recycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowId);
+        model.put("riskDailyRate",borrowCashDo.getRiskDailyRate());
+        model.put("overdueRate",recycleOrderDo.getOverdueRate());
+        model.put("gmtCreate",recycleOrderDo.getGmtCreate());
+        model.put("borrowNo",borrowCashDo.getBorrowNo());
+        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+        model.put("lender", lenderDo.getValue());// 出借人
+    }
+    private void getRecycleProtocolWithWoutBorrowId(ModelMap model,BigDecimal overdueRate,BigDecimal riskDailyRate) {
+        model.put("riskDailyRate",riskDailyRate);
+        model.put("overdueRate",overdueRate);
         AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
         model.put("lender", lenderDo.getValue());// 出借人
     }
@@ -113,7 +132,7 @@ public class AppH5ProtocolRecycleController extends BaseController {
         String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
         BigDecimal totalServiceFee = NumberUtil.objToBigDecimalDefault(request.getParameter("totalServiceFee"), new BigDecimal(0));
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
-        Long loanId = NumberUtil.objToLongDefault(request.getParameter("loanId"), 0l);
+        Long borrowId = NumberUtil.objToLongDefault(request.getParameter("loanId"), 0l);
         Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {
