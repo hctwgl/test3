@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * eds每日拉取51返呗的债权金额限制类
+ * eds每日拉取爱上街的债权金额限制类
  * @author wujun
  * @version 1.0.0 初始化
  * @date 2017年12月18日下午1:47:38

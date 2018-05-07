@@ -4,7 +4,7 @@ let domainName = protocol+'//'+host;
 let type=getUrl('type');
 var shareInfo = {
     title: "20元话费、300M流量，3元超值购点击即领",
-    desc: "51返呗超值新人礼：20元话费3元领，快来抢购吧",
+    desc: "爱上街超值新人礼：20元话费3元领，快来抢购吧",
     link: domainName+'/fanbei-web/activity/newUserShare',
     imgUrl: "https://f.51fanbei.com/h5/app/activity/11/newUser061.png",
     success: function() {

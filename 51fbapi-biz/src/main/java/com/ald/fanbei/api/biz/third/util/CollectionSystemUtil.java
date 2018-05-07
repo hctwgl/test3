@@ -90,7 +90,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 	/**
-	 * 51返呗主动还款通知催收平台
+	 * 爱上街主动还款通知催收平台
 	 * 
 	 * @param repayNo
 	 *            --还款编号
@@ -195,7 +195,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 	/**
-	 * 51返呗续期通知接口
+	 * 爱上街续期通知接口
 	 * 
 	 * @param borrow_no
 	 *            借款单号

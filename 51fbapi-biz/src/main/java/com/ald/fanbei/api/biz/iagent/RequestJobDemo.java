@@ -24,7 +24,7 @@ public class RequestJobDemo {
 	public static void requestJob() {
 		Map map=new HashMap();
 		map.put("work_id", "11111111");
-		map.put("corp_code", "51返呗");
+		map.put("corp_code", "爱上街");
 		map.put("access_token", "xCGQF6wNeA1z6Cmz2UMW8F1as");
 		map.put("job_code", "51FB-SP01");
 		map.put("order_id", "111311111");

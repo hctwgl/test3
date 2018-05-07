@@ -6,7 +6,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 资金方调用返呗业务日志实体
+ * 资金方调用爱上街业务日志实体
  * 
  * @author chengkang
  * @version 1.0.0 初始化

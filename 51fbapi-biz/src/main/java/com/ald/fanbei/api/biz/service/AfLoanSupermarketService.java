@@ -50,7 +50,6 @@ public interface AfLoanSupermarketService {
 	 */
 	List<Object> getBorrowHomeListByLable(String label,String systemType);
 
-
-
+	List<Object> getLoanHomeListByLable(String label,String systemType);
 
 }

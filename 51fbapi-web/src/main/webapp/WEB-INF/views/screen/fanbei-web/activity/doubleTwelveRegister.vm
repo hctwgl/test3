@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>51返呗注册</title>
+    <title>爱上街注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelveRegister.css?version=$version">
 </head>
 
@@ -46,7 +46,7 @@
         <div class="agree flex fd-row ai-c">
             <input type="checkbox" checked>
             <span>已阅读并同意</span>
-            <a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
+            <a href="/fanbei-web/app/protocolRegister">《爱上街用户注册协议》</a>
         </div>
         <p class="registered clearfix">
             <a onclick="toLogin()">已有账号登录</a>

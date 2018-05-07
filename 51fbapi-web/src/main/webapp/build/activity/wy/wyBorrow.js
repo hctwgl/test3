@@ -76,7 +76,7 @@ let vue=new Vue({
                     iconUrl:"https://img.51fanbei.com/h5/app/activity/wy/bicon.png",
                     linkUrl:"../../app/user/channelRegister?channelCode=wwyy&pointCode=wwyy",
                     lsmIntro:"最高可借20000元，日息低至0.5元",
-                    lsmName:"51返呗-极速贷",
+                    lsmName:"爱上街-极速贷",
                     lsmNo:"51fanbei",
                     marketPoint:"205983,本月放款人数"});
                     console.log(self.content);

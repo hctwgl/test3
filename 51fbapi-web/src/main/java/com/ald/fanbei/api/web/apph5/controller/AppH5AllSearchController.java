@@ -143,7 +143,9 @@ public class AppH5AllSearchController extends BaseController {
 					for (int i = 0; i < goodsIds.size(); i++) {
 						query.setGoodsId(goodsIds.get(i));
 						AfGoodsDo goodsDo = afGoodsService.getAvaliableSelfGoodsBySolr(query);
-						orgSelfGoodlist.add(goodsDo);
+						if(null != goodsDo){
+							orgSelfGoodlist.add(goodsDo);
+						}
 					}
 				}
 				totalCount = solrSearchResult.getTotalCount();
