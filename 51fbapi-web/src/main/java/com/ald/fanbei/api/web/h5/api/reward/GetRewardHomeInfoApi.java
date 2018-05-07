@@ -84,6 +84,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		//任务列表
 
 		//是否有补签
+		supplementSign(afSignRewardExtDo,0);
 
 		return resp;
 	}
@@ -115,9 +116,9 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		calendar.setTime(DateUtil.formatDateToYYYYMMdd(date));
 		while(flag){
 			num ++;
-			calendar.add(Calendar.DAY_OF_MONTH,(new BigDecimal(num).multiply(new BigDecimal(cycle)).subtract(new BigDecimal(1))).intValue());
+			calendar.add(Calendar.DAY_OF_MONTH,(new BigDecimal(num-1).multiply(new BigDecimal(cycle))).intValue());
 			startTime = calendar.getTime();
-			calendar.add(Calendar.DAY_OF_MONTH,cycle);
+			calendar.add(Calendar.DAY_OF_MONTH,cycle-1);
 			endTime = calendar.getTime();
 			if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
 				flag = false;
