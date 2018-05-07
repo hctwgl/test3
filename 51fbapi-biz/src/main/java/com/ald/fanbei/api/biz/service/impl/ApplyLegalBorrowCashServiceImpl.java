@@ -3,11 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -239,6 +235,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		JSONArray array = JSONObject.parseArray(borrowRate);
 		BigDecimal rateAmount = oriRate.multiply(borrowAmount).multiply(new BigDecimal(day));
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+		Calendar   calendar   =   new   GregorianCalendar();
+		calendar.add(Calendar.DATE,Integer.parseInt(param.getType()));
+		afBorrowCashDo.setGmtPlanRepayment( calendar.getTime() );
 		afBorrowCashDo.setAmount(borrowAmount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());

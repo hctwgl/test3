@@ -132,7 +132,6 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 			recycleOrderDo.setGoodsName(paramBo.getGoodsName());
 			recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")));
 			Long borrowId = afBorrowRecycleService.addBorrowRecord(afBorrowCashDo, recycleOrderDo);
-
 			RiskVerifyRespBo verifyBo;
 			try {
 				bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));// 借过款的放入缓存，借钱按钮不需要高亮显示
