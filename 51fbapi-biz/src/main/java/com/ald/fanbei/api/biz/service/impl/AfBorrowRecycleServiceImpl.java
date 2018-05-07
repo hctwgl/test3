@@ -188,7 +188,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             }
         }
         if (idNumberDo != null){
-            bo.params = "{\"idNumber\":"+idNumberDo.getCitizenId()+",\"realName\":"+idNumberDo.getName()+"'\"}";
+            bo.params = "{\"idNumber\":"+idNumberDo.getCitizenId()+",\"realName\":"+idNumberDo.getName()+"}";
         }
     }
 
