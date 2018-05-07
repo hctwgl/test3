@@ -176,7 +176,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }else if (userAuth.getBankcardStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
             bo.action="DO_BIND_CARD";
-            bo.params = "{\"idNumber\":"+idNumberDo.getCitizenId()+",\"realName\":"+idNumberDo.getName()+"'\"}";
         }else if (userAuth.getRiskStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
@@ -188,7 +187,9 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
         }
-
+        if (idNumberDo != null){
+            bo.params = "{\"idNumber\":"+idNumberDo.getCitizenId()+",\"realName\":"+idNumberDo.getName()+"'\"}";
+        }
     }
 
     /**
