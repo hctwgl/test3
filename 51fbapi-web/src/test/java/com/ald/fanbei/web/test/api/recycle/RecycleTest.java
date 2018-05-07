@@ -19,7 +19,7 @@ public class RecycleTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = AccountOfTester.胡潮永.mobile;
+	String userName = AccountOfTester.朱玲玲.mobile;
 	
 	@Before
 	public void init(){
