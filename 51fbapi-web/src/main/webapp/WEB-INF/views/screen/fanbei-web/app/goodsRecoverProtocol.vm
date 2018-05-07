@@ -10,17 +10,21 @@
         ul{
             border: 1px solid #111;
         }
-        ul i:first-child{
-            width: 2.5rem;
+        ul li{
+            border-bottom: 1px solid #111;
+            overflow-x: hidden;
+        }
+        ul li:last-child{
+            border-bottom: 0;
+        }
+        ul li i:first-child{
+            width: 35%;
             text-align: center;
             border-right: 1px solid #111;
             margin-right: 0.2rem;
         }
-        ul li{
-            border-bottom: 1px solid #111;
-        }
-        ul li:last-child{
-            border-bottom: 0;
+        ul li i:last-child{
+            width: 60%;
         }
     </style>
 </head>
