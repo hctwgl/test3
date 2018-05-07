@@ -98,7 +98,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     }
     public BorrowRecycleHomeInfoBo unLogin() {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
         bo.rejectCode = AfBorrowCashRejectType.PASS.name();
         bo.isLogin = false;
@@ -115,6 +114,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
         AfUserBankcardDo userBankcardDo=afUserBankcardService.getUserMainBankcardByUserId(userAccount.getUserId());
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
+        bo.isLogin = true;
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
         bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
@@ -155,7 +155,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         } else {
             bo.isBorrowOverdue = false;
         }
-        AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
+//        AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
 //        bo.rejectCode = rejectType.name();
         return bo;
     }
@@ -180,7 +180,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         }else if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_PROMOTE_BASIC";
         }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
             bo.rejectCode=AfBorrowCashRejectType.PASS.name();
             //检查额度
@@ -190,8 +189,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
         }else {
-            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_PROMOTE_BASIC";
+            bo.rejectCode=AfBorrowCashRejectType.PASS.name();
         }
         if (idNumberDo != null){
             bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
