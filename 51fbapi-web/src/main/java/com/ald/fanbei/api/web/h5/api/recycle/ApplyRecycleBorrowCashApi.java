@@ -1,9 +1,12 @@
 package com.ald.fanbei.api.web.h5.api.recycle;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -29,11 +32,6 @@ import com.ald.fanbei.api.biz.third.util.common.RiskResultCode;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.RiskReviewStatus;
-import com.ald.fanbei.api.common.enums.SceneType;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BeanUtil;
@@ -125,13 +123,14 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 
 			final AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildRecycleBorrowCashDo(mainCard, userId, rateInfoDo, paramBo);
 			afBorrowCashDo.setMajiabaoName(appName);// 用户借钱时app来源区分
-			
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
+			Map<String, Object> map = afResourceService.getRateInfo(afResourceDo.getValue2(),paramBo.getType(),"borrow","BORROW_RECYCLE_INFO_LEGAL_NEW");
 			AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
 			recycleOrderDo.setPropertyValue(paramBo.getPropertyValue());
 			recycleOrderDo.setUserId(userId);
 			recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
 			recycleOrderDo.setGoodsName(paramBo.getGoodsName());
-			
+			recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")));
 			Long borrowId = afBorrowRecycleService.addBorrowRecord(afBorrowCashDo, recycleOrderDo);
 
 			RiskVerifyRespBo verifyBo;

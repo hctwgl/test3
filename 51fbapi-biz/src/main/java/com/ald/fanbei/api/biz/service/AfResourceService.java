@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
@@ -313,4 +314,6 @@ public interface AfResourceService {
 	 * @return
 	 */
 	List<String> getBorrowCashWhiteList();
+
+	Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag,String secType);
 }

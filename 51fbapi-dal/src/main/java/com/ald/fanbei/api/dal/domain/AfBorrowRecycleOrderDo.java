@@ -54,6 +54,16 @@ import java.math.BigDecimal;
 
     private Long userId;
 
+    private BigDecimal overdueRate;
+
+    public BigDecimal getOverdueRate() {
+        return overdueRate;
+    }
+
+    public void setOverdueRate(BigDecimal overdueRate) {
+        this.overdueRate = overdueRate;
+    }
+
     public Long getUserId() {
         return userId;
     }

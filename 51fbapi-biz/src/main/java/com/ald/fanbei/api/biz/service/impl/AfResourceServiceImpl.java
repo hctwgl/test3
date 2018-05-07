@@ -11,6 +11,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1082,4 +1084,57 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return whiteIdsList;
 	}
 
+    @Override
+    public Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag,String secType) {
+        AfResourceDo afResourceDo = afResourceDao.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), secType);
+        String oneDay = "";
+        String twoDay = "";
+        if(null != afResourceDo){
+            oneDay = afResourceDo.getTypeDesc().split(",")[0];
+            twoDay = afResourceDo.getTypeDesc().split(",")[1];
+        }
+        Map<String, Object> rateInfo = Maps.newHashMap();
+        double serviceRate = 0;
+        double interestRate = 0;
+        double overdueRate = 0;
+        JSONArray array = JSONObject.parseArray(borrowRate);
+        double totalRate = 0;
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject info = array.getJSONObject(i);
+            String borrowTag = info.getString(tag + "Tag");
+            if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    interestRate = info.getDouble(tag + "FirstType");
+                    totalRate += interestRate;
+                } else if(StringUtils.equals(twoDay, borrowType)) {
+                    interestRate = info.getDouble(tag + "SecondType");
+                    totalRate += interestRate;
+                }
+            }
+            if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    serviceRate = info.getDouble(tag + "FirstType");
+                    totalRate += serviceRate;
+                } else if(StringUtils.equals(twoDay, borrowType)){
+                    serviceRate = info.getDouble(tag + "SecondType");
+                    totalRate += serviceRate;
+                }
+            }
+            if (StringUtils.equals("CONTRACT_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    overdueRate = info.getDouble(tag + "FirstType");
+                    totalRate += serviceRate;
+                } else if(StringUtils.equals(twoDay, borrowType)){
+                    overdueRate = info.getDouble(tag + "SecondType");
+                    totalRate += serviceRate;
+                }
+            }
+
+        }
+        rateInfo.put("serviceRate", serviceRate);
+        rateInfo.put("interestRate", interestRate);
+        rateInfo.put("overdueRate", overdueRate);
+        rateInfo.put("totalRate", totalRate);
+        return rateInfo;
+    }
 }
