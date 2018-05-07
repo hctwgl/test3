@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 用户第三方信息Service
@@ -31,10 +32,26 @@ public interface AfUserThirdInfoService extends ParentService<AfUserThirdInfoDo,
     UserWxInfoDto getWxOrLocalUserInfo(Long userId);
 
     /**
+     * 根据微信openId获取用户信息
+     *
+     * @author wangli
+     * @date 2018/5/6 12:17
+     */
+    UserWxInfoDto getLocalUserInfoByWxOpenId(String openId);
+
+    /**
      * 根据微信openId获取用户id
      *
      * @author wangli
      * @date 2018/5/4 14:33
      */
     Long getUserIdByWxOpenId(String openId);
+
+    /**
+     * 绑定用户微信信息
+     *
+     * @author wangli
+     * @date 2018/5/7 16:53
+     */
+    void bindUserWxInfo(JSONObject userWxInfo, Long userId, String modifier);
 }

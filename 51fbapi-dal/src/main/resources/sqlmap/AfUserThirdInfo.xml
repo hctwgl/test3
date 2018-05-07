@@ -156,5 +156,10 @@
         FROM af_user_third_info
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getLocalUserInfoByThirdId" resultType="UserWxInfoDto">
+        SELECT u.user_id, u.user_name
+        FROM af_user_third_info ut, af_user u
+        WHERE ut.user_id = u.id AND ut.is_delete = 0 AND ut.third_id = #{thirdId} AND ut.third_type = #{thirdType}
+    </select>
 </mapper>

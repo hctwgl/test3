@@ -29,4 +29,12 @@ public interface AfRedPacketHelpOpenService extends ParentService<AfRedPacketHel
      * @date 2018/5/4 15:16
      */
     AfRedPacketHelpOpenDo getByOpenIdAndUserId(String openId, Long userId);
+
+    /**
+     * 帮拆红包
+     *
+     * @author wangli
+     * @date 2018/5/7 11:13
+     */
+    AfRedPacketHelpOpenDo open(AfRedPacketHelpOpenDo helpOpenDo);
 }

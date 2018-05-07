@@ -56,11 +56,29 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	}
 
 	@Override
-	public Long getUserIdByWxOpenId(String openId) {
-		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByThirdId(openId, UserThirdType.WX.getCode());
-		if (thirdInfo == null) return null;
+	public UserWxInfoDto getLocalUserInfoByWxOpenId(String openId) {
+		return afUserThirdInfoDao.getLocalUserInfoByThirdId(openId, UserThirdType.WX.getCode());
+	}
 
-		return thirdInfo.getUserId();
+	@Override
+	public Long getUserIdByWxOpenId(String openId) {
+		UserWxInfoDto userWxInfoDto = getLocalUserInfoByWxOpenId(openId);
+		if (userWxInfoDto == null) return null;
+
+		return userWxInfoDto.getUserId();
+	}
+
+	@Override
+	public void bindUserWxInfo(JSONObject userWxInfo, Long userId, String modifier) {
+		String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
+		AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
+		userThirdInfoDo.setUserId(userId);
+		userThirdInfoDo.setThirdId(openId);
+		userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
+		userThirdInfoDo.setCreator(modifier);
+		userThirdInfoDo.setModifier(modifier);
+		userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
+		saveRecord(userThirdInfoDo);
 	}
 
 	// 获取用户第三方信息

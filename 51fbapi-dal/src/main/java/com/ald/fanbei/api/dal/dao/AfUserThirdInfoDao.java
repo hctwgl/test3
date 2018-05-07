@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户第三方信息Dao
@@ -12,4 +14,11 @@ import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
  */
 public interface AfUserThirdInfoDao extends BaseDao<AfUserThirdInfoDo, Long> {
 
+    /**
+     * 根据第三方id查找本平台用户信息
+     *
+     * @author wangli
+     * @date 2018/5/6 16:01
+     */
+    UserWxInfoDto getLocalUserInfoByThirdId(@Param("thridId") String thridId, @Param("thirdType") String thirdType);
 }

@@ -23,4 +23,12 @@ public interface AfRedPacketHelpOpenDao extends BaseDao<AfRedPacketHelpOpenDo, L
      */
     List<AfRedPacketHelpOpenDo> findOpenRecordList(@Param("redPacketTotalId") Long redPacketTotalId,
                                                    @Param("queryNum") Integer queryNum);
+
+    /**
+     * 获取已拆红包数量
+     *
+     * @author wangli
+     * @date 2018/5/7 11:20
+     */
+    int getOpenedNum(@Param("redPacketTotalId") Long redPacketTotalId);
 }

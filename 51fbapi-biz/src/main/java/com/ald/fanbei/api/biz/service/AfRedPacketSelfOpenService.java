@@ -22,4 +22,20 @@ public interface AfRedPacketSelfOpenService extends ParentService<AfRedPacketSel
      * @date 2018/5/3 20:58
      */
     List<AfRedPacketSelfOpenDto> findOpenRecordList(Long redPacketTotalId);
+
+    /**
+     * 获取已拆红包数量
+     *
+     * @author wangli
+     * @date 2018/5/7 9:54
+     */
+    int getOpenedNum(Long redPacketTotalId);
+
+    /**
+     * 拆红包
+     *
+     * @author wangli
+     * @date 2018/5/7 10:04
+     */
+    AfRedPacketSelfOpenDo open(Long userId, String modifier, String sourceType);
 }

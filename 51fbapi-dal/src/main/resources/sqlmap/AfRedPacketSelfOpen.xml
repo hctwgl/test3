@@ -162,4 +162,10 @@
         WHERE rps.red_packet_total_id = rpt.id AND rpt.user_id = u.id
           AND rps.is_delete = 0 AND rpt.is_delete = 0 AND rpt.id = #{redPacketTotalId}
     </select>
+
+    <select id="getOpenedNum" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(1), 0)
+        FROM af_red_packet_self_open
+        WHERE is_delete = 0 AND red_packet_total_id = #{redPacketTotalId}
+    </select>
 </mapper>

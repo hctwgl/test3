@@ -27,6 +27,10 @@ public class UserWxInfoDto extends AbstractSerial {
 
     private String nick;
 
+    private Long userId;
+
+    private String userName;
+
     public UserWxInfoDto() {}
 
     public UserWxInfoDto(JSONObject jsonInfo) {

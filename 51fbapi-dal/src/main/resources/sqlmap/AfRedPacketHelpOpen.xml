@@ -203,4 +203,10 @@
             LIMIT #{queryNum}
         </if>
     </select>
+
+    <select id="getOpenedNum" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(1), 0)
+        FROM af_red_packet_help_open
+        WHERE is_delete = 0 AND red_packet_total_id = #{redPacketTotalId}
+    </select>
 </mapper>

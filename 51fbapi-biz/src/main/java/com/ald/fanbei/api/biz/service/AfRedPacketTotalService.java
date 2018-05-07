@@ -38,4 +38,11 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      */
     List<AfRedPacketTotalDo> findWithdrawList(Long userId, Integer queryNum);
 
+    /**
+     * 红包提现
+     *
+     * @author wangli
+     * @date 2018/5/6 16:07
+     */
+    void withdraw(Long id, String modifier);
 }
