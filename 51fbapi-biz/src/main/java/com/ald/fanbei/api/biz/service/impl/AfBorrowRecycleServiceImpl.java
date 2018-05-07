@@ -230,6 +230,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     @Override
     public BorrowRecycleHomeInfoBo getRecycleRecordByBorrowId(Long borrowId) {
         AfBorrowCashDo cashDo = afBorrowCashDao.getBorrowCashByrid(borrowId);
+        AfIdNumberDo idNumberDo = idNumberService.getIdNumberInfoByUserId(cashDo.getUserId());
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
         bo.borrowNo = cashDo.getBorrowNo();
         bo.borrowId = cashDo.getRid();
@@ -241,6 +242,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         bo.reBankId = cashDo.getCardNumber();
         bo.reBankName = cashDo.getCardName();
         bo.borrowStatus = cashDo.getStatus();
+        bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
         addRecycleGoodsInfos(bo, cashDo);
         bo.overdueAmount = BigDecimalUtil.add(cashDo.getRateAmount(), cashDo.getOverdueAmount(),cashDo.getSumRate(),cashDo.getSumOverdue());
         return bo;
