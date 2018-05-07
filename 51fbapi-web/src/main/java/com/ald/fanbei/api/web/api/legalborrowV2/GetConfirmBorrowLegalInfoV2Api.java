@@ -150,7 +150,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_SWITCH.getCode(),AfResourceSecType.BORROW_CASH_SWITCH.getCode());
 			boolean isCanBorrowCash = afBorrowCashService.isCanBorrowCash(userId);
 			if (!isCanBorrowCash) {
-				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
 			}else if (resourceDo != null && resourceDo.getValue().equals("Y")){
 				if (context.getAppVersion() > 390){
 				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STOP_ERROR);

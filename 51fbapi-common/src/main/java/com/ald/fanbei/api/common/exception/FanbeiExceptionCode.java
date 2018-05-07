@@ -280,6 +280,7 @@ public enum FanbeiExceptionCode {
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
+    JSD_BORROW_CASH_STATUS_ERROR("JSD_BORROW_CASH_STATUS_ERROR",2022,"jsd borrow cash amount status","您有一笔未结清极速贷借款"),
     BORROW_ERROR("BORROW_ERROR",7001,"borrow_errow","借款回调修改异常"),
 
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
