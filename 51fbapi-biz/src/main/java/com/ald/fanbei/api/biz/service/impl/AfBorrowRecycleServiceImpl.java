@@ -180,7 +180,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         }else if (userAuth.getRiskStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         }else if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
-            bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
+            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
         }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
             bo.rejectCode=AfBorrowCashRejectType.PASS.name();
             //检查额度
