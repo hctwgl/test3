@@ -172,9 +172,9 @@ public class AfBorrowRecycleRepaymentServiceImpl implements AfBorrowRecycleRepay
 	    lockRepay(bo.userId);
 		
 	    Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_RECYCLE;
 		if (StringUtil.equals("sysJob", bo.remoteIp)) {
-		    name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+		    name = Constants.BORROW_REPAYMENT_RECYCLE_NAME_AUTO;
 		}
 	
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);

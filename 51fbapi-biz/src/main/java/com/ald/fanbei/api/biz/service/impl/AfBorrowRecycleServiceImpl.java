@@ -98,7 +98,6 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     }
     public BorrowRecycleHomeInfoBo unLogin() {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
-
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
         bo.rejectCode = AfBorrowCashRejectType.PASS.name();
         bo.isLogin = false;
@@ -115,6 +114,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
         AfUserBankcardDo userBankcardDo=afUserBankcardService.getUserMainBankcardByUserId(userAccount.getUserId());
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
+        bo.isLogin = true;
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
         bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
@@ -123,6 +123,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.reMainBankName= userBankcardDo.getBankName();
         }
         AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+        bo.rejectCode=AfBorrowCashRejectType.PASS.name();
         checkCreditAction(bo,userAccount,cfgBean.minAmount,cfgBean.supuerSwitch);//h5返回认证状态判断并跳转页面
         if (cashDo == null) {
             bo.minQuota = cfgBean.minAmount;
@@ -180,18 +181,16 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
         }else if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_PROMOTE_BASIC";
         }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
             bo.rejectCode=AfBorrowCashRejectType.PASS.name();
             //检查额度
-            if (minAmount.compareTo(userAccount.getAuAmount()) > 0) {
-                bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
-            }else if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
+           if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
-        }else {
-            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_PROMOTE_BASIC";
+
+        }
+        if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
+            bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
         }
         if (idNumberDo != null){
             bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";

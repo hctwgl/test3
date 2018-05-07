@@ -3,14 +3,11 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -60,15 +57,6 @@ import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -84,6 +72,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfBorrowCashService afBorrowCashService;
+
+	@Resource
+	AfBorrowCashDao afBorrowCashDao;
 
 	@Resource
 	AfBorrowRecycleOrderService borrowRecycleOrderService;
@@ -125,6 +116,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfBorrowCashDao borrowCashDao;
+
+	@Resource
+	AfBorrowRecycleOrderService recycleOrderService;
 
 	@Resource
 	NumberWordFormat numberWordFormat;
@@ -239,6 +233,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		JSONArray array = JSONObject.parseArray(borrowRate);
 		BigDecimal rateAmount = oriRate.multiply(borrowAmount).multiply(new BigDecimal(day));
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+		Calendar   calendar   =   new   GregorianCalendar();
+		calendar.add(Calendar.DATE,Integer.parseInt(param.getType()));
+		afBorrowCashDo.setGmtPlanRepayment( calendar.getTime() );
 		afBorrowCashDo.setAmount(borrowAmount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
@@ -400,7 +397,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		this.checkBindCard(authDo);
 		this.checkAuth(authDo);
 		this.checkCanBorrow(accountDo, param);
-		this.checkBorrowFinish(accountDo.getUserId());
+		this.checkRecycleBorrowFinish(accountDo.getUserId());
 		this.checkRiskRefused(accountDo.getUserId());
 		this.checkCardNotEmpty(bankCard);
 		this.checkBorrowType(param,rateInfoDo);
@@ -430,6 +427,18 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		boolean borrowFlag = afBorrowCashService.isCanBorrowCash(userId);
 		if (!borrowFlag) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+		}
+	}
+
+	@Override
+	public void checkRecycleBorrowFinish(Long userId) {
+		List<AfBorrowCashDo> notFinishBorrowList = afBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
+		for (AfBorrowCashDo borrowCashDo :notFinishBorrowList) {
+			AfBorrowRecycleOrderDo recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
+			if (recycleOrderDo!= null){
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RECYCLE_STATUS_ERROR);
+			}
+			throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
 		}
 	}
 
@@ -576,7 +585,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
 				Date desTime = DateUtil.addDays(lastBorrowCashDo.getGmtCreate(), rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) {
-					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					throw new FanbeiException(FanbeiExceptionCode.RISK_REFUSE_ERROR);
 				}
 			}
 		}
