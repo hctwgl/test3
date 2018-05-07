@@ -130,7 +130,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 			recycleOrderDo.setUserId(userId);
 			recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
 			recycleOrderDo.setGoodsName(paramBo.getGoodsName());
-			recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")).divide(BigDecimal.valueOf(100),4,BigDecimal.ROUND_HALF_UP));
+			recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")));
 			Long borrowId = afBorrowRecycleService.addBorrowRecord(afBorrowCashDo, recycleOrderDo);
 
 			RiskVerifyRespBo verifyBo;

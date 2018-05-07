@@ -48,7 +48,7 @@ public class GetRecycleProtocolApi implements H5Handle {
                 afResourceDo.setValue("/app/sys/riskWarning");
             }
         }
-        data.put("whiteLoanList", afResourceDoList);
+        data.put("recycleList", afResourceDoList);
         resp.setResponseData(data);
         return resp;
     }

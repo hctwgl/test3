@@ -23,10 +23,8 @@ public class GetRecycleProtocolParam {
 	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	public String type;
 
-	@NotNull
 	public String goodsName;
 
-	@NotNull
 	public String goodsModel;
 
 	public String goodsImg;
