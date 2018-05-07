@@ -29,8 +29,5 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     @Resource
     private AfSignRewardExtDao afSignRewardExtDao;
 
-		@Override
-	public BaseDao<AfSignRewardExtDo, Long> getDao() {
-		return afSignRewardExtDao;
-	}
+
 }

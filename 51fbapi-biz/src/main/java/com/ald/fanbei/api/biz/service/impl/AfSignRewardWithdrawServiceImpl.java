@@ -29,8 +29,5 @@ public class AfSignRewardWithdrawServiceImpl  implements AfSignRewardWithdrawSer
     @Resource
     private AfSignRewardWithdrawDao afSignRewardWithdrawDao;
 
-		@Override
-	public BaseDao<AfSignRewardWithdrawDo, Long> getDao() {
-		return afSignRewardWithdrawDao;
-	}
+
 }
