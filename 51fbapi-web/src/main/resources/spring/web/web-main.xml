@@ -613,6 +613,10 @@
 				<!-- 白领贷业务接口 -->
 				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
 				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
+
+				<!-- 边逛边赚 -->
+				<entry key="/h5/reward/getRewardHomeInfo" value-ref="getRewardHomeInfoApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>
