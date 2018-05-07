@@ -438,6 +438,11 @@ public class ArbitrationController {
         return map;
     }
 
+    /**
+     * 综合接口请求各类数据
+     * @param response
+     * @throws Exception
+     */
     @ResponseBody
     @RequestMapping(value = {"/getData"}, method = RequestMethod.POST)
     public void getData(HttpServletResponse response) throws Exception {
