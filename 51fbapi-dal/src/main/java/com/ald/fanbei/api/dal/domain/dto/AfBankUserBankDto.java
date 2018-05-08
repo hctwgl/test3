@@ -5,6 +5,8 @@ package com.ald.fanbei.api.dal.domain.dto;
 
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 
+import java.math.BigDecimal;
+
 /**
  * @类描述：
  * @author suweili 2017年3月1日下午9:54:22
@@ -21,6 +23,11 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
     private String message;
 
     private String bankChannel;
+
+    //银行卡类型 0 其它 1 借记卡 2 信用卡
+    private Integer cardType;
+    //信用卡付款费率
+    private BigDecimal creditRate;
 
     public String getIsValid() {
 	return isValid;
@@ -69,9 +76,32 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
 	this.bankChannel = bankChannel;
     }
 
-    @Override
-    public String toString() {
-	return "AfBankUserBankDto [bankIcon=" + bankIcon + ", isValid=" + isValid + ", bankStatus=" + bankStatus + ", message=" + message + ", bankChannel=" + bankChannel + "]";
+    public Integer getCardType() {
+        return cardType;
     }
 
+    public void setCardType(Integer cardType) {
+        this.cardType = cardType;
+    }
+
+    public BigDecimal getCreditRate() {
+        return creditRate;
+    }
+
+    public void setCreditRate(BigDecimal creditRate) {
+        this.creditRate = creditRate;
+    }
+
+    @Override
+    public String toString() {
+        return "AfBankUserBankDto{" +
+                "bankIcon='" + bankIcon + '\'' +
+                ", isValid='" + isValid + '\'' +
+                ", bankStatus=" + bankStatus +
+                ", message='" + message + '\'' +
+                ", bankChannel='" + bankChannel + '\'' +
+                ", cardType=" + cardType +
+                ", creditRate=" + creditRate +
+                '}';
+    }
 }
