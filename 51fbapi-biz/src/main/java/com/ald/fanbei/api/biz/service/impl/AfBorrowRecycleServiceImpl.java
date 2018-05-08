@@ -177,6 +177,11 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             bo.action="DO_SCAN_ID";
             return bo;
         }
+        if (userAuth.getRealnameStatus().equals("N")){
+            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
+            bo.action="DO_SCAN_ID";
+            return bo;
+        }
         if (userAuth.getBankcardStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
             bo.action="DO_BIND_CARD";
