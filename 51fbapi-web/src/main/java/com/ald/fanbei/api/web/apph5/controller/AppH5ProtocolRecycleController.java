@@ -73,6 +73,7 @@ public class AppH5ProtocolRecycleController extends BaseController {
         String goodsName = ObjectUtils.toString(request.getParameter("goodsName"), "").toString();
         String goodsModel = ObjectUtils.toString(request.getParameter("goodsModel"), "").toString();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
+        BigDecimal riskDailyRate = NumberUtil.objToBigDecimalDefault(request.getParameter("riskDailyRate"), new BigDecimal(0));
         long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0);
         Integer type = NumberUtil.objToIntDefault(request.getParameter("type"), 0);
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
@@ -100,25 +101,26 @@ public class AppH5ProtocolRecycleController extends BaseController {
         if (borrowId > 0) {//借了钱的借钱协议
             getRecycleProtocolWithBorrowId(model, borrowId);
         } else {//借钱前的借钱协议
-            getRecycleProtocolWithWoutBorrowId(model, (Double) map.get("overdueRate"));
+            getRecycleProtocolWithWoutBorrowId(model, (Double) map.get("overdueRate"),riskDailyRate);
         }
     }
     private void getRecycleProtocolWithBorrowId(ModelMap model,Long borrowId) {
         AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
         AfBorrowRecycleOrderDo recycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowId);
         model.put("riskDailyRate",borrowCashDo.getRiskDailyRate());
-        model.put("overdueRate",recycleOrderDo.getOverdueRate());
+        model.put("overdueRate",recycleOrderDo.getOverdueRate().divide(BigDecimal.valueOf(360)));
         model.put("gmtCreate",recycleOrderDo.getGmtCreate());
         model.put("borrowNo",borrowCashDo.getBorrowNo());
         model.put("goodsName", recycleOrderDo.getGoodsName());//借钱本金
         model.put("goodsModel",JSON.parseObject(recycleOrderDo.getPropertyValue()).get("goodsModel"));
-        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-        model.put("lender", lenderDo.getValue());// 出借人
+        AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
+        model.put("lender", companyInfo.getValue());// 出借人
     }
-    private void getRecycleProtocolWithWoutBorrowId(ModelMap model,Double overdueRate) {
-        model.put("overdueRate",overdueRate);
-        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-        model.put("lender", lenderDo.getValue());// 出借人
+    private void getRecycleProtocolWithWoutBorrowId(ModelMap model,Double overdueRate,BigDecimal riskDailyRate) {
+        model.put("overdueRate",new BigDecimal(overdueRate).divide(BigDecimal.valueOf(360)));
+        model.put("riskDailyRate",riskDailyRate);
+        AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
+        model.put("lender", companyInfo.getValue());// 出借人
     }
 
     /**
