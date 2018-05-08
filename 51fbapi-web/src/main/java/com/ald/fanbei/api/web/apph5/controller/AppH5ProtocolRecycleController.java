@@ -9,10 +9,6 @@ import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
-import com.ald.fanbei.api.dal.dao.AfContractPdfEdspaySealDao;
-import com.ald.fanbei.api.dal.dao.AfEdspayUserInfoDao;
-import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -31,10 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author CFP 2017年12月19日下午1:41:05
@@ -70,8 +63,8 @@ public class AppH5ProtocolRecycleController extends BaseController {
     @RequestMapping(value = {"goodsRecoverProtocol"}, method = RequestMethod.GET)
     public void goodsRecoverProtocol(HttpServletRequest request, ModelMap model) throws IOException {
         String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-        String goodsName = ObjectUtils.toString(request.getParameter("goodsName"), "").toString();
-        String goodsModel = ObjectUtils.toString(request.getParameter("goodsModel"), "").toString();
+        String goodsName = ObjectUtils.toString(new String(request.getParameter("goodsName").getBytes("iso-8859-1"), "utf-8"), "").toString();
+        String goodsModel = ObjectUtils.toString(new String(request.getParameter("goodsModel").getBytes("iso-8859-1"), "utf-8"), "").toString();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
         BigDecimal riskDailyRate = NumberUtil.objToBigDecimalDefault(request.getParameter("riskDailyRate"), new BigDecimal(0));
         long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0);
