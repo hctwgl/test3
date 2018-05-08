@@ -432,7 +432,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    }
 	}
 
-	addAdditionalStatus(data, authDo,authDo.getOnlinebankStatus());
+	addAdditionalStatus(data, authDo,bubbleConfigResourceDo.getValue());
 	data.put("showExtraTab", "1");
 	data.put("isSkipH5", isSkipH5);
 
@@ -773,7 +773,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    }
 	}
         if (YesNoStatus.YES.getCode().equals(bubbleSwitch) && "Y".equals(authDo.getBubbleStatus())) {
-            supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, scene, AuthType.BUBBLE.getCode(), authDo.getGmtZhengxin());
+            supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, scene, AuthType.BUBBLE.getCode(), authDo.getGmtBubble());
             if (supplementAuth.get("status") != null) {
                 data.put("bubbleStatus", supplementAuth.get("status"));
                 data.put("bubbleTitle", supplementAuth.get("title"));
