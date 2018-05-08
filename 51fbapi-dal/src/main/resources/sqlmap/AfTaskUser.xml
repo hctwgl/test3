@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_task_user表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTaskUserDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_id,task_id,coin_amount,cash_amount,coupon_id 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="taskId != null and taskId != ''">
+            AND task_id = #{taskId,jdbcType=INTEGER}
+        </if>
+        <if test="coinAmount != null and coinAmount != ''">
+            AND coin_amount = #{coinAmount,jdbcType=INTEGER}
+        </if>
+        <if test="cashAmount != null and cashAmount != ''">
+            AND cash_amount = #{cashAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            AND coupon_id = #{couponId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_task_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="taskId != null">        
+	            task_id,
+	        </if>
+	        <if test="coinAmount != null">        
+	            coin_amount,
+	        </if>
+	        <if test="cashAmount != null">        
+	            cash_amount,
+	        </if>
+	        <if test="couponId != null">        
+	            coupon_id,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="taskId != null" >
+		       #{taskId,jdbcType=INTEGER},
+		    </if>
+		    <if test="coinAmount != null" >
+		       #{coinAmount,jdbcType=INTEGER},
+		    </if>
+		    <if test="cashAmount != null" >
+		       #{cashAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="couponId != null" >
+		       #{couponId,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        UPDATE af_task_user
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="taskId != null and taskId != '' ">        
+                task_id = #{taskId,jdbcType=INTEGER},                
+            </if>
+            <if test="coinAmount != null and coinAmount != '' ">        
+                coin_amount = #{coinAmount,jdbcType=INTEGER},                
+            </if>
+            <if test="cashAmount != null and cashAmount != '' ">        
+                cash_amount = #{cashAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="couponId != null and couponId != '' ">        
+                coupon_id = #{couponId,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="isDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND task_id IN
+        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ORDER BY gmt_create
+    </select>
+
+    <select id="isNotDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND task_id IN
+        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ORDER BY gmt_create
+    </select>
+    
+</mapper>
