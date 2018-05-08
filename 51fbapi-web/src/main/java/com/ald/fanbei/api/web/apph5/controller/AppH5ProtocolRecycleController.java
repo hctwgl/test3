@@ -63,8 +63,8 @@ public class AppH5ProtocolRecycleController extends BaseController {
     @RequestMapping(value = {"goodsRecoverProtocol"}, method = RequestMethod.GET)
     public void goodsRecoverProtocol(HttpServletRequest request, ModelMap model) throws IOException {
         String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-        String goodsName = ObjectUtils.toString(new String(request.getParameter("goodsName").getBytes("iso-8859-1"), "utf-8"), "").toString();
-        String goodsModel = ObjectUtils.toString(new String(request.getParameter("goodsModel").getBytes("iso-8859-1"), "utf-8"), "").toString();
+        String goodsName = ObjectUtils.toString(request.getParameter("goodsName"), "").toString();
+        String goodsModel = ObjectUtils.toString(request.getParameter("goodsModel"), "").toString();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
         BigDecimal riskDailyRate = NumberUtil.objToBigDecimalDefault(request.getParameter("riskDailyRate"), new BigDecimal(0));
         long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0);
