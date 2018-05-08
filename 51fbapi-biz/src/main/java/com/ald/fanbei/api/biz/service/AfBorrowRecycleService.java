@@ -5,6 +5,7 @@ import java.util.List;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleServiceImpl.BorrowRecycleHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowRecycleOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
 /**
  * 回收业务中未归类的函数写入此类
@@ -47,5 +48,7 @@ public interface AfBorrowRecycleService extends ParentService<AfBorrowCashDo, Lo
 	 * @return
 	 */
 	Long addBorrowRecord( AfBorrowCashDo afBorrowCashDo, AfBorrowRecycleOrderDo recycleOrderDo);
+
+	BorrowRecycleHomeInfoBo getRejectCodeAndAction(AfUserAccountDo userAccount);
 	
 }

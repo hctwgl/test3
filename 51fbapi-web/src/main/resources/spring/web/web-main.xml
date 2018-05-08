@@ -618,6 +618,7 @@
 				<entry key="/h5/recycle/borrowRecycleRecord" value-ref="borrowRecycleRecordApi" />
 				<entry key="/h5/recycle/borrowRecycleDetail" value-ref="borrowRecycleDetailApi" />
 				<entry key="/h5/recycle/borrowRecycleHome" value-ref="borrowRecycleHomeInfoApi" />
+				<entry key="/h5/recycle/borrowRecycleStatus" value-ref="borrowRecycleStatusApi" />
 				<entry key="/h5/recycle/recycleRepayDo" value-ref="recycleRepayDoApi" />
 				<entry key="/h5/recycle/getUserBankList" value-ref="getUserBankListApi" />
 				<entry key="/h5/recycle/borrowFinanceHome" value-ref="borrowFinanceHomeApi" />

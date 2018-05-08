@@ -156,8 +156,25 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         } else {
             bo.isBorrowOverdue = false;
         }
-        AfBorrowCashRejectType rejectType = this.rejectCheck(cfgBean, userAccount, cashDo);
-//        bo.rejectCode = rejectType.name();
+        return bo;
+    }
+
+    @Override
+    public BorrowRecycleHomeInfoBo getRejectCodeAndAction(AfUserAccountDo userAccount) {
+        BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
+        BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
+        bo.isLogin = true;
+        bo.minQuota = cfgBean.minAmount;
+        bo.borrowCashDay=cfgBean.borrowCashDay;
+        bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
+        AfBorrowCashDo cashDo = afBorrowCashDao.fetchLastRecycleByUserId(userAccount.getUserId());
+        bo.rejectCode=AfBorrowCashRejectType.PASS.name();
+        checkCreditAction(bo,userAccount,cfgBean.minAmount,cfgBean.supuerSwitch);//h5返回认证状态判断并跳转页面
+        if (cashDo == null) {
+            bo.minQuota = cfgBean.minAmount;
+            bo.isBorrowOverdue = false;
+            bo.recycleStatus ="UNSUBMIT";
+        }
         return bo;
     }
 
