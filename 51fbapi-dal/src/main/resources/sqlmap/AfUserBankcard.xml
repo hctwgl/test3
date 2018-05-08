@@ -195,7 +195,7 @@
 	
 	<select id="getAfUserBankcardDoList" parameterType="java.lang.Long" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryFields"/>,a.bank_icon
 		FROM
 			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code

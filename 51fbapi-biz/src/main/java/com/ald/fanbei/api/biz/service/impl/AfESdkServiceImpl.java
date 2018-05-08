@@ -811,7 +811,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
         if (null == afUserSealDo) {// 第一次创建个人印章
             Map<String, String> map = new HashMap<>();
-            map.put("name", accountDo.getRealName());
+            map.put("name", accountDo.getRealName() == null ? afUserDo.getRealName():accountDo.getRealName());
             map.put("idno", accountDo.getIdNumber());
             map.put("email", afUserDo.getEmail());
             map.put("mobile", afUserDo.getMobile());
@@ -826,9 +826,9 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
             afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());
             if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())) {
-                afUserSealDo1.setUserType("3");
+                afUserSealDo1.setUserType("3");//钱包用户
             } else {
-                afUserSealDo1.setUserType("2");
+                afUserSealDo1.setUserType("2");//反呗用户
             }
             AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");
             if (!addSealResult.isErrShow()) {
@@ -843,7 +843,9 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
             int num = insertUserSeal(afUserSealDo1);
             return afUserSealDo1;
-        } else if (null != afUserSealDo.getUserAccountId() && null == afUserSealDo.getUserSeal()) {// 有账户没印章
+        }
+
+        if (null != afUserSealDo.getUserAccountId() && null == afUserSealDo.getUserSeal()) {// 有账户没印章
             AddSealResult addSealResult = createSealPersonal(afUserSealDo.getUserAccountId().toString(), "SQUARE",
                     "RED");
             if (!addSealResult.isErrShow()) {
@@ -854,8 +856,7 @@ public class AfESdkServiceImpl implements AfESdkService {
                     afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
                     afUserSealDo1.setUserName(afUserDo.getRealName());
                 }
-                // userSeal = addSealResult.getSealData();
-                int num = afUserSealDao.updateByUserId(afUserSealDo1);
+                afUserSealDao.updateByUserId(afUserSealDo1);
             }
             return afUserSealDo1;
         }
