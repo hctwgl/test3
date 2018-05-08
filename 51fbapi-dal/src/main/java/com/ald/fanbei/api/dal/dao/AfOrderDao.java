@@ -321,4 +321,6 @@ public interface AfOrderDao {
 	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
 
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
+
+	int getFinishOrderCount(@Param("userId")Long userId);
 }

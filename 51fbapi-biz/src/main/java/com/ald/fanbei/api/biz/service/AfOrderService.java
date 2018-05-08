@@ -477,4 +477,9 @@ public interface AfOrderService {
 
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
 
+	/**
+	 * 查询用户完成订单数
+	 */
+	int getFinishOrderCount(Long userId);
+
 }

@@ -1448,4 +1448,8 @@
 		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
 		and iagent_status ='C'
 	</select>
+
+	<select id="getFinishOrderCount" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT count(id) FROM af_order where is_delete = 0 AND order_type = 'SELFBUILD' AND status in ('FINISHED','REBATED') AND user_id = #{userId}
+	</select>
 </mapper>

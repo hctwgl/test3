@@ -145,16 +145,16 @@
     </select>
 
     <select id="isExist" resultType="int" parameterType="Long">
-        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0 and reward_status = 0
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
         AND  date_format(now(),'%Y-%m-%d') = date_format(gmt_create,'%Y-%m-%d')
     </select>
 
     <select id="sumAmount" resultType="double" parameterType="Long">
-        SELECT sum(amount) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and status = 0 and reward_status = 0
+        SELECT sum(amount) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and status = 0
     </select>
 
-    <select id="sumSignDays">
-        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0 and reward_status = 0
+    <select id="sumSignDays" resultType="int">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
         AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
     </select>
     

@@ -3099,4 +3099,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		return orderDao.selectTodayIagentStatusCOrders(userId);
 	}
 
+	@Override
+	public int getFinishOrderCount(Long userId){
+		return orderDao.getFinishOrderCount(userId);
+	}
+
 }
