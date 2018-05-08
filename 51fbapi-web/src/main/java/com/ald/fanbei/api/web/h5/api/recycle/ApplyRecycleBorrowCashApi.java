@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.recycle;
 
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Map;
 
@@ -126,7 +127,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
 			Map<String, Object> map = afResourceService.getRateInfo(afResourceDo.getValue2(),paramBo.getType(),"borrow","BORROW_RECYCLE_INFO_LEGAL_NEW");
 			AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
-			recycleOrderDo.setPropertyValue(paramBo.getPropertyValue());
+			recycleOrderDo.setPropertyValue(URLDecoder.decode(paramBo.getPropertyValue()));
 			recycleOrderDo.setUserId(userId);
 			recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
 			recycleOrderDo.setGoodsName(paramBo.getGoodsName());
