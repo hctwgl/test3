@@ -245,24 +245,28 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			for(AfTaskDo afTaskDo : taskList){
 				if(id == afTaskDo.getRid()){
 					finalTaskList.add(afTaskDo);
-					continue;
 				}
+				break;
 			}
 		}
 		for(AfTaskDo afTaskDo : taskList){
 			boolean flag = true;
 			boolean taskFlag = true;
 			for(AfTaskUserDo afTaskUserDo : isDailyTaskList){
-				if(afTaskUserDo.getTaskId() == afTaskDo.getRid()){
+				if(afTaskUserDo.getTaskId() == afTaskDo.getRid()
+						|| (StringUtil.equals(afTaskDo.getIsOpen().toString(),"1") && StringUtil.equals(afTaskDo.getIsDelete(),"0"))){
 					flag = false;
 				}
+				break;
 			}
 			for(Long id : notFinishedList){
-				if(id == afTaskDo.getRid()){
+				if(id == afTaskDo.getRid()
+						|| (StringUtil.equals(afTaskDo.getIsOpen().toString(),"1") && StringUtil.equals(afTaskDo.getIsDelete(),"0"))){
 					taskFlag = false;
 				}
+				break;
 			}
-			if(flag&&taskFlag){
+			if(flag && taskFlag){
 				finalTaskList.add(afTaskDo);
 			}
 		}

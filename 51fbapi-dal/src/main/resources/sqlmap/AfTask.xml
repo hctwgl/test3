@@ -257,9 +257,7 @@
         select
           <include refid="queryFields" />
         from af_task
-        WHERE is_delete = 0
-        AND is_open = 1
-        AND user_id = #{userId}
+        WHERE user_id = #{userId}
         AND user_level in (#{userLevel})
         ORDER BY gmt_create
     </select>
