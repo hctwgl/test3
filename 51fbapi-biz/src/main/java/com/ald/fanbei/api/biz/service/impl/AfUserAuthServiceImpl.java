@@ -849,11 +849,14 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    data.put("gmtZhengxinExist", YesNoStatus.NO.getCode());
 	}
     // 添加是否已发起过冒泡认证，来区分对应状态是初始化还是之前认证失败
-     if (authDo.getGmtBubble() != null && YesNoStatus.YES.getCode().equals(bubbleSwitch)) {
-            data.put("gmtBubbleExist", YesNoStatus.YES.getCode());
-        } else {
-            data.put("gmtBubbleExist", YesNoStatus.NO.getCode());
-        }
+	 if(YesNoStatus.YES.getCode().equals(bubbleSwitch)){
+			if (authDo.getGmtBubble()!=null) {
+				data.put("gmtBubbleExist", YesNoStatus.YES.getCode());
+			} else {
+				data.put("gmtBubbleExist", YesNoStatus.NO.getCode());
+			}
+		}
+
     }
 
     @Override
