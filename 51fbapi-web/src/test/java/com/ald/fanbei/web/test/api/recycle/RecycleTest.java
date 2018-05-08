@@ -24,8 +24,9 @@ public class RecycleTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
-	String userName = AccountOfTester.代秋天.mobile;
+	String urlBase = "https://btestapp.51fanbei.com";
+//	String urlBase = "http://localhost:8080";
+	String userName = AccountOfTester.俞佳楠.mobile;
 	
 	@Before
 	public void init(){
@@ -69,24 +70,6 @@ public class RecycleTest extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("start", "0");
 		testH5(url, params, userName, true);
-	}
-
-	/**	"borrowTag": "OVERDUE_RATE"
-
-	 * 获取回收状态
-	 */
-	@Test
-	public void borrowRecycleStatus() throws UnsupportedEncodingException {
-		String name = URLDecoder.decode("goodsName=%E4%B8%89%E6%98%9F%20Galaxy%20Note8%20%E6%98%9F%E6%B2%B3%E8%93%9D&borrowId=null&goodsModel=64GB%209%E6%88%90%E6%96%B0&overdueRate=null&type=10&riskDailyRate=0.0080&_appInfo=%7B%22id%22:%22i_2116FA7F-4A3C-42DD-8366-8B2F402799E9_1525761688617_www%22,%22netType%22:%22Wifi%22,%22sign%22:%2271bb6f9564c47c98d8f70dc87eeedc9a7630480e259113af13fd284f9c8e87cc%22,%22appVersion%22:%22413%22,%22time%22:%221525761688617%22,%22userName%22:%2213656648524%22%7D");
-		System.out.println(name);
-		String t = URLEncoder.encode("goodsName=三星 Galaxy Note8 星河蓝&borrowId=null&goodsModel=64GB 9成新&overdueRate=null&type=10&riskDailyRate=0.0080&_appInfo={\"id\":\"i_2116FA7F-4A3C-42DD-8366-8B2F402799E9_1525761688617_www\",\"netType\":\"Wifi\",\"sign\":\"71bb6f9564c47c98d8f70dc87eeedc9a7630480e259113af13fd284f9c8e87cc\",\"appVersion\":\"413\",\"time\":\"1525761688617\",\"userName\":\"13656648524\"}","UTF-8");
-		String tt = URLEncoder.encode("goodsName=三星 Galaxy Note8 星河蓝&borrowId=null&goodsModel=64GB 9成新&overdueRate=null&type=10&riskDailyRate=0.0080&_appInfo={\"id\":\"i_2116FA7F-4A3C-42DD-8366-8B2F402799E9_1525761688617_www\",\"netType\":\"Wifi\",\"sign\":\"71bb6f9564c47c98d8f70dc87eeedc9a7630480e259113af13fd284f9c8e87cc\",\"appVersion\":\"413\",\"time\":\"1525761688617\",\"userName\":\"13656648524\"}","GBK");
-		System.out.println(t);
-		System.out.println(tt);
-//		String url = urlBase + "/h5/recycle/borrowRecycleStatus";
-//		Map<String,String> params = new HashMap<>();
-//		params.put("start", "0");
-//		testH5(url, params, userName, true);
 	}
 	/**
 	 * 获取回收详情
