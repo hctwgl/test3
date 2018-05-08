@@ -51,13 +51,9 @@ public class GetRecycleProtocolApi implements H5Handle {
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("RECYCLE_PROTOCOL");
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if ("RECYCLE_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//回收借钱协议
-                try {
 					afResourceDo.setValue("/fanbei-web/h5/goodsRecoverProtocol?userName=" + userName +
-					        "&amount=" + param.amount + "&goodsName=" + URLEncoder.encode(param.goodsName,"UTF-8") + "&borrowId=" + param.borrowId + "&goodsModel=" + URLEncoder.encode(param.goodsModel,"UTF-8") +
+					        "&amount=" + param.amount  + "&borrowId=" + param.borrowId  +
 					        "&overdueRate=" + param.overdueRate + "&type=" + param.type+"&riskDailyRate="+oriRate);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
             } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
                 afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" + userName);
             } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议
