@@ -65,7 +65,7 @@ public class GetAllBorrowListApi implements ApiHandle  {
 		}
 		
 		AfBorrowCashDo dealingCash = afBorrowCashDao.getDealingCashByUserId(userId);
-		if(afBorrowRecycleService.isRecycleBorrow(dealingCash.getRid())) { // 屏蔽 回收借款
+		if(dealingCash != null && afBorrowRecycleService.isRecycleBorrow(dealingCash.getRid())) { // 屏蔽 回收借款
 			dealingCash = null;
     	}
 		if(dealingCash != null) {
