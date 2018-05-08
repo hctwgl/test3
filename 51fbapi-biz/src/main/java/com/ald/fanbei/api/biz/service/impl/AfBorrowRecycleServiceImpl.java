@@ -168,6 +168,9 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         if (YesNoStatus.NO.getCode().equals(supuerSwitch) ) {
             bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
         }
+        if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
+            bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+        }
         if (userAuth == null){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
             bo.action="DO_SCAN_ID";
@@ -189,9 +192,7 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
             }
 
         }
-        if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
-            bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
-        }
+
         if (idNumberDo != null){
             bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
         }
