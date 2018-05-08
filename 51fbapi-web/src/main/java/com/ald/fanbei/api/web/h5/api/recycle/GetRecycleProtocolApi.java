@@ -38,7 +38,7 @@ public class GetRecycleProtocolApi implements H5Handle {
     RiskUtil riskUtil;
 
     @Override
-    public H5HandleResponse process(Context context) throws UnsupportedEncodingException {
+    public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         // 获取客户端请求参数
         GetRecycleProtocolParam param = (GetRecycleProtocolParam) context.getParamEntity();
@@ -51,9 +51,13 @@ public class GetRecycleProtocolApi implements H5Handle {
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("RECYCLE_PROTOCOL");
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if ("RECYCLE_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//回收借钱协议
-                afResourceDo.setValue("/fanbei-web/h5/goodsRecoverProtocol?userName=" + userName +
-                        "&amount=" + param.amount + "&goodsName=" + URLEncoder.encode(param.goodsName,"UTF-8") + "&borrowId=" + param.borrowId + "&goodsModel=" + URLEncoder.encode(param.goodsModel,"UTF-8") +
-                        "&overdueRate=" + param.overdueRate + "&type=" + param.type+"&riskDailyRate="+oriRate);
+                try {
+					afResourceDo.setValue("/fanbei-web/h5/goodsRecoverProtocol?userName=" + userName +
+					        "&amount=" + param.amount + "&goodsName=" + URLEncoder.encode(param.goodsName,"UTF-8") + "&borrowId=" + param.borrowId + "&goodsModel=" + URLEncoder.encode(param.goodsModel,"UTF-8") +
+					        "&overdueRate=" + param.overdueRate + "&type=" + param.type+"&riskDailyRate="+oriRate);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
             } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
                 afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" + userName);
             } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议
