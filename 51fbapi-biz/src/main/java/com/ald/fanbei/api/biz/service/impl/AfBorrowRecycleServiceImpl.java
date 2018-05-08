@@ -161,41 +161,52 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         return bo;
     }
 
-    void checkCreditAction(BorrowRecycleHomeInfoBo bo,AfUserAccountDo userAccount,BigDecimal minAmount,String supuerSwitch){
+    BorrowRecycleHomeInfoBo checkCreditAction(BorrowRecycleHomeInfoBo bo,AfUserAccountDo userAccount,BigDecimal minAmount,String supuerSwitch){
         AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userAccount.getUserId(), "CASH");
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(userAccount.getUserId());
         AfIdNumberDo idNumberDo = idNumberService.getIdNumberInfoByUserId(userAccount.getUserId());
+        if (idNumberDo != null){
+            bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
+        }
         if (YesNoStatus.NO.getCode().equals(supuerSwitch) ) {
             bo.rejectCode = AfBorrowCashRejectType.SWITCH_OFF.name();
-        }
-        if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
-            bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+            return bo;
         }
         if (userAuth == null){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
             bo.action="DO_SCAN_ID";
-        }else if (userAuth.getFacesStatus().equals("N")){
-            bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-            bo.action="DO_SCAN_ID";
-        }else if (userAuth.getBankcardStatus().equals("N")){
+            return bo;
+        }
+        if (userAuth.getBankcardStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
             bo.action="DO_BIND_CARD";
-        }else if (userAuth.getRiskStatus().equals("N")){
+            return bo;
+        }
+       if (userAuth.getRiskStatus().equals("N")){
             bo.rejectCode=AfBorrowCashRejectType.NO_PASS_STRO_RISK.name();
-        }else if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
+            return bo;
+        }
+        if (userAuth.getRiskStatus().equals("A")||userAuth.getRiskStatus().equals("P")){
             bo.rejectCode=AfBorrowCashRejectType.NO_AUTHZ.name();
-        }else if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
+            return bo;
+        }
+        if (afUserAuthStatusDo != null && afUserAuthStatusDo.getStatus().equals("Y")){
             bo.rejectCode=AfBorrowCashRejectType.PASS.name();
+            if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
+                bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+                return bo;
+            }
             //检查额度
-           if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
+            if (borrowCashService.checkRiskRefusedResult(userAccount.getUserId())){
                 bo.rejectCode=AfBorrowCashRejectType.NO_PASS_WEAK_RISK.name();
             }
-
+            return bo;
         }
-
-        if (idNumberDo != null){
-            bo.params = "{\"idNumber\":\""+idNumberDo.getCitizenId()+"\",\"realName\":\""+idNumberDo.getName()+"\"}";
+        if (minAmount.compareTo(userAccount.getAuAmount().subtract(userAccount.getUsedAmount())) > 0) {
+            bo.rejectCode=AfBorrowCashRejectType.QUOTA_TOO_SMALL.name();
+            return bo;
         }
+        return bo;
     }
 
     /**
