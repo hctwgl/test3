@@ -58,6 +58,7 @@ public class GetRecycleProtocolApi implements H5Handle {
                 afResourceDo.setValue("/app/sys/riskWarning");
             }
         }
+        logger.info("getRecycleProtocolApi userId = "+context.getUserId()+",recycleList ="+JSONObject.toJSONString(afResourceDoList));
         data.put("recycleList", afResourceDoList);
         resp.setResponseData(data);
         return resp;
