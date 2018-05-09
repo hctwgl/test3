@@ -11,13 +11,13 @@ package com.ald.fanbei.api.common.enums;
 public enum RiskReviewStatus {
 	
 	APPLY("APPLY", "申请/待风控审核"), 
-	WAITFBREVIEW("WAITFBREVIEW", ":待返呗审核通过"),
+	WAITFBREVIEW("WAITFBREVIEW", ":待爱上街审核通过"),
 	REFUSE("REFUSE", "风控拒绝审核不通过"),
 	
 	AGREE("AGREE", "风控审核同意"),
 
-	FBAGREE("FBAGREE", "返呗审核同意"),
-	FBREFUSE("FBREFUSE", "返呗平台审核拒绝");
+	FBAGREE("FBAGREE", "爱上街审核同意"),
+	FBREFUSE("FBREFUSE", "爱上街平台审核拒绝");
     
     private String code;
     private String name;

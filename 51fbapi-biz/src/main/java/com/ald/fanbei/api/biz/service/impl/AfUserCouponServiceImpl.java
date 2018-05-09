@@ -411,6 +411,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 								userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
 								userCoupon.setSourceType(couponSenceRuleType);
 								afUserCouponService.addUserCoupon(userCoupon);
+								AfCouponDo couponDoT = new AfCouponDo();
+								couponDoT.setRid(couponDo.getRid());
+								couponDoT.setQuotaAlready(1);
+								afCouponService.updateCouponquotaAlreadyById(couponDoT);
 
 								return userCoupon;
 							}
@@ -425,6 +429,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return null;
 	}
 
-	
+	@Override
+	public AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId){
+		return afUserCouponDao.getUserCouponAfterPaidSuccess(userId);
+	}
 	
 }

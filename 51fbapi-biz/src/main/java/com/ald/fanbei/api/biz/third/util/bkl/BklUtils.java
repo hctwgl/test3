@@ -58,7 +58,7 @@ public class BklUtils {
         }
         Map map=new HashMap();
         map.put("work_id", bklDo.getCsvArn()+ new Date().getTime());
-        map.put("corp_code", "51返呗");
+        map.put("corp_code", "爱上街");
         map.put("access_token", ConfigProperties.get(Constants.CONFKEY_BKL_ACCESS_TOKEN));
         map.put("job_code", "51FB-SP01");
         map.put("order_id", bklDo.getCsvArn() + new Date().getTime());

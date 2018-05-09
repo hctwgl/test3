@@ -1,13 +1,23 @@
 package com.ald.fanbei.api.common.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -17,16 +27,10 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.ald.fanbei.api.common.SSLClient;
-
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -38,6 +42,8 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ald.fanbei.api.common.SSLClient;
 
 /**
  * 
@@ -592,7 +598,7 @@ public class HttpUtil {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         String body = null;
 
-        logger.info("create httppost: url = " + url);
+        logger.debug("create httppost: url = " + url);
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
@@ -630,17 +636,17 @@ public class HttpUtil {
     }
 
     private static String paseResponse(HttpResponse response) {
-        logger.info("get response from http server..");
+        logger.debug("get response from http server..");
         HttpEntity entity = response.getEntity();
 
-        logger.info("response status: " + response.getStatusLine());
+        logger.debug("response status: " + response.getStatusLine());
         String charset = EntityUtils.getContentCharSet(entity);
-        logger.info(charset);
+        logger.debug(charset);
 
         String body = null;
         try {
             body = EntityUtils.toString(entity);
-            logger.info(body);
+            logger.debug(body);
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -651,7 +657,7 @@ public class HttpUtil {
     }
 
     private static HttpResponse sendRequest(DefaultHttpClient httpclient, HttpUriRequest httpost) {
-        logger.info("execute post...");
+        logger.debug("execute post...");
         HttpResponse response = null;
 
         try {
@@ -673,7 +679,7 @@ public class HttpUtil {
         }
 
         try {
-            logger.info("set utf-8 form entity to httppost");
+            logger.debug("set utf-8 form entity to httppost");
             httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

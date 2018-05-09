@@ -125,7 +125,7 @@ import java.math.BigDecimal;
     private String reviewDetails;
 
     /**
-     * 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
+     * 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待爱上街审核通过 ，REFUSE:风控拒绝， FBAGREE:爱上街审核同意， FBREFUSE:爱上街平台审核拒绝】
      */
     private String reviewStatus;
 
@@ -170,7 +170,7 @@ import java.math.BigDecimal;
     private BigDecimal auAmount;
 
     /**
-     * App来源，www为返呗,其余的为马甲包
+     * App来源，www为爱上街,其余的为马甲包
      */
     private String appName;
 
@@ -545,18 +545,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
+     * 获取审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待爱上街审核通过 ，REFUSE:风控拒绝， FBAGREE:爱上街审核同意， FBREFUSE:爱上街平台审核拒绝】
      *
-     * @return 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
+     * @return 审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待爱上街审核通过 ，REFUSE:风控拒绝， FBAGREE:爱上街审核同意， FBREFUSE:爱上街平台审核拒绝】
      */
     public String getReviewStatus(){
       return reviewStatus;
     }
 
     /**
-     * 设置审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
+     * 设置审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待爱上街审核通过 ，REFUSE:风控拒绝， FBAGREE:爱上街审核同意， FBREFUSE:爱上街平台审核拒绝】
      * 
-     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待返呗审核通过 ，REFUSE:风控拒绝， FBAGREE:返呗审核同意， FBREFUSE:返呗平台审核拒绝】 
+     * @param reviewStatus 要设置的审核状态【APPLY:申请/待风控审核 ，AGREE:风控同意 ， WAIT_FBREVIEW:待爱上街审核通过 ，REFUSE:风控拒绝， FBAGREE:爱上街审核同意， FBREFUSE:爱上街平台审核拒绝】
      */
     public void setReviewStatus(String reviewStatus){
       this.reviewStatus = reviewStatus;
@@ -707,18 +707,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取App来源，www为返呗,其余的为马甲包
+     * 获取App来源，www为爱上街,其余的为马甲包
      *
-     * @return App来源，www为返呗,其余的为马甲包
+     * @return App来源，www为爱上街,其余的为马甲包
      */
     public String getAppName(){
       return appName;
     }
 
     /**
-     * 设置App来源，www为返呗,其余的为马甲包
+     * 设置App来源，www为爱上街,其余的为马甲包
      * 
-     * @param appName 要设置的App来源，www为返呗,其余的为马甲包
+     * @param appName 要设置的App来源，www为爱上街,其余的为马甲包
      */
     public void setAppName(String appName){
       this.appName = appName;

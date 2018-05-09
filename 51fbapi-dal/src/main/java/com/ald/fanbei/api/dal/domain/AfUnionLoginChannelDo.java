@@ -27,7 +27,7 @@ import java.math.BigDecimal;
     private String code;
 
     /**
-     * 秘钥，常用于加解密与验签。可以由渠道方提供也可以由返呗提供
+     * 秘钥，常用于加解密与验签。可以由渠道方提供也可以由爱上街提供
      */
     private String secretKey;
 
@@ -110,18 +110,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取秘钥，常用于加解密与验签。可以由渠道方提供也可以由返呗提供
+     * 获取秘钥，常用于加解密与验签。可以由渠道方提供也可以由爱上街提供
      *
-     * @return 秘钥，常用于加解密与验签。可以由渠道方提供也可以由返呗提供
+     * @return 秘钥，常用于加解密与验签。可以由渠道方提供也可以由爱上街提供
      */
     public String getSecretKey(){
       return secretKey;
     }
 
     /**
-     * 设置秘钥，常用于加解密与验签。可以由渠道方提供也可以由返呗提供
+     * 设置秘钥，常用于加解密与验签。可以由渠道方提供也可以由爱上街提供
      * 
-     * @param secretKey 要设置的秘钥，常用于加解密与验签。可以由渠道方提供也可以由返呗提供
+     * @param secretKey 要设置的秘钥，常用于加解密与验签。可以由渠道方提供也可以由爱上街提供
      */
     public void setSecretKey(String secretKey){
       this.secretKey = secretKey;

@@ -106,7 +106,7 @@ let vm = new Vue({
         //点击有福同享--分享++埋点
         inviteButtonClick(){
             recommendCode=$('.invitecode').html();
-            let dat='{"shareAppTitle":"老铁~快来吃霸王餐啦~","shareAppContent":"节日剁手不吃土，来51返呗点16元外卖1元购，有福同享，你也快来>>>","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName='+pageName+'&recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"ggFixShare"}';
+            let dat='{"shareAppTitle":"老铁~快来吃霸王餐啦~","shareAppContent":"节日剁手不吃土，来爱上街点16元外卖1元购，有福同享，你也快来>>>","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName='+pageName+'&recommendCode='+recommendCode+'","isSubmit":"Y","sharePage":"ggFixShare"}';
             let base64 = BASE64.encoder(dat);
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
             //点击有福同享加埋点
@@ -175,7 +175,7 @@ function alaShareData(){
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
         "shareAppTitle": "老铁~快来吃霸王餐啦~",  // 分享的title
-        'shareAppContent': "节日剁手不吃土，来51返呗点16元外卖1元购，有福同享，你也快来>>>",  // 分享的内容
+        'shareAppContent': "节日剁手不吃土，来爱上街点16元外卖1元购，有福同享，你也快来>>>",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName+"&recommendCode="+recommendCode,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
