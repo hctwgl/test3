@@ -9,10 +9,10 @@ import java.math.BigDecimal;
  * 
  * @author gaojibin
  * @version 1.0.0 初始化
- * @date 2018-05-09 10:01:49
+ * @date 2018-05-09 15:00:02
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfOrderCreditInfoDo extends AbstractSerial {
+ public class AfOrderBankcardDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +46,13 @@ import java.math.BigDecimal;
      * 
      */
     private String bankcardNo;
+
+    /**
+     * 0 其它
+            1 借记卡
+            2 信用卡
+     */
+    private Integer cardType;
 
     /**
      * 
@@ -165,6 +172,32 @@ import java.math.BigDecimal;
      */
     public void setBankcardNo(String bankcardNo){
       this.bankcardNo = bankcardNo;
+    }
+
+    /**
+     * 获取0 其它
+            1 借记卡
+            2 信用卡
+     *
+     * @return 0 其它
+            1 借记卡
+            2 信用卡
+     */
+    public Integer getCardType(){
+      return cardType;
+    }
+
+    /**
+     * 设置0 其它
+            1 借记卡
+            2 信用卡
+     * 
+     * @param cardType 要设置的0 其它
+            1 借记卡
+            2 信用卡
+     */
+    public void setCardType(Integer cardType){
+      this.cardType = cardType;
     }
 
     /**
