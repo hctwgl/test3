@@ -9,7 +9,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,17 +24,6 @@ import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgB
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.enums.AfBorrowCashRejectType;
-import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowRecycleStatus;
-import com.ald.fanbei.api.common.enums.AfCounponStatus;
-import com.ald.fanbei.api.common.enums.AfLoanStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.SceneType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -88,10 +80,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
     private AfUserAccountSenceService afUserAccountSenceService;
 
 
-    public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId){
+    public BorrowRecycleHomeInfoBo getRecycleInfo(Long userId,Map<String,String> params){
         AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
         if(userAccount!=null){
-            return processLogin(userAccount);
+            return processLogin(userAccount,params);
         }else {
             return unLogin();
         }
@@ -110,13 +102,25 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         return bo;
     }
 
-    public BorrowRecycleHomeInfoBo processLogin(AfUserAccountDo userAccount) {
+    public BorrowRecycleHomeInfoBo processLogin(AfUserAccountDo userAccount,Map<String,String> params) {
         BorrowLegalCfgBean cfgBean = afResourceService.getBorrowLegalCfgInfo();
         AfUserBankcardDo userBankcardDo=afUserBankcardService.getUserMainBankcardByUserId(userAccount.getUserId());
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
+        String firstDay="10";
+        String secondDay="20";
+        if (afResourceDo != null){
+            String[] days = afResourceDo.getTypeDesc().split(",");
+            firstDay=days[0];
+            secondDay=days[1];
+        }
+        BigDecimal oriFirstRate = riskUtil.getRiskOriRate(userAccount.getUserId(),(JSONObject)JSONObject.toJSON(params),firstDay);
+        BigDecimal oriSecondRate = riskUtil.getRiskOriRate(userAccount.getUserId(),(JSONObject)JSONObject.toJSON(params),secondDay);
         BorrowRecycleHomeInfoBo bo = new BorrowRecycleHomeInfoBo();
         bo.isLogin = true;
         bo.minQuota = cfgBean.minAmount;
         bo.borrowCashDay=cfgBean.borrowCashDay;
+        bo.borrowFirstRate=oriFirstRate;
+        bo.borrowSecondRate=oriSecondRate;
         bo.useableAmount =this.calculateMaxAmount(afUserAccountSenceService.getLoanMaxPermitQuota(userAccount.getUserId(),SceneType.CASH,cfgBean.maxAmount));;
         if (userBankcardDo != null){
             bo.reMainBankId=userBankcardDo.getCardNumber();
@@ -394,6 +398,8 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         public String reMainBankId;
         public String reMainBankName;
         public String action;
+        public BigDecimal borrowFirstRate;
+        public BigDecimal borrowSecondRate;
 
     }
 
