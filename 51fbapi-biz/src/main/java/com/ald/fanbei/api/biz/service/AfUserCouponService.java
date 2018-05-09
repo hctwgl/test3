@@ -157,6 +157,8 @@ public interface AfUserCouponService {
     List<AfUserCouponDto> getUserAllCoupon();
 
 	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
+
+    List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status);
 }
 
 

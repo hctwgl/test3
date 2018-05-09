@@ -395,5 +395,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return afUserCouponDao.getUserAllCouponByUserId(userId);
 	}
 
+	@Override
+	public List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status) {
+		return afUserCouponDao.getH5UserCouponByUser(userId,status);
+	}
+
 
 }

@@ -146,4 +146,6 @@ public interface AfUserCouponDao {
 	List<AfUserCouponDto> getUserAllCoupon();
 
 	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
+
+    List<AfUserCouponDto> getH5UserCouponByUser(@Param("userId")Long userId, @Param("status")String status);
 }

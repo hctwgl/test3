@@ -12,8 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
+import com.ald.fanbei.api.web.vo.AfUserCouponVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -31,17 +34,6 @@ import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.HomePageType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.MoXieResCodeType;
-import com.ald.fanbei.api.common.enums.MobileStatus;
-import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -122,6 +114,10 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfSubjectGoodsService afSubjectGoodsService;
+
+	private final static int EXPIRE_DAY = 2;
+	@Resource
+	AfCouponCategoryService afCouponCategoryService;
 	/**
 	 * 首页弹窗页面
 	 * 
@@ -1505,10 +1501,98 @@ public class AppH5FanBeiWebController extends BaseController {
 			logger.error("getCouponList error for " + e);
 		}
 		return H5CommonResponse.getNewInstance(true, "", "", serviceInfo).toString();
-
-
 	}
 
+	/**
+	 * @author hqj
+	 * @说明：我的优惠券-h5接口
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             model
+	 * @param: @return
+	 * @param: @throws
+	 *             IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getMineCouponList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getMineCouponList(HttpServletRequest request, ModelMap model) throws IOException {
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();FanbeiWebContext context = new FanbeiWebContext();
+		try{
+			context = doWebCheck(request,true);
+			String userName = context.getUserName();
+			//userName = "18314896619";
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			Long userId = userDo.getRid();
+			Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("pageNo")), 1);
+			String status = ObjectUtils.toString(request.getParameter("status"),"");
+			Map<String, Object> data = new HashMap<String, Object>();
+			// 获取领券中心URL add by jrb
+			List<AfResourceDo>  resourceList = afResourceService.getConfigByTypes(ResourceType.COUPON_CENTER_URL.getCode());
+			if(resourceList != null && !resourceList.isEmpty()) {
+				AfResourceDo resourceDo = resourceList.get(0);
+				String couponCenterUrl = resourceDo.getValue();
+				String isShow = resourceDo.getValue1();
+				if("Y".equals(isShow)) {
+					data.put("couponCenterUrl", couponCenterUrl);
+				}
+			}
+			logger.info("userId=" + userId + ",status=" + status);
+			List<AfUserCouponDto> couponList = afUserCouponService.getH5UserCouponByUser(userId,status);
+			List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
+			for (AfUserCouponDto afUserCouponDto : couponList) {
+				AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
+				Date gmtEnd = couponVo.getGmtEnd();
+				// 如果当前时间离到期时间小于48小时,则显示即将过期
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
+				Date twoDay = cal.getTime();
+				if(gmtEnd != null){
+					if(twoDay.after(gmtEnd)) {
+						couponVo.setWillExpireStatus("Y");
+					} else {
+						couponVo.setWillExpireStatus("N");
+					}
+				} else {
+					couponVo.setWillExpireStatus("N");
+				}
+				// 查询优惠券所在分类
+				List <AfCouponCategoryDo> couponCategoryList = afCouponCategoryService.getCouponCategoryByCouponId(afUserCouponDto.getCouponId());
+				if(couponCategoryList != null && !couponCategoryList.isEmpty()) {
+					logger.info("couponCategoryList info=>" + couponCategoryList.toString());
+					AfCouponCategoryDo afCouponCategoryDo = couponCategoryList.get(0);
+					String shopUrl = afCouponCategoryDo.getUrl();
+					couponVo.setShopUrl(shopUrl);
+				}
+				couponVoList.add(couponVo);
+			}
+			return H5CommonResponse.getNewInstance(true, "", "", couponVoList).toString();
+		} catch(FanbeiException e){
+			String opennative = "/fanbei-web/opennative?name=";
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse
+					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+					.toString();
+		}catch (Exception e){
+			logger.error("getMineCouponList error", e);
+			return H5CommonResponse.getNewInstance(false, "预约失败").toString();
+		}
+	}
+	private AfUserCouponVo getUserCouponVo(AfUserCouponDto afUserCouponDto){
+		AfUserCouponVo couponVo = new AfUserCouponVo();
+		couponVo.setAmount(afUserCouponDto.getAmount());
+		couponVo.setGmtEnd(afUserCouponDto.getGmtEnd());
+		couponVo.setGmtStart(afUserCouponDto.getGmtStart());
+		couponVo.setLimitAmount(afUserCouponDto.getLimitAmount());
+		couponVo.setName(afUserCouponDto.getName());
+		couponVo.setStatus(afUserCouponDto.getStatus());
+		couponVo.setUseRule(afUserCouponDto.getUseRule());
+		couponVo.setType(afUserCouponDto.getType());
+		couponVo.setUseRange(afUserCouponDto.getUseRange());
+		couponVo.setShopUrl(afUserCouponDto.getShopUrl());
+		return couponVo;
+	}
 
 	/*
 	 * (non-Javadoc)
