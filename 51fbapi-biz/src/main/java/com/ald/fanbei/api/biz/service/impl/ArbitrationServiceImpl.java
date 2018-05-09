@@ -734,7 +734,7 @@ public class ArbitrationServiceImpl extends BaseService implements
         dataMap.put("voucherNo","po"+loanBillNo);
         dataMap.put("voucherOffer","宝付");
         dataMap.put("provedObject","");
-		dataMap.put("provedObject",DateUtil.formatDate(afBorrowCashDo.getGmtArrival(),"yyyy-MM-dd HH:mm:ss"));
+		dataMap.put("voucherDate",DateUtil.formatDate(afBorrowCashDo.getGmtArrival(),"yyyy-MM-dd"));
 
         List dataList=new ArrayList();
         dataList.add(dataMap);
