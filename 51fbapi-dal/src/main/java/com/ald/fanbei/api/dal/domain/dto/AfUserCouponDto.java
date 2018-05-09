@@ -26,4 +26,7 @@ public class AfUserCouponDto extends AfUserCouponDo {
     private String activityType;
     private String expiryType;
     private BigDecimal discount;
+    private Integer quota;
+    private Integer quotaAlready;
+    private Integer limitCount;
 }
