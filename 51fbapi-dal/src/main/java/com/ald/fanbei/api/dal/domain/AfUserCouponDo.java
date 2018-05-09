@@ -29,10 +29,6 @@ public class AfUserCouponDo extends AbstractSerial{
 	private String	sourceType;//'获取来源【REGIST：注册， INVITE：邀请, SPECIAL：专场, GAME：游戏,REDRAIN：红包雨,USERWAKE：用户唤醒, RECYCLE:有得卖回收业务】',
 	private String	type;//获取来源【REGIST：注册， INVITE：邀请 】
 	private String	sourceRef = "SYS"; //对应数据库默认值
-	private Integer isGlobal;//对应场景
-	private Long activityId;
-	private String activityType;
-	private String expiryType;
 
 	public AfUserCouponDo(){
 
