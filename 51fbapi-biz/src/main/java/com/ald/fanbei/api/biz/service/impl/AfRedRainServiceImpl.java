@@ -180,7 +180,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				for(AfRedRainPoolDo pool : pools) {
 					int num = pool.getNum();
 					for(int i = 0; i<num; i++) {
-						sink.add(System.nanoTime() + JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount())));
+						sink.add(System.nanoTime() + JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount(), pool.getCouponEffectiveTime(),pool.getCouponLimitAmount())));
 					}
 				}
 				redPacketRedisPoolService.inject(sink);

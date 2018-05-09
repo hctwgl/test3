@@ -515,7 +515,17 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		}
 		return restAmount;
 	}
-	
+    @Override
+    public BigDecimal calculateLegalRestOverdue(AfBorrowCashDo cashDo) {
+        BigDecimal overdueAmount = BigDecimal.ZERO;
+        if(cashDo != null) {
+            overdueAmount = BigDecimalUtil.add(overdueAmount,
+                    cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
+                    cashDo.getRateAmount(),cashDo.getSumRate(),
+                    cashDo.getPoundage(),cashDo.getSumRenewalPoundage());
+        }
+        return overdueAmount;
+    }
 
 	
 	@Override

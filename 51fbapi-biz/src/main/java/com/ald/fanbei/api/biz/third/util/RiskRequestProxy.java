@@ -1,21 +1,20 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import com.ald.fanbei.api.biz.service.RiskTrackerService;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
-import com.alibaba.fastjson.JSON;
-import org.json.JSONObject;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import com.ald.fanbei.api.biz.service.RiskTrackerService;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
+import com.alibaba.fastjson.JSON;
 
 @Component
 public class RiskRequestProxy {
@@ -36,7 +35,7 @@ public class RiskRequestProxy {
         String result = "";
         Calendar calStart = Calendar.getInstance();
         RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
-        logger.info(String.format(TRACK_BEGIN_FORMAT, trackId,url, JSON.toJSONString(params)));
+        logger.info(String.format(TRACK_BEGIN_FORMAT, trackId, url, JSON.toJSONString(params)));
         try {
             riskTrackerDo.setGmtCreate(new Date());
             String paramsStr=JSON.toJSONString(params);
@@ -57,7 +56,7 @@ public class RiskRequestProxy {
                         "	",orderNo,
                         "	",(calEnd.getTimeInMillis() - calStart.getTimeInMillis()),
                         "	", JSON.toJSONString(params),
-                        "	",result));;//其他的全部进行埋点
+                        "	",result));//其他的全部进行埋点
             }catch (Exception e){
                 //不影响之前的逻辑
                 logger.error(String.format("I_"+TRACK_ERROR_FORMAT, trackId, url, params), e);

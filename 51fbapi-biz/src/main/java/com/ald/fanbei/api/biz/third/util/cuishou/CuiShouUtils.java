@@ -6,6 +6,7 @@ import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
+import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleRepaymentServiceImpl;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
@@ -94,6 +95,11 @@ public class CuiShouUtils {
     AfResourceService afResourceService;
     @Resource
     AfCommitRecordService afCommitRecordService;
+
+    @Resource
+    private AfBorrowRecycleRepaymentServiceImpl afBorrowRecycleRepaymentService;
+
+    AfBorrowRecycleService afBorrowRecycleService;
 
     /**
      * 线下还款
@@ -388,6 +394,9 @@ public class CuiShouUtils {
                 }//合规线下还款V2
                 else if (afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
                     afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin);
+                }
+                else if(afBorrowRecycleService.isRecycleBorrow(borrowId)){
+                    afBorrowRecycleRepaymentService.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance, repayCardNum, operator, isAdmin);
                 }
                 //旧版线下还款
                 else {

@@ -221,7 +221,15 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo);
-	
+
+	/**
+	 * 计算违约金额
+	 * @param cashDo
+	 * @return
+	 */
+	BigDecimal calculateLegalRestOverdue(AfBorrowCashDo cashDo);
+
+
 	/**
 	 * 检查当前用户是否有进行中的借款
 	 * @param userId

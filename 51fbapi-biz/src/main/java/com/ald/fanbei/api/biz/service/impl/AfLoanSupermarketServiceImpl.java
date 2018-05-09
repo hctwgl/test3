@@ -52,6 +52,30 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 	}
 
 	@Override
+	public List<Object> getBorrowHomeListByLable(String label, String systemType) {
+		List<Object> borrowList=new ArrayList<>();
+		for(AfLoanSupermarketDo afLoanSupermarketDo:afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType)){
+			Map<String,String> map=new HashMap<>();
+			map.put("lsmNo",afLoanSupermarketDo.getLsmNo());
+			map.put("iconUrl",afLoanSupermarketDo.getIconUrl());
+			map.put("lsmIntro",afLoanSupermarketDo.getLsmIntro());
+			map.put("lsmName",afLoanSupermarketDo.getLsmName());
+			map.put("payMethod",afLoanSupermarketDo.getPayMethod()+"");
+			map.put("linkUrl",afLoanSupermarketDo.getLinkUrl());
+			map.put("money",afLoanSupermarketDo.getMoney()+"");
+			map.put("moneyMax",afLoanSupermarketDo.getMoneyMax()+"");
+			map.put("moneyMin",afLoanSupermarketDo.getMoneyMin()+"");
+			map.put("registerUrl",afLoanSupermarketDo.getRegisterUrl());
+			map.put("time",afLoanSupermarketDo.getTime()+"");
+			map.put("timeMin",afLoanSupermarketDo.getTimeMin()+"");
+			map.put("timeMax",afLoanSupermarketDo.getMoneyMax()+"");
+			borrowList.add(map);
+		}
+		return borrowList;
+	}
+	
+	
+	@Override
 	public List<Object> getLoanHomeListByLable(String label, String systemType) {
 		List<Object> dcHomeList=new ArrayList<>();
 		for(AfLoanSupermarketDo afLoanSupermarketDo:afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType)){
