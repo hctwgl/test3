@@ -1378,7 +1378,7 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	/**
 	 * @author hqj
-	 * @说明：商品详情页
+	 * @说明：商品详情页优惠券
 	 * @param: @param
 	 *             request
 	 * @param: @param
@@ -1472,6 +1472,39 @@ public class AppH5FanBeiWebController extends BaseController {
 			logger.error("getCouponList error for " + e);
 		}
 		return H5CommonResponse.getNewInstance(true, "", "", list).toString();
+
+
+	}
+
+	/**
+	 * @author hqj
+	 * @说明：商品详情页服务信息
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             model
+	 * @param: @return
+	 * @param: @throws
+	 *             IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getSaleServiceInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getSaleServiceInfo(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = doWebCheck(request, false);
+		String serviceInfo = "";
+		try{
+			AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(Constants.COUPON_SALESERVICE);
+			if(afResourceDo!=null){
+				String value = afResourceDo.getValue();
+				if(StringUtil.isNotBlank(value)){
+					serviceInfo = value;
+				}
+			}
+		}catch (Exception e){
+			logger.error("getCouponList error for " + e);
+		}
+		return H5CommonResponse.getNewInstance(true, "", "", serviceInfo).toString();
 
 
 	}
