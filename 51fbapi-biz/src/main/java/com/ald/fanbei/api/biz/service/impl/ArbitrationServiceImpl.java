@@ -323,7 +323,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    result.put("countPeriods", countPeriods);// 期数
 	    result.put("borrowStartDate", DateUtil
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
-			    .getGmtCreate()));// 借款开始日期
+			    .getGmtArrival()));// 借款开始日期
 	    result.put("borrowEndDate", DateUtil
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtPlanRepayment()));// 借款结束日期
