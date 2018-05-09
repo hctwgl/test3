@@ -44,6 +44,24 @@ public class ApplyLegalBorrowCashBo {
 	private String deliveryPhone;
 	private String ipAddress;
 	private String appName;
+	private String propertyValue;
+	private String goodsImg;
+
+	public String getPropertyValue() {
+		return propertyValue;
+	}
+
+	public void setPropertyValue(String propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+
+	public String getGoodsImg() {
+		return goodsImg;
+	}
+
+	public void setGoodsImg(String goodsImg) {
+		this.goodsImg = goodsImg;
+	}
 
 	public String getIpAddress() {
 		return ipAddress;

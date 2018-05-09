@@ -118,12 +118,13 @@ public class GetHomeChannelApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		Long tabId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("tabId"), null);
+		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		if(tabId == null){
 			logger.error("tabId is null");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	      }
 		
-		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID.getCode() + tabId;
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID.getCode() + tabId+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
 		 
          if (cacheResult != null) {
@@ -139,7 +140,7 @@ public class GetHomeChannelApi implements ApiHandle {
 			    }
 			}
 			
-			String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+
 	
 		    List<Object> topBannerList = new ArrayList<Object>();
 		    List<Object> navigationList = new ArrayList<Object>();

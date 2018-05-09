@@ -11,7 +11,7 @@ public abstract class  AbstractCacheTask implements CacheTask{
 	
 	private long updateInterval;
 	
-	protected Logger log = LoggerFactory.getLogger(AbstractCacheTask.class);
+	protected Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void run() {

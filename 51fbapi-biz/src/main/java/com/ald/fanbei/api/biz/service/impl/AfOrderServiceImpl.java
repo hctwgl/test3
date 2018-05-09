@@ -2389,6 +2389,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
 			resultMap.put(Constants.VIRTUAL_RECENT_DAY, response.getData().getRecentDay());
 			resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT, response.getData().getTotalAmount());
+			resultMap.put(Constants.VIRTUAL_DAY_AMOUNT, response.getData().getDayAmount());
 			resultMap.put(Constants.VIRTUAL_CHECK, "TRUE");
 		}
 		return resultMap;

@@ -1,6 +1,5 @@
 package com.ald.fanbei;
 
-import com.ald.fanbei.AppTest;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
 import com.alibaba.fastjson.JSON;
 

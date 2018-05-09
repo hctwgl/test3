@@ -91,7 +91,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("chargeMobileSucc,pid=", pid, ",mobile=", mobile));
-			String msgContext = "您好，您于{date}为【{mobile}】的话费充值成功，感谢您使用51返呗";
+			String msgContext = "您好，您于{date}为【{mobile}】的话费充值成功，感谢您使用爱上街";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
@@ -370,7 +370,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("额度不够用？51返呗借贷超市，帮你解决", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("额度不够用？爱上街借贷超市，帮你解决", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
 		}

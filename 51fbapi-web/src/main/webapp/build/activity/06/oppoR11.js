@@ -14,7 +14,7 @@ function alaShareData(){
         'appLogin': 'N', // 是否需要登录，Y需要，N不需要
         'type': 'share', // 此页面的类型
         'shareAppTitle': 'OPPO R11预约返利300福利',  // 分享的title
-        'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300福利！有，且只在51返呗 GO>>>',  // 分享的内容
+        'shareAppContent': 'OPPO R11全明星首发，疯陪到底！0元预约享12期分期免息，更有超级返利300福利！有，且只在爱上街 GO>>>',  // 分享的内容
         'shareAppImage': 'https://f.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
         'shareAppUrl': domainName+'/fanbei-web/activity/oppoR11?oppoR11Share=oppoR11Share',  // 分享后的链接
         'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
@@ -192,7 +192,7 @@ function addMobileListModel(goodsList,notifyUrl) {
             $("#oppoR11Btn").attr('href', 'javascript:void(0);');
             $("#oppoR11Btn").click(function() {
                 layer.open({
-                    content: '享12期免息500元福利<br/>有且只在51返呗',
+                    content: '享12期免息500元福利<br/>有且只在爱上街',
                     btn: ['确认', '取消'],
                     yes: function(){
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
@@ -204,7 +204,7 @@ function addMobileListModel(goodsList,notifyUrl) {
             privateGoodsId = "javascript:void(0);";
             $('#mobileList').on('click','li',function() {
                 layer.open({
-                    content: '享12期免息500元福利<br/>有且只在51返呗',
+                    content: '享12期免息500元福利<br/>有且只在爱上街',
                     btn: ['确认', '取消'],
                     yes: function(){
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";

@@ -121,7 +121,7 @@ public class EdspayController {
 	}
 	
 	/**
-	 * 返呗主动查询钱包打款结果后的调用api处理接口
+	 * 爱上街主动查询钱包打款结果后的调用api处理接口
 	 * @param request
 	 * @param response
 	 * @return

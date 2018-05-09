@@ -155,6 +155,8 @@ public interface AfUserCouponService {
 
 	AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo);
 
+	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
+
 }
 
 

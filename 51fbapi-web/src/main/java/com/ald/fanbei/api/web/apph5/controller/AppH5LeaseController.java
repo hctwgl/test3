@@ -680,6 +680,7 @@ public class AppH5LeaseController extends BaseController {
                             data.put("cashDeposit", freezeAmount.subtract(useableAmount));//支付金额
                         }
                     }
+
                 }
                 else {
                     data.put("riskStatus","N");

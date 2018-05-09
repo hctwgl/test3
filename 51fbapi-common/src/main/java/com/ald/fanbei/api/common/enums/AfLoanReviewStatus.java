@@ -12,8 +12,8 @@ public enum AfLoanReviewStatus {
 	
 	REFUSE("风控拒绝审核不通过"),
 	AGREE("风控审核同意"),
-	FBAGREE("返呗审核同意"),
-	FBREFUSE("返呗平台审核拒绝");
+	FBAGREE("爱上街审核同意"),
+	FBREFUSE("爱上街平台审核拒绝");
     
     public String desz;
 

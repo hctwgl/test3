@@ -4,12 +4,7 @@ import java.math.BigDecimal;
 
 import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowCashDto;
 
 public interface ApplyLegalBorrowCashService {
@@ -17,6 +12,9 @@ public interface ApplyLegalBorrowCashService {
 	public AfBorrowLegalOrderDo buildBorrowLegalOrder(Long userId, ApplyLegalBorrowCashBo param);
 
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
+											AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
+
+	AfBorrowCashDo buildRecycleBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId,
 											AfResourceDo rateInfoDo,  ApplyLegalBorrowCashBo param);
 
 	public void checkLock(String lockKey);
@@ -42,14 +40,22 @@ public interface ApplyLegalBorrowCashService {
 
 	public void checkBorrowFinish(Long userId);
 
+	public void checkRecycleBorrowFinish(Long userId);
+
 	public void delegatePay(String consumerNo, String orderNo, String result,
 							AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
 
+	public void recycleDelegatePay(Long userId, String orderNo, AfUserBankcardDo mainCard,AfBorrowCashDo afBorrowCashDo);
+
 	public void checkRiskRefused(Long userId);
+
+	boolean checkRiskRefusedResult(Long userId);
 
 	public void checkCardNotEmpty(AfUserBankcardDo mainCard);
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
+
+	public void updateBorrowStatus(AfBorrowCashDo cashDo);
 
 	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 

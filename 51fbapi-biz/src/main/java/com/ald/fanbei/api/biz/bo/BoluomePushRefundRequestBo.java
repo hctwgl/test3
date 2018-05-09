@@ -17,7 +17,7 @@ public class BoluomePushRefundRequestBo extends HashMap<String, String> {
 	
 	private static final long serialVersionUID = 6353705002749893987L;
 	private String orderId;//订单Id
-	private Long userId;//51返呗用户id
+	private Long userId;//爱上街用户id
 	private BigDecimal amount;//成功支付金额
 	private String status;//推送状态 
 	private Long timestamp;//签名时间戳

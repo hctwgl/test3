@@ -58,7 +58,7 @@ public class LoanCollectionController {
     LoanCollectionSystemUtil loanCollectionSystemUtil;
 
     /**
-     * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录白领贷线下还款信息
+     * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向爱上街推送,爱上街记录白领贷线下还款信息
      *
      * @param request
      * @param response
