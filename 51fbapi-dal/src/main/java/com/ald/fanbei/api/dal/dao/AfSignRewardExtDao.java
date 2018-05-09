@@ -3,6 +3,8 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+
 /**
  * 分类运营位配置Dao
  * 
@@ -14,5 +16,7 @@ import org.apache.ibatis.annotations.Param;
 public interface AfSignRewardExtDao  {
 
     AfSignRewardExtDo selectByUserId(@Param("userId") Long userId);
+
+    int extractMoney(@Param("userId")Long userId,@Param("amount") BigDecimal amount);
 
 }

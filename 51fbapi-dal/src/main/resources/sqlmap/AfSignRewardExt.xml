@@ -139,5 +139,9 @@
         WHERE is_delete = 0
         AND user_id = #{userId}
     </select>
+
+    <update id="extractMoney">
+        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount - #{amount} where user_id = #{userId} and is_delete = 0
+    </update>
     
 </mapper>

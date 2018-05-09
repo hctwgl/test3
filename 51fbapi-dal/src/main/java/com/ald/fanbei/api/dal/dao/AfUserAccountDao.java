@@ -119,4 +119,6 @@ public interface AfUserAccountDao {
 
 
 	Integer reduceRebateAmount(AfUserAccountDo afUserAccountDo);//
+
+	int updateRebateAmountByUserId(@Param("userId") Long userId,@Param("amount") BigDecimal amount);
 }

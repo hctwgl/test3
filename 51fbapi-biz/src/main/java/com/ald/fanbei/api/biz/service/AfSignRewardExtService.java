@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 
+import java.math.BigDecimal;
+
 /**
  * 分类运营位配置Service
  * 
@@ -13,5 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 public interface AfSignRewardExtService {
 
     AfSignRewardExtDo selectByUserId(Long userId);
+
+    int extractMoney(Long userId, BigDecimal amount);
 
 }

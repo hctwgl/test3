@@ -441,7 +441,11 @@ public enum FanbeiExceptionCode {
     BRAND_GOODS_IS_EMPTY("BRAND_GOODS_IS_EMPTY",9005,"goods of this brand is empty","改品牌下的商品信息为空!"),
     BRAND_RESULT_INIT_SUCCESS("BRAND_RESULT_INIT_SUCCESS",9006,"brand result page init success","品牌结果页初始化成功!"),
     BRAND_CATEGORY_PAGE_INIT_SUCCESS("BRAND_CATEGORY_PAGE_INIT_SUCCESS",9007,"aishangjie brand category page init success","品牌分类页面初始化成功!"),
-    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9006,"choose bank card pay","请您选择银行卡付款方式");
+    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9008,"choose bank card pay","请您选择银行卡付款方式"),
+
+    WITHDRAW_FAIL("WITHDRAW_FAIL",9010,"withdraw fail","提现失败"),
+    CHOOSE_WITHDRAW_TYPE("CHOOSE_WITHDRAW_TYPE",9009,"choose withdraw type","请选择提现方式");
+
 
 
     /**

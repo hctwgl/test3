@@ -297,4 +297,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.findByIdNo(idNo);
 	}
 
+	@Override
+	public int updateRebateAmount(AfUserAccountDo afUserAccountDo){
+		return afUserAccountDao.updateRebateAmount(afUserAccountDo);
+	}
+
 }

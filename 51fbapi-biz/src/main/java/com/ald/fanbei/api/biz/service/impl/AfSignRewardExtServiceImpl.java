@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.AfSignRewardExtDao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import com.ald.fanbei.api.biz.service.AfSignRewardExtService;
 
+import java.math.BigDecimal;
 
 
 /**
@@ -32,6 +33,11 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     @Override
     public AfSignRewardExtDo selectByUserId(Long userId){
         return afSignRewardExtDao.selectByUserId(userId);
+    }
+
+    @Override
+    public int extractMoney(Long userId, BigDecimal amount){
+        return afSignRewardExtDao.extractMoney(userId,amount);
     }
 
 

@@ -142,4 +142,6 @@ public interface AfUserAccountService {
     int updateUserAccountByUserId(Long userId,int money);
 
 	AfUserAccountDo findByIdNo(String idNo);
+
+	int updateRebateAmount(AfUserAccountDo afUserAccountDo);
 }
