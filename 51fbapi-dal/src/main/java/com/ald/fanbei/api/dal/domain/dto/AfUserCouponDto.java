@@ -29,4 +29,5 @@ public class AfUserCouponDto extends AfUserCouponDo {
     private Integer quota;
     private Integer quotaAlready;
     private Integer limitCount;
+    private Integer userAlready;
 }
