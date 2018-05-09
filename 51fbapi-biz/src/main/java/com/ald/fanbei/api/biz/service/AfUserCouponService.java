@@ -152,6 +152,11 @@ public interface AfUserCouponService {
 
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
+    List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
+
+    List<AfUserCouponDto> getUserAllCoupon();
+
+	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
 }
 
 

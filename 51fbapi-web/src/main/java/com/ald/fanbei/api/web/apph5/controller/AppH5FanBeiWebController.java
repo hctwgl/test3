@@ -5,16 +5,15 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -25,20 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderLogisticsService;
-import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
-import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
-import com.ald.fanbei.api.biz.service.AfPopupsService;
-import com.ald.fanbei.api.biz.service.AfResourceH5ItemService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSeckillActivityService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -68,17 +53,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
-import com.ald.fanbei.api.dal.domain.AfPopupsDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
@@ -142,7 +116,12 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfResourceH5ItemService afResourceH5ItemService;
 	@Resource
 	AfSeckillActivityService afSeckillActivityService;
-
+	@Resource
+	AfGoodsService afGoodsService;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
+	AfSubjectGoodsService afSubjectGoodsService;
 	/**
 	 * 首页弹窗页面
 	 * 
@@ -1395,6 +1374,106 @@ public class AppH5FanBeiWebController extends BaseController {
 		    goodsList.add(goodsInfo);
 		}
 		return goodsList;
+	}
+
+	/**
+	 * @author hqj
+	 * @说明：商品详情页
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             model
+	 * @param: @return
+	 * @param: @throws
+	 *             IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getDetailCouponList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getDetailCouponList(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = doWebCheck(request, false);
+		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"), null);
+		List<AfUserCouponDto> list = new ArrayList<AfUserCouponDto>();
+		try{
+			// 获取用户信息
+			Long userId = null;
+			String userName = context.getUserName();
+			if(StringUtil.isNotBlank(userName)) {
+				AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+				if (afUserDo != null) {
+					userId = afUserDo.getRid();
+				}
+			}
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			Long brandId = afGoodsDo.getBrandId();
+			Long categoryId = afGoodsDo.getCategoryId();
+			List<AfUserCouponDto> userCouponList = new ArrayList<>();
+
+			List<AfSubjectGoodsDo> subjectGoods = null;
+			//获取所有优惠券
+			if(userId==null){
+				userCouponList = afUserCouponService.getUserAllCoupon();
+
+			}else {
+				userCouponList = afUserCouponService.getUserAllCouponByUserId(userId);
+			}
+			if(userCouponList!=null&&userCouponList.size()>0){
+				for(AfUserCouponDto afUserCouponDto:userCouponList){
+					String expiryType = afUserCouponDto.getExpiryType();
+					Date gmtStart = afUserCouponDto.getGmtStart();
+					Date gmtEnd = afUserCouponDto.getGmtEnd();
+					int validDays = afUserCouponDto.getValidDays();
+					int is_global = afUserCouponDto.getIsGlobal();
+					String goodsIds = afUserCouponDto.getGoodsIds();
+					if(StringUtil.isBlank(expiryType)){
+						continue;
+					}else {
+						if(StringUtil.equals("D",expiryType)&&validDays<=0){
+							continue;
+						}else if(StringUtil.equals("R",expiryType)&&(gmtStart==null||gmtEnd==null||gmtEnd.getTime()<=(new Date()).getTime())){
+							continue;
+						}
+					}
+					if(is_global==0){
+						list.add(afUserCouponDto);
+					}else if(is_global==2&&StringUtil.isNotBlank(goodsIds)){
+						goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
+						if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(goodsId))){//当前商品id被包含在券信息的商品id集合里面
+							list.add(afUserCouponDto);
+						}
+					}else if(is_global==3&&StringUtil.isNotBlank(goodsIds)){
+						goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
+						if(subjectGoods==null){
+							subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
+						}
+						if(subjectGoods!=null&&subjectGoods.size()>0){
+							for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoods){
+								String subjectId = afSubjectGoodsDo.getSubjectId();
+								if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(subjectId))){//当前会场id被包含在券信息的会场id集合里面
+									list.add(afUserCouponDto);
+									break;
+								}
+							}
+						}
+					}else if(is_global==4&&StringUtil.isNotBlank(goodsIds)){
+						goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
+						if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(categoryId))){//当前分类id被包含在券信息的分类id集合里面
+							list.add(afUserCouponDto);
+						}
+					}else if(is_global==5&&StringUtil.isNotBlank(goodsIds)){
+						goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
+						if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(brandId))){//当前品牌id被包含在券信息的品牌id集合里面
+							list.add(afUserCouponDto);
+						}
+					}
+				}
+			}
+		}catch (Exception e){
+			logger.error("getCouponList error for " + e);
+		}
+		return H5CommonResponse.getNewInstance(true, "", "", list).toString();
+
+
 	}
 
 

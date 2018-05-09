@@ -380,6 +380,20 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	    	return afUserCouponDao.getUserCouponByUserIdAndCouponCource(userId,sourceType);
 	}
 
-	
-	
+	@Override
+	public List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount) {
+		return afUserCouponDao.getUserAllAcgencyCouponByAmount(userId,actualAmount);
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserAllCoupon() {
+		return afUserCouponDao.getUserAllCoupon();
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserAllCouponByUserId(Long userId) {
+		return afUserCouponDao.getUserAllCouponByUserId(userId);
+	}
+
+
 }

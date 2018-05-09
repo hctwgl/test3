@@ -380,4 +380,51 @@
 			u.source_type = #{sourceType}
 	</select>
 
+	<!--所有优惠券-->
+	<select id="getUserAllAcgencyCouponByAmount" resultType="AfUserCouponDto">
+		SELECT
+		CASE
+		WHEN 48 > TIMESTAMPDIFF(HOUR, NOW(), uc.gmt_end)  THEN 'Y'  ELSE 'N'
+		END AS will_expire_status,
+		uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status, uc.gmt_start, uc.gmt_end ,c.use_range,c.activity_id,c.activity_type
+		FROM
+		af_user_coupon uc LEFT JOIN
+		af_coupon c  ON uc.coupon_id = c.id
+		WHERE uc.user_id = #{userId} AND c.type IN ('FULLVOUCHER','DISCOUNT')
+		AND uc.status = 'NOUSE'
+		AND uc.is_delete = 0
+		AND c.is_delete = 0
+		AND (NOW() BETWEEN uc.gmt_start
+		AND uc.gmt_end)
+		AND #{amount} >=  c.limit_amount
+		ORDER BY c.amount DESC
+		LIMIT 50
+	</select>
+	<!--所有优惠券(商品详情)-->
+	<select id="getUserAllCoupon" resultType="AfUserCouponDto">
+		SELECT
+		c.limit_amount,c.amount, c.name, c.use_rule, c.type,c.use_range,c.activity_id,
+		c.quota,c.quota_already,c.limit_count,
+		c.activity_type,c.is_global,c.goods_ids,c.expiry_type,c.valid_days,c.gmt_start,c.gmt_end
+		FROM
+		af_coupon c
+		WHERE c.type IN ('FULLVOUCHER','DISCOUNT')
+		AND c.is_delete = 0 AND c.is_show = 1
+		ORDER BY c.amount DESC
+	</select>
+	<!--所有优惠券(商品详情)-->
+	<select id="getUserAllCouponByUserId" resultType="AfUserCouponDto">
+		SELECT
+		uc.id rid, c.limit_amount, c.amount, c.name, c.use_rule, c.type, uc.status,
+		uc.gmt_start, uc.gmt_end ,c.use_range,c.activity_id,c.activity_type,c.quota,c.quota_already,c.limit_count,
+		c.is_global,c.goods_ids,c.expiry_type,c.valid_days,c.gmt_start,c.gmt_end,COUNT(uc.id) user_already
+		FROM
+		af_coupon c LEFT JOIN
+		af_user_coupon uc ON (uc.coupon_id = c.id AND uc.user_id = #{userId})
+		WHERE c.type IN ('FULLVOUCHER','DISCOUNT')
+		AND c.is_delete = 0 AND c.is_show = 1
+		GROUP BY c.id
+		ORDER BY c.amount DESC
+	</select>
+
 </mapper>
