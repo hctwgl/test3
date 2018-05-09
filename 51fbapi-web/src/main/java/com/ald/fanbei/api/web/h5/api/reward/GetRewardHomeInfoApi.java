@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -144,14 +145,15 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		return countDays;
 	}
 
-	private List<AfTaskDo> taskList(Context context){
+	private List<AfTaskDto> taskList(Context context){
 		List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
 		List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
 		List<Long> isDailyList = new ArrayList<Long>();
 		List<Long> isNotDailyList = new ArrayList<Long>();
 		List<Long> finishedList = new ArrayList<Long>();
 		List<Long> notFinishedList = new ArrayList<Long>();
-		List<AfTaskDo> finalTaskList = new ArrayList<AfTaskDo>();
+		List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
+		AfTaskDto taskDto = new AfTaskDto();
 		String loyalUsers;
 		String ordinaryUser;
 		String specialUser;
@@ -217,7 +219,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			sb.append("'").append("5").append("',");
 		}
 		sb.deleteCharAt(sb.length()-1);
-		List<AfTaskDo> taskList = afTaskService.getTaskListByUserIdAndUserLevel(context.getUserId(),sb.toString());
+		List<AfTaskDto> taskList = afTaskService.getTaskListByUserIdAndUserLevel(context.getUserId(),sb.toString());
 
 		for(AfTaskDo afTaskDo : taskList){
 			if(afTaskDo.getIsDailyUpdate().equals("1")){
@@ -242,14 +244,15 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			}
 		}
 		for(Long id : notFinishedList){
-			for(AfTaskDo afTaskDo : taskList){
+			for(AfTaskDto afTaskDo : taskList){
 				if(id == afTaskDo.getRid()){
+					taskDto.setReceiveReward("N");
 					finalTaskList.add(afTaskDo);
 				}
 				break;
 			}
 		}
-		for(AfTaskDo afTaskDo : taskList){
+		for(AfTaskDto afTaskDo : taskList){
 			boolean flag = true;
 			boolean taskFlag = true;
 			for(AfTaskUserDo afTaskUserDo : isDailyTaskList){

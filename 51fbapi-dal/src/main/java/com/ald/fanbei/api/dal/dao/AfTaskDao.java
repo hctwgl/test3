@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface AfTaskDao {
 
-    List<AfTaskDo> getTaskListByUserIdAndUserLevel(@Param("userId") Long userId, @Param("userLevel")String userLevel);
+    List<AfTaskDto> getTaskListByUserIdAndUserLevel(@Param("userId") Long userId, @Param("userLevel")String userLevel);
 
 }

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     private AfTaskDao afTaskDao;
 
     @Override
-	public List<AfTaskDo> getTaskListByUserIdAndUserLevel(Long userId, String userLevel){
+	public List<AfTaskDto> getTaskListByUserIdAndUserLevel(Long userId, String userLevel){
 		return afTaskDao.getTaskListByUserIdAndUserLevel(userId,userLevel);
 	}
 
