@@ -179,5 +179,14 @@
         FROM af_bankcard_config
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getByCardNo" resultType="com.ald.fanbei.api.dal.domain.dto.BankCardInfoDto">
+        SELECT
+        bank_name,card_name,card_type
+        FROM af_bankcard_config
+        WHERE is_delete = 0 AND cardno_header = SUBSTR(#{cardNo},1,header_length)
+        order by bank_code
+        limit 1;
+    </select>
+
 </mapper>

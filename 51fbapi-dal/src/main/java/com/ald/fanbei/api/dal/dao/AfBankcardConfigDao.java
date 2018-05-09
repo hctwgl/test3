@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfBankcardConfigDo;
+import com.ald.fanbei.api.dal.domain.dto.BankCardInfoDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 信用卡绑定及订单支付Dao
@@ -12,6 +14,6 @@ import com.ald.fanbei.api.dal.domain.AfBankcardConfigDo;
  */
 public interface AfBankcardConfigDao extends BaseDao<AfBankcardConfigDo, Long> {
 
-    
+    BankCardInfoDto getByCardNo(@Param("cardNo") String cardNo);
 
 }
