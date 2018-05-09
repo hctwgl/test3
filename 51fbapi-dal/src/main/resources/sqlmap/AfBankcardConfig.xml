@@ -182,7 +182,7 @@
 
     <select id="getByCardNo" resultType="com.ald.fanbei.api.dal.domain.dto.BankCardInfoDto">
         SELECT
-        bank_name,card_name,card_type
+          bank_name,card_name,card_type,bank_code
         FROM af_bankcard_config
         WHERE is_delete = 0 AND cardno_header = SUBSTR(#{cardNo},1,header_length)
         order by bank_code

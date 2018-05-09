@@ -4,6 +4,15 @@ public class BankCardInfoDto {
     private String bankName;
     private String cardName;
     private Integer cardType;
+    private String bankCode;
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
 
     public String getBankName() {
         return bankName;
@@ -35,6 +44,7 @@ public class BankCardInfoDto {
                 "bankName='" + bankName + '\'' +
                 ", cardName='" + cardName + '\'' +
                 ", cardType=" + cardType +
+                ", bankCode='" + bankCode + '\'' +
                 '}';
     }
 }
