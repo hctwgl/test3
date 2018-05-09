@@ -424,7 +424,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("position", position);	//法定代表人职务
 				map.put("sex", sex);	//性别
 				map.put("phone", phone);	//联系电话
-				map.put("email", "");	//电子邮箱
+				map.put("email", "law@edspay.com");	//电子邮箱
 				map.put("idAddress", idAddress);	//证件地址
 				map.put("address", "");	//通讯地址
 				map.put("img_01", img_01);	//身份证正面照
