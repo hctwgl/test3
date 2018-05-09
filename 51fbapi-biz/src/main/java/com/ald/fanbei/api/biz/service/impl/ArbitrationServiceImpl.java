@@ -281,12 +281,12 @@ public class ArbitrationServiceImpl extends BaseService implements
                 }
                 }
             }
-		// end
+		   // end
 
             result.put("rateInterest",
-                new BigDecimal(interestRate).divide(new BigDecimal(36000),3,RoundingMode.HALF_UP));// 利息利率
+					afBorrowCashDo.getRateAmount().multiply(new BigDecimal(360) ).divide(afBorrowCashDo.getAmount().multiply(new BigDecimal( afBorrowCashDo.getType())),2,RoundingMode.HALF_UP));// 利息利率
             result.put("rateService",0);
-            result.put("rateOverdue",new BigDecimal(overdueRate).divide(new BigDecimal(36000),3,RoundingMode.HALF_UP));
+            result.put("rateOverdue",new BigDecimal(overdueRate).divide(new BigDecimal(36000),6,RoundingMode.HALF_UP));
 	    } else { // 旧版借款
             AfResourceDo afResourceDo = afResourceService
                 .getConfigByTypesAndSecType(ResourceType.BORROW_RATE
@@ -722,6 +722,9 @@ public class ArbitrationServiceImpl extends BaseService implements
 
     @Override
     public ArbitrationRespBo getPayVoucher(String loanBillNo) {
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashDao
+				.getBorrowCashInfoByBorrowNo(loanBillNo);
+
         ArbitrationRespBo arbitrationRespBo=new ArbitrationRespBo();
         arbitrationRespBo.setErrCode("0000");
         arbitrationRespBo.setErrMsg("");
@@ -731,6 +734,8 @@ public class ArbitrationServiceImpl extends BaseService implements
         dataMap.put("voucherNo","po"+loanBillNo);
         dataMap.put("voucherOffer","宝付");
         dataMap.put("provedObject","");
+		dataMap.put("provedObject",DateUtil.formatDate(afBorrowCashDo.getGmtArrival(),"yyyy-MM-dd HH:mm:ss"));
+
         List dataList=new ArrayList();
         dataList.add(dataMap);
         arbitrationRespBo.setResult(dataList);
