@@ -20,11 +20,11 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_category_opration";
+		String tables = "af_bankcard_config,af_user_bankcard_type,af_order_credit_info";
 
 		// 配置作者及Domain说明
-		String classAuthor = "liutengyuan";
-		String functionName = "分类运营位配置";
+		String classAuthor = "gaojibin";
+		String functionName = "信用卡绑定及订单支付";
 
 
 //		String tables = "af_facescore_img";
