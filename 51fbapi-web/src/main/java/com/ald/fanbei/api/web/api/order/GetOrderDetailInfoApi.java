@@ -190,6 +190,8 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 
 		vo.setFeeAmount(order.getFeeAmount());
 		vo.setCardType(order.getCardType());
+		//实付金额需要加上信用卡手续费
+		vo.setActualAmount(vo.getActualAmount().add(vo.getFeeAmount()));
 		return vo;
 	}
 }
