@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
 import com.ald.fanbei.api.biz.service.AfSignRewardService;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -44,5 +46,10 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     @Override
     public int sumSignDays(Long userId,Date startTime){
         return  afSignRewardDao.sumSignDays(userId,startTime);
+    }
+
+    @Override
+    public List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query){
+        return  afSignRewardDao.getRewardDetailList(query);
     }
 }

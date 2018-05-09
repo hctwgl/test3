@@ -157,5 +157,14 @@
         SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
         AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
     </select>
+
+    <select id="getRewardDetailList" resultType="AfSignRewardDo" parameterType="AfSignRewardQuery">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        ORDER BY gmt_create desc
+    </select>
     
 </mapper>

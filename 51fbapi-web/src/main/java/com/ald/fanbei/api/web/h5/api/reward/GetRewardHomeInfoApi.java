@@ -65,15 +65,15 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			resp.addResponseData("rewardRule","");
 		}
 
-		//是否有余额
-		resp.addResponseData("rewardAmount",afSignRewardService.sumAmount(context.getUserId()));
-
-		//签到提醒
 		AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(context.getUserId());
 		if(null == afSignRewardExtDo){
+			//签到提醒
 			resp.addResponseData("isOpenRemind","N");
+			//是否有余额
+			resp.addResponseData("rewardAmount",BigDecimal.ZERO);
 		}else if(null != afSignRewardExtDo){
 			resp.addResponseData("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
+			resp.addResponseData("rewardAmount",afSignRewardExtDo.getAmount());
 		}
 
 		//banner

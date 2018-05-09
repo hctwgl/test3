@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -20,5 +22,7 @@ public interface AfSignRewardService {
     double sumAmount(Long userId);
 
     int sumSignDays(Long userId,Date startTime);
+
+    List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
 
 }

@@ -616,6 +616,9 @@
 
 				<!-- 边逛边赚 -->
 				<entry key="/h5/reward/getRewardHomeInfo" value-ref="getRewardHomeInfoApi" />
+				<entry key="/h5/reward/getFinishedTask" value-ref="getFinishedTaskApi" />
+				<entry key="/h5/reward/getRewardDetail" value-ref="getRewardDetailApi" />
+				<entry key="/h5/reward/getWithdrawDetail" value-ref="getWithdrawDetailApi" />
 
 			</map>
 		</constructor-arg>

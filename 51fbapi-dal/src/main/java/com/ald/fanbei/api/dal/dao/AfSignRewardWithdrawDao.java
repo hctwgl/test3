@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
+import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
+
+import java.util.List;
 
 /**
  * 分类运营位配置Dao
@@ -12,6 +15,6 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
  */
 public interface AfSignRewardWithdrawDao  {
 
-    
+    List<AfSignRewardWithdrawDo> getWithdrawList(AfSignRewardWithdrawQuery query);
 
 }

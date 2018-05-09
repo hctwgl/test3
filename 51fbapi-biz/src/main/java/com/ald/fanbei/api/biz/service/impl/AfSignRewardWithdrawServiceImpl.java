@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.ald.fanbei.api.dal.dao.AfSignRewardWithdrawDao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
 import com.ald.fanbei.api.biz.service.AfSignRewardWithdrawService;
 
+import java.util.List;
 
 
 /**
@@ -29,5 +31,9 @@ public class AfSignRewardWithdrawServiceImpl  implements AfSignRewardWithdrawSer
     @Resource
     private AfSignRewardWithdrawDao afSignRewardWithdrawDao;
 
+    @Override
+    public List<AfSignRewardWithdrawDo> getWithdrawList(AfSignRewardWithdrawQuery query){
+        return afSignRewardWithdrawDao.getWithdrawList(query);
+    }
 
 }

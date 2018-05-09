@@ -131,5 +131,14 @@
         FROM af_sign_reward_withdraw
         <include refid="commonCondition"/>
     </select>
+
+    <select id="getWithdrawList" parameterType="AfSignRewardWithdrawQuery" resultType="AfSignRewardWithdrawDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_withdraw
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        ORDER BY gmt_create desc
+    </select>
     
 </mapper>
