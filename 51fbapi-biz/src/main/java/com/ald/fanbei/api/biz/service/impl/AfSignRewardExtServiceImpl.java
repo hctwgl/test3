@@ -40,5 +40,10 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
         return afSignRewardExtDao.extractMoney(userId,amount);
     }
 
+    @Override
+    public int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo){
+        return afSignRewardExtDao.updateSignRewardExt(afSignRewardExtDo);
+    }
+
 
 }

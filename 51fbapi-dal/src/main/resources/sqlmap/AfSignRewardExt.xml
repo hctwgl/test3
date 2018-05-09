@@ -84,17 +84,11 @@
         </trim>
     </insert>
     
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
+    <update id="updateSignRewardExt"  parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
         UPDATE af_sign_reward_ext
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
-            </if>
             <if test="gmtModified != null and gmtModified != '' ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
             </if>
             <if test="firstDayParticipation != null and firstDayParticipation != '' ">        
                 first_day_participation = #{firstDayParticipation,jdbcType=TIMESTAMP},                
@@ -106,7 +100,7 @@
                 is_open_remind = #{isOpenRemind,jdbcType=INTEGER}                
             </if>
         </set>    
-        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND user_id = #{userId}
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">

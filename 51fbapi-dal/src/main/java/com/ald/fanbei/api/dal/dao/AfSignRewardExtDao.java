@@ -19,4 +19,6 @@ public interface AfSignRewardExtDao  {
 
     int extractMoney(@Param("userId")Long userId,@Param("amount") BigDecimal amount);
 
+    int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo);
+
 }

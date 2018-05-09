@@ -18,4 +18,6 @@ public interface AfSignRewardExtService {
 
     int extractMoney(Long userId, BigDecimal amount);
 
+    int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo);
+
 }
