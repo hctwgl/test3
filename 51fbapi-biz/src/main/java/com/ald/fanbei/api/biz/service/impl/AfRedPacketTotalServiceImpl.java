@@ -6,16 +6,19 @@ import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.enums.SelfOpenRedPacketSourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfRedPacketTotalDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfRedPacketSelfOpenDto;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
+import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,19 +90,14 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	@Override
 	public OpenRedPacketHomeBo getHomeInfoOutSite(String wxCode, Long shareId) {
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-
 		checkActivityIsStop(config);
 
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 		OpenRedPacketHomeBo result = new OpenRedPacketHomeBo();
-
-		result.setIsBindMobile(YesNoStatus.NO.getCode());
-		result.setIsCanHelpOpen(YesNoStatus.NO.getCode());
 		result.setWithdrawTotalNum(getWithdrawTotalNum(redPacketConfig));
 
 		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
 		Long userId = afUserThirdInfoService.getUserIdByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-
 		if (userId != null) {
 			result.setIsBindMobile(YesNoStatus.YES.getCode());
 			result.setRedPacket(getRedPacketInfoOfHome(userId, redPacketConfig));
@@ -109,15 +107,18 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 				// TODO:queryNum传null，测试使用，记得改回2
 				result.setOpenList(findOpenListOfHome(id, null));
 			}
+		} else {
+			result.setIsBindMobile(YesNoStatus.NO.getCode());
 		}
 
 		AfRedPacketTotalDo shareRedPacket = getById(shareId);
-		AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.getHelpOpenRecord(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID), shareRedPacket.getUserId());
-
-		if (helpOpenDo == null) {
+		String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
+		if (afRedPacketHelpOpenService.isCanOpen(shareRedPacket, openId)) {
 			result.setIsCanHelpOpen(YesNoStatus.YES.getCode());
+		} else {
+			result.setIsCanHelpOpen(YesNoStatus.NO.getCode());
 		}
-		fillHelpOpenInfo(shareRedPacket, helpOpenDo, redPacketConfig, result);
+		fillHelpOpenInfo(shareRedPacket, openId, redPacketConfig, result);
 
 		return result;
 	}
@@ -199,11 +200,11 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 			StringBuilder sb = new StringBuilder("你拆了");
 			for (int i = 0; i < selfOpenList.size(); i++) {
 				if (i < selfOpenList.size() - 1) {
-					sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString()
-							+ "元+");
+					sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString())
+					  .append("+");
 				} else {
-					sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString()
-							+ "元");
+					sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString())
+					  .append("元");
 				}
 			}
 			e.put("desc", sb.toString());
@@ -231,32 +232,18 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	public void checkIsCanOpen(String sourceType, AfRedPacketTotalDo theOpening, Integer shareTime) {
-		if (theOpening == null) {
-			return;
-		}
-
-		int openedNum = afRedPacketSelfOpenService.getOpenedNum(theOpening.getRid());
-		if (openedNum >= (shareTime + 1)) {
-			throw new FanbeiException("您已没有红包可拆，继续分享可以让好友帮您拆");
-		}
-
-		if (StringUtil.isNotBlank(sourceType) && sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SELF.getCode())) {
-			boolean isOpened= afRedPacketSelfOpenService.isOpenedRedPacketOfSelf(theOpening.getRid());
-			if (isOpened) {
-				throw new FanbeiException("您已拆过自己的红包了，继续分享可以再拆红包");
-			}
-		}
+	public boolean isCanGainOne(Long id, Integer shareTime) {
+		int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
+		return openedNum < (shareTime + 1);
 	}
 
 	@Override
-	public boolean isCanGainOne(Long id, Integer shareTime) {
-		int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
-		if (openedNum >= (shareTime + 1)) {
-			return false;
-		}
+	public boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo) {
+		if (redPacketTotalDo.getIsWithdraw() == 1) return true;
 
-		return true;
+		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+		return isOverdue(redPacketTotalDo, redPacketConfig);
 	}
 
 	@Override
@@ -270,6 +257,11 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	@Override
 	public BigDecimal calcWithdrawRestAmount(Long id, BigDecimal thresholdAmount) {
 		AfRedPacketTotalDo redPacketTotalDo = getById(id);
+		return calcWithdrawRestAmount(redPacketTotalDo, thresholdAmount);
+	}
+
+	@Override
+	public BigDecimal calcWithdrawRestAmount(AfRedPacketTotalDo redPacketTotalDo, BigDecimal thresholdAmount) {
 		BigDecimal restAmount = thresholdAmount.subtract(redPacketTotalDo.getAmount());
 		return restAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restAmount;
 	}
@@ -281,7 +273,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 	// 检查活动是否停止
 	private void checkActivityIsStop(AfResourceDo config) {
-		if (config.getValue().trim().equals(YesNoStatus.NO)) {
+		if (config.getValue().trim().equals(YesNoStatus.NO.getCode())) {
 			throw new FanbeiException("活动已结束");
 		}
 	}
@@ -313,7 +305,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	// 填充帮拆红包信息
-	private void fillHelpOpenInfo(AfRedPacketTotalDo shareRedPacket, AfRedPacketHelpOpenDo helpOpenDo,
+	private void fillHelpOpenInfo(AfRedPacketTotalDo shareRedPacket, String openId,
 								  JSONObject redPacketConfig, OpenRedPacketHomeBo result) {
 		Map<String, String> helpOpenInfo = new HashMap<>();
 		helpOpenInfo.put("isOverdue", YesNoStatus.NO.getCode());
@@ -326,8 +318,11 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		helpOpenInfo.put("avatar", shareUserWxInfo.getAvatar());
 		helpOpenInfo.put("nick", shareUserWxInfo.getNick());
 
-		if (helpOpenDo != null && helpOpenDo.getRedPacketTotalId().equals(shareRedPacket.getRid())) {
-			helpOpenInfo.put("amount", helpOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
+		if (result.getIsCanHelpOpen().equals(YesNoStatus.NO.getCode())) {
+			AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.getHelpOpenRecord(openId, shareRedPacket.getUserId());
+			if (helpOpenDo != null && helpOpenDo.getRedPacketTotalId().equals(shareRedPacket.getRid())) {
+				helpOpenInfo.put("amount", helpOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
+			}
 		}
 		result.setHelpOpenInfo(helpOpenInfo);
 	}
@@ -335,25 +330,29 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	// 判断红包是否过期
 	private boolean isOverdue(AfRedPacketTotalDo redPacketTotalDo, JSONObject redPacketConfig) {
 		Integer overdueIntervalHour = redPacketConfig.getInteger("overdueIntervalHour");
-		if (DateUtil.addHoures(redPacketTotalDo.getGmtCreate(), overdueIntervalHour).before(new Date())) {
-			return true;
-		}
-		return false;
+		Date gmtOverdue = DateUtil.addHoures(redPacketTotalDo.getGmtCreate(), overdueIntervalHour);
+		return gmtOverdue.before(new Date());
 	}
 
 	// 检查是否能提现
 	private void checkIsCanWithdraw(AfRedPacketTotalDo redPacketTotalDo) {
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-		BigDecimal thresholdAmount =  redPacketConfig.getBigDecimal("thresholdAmount");
+
+		Integer everydayWithdrawNum = redPacketConfig.getInteger("everydayWithdrawNum");
+		int todayWithdrawedNum = getTodayWithdrawedNum(redPacketTotalDo.getUserId());
+		if (todayWithdrawedNum >= everydayWithdrawNum) {
+			throw new FanbeiException("今日已不可提现，请明天再来哦");
+		}
 
 		if (isOverdue(redPacketTotalDo, redPacketConfig)) {
 			throw new FanbeiException("红包已过期");
 		}
+
+		BigDecimal thresholdAmount =  redPacketConfig.getBigDecimal("thresholdAmount");
 		if (redPacketTotalDo.getAmount().compareTo(thresholdAmount) < 0) {
-			String restAmount = thresholdAmount.subtract(redPacketTotalDo.getAmount())
-					.setScale(2, RoundingMode.HALF_UP).toString();
-			throw new FanbeiException("您还剩" + restAmount + "元才能提现");
+			BigDecimal restAmount = calcWithdrawRestAmount(redPacketTotalDo, thresholdAmount);
+			throw new FanbeiException("您还剩" + restAmount.setScale(2, RoundingMode.HALF_UP) + "元才能提现");
 		}
 	}
 
@@ -377,5 +376,15 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		afUserAccountLogDo.setType(AccountLogType.OPEN_REDPACKET.getCode());
 		afUserAccountLogDo.setRefId("");
 		afUserAccountService.addUserAccountLog(afUserAccountLogDo);
+	}
+
+	// 获取用户今日红包提现数量
+	private int getTodayWithdrawedNum(Long userId) {
+		AfRedPacketTotalQueryNoPage query = new AfRedPacketTotalQueryNoPage();
+		query.setUserId(userId);
+		Date now = new Date();
+		query.setGmtWithdrawStart(DateUtil.getStartOfDate(now));
+		query.setGmtWithdrawEnd(DateUtil.getEndOfDate(now));
+		return afRedPacketTotalDao.countByQuery(query);
 	}
 }

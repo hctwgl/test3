@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
+import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,4 +40,12 @@ public interface AfRedPacketTotalDao extends BaseDao<AfRedPacketTotalDo, Long> {
      * @date 2018/5/3 20:24
      */
     List<AfRedPacketTotalDo> findWithdrawList(@Param("userId") Long userId, @Param("queryNum") Integer queryNum);
+
+    /**
+     * 根据条件统计
+     *
+     * @author wangli
+     * @date 2018/5/10 16:06
+     */
+    int countByQuery(AfRedPacketTotalQueryNoPage query);
 }

@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -60,12 +59,22 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	}
 
 	@Override
+	public boolean isCanOpen(AfRedPacketTotalDo shareRedPacket, String openId) {
+		try {
+			checkIsCanOpen(shareRedPacket, openId);
+		} catch (FanbeiException e) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	@Transactional
 	public AfRedPacketHelpOpenDo open(String wxCode, Long shareId) {
 		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
 		AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
-		checkIsCanOpen(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID), shareRedPacket.getUserId());
+		checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
 
 		AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
 		helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
@@ -75,7 +84,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		helpOpenDo.setUserId(shareRedPacket.getUserId());
 
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-		fillAmountAndDiscountInfo(config, helpOpenDo);
+		fillAmountAndDiscountInfo(config, helpOpenDo, shareRedPacket);
 		saveRecord(helpOpenDo);
 
 		afRedPacketTotalService.updateAmount(shareRedPacket, helpOpenDo.getAmount(), "");
@@ -88,26 +97,35 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		return afRedPacketHelpOpenDao;
 	}
 
-	// 检查是否可以帮拆红包
-	private void checkIsCanOpen(String openId, Long userId) {
-		AfRedPacketHelpOpenDo helpOpenDo = getHelpOpenRecord(openId, userId);
+	// 检查是否可以拆红包
+	private void checkIsCanOpen(AfRedPacketTotalDo shareRedPacket, String openId) {
+		if (afRedPacketTotalService.isInvalid(shareRedPacket)) {
+			throw new FanbeiException("分享的红包已失效");
+		}
+
+		AfRedPacketHelpOpenDo helpOpenDo = getHelpOpenRecord(openId, shareRedPacket.getUserId());
 		if (helpOpenDo != null) {
 			throw new FanbeiException("您已帮此用户拆过红包了");
 		}
 	}
 
 	// 填充拆得的金额和比率
-	private void fillAmountAndDiscountInfo(AfResourceDo config, AfRedPacketHelpOpenDo helpOpenDo) {
+	private void fillAmountAndDiscountInfo(AfResourceDo config, AfRedPacketHelpOpenDo helpOpenDo,
+										   AfRedPacketTotalDo shareRedPacket) {
 		JSONArray helpOpenRateConfig = JSONArray.parseArray(config.getValue3());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 		int num = afRedPacketHelpOpenDao.getOpenedNum(helpOpenDo.getRedPacketTotalId());
 		num = num == 0 ? 1 : num;
 
 		String configRate = null;
-		for (Iterator it = helpOpenRateConfig.iterator(); it.hasNext();) {
-			JSONObject e = (JSONObject) it.next();
+		for (Object obj : helpOpenRateConfig) {
+			JSONObject e = (JSONObject) obj;
 			Integer minPepole = Integer.valueOf(e.get("minPepole").toString());
-			Integer maxPepole = Integer.valueOf(e.get("maxPepole").toString());
+			Integer maxPepole = null;
+			if (e.get("maxPepole") != null) {
+				maxPepole = Integer.valueOf(e.get("maxPepole").toString());
+			}
+
 			if (maxPepole != null) {
 				if (num >= minPepole && num <= maxPepole) {
 					configRate = e.get("rate").toString();
@@ -120,17 +138,21 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 					return;
 				}
 			}
-			continue;
 		}
 
+		if (configRate == null) {
+			throw new FanbeiException("帮差红包比率配置错误，已有" + num + "人帮拆过，却找不到对应的比率配置");
+		}
 		String[] numArr = configRate.split("-");
 		Integer min = Integer.valueOf(numArr[0]);
 		Integer max = Integer.valueOf(numArr[1]);
 		double rate = Math.random() * (max - min);
 		helpOpenDo.setDiscountRate(new BigDecimal(min).add(new BigDecimal(rate))
-				.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP));
+				.divide(new BigDecimal(100), 3, RoundingMode.HALF_UP));
+
 		BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-		helpOpenDo.setAmount(thresholdAmount.multiply(helpOpenDo.getDiscountRate()));
+		BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(shareRedPacket, thresholdAmount);
+		helpOpenDo.setAmount(withdrawRestAmount.multiply(helpOpenDo.getDiscountRate()));
 	}
 
 }

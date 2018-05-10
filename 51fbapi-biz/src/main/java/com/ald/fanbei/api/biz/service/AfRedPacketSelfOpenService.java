@@ -47,11 +47,4 @@ public interface AfRedPacketSelfOpenService extends ParentService<AfRedPacketSel
       */
     AfRedPacketSelfOpenDo bindPhoneAndOpen(Long userId, String modifier, String wxCode, String sourceType);
 
-    /**
-     * 是否已经拆过自己获得的红包，不是分享获得的
-     *
-     * @author wangli
-     * @date 2018/5/8 16:07
-     */
-    boolean isOpenedRedPacketOfSelf(Long redPacketTotalId);
 }

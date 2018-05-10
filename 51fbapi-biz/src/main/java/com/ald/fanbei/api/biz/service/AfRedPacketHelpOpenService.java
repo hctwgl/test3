@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfRedPacketHelpOpenDo;
+import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
 
 import java.util.List;
 
@@ -29,6 +30,14 @@ public interface AfRedPacketHelpOpenService extends ParentService<AfRedPacketHel
      * @date 2018/5/4 15:16
      */
     AfRedPacketHelpOpenDo getHelpOpenRecord(String openId, Long userId);
+
+    /**
+     * 判断是否可以帮拆红包
+     *
+     * @author wangli
+     * @date 2018/5/10 17:38
+     */
+    boolean isCanOpen(AfRedPacketTotalDo shareRedPacket, String openId);
 
     /**
      * 帮拆红包

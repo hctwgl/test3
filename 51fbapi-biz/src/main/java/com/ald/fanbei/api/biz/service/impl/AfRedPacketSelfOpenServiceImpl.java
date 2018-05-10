@@ -7,7 +7,9 @@ import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.SelfOpenRedPacketSourceType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfRedPacketSelfOpenDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfRedPacketSelfOpenDo;
@@ -81,7 +83,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		AfRedPacketTotalDo theOpening = afRedPacketTotalService
 				.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
 
-		afRedPacketTotalService.checkIsCanOpen(sourceType, theOpening, redPacketConfig.getInteger("shareTime"));
+		checkIsCanOpen(sourceType, theOpening, redPacketConfig.getInteger("shareTime"));
 
 		AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
 		selfOpenDo.setRedPacketTotalId(theOpening.getRid());
@@ -89,8 +91,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		selfOpenDo.setCreator(modifier);
 		selfOpenDo.setModifier(modifier);
 		selfOpenDo.setDiscountRate(calcDiscountRate(selfOpenRateConfig, sourceType));
+
 		BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-		selfOpenDo.setAmount(thresholdAmount.multiply(selfOpenDo.getDiscountRate()));
+		BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(theOpening, thresholdAmount);
+		selfOpenDo.setAmount(withdrawRestAmount.multiply(selfOpenDo.getDiscountRate()));
+
 		saveRecord(selfOpenDo);
 
 		afRedPacketTotalService.updateAmount(theOpening, selfOpenDo.getAmount(), modifier);
@@ -107,7 +112,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	}
 
 	@Override
-	public boolean isOpenedRedPacketOfSelf(Long redPacketTotalId) {
+	public BaseDao<AfRedPacketSelfOpenDo, Long> getDao() {
+		return afRedPacketSelfOpenDao;
+	}
+
+	private boolean hadSelfOpenedRedPacket(Long redPacketTotalId) {
 		AfRedPacketSelfOpenDo query = new AfRedPacketSelfOpenDo();
 		query.setRedPacketTotalId(redPacketTotalId);
 		query.setSourceType(SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
@@ -115,14 +124,28 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		return e != null;
 	}
 
-	@Override
-	public BaseDao<AfRedPacketSelfOpenDo, Long> getDao() {
-		return afRedPacketSelfOpenDao;
+	// 检查是否能拆红包
+	private void checkIsCanOpen(String sourceType, AfRedPacketTotalDo theOpening, Integer shareTime) {
+		if (theOpening == null) {
+			return;
+		}
+
+		int openedNum = getOpenedNum(theOpening.getRid());
+		if (openedNum >= (shareTime + 1)) {
+			throw new FanbeiException("您已没有红包可拆，继续分享可以让好友帮您拆");
+		}
+
+		if (StringUtil.isNotBlank(sourceType) && sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SELF.getCode())) {
+			boolean isOpened= hadSelfOpenedRedPacket(theOpening.getRid());
+			if (isOpened) {
+				throw new FanbeiException("您已拆过自己的红包了，继续分享可以再拆红包");
+			}
+		}
 	}
 
 	// 计算拆红包比率
 	private BigDecimal calcDiscountRate(JSONObject selfOpenRateConfig, String sourceType) {
-		String configRate = null;
+		String configRate;
 		if (sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SELF.getCode())) {
 			configRate = selfOpenRateConfig.getString("firstOpen");
 		} else if(sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SHARE_MOMENTS.getCode())) {

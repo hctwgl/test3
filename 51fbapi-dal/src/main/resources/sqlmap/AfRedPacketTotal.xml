@@ -26,6 +26,12 @@
         <if test="gmtWithdraw !=null">
             AND gmt_withdraw = #{gmtWithdraw,jdbcType=TIMESTAMP}
         </if>
+        <if test="gmtWithdrawStart != null and gmtWithdrawStart != ''">
+            AND gmt_withdraw <![CDATA[ >= ]]> #{gmtWithdrawStart}
+        </if>
+        <if test="gmtWithdrawEnd != null and gmtWithdrawEnd != ''">
+            AND gmt_withdraw <![CDATA[ <= ]]> #{gmtWithdrawEnd}
+        </if>
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
@@ -166,7 +172,7 @@
           <include refid="queryFields" />
         FROM af_red_packet_total
         WHERE is_delete = 0 AND is_withdraw = 0 AND user_id = #{userId}
-          AND gmt_create <![CDATA[<]]> date_add(now(), interval #{overdueIntervalHour} hour)
+          AND gmt_create <![CDATA[ > ]]> date_sub(now(), interval #{overdueIntervalHour} hour)
         LIMIT 1
     </select>
 
@@ -180,5 +186,11 @@
             LIMIT #{queryNum}
         </if>
 
+    </select>
+
+    <select id="countByQuery" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(1), 0)
+        FROM af_red_packet_total
+        <include refid="commonCondition"/>
     </select>
 </mapper>

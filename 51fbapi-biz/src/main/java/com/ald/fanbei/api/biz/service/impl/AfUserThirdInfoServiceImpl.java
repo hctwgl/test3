@@ -90,15 +90,6 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 		return list.size() == 0 ? null : list.get(0);
 	}
 
-	// 获取用户第三方信息
-	private AfUserThirdInfoDo getUserThirdInfoByThirdId(String thirdId, String userThirdType) {
-		AfUserThirdInfoDo query = new AfUserThirdInfoDo();
-		query.setThirdId(thirdId);
-		query.setThirdType(userThirdType);
-		List<AfUserThirdInfoDo> list = getListByCommonCondition(query);
-		return list.size() == 0 ? null : list.get(0);
-	}
-
 	@Override
 	public BaseDao<AfUserThirdInfoDo, Long> getDao() {
 		return afUserThirdInfoDao;

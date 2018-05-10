@@ -84,20 +84,20 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
     void withdraw(Long id, String modifier);
 
     /**
-     * 检查是否能拆红包
-     *
-     * @author wangli
-     * @date 2018/5/10 10:12
-     */
-    void checkIsCanOpen(String sourceType, AfRedPacketTotalDo theOpening, Integer shareTime);
-
-    /**
      * 判断用户拆完红包后，是否能再拆一个红包
      *
      * @author wangli
      * @date 2018/5/10 10:30
      */
     boolean isCanGainOne(Long id, Integer shareTime);
+
+    /**
+     * 判断红包是否失效
+     *
+     * @author wangli
+     * @date 2018/5/10 17:33
+     */
+    boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo);
 
     /**
      * 更新红包金额
@@ -114,4 +114,12 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      * @date 2018/5/10 10:21
      */
     BigDecimal calcWithdrawRestAmount(Long id, BigDecimal thresholdAmount);
+
+    /**
+     * 计算红包提现剩余金额
+     *
+     * @author wangli
+     * @date 2018/5/10 15:11
+     */
+    BigDecimal calcWithdrawRestAmount(AfRedPacketTotalDo redPacketTotalDo, BigDecimal thresholdAmount);
 }
