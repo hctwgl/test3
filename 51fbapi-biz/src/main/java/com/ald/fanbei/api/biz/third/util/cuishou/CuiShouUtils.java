@@ -81,7 +81,8 @@ public class CuiShouUtils {
     @Resource
     private AfBorrowRecycleRepaymentServiceImpl afBorrowRecycleRepaymentService;
 
-    AfBorrowRecycleService afBorrowRecycleService;
+    @Resource
+    private AfBorrowRecycleService afBorrowRecycleService;
 
     /**
      * 线下还款
