@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
@@ -23,4 +25,6 @@ public interface AfAssetPackageDetailDao extends BaseDao<AfAssetPackageDetailDo,
 	int updateReDisTri(@Param("borrowNo")String borrowNo);
 
 	int invalidPackageDetail(@Param("borrowNo")String borrowNo);
+
+	List<AfAssetPackageDetailDo> getPackageDetailByBorrowNo(@Param("borrowNo")String borrowNo);
 }

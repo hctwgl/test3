@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +31,16 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
@@ -135,6 +147,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
     @Resource
     AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
+    
+    @Resource
+    AssetSideEdspayUtil assetSideEdspayUtil;
     @Autowired
     KafkaSync kafkaSync;
     @Override
@@ -561,6 +576,22 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         afUserAccountLogDao.addUserAccountLog(accountLog);
                         afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                        try {
+                			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(), -1));
+                			if (isBefore) {
+                				if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
+                					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);
+                					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+                					if (result) {
+                						logger.info("trans modified borrowcash Info success,loanId="+afBorrowCashDo.getRid());
+                					}else{
+                						assetSideEdspayUtil.transFailRecord(afBorrowCashDo, modifiedLoanInfo);
+                					}
+                				}
+                			}
+                		} catch (Exception e) {
+                			logger.error("preFinishNotifyEds error="+e);
+                		}
                         //fmf 增加还款成功为FINSH的时间
                         try {
                             afBorrowCashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
@@ -984,6 +1015,22 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         bcashDo.setRateAmount(BigDecimal.ZERO);
                         bcashDo.setOverdueAmount(BigDecimal.ZERO);
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                        try {
+                        	boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(afBorrowCashDo.getGmtPlanRepayment(), -1));
+                        	if (isBefore) {
+                        		if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
+                        			List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);
+                        			boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+                        			if (result) {
+                        				logger.info("trans modified borrowCash Info success,loanId="+afBorrowCashDo.getRid());
+                        			}else{
+                        				assetSideEdspayUtil.transFailRecord(afBorrowCashDo, modifiedLoanInfo);
+                        			}
+                        		}
+                        	}
+						} catch (Exception e) {
+							logger.error("preFinishNotifyEds error="+e);
+						}
                     }
                     afBorrowCashService.updateBorrowCash(bcashDo);
 
