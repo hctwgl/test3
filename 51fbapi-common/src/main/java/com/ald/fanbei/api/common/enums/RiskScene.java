@@ -28,7 +28,7 @@ public enum RiskScene {
 	BUBBLE_BLD("172","BUBBLE_BLD","冒泡白领贷"),
 	BUBBLE_XJD_PASS("170","BUBBLE_XJD_PASS","冒泡现金贷(强风控通过)"),
 	BUBBLE_XJD_UNPASS("171","BUBBLE_XJD_UNPASS","冒泡现金贷(强风控不通过)"),
-	BUBBLE_ONLINE("173","BUBBLE_XJD_UNPASS","冒泡消费分期线上(强风控通过)"),
+	BUBBLE_ONLINE("173","BUBBLE_ONLINE","冒泡消费分期线上(强风控通过)"),
 	;
 	
     private String code;
