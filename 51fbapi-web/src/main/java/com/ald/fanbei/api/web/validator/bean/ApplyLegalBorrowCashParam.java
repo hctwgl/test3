@@ -55,6 +55,7 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	@Pattern(regexp = "^[1-9]{1}[0-9]{5,10}$")
 	private String deliveryPhone;
+
 	public BigDecimal getAmount() {
 		return amount;
 	}

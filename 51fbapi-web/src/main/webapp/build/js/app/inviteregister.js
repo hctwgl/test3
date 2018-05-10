@@ -439,7 +439,7 @@ window.onload = () => {
     !boolphone ? requestMsg('请填写正确的手机号') : 
     !boolpwd ? requestMsg('请填写6-18位的数字、字母、字符组成的密码') :
     !boolverify ? requestMsg('请输入正确的验证码') : 
-    !boolcheckbox ? requestMsg('请阅读并同意《51返呗用户注册协议》') : null
+    !boolcheckbox ? requestMsg('请阅读并同意《爱上街用户注册协议》') : null
     if (boolphone && boolpwd && boolverify && boolcheckbox) {
       if(!$('.reg').hasClass('pending')) {
         $('.reg').addClass('pending')

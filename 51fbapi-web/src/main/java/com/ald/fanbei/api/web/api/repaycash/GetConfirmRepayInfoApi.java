@@ -218,7 +218,7 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 
 			resp.setResponseData(newMap);
 		}
-		// 在返回前进行返呗内部异常捕获校验并向用户反馈
+		// 在返回前进行爱上街内部异常捕获校验并向用户反馈
 		validThirdReqExistFanbeiError(map);
 		// 向客户端反馈结果
 		return resp;

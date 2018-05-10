@@ -2,7 +2,7 @@ package com.ald.fanbei.api.common.exception;
 
 
 /**
- *@类FanbeiThirdRespCode的实现描述：返呗与三方联调时，对三方的响应码及响应说明
+ *@类FanbeiThirdRespCode的实现描述：爱上街与三方联调时，对三方的响应码及响应说明
  *@author 程康 2017年8月2日 下午14:46:54
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

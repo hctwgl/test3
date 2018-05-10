@@ -255,7 +255,7 @@ public class JpushUtilV2 extends AbstractThird {
 
             result = jpushClient.sendPush(ppl);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
         return result;
     }

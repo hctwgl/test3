@@ -2,7 +2,7 @@ package com.ald.fanbei.api.common.exception;
 
 
 /**
- *@类FanbeiAssetSideRespCode的实现描述：返呗与资产方响应码及响应说明配置
+ *@类FanbeiAssetSideRespCode的实现描述：爱上街与资产方响应码及响应说明配置
  *@author 程康 2017年11月29日 上午11:48:54
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

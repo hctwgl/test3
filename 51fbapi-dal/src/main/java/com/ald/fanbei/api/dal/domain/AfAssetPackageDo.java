@@ -41,7 +41,7 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
     /**
-     * 资产包类型【0：返呗主动推送，1：合作方主动请求】
+     * 资产包类型【0：爱上街主动推送，1：合作方主动请求】
      */
     private Integer type;
 
@@ -202,18 +202,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取资产包类型【0：返呗主动推送，1：合作方主动请求】
+     * 获取资产包类型【0：爱上街主动推送，1：合作方主动请求】
      *
-     * @return 资产包类型【0：返呗主动推送，1：合作方主动请求】
+     * @return 资产包类型【0：爱上街主动推送，1：合作方主动请求】
      */
     public Integer getType(){
       return type;
     }
 
     /**
-     * 设置资产包类型【0：返呗主动推送，1：合作方主动请求】
+     * 设置资产包类型【0：爱上街主动推送，1：合作方主动请求】
      * 
-     * @param type 要设置的资产包类型【0：返呗主动推送，1：合作方主动请求】
+     * @param type 要设置的资产包类型【0：爱上街主动推送，1：合作方主动请求】
      */
     public void setType(Integer type){
       this.type = type;

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
@@ -267,6 +268,22 @@ public interface AfResourceService {
 	 */
 	List<Object> getLoanHomeListByType();
 
+	/**
+	 * @param type (banner的类型)
+	 * @param envType (区分预发和线上)
+	 * @return
+	 */
+	List<Object> getBorrowRecycleHomeListByType();
+
+
+	/**
+	 * @param type (banner的类型)
+	 * @param envType (区分预发和线上)
+	 * @return
+	 */
+	List<Object> getBorrowFinanceHomeListByType();
+
+
 	List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType);
 	List<AfResourceDo> getConfigsListByTypesAndSecType(String type, String secType);
 
@@ -292,5 +309,11 @@ public interface AfResourceService {
 
 	List<AfResourceDo> getBackGroundByTypeAndStatusOrder(String code);
 
+	/**
+	 * 获取风控白名单用户
+	 * @return
+	 */
+	List<String> getBorrowCashWhiteList();
 
+	Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag,String secType);
 }
