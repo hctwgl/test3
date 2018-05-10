@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
@@ -31,11 +32,6 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
@@ -107,7 +103,14 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		} catch (Exception e) {
 			// ignore error
 		}
-
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_SWITCH.getCode(),AfResourceSecType.BORROW_CASH_SWITCH.getCode());
+		if (resourceDo != null && resourceDo.getValue().equals("Y")){
+			if (context.getAppVersion() > 390){
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STOP_ERROR);
+			}else {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_MAJIABAO_STOP_ERROR);
+			}
+		}
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (StringUtils.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())&& StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);

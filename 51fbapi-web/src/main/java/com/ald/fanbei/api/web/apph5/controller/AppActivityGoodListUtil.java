@@ -210,9 +210,10 @@ public class AppActivityGoodListUtil {
             goodsInfo.put("goodsType", "0");
             goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
             goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-            goodsInfo.put("total", homePageSecKillGoods.getTotal());
+            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());
             goodsInfo.put("source", homePageSecKillGoods.getSource());
             goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
+            goodsInfo.put("saleCount", 0);
             // 如果是分期免息商品，则计算分期
             Long goodsId = homePageSecKillGoods.getGoodsId();
             JSONArray interestFreeArray = null;
@@ -237,6 +238,8 @@ public class AppActivityGoodListUtil {
             }
             goodsList.add(goodsInfo);
         }
+
+
 
         data.put("goodsList", goodsList);
     }

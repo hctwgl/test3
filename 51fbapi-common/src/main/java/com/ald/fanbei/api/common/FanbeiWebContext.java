@@ -4,7 +4,7 @@
 package com.ald.fanbei.api.common;
 
 /**
- *@类现描述：返呗web上下文
+ *@类现描述：爱上街web上下文
  *@author chenjinhu 2017年6月7日 上午12:14:25
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的

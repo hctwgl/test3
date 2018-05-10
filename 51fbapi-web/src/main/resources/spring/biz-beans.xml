@@ -189,8 +189,8 @@
 		<property name="keepAliveSeconds" value="300" />
 	</bean>
 
-	<!-- solrServer -->
-	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
-		<constructor-arg name="baseURL" value="${solrServer.address}"/>
-	</bean>
+
+	<!--<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">-->
+		<!--<constructor-arg name="baseURL" value="${solrServer.address}"/>-->
+	<!--</bean>-->
 </beans>

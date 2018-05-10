@@ -12,6 +12,7 @@ public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
+	public static final long SECOND_OF_FIVE_MINITS = 5 * 60l;
 	public static final long SECOND_OF_TEN = 10l;//10秒
 	public static final long SECOND_OF_FIFTEEN = 15l;//15秒
 	public static final long SECOND_OF_THREE = 30l;// 30秒
@@ -120,9 +121,13 @@ public class Constants {
 	public static final String DEFAULT_SELFSUPPORT_SHOP = "自营商品支付";
 
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
+	public static final String DEFAULT_REPAYMENT_NAME_BORROW_RECYCLE = "主动支付";
+
 	public static final String BORROW_REPAYMENT_NAME_OFFLINE = "线下还款";
 	public static final String COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE = "催收线下还款";
 	public static final String BORROW_REPAYMENT_NAME_AUTO = "代扣付款";
+	public static final String BORROW_REPAYMENT_RECYCLE_NAME_AUTO = "代扣支付";
+
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// 支付失败信息
 	public static final String PAY_ORDER_PASSWORD_ERROR = "支付密码输入有误";
@@ -469,7 +474,7 @@ public class Constants {
 	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";
 
 	public static final int ONE_YEAY_DAYS = 360;
-	//返呗与资产方对接时的平台标识
+	//爱上街与资产方对接时的平台标识
 	public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 	public static final String ASSET_SIDE_EDSPAY_FLAG = "edspay";
 	//资产方查询用户借款及逾期信息redis中的key前缀
@@ -574,5 +579,8 @@ public class Constants {
 	//乐享生活节
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
+
+    public static final String BORROW_FINANCE = "borrow";
+
 
 }

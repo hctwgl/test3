@@ -7,7 +7,7 @@ package com.ald.fanbei.api.common.enums;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum AfAssetPackageType {
-	FB_PUSH(0, "返呗主动推送"), 
+	FB_PUSH(0, "爱上街主动推送"),
 	ASSET_REQ(1, "合作方主动请求");
 
 	private Integer code;

@@ -7,8 +7,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.AfLoanDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
@@ -61,6 +59,9 @@ public class MineHomeApi implements ApiHandle {
     private AfUserCouponService afUserCouponService;
 
     @Autowired
+    private AfBorrowRecycleService afBorrowRecycleService;
+    
+    @Autowired
     private AfBorrowBillService afBorrowBillService;
 
     @Autowired
@@ -80,12 +81,6 @@ public class MineHomeApi implements ApiHandle {
 
     @Autowired
     private AfLoanPeriodsService afLoanPeriodsService;
-
-    @Autowired
-    private AfBorrowCashDao afBorrowCashDao;
-
-    @Autowired
-    private AfLoanDao afLoanDao;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -217,38 +212,15 @@ public class MineHomeApi implements ApiHandle {
             data.setDesc(DESC_AMOUNT_AUTH);
         } else if (StringUtil.equals(cashAuthStatus.getRiskStatus(), RiskStatus.YES.getCode())) {
             // 已认证，通过强风控
-            AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
-            if (userAccount == null || userAccount.getRid() == null) {
-                logger.error("getMyBorrowV1Api error ; userAccount is null and userId = " + userId);
-                return;
-            }
-            // 信用额度
-            BigDecimal auAmount = userAccount.getAuAmount();
-            // 可用额度
-            BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
-
-            BigDecimal cashUsedAmount=BigDecimal.ZERO;
-            AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getDealingCashByUserId(userId);
-            List<AfLoanDo> listLoan = afLoanDao.listDealingLoansByUserId(userId);
-            if(listLoan != null && listLoan.size()>0){
-                for (AfLoanDo afLoanDo : listLoan) {
-                    cashUsedAmount = cashUsedAmount.add(afLoanDo.getAmount());
-                }
-            }
-            if(afBorrowCashDo!=null)
-            {
-                cashUsedAmount = cashUsedAmount.add(afBorrowCashDo.getAmount());
-            }
-
-            AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService.getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
+            AfUserAccountSenceDo loanTotalSenceDo = afUserAccountSenceService
+                    .getByUserIdAndScene(SceneType.LOAN_TOTAL.getName(), userId);
             if (loanTotalSenceDo != null) {
-                if (BigDecimal.ZERO.compareTo(auAmount) != 0) {
-                    auAmount = loanTotalSenceDo.getAuAmount();
-                }
+                data.setShowAmount(
+                        loanTotalSenceDo.getAuAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                data.setDesc(DESC_AMOUNT_AUTH);
             }
-            data.setShowAmount(auAmount.subtract(cashUsedAmount).setScale(2, RoundingMode.HALF_UP).toString());
-            data.setDesc(DESC_AMOUNT_AUTH);
         }
+
     }
 
     // 填充账户信息
@@ -309,18 +281,18 @@ public class MineHomeApi implements ApiHandle {
         }
 
         if (CollectionUtil.isNotEmpty(bannerResources)) {
-          List<Map<String, Object>> bannerList = CollectionConverterUtil
-                  .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
-              @Override
-              public Map<String, Object> convert(AfResourceDo source) {
-                  Map<String, Object> map = new HashMap<String, Object>();
-                  map.put("imageUrl", source.getValue());
-                  map.put("type", source.getValue1());
-                  map.put("content", source.getValue2());
-                  return map;
-              }
-          });
-          data.setBannerList(bannerList);
+            List<Map<String, Object>> bannerList = CollectionConverterUtil
+                    .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
+                        @Override
+                        public Map<String, Object> convert(AfResourceDo source) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("imageUrl", source.getValue());
+                            map.put("type", source.getValue1());
+                            map.put("content", source.getValue2());
+                            return map;
+                        }
+                    });
+            data.setBannerList(bannerList);
         }
 
         // navigation
@@ -411,6 +383,12 @@ public class MineHomeApi implements ApiHandle {
             // 没有最早的待还，查询最后一笔借款信息
             borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
+        
+        // 回收业务 屏蔽逻辑 - 2018.05.07 By ZJF
+        if(borrowCashDo != null && afBorrowRecycleService.isRecycleBorrow(borrowCashDo.getRid())) {
+        	borrowCashDo = null;
+        }
+        
         if (borrowCashDo != null && borrowCashDo.getStatus().equals(AfBorrowCashStatus.transed.getCode())) {
             return afBorrowCashService.calculateLegalRestAmount(borrowCashDo);
         }
