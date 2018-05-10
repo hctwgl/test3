@@ -113,7 +113,7 @@
 	
 	<select id="listNewEncoreGoodsByActivityId" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">
 		SELECT
-		<include refid="newEncoreGoodsSqlField"></include>,t.activity_price 'activityPrice'
+		<include refid="newEncoreGoodsSqlField"></include>,t.activity_price
 		FROM
 		af_activity_model m
 		INNER JOIN af_goods g ON m.goods_id = g.id

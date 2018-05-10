@@ -18,8 +18,7 @@ public class AfEncoreGoodsDto extends AfGoodsDo {
 	private static final long serialVersionUID = -3162832676757115210L;
 	private Integer titleType;
 	private String doubleRebate;
-	private BigDecimal activityPrice;
-	
+
 	public Integer getTitleType() {
 		return titleType;
 	}
@@ -31,13 +30,5 @@ public class AfEncoreGoodsDto extends AfGoodsDo {
 	}
 	public void setDoubleRebate(String doubleRebate) {
 		this.doubleRebate = doubleRebate;
-	}
-
-	public BigDecimal getActivityPrice() {
-		return activityPrice;
-	}
-
-	public void setActivityPrice(BigDecimal activityPrice) {
-		this.activityPrice = activityPrice;
 	}
 }
