@@ -268,7 +268,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("couponList",newList.size());
 			data.put("pageNo", 1);
-			data.put("totalCount", 0);
+			data.put("totalCount", newList.size());
 			resp.setResponseData(data);
 			return resp;
 		}
