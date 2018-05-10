@@ -859,13 +859,13 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
     }
     private String getReceptContractPdf(Map<String, Object> data,String outFilePath) throws IOException {
         long time = new Date().getTime();
-        data.put("PDFPath", outFilePath);
+        data.put("userPath", outFilePath);
         String dstFile = String.valueOf(src + data.get("userName") + "recept" + time + 2 + ".pdf");
-        data.put("userPath", dstFile);
+        data.put("selfPath", dstFile);
         boolean result = true;
-        byte[] stream = new byte[1024];
+        byte[] stream = null;
         logger.info("lease data ="+data);
-        //stream = borrowerCreateSeal(result,stream,data);//借款人签章
+//        stream = borrowerCreateSeal(result,stream,data);//借款人签章
 //
         stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
 
@@ -938,7 +938,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         AfUserAccountDo accountDo = getUserInfo(userId, data, null);
         data.put("PDFPath", outFilePath);
         String dstFile = String.valueOf(src + data.get("userName") + "lease" + time + 2 + ".pdf");
-        data.put("userPath", dstFile);
+        data.put("PDFPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
         stream = borrowerCreateSeal(result,stream,data);//借款人签章
