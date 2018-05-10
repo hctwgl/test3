@@ -1,32 +1,35 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankCardType;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardTypeDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardTypeDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyBindBankcardParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *@类现描述：申请绑卡银行短信
@@ -46,7 +49,10 @@ public class ApplyBindBankcardApi implements ApiHandle {
 	private AfUserBankcardDao afUserBankcardDao;
 	@Resource
 	private AfUserAuthService afUserAuthService;
-	
+
+	@Autowired
+	private AfUserBankcardTypeDao afUserBankcardTypeDao;
+
 	@Resource
 	UpsUtil upsUtil;
 	
@@ -56,6 +62,13 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		ApplyBindBankcardParam param = (ApplyBindBankcardParam) requestDataVo.getParamObj();
 		
 		Long userId = context.getUserId();
+
+		if(context.getAppVersion()>=415){
+			if(param.cardType== null)
+			{
+				throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+			}
+		}
 
 		if(afUserBankcardDao.getUserBankByCardNo(param.cardNumber)>0){// 判断该卡是否已被绑定
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
@@ -71,7 +84,21 @@ public class ApplyBindBankcardApi implements ApiHandle {
 			return  new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_CARD_IS_EXIST);
 		}
 
-		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02", param.bankCode);
+		//默认赋值为借记卡
+		String cardType = "00";
+		if(BankCardType.CREDIT.getCode().equals(param.cardType)) {//验证信用卡有效期格式
+			String express = "\\d{2}/\\d{2}";
+				Pattern pattern = Pattern.compile(express);
+			Matcher matcher = pattern.matcher(param.validDate);
+			if(!matcher.matches())
+			{
+				throw new FanbeiException("信用卡有效期格式错误，正确格式为MM/YY");
+			}
+			cardType = "01";
+		}
+
+		UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), param.realname, param.mobile, param.idNumber, param.cardNumber, "02",
+				param.bankCode,cardType,param.validDate,param.safeCode);
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}else if(!"10".equals(upsResult.getNeedCode())){
@@ -84,6 +111,18 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		
 		AfUserBankcardDo bankDo = genUserBankcardDo(upsResult.getBankCode(), param.bankName, param.cardNumber, param.mobile, userId, isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
+
+		if(context.getAppVersion()>=415) {
+			//添加银行卡补充信息
+			AfUserBankcardTypeDo afUserBankcardTypeDo = new AfUserBankcardTypeDo();
+			afUserBankcardTypeDo.setType(param.cardType);
+			if(BankCardType.CREDIT.getCode().equals(param.cardType)){
+				afUserBankcardTypeDo.setSafeCode(param.safeCode);
+				afUserBankcardTypeDo.setValidDate(param.validDate);
+				afUserBankcardTypeDo.setUserBankcardId(bankDo.getRid());
+			}
+			afUserBankcardTypeDao.saveRecord(afUserBankcardTypeDo);
+		}
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());

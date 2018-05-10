@@ -20,7 +20,7 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_order_bankcard";
+		String tables = "af_user_bankcard_type";
 
 		// 配置作者及Domain说明
 		String classAuthor = "gaojibin";

@@ -1,51 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
-import org.dbunit.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmRespBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthPayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthSignReqBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthSignValidReqBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectReqBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignReqBo;
-import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.UpsQueryTradeReqBo;
-import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsReqBo;
-import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
-import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
-import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
-import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
-import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
@@ -58,18 +13,19 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.domain.AfUpsLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 /**
@@ -155,7 +111,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param bankName 银行名称
 	 * @param bankCode 银行编号
 	 * @param purpose 用途
-	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
 	public UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
@@ -215,7 +170,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param bankName 银行名称
 	 * @param bankCode 银行编号
 	 * @param purpose 用途
-	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
 	public UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
@@ -271,7 +225,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param realName 真实姓名
 	 * @param cardNo 银行卡号
 	 * @param idNumber 身份证号
-	 * @param notifyUrl 异步回调地址
 	 * @param clientType 客户端类型
 	 */
 	public UpsAuthPayRespBo authPay(BigDecimal amount,String userNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
@@ -314,7 +267,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param userNo 第三方唯一标识
 	 * @param smsCode 短信验证码
 	 * @param tradeNo 原认证支付交易订单号
-	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
 	public UpsAuthPayConfirmRespBo authPayConfirm(String payOrderNo,String cardNo,String userNo,
@@ -386,7 +338,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 * @return
 	 */
-	public UpsAuthSignRespBo authSign(String userNo,String realName,String mobile,String idNumber,String cardNumber,String clientType,String bankCode){
+	public UpsAuthSignRespBo authSign(String userNo,String realName,String mobile,String idNumber,String cardNumber,String clientType,String bankCode,String cardType,
+									  String validDate,String safeCode){
 //		String orderNo = "as"+idNumber.substring(idNumber.length()-15,idNumber.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-4,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
@@ -398,6 +351,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(idNumber);
 		reqBo.setCardNo(cardNumber);
+		reqBo.setCardType(cardType);
+		reqBo.setValidDate(validDate);
+		reqBo.setCvv2(safeCode);
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -429,9 +385,7 @@ public class UpsUtil extends AbstractThird {
 	
 	/**
 	 * 签约短信验证
-	 * @param tradeNo 交易号
 	 * @param verifyCode 短信验证
-	 * @param notifyUrl
 	 * @param clientType
 	 */
 	public UpsAuthSignValidRespBo authSignValid(String userNo,String cardNo,String verifyCode,String clientType){
@@ -533,8 +487,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param certNo --身份证号
 	 * @param purpose --用途
 	 * @param remark --
-	 * @param returnUrl
-	 * @param notifyUrl
 	 * @param clientType
 	 */
         public UpsCollectRespBo collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
@@ -585,8 +537,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param certNo --身份证号
 	 * @param purpose --用途
 	 * @param remark --
-	 * @param returnUrl
-	 * @param notifyUrl
 	 * @param clientType
 	 */
 	public UpsCollectRespBo quickPay(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
@@ -625,14 +575,8 @@ public class UpsUtil extends AbstractThird {
 	
 	/**
 	 * 短信重发
-	 * 
-	 * @param userNo --用户唯一标识
-	 * @param bankCode --银行代码
-	 * @param cardNo --银行卡号
-	 * @param orderNo -- 订单编号  
-	 * @param returnUrl
-	 * @param notifyUrl
-	 * @param clientType  客户端类型
+	 *
+	 * @param orderNo -- 订单编号
 	 */
         public UpsResendSmsRespBo quickPayResendSms(String payTradeNo,String orderNo) {
         	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
@@ -702,8 +646,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param totalCount --总量
 	 * @param remark --备注
 	 * @param paymentDetails --批量代付明细 tradeNo amount certNo bankName
-	 * @param returnUrl
-	 * @param notifyUrl
 	 * @param clientType
 	 */
 	public UpsBatchDelegatePayRespBo batchDelegatePay(BigDecimal amount,String userName,String totalCount,String remark,String paymentDetails,String clientType){

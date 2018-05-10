@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author gaojibin
  * @version 1.0.0 初始化
- * @date 2018-05-09 10:01:48
+ * @date 2018-05-10 09:49:15
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfUserBankcardTypeDo extends AbstractSerial {
@@ -38,10 +38,11 @@ import java.math.BigDecimal;
     private Long userBankcardId;
 
     /**
-     * B 借记卡
-            C 信用卡
+     * 0 其它
+            1 借记卡
+            2 信用卡
      */
-    private String type;
+    private Integer type;
 
     /**
      * 
@@ -128,24 +129,28 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取B 借记卡
-            C 信用卡
+     * 获取0 其它
+            1 借记卡
+            2 信用卡
      *
-     * @return B 借记卡
-            C 信用卡
+     * @return 0 其它
+            1 借记卡
+            2 信用卡
      */
-    public String getType(){
+    public Integer getType(){
       return type;
     }
 
     /**
-     * 设置B 借记卡
-            C 信用卡
+     * 设置0 其它
+            1 借记卡
+            2 信用卡
      * 
-     * @param type 要设置的B 借记卡
-            C 信用卡
+     * @param type 要设置的0 其它
+            1 借记卡
+            2 信用卡
      */
-    public void setType(String type){
+    public void setType(Integer type){
       this.type = type;
     }
 

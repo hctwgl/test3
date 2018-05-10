@@ -19,8 +19,35 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 	private String cardNo				;//卡号
 	private String returnUrl			;//同步通知地址
 	private String notifyUrl			;//异步通知地址
-	
-	
+
+	private String cardType;
+	private String cvv2;
+	private String validDate;
+
+	public String getCardType() {
+		return cardType;
+	}
+
+	public void setCardType(String cardType) {
+		this.cardType = cardType;
+	}
+
+	public String getCvv2() {
+		return cvv2;
+	}
+
+	public void setCvv2(String cvv2) {
+		this.cvv2 = cvv2;
+	}
+
+	public String getValidDate() {
+		return validDate;
+	}
+
+	public void setValidDate(String validDate) {
+		this.validDate = validDate;
+	}
+
 	public String getBankCode() {
 		return bankCode;
 	}
