@@ -157,13 +157,15 @@ public class ArbitrationServiceImpl extends BaseService implements
 
 	    AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService
 		    .getLenderInfoByBorrowCashId(afBorrowCashDo.getRid());
-
-	    if (fundSideInfo != null
-		    && StringUtil.isNotBlank(fundSideInfo.getName())) {
-		result.put("lender", fundSideInfo.getName());// 出借人
-	    } else {
-		result.put("lender", lenderDo.getValue()); // 出借人
-	    }
+		AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
+		Long pdfId=afContractPdfDo.getId();
+		List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(pdfId);
+		String lender="";
+		for (AfLenderInfoDto lenderInfoDto:lenders) {
+			lender=lender+lenderInfoDto.getUserName()+",";
+		}
+		lender=lender.substring(0,lender.lastIndexOf(","));
+		result.put("lender", lender);// 出借人
 	    result.put("amtCapital", afBorrowCashDo.getArrivalAmount()
 		    .multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 实际打款金额
 	    result.put("serviceType", serviceType); // 服务费预扣标识符
