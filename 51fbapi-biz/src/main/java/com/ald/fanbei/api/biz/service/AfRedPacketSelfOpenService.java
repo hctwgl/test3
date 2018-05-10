@@ -37,5 +37,21 @@ public interface AfRedPacketSelfOpenService extends ParentService<AfRedPacketSel
      * @author wangli
      * @date 2018/5/7 10:04
      */
-    AfRedPacketSelfOpenDo open(Long userId, String modifier, String sourceType);
+     AfRedPacketSelfOpenDo open(Long userId, String modifier, String sourceType);
+
+     /**
+      * 绑定手机号并拆红包
+      *
+      * @author wangli
+      * @date 2018/5/10 11:53
+      */
+    AfRedPacketSelfOpenDo bindPhoneAndOpen(Long userId, String modifier, String wxCode, String sourceType);
+
+    /**
+     * 是否已经拆过自己获得的红包，不是分享获得的
+     *
+     * @author wangli
+     * @date 2018/5/8 16:07
+     */
+    boolean isOpenedRedPacketOfSelf(Long redPacketTotalId);
 }

@@ -23,18 +23,18 @@ public interface AfRedPacketHelpOpenService extends ParentService<AfRedPacketHel
     List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum);
 
     /**
-     * 根据openId和userId获取帮拆红包
+     * 获取帮拆红包记录（根据openId和userId）
      *
      * @author wangli
      * @date 2018/5/4 15:16
      */
-    AfRedPacketHelpOpenDo getByOpenIdAndUserId(String openId, Long userId);
+    AfRedPacketHelpOpenDo getHelpOpenRecord(String openId, Long userId);
 
     /**
      * 帮拆红包
      *
      * @author wangli
-     * @date 2018/5/7 11:13
+     * @date 2018/5/10 10:40
      */
-    AfRedPacketHelpOpenDo open(AfRedPacketHelpOpenDo helpOpenDo);
+    AfRedPacketHelpOpenDo open(String wxCode, Long shareId);
 }

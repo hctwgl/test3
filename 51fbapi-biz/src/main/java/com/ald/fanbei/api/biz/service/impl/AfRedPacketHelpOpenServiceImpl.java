@@ -3,12 +3,15 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.service.AfRedPacketHelpOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.dao.AfRedPacketHelpOpenDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfRedPacketHelpOpenDo;
 import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +52,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	}
 
 	@Override
-	public AfRedPacketHelpOpenDo getByOpenIdAndUserId(String openId, Long userId) {
+	public AfRedPacketHelpOpenDo getHelpOpenRecord(String openId, Long userId) {
 		AfRedPacketHelpOpenDo query = new AfRedPacketHelpOpenDo();
 		query.setOpenId(openId);
 		query.setUserId(userId);
@@ -58,16 +61,24 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 	@Override
 	@Transactional
-	public AfRedPacketHelpOpenDo open(AfRedPacketHelpOpenDo helpOpenDo) {
-		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+	public AfRedPacketHelpOpenDo open(String wxCode, Long shareId) {
+		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
+		AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
-		AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(helpOpenDo.getRedPacketTotalId());
-		helpOpenDo.setUserId(redPacketTotalDo.getUserId());
+		checkIsCanOpen(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID), shareRedPacket.getUserId());
+
+		AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
+		helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+		helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
+		helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));
+		helpOpenDo.setRedPacketTotalId(shareId);
+		helpOpenDo.setUserId(shareRedPacket.getUserId());
+
+		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		fillAmountAndDiscountInfo(config, helpOpenDo);
 		saveRecord(helpOpenDo);
 
-		redPacketTotalDo.setAmount(redPacketTotalDo.getAmount().add(helpOpenDo.getAmount()));
-		afRedPacketTotalService.updateById(redPacketTotalDo);
+		afRedPacketTotalService.updateAmount(shareRedPacket, helpOpenDo.getAmount(), "");
 
 		return helpOpenDo;
 	}
@@ -77,26 +88,35 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		return afRedPacketHelpOpenDao;
 	}
 
+	// 检查是否可以帮拆红包
+	private void checkIsCanOpen(String openId, Long userId) {
+		AfRedPacketHelpOpenDo helpOpenDo = getHelpOpenRecord(openId, userId);
+		if (helpOpenDo != null) {
+			throw new FanbeiException("您已帮此用户拆过红包了");
+		}
+	}
+
 	// 填充拆得的金额和比率
 	private void fillAmountAndDiscountInfo(AfResourceDo config, AfRedPacketHelpOpenDo helpOpenDo) {
-		JSONArray helpOpenRateConfig = JSONObject.parseArray(config.getValue3());
+		JSONArray helpOpenRateConfig = JSONArray.parseArray(config.getValue3());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 		int num = afRedPacketHelpOpenDao.getOpenedNum(helpOpenDo.getRedPacketTotalId());
+		num = num == 0 ? 1 : num;
 
 		String configRate = null;
-		Iterator it = helpOpenRateConfig.iterator();
-		while (it.hasNext()) {
+		for (Iterator it = helpOpenRateConfig.iterator(); it.hasNext();) {
 			JSONObject e = (JSONObject) it.next();
-			Integer minPepole = e.getInteger("minPeople");
-			Integer maxPepole = e.getInteger("maxPepole");
+			Integer minPepole = Integer.valueOf(e.get("minPepole").toString());
+			Integer maxPepole = Integer.valueOf(e.get("maxPepole").toString());
 			if (maxPepole != null) {
 				if (num >= minPepole && num <= maxPepole) {
-					configRate = e.getString("rate");
+					configRate = e.get("rate").toString();
 					break;
 				}
 			} else {
 				if (num >= minPepole) {
-					helpOpenDo.setAmount(e.getBigDecimal("amount"));
+					BigDecimal amount = new BigDecimal(e.get("amount").toString());
+					helpOpenDo.setAmount(amount);
 					return;
 				}
 			}

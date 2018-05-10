@@ -20,5 +20,5 @@ public interface AfUserThirdInfoDao extends BaseDao<AfUserThirdInfoDo, Long> {
      * @author wangli
      * @date 2018/5/6 16:01
      */
-    UserWxInfoDto getLocalUserInfoByThirdId(@Param("thridId") String thridId, @Param("thirdType") String thirdType);
+    UserWxInfoDto getLocalUserInfoByThirdId(@Param("thirdId") String thirdId, @Param("thirdType") String thirdType);
 }

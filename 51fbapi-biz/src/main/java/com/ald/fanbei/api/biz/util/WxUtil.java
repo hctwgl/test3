@@ -1,5 +1,19 @@
 package com.ald.fanbei.api.biz.util;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,28 +22,6 @@ import java.net.ConnectException;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @说明： 对接微信的工具类
@@ -147,6 +139,30 @@ public class WxUtil {
 
 	return userInfo;
     }
+
+	/**
+	 * 获取用户信息，并进行缓存
+	 *
+	 * @author wangli
+	 * @date 2018/5/10 10:44
+	 */
+	public static JSONObject getUserInfoWithCache(String code) {
+        /*String key = "WxUtil:userInfo:" + code;
+        JSONObject userWxInfo = (JSONObject) bizCacheUtil.getObject(key);
+        if (userWxInfo == null) {
+            userWxInfo = WxUtil.getUserInfo(WxUtil.getWxAppId(), WxUtil.getWxSecret(), code);
+            if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
+                bizCacheUtil.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
+            } else {
+                String errmsg = userWxInfo.getString("errmsg");
+                throw new FanbeiException(StringUtil.isBlank(errmsg) ? "未获取到用户微信信息" : errmsg);
+            }
+        }
+        return userWxInfo;*/
+		// TODO:测试数据，部署记得修改
+		String jsonStr = "{\"openid\": \"OPENID\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
+		return JSONObject.parseObject(jsonStr);
+	}
 
     /**
      * 发送https请求

@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.AfRedPacketSelfOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
+import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.SelfOpenRedPacketSourceType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -73,22 +74,17 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	@Override
 	@Transactional
 	public AfRedPacketSelfOpenDo open(Long userId, String modifier, String sourceType) {
+		// TODO:这里事务没有起作用，记得检查
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 		JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
+		AfRedPacketTotalDo theOpening = afRedPacketTotalService
+				.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
 
-		AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService
-				.getTheOpening(userId, redPacketConfig.getInteger("overdueIntervalHour"));
-		if (redPacketTotalDo == null) {
-			redPacketTotalDo = new AfRedPacketTotalDo();
-			redPacketTotalDo.setUserId(userId);
-			redPacketTotalDo.setCreator(modifier);
-			redPacketTotalDo.setModifier(modifier);
-			afRedPacketTotalService.saveRecord(redPacketTotalDo);
-		}
+		afRedPacketTotalService.checkIsCanOpen(sourceType, theOpening, redPacketConfig.getInteger("shareTime"));
 
 		AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
-		selfOpenDo.setRedPacketTotalId(redPacketTotalDo.getRid());
+		selfOpenDo.setRedPacketTotalId(theOpening.getRid());
 		selfOpenDo.setSourceType(sourceType);
 		selfOpenDo.setCreator(modifier);
 		selfOpenDo.setModifier(modifier);
@@ -97,11 +93,26 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		selfOpenDo.setAmount(thresholdAmount.multiply(selfOpenDo.getDiscountRate()));
 		saveRecord(selfOpenDo);
 
-		redPacketTotalDo.setAmount(redPacketTotalDo.getAmount().add(selfOpenDo.getAmount()));
-		redPacketTotalDo.setModifier(modifier);
-		afRedPacketTotalService.updateById(redPacketTotalDo);
+		afRedPacketTotalService.updateAmount(theOpening, selfOpenDo.getAmount(), modifier);
 
 		return selfOpenDo;
+	}
+
+	@Override
+	public AfRedPacketSelfOpenDo bindPhoneAndOpen(Long userId, String modifier, String wxCode, String sourceType) {
+		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
+		afUserThirdInfoService.bindUserWxInfo(userWxInfo, userId, modifier);
+
+		return open(userId, modifier, sourceType);
+	}
+
+	@Override
+	public boolean isOpenedRedPacketOfSelf(Long redPacketTotalId) {
+		AfRedPacketSelfOpenDo query = new AfRedPacketSelfOpenDo();
+		query.setRedPacketTotalId(redPacketTotalId);
+		query.setSourceType(SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
+		AfRedPacketSelfOpenDo e = getByCommonCondition(query);
+		return e != null;
 	}
 
 	@Override
@@ -125,6 +136,6 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		Integer max = Integer.valueOf(numArr[1]);
 		double rate = Math.random() * (max - min);
 		return new BigDecimal(min).add(new BigDecimal(rate))
-				.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+				.divide(new BigDecimal(100), 3, RoundingMode.HALF_UP);
 	}
 }

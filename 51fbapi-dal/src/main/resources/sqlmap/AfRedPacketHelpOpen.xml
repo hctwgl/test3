@@ -24,8 +24,8 @@
         <if test="openId != null and openId != ''">
             AND open_id = #{openId,jdbcType=VARCHAR}
         </if>
-        <if test="friendAvata != null and friendAvata != ''">
-            AND friend_avata = #{friendAvata,jdbcType=VARCHAR}
+        <if test="friendAvatar != null and friendAvatar != ''">
+            AND friend_avatar = #{friendAvatar,jdbcType=VARCHAR}
         </if>
         <if test="friendNick != null and friendNick != ''">
             AND friend_nick = #{friendNick,jdbcType=VARCHAR}
@@ -67,8 +67,8 @@
 	        <if test="openId != null">        
 	            open_id,
 	        </if>
-	        <if test="friendAvata != null">        
-	            friend_avata,
+	        <if test="friendAvatar != null">
+	            friend_avatar,
 	        </if>
 	        <if test="friendNick != null">        
 	            friend_nick,
@@ -103,8 +103,8 @@
 		    <if test="openId != null" >
 		       #{openId,jdbcType=VARCHAR},
 		    </if>
-		    <if test="friendAvata != null" >
-		       #{friendAvata,jdbcType=VARCHAR},
+		    <if test="friendAvatar != null" >
+		       #{friendAvatar,jdbcType=VARCHAR},
 		    </if>
 		    <if test="friendNick != null" >
 		       #{friendNick,jdbcType=VARCHAR},
@@ -142,8 +142,8 @@
             <if test="openId != null and openId != '' ">        
                 open_id = #{openId,jdbcType=VARCHAR},                
             </if>
-            <if test="friendAvata != null and friendAvata != '' ">        
-                friend_avata = #{friendAvata,jdbcType=VARCHAR},                
+            <if test="friendAvatar != null and friendAvatar != '' ">
+                friend_avatar = #{friendAvatar,jdbcType=VARCHAR},
             </if>
             <if test="friendNick != null and friendNick != '' ">        
                 friend_nick = #{friendNick,jdbcType=VARCHAR},                

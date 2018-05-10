@@ -1,9 +1,9 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import com.ald.fanbei.api.biz.bo.OpenRedPacketHomeBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -14,15 +14,15 @@ import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfRedPacketSelfOpenDto;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfOpenRedPacketHomeVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -36,7 +36,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 拆红包controller
@@ -67,9 +70,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     private AfUserThirdInfoService afUserThirdInfoService;
 
     @Autowired
-    private BizCacheUtil bizCacheUtil;
-
-    @Autowired
     private AfSmsRecordService afSmsRecordService;
 
     @Autowired
@@ -86,33 +86,15 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/getHomeInfoInSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getHomeInfoInSite(HttpServletRequest request,
-                                    @RequestParam(value = "broadcastSize", required = false) Integer broadcastSize) {
+    public String getHomeInfoInSite(HttpServletRequest request) {
         try {
-            AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-            // 判断活动开关是否打开
-            if (config.getValue().trim().equals(YesNoStatus.NO)) {
-                return H5CommonResponse.getNewInstance(false, "活动已结束", "", null).toString();
-            }
-
-            AfOpenRedPacketHomeVo data = new AfOpenRedPacketHomeVo();
             FanbeiWebContext context = doWebCheck(request, false);
-            JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-
-            data.setWithdrawTotalNum(getWithdrawTotalNum(redPacketConfig));
-            if (context.isLogin()) {
-                Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
-                data.setRedPacket(getRedPacket(userId, redPacketConfig));
-                data.setWithdrawList(doFindWithdrawList(userId, 2));
-                if (data.getRedPacket() != null) {
-                    Long redPacketTotalId = Long.valueOf(data.getRedPacket().get(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID));
-                    data.setOpenList(doFindOpenList(redPacketTotalId, 2));
-                }
-            }
+            OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoInSite(context);
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+        } catch (FanbeiException e) {
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
     }
 
@@ -124,61 +106,14 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/getHomeInfoOutSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getHomeInfoOutSite(@RequestParam("code") String code,@RequestParam("shareId") Long shareId) {
+    public String getHomeInfoOutSite(@RequestParam("code") String code, @RequestParam("shareId") Long shareId) {
         try {
-            AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-            // 判断活动开关是否打开
-            if (config.getValue().trim().equals(YesNoStatus.NO)) {
-                return H5CommonResponse.getNewInstance(false, "活动已结束", "", null).toString();
-            }
-
-            AfOpenRedPacketHomeVo data = new AfOpenRedPacketHomeVo();
-            JSONObject userWxInfo = getUserWxInfoByCode(code);
-            JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-
-            data.setWithdrawTotalNum(getWithdrawTotalNum(redPacketConfig));
-
-            Long userId = afUserThirdInfoService.getUserIdByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-            if (userId != null) {
-                data.setUserId(userId.toString());
-                data.setRedPacket(getRedPacket(userId, redPacketConfig));
-                data.setWithdrawList(doFindWithdrawList(userId, 2));
-                if (data.getRedPacket() != null) {
-                    Long redPacketTotalId = Long.valueOf(data.getRedPacket().get(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID));
-                    data.setOpenList(doFindOpenList(redPacketTotalId, 2));
-                }
-            }
-
-            AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
-            AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService
-                    .getByOpenIdAndUserId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID), shareRedPacket.getUserId());
-            if (helpOpenDo == null) {
-                data.setIsCanOpen(YesNoStatus.YES.getCode());
-            } else {
-                data.setIsCanOpen(YesNoStatus.NO.getCode());
-            }
-
-            Map<String, String> helpOpenInfo = new HashMap<>();
-            helpOpenInfo.put("isOverdue", YesNoStatus.NO.getCode());
-            Integer overdueIntervalHour = redPacketConfig.getInteger("overdueIntervalHour");
-            if (DateUtil.addHoures(shareRedPacket.getGmtCreate(), overdueIntervalHour).before(new Date())) {
-                helpOpenInfo.put("isOverdue", YesNoStatus.YES.getCode());
-            }
-            if (data.getIsCanOpen().equals(YesNoStatus.YES.getCode())) {
-                UserWxInfoDto shareUserWxInfo = afUserThirdInfoService.getWxOrLocalUserInfo(shareRedPacket.getUserId());
-                helpOpenInfo.put("avatar", shareUserWxInfo.getAvatar());
-                helpOpenInfo.put("nick", shareUserWxInfo.getNick());
-            } else if (helpOpenDo.getRedPacketTotalId().equals(shareRedPacket.getRid())) {
-                UserWxInfoDto shareUserWxInfo = afUserThirdInfoService.getWxOrLocalUserInfo(shareRedPacket.getUserId());
-                helpOpenInfo.put("avatar", shareUserWxInfo.getAvatar());
-                helpOpenInfo.put("nick", shareUserWxInfo.getNick());
-                helpOpenInfo.put("amount", helpOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
-            }
-
+            OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(code, shareId);
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+        } catch (FanbeiException e) {
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoOutSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "页面失效，请刷新页面重试").toString();
+           return handleException(e);
         }
     }
 
@@ -193,19 +128,18 @@ public class AppH5OpenRedPacketController extends BaseController {
     public String findOpenList(@RequestParam("id") Long id) {
         Map<String, Object> data = new HashMap<>();
 
-        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(id);
         Map<String, String> redPacket = new HashMap<>();
+        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(id);
         redPacket.put("id", redPacketTotalDo.getRid().toString());
         redPacket.put("amount", redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
         AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
         JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-        BigDecimal restAmount = redPacketConfig.getBigDecimal("thresholdAmount")
-                .subtract(redPacketTotalDo.getAmount());
-        redPacket.put("restAmount", restAmount.compareTo(BigDecimal.ZERO) < 0 ? "0.00" :
-                restAmount.setScale(2, RoundingMode.HALF_UP).toString());
-        data.put("redPacket", redPacket);
+        BigDecimal restAmount = afRedPacketTotalService
+                .calcWithdrawRestAmount(id, redPacketConfig.getBigDecimal("thresholdAmount"));
+        redPacket.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
 
-        data.put("openList", doFindOpenList(id, null));
+        data.put("redPacket", redPacket);
+        data.put("openList", afRedPacketTotalService.findOpenListOfHome(id, null));
 
         return H5CommonResponse.getNewInstance(true, "", "", data).toString();
     }
@@ -221,91 +155,39 @@ public class AppH5OpenRedPacketController extends BaseController {
     public String findWithdrawList(HttpServletRequest request,
                                    @RequestParam(value = "code", required = false) String code) {
         try {
-            Long userId = null;
-            if (StringUtil.isBlank(code)) {
-                FanbeiWebContext context = doWebCheck(request, true);
-                AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-                userId = userDo.getRid();
-            } else {
-                JSONObject userWxInfo = getUserWxInfoByCode(code);
-                userId = afUserThirdInfoService.getUserIdByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-            }
-            if (userId != null) {
-                List<Map<String, String>> data = doFindWithdrawList(userId, null);
-                return H5CommonResponse.getNewInstance(true, "", "", data).toString();
-            } else {
-                return H5CommonResponse.getNewInstance(false, "没有绑定手机号", "", null).toString();
-            }
+            AfUserDo userDo = getUserInfo(code, request);
+            List<Map<String, String>> data = afRedPacketTotalService
+                    .findWithdrawListOfHome(userDo.getRid(), null);
+
+            return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-                return H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
-            }
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
     }
 
     /**
-     * 拆红包
+     * 个人拆红包
      *
      * @author wangli
      * @date 2018/5/7 9:37
      */
     @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String open(HttpServletRequest request, @RequestParam(value = "code", required = false) String code,
+    public String selfOpen(HttpServletRequest request, @RequestParam(value = "code", required = false) String code,
                        @RequestParam("sourceType") String sourceType) {
         try {
-            Long userId = null;
-            String userName = null;
-            if (StringUtil.isBlank(code)) {
-                FanbeiWebContext context = doWebCheck(request, true);
-                AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-                userId = userDo.getRid();
-                userName = userDo.getUserName();
-            } else {
-                JSONObject userWxInfo = getUserWxInfoByCode(code);
-                UserWxInfoDto localUserInfo = afUserThirdInfoService
-                        .getLocalUserInfoByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-                if (localUserInfo != null) {
-                    userId = localUserInfo.getUserId();
-                    userName = localUserInfo.getUserName();
-                } else {
-                    return H5CommonResponse.getNewInstance(false, "没有绑定手机号", "", null).toString();
-                }
-            }
-
-            AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-            JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-
-            if (!isCanOpen(userId, redPacketConfig)) {
-                return H5CommonResponse.getNewInstance(false, "您已不能再拆红包了", "", null).toString();
-            }
-            AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.open(userId, userName, sourceType);
-            Map<String, String> data = new HashMap<>();
-            data.put("id", selfOpenDo.getRedPacketTotalId().toString());
-            data.put("amount", selfOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
-            BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-            AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(selfOpenDo.getRedPacketTotalId());
-            BigDecimal restAmount = thresholdAmount.subtract(redPacketTotalDo.getAmount());
-            data.put("restAmount", restAmount.compareTo(BigDecimal.ZERO) < 0 ? "0.00"
-                    : restAmount.setScale(2, RoundingMode.HALF_UP).toString());
+            AfUserDo userDo = getUserInfo(code, request);
+            AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
+                    .open(userDo.getRid(), userDo.getUserName(), sourceType);
+            Map<String, String> data = buildSelfOpenResult(selfOpenDo);
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-                return H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
-            }
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
     }
 
@@ -319,13 +201,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String helpOpen(@RequestParam("code") String code, @RequestParam("shareId") Long shareId) {
         try {
-            JSONObject userWxInfo = getUserWxInfoByCode(code);
-            AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
-            helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-            helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
-            helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));;
-            helpOpenDo.setRedPacketTotalId(shareId);
-            helpOpenDo = afRedPacketHelpOpenService.open(helpOpenDo);
+            AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(code, shareId);
 
             Map<String, String> data = new HashMap<>();
             UserWxInfoDto userWxInfoDto = afUserThirdInfoService.getWxOrLocalUserInfo(helpOpenDo.getUserId());
@@ -333,60 +209,37 @@ public class AppH5OpenRedPacketController extends BaseController {
             data.put("amount", helpOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+        } catch (FanbeiException e) {
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
     }
 
+    /**
+     * 绑定手机号并拆红包
+     *
+     * @author wangli
+     * @date 2018/5/10 11:53
+     */
     @RequestMapping(value = "/bindPhoneAndOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, @RequestParam("code") String code,
                                    @RequestParam("verifyCode") String verifyCode, @RequestParam("token") String token,
                                    @RequestParam("bsqToken") String bsqToken, @RequestParam("mobile") String mobile) {
         try {
-            tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
-                    mobile, mobile, "");
-        } catch (Exception e) {
-            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc()).toString();
-        }
+            AfUserDo userDo = getOrRegisterUser(request, verifyCode, token, bsqToken, mobile);
+            AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
+                    userDo.getUserName(), code, SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
 
-        H5CommonResponse response = validateVerifyCode(verifyCode, mobile);
-        if (!response.getSuccess()) {
-            return response.toString();
-        }
-
-        AfUserDo userDo = afUserService.getUserByUserName(mobile);
-        if (userDo == null) {
-            userDo = registerUser(request, mobile, bsqToken);
-        }
-
-        try {
-            JSONObject userWxInfo = getUserWxInfoByCode(code);
-            afUserThirdInfoService.bindUserWxInfo(userWxInfo, userDo.getRid(), userDo.getUserName());
-
-            Map<String, String> data = null;
-            AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-            JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-            if (isCanOpen(userDo.getRid(), redPacketConfig)) {
-                data = new HashMap<>();
-                AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.open(userDo.getRid(),
-                        userDo.getUserName(), SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
-                data.put("id", selfOpenDo.getRedPacketTotalId().toString());
-                data.put("amount", selfOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
-                BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-                AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(selfOpenDo.getRedPacketTotalId());
-                BigDecimal restAmount = thresholdAmount.subtract(redPacketTotalDo.getAmount());
-                data.put("restAmount", restAmount.compareTo(BigDecimal.ZERO) < 0 ? "0.00"
-                        : restAmount.setScale(2, RoundingMode.HALF_UP).toString());
-            }
+            Map<String, String> data = buildSelfOpenResult(selfOpenDo);
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+        } catch (FanbeiException e) {
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/bindPhoneAndOpen, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
-
     }
 
     /**
@@ -400,29 +253,14 @@ public class AppH5OpenRedPacketController extends BaseController {
     public String withdraw(HttpServletRequest request, @RequestParam(value = "code", required = false) String code,
                            @RequestParam("id") Long id) {
         try {
-            String userName = null;
-            if (StringUtil.isBlank(code)) {
-                FanbeiWebContext context = doWebCheck(request, true);
-                userName = context.getUserName();
-            } else {
-                JSONObject userWxInfo = getUserWxInfoByCode(code);
-                UserWxInfoDto localUserInfo = afUserThirdInfoService
-                        .getLocalUserInfoByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-                userName = localUserInfo.getUserName();
-            }
+            AfUserDo userDo = getUserInfo(code, request);
+            afRedPacketTotalService.withdraw(id, userDo.getUserName());
 
-            afRedPacketTotalService.withdraw(id, userName);
             return H5CommonResponse.getNewInstance(true, "").toString();
         } catch (FanbeiException e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-                    || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-                return H5CommonResponse.getNewInstance(false, "没有登录", "", null).toString();
-            }
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleFanbeiException(e);
         } catch (Exception e) {
-            logger.error("/redPacket/getHomeInfoInSite, error={}", e);
-            return H5CommonResponse.getNewInstance(false, "未知错误", "", null).toString();
+            return handleException(e);
         }
     }
 
@@ -451,148 +289,48 @@ public class AppH5OpenRedPacketController extends BaseController {
         return null;
     }
 
-    // 获取提现总人数
-    private int getWithdrawTotalNum(JSONObject redPacketConfig) {
-        int withdrawTotalNum = afRedPacketTotalService.getWithdrawTotalNum();
-        Integer configWithdrawTotalNum = redPacketConfig.getInteger("withdrawTotalNum");
-        configWithdrawTotalNum = configWithdrawTotalNum == null ? 0 : configWithdrawTotalNum;
-        return withdrawTotalNum + configWithdrawTotalNum;
-    }
-
-    // 获取红包信息
-    private Map<String,String> getRedPacket(Long userId, JSONObject redPacketConfig) {
-        Integer overdueIntervalHour = redPacketConfig.getInteger("overdueIntervalHour");
-        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getTheOpening(userId, overdueIntervalHour);
-        if (redPacketConfig == null) return null;
-
-        Map<String, String> result = new HashMap<>();
-        result.put(AfOpenRedPacketHomeVo.KEY_REDPACKET_ID, redPacketTotalDo.getRid().toString());
-        result.put("amount", redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
-        result.put("withdrawLimitAmount", redPacketConfig.getString("thresholdAmount"));
-        result.put("gmtOverdue",
-                DateUtil.formatDateTime(DateUtil.addHoures(redPacketTotalDo.getGmtCreate(), overdueIntervalHour)));
-        return result;
-    }
-
-    // 查找用户提现记录
-    private List<Map<String,String>> doFindWithdrawList(Long userId, Integer queryNum) {
-        List<Map<String, String>> result = new ArrayList<>();
-        List<AfRedPacketTotalDo> withdrawList = afRedPacketTotalService.findWithdrawList(userId, queryNum);
-        if (CollectionUtil.isNotEmpty(withdrawList)) {
-            result = CollectionConverterUtil.convertToListFromList(withdrawList,
-                    new Converter<AfRedPacketTotalDo, Map<String, String>>() {
-                @Override
-                public Map<String, String> convert(AfRedPacketTotalDo source) {
-                    Map<String, String> e = new HashMap<>();
-                    e.put("gmtWithdraw", DateUtil.formatDateTime(source.getGmtWithdraw()));
-                    e.put("desc", "成功提现" + source.getAmount().setScale(2, RoundingMode.HALF_UP).toString() + "元");
-                    return e;
-                }
-            });
-            return result;
-        }
-        return result;
-    }
-
-    // 查找拆红包记录
-    private List<Map<String,String>> doFindOpenList(Long redPacketTotalId, Integer queryNum) {
-        List<Map<String, String>> result = new ArrayList<>();
-
-        List<AfRedPacketHelpOpenDo> helpOpenList = afRedPacketHelpOpenService
-                .findOpenRecordList(redPacketTotalId, queryNum);
-        List<AfRedPacketSelfOpenDto> selfOpenList = null;
-        if (queryNum == null || queryNum == 0) {
-            selfOpenList = afRedPacketSelfOpenService.findOpenRecordList(redPacketTotalId);
+    // 获取或注册用户
+    private AfUserDo getOrRegisterUser(HttpServletRequest request, String verifyCode, String token,
+                                       String bsqToken, String mobile) {
+        try {
+            tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
+                    mobile, mobile, "");
+        } catch (Exception e) {
+            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
         }
 
-        if (CollectionUtil.isNotEmpty(helpOpenList)) {
-            result.addAll(CollectionConverterUtil.convertToListFromList(helpOpenList,
-                    new Converter<AfRedPacketHelpOpenDo, Map<String, String>>() {
-                        @Override
-                        public Map<String, String> convert(AfRedPacketHelpOpenDo source) {
-                            Map<String, String> e = new HashMap<>();
-                            e.put("avatar", source.getFriendAvatar());
-                            e.put("nick", source.getFriendNick());
-                            e.put("desc", "帮你拆了" +
-                                    source.getAmount().setScale(2, RoundingMode.HALF_UP).toString() + "元");
-                            return e;
-                        }
-                    }));
-        }
-        if (CollectionUtil.isNotEmpty(selfOpenList)) {
-            Map<String, String> e = new HashMap<>();
-            e.put("avatar", selfOpenList.get(0).getUserAvatar());
-            e.put("nick", selfOpenList.get(0).getUserNick());
-            StringBuilder sb = new StringBuilder("你拆了");
-            for (int i = 0; i < selfOpenList.size(); i++) {
-                if (i < selfOpenList.size() - 1) {
-                    sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString()
-                            + "元+");
-                } else {
-                    sb.append(selfOpenList.get(i).getAmount().setScale(2, RoundingMode.HALF_UP).toString()
-                            + "元");
-                }
-            }
-            e.put("desc", sb.toString());
-            result.add(e);
-        }
-        return result;
-    }
+        validateVerifyCode(verifyCode, mobile);
 
-    // 根据code获取用户微信信息
-    private JSONObject getUserWxInfoByCode(String code) {
-        String key = "openRedPacket:userWxInfo:" + code;
-        JSONObject userWxInfo = (JSONObject) bizCacheUtil.getObject(key);
-        if (userWxInfo == null) {
-            userWxInfo = WxUtil.getUserInfo(WxUtil.getWxAppId(), WxUtil.getWxSecret(), code);
-            if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
-                bizCacheUtil.saveObject(key, userWxInfo, Constants.MINITS_OF_FIVE);
-            } else {
-                String errmsg = userWxInfo.getString("errmsg");
-                throw new RuntimeException(errmsg == null ? "用户微信信息为空" : errmsg);
-            }
-        }
-        return userWxInfo;
-    }
-
-    // 判断用户是否可以再拆红包
-    private boolean isCanOpen(Long userId, JSONObject redPacketConfig) {
-        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService
-                .getTheOpening(userId, redPacketConfig.getInteger("overdueIntervalHour"));
-        if (redPacketTotalDo == null) return true;
-
-        int num = afRedPacketSelfOpenService.getOpenedNum(redPacketTotalDo.getRid());
-        Integer shareTime = redPacketConfig.getInteger("shareTime");
-        if (num < (shareTime + 1)) {
-            return true;
+        AfUserDo userDo = afUserService.getUserByUserName(mobile);
+        if (userDo == null) {
+            userDo = registerUser(request, mobile, bsqToken);
         }
 
-        return false;
+        return userDo;
     }
 
     // 验证验证码
-    private H5CommonResponse validateVerifyCode(String verifyCode, String mobile) {
+    private void validateVerifyCode(String verifyCode, String mobile) {
         AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
         if (smsDo == null) {
             logger.error("/redPacket/bindPhoneAndOpen, error=sms record is empty");
-            return H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配");
+            throw new FanbeiException("手机号与验证码不匹配");
         }
         String realCode = smsDo.getVerifyCode();
         if (!StringUtils.equals(verifyCode, realCode)) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is invalid");
-            return H5CommonResponse.getNewInstance(false,  FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc());
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
         }
         if (smsDo.getIsCheck() == 1) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is already invalid");
-            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc());
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
         }
         // 判断验证码是否过期
         if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is overdue");
-            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc());
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }
         afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-        return H5CommonResponse.getNewInstance(true, "");
     }
 
     // 注册用户
@@ -617,5 +355,62 @@ public class AppH5OpenRedPacketController extends BaseController {
         userDo.setRecommendCode(inviteCode);
         afUserService.updateUser(userDo);
         return userDo;
+    }
+
+    // 处理FanbeiException
+    private String handleFanbeiException(FanbeiException e) {
+        logger.error("/redPacket/getHomeInfoInSite, error={}", e);
+        if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+                || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+            return H5CommonResponse.getNewInstance(false, "没有登录").toString();
+        }
+        return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();
+    }
+
+    // 处理异常
+    private String handleException(Exception e) {
+        logger.error("/redPacket/getHomeInfoInSite, error:", e);
+        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getErrorMsg()).toString();
+    }
+
+    // 获取用户信息，如果传code了，就利用绑定的openId获取用户信息，否则从登录信息中获取
+    private AfUserDo getUserInfo(String code, HttpServletRequest request) {
+        AfUserDo userDo = null;
+        if (StringUtil.isBlank(code)) {
+            FanbeiWebContext context = doWebCheck(request, true);
+            userDo = afUserService.getUserByUserName(context.getUserName());
+        } else {
+            JSONObject userWxInfo = WxUtil.getUserInfoWithCache(code);
+            UserWxInfoDto localUserInfo = afUserThirdInfoService
+                    .getLocalUserInfoByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+            if (localUserInfo != null) {
+                userDo = new AfUserDo();
+                userDo.setRid(localUserInfo.getUserId());
+                userDo.setUserName(localUserInfo.getUserName());
+            } else {
+                throw new FanbeiException("没有绑定手机号");
+            }
+        }
+
+        return userDo;
+    }
+
+    // 构建自己拆红包结果
+    private Map<String, String> buildSelfOpenResult(AfRedPacketSelfOpenDo selfOpenDo) {
+        Map<String, String> result = new HashMap<>();
+        result.put("id", selfOpenDo.getRedPacketTotalId().toString());
+        result.put("amount", selfOpenDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
+
+        AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+        JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+        BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
+        BigDecimal restAmount = afRedPacketTotalService
+                .calcWithdrawRestAmount(selfOpenDo.getRedPacketTotalId(), thresholdAmount);
+        result.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
+
+        boolean isCanGainOne = afRedPacketTotalService
+                .isCanGainOne(selfOpenDo.getRedPacketTotalId(), redPacketConfig.getInteger("shareTime"));
+        result.put("isCanGainOne", isCanGainOne ? YesNoStatus.YES.getCode() : YesNoStatus.NO.getCode());
+        return result;
     }
 }
