@@ -605,12 +605,12 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	    }
 	}
-	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
-	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
-		data.put("status", "F");
-		data.put("title", "");
-	    }
-	}
+//	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+//	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
+//		data.put("status", "F");
+//		data.put("title", "");
+//	    }
+//	}
 	return data;
     }
     
