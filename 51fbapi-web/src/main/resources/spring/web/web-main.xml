@@ -594,6 +594,7 @@
 				<!--商品详情优惠券接口-->
 				<entry key="/coupon/getDetailCouponList" value-ref="getDetailCouponListApi" />
 				<entry key="/coupon/getPickCoupon" value-ref="getPickCouponApi" />
+				<entry key="/coupon/getSaleServiceInfo" value-ref="getSaleServiceInfoApi" />
 			</map>
 		</constructor-arg>
 	</bean>
