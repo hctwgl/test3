@@ -1211,6 +1211,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 
+							//计算信用卡手续费
+							if(BankCardType.CREDIT.getCode().equals(cardInfo.getCardType())) {
+								Double feeAmount = getCreditFeeAmount(bankAmount);
+								bankAmount = bankAmount.add(BigDecimal.valueOf(feeAmount));
+							}
 							Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap,
 									isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
 							return result;
@@ -1284,6 +1289,13 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							if (canPay) {
 								KuaijieOrderPayBo bizObject = new KuaijieOrderPayBo(orderInfo, borrow, afOrderLeaseDo);
 								UpsCollectRespBo respBo;
+
+								//计算信用卡手续费
+								if(BankCardType.CREDIT.getCode().equals(cardInfo.getCardType())) {
+									Double feeAmount = getCreditFeeAmount(actualAmount);
+									actualAmount = actualAmount.add(BigDecimal.valueOf(feeAmount));
+								}
+
 								if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 									resultMap = sendKuaiJieSms(cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(),
 											userAccountInfo.getIdNumber(), JSON.toJSONString(bizObject), "afOrderService", Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
@@ -1307,6 +1319,18 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			}
 
 		});
+	}
+
+	private Double getCreditFeeAmount(BigDecimal actualAmount){
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
+		// 转换为分进行计算 *100
+		Double feeAmount = Math.ceil(actualAmount.multiply(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue4()))).doubleValue());
+		// 转换单位为元 /100
+		feeAmount = BigDecimal.valueOf(feeAmount).divide(BigDecimal.valueOf(100)).doubleValue();
+		// 至少一分钱手续费
+		feeAmount = feeAmount <= 0 ? 0.01 : feeAmount;
+
+		return feeAmount;
 	}
 
     @Override
