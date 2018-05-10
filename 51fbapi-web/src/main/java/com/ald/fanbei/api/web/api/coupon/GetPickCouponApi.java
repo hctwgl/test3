@@ -43,18 +43,18 @@ public class GetPickCouponApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         try {
             ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-            String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"), "").toString();
+            Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0l);
             //AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
             Map<String, Object> returnData = new HashMap<String, Object>();
 
-            if (StringUtils.isEmpty(couponId)) {
+            if (couponId==0l) {
                 throw new FanbeiException("getPickCouponApi couponId not exist error", FanbeiExceptionCode.REQUEST_PARAM_ILLEGAL);
             }
             Long userId = context.getUserId();
             if (userId == null) {
                 throw new FanbeiException("getPickCouponApi userId not exist error", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
             }
-            AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
+            AfCouponDo couponDo = afCouponService.getCouponById(couponId);
             if (couponDo == null) {
                 throw new FanbeiException("getPickCouponApi couponDo not exist error", FanbeiExceptionCode.BORROW_CASH_COUPON_NOT_EXIST_ERROR);
             }
