@@ -865,7 +865,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         boolean result = true;
         byte[] stream = new byte[1024];
         logger.info("lease data ="+data);
-        stream = borrowerCreateSeal(result,stream,data);//借款人签章
+        //stream = borrowerCreateSeal(result,stream,data);//借款人签章
 //
         stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
 

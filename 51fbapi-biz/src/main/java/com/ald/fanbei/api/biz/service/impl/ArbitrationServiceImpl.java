@@ -394,7 +394,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				map.put("nation", afIdNumberDo.getNation());	//民族
 				map.put("legalPerson", "");//法定代表人
 				map.put("position", "");	//法定代表人职务
-				map.put("sex", afIdNumberDo.getGender()=="女"?Integer.parseInt(ArbitrationStatus.ZERO.getCode()):Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//性别
+				map.put("sex", afIdNumberDo.getGender().equals("女")?Integer.parseInt(ArbitrationStatus.ZERO.getCode()):Integer.parseInt(ArbitrationStatus.ONE.getCode()));	//性别
 				map.put("phone", userAccountDo.getUserName());	//联系电话
 				map.put("email", "");	//电子邮箱
 				map.put("idAddress", afIdNumberDo.getAddress());	//证件地址
