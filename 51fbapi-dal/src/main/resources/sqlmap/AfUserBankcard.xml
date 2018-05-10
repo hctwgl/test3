@@ -15,7 +15,7 @@
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
 		c.bank_icon,c.bank_name,c.is_valid,c.pay_type bankChannel
 	</sql>
-	
+
 	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
 		VALUES (
@@ -33,11 +33,12 @@
 	
 	<select id="getUserBankInfo" resultType="AfUserBankDto">
 		SELECT
-			<include refid="queryWithFields"/>
+			<include refid="queryWithFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
-			LEFT JOIN af_user_account c	ON 	b.is_delete=0 and b.user_id = c.user_id 
+			LEFT JOIN af_user_account c	ON 	b.is_delete=0 and b.user_id = c.user_id
+			LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 
 			and a.is_delete = 0 and a.is_valid = 'Y'
@@ -47,11 +48,12 @@
 	</select>
 	<select id="getUserBankInfoRefund" resultType="AfUserBankDto">
 		SELECT
-			<include refid="queryWithFields"/>
+			<include refid="queryWithFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
 			LEFT JOIN af_user_account c ON b.is_delete=0 and b.user_id = c.user_id
+			LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 
 		AND b.id=#{bankId}
@@ -59,25 +61,26 @@
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryWithBankFields"/>
+			<include refid="queryWithBankFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard b
 		LEFT JOIN af_bank c
 		ON c.is_delete = 0 and c.bank_code = b.bank_code
+		LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 AND b.user_id = #{userId} AND b.is_main = 'Y' and b.status='B' limit 1
 	</select>
 	
 	<select id="getUserBankcardByBankId" resultType="AfBankUserBankDto">
 		SELECT
-			<include refid="queryBankFields"/>
+			<include refid="queryBankFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard u
 		LEFT JOIN
 			af_bank  b
 		ON
 			u.is_delete=0 and u.bank_code = b.bank_code
-		
+		LEFT JOIN af_user_bankcard_type t on u.id = t.user_bankcard_id
 		WHERE
 			
 		    u.status = 'B'
@@ -87,13 +90,14 @@
 	
 	<select id="getUserBankcardByUserId" resultType="AfBankUserBankDto">
 		SELECT
-			<include refid="queryBankFields"/>
+			<include refid="queryBankFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard u
 		LEFT JOIN
 			af_bank  b
 		ON
 			u.is_delete=0 and u.bank_code = b.bank_code
+		LEFT JOIN af_user_bankcard_type t on u.id = t.user_bankcard_id
 		
 		WHERE
 			
@@ -142,10 +146,11 @@
 	
 	<select id="getUserBankcardById" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
+			LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 
 			and a.is_delete = 0 and a.is_valid = 'Y'
@@ -181,10 +186,11 @@
 	
 	<select id="getUserBankList" resultType="AfUserBankcardDo" parameterType="AfUserBankQuery">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
 			af_user_bankcard b
 			join af_bank a on b.bank_code = a.bank_code
+			LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 
 			and a.is_delete = 0 and a.is_valid = 'Y'
@@ -195,10 +201,11 @@
 	
 	<select id="getAfUserBankcardDoList" parameterType="java.lang.Long" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
-			af_user_bankcard b
-			join af_bank a on b.bank_code = a.bank_code
+		af_user_bankcard b
+		join af_bank a on b.bank_code = a.bank_code
+		LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0 
 			and a.is_delete = 0 and a.is_valid = 'Y'
@@ -225,10 +232,11 @@
 	
 	<select id="getUserBankcardIdByCardNumber" parameterType="java.lang.String" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryFields"/>
+			<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
-			af_user_bankcard b
-			join af_bank a on b.bank_code = a.bank_code
+		af_user_bankcard b
+		join af_bank a on b.bank_code = a.bank_code
+		LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 			b.is_delete=0
 			and a.is_delete = 0 and a.is_valid = 'Y' 
@@ -240,10 +248,11 @@
 	</select>
 	<select id="getUserBankcardByIdAndStatus" resultType="AfUserBankcardDo">
 		SELECT
-		<include refid="queryFields"/>
+		<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
 		FROM
-			af_user_bankcard b
-			join af_bank a on b.bank_code = a.bank_code
+		af_user_bankcard b
+		join af_bank a on b.bank_code = a.bank_code
+		LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
 		WHERE
 		b.is_delete=0
 		and a.is_delete = 0 and a.is_valid = 'Y'

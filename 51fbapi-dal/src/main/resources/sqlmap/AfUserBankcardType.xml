@@ -131,5 +131,4 @@
         FROM af_user_bankcard_type
         <include refid="commonCondition"/>
     </select>
-    
 </mapper>
