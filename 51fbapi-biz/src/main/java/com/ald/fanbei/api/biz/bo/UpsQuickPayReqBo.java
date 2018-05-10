@@ -20,8 +20,27 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	private String certNo			;	//证件号
 	private String notifyUrl		;   //异步通知地址
 	private String expiredTime      ;   //交易过期时间
-	private String productName      ;   //商品名称    
-	
+	private String productName      ;   //商品名称
+
+	private String cvv2;
+	private String validDate;
+
+	public String getCvv2() {
+		return cvv2;
+	}
+
+	public void setCvv2(String cvv2) {
+		this.cvv2 = cvv2;
+	}
+
+	public String getValidDate() {
+		return validDate;
+	}
+
+	public void setValidDate(String validDate) {
+		this.validDate = validDate;
+	}
+
 	public String getAmount() {
 		return amount;
 	}

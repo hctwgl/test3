@@ -540,7 +540,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 */
 	public UpsCollectRespBo quickPay(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
-			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String productName){		
+			String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String productName,String safeCode ,String validDate){
 		amount = setActualAmount(amount);
 		UpsQuickPayReqBo reqBo = new UpsQuickPayReqBo();
 		setPubParam(reqBo,"quickPay",orderNo,clientType);
@@ -556,6 +556,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));		
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		reqBo.setCvv2(safeCode);
+		reqBo.setValidDate(validDate);
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPay", reqBo);

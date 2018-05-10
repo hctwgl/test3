@@ -195,6 +195,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Autowired
 	AfOrderCombinationPayService afOrderCombinationPayService;
 
+    @Autowired
+    AfOrderBankcardDao afOrderBankcardDao;
+
 	@Resource
 	AfBklService afBklService;
 	@Override
@@ -1211,13 +1214,16 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
 
+                            AfOrderBankcardDo afOrderBankcardDo = new AfOrderBankcardDo();
 							//计算信用卡手续费
 							if(BankCardType.CREDIT.getCode().equals(cardInfo.getCardType())) {
 								Double feeAmount = getCreditFeeAmount(bankAmount);
 								bankAmount = bankAmount.add(BigDecimal.valueOf(feeAmount));
+								afOrderBankcardDo.setFeeAmount(BigDecimal.valueOf(feeAmount));
 							}
 							Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap,
 									isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
+                            addOrderBankCardInfo(orderId,cardInfo,afOrderBankcardDo);
 							return result;
 						}
 					} else {
@@ -1290,10 +1296,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								KuaijieOrderPayBo bizObject = new KuaijieOrderPayBo(orderInfo, borrow, afOrderLeaseDo);
 								UpsCollectRespBo respBo;
 
+								AfOrderBankcardDo afOrderBankcardDo = new AfOrderBankcardDo();
+
 								//计算信用卡手续费
 								if(BankCardType.CREDIT.getCode().equals(cardInfo.getCardType())) {
 									Double feeAmount = getCreditFeeAmount(actualAmount);
 									actualAmount = actualAmount.add(BigDecimal.valueOf(feeAmount));
+									afOrderBankcardDo.setFeeAmount(BigDecimal.valueOf(feeAmount));
+									//afOrderBankcardDo.setRate();
 								}
 
 								if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
@@ -1303,6 +1313,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(),
 											userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
 								}
+
+                                addOrderBankCardInfo(orderId,cardInfo,afOrderBankcardDo);
 							}
 						}
 						// 活动返利
@@ -1320,6 +1332,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 		});
 	}
+
+	private void addOrderBankCardInfo(Long orderId,AfUserBankcardDo cardInfo,AfOrderBankcardDo afOrderBankcardDo){
+
+        //记录支付订单的银行卡信息
+        afOrderBankcardDo.setBankcardNo(cardInfo.getCardNumber());
+        afOrderBankcardDo.setCardType(cardInfo.getCardType());
+        afOrderBankcardDo.setOrderId(orderId);
+        afOrderBankcardDo.setUserBankcardId(cardInfo.getRid());
+        afOrderBankcardDao.saveRecord(afOrderBankcardDo);
+    }
+
 
 	private Double getCreditFeeAmount(BigDecimal actualAmount){
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
