@@ -72,6 +72,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 					{//老版本信用卡显示维护中（不可用，还未支持快捷支付）
 						item.setMessage(afResourceDo.getValue1());
 						item.setIsValid("N");
+						item.setCreditRate(BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue4())));
 					}
 				}
 				else
@@ -79,6 +80,7 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 					if(BankCardType.CREDIT.getCode().equals(item.getCardType()))
 					{//信用卡为快捷支付
 						item.setBankChannel(BankPayChannel.KUAIJIE.getCode());
+						item.setCreditRate(BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue4())));
 					}
 				}
 			}
