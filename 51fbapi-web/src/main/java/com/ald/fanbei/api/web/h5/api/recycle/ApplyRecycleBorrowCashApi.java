@@ -147,7 +147,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 						|| afResourceService.getBorrowCashWhiteList().contains(context.getUserName()) ) {
 					afBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
 				} else {
-					if (verifyBo.getRejectCode().equals(104) && verifyBo.getResult().equals("30")){
+					if (verifyBo.getRejectCode().equals("104") && verifyBo.getResult().equals("30")){
 						throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
 					}
 					throw new FanbeiException("weak risk direct fail, msg=" + verifyBo.getMsg());
