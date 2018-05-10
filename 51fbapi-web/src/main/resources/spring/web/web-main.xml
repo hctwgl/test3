@@ -593,6 +593,7 @@
 				<entry key="/pay/confirmPayment" value-ref="confirmPaymentApi" />
 				<!--商品详情优惠券接口-->
 				<entry key="/coupon/getDetailCouponList" value-ref="getDetailCouponListApi" />
+				<entry key="/coupon/getPickCoupon" value-ref="getPickCouponApi" />
 			</map>
 		</constructor-arg>
 	</bean>

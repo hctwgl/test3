@@ -59,7 +59,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/address/addressList","/address/addAddress","/address/updateInfo","/address/deleteAddress","/mine/commitCode",
-    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay","/order/getOrderLogistics","/coupon/getDetailCouponList"
+    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay","/order/getOrderLogistics","/coupon/getDetailCouponList","/coupon/getPickCoupon"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String mineRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
