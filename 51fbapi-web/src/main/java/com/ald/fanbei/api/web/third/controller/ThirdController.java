@@ -239,7 +239,7 @@ public class ThirdController extends AbstractThird{
 //                    smsUtil.sendSmsToDhst(userDo.getMobile(),content);
                     HttpUtil.doHttpPost(ConfigProperties.get(Constants.CONFKEY_ADMIN_URL)+"/orderClose/closeOrderAndBorrow?orderNo="+afOrderDo.getOrderNo(),JSONObject.toJSONString(qmap));
                 }
-                List<AfOrderDo> orderList = afOrderService.selectTodayIagentStatusCOrders(afOrderDo.getUserId());
+                List<AfOrderDo> orderList = afOrderService.selectTodayIagentStatusCOrders(afOrderDo.getUserId(),afOrderDo.getGmtCreate());
                 if (orderList!= null){
                     for (AfOrderDo temp:orderList){
                         afOrderService.updateIagentStatusByOrderId(temp.getRid(),iagentstate);

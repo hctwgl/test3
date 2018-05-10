@@ -1345,8 +1345,11 @@ public class RiskUtil extends AbstractThird {
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
 						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-						orderInfo.setIagentStatus("A");
+
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("A");
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),orderInfo.getIagentStatus());
+
 					}
 				}catch (Exception e){
 					logger.error("payOrder bklUtils submitBklInfo error",e);
@@ -3804,6 +3807,7 @@ public class RiskUtil extends AbstractThird {
 		}
 		return riskResp;
 	}
+
 
 	/**
 	 * 网银通知推送

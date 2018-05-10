@@ -464,7 +464,7 @@ public interface AfOrderService {
 
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
-	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId,Date gmtCreate);
 
 	/**
 	 * 统计用户各个状态的订单数
