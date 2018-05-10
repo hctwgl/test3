@@ -155,12 +155,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    String negotiatePhone = StringUtil.null2Str(json
 		    .get("negotiatePhone"));
 
-	    AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService
-		    .getLenderInfoByBorrowCashId(afBorrowCashDo.getRid());
 		AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
 		Long pdfId=afContractPdfDo.getId();
 		List<AfLenderInfoDto> lenders= afContractPdfService.selectLenders(pdfId);
 		String lender="";
+		logger.info("pdfId:"+pdfId+",lenders:"+JSON.toJSONString(lenders));
 		for (AfLenderInfoDto lenderInfoDto:lenders) {
 			lender=lender+lenderInfoDto.getUserName()+",";
 		}
