@@ -33,7 +33,7 @@
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
         <if test="friendUserId != null and friendUserId != ''">
-            AND friend_user_id = #{friendUserId,jdbcType=VARCHAR}
+            AND friend_user_id = #{friendUserId,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -88,7 +88,7 @@
 		       #{userId,jdbcType=INTEGER},
 		    </if>
 		    <if test="friendUserId != null" >
-		       #{friendUserId,jdbcType=VARCHAR},
+		       #{friendUserId,jdbcType=INTEGER},
 		    </if>
         </trim>
     </insert>
@@ -112,10 +112,10 @@
                 status = #{status,jdbcType=INTEGER},                
             </if>
             <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
+                user_id = #{userId,jdbcType=INTEGER},
             </if>
             <if test="friendUserId != null and friendUserId != '' ">        
-                friend_user_id = #{friendUserId,jdbcType=VARCHAR}                
+                friend_user_id = #{friendUserId,jdbcType=INTEGER}
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
@@ -149,10 +149,6 @@
         AND  date_format(now(),'%Y-%m-%d') = date_format(gmt_create,'%Y-%m-%d')
     </select>
 
-    <select id="sumAmount" resultType="double" parameterType="Long">
-        SELECT sum(amount) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and status = 0
-    </select>
-
     <select id="sumSignDays" resultType="int">
         SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
         AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
@@ -165,6 +161,10 @@
         WHERE is_delete = 0
         AND user_id = #{userId}
         ORDER BY gmt_create desc
+    </select>
+
+    <select id="checkUserSign" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
     </select>
     
 </mapper>

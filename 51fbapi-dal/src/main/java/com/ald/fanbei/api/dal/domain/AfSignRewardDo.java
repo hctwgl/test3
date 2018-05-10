@@ -60,7 +60,7 @@ import java.math.BigDecimal;
     /**
      * 帮签用户ID
      */
-    private String friendUserId;
+    private Long friendUserId;
 
 
 

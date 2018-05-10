@@ -40,7 +40,7 @@ public class GetSignRemindApi implements H5Handle {
                 afSignRewardExtDo.setUserId(context.getUserId());
                 afSignRewardExtDo.setIsOpenRemind(isOpenRemind);
                 if(afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo) < 1){
-                    throw new FanbeiException(FanbeiExceptionCode.SIGN_REMIND_FAIL);
+                    resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SIGN_REMIND_FAIL);
                 }
             }else{
                 resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);

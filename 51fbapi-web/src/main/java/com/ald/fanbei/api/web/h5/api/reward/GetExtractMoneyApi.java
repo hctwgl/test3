@@ -91,7 +91,7 @@ public class GetExtractMoneyApi implements H5Handle {
                 resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_FAIL);
             }
         }else {
-            throw new FanbeiException(FanbeiExceptionCode.CHOOSE_WITHDRAW_TYPE);
+            resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.CHOOSE_WITHDRAW_TYPE);
         }
         return resp;
     }

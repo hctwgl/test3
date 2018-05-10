@@ -39,11 +39,6 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     }
 
     @Override
-    public double sumAmount(Long userId){
-        return  afSignRewardDao.sumAmount(userId);
-    }
-
-    @Override
     public int sumSignDays(Long userId,Date startTime){
         return  afSignRewardDao.sumSignDays(userId,startTime);
     }
@@ -51,5 +46,15 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     @Override
     public List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query){
         return  afSignRewardDao.getRewardDetailList(query);
+    }
+
+    @Override
+    public int saveRecord(AfSignRewardDo afSignRewardDo){
+        return  afSignRewardDao.saveRecord(afSignRewardDo);
+    }
+
+    @Override
+    public boolean checkUserSign(Long userId){
+        return  afSignRewardDao.checkUserSign(userId)> 0 ? true :false;
     }
 }

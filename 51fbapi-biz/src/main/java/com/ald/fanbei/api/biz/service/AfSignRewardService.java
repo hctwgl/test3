@@ -19,10 +19,12 @@ public interface AfSignRewardService {
 
     boolean isExist(Long userId);
 
-    double sumAmount(Long userId);
-
     int sumSignDays(Long userId,Date startTime);
 
     List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
+
+    int saveRecord(AfSignRewardDo afSignRewardDo);
+
+    boolean checkUserSign(Long userId);
 
 }

@@ -34,14 +34,6 @@ import java.util.Date;
 public class GetReceiveRewardApi implements H5Handle {
 
     @Resource
-    AfSignRewardExtService afSignRewardExtService;
-    @Resource
-    TransactionTemplate transactionTemplate;
-    @Resource
-    AfUserCouponService afUserCouponService;
-    @Resource
-    AfUserAccountService afUserAccountService;
-    @Resource
     AfTaskService afTaskService;
     @Resource
     AfTaskUserService afTaskUserService;
@@ -55,7 +47,7 @@ public class GetReceiveRewardApi implements H5Handle {
         AfTaskDo afTaskDo = afTaskService.getTaskByTaskId(taskId);
         int count = 0;
         if(null == afTaskDo){
-            throw new FanbeiException(FanbeiExceptionCode.TASK_NOT_EXIST);
+            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.TASK_NOT_EXIST);
         }
         AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
         afTaskUserDo.setCashAmount(afTaskDo.getCashAmount());
@@ -71,12 +63,11 @@ public class GetReceiveRewardApi implements H5Handle {
                 count = afTaskUserService.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
             }
             if(count<1){
-                resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.RECEIVE_REWARD_FAIL);
+                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.RECEIVE_REWARD_FAIL);
             }
         }else{
-            throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+            return  new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-
         return resp;
     }
 
