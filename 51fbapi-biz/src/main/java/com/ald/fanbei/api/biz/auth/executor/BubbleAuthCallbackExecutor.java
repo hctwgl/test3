@@ -130,7 +130,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
             if (bldAuthDo != null && StringUtils.equals("Y", bldAuthDo.getStatus())) {
                 try {
                     afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.LOAN_TOTAL.getName(), AuthType.BUBBLE.getCode(), userId);
-                    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtAlipay())) {
+                    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
                         RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { RiskScene.BUBBLE_BLD.getCode() }, RiskSceneType.BLD.getCode());
                         // 提额成功
                         if (respBo != null && respBo.isSuccess()) {
