@@ -71,7 +71,7 @@ public class FanbeiException extends RuntimeException {
     }
 
     public FanbeiException(FanbeiExceptionCode CommonErrorCode) {
-        super();
+        super(CommonErrorCode.getErrorMsg());
         errorCode = CommonErrorCode;
     }
 

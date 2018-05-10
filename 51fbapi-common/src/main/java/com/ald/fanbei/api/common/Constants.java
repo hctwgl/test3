@@ -121,9 +121,13 @@ public class Constants {
 	public static final String DEFAULT_SELFSUPPORT_SHOP = "自营商品支付";
 
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
+	public static final String DEFAULT_REPAYMENT_NAME_BORROW_RECYCLE = "主动支付";
+
 	public static final String BORROW_REPAYMENT_NAME_OFFLINE = "线下还款";
 	public static final String COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE = "催收线下还款";
 	public static final String BORROW_REPAYMENT_NAME_AUTO = "代扣付款";
+	public static final String BORROW_REPAYMENT_RECYCLE_NAME_AUTO = "代扣支付";
+
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
 	// 支付失败信息
 	public static final String PAY_ORDER_PASSWORD_ERROR = "支付密码输入有误";
@@ -577,5 +581,8 @@ public class Constants {
 	//乐享生活节
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
+
+    public static final String BORROW_FINANCE = "borrow";
+
 
 }
