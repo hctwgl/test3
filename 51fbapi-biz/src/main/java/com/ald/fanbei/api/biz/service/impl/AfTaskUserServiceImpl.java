@@ -40,4 +40,14 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	public List<AfTaskUserDo> isNotDailyTaskList(Long userId, List<Long> list){
 		return afTaskUserDao.isNotDailyTaskList(userId,list);
 	}
+
+	@Override
+	public int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo){
+		return afTaskUserDao.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
+	}
+
+	@Override
+	public int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo){
+		return afTaskUserDao.updateDailyByTaskIdAndUserId(afTaskUserDo);
+	}
 }

@@ -233,11 +233,11 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+	<select id="getTaskByTaskId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
         SELECT
         <include refid="queryFields" />
         FROM af_task
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND id=#{taskId}
         LIMIT 0,1
     </select>
 

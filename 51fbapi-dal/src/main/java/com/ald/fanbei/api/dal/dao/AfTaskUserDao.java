@@ -19,4 +19,8 @@ public interface AfTaskUserDao  {
 
     List<AfTaskUserDo> isNotDailyTaskList(@Param("userId")Long userId,@Param("list")List<Long> list);
 
+    int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
+
+    int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
+
 }
