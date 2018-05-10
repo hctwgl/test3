@@ -51,18 +51,22 @@
 	
 	
 	<select id="listAllSubjectGoodsV1" resultType="AfGoodsDo" >
-		SELECT
-			g.id rid,g.*
-		FROM
-			af_subject_goods s
-		INNER JOIN
-			af_goods g
-		ON
-			s.goods_id = g.id
+		SELECT g.id rid,g.*, t.activity_price 'activityPrice'
+		    FROM af_subject_goods s
+		INNER JOIN af_goods g ON s.goods_id = g.id
+		LEFT JOIN (SELECT min(a.special_price) 'activity_price',a.goods_id
+		    FROM`af_seckill_activity_goods` a
+		    INNER JOIN af_seckill_activity b ON a.activity_id = b.id
+		    WHERE a.is_delete = 0
+		    AND b.is_delete = 0
+		    AND b.gmt_pstart <![CDATA[<=]]> now()
+		    AND b.gmt_end <![CDATA[>=]]> now()
+		    GROUP BY a.goods_id
+		    ORDER BY b.gmt_create DESC) t on s.goods_id = t.goods_id
 		WHERE
-			s.is_delete=0
+		s.is_delete=0
 		AND
-			s.subject_id = #{subjectId}
+		s.subject_id = #{subjectId}
 	</select>
 
 	<select id="listQualitySubjectGoods" resultType="AfGoodsDo" >
