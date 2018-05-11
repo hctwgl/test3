@@ -630,11 +630,13 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, IFNULL(c.card_type,1) cardType
+			ifnull(c.fee_amount,0) feeAmount, c.card_type
 		FROM
-			af_order o left join af_order_bankcard c on o.id = c.order_id
+			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
 			o.is_delete=0 AND o.id = #{rid} AND o.user_id = #{userId}
+			order by c.gmt_create desc
+			limit 1
 	</select>
 	
 	<select id="getOrderInfoByIdWithoutDeleted" resultType="AfOrderDo">
@@ -646,11 +648,13 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, IFNULL(c.card_type,1) cardType
+			ifnull(c.fee_amount,0) feeAmount, c.card_type
 		FROM
-			af_order o left join af_order_bankcard c on o.id = c.order_id
+			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
 			o.id = #{rid} AND o.user_id = #{userId}
+			order by c.gmt_create desc
+			limit 1
 	</select>
 	
 	<select id="getOrderInfoByOrderNo" resultType="AfOrderDo">
