@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleServiceImpl.BorrowRecycleHomeInfoBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -22,7 +23,7 @@ public interface AfBorrowRecycleService extends ParentService<AfBorrowCashDo, Lo
 	 * @param userId
 	 * @return
 	 */
-	BorrowRecycleHomeInfoBo getRecycleInfo(Long userId);
+	BorrowRecycleHomeInfoBo getRecycleInfo(Long userId, Map<String,String> params);
 
 	/**
 	 * 获取回收记录

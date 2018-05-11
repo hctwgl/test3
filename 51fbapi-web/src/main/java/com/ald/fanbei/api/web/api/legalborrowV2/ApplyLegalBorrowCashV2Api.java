@@ -14,8 +14,8 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.biz.util.SmartAddressEngine;
 import com.ald.fanbei.api.common.enums.*;
-
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -111,6 +111,8 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 	ApplyLegalBorrowCashServiceImpl applyLegalBorrowCashServiceImpl;
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowCashPushService afBorrowCashPushService;
 	// [end]
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -291,7 +293,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 						repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afBorrowCashDto.getLoanStartTime(), timeLimit-1)));
 						repaymentPlan.setRepaymentDays(timeLimit.longValue());
 						repaymentPlan.setRepaymentAmount(afBorrowCashDto.getMoney());
-						repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afBorrowCashDto.getMoney(), new BigDecimal(afAssetSideInfoDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
+						repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afBorrowCashDto.getMoney(), new BigDecimal(borrowRate.doubleValue()*timeLimit / 36000d)));
 						repaymentPlan.setRepaymentPeriod(0);
 						repaymentPlans.add(repaymentPlan);
 						borrowCashInfo.setRepaymentPlans(repaymentPlans);
@@ -334,6 +336,9 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 									return "success";
 								}
 							});
+							//记录push表
+							AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(afBorrowCashDo.getRid(),borrowCashInfo.getApr(), borrowCashInfo.getManageFee());
+							afBorrowCashPushService.saveOrUpdate(borrowCashPush);
 						}
 					}else{
 						// 不需推送或者马甲包的债权，提交ups进行打款处理
@@ -407,6 +412,17 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		} finally {
 			bizCacheUtil.delCache(lockKey);
 		}
+	}
+
+	private AfBorrowCashPushDo buildBorrowCashPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfBorrowCashPushDo borrowCashPush =new AfBorrowCashPushDo();
+		Date now = new Date();
+		borrowCashPush.setGmtCreate(now);
+		borrowCashPush.setGmtModified(now);
+		borrowCashPush.setBorrowCashId(rid);
+		borrowCashPush.setBorrowRate(apr);
+		borrowCashPush.setProfitRate(manageFee);
+		return borrowCashPush;
 	}
 
 	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {

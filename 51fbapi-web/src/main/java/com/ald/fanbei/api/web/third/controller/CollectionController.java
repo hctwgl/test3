@@ -6,11 +6,14 @@ import java.util.Date;
 
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfLoanDao;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -98,6 +101,9 @@ public class CollectionController {
 
     @Resource
     AfLoanDao loanDao;
+    
+    @Resource
+    AssetSideEdspayUtil assetSideEdspayUtil;
     /**
      * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向爱上街推送,爱上街记录线下还款信息
      *
@@ -502,6 +508,22 @@ public class CollectionController {
                     afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
                     afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount()));
                     afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                    try {
+            			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(afBorrowCashDo.getGmtPlanRepayment(), -1));
+            			if (isBefore) {
+            				if (assetSideEdspayUtil.isPush(afBorrowCashDo)) {
+            					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(afBorrowCashDo,1);
+            					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+            					if (result) {
+            						logger.info("trans modified borrowcash Info success,loanId="+afBorrowCashDo.getRid());
+            					}else{
+            						assetSideEdspayUtil.transFailRecord(afBorrowCashDo, modifiedLoanInfo);
+            					}
+            				}
+            			}
+            		} catch (Exception e) {
+            			logger.error("preFinishNotifyEds error="+e);
+            		}
                     borrowCashService.updateBalancedDate(afBorrowCashDo);
                     logger.info("repayAmount>=amount Balanced is success,borrowNo=" + borrowNo + ",repayAmount=" + afBorrowCashDo.getRepayAmount() + ",amount=" + afBorrowCashDo.getAmount());
 

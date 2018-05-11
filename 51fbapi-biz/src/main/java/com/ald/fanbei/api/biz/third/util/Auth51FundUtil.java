@@ -78,7 +78,7 @@ public class Auth51FundUtil extends AbstractThird {
 				//推送公积金信息给风控
 				try {
 					logger.info("getGjjData success,orderSn=" + orderSn);
-					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respResult,userId);
+					RiskQuotaRespBo riskRespBo = riskUtil.newFundInfoNotify(respResult,userId,orderSn);
 					return 1;
 				} catch (Exception e) {
 					logger.error("error:"+e);
