@@ -20,4 +20,6 @@ public interface AfSignRewardExtService {
 
     int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo);
 
+    int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
+
 }

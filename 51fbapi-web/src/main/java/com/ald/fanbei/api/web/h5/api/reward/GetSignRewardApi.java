@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSignRewardExtService;
 import com.ald.fanbei.api.biz.service.AfSignRewardService;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -9,6 +10,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
@@ -36,6 +38,8 @@ public class GetSignRewardApi implements H5Handle {
     AfResourceService afResourceService;
     @Resource
     NumberWordFormat numberWordFormat;
+    @Resource
+    AfSignRewardExtService afSignRewardExtService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -83,12 +87,14 @@ public class GetSignRewardApi implements H5Handle {
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         if(flag){//多次签到
             //判断是当前周期的第几天
+            AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
+
 
 
         }else {//第一次签到
             BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(afResourceDo.getValue1()) - Double.parseDouble(afResourceDo.getValue2())) + afResourceDo.getValue2()).setScale(2, RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
-            if(afSignRewardService.saveRecord(afSignRewardDo)<1){
+            if(afSignRewardService.saveRecord(afSignRewardDo)<1 ){
                 result = false;
             }
         }

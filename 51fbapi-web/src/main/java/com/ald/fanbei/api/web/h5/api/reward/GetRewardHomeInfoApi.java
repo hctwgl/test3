@@ -67,13 +67,30 @@ public class GetRewardHomeInfoApi implements H5Handle {
 
 		AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(context.getUserId());
 		if(null == afSignRewardExtDo){
+			//新增SignRewardExt
+			afSignRewardExtDo.setIsOpenRemind(0);
+			afSignRewardExtDo.setUserId(context.getUserId());
+			afSignRewardExtDo.setGmtModified(new Date());
+			afSignRewardExtDo.setGmtCreate(new Date());
+			afSignRewardExtDo.setAmount(BigDecimal.ZERO);
+			afSignRewardExtDo.setCycleDays(10);
+			afSignRewardExtDo.setFirstDayParticipation(null);
+			afSignRewardExtService.saveRecord(afSignRewardExtDo);
 			//签到提醒
 			resp.addResponseData("isOpenRemind","N");
 			//是否有余额
 			resp.addResponseData("rewardAmount",BigDecimal.ZERO);
+			//是否有补签
+			resp.addResponseData("supplementSignDays",0);
+
 		}else if(null != afSignRewardExtDo){
+			//签到提醒
 			resp.addResponseData("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
+			//是否有余额
 			resp.addResponseData("rewardAmount",afSignRewardExtDo.getAmount());
+			//是否有补签
+			int count = supplementSign(afSignRewardExtDo,0);
+			resp.addResponseData("supplementSignDays",count);
 		}
 
 		//banner
@@ -90,10 +107,6 @@ public class GetRewardHomeInfoApi implements H5Handle {
 
 		//今天是否签到
 		resp.addResponseData("rewardStatus",afSignRewardService.isExist(context.getUserId())==false?"N":"Y");
-
-		//是否有补签
-		int count = supplementSign(afSignRewardExtDo,0);
-		resp.addResponseData("supplementSignDays",count);
 
 		//任务列表
 		resp.addResponseData("taskList",taskList(context));
