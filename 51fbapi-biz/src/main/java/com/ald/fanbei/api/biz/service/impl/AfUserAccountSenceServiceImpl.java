@@ -249,7 +249,7 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 		// 提额成功
 		if (respBo != null && respBo.isSuccess()) {
 		    // 获取提额结果
-		    String raiseStatus = "10";
+		    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
 		    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
 			String fqAmount = respBo.getData().getFqAmount();
 			AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);

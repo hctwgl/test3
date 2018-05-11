@@ -25,7 +25,6 @@ import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
-import com.ald.fanbei.api.biz.third.util.yibaopay.JsonUtils;
 import com.ald.fanbei.api.biz.util.*;
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
@@ -3925,10 +3924,7 @@ public class RiskUtil extends AbstractThird {
 
 		RiskQuotaRespBo riskResp = null;
 		try {
-//			Map<String,Object> map=JSON.parseObject(reqResult, Map.class);
-//			Map<String,RiskQuotaRespBo.Data> map1= (Map<String, RiskQuotaRespBo.Data>) map.get("data");
 			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
-//			riskResp.setData(map1);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
