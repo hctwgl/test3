@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRepayV2Bo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
@@ -39,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -154,6 +157,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+    @Resource
+    AssetSideEdspayUtil assetSideEdspayUtil;
 
     @Autowired
     private AfBorrowLegalOrderService afBorrowLegalOrderService;
@@ -747,41 +752,63 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     }
 
     private void dealBorrowRepayIfFinish(RepayDealBo repayDealBo, AfRepaymentBorrowCashDo repaymentDo, AfBorrowCashDo cashDo, String isBalance) {
-	BigDecimal sumAmount = BigDecimalUtil.add(cashDo.getAmount(), cashDo.getOverdueAmount(), cashDo.getSumOverdue(), cashDo.getRateAmount(), cashDo.getSumRate(), cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
-	BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
-	cashDo.setRepayAmount(allRepayAmount);
-
-	BigDecimal minus = allRepayAmount.subtract(sumAmount); // 容许多还一块钱，兼容离线还款
-							       // 场景
-	if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
-	    cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-	    cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
-	} else if (YesNoStatus.YES.getCode().equals(isBalance)) {// 线下还款平账
-	    cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-	    cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
-	}
-
-	if (AfBorrowCashStatus.finsh.getCode().equals(cashDo.getStatus())) {
-	    afUserAccountSenceService.syncLoanUsedAmount(repayDealBo.userId, SceneType.CASH, repayDealBo.cashDo.getAmount().negate());
-	}
-	// 判断是否代扣逾期则平账
-	try {
-	    Boolean isCashOverdueOld = false;
-	    Date gmtPlanTime = cashDo.getGmtPlanRepayment();
-	    gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
-	    Date newDate = new Date();
-	    newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
-	    if (StringUtils.equals("代扣付款", repaymentDo.getName()) && gmtPlanTime.getTime() < newDate.getTime()) {
-		isCashOverdueOld = true;
-	    }
-	    if (isCashOverdueOld) {
-		cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
-		cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
-	    }
-	} catch (Exception ex) {
-	    logger.info("dealRepaymentSucess isCashOverdue error", ex);
-	}
+		BigDecimal sumAmount = BigDecimalUtil.add(cashDo.getAmount(), cashDo.getOverdueAmount(), cashDo.getSumOverdue(), cashDo.getRateAmount(), cashDo.getSumRate(), cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
+		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
+		cashDo.setRepayAmount(allRepayAmount);
+	
+		BigDecimal minus = allRepayAmount.subtract(sumAmount); // 容许多还一块钱，兼容离线还款
+								       // 场景
+		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
+		    cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+		    cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		    preFinishNotifyEds(cashDo);
+		} else if (YesNoStatus.YES.getCode().equals(isBalance)) {// 线下还款平账
+		    cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+		    cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		    preFinishNotifyEds(cashDo);
+		}
+	
+		if (AfBorrowCashStatus.finsh.getCode().equals(cashDo.getStatus())) {
+		    afUserAccountSenceService.syncLoanUsedAmount(repayDealBo.userId, SceneType.CASH, repayDealBo.cashDo.getAmount().negate());
+		}
+		// 判断是否代扣逾期则平账
+		try {
+		    Boolean isCashOverdueOld = false;
+		    Date gmtPlanTime = cashDo.getGmtPlanRepayment();
+		    gmtPlanTime = DateUtil.parseDate(DateUtil.formatDate(gmtPlanTime));
+		    Date newDate = new Date();
+		    newDate = DateUtil.parseDate(DateUtil.formatDate(newDate));
+		    if (StringUtils.equals("代扣付款", repaymentDo.getName()) && gmtPlanTime.getTime() < newDate.getTime()) {
+			isCashOverdueOld = true;
+		    }
+		    if (isCashOverdueOld) {
+			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+			preFinishNotifyEds(cashDo);
+			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		    }
+		} catch (Exception ex) {
+		    logger.info("dealRepaymentSucess isCashOverdue error", ex);
+		}
     }
+
+	private void preFinishNotifyEds(AfBorrowCashDo cashDo) {
+		try {
+			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(cashDo.getGmtPlanRepayment(), -1));
+			if (isBefore) {
+				if (assetSideEdspayUtil.isPush(cashDo)) {
+					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(cashDo,1);
+					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("trans modified borrowCash Info success,loanId="+cashDo.getRid());
+					}else{
+						assetSideEdspayUtil.transFailRecord(cashDo, modifiedLoanInfo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("preFinishNotifyEds error="+e);
+		}
+	}
 
     private void checkOfflineRepayment(AfBorrowCashDo cashDo, String offlineRepayAmount, String outTradeNo) {
 	if (afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, outTradeNo) != null) {

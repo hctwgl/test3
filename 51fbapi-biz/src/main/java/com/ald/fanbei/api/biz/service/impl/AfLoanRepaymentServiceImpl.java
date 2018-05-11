@@ -29,6 +29,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
@@ -38,6 +39,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.UpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -174,6 +176,8 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 	CuiShouUtils cuiShouUtils;
 	@Resource
 	KafkaSync kafkaSync;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 
     @Override
     public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
@@ -683,6 +687,22 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			afLoanDao.updateById(loanDo);
+			try {
+				boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1) );
+				if (isBefore) {
+					if (assetSideEdspayUtil.isPush(loanRepayDealBo.loanDo)) {
+						List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanRepayDealBo.loanDo,1);
+						boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+						if (result) {
+							logger.info("trans modified loan Info success,loanId="+loanRepayDealBo.loanDo.getRid());
+						}else{
+							assetSideEdspayUtil.transFailRecord(loanRepayDealBo.loanDo, modifiedLoanInfo);
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error("preFinishNotifyEds error="+e);
+			}
 			
 			loanRepayDealBo.loanDo.setStatus(AfLoanStatus.FINISHED.name());
 			

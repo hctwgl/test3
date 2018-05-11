@@ -98,7 +98,7 @@
 		ON
 			u.is_delete=0 and u.bank_code = b.bank_code
 		LEFT JOIN af_user_bankcard_type t on u.id = t.user_bankcard_id
-		
+
 		WHERE
 			
 		    u.status = 'B'
@@ -202,6 +202,7 @@
 	<select id="getAfUserBankcardDoList" parameterType="java.lang.Long" resultType="AfUserBankcardDo">
 		SELECT
 			<include refid="queryFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
+			<include refid="queryFields"/>,a.bank_icon
 		FROM
 		af_user_bankcard b
 		join af_bank a on b.bank_code = a.bank_code

@@ -2,26 +2,18 @@ package com.ald.fanbei.api.biz.service.impl;
 
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.AfGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
-import com.ald.fanbei.api.dal.domain.AfInterestReduceRulesDo;
-import com.ald.fanbei.api.dal.domain.AfInterestReduceSchemeDo;
-import org.apache.commons.collections.CollectionUtils;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
-
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,7 +32,11 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -50,16 +46,6 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * @author Xiaotianjian 2017年1月20日上午10:27:48
@@ -902,7 +888,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 					cfgBean.amountPerDay = new BigDecimal(v);
 				} else if (StringUtils.equals(secType, AfResourceSecType.borrowCashShowNum.getCode())) {
 					cfgBean.showNums = Integer.valueOf(v);
-				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode())) {
+				}else if (StringUtils.equals(secType, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode())) {
 					cfgBean.borrowCashDay = afResourceDo.getTypeDesc();
 					cfgBean.maxAmount = new BigDecimal(afResourceDo.getValue1());
 					cfgBean.minAmount = new BigDecimal(afResourceDo.getValue4());
@@ -919,7 +905,7 @@ public class AfResourceServiceImpl implements AfResourceService {
 		public BigDecimal poundage;
 		public BigDecimal overduePoundage;
 		public BigDecimal bankRate;
-		public String supuerSwitch;
+		public String   supuerSwitch;
 		public String lender;
 		public BigDecimal amountPerDay;
 		public Integer showNums;
@@ -954,7 +940,33 @@ public class AfResourceServiceImpl implements AfResourceService {
         return list;
     }
 
-	@Override
+    @Override
+    public List<Object> getBorrowRecycleHomeListByType() {
+        String type = "BORROW_RECYCLE_HOME";
+        String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        List<Object> list = new ArrayList<Object>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderBy(type));
+        }else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type));
+        }
+        return list;
+    }
+
+    @Override
+    public List<Object> getBorrowFinanceHomeListByType() {
+        String type = "BORROW_FINANCE_HOME";
+        String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        List<Object> list = new ArrayList<Object>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderBy(type));
+        }else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+            list = extractBannerCfgInfo(afResourceDao.getResourceHomeListByTypeOrderByOnPreEnv(type));
+        }
+        return list;
+    }
+
+    @Override
 	public List<AfResourceDo> getFlowFlayerResourceConfig(String resourceType, String secType) {
 
 		return afResourceDao.getFlowFlayerResourceConfig(resourceType,secType);
@@ -1056,4 +1068,73 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getBackGroundByTypeAndStatusOrder(code);
 	}
 
+	@Override
+	public List<String> getBorrowCashWhiteList() {
+		List<String> whiteIdsList = new ArrayList<String>();
+		AfResourceDo whiteListInfo = afResourceDao.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		if (whiteListInfo != null) {
+			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","),
+				new Converter<String, String>() {
+					@Override
+					public String convert(String source) {
+						return source.trim();
+					}
+				});
+		}
+		return whiteIdsList;
+	}
+
+    @Override
+    public Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag,String secType) {
+        AfResourceDo afResourceDo = afResourceDao.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), secType);
+        String oneDay = "";
+        String twoDay = "";
+        if(null != afResourceDo){
+            oneDay = afResourceDo.getTypeDesc().split(",")[0];
+            twoDay = afResourceDo.getTypeDesc().split(",")[1];
+        }
+        Map<String, Object> rateInfo = Maps.newHashMap();
+        double serviceRate = 0;
+        double interestRate = 0;
+        double overdueRate = 0;
+        JSONArray array = JSONObject.parseArray(borrowRate);
+        double totalRate = 0;
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject info = array.getJSONObject(i);
+            String borrowTag = info.getString(tag + "Tag");
+            if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    interestRate = info.getDouble(tag + "FirstType");
+                    totalRate += interestRate;
+                } else if(StringUtils.equals(twoDay, borrowType)) {
+                    interestRate = info.getDouble(tag + "SecondType");
+                    totalRate += interestRate;
+                }
+            }
+            if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    serviceRate = info.getDouble(tag + "FirstType");
+                    totalRate += serviceRate;
+                } else if(StringUtils.equals(twoDay, borrowType)){
+                    serviceRate = info.getDouble(tag + "SecondType");
+                    totalRate += serviceRate;
+                }
+            }
+            if (StringUtils.equals("CONTRACT_RATE", borrowTag)) {
+                if (StringUtils.equals(oneDay, borrowType)) {
+                    overdueRate = info.getDouble(tag + "FirstType");
+                    totalRate += serviceRate;
+                } else if(StringUtils.equals(twoDay, borrowType)){
+                    overdueRate = info.getDouble(tag + "SecondType");
+                    totalRate += serviceRate;
+                }
+            }
+
+        }
+        rateInfo.put("serviceRate", serviceRate);
+        rateInfo.put("interestRate", interestRate);
+        rateInfo.put("overdueRate", overdueRate);
+        rateInfo.put("totalRate", totalRate);
+        return rateInfo;
+    }
 }
