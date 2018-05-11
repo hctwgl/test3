@@ -22,7 +22,10 @@ import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -62,6 +65,9 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
     @Autowired
     private AfUserThirdInfoService afUserThirdInfoService;
+
+    @Autowired
+	private TransactionTemplate transactionTemplate;
 
 	@Override
 	public OpenRedPacketHomeBo getHomeInfoInSite(FanbeiWebContext context) {
@@ -129,18 +135,23 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	@Transactional
-	public AfRedPacketTotalDo getTheOpeningMust(Long userId, String modifier, Integer overdueIntervalHour) {
-		AfRedPacketTotalDo theOpening = getTheOpening(userId, overdueIntervalHour);
-		if (theOpening == null) {
-			theOpening = new AfRedPacketTotalDo();
-			theOpening.setUserId(userId);
-			theOpening.setCreator(modifier);
-			theOpening.setModifier(modifier);
-			theOpening.setAmount(BigDecimal.ZERO);
-			saveRecord(theOpening);
-		}
-		return theOpening;
+	public AfRedPacketTotalDo getTheOpeningMust(final Long userId, final String modifier,
+												final Integer overdueIntervalHour) {
+		return transactionTemplate.execute(new TransactionCallback<AfRedPacketTotalDo>() {
+			@Override
+			public AfRedPacketTotalDo doInTransaction(TransactionStatus transactionStatus) {
+				AfRedPacketTotalDo theOpening = getTheOpening(userId, overdueIntervalHour);
+				if (theOpening == null) {
+					theOpening = new AfRedPacketTotalDo();
+					theOpening.setUserId(userId);
+					theOpening.setCreator(modifier);
+					theOpening.setModifier(modifier);
+					theOpening.setAmount(BigDecimal.ZERO);
+					saveRecord(theOpening);
+				}
+				return theOpening;
+			}
+		});
 	}
 
 	@Override
@@ -244,28 +255,37 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	@Transactional
-	public void withdraw(Long id, String modifier) {
-		AfRedPacketTotalDo redPacketTotalDo = getById(id);
+	public void withdraw(final Long id, final String modifier) {
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				AfRedPacketTotalDo redPacketTotalDo = getById(id);
 
-		checkIsCanWithdraw(redPacketTotalDo);
+				checkIsCanWithdraw(redPacketTotalDo);
 
-		if (redPacketTotalDo.getIsWithdraw() == 1) return;
+				if (redPacketTotalDo.getIsWithdraw() == 1) return;
 
-		redPacketTotalDo.setIsWithdraw(1);
-		redPacketTotalDo.setModifier(modifier);
-		redPacketTotalDo.setGmtWithdraw(new Date());
-		updateById(redPacketTotalDo);
+				redPacketTotalDo.setIsWithdraw(1);
+				redPacketTotalDo.setModifier(modifier);
+				redPacketTotalDo.setGmtWithdraw(new Date());
+				updateById(redPacketTotalDo);
 
-		withdrawToUserAccount(redPacketTotalDo);
+				withdrawToUserAccount(redPacketTotalDo);
+			}
+		});
 	}
 
 	@Override
-	@Transactional
-	public void updateAmount(AfRedPacketTotalDo theOpening, BigDecimal openAmount, String modifier) {
-		theOpening.setAmount(theOpening.getAmount().add(openAmount));
-		theOpening.setModifier(modifier);
-		updateById(theOpening);
+	public void updateAmount(final AfRedPacketTotalDo theOpening, final BigDecimal openAmount,
+							 final String modifier) {
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				theOpening.setAmount(theOpening.getAmount().add(openAmount));
+				theOpening.setModifier(modifier);
+				updateById(theOpening);
+			}
+		});
 	}
 
 	@Override

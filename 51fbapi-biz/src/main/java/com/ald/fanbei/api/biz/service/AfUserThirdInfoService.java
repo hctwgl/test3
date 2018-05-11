@@ -53,5 +53,5 @@ public interface AfUserThirdInfoService extends ParentService<AfUserThirdInfoDo,
      * @author wangli
      * @date 2018/5/7 16:53
      */
-    void bindUserWxInfo(JSONObject userWxInfo, Long userId, String modifier);
+    AfUserThirdInfoDo bindUserWxInfo(JSONObject userWxInfo, Long userId, String modifier);
 }

@@ -11,6 +11,9 @@ import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -33,6 +36,9 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 
     @Autowired
     private AfUserService afUserService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
 	@Override
 	public UserWxInfoDto getUserWxInfo(Long userId) {
@@ -69,16 +75,22 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	}
 
 	@Override
-	public void bindUserWxInfo(JSONObject userWxInfo, Long userId, String modifier) {
-		String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
-		AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
-		userThirdInfoDo.setUserId(userId);
-		userThirdInfoDo.setThirdId(openId);
-		userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
-		userThirdInfoDo.setCreator(modifier);
-		userThirdInfoDo.setModifier(modifier);
-		userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
-		saveRecord(userThirdInfoDo);
+	public AfUserThirdInfoDo bindUserWxInfo(final JSONObject userWxInfo, final Long userId, final String modifier) {
+		return transactionTemplate.execute(new TransactionCallback<AfUserThirdInfoDo>() {
+			@Override
+			public AfUserThirdInfoDo doInTransaction(TransactionStatus transactionStatus) {
+				String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
+				AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
+				userThirdInfoDo.setUserId(userId);
+				userThirdInfoDo.setThirdId(openId);
+				userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
+				userThirdInfoDo.setCreator(modifier);
+				userThirdInfoDo.setModifier(modifier);
+				userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
+				saveRecord(userThirdInfoDo);
+				return userThirdInfoDo;
+			}
+		});
 	}
 
 	// 获取用户第三方信息

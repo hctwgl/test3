@@ -20,7 +20,9 @@ import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -52,6 +54,9 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	@Autowired
 	private AfRedPacketTotalService afRedPacketTotalService;
 
+	@Autowired
+	private TransactionTemplate transactionTemplate;
+
 	@Override
 	public List<AfRedPacketSelfOpenDto> findOpenRecordList(Long redPacketTotalId) {
 		List<AfRedPacketSelfOpenDto> result = afRedPacketSelfOpenDao.findOpenRecordList(redPacketTotalId);
@@ -74,33 +79,36 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	}
 
 	@Override
-	@Transactional
-	public AfRedPacketSelfOpenDo open(Long userId, String modifier, String sourceType) {
-		// TODO:这里事务没有起作用，记得检查
-		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-		JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
-		AfRedPacketTotalDo theOpening = afRedPacketTotalService
-				.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
+	public AfRedPacketSelfOpenDo open(final Long userId, final String modifier, final String sourceType) {
+		return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {
+			@Override
+			public AfRedPacketSelfOpenDo doInTransaction(TransactionStatus transactionStatus) {
+				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+				JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
+				AfRedPacketTotalDo theOpening = afRedPacketTotalService
+						.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
 
-		checkIsCanOpen(sourceType, theOpening, redPacketConfig);
+				checkIsCanOpen(sourceType, theOpening, redPacketConfig);
 
-		AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
-		selfOpenDo.setRedPacketTotalId(theOpening.getRid());
-		selfOpenDo.setSourceType(sourceType);
-		selfOpenDo.setCreator(modifier);
-		selfOpenDo.setModifier(modifier);
-		selfOpenDo.setDiscountRate(calcDiscountRate(selfOpenRateConfig, sourceType));
+				AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
+				selfOpenDo.setRedPacketTotalId(theOpening.getRid());
+				selfOpenDo.setSourceType(sourceType);
+				selfOpenDo.setCreator(modifier);
+				selfOpenDo.setModifier(modifier);
+				selfOpenDo.setDiscountRate(calcDiscountRate(selfOpenRateConfig, sourceType));
 
-		BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-		BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(theOpening, thresholdAmount);
-		selfOpenDo.setAmount(withdrawRestAmount.multiply(selfOpenDo.getDiscountRate()));
+				BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
+				BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(theOpening, thresholdAmount);
+				selfOpenDo.setAmount(withdrawRestAmount.multiply(selfOpenDo.getDiscountRate()));
 
-		saveRecord(selfOpenDo);
+				saveRecord(selfOpenDo);
 
-		afRedPacketTotalService.updateAmount(theOpening, selfOpenDo.getAmount(), modifier);
+				afRedPacketTotalService.updateAmount(theOpening, selfOpenDo.getAmount(), modifier);
 
-		return selfOpenDo;
+				return selfOpenDo;
+			}
+		});
 	}
 
 	@Override
