@@ -3895,6 +3895,43 @@ public class RiskUtil extends AbstractThird {
 		return riskResp;
 	}
 
+	/**
+	 * 冒泡补充认证提额接口
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public RiskQuotaRespBo userReplenishQuota(String consumerNo, String[] scenes, String sceneType) {
+		RiskQuotaReqBo reqBo = new RiskQuotaReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		Map<String, Object> detailsMap = Maps.newHashMap();
+		detailsMap.put("sceneType", sceneType);
+		detailsMap.put("scenes", scenes);
+		String details = JSONObject.toJSONString(detailsMap);
+		// 生成Base64编码
+		String detailsBase64 = Base64.encodeString(details);
+		reqBo.setDetails(detailsBase64);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl()+ "/modules/api/thrid/userReplenishQuota.htm";
+
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "userSupplementQuota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_AMOUNT_ERROR);
+		}
+
+		RiskQuotaRespBo riskResp = null;
+		try {
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+		}
+		return riskResp;
+	}
+
 	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
 		Boolean bankIsMaintaining=false;
 		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {

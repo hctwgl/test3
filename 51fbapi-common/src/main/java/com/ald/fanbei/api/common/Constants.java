@@ -421,8 +421,6 @@ public class Constants {
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
 
-	//贷款超市主页标签
-	public static final String DC_LABEL_HOME="home";
 
 	// 借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR = "BORROWCASH_ TO_DRAW";

@@ -38,6 +38,7 @@ public class AuthCallbackManager implements Executor, ApplicationContextAware {
 	register(AuthType.FUND.getCode(), getExecutor("fundAuthCallbackExecutor"));
 	register(AuthType.INSURANCE.getCode(), getExecutor("insuranceAuthCallbackExecutor"));
 	register(AuthType.ZHENGXIN.getCode(), getExecutor("zhengxinAuthCallbackExecutor"));
+    register(AuthType.BUBBLE.getCode(), getExecutor("bubbleAuthCallbackExecutor"));
     }
 
     @Override

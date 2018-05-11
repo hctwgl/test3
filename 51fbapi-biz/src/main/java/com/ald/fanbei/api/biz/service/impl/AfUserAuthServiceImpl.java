@@ -170,6 +170,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	long between = 0l;
 
 	AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
+
 	JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 	Integer sorce = userDto.getCreditScore();
 	if (appVersion >= 406) {
@@ -270,6 +271,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	} else {
 	    data.put("gmtMobileExist", YesNoStatus.NO.getCode());
 	}
+
 
 	data.put("teldirStatus", authDo.getTeldirStatus());
 	data.put("zmModel", zmModel);
@@ -402,18 +404,23 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	data.put("chsiStatus", authDo.getChsiStatus());
 	data.put("zhengxinStatus", authDo.getZhengxinStatus());
 	data.put("onlinebankStatus", authDo.getOnlinebankStatus());
-
+    AfResourceDo bubbleConfigResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.BUBBLE_AUTH_CONFIG.getCode(), AfResourceSecType.BUBBLE_AUTH_RULE_CONFIG.getCode());
+     data.put("isOpenBubbleAuth", bubbleConfigResourceDo.getValue());
+        //开启冒泡认证
+    if(YesNoStatus.YES.getCode().equals(bubbleConfigResourceDo.getValue())){
+            data.put("bubbleStatus", authDo.getBubbleStatus());
+     }
 	AfAuthRaiseStatusDo afAuthRaiseStatusDo = new AfAuthRaiseStatusDo();
 	afAuthRaiseStatusDo.setUserId(userDto.getUserId());
 	List<AfAuthRaiseStatusDo> listRaiseStatus = afAuthRaiseStatusService.getListByCommonCondition(afAuthRaiseStatusDo);
 	AfResourceDo authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY");
 	AfResourceDo userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY");
 	if (scene.equals(UserAccountSceneType.ONLINE.getCode())) {
-	    authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY_ONLINE");
+            authDay = afResourceService.getSingleResourceBytype("SUPPLEMENT_AUTH_DAY_ONLINE");
 	    //有效期一致，不在独立配置
 	    //userAuthDay = afResourceService.getSingleResourceBytype("USER_AUTH_DAY_ONLINE");
 	}
-	setAuthRaiseStatus(listRaiseStatus, scene, authDay, userAuthDay, data, authDo);
+	setAuthRaiseStatus(listRaiseStatus, scene, authDay, userAuthDay, data, authDo,bubbleConfigResourceDo.getValue());
 
 	if (scene.equals(UserAccountSceneType.CASH.getCode())) {
 	    AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, UserAccountSceneType.BLD_LOAN.getCode());
@@ -425,7 +432,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	    }
 	}
 
-	addAdditionalStatus(data, authDo);
+	addAdditionalStatus(data, authDo,bubbleConfigResourceDo.getValue());
 	data.put("showExtraTab", "1");
 	data.put("isSkipH5", isSkipH5);
 
@@ -598,12 +605,12 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	    }
 	}
-	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
-	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
-		data.put("status", "F");
-		data.put("title", "");
-	    }
-	}
+//	if (!isExist && !scene.equals(UserAccountSceneType.CASH.getCode())) {
+//	    if (checkUserAuthDay(data, userAuthDay, auth_type, authDate)) {
+//		data.put("status", "F");
+//		data.put("title", "");
+//	    }
+//	}
 	return data;
     }
     
@@ -673,7 +680,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     }
 
 
-    private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo) {
+    private void setAuthRaiseStatus(List<AfAuthRaiseStatusDo> listRaiseStatus, String scene, AfResourceDo authDay, AfResourceDo userAuthDay, Map<String, Object> data, AfUserAuthDo authDo,String bubbleSwitch) {
 	Map<String, Object> supplementAuth = new HashMap<String, Object>();
 	if (authDo.getFundStatus().equals("Y")) {
 	    supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, scene, AuthType.FUND.getCode(), authDo.getGmtFund());
@@ -765,6 +772,21 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 		}
 	    }
 	}
+        if (YesNoStatus.YES.getCode().equals(bubbleSwitch) && "Y".equals(authDo.getBubbleStatus())) {
+            supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, scene, AuthType.BUBBLE.getCode(), authDo.getGmtBubble());
+            if (supplementAuth.get("status") != null) {
+                data.put("bubbleStatus", supplementAuth.get("status"));
+                data.put("bubbleTitle", supplementAuth.get("title"));
+            }
+            // 如果白领贷强风控通过判断是否提额
+            if (SceneType.CASH.getName().equals(scene) && data.get("bldRiskStatus") != null && data.get("bldRiskStatus").equals("Y")) {
+                supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, UserAccountSceneType.BLD_LOAN.getCode(), AuthType.BUBBLE.getCode(), authDo.getGmtZhengxin());
+                if (supplementAuth.get("status") != null) {
+                    data.put("bubbleStatus", supplementAuth.get("status"));
+                    data.put("bubbleTitle", supplementAuth.get("title"));
+                }
+            }
+        }
 	if (authDo.getOnlinebankStatus().equals("Y")) {
 	    supplementAuth = getAuthRaiseStatus(listRaiseStatus, authDay, userAuthDay, scene, AuthType.BANK.getCode(), authDo.getGmtOnlinebank());
 	    if (supplementAuth.get("status") != null) {
@@ -782,7 +804,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	}
     }
 
-    private void addAdditionalStatus(Map<String, Object> data, AfUserAuthDo authDo) {
+    private void addAdditionalStatus(Map<String, Object> data, AfUserAuthDo authDo,String bubbleSwitch) {
 	// 添加是否已发起过网银认证，来区分对应状态是初始化还是之前认证失败
 	if (authDo.getGmtOnlinebank() != null) {
 	    data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
@@ -826,6 +848,15 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	} else {
 	    data.put("gmtZhengxinExist", YesNoStatus.NO.getCode());
 	}
+    // 添加是否已发起过冒泡认证，来区分对应状态是初始化还是之前认证失败
+	 if(YesNoStatus.YES.getCode().equals(bubbleSwitch)){
+			if (authDo.getGmtBubble()!=null) {
+				data.put("gmtBubbleExist", YesNoStatus.YES.getCode());
+			} else {
+				data.put("gmtBubbleExist", YesNoStatus.NO.getCode());
+			}
+		}
+
     }
 
     @Override
