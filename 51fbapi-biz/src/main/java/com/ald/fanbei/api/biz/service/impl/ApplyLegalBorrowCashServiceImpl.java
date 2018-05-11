@@ -191,6 +191,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				.multiply(new BigDecimal(day)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+		afBorrowCashDo.setGmtCreate(new Date());
 		afBorrowCashDo.setAmount(borrowAmount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
