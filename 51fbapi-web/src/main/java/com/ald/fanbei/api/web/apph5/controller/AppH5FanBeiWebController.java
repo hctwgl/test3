@@ -1567,7 +1567,8 @@ public class AppH5FanBeiWebController extends BaseController {
 				}
 				couponVoList.add(couponVo);
 			}
-			return H5CommonResponse.getNewInstance(true, "", "", couponVoList).toString();
+			data.put("couponList", couponVoList);
+			return H5CommonResponse.getNewInstance(true, "", "", data).toString();
 		} catch(FanbeiException e){
 			String opennative = "/fanbei-web/opennative?name=";
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
