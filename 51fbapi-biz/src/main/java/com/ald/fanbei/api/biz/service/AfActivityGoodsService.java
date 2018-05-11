@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,5 +30,6 @@ public interface AfActivityGoodsService {
 	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId);
 
 	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list);
-	
+
+	HashMap getVisualActivityGoodsByGoodsId(Long goodsId);
 }

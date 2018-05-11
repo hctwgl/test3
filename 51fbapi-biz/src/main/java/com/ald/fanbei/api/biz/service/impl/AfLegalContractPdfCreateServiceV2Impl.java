@@ -747,7 +747,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 return pdf.getContractPdfUrl();
             }
             return getPdfInfoWithOutLender(protocolUrl, map, afBorrowDo.getUserId(), afBorrowDo.getRid(), "instalment", "2", investorList);
-        } else if (debtType == 5){//白领贷借款
+        } else if (debtType == 2){//白领贷借款
             AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
             if (loanDo == null) {
                 logger.error("白领贷借款信息不存在 => {}", orderNo);
@@ -1106,14 +1106,14 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
 
         stream = createByte(map,result);
 
-        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("firstPartyKey"),"5",false,stream);
+        stream = StreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("firstPartyKey"),"5",false,stream);
         if (stream != null){
             if (null != map.get("companySelfSeal") && !"".equals(map.get("companySelfSeal"))) {//ald签章
-                stream = selfStreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
+                stream = selfStreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
 //                stream = secondPartySign(map,result,stream);
             }
             if (null != map.get("thirdSeal") && !"".equals(map.get("thirdSeal"))) {//出借人签章
-                stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
+                stream = StreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
             }
             InputStream inputStream = new ByteArrayInputStream(stream);
             return ossFileUpload(map, String.valueOf(map.get("uploadPath")),inputStream);//oss上传
@@ -1446,14 +1446,14 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         byte[] stream = new byte[1024];
 //        stream = downLoadByUrl(map.get("PDFPath").toString());
         stream = borrowerCreateSeal(result,stream,map);//借款人签章
-//        stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
+//        stream = StreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("personUserSeal"),(String)map.get("accountId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("personKey"),"5",false,stream);
         if (stream != null){
             if (null != map.get("secondPartyKey") && !"".equals(map.get("secondPartyKey"))) {//ald签章
-                stream = selfStreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
+                stream = selfStreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("secondAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("secondPartyKey"),"6",false,stream);
 //                stream = secondPartySign(map,result,stream);
             }
             if (null != map.get("thirdPartyKey") && !"".equals(map.get("thirdPartyKey"))) {//出借人签章
-                stream = StreamSign((Long)map.get("borrowId"),"反呗合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
+                stream = StreamSign((Long)map.get("borrowId"),"爱上街合同","Key",(String)map.get("thirdSeal"),(String)map.get("thirdAccoundId"),Integer.valueOf(ObjectUtils.toString(map.get("posType"), "")),Integer.valueOf(ObjectUtils.toString(map.get("sealWidth"), "")),(String)map.get("thirdPartyKey"),"6",false,stream);
             }
             InputStream inputStream = new ByteArrayInputStream(stream);
             return ossFileUploadWithEdspaySeal(map, String.valueOf(map.get("uploadPath")),inputStream);//oss上传

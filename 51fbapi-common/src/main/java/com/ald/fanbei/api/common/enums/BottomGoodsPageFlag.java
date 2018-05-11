@@ -1,9 +1,5 @@
 package com.ald.fanbei.api.common.enums;
 
-import com.sun.tools.corba.se.idl.StringGen;
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 底部商品页页面标识
  *

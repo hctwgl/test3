@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashPushDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashPushDo;
@@ -32,5 +33,21 @@ public class AfBorrowCashPushServiceImpl extends ParentServiceImpl<AfBorrowCashP
 		@Override
 	public BaseDao<AfBorrowCashPushDo, Long> getDao() {
 		return afBorrowCashPushDao;
+	}
+
+	@Override
+	public void saveOrUpdate(AfBorrowCashPushDo borrowCashPush) {
+		AfBorrowCashPushDo borrowCashPushTemp = afBorrowCashPushDao.getByBorrowCashId(borrowCashPush.getBorrowCashId());
+		if (borrowCashPushTemp == null) {
+			afBorrowCashPushDao.saveRecord(borrowCashPush);
+		} else {
+			borrowCashPush.setRid(borrowCashPushTemp.getRid());
+			afBorrowCashPushDao.updateById(borrowCashPush);
+		}
+	}
+
+	@Override
+	public AfBorrowCashPushDo getByBorrowCashId(Long rid) {
+		return afBorrowCashPushDao.getByBorrowCashId(rid);
 	}
 }

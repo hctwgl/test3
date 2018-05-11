@@ -3,7 +3,7 @@
 <head>
     #set($version="201708101600")
     #set($commonUrl="https://img.51fanbei.com/h5/app/images/user")
-    <title>51返呗</title>
+    <title>爱上街</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/login.css">
 </head>
 <body>

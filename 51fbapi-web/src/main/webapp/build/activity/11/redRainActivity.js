@@ -5,6 +5,7 @@ let couponArr=[];
 var sendAjax=true;
 var ward=[parseInt(Math.random() * 5+1),parseInt(Math.random() * 5+6),parseInt(Math.random() * 5+11)];
 var touch=0;
+
 //数据统计
 $.ajax({
     url:'/fanbei-web/postMaidianInfo',
@@ -28,10 +29,10 @@ $(document).ready(function() {
             "left": Left,
         });
         $(".li" + num).css({
-            "width": Wh,
+            "width": Wh-30,
             "height": Wh,
             "transform": "rotate(" + rot + ")",
-            "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain" + imgName + ".png) no-repeat center center",
+            "background":"url(https://f.51fanbei.com/h5/app/activity/11/redRain1.png) no-repeat center center",
             "background-size":"100%",
             "-ms-transform": "rotate(" + rot + ")", /* Internet Explorer */
             "-moz-transform": "rotate(" + rot + ")", /* Firefox */
@@ -86,7 +87,10 @@ $(document).ready(function() {
     let backward=()=>{
         numz--;
         if(numz>0){
-            $(".backward span").html(numz);
+            $(".backward span").css({
+                "background":"url(https://f.51fanbei.com/h5/app/activity/11/num" + numz + ".png) no-repeat center",
+                "background-size":"100%",
+            });
             setTimeout(backward,1000)
         }else{
             $(".backward").remove();
@@ -103,10 +107,20 @@ $(document).ready(function() {
             $('.redNum span:nth-child(1)').text(0);
             let str='';
             for(let i=0;i<couponArr.length;i++){
-                str+=`<div class="wardCoupon">
-                          <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
-                          <span class="wardTxt">${couponArr[i].couponName}</span>
-                      </div>`;
+                // str+=`<div class="wardCoupon">
+                //           <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
+                //           <span class="wardTxt">${couponArr[i].couponName}</span>
+                //       </div>`;
+                str+=`   <div class="wardCoupon">
+                        <span class="wardMoney">
+                            <span>￥</span>${couponArr[i].amount}
+                        </span>
+                         <div class="wardMsg">
+                                <p>全场通用</p><p>满${couponArr[i].couponLimitAmount}元可用</p>
+                         </div>
+                         <span class="wardTxt">有效期：${couponArr[i].couponEffectiveTime} 不可叠加使用</span>
+
+                </div>`;
             }
             $('.wardContent').html(str);
             $(".gameWard").show();

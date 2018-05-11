@@ -444,4 +444,16 @@
 		ORDER BY c.amount DESC
 	</select>
 
+	<select id="getUserCouponAfterPaidSuccess" resultType="AfUserCouponDto">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_user_coupon u
+	    INNER JOIN af_coupon c on c.is_delete = 0 and u.coupon_id = c.id
+		WHERE u.is_delete = 0
+		  AND u.user_id = #{userId}
+		  and u.`status`= 'NOUSE'
+		  and u.source_type = 'SELFSUPPORT_PAID'
+		  order by u.gmt_create desc limit 1
+	</select>
+
 </mapper>

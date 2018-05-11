@@ -4,7 +4,7 @@
 * @Last Modified by:   Yangyang
 
 * @Last Modified time: 2017-04-25 15:44:56
-* @title:  返呗注册
+* @title:  爱上街注册
 */
 var token = formatDateTime()+Math.random().toString(36).substr(2);
 
@@ -99,7 +99,7 @@ $(function(){
                     requestMsg("请填写6-18位的数字、字母组成的密码");
                 }
             } else {
-                requestMsg("请阅读并同意《51返呗用户注册协议》");
+                requestMsg("请阅读并同意《爱上街用户注册协议》");
             }
 		}else{
             requestMsg("请填写正确的手机号");

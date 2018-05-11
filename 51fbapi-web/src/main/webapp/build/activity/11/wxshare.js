@@ -1,6 +1,6 @@
 var shareInfo = {
     title: "砍价赢免单丨iphone X0元免费领!",
-    desc: "来不及解释啦，51返呗想送你iphone X，还差一点点，请帮我砍它~",
+    desc: "来不及解释啦，爱上街想送你iphone X，还差一点点，请帮我砍它~",
     link: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ setShareType() +'&userName='+ userName + '&spread='+ spread,
     imgUrl: "http://f.51fanbei.com/online/17f31c95deb17587.png",
     success: function() {

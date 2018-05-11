@@ -373,11 +373,11 @@ public class AppH5EnjoyLifeController extends BaseController {
     @RequestMapping(value = "/reserveGoodsV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
         H5CommonResponse resp = H5CommonResponse.getNewInstance();FanbeiWebContext context = new FanbeiWebContext();
         try{
             context = doWebCheck(request,true);
             String userName = context.getUserName();
-            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
             Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
             Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"),0l);
@@ -419,7 +419,7 @@ public class AppH5EnjoyLifeController extends BaseController {
             }catch (Exception e){
                 return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
             }
-            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
+            return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢前将通过短信通知您", "", goodsId).toString();
         } catch(FanbeiException e){
             String opennative = "/fanbei-web/opennative?name=";
             String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();

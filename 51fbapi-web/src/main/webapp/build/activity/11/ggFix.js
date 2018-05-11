@@ -265,7 +265,7 @@ let vm = new Vue({
         //去账户提现+埋点
         toCashClick(){
             if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
-                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
+                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanWithdrawalsActivity';
             }else{
                 window.location.href='/fanbei-web/opennative?name=GG_ALACashBorrowingViewController';
             }

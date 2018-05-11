@@ -240,6 +240,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
                     investorUserDo.setRealName(seal.getRealName());
                     investorUserDo.setMajiabaoName("edspay");
                     accountDo.setIdNumber(seal.getEdspayUserCardId());
+                    accountDo.setRealName(seal.getRealName());
                     AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(investorUserDo, accountDo);
                     if (afUserSealDo != null) {
                         newSealList.add(afUserSealDo);

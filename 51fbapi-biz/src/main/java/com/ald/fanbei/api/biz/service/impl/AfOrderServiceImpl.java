@@ -35,6 +35,115 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
+import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
+import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
+import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfCheckoutCounterService;
+import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
+import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.InterestFreeUitl;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.OrderNoUtils;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
+import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
+import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
+import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfShopDao;
+import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.domain.AfCheckoutCounterDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
+import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderDto;
+import com.ald.fanbei.api.dal.domain.dto.LeaseOrderListDto;
+import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.domain.XItem;
+import com.taobao.api.response.TaeItemDetailGetResponse;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -154,6 +263,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	AfInterimDetailDao afInterimDetailDao;
 	@Resource
 	AfCheckoutCounterService afCheckoutCounterService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 
 	@Autowired
 	private AfShopDao afShopDao;
@@ -1058,6 +1169,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			if (saleAmount.compareTo(BigDecimal.ZERO) == 0) {
 			    AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
 			    BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+				if(useableAmount.compareTo(BigDecimal.ZERO) == -1){
+					useableAmount = BigDecimal.ZERO;
+				}
 			    if (useableAmount.compareTo(afOrderLeaseDo.getFreezeAmount()) >= 0) {
 				afOrderLeaseDo.setQuotaDeposit(afOrderLeaseDo.getFreezeAmount());
 				afOrderLeaseDo.setCashDeposit(new BigDecimal(0));
@@ -1149,7 +1263,16 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    // #region add by honghzengpei
 			    // afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
 			    // #endregion
-			    return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
+				Map<String, Object> riskReturnMap = riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
+			    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
+					// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+					if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+					}
+					// end by luoxiao
+				}
+				return riskReturnMap;
 			}
 
 			// verybo.getResult()=10,则成功，活动返利
@@ -1255,7 +1378,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}
 					}
 					if (!canPay) {
-						afOrderService.closeOrder("风控审批不通过", "", orderId, userId);
+                        orderInfo.setStatus(OrderStatus.CLOSED.getCode());
+                        orderInfo.setClosedReason("风控审批不通过");
+                        orderDao.updateOrder(orderInfo);
 						resultMap.put("success", false);
 						resultMap.put("verifybo", JSONObject.toJSONString(verybo));
 						resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -1338,7 +1463,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					afUserAccountSenceDao.updateFreezeAmount(UserAccountSceneType.ONLINE.getCode(), kuaijieOrderPayBo.getOrderInfo().getUserId(), kuaijieOrderPayBo.getAfOrderLeaseDo().getQuotaDeposit());
 				}
 			}
-
+			if (kuaijieOrderPayBo.getOrderInfo().getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
+				//在这里加入电核直接通过代码
+				afOrderService.updateIagentStatusByOrderId(kuaijieOrderPayBo.getOrderInfo().getRid(),"H");
+			}
 			Map<String, Object> newMap = new HashMap<String, Object>();
 			newMap.put("outTradeNo", respBo.getOrderNo());
 			newMap.put("tradeNo", respBo.getTradeNo());
@@ -1709,6 +1837,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	    }
 	});
 	if (result == 1) {
+		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+		}
+		// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger
 			// machine in the certain date---------------------------------
@@ -1980,6 +2114,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+						preFinishNotifyEds(borrowInfo);
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -2071,6 +2206,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								UserAccountLogType.CP_REFUND, afBorrowDo.getAmount(), userId, afBorrowDo.getRid()));
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.FINISH.getCode());
+						preFinishNotifyEds(afBorrowDo);
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(afBorrowDo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -2366,6 +2502,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			resultMap.put(Constants.VIRTUAL_AMOUNT, response.getData().getAmount());
 			resultMap.put(Constants.VIRTUAL_RECENT_DAY, response.getData().getRecentDay());
 			resultMap.put(Constants.VIRTUAL_TOTAL_AMOUNT, response.getData().getTotalAmount());
+			resultMap.put(Constants.VIRTUAL_DAY_AMOUNT, response.getData().getDayAmount());
 			resultMap.put(Constants.VIRTUAL_CHECK, "TRUE");
 		}
 		return resultMap;
@@ -2765,6 +2902,23 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					if (borrowInfo != null) {
 						// 修改借款状态
 						afBorrowService.updateBorrowStatus(borrowInfo.getRid(), BorrowStatus.FINISH.getCode());
+						try {
+				    		List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
+							boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(borrowBillList.get(borrowBillList.size()-1).getGmtPayTime(), -1));
+							if (isBefore) {
+								if (assetSideEdspayUtil.isPush(borrowInfo)) {
+									List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);
+									boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+									if (result) {
+										logger.info("trans modified borrow Info success,loanId="+borrowInfo.getRid());
+									}else{
+										assetSideEdspayUtil.transFailRecord(borrowInfo, modifiedLoanInfo);
+									}
+								}
+							}
+						} catch (Exception e) {
+							logger.error("preFinishNotifyEds error="+e);
+						}
 						// 修改账单状态
 						afBorrowBillDao.updateNotRepayedBillStatus(borrowInfo.getRid(),
 								BorrowBillStatus.CLOSE.getCode());
@@ -3074,8 +3228,28 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		return orderDao.selectTodayIagentStatus(userId, amount);
 	}
 	@Override
-	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId){
-		return orderDao.selectTodayIagentStatusCOrders(userId);
+	public List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId,Date gmtCreate){
+		return orderDao.selectTodayIagentStatusCOrders(userId, gmtCreate);
+	}
+
+	private void preFinishNotifyEds(AfBorrowDo borrowInfo) {
+		try {
+			List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowInfo.getRid());
+			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(borrowBillList.get(borrowBillList.size()-1).getGmtPayTime(), -1) );
+			if (isBefore) {
+				if (assetSideEdspayUtil.isPush(borrowInfo)) {
+					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowInfo,3);
+					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("trans modified borrow Info success,loanId="+borrowInfo.getRid());
+					}else{
+						assetSideEdspayUtil.transFailRecord(borrowInfo, modifiedLoanInfo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("preFinishNotifyEds error="+e);
+		}
 	}
 
 }

@@ -52,7 +52,7 @@ public class H5Controller extends BaseController {
 	@RequestMapping(value = { "app/sys/invitationRewardRule" }, method = RequestMethod.GET)
 	public String downloadApp(HttpServletRequest request, ModelMap model) throws IOException {
 
-		model.put("rule", "您邀请的所有好友在51返呗成功购物并获得返利后，您将获得返利的20%现金奖励；当您邀请的好友A邀请她的好友B成功在51返呗购物并获得返利后，");
+		model.put("rule", "您邀请的所有好友在爱上街成功购物并获得返利后，您将获得返利的20%现金奖励；当您邀请的好友A邀请她的好友B成功在爱上街购物并获得返利后，");
 		return "/app/sys/invitationRewardRule";
 	}
 

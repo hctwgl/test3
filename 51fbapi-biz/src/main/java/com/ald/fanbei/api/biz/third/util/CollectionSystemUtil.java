@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
@@ -17,6 +18,8 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleOrderService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleRepaymentService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
@@ -70,6 +73,10 @@ public class CollectionSystemUtil extends AbstractThird {
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	@Resource
+	AfBorrowRecycleOrderService afBorrowRecycleOrderService;
+	@Resource
+	AfBorrowRecycleRepaymentService afBorrowRecycleRepaymentService;
 
 	@Resource
 	CommitRecordUtil commitRecordUtil;
@@ -83,7 +90,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 	/**
-	 * 51返呗主动还款通知催收平台
+	 * 爱上街主动还款通知催收平台
 	 * 
 	 * @param repayNo
 	 *            --还款编号
@@ -188,7 +195,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 	/**
-	 * 51返呗续期通知接口
+	 * 爱上街续期通知接口
 	 * 
 	 * @param borrow_no
 	 *            借款单号
@@ -278,6 +285,9 @@ public class CollectionSystemUtil extends AbstractThird {
 					}//合规线下还款V2
                     else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
                         afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
+                    }// 回收线下还款
+                    else if(afBorrowRecycleOrderService.isBorrowRecycel(borrowId)) {
+                    	afBorrowRecycleRepaymentService.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
                     }
 					//旧版线下还款
 					else {

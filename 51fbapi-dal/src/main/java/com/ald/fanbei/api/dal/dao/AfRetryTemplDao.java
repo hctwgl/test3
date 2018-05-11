@@ -23,4 +23,6 @@ public interface AfRetryTemplDao extends BaseDao<AfRetryTemplDo, Long> {
 
 	List<AfRetryTemplDo> getByBusId(@Param("busId")String busId);
 
+	AfRetryTemplDo getCurPushDebt(@Param("busId")String busId, @Param("eventType")String eventType);
+
 }

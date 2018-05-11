@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
@@ -109,7 +111,7 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 
 	AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query);
-	
+
 	List<AfGoodsDo> getGoodsByItem(@Param("categoryId") Long categoryId);
 
 
@@ -143,5 +145,7 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 
+	List<HashMap> getVisualGoodsByGoodsId(@Param("ids")List<String> ids);
 
+	List<Map<String, Object>> getGoodsByIds(@Param("list") List<Long> goodList);
 }

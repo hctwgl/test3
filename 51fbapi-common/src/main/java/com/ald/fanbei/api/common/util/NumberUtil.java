@@ -436,5 +436,18 @@ public class NumberUtil {
     public static void main(String[] args) {
 		System.out.println(getSumInterestsByAmountAndRate(BigDecimal.valueOf(1000),BigDecimal.valueOf(9),10));
 	}
+    
+    /**
+     * 方法说明: 判断输入的数值是否为空
+     * @param num
+     * @return
+     */
+    public static boolean isNull(BigDecimal num){
+    	if(num==null){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
 
 }

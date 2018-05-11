@@ -59,6 +59,9 @@ public class MineHomeApi implements ApiHandle {
     private AfUserCouponService afUserCouponService;
 
     @Autowired
+    private AfBorrowRecycleService afBorrowRecycleService;
+    
+    @Autowired
     private AfBorrowBillService afBorrowBillService;
 
     @Autowired
@@ -147,12 +150,14 @@ public class MineHomeApi implements ApiHandle {
         List<String> cashDescs = getAuthDesc(creditResource.getValue3(), "one");// 借款最高额度
         List<String> consumeDescs = getAuthDesc(creditResource.getValue4(), "one");// 购物最高额度
 
+        // 默认值
+        data.setShowAmount(cashDescs.get(0));
+        data.setDesc(DESC_AMOUNT_NOAUTH);
+        data.setOnlineShowAmount(consumeDescs.get(0));
+        data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
+
         // 未登录
         if (userId == null) {
-            data.setShowAmount(cashDescs.get(0));
-            data.setDesc(DESC_AMOUNT_NOAUTH);
-            data.setOnlineShowAmount(consumeDescs.get(0));
-            data.setOnlineDesc(DESC_ONLINEAMOUNT_NOAUTH);
             return;
         }
 
@@ -266,7 +271,6 @@ public class MineHomeApi implements ApiHandle {
     private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-        logger.info("getDrainageBannerListApi and type = {}", invelomentType);
 
         List<AfResourceDo> bannerResources = null;
         if (Constants.INVELOMENT_TYPE_ONLINE.equals(invelomentType)
@@ -277,18 +281,18 @@ public class MineHomeApi implements ApiHandle {
         }
 
         if (CollectionUtil.isNotEmpty(bannerResources)) {
-          List<Map<String, Object>> bannerList = CollectionConverterUtil
-                  .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
-              @Override
-              public Map<String, Object> convert(AfResourceDo source) {
-                  Map<String, Object> map = new HashMap<String, Object>();
-                  map.put("imageUrl", source.getValue());
-                  map.put("type", source.getValue1());
-                  map.put("content", source.getValue2());
-                  return map;
-              }
-          });
-          data.setBannerList(bannerList);
+            List<Map<String, Object>> bannerList = CollectionConverterUtil
+                    .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
+                        @Override
+                        public Map<String, Object> convert(AfResourceDo source) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("imageUrl", source.getValue());
+                            map.put("type", source.getValue1());
+                            map.put("content", source.getValue2());
+                            return map;
+                        }
+                    });
+            data.setBannerList(bannerList);
         }
 
         // navigation
@@ -379,6 +383,12 @@ public class MineHomeApi implements ApiHandle {
             // 没有最早的待还，查询最后一笔借款信息
             borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
+        
+        // 回收业务 屏蔽逻辑 - 2018.05.07 By ZJF
+        if(borrowCashDo != null && afBorrowRecycleService.isRecycleBorrow(borrowCashDo.getRid())) {
+        	borrowCashDo = null;
+        }
+        
         if (borrowCashDo != null && borrowCashDo.getStatus().equals(AfBorrowCashStatus.transed.getCode())) {
             return afBorrowCashService.calculateLegalRestAmount(borrowCashDo);
         }

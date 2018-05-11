@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -34,13 +35,17 @@ public interface AfRedPacketPoolService {
 		private Long couponId;
 		private Integer redRainRoundId;
 		private Integer amount;
+		private String couponEffectiveTime;
+		private BigDecimal couponLimitAmount;
 
-		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId, Integer amount){
+		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId, Integer amount, String couponEffectiveTime, BigDecimal couponLimitAmount){
 			this.type = type;
 			this.couponName = couponName;
 			this.couponId = couponId;
 			this.redRainRoundId = redRainRoundId;
 			this.amount = amount;
+			this.couponEffectiveTime = couponEffectiveTime;
+			this.couponLimitAmount = couponLimitAmount;
 		}
 		
 		public Redpacket() {}
@@ -83,6 +88,22 @@ public interface AfRedPacketPoolService {
 
 		public void setAmount(Integer amount) {
 			this.amount = amount;
+		}
+
+		public String getCouponEffectiveTime() {
+			return couponEffectiveTime;
+		}
+
+		public void setCouponEffectiveTime(String couponEffectiveTime) {
+			this.couponEffectiveTime = couponEffectiveTime;
+		}
+
+		public BigDecimal getCouponLimitAmount() {
+			return couponLimitAmount;
+		}
+
+		public void setCouponLimitAmount(BigDecimal couponLimitAmount) {
+			this.couponLimitAmount = couponLimitAmount;
 		}
 	}
 	

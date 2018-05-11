@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -90,8 +91,8 @@ public interface AfUserCouponService {
 	 * 发放优惠券
 	 * @param userId
 	 * @param couponId
-	 * @param source_type 来源类型
-	 * @param source_ref  来源关联id
+	 * @param sourceType 来源类型
+	 * @param sourceRef  来源关联id
 	 */
 	void grantCoupon(Long userId,Long couponId,String sourceType,String sourceRef);
 
@@ -159,6 +160,10 @@ public interface AfUserCouponService {
 	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
 
     List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status);
+	AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo);
+
+	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
+
 }
 
 
