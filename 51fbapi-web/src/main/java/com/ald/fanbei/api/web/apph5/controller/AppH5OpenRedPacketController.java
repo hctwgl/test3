@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -292,15 +293,14 @@ public class AppH5OpenRedPacketController extends BaseController {
     // 获取或注册用户
     private AfUserDo getOrRegisterUser(HttpServletRequest request, String verifyCode, String token,
                                        String bsqToken, String mobile) {
-        // TODO:测试用，记得解开
-        /*try {
+        try {
             tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
                     mobile, mobile, "");
         } catch (Exception e) {
             throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
         }
 
-        validateVerifyCode(verifyCode, mobile);*/
+        validateVerifyCode(verifyCode, mobile);
 
         AfUserDo userDo = afUserService.getUserByUserName(mobile);
         if (userDo == null) {
@@ -336,13 +336,12 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     // 注册用户
     private AfUserDo registerUser(HttpServletRequest request, String mobile, String bsqToken) {
-        // TODO:测试用，记得解开
-        /*try {
+        try {
             baiQiShiUtils.getRegistResult("h5", bsqToken, CommonUtil.getIpAddr(request), mobile,
                     "","","","");
         } catch (Exception e){
             logger.error("/redPacket/bindPhoneAndOpen baiQiShiUtils getRegistResult error => {}",e.getMessage());
-        }*/
+        }
 
         AfUserDo userDo = new AfUserDo();
         userDo.setSalt("");

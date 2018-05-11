@@ -215,6 +215,35 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
+	public int getTodayWithdrawedNum(Long userId) {
+		AfRedPacketTotalQueryNoPage query = new AfRedPacketTotalQueryNoPage();
+		query.setUserId(userId);
+		Date now = new Date();
+		query.setGmtWithdrawStart(DateUtil.getStartOfDate(now));
+		query.setGmtWithdrawEnd(DateUtil.getEndOfDate(now));
+		return afRedPacketTotalDao.countByQuery(query);
+	}
+
+	@Override
+	public boolean isCanGainOne(Long id, Integer shareTime) {
+		if (shareTime != null) {
+			int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
+			return openedNum < (shareTime + 1);
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo) {
+		if (redPacketTotalDo.getIsWithdraw() == 1) return true;
+
+		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+		return isOverdue(redPacketTotalDo, redPacketConfig);
+	}
+
+	@Override
 	@Transactional
 	public void withdraw(Long id, String modifier) {
 		AfRedPacketTotalDo redPacketTotalDo = getById(id);
@@ -229,21 +258,6 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		updateById(redPacketTotalDo);
 
 		withdrawToUserAccount(redPacketTotalDo);
-	}
-
-	@Override
-	public boolean isCanGainOne(Long id, Integer shareTime) {
-		int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
-		return openedNum < (shareTime + 1);
-	}
-
-	@Override
-	public boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo) {
-		if (redPacketTotalDo.getIsWithdraw() == 1) return true;
-
-		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-		return isOverdue(redPacketTotalDo, redPacketConfig);
 	}
 
 	@Override
@@ -339,12 +353,6 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 
-		Integer everydayWithdrawNum = redPacketConfig.getInteger("everydayWithdrawNum");
-		int todayWithdrawedNum = getTodayWithdrawedNum(redPacketTotalDo.getUserId());
-		if (todayWithdrawedNum >= everydayWithdrawNum) {
-			throw new FanbeiException("今日已不可提现，请明天再来哦");
-		}
-
 		if (isOverdue(redPacketTotalDo, redPacketConfig)) {
 			throw new FanbeiException("红包已过期");
 		}
@@ -376,15 +384,5 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		afUserAccountLogDo.setType(AccountLogType.OPEN_REDPACKET.getCode());
 		afUserAccountLogDo.setRefId("");
 		afUserAccountService.addUserAccountLog(afUserAccountLogDo);
-	}
-
-	// 获取用户今日红包提现数量
-	private int getTodayWithdrawedNum(Long userId) {
-		AfRedPacketTotalQueryNoPage query = new AfRedPacketTotalQueryNoPage();
-		query.setUserId(userId);
-		Date now = new Date();
-		query.setGmtWithdrawStart(DateUtil.getStartOfDate(now));
-		query.setGmtWithdrawEnd(DateUtil.getEndOfDate(now));
-		return afRedPacketTotalDao.countByQuery(query);
 	}
 }

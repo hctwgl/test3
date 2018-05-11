@@ -76,12 +76,12 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
     List<Map<String, String>> findOpenListOfHome(Long id, Integer queryNum);
 
     /**
-     * 红包提现
+     * 获取用户今日红包提现数量
      *
      * @author wangli
-     * @date 2018/5/6 16:07
+     * @date 2018/5/11 10:06
      */
-    void withdraw(Long id, String modifier);
+    int getTodayWithdrawedNum(Long userId);
 
     /**
      * 判断用户拆完红包后，是否能再拆一个红包
@@ -98,6 +98,14 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      * @date 2018/5/10 17:33
      */
     boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo);
+
+    /**
+     * 红包提现
+     *
+     * @author wangli
+     * @date 2018/5/6 16:07
+     */
+    void withdraw(Long id, String modifier);
 
     /**
      * 更新红包金额

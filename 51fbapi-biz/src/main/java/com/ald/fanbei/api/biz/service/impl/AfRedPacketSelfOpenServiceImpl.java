@@ -83,7 +83,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		AfRedPacketTotalDo theOpening = afRedPacketTotalService
 				.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
 
-		checkIsCanOpen(sourceType, theOpening, redPacketConfig.getInteger("shareTime"));
+		checkIsCanOpen(sourceType, theOpening, redPacketConfig);
 
 		AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
 		selfOpenDo.setRedPacketTotalId(theOpening.getRid());
@@ -125,20 +125,31 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	}
 
 	// 检查是否能拆红包
-	private void checkIsCanOpen(String sourceType, AfRedPacketTotalDo theOpening, Integer shareTime) {
+	private void checkIsCanOpen(String sourceType, AfRedPacketTotalDo theOpening, JSONObject redPacketConfig) {
 		if (theOpening == null) {
 			return;
 		}
 
-		int openedNum = getOpenedNum(theOpening.getRid());
-		if (openedNum >= (shareTime + 1)) {
-			throw new FanbeiException("您已没有红包可拆，继续分享可以让好友帮您拆");
+		Integer shareTime = redPacketConfig.getInteger("shareTime");
+		if (shareTime != null) {
+			int openedNum = getOpenedNum(theOpening.getRid());
+			if (openedNum >= (shareTime + 1)) {
+				throw new FanbeiException("您已没有红包可拆，继续分享可以让好友帮您拆");
+			}
 		}
 
 		if (StringUtil.isNotBlank(sourceType) && sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SELF.getCode())) {
 			boolean isOpened= hadSelfOpenedRedPacket(theOpening.getRid());
 			if (isOpened) {
 				throw new FanbeiException("您已拆过自己的红包了，继续分享可以再拆红包");
+			}
+		}
+
+		Integer everydayWithdrawNum = redPacketConfig.getInteger("everydayWithdrawNum");
+		if (everydayWithdrawNum != null) {
+			int todayWithdrawedNum = afRedPacketTotalService.getTodayWithdrawedNum(theOpening.getUserId());
+			if (todayWithdrawedNum >= everydayWithdrawNum) {
+				throw new FanbeiException("今日已不能再拆红包，请明天再来哦");
 			}
 		}
 	}

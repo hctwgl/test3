@@ -114,8 +114,8 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 										   AfRedPacketTotalDo shareRedPacket) {
 		JSONArray helpOpenRateConfig = JSONArray.parseArray(config.getValue3());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-		int num = afRedPacketHelpOpenDao.getOpenedNum(helpOpenDo.getRedPacketTotalId());
-		num = num == 0 ? 1 : num;
+		int openedNum = afRedPacketHelpOpenDao.getOpenedNum(helpOpenDo.getRedPacketTotalId());
+		int openingNum = openedNum + 1;
 
 		String configRate = null;
 		for (Object obj : helpOpenRateConfig) {
@@ -127,12 +127,12 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 			}
 
 			if (maxPepole != null) {
-				if (num >= minPepole && num <= maxPepole) {
+				if (openingNum >= minPepole && openingNum <= maxPepole) {
 					configRate = e.get("rate").toString();
 					break;
 				}
 			} else {
-				if (num >= minPepole) {
+				if (openingNum >= minPepole) {
 					BigDecimal amount = new BigDecimal(e.get("amount").toString());
 					helpOpenDo.setAmount(amount);
 					return;
@@ -141,7 +141,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		}
 
 		if (configRate == null) {
-			throw new FanbeiException("帮差红包比率配置错误，已有" + num + "人帮拆过，却找不到对应的比率配置");
+			throw new FanbeiException("帮差红包比率配置错误，第" + openingNum + "个人帮拆，却找不到对应的比率配置");
 		}
 		String[] numArr = configRate.split("-");
 		Integer min = Integer.valueOf(numArr[0]);
