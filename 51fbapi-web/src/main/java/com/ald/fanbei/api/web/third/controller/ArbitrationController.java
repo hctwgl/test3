@@ -3,8 +3,7 @@ package com.ald.fanbei.api.web.third.controller;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -28,6 +27,11 @@ import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
@@ -118,7 +122,7 @@ public class ArbitrationController {
      */
     @ResponseBody
     @RequestMapping(value = "/lenderTest", method = RequestMethod.GET)
-    public String createLender(String loanBillNo,Date date) throws  Exception {
+    public String createLender(String loanBillNo,Date date,String protocal) throws  Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日");
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
         AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
@@ -129,7 +133,8 @@ public class ArbitrationController {
         HashMap map= new HashMap<String, Object>();
         map.put("userName",afUserDo.getUserName());
         map.put("gmtCreate",new Date());
-        String receiptNo="REC"+System.currentTimeMillis();
+        String pdfText= getPdfTextByUrl(protocal);
+        String receiptNo= pdfText.substring(pdfText.indexOf("协议编号：")+5,pdfText.indexOf("甲方")).replace("\r\n","");
         map.put("orderNo",receiptNo);
         String lender="";
         String lenderAmountInfo="";
@@ -172,7 +177,41 @@ public class ArbitrationController {
         String url= afLegalContractPdfCreateServiceV2.receptProtocolPdf(map);
         return url;
     }
-
+    public static String getPdfTextByUrl(String path) {
+        String content = null;
+        java.net.URL url = null;
+        try {
+            url = new URL(path);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection conn = null;
+        InputStream inputStream = null;
+        try {
+            conn = (HttpURLConnection)url.openConnection();
+            inputStream = conn.getInputStream();
+            RandomAccessRead accessRead = new RandomAccessBufferedFileInputStream(inputStream);
+            PDFParser parser = new PDFParser(accessRead);
+            parser.parse();
+            PDDocument pdfdocument = parser.getPDDocument();
+            PDFTextStripper stripper = new PDFTextStripper();
+            content = stripper.getText(pdfdocument);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if(inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if(conn != null){
+                conn.disconnect();
+            }
+        }
+        return content;
+    }
     /**
      * 协议生成
      * @param loanBillNo 借款编号
@@ -219,7 +258,7 @@ public class ArbitrationController {
         //收据
         //if(StringUtil.isEmpty(arbitrationDo.getValue3())){
             try{
-                String lenderUrl= createLender(loanBillNo,arbitrationDo.getGmtCreate());
+                String lenderUrl= createLender(loanBillNo,arbitrationDo.getGmtCreate(),arbitrationDo.getValue1());
                 arbitrationDo.setValue3(lenderUrl);
             }catch (Exception ex){
                 logger.info("create lender error：",ex);
