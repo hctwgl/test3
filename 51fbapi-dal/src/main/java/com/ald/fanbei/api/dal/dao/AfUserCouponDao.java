@@ -150,4 +150,6 @@ public interface AfUserCouponDao {
     List<AfUserCouponDto> getH5UserCouponByUser(@Param("userId")Long userId, @Param("status")String status);
 
 	AfUserCouponDto getUserCouponAfterPaidSuccess(@Param("userId") Long userId);
+
+    List<AfUserCouponDto> getUserCouponByTypeV1(@Param("userId") Long userId, @Param("type") String type, @Param("repaymentType") String repaymentType);
 }

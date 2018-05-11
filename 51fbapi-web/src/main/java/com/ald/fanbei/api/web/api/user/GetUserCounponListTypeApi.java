@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.StringUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +40,19 @@ public class GetUserCounponListTypeApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-        if(CouponType.findRoleTypeByCode(type)==null){
+		String repaymentType = ObjectUtils.toString(requestDataVo.getParams().get("repaymentType"),"");
+		//type = "REPAYMENT";
+		//repaymentType= "LOAN";
+		if(CouponType.findRoleTypeByCode(type)==null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-        List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId, type);
+
+        List<AfUserCouponDto> couponList = new ArrayList<AfUserCouponDto>();
+		if(context.getAppVersion()>=414&& StringUtil.isNotBlank(repaymentType)){
+			couponList = afUserCouponService.getUserCouponByTypeV1(userId, type,repaymentType);
+		}else{
+			couponList = afUserCouponService.getUserCouponByType(userId, type);
+		}
         List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
         for (AfUserCouponDto afUserCouponDto : couponList) {
         	AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);

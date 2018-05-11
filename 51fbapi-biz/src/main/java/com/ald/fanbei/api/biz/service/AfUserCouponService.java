@@ -164,6 +164,7 @@ public interface AfUserCouponService {
 
 	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
 
+	List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType);
 }
 
 
