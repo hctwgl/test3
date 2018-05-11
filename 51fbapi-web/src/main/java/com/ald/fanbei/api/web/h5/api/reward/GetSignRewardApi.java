@@ -15,12 +15,14 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.Random;
 
 
 /**
@@ -40,6 +42,8 @@ public class GetSignRewardApi implements H5Handle {
     NumberWordFormat numberWordFormat;
     @Resource
     AfSignRewardExtService afSignRewardExtService;
+    @Resource
+    TransactionTemplate transactionTemplate;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -82,8 +86,7 @@ public class GetSignRewardApi implements H5Handle {
      * @param afSignRewardDo
      * @return
      */
-    private boolean userSign(AfSignRewardDo afSignRewardDo,AfResourceDo afResourceDo){
-        boolean result = true;
+    private boolean userSign(final AfSignRewardDo afSignRewardDo, AfResourceDo afResourceDo){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         if(flag){//多次签到
             //判断是当前周期的第几天
@@ -94,12 +97,29 @@ public class GetSignRewardApi implements H5Handle {
         }else {//第一次签到
             BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(afResourceDo.getValue1()) - Double.parseDouble(afResourceDo.getValue2())) + afResourceDo.getValue2()).setScale(2, RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
-            if(afSignRewardService.saveRecord(afSignRewardDo)<1 ){
-                result = false;
-            }
+
+
+            String status = transactionTemplate.execute(new TransactionCallback<String>() {
+                @Override
+                public String doInTransaction(TransactionStatus status) {
+                    try{
+                        AfSignRewardDo reward = new AfSignRewardDo();
+                        reward = afSignRewardDo;
+                        if(afSignRewardService.saveRecord(afSignRewardDo)<1 && afSignRewardExtService.updateSignRewardExt() ){
+                            return "fail";
+                        }
+                        return "success";
+                    }catch (Exception e){
+                        status.setRollbackOnly();
+                        return "fail";
+                    }
+
+                }
+
+            });
         }
 
-        return result;
+        return true;
     }
 
     /**
