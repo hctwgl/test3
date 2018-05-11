@@ -443,6 +443,7 @@ public enum FanbeiExceptionCode {
     BRAND_CATEGORY_PAGE_INIT_SUCCESS("BRAND_CATEGORY_PAGE_INIT_SUCCESS",9007,"aishangjie brand category page init success","品牌分类页面初始化成功!"),
     CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9008,"choose bank card pay","请您选择银行卡付款方式"),
 
+    FRIEND_USER_SIGN_EXIST("FRIEND_USER_SIGN_EXIST",9015,"friend user sign exist","今天已经帮此好友签到，不能再次签到"),
     USER_SIGN_FAIL("USER_SIGN_FAIL",9014,"user sign fail","签到失败"),
     USER_SIGN_EXIST("USER_SIGN_EXIST",9014,"user sign exist","今天已经签到，不能再次签到"),
     RECEIVE_REWARD_FAIL("RECEIVE_REWARD_FAIL",9013,"receive reward fail","奖励领取失败"),

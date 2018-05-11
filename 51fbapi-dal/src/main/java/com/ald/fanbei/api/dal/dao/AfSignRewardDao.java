@@ -26,4 +26,10 @@ public interface AfSignRewardDao  {
     int saveRecord(AfSignRewardDo afSignRewardDo);
 
     int checkUserSign(@Param("userId") Long userId);
+
+    int friendUserSign(@Param("friendUserId")Long friendUserId);
+
+    int frienddUserSignCount(@Param("userId")Long userId,@Param("friendUserId")Long friendUserId);
+
+    int frienddUserSignCountToDay(@Param("userId")Long userId,@Param("friendUserId")Long friendUserId);
 }

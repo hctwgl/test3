@@ -27,4 +27,10 @@ public interface AfSignRewardService {
 
     boolean checkUserSign(Long userId);
 
+    boolean friendUserSign(Long friendUserId);
+
+    int frienddUserSignCount(Long userId,Long friendUserId);
+
+    boolean frienddUserSignCountToDay(Long userId,Long friendUserId);
+
 }

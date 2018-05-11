@@ -62,6 +62,8 @@ import java.math.BigDecimal;
      */
     private Long friendUserId;
 
+    private Integer isDelete;
+
 
 
 }

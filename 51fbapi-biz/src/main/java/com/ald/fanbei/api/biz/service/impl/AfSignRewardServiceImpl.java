@@ -55,6 +55,21 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
 
     @Override
     public boolean checkUserSign(Long userId){
-        return  afSignRewardDao.checkUserSign(userId)> 0 ? true :false;
+        return afSignRewardDao.checkUserSign(userId)> 0 ? true :false;
+    }
+
+    @Override
+    public boolean friendUserSign(Long friendUserId){
+        return afSignRewardDao.friendUserSign(friendUserId)> 0 ? true :false;
+    }
+
+    @Override
+    public int frienddUserSignCount(Long userId,Long friendUserId){
+        return afSignRewardDao.frienddUserSignCount(userId,friendUserId);
+    }
+
+    @Override
+    public boolean frienddUserSignCountToDay(Long userId,Long friendUserId){
+        return afSignRewardDao.frienddUserSignCountToDay(userId,friendUserId)> 0 ? true :false;
     }
 }

@@ -166,5 +166,18 @@
     <select id="checkUserSign" resultType="int" parameterType="Long">
         SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
     </select>
+
+    <select id="friendUserSign" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type in (1,2)
+    </select>
+
+    <select id="frienddUserSignCount" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type = 1 AND user_id = #{userId}
+    </select>
+
+    <select id="frienddUserSignCountToDay" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type = 1 AND user_id = #{userId}
+        AND  date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </select>
     
 </mapper>
