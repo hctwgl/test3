@@ -612,8 +612,8 @@
 			al.user_id userId,
 			au.real_name NAME,
 			aua.id_number cardId,
-			au.user_name mobile,
-			al.card_no bankNo,
+			ub.mobile mobile,
+			ub.card_number bankNo,
 			al.card_name cardName,
 			al.amount money,
 			al.loan_remark ,
@@ -624,7 +624,19 @@
 			af_loan al
 		LEFT JOIN af_user au ON au.id = al.user_id
 		LEFT JOIN af_user_account aua ON aua.user_id = au.id
-	    WHERE al.is_delete = 0 AND al.id=#{rid ,jdbcType=BIGINT}
+		left JOIN af_user_bankcard ub ON ub.user_id=al.user_id
+	    WHERE al.is_delete = 0 AND al.id=#{rid ,jdbcType=BIGINT} and ub.is_main='Y'
         LIMIT 0,1
+	</select>
+	
+	<select id="getLoanById" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfLoanDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_loan
+		WHERE
+		is_delete = 0
+		AND
+		id = #{rid}
 	</select>
 </mapper>

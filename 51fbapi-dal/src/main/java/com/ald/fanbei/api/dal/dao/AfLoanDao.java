@@ -40,4 +40,6 @@ public interface AfLoanDao extends BaseDao<AfLoanDo, Long> {
 
 	AfLoanDto getBorrowInfoById(AfLoanDo loanDo);
 
+	AfLoanDo getLoanById(Long borrowCashId);
+
 }
