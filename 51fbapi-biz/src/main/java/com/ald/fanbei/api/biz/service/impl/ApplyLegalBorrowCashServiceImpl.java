@@ -398,6 +398,20 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		this.checkBindCard(authDo);
 		this.checkAuth(authDo);
 		this.checkCanBorrow(accountDo, param);
+		this.checkBorrowFinish(accountDo.getUserId());
+		this.checkRiskRefused(accountDo.getUserId());
+		this.checkCardNotEmpty(bankCard);
+		this.checkBorrowType(param,rateInfoDo);
+	}
+
+	@Override
+	public void checkRecycleBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo, AfUserBankcardDo bankCard, ApplyLegalBorrowCashBo param) {
+		this.checkAccount(accountDo, authDo);
+		this.checkAmount(param, rateInfoDo);
+		this.checkPassword(accountDo, param);
+		this.checkBindCard(authDo);
+		this.checkAuth(authDo);
+		this.checkCanBorrow(accountDo, param);
 		this.checkRecycleBorrowFinish(accountDo.getUserId());
 		this.checkRiskRefused(accountDo.getUserId());
 		this.checkCardNotEmpty(bankCard);
