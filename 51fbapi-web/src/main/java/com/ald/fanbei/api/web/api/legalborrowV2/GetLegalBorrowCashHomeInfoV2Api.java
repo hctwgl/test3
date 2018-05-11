@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
@@ -125,6 +126,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	
+	@Resource
+	AfBorrowRecycleService afBorrowRecycleService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -166,6 +170,10 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String finishFlag = YesNoStatus.NO.getCode();
 		AfBorrowCashDo afBorrowCash = afBorrowCashService.getNowUnfinishedBorrowCashByUserId(userId);
+		// 屏蔽回收借款 5.11 By ZJF
+    	if(afBorrowCash != null && afBorrowRecycleService.isRecycleBorrow(afBorrowCash.getRid())) {
+    		afBorrowCash = null;
+    	}
 		if (afBorrowCash != null) {
 			finishFlag = YesNoStatus.YES.getCode();
 		}
@@ -219,6 +227,11 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			// 查询最后一笔借款信息
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
+		// 屏蔽回收借款 5.11 By ZJF
+    	if(afBorrowCashDo != null && afBorrowRecycleService.isRecycleBorrow(afBorrowCashDo.getRid())) {
+    		afBorrowCashDo = null;
+    	}
+		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
 		} else {
