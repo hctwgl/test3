@@ -75,6 +75,16 @@ public class AfOrderVo extends AbstractSerial {
 	private Integer cardType;
 	private BigDecimal feeAmount =BigDecimal.ZERO;
 
+	private String refundMsg;
+
+	public String getRefundMsg() {
+		return refundMsg;
+	}
+
+	public void setRefundMsg(String refundMsg) {
+		this.refundMsg = refundMsg;
+	}
+
 	public BigDecimal getFeeAmount() {
 		return feeAmount;
 	}
