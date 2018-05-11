@@ -112,25 +112,46 @@
 	
 	
 	<select id="listNewEncoreGoodsByActivityId" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">
-		SELECT 
-		<include refid="newEncoreGoodsSqlField"></include>
+		SELECT
+		<include refid="newEncoreGoodsSqlField"></include>,t.activity_price
 		FROM
-			af_goods g ,af_activity_model m
+		af_activity_model m
+		INNER JOIN af_goods g ON m.goods_id = g.id
+		LEFT JOIN (
+		SELECT
+		min(a.special_price) 'activity_price',
+		a.goods_id
+		FROM
+		`af_seckill_activity_goods` a
+		INNER JOIN af_seckill_activity b ON a.activity_id = b.id
 		WHERE
-			m.activity_id = #{activityId}
-		AND
-			m.goods_id = g.id	
-		AND
-			m.goods_type = 2
-		AND 
-			g.is_delete = 0
-		AND
-			m.is_delete = 0
-		AND
-			m.title_type != 0
-		AND
-		((g.source = 'SELFSUPPORT' AND g.id > 121461) OR (g.source <![CDATA[<>]]> 'SELFSUPPORT')) 
-		ORDER BY m.gmt_create DESC
+		a.is_delete = 0
+		AND b.is_delete = 0
+		AND b.gmt_pstart <![CDATA[<=]]> now()
+		AND b.gmt_end <![CDATA[>=]]> now()
+		GROUP BY
+		a.goods_id
+		ORDER BY
+		b.gmt_create DESC
+		) t ON m.goods_id = t.goods_id
+		WHERE
+		m.activity_id = #{activityId}
+		AND m.goods_id = g.id
+		AND m.goods_type = 2
+		AND g.is_delete = 0
+		AND m.is_delete = 0
+		AND m.title_type != 0
+		AND (
+		(
+		g.source = 'SELFSUPPORT'
+		AND g.id > 121461
+		)
+		OR (
+		g.source <![CDATA[<>]]> 'SELFSUPPORT'
+		)
+		)
+		ORDER BY
+		m.gmt_create DESC
 	</select>
 	
 	<select id="listNewEncoreGoodsByActivityIdLT371" resultType="AfEncoreGoodsDto" parameterType="java.lang.Long">

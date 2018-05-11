@@ -49,5 +49,10 @@ public class AfRetryTemplServiceImpl extends ParentServiceImpl<AfRetryTemplDo, L
 		return afRetryTemplDao.getByBusId(busId);
 	}
 
+	@Override
+	public AfRetryTemplDo getCurPushDebt(String busId, String eventType) {
+		return afRetryTemplDao.getCurPushDebt(busId, eventType);
+	}
+
    
 }

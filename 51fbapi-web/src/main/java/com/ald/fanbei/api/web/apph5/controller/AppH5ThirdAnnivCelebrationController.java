@@ -94,7 +94,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                     }
 
                     AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
-                    if(null != couponCategory){
+                    if (null != couponCategory) {
                         String coupons = couponCategory.getCoupons();
                         JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
                         int size = couponsArray.size();
@@ -158,16 +158,12 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         }
 
         // 查询秒杀活动列表
+        List<String> activityIds = activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
+
+        // 查询每日活动场次(每日第一场时间前为上一场次信息)
         Date now = new Date();
         Date gmtStart = DateUtil.getStartOfDate(now);
         Date gmtEnd = DateUtil.getEndOfDate(now);
-        List<String> activityIds = bizCacheUtil.getObjectList(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode());
-        if (null == activityIds) {
-            activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
-            bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
-        }
-
-        // 查询每日活动场次(每日第一场时间前为上一场次信息)
         List<String> todayActivityIds = afSeckillActivityService.getActivityListByName(activityName, gmtStart, gmtEnd);
 
         String activityId = "";
@@ -188,64 +184,54 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             activityId = activityIds.get(0);
             nextActivityId = activityIds.get(1);
         } else {
-            if (StringUtils.equals(activityIds.get(0), todayActivityIds.get(0))) {
+            // 活动时间配置
+            Calendar calendar = Calendar.getInstance();
+            int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+            String startHourKey = CacheConstants.CACHE_KEY_ACTIVITY_START_HOUR_ARRAY + activityName;
+            String[] activityStartHourArray = (String[]) bizCacheUtil.getObject(startHourKey);
+            if (null == activityStartHourArray) {
+                AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
+                if (null != activityStartHour) {
+                    activityStartHourArray = activityStartHour.getValue().split(",");
+                    bizCacheUtil.saveObject(startHourKey, activityStartHourArray, Constants.SECOND_OF_ONE_DAY);
+                } else {
+                    activityStartHourArray = new String[]{"10", "14", "18"};
+                }
+            }
+
+            int arrayLength = activityStartHourArray.length;
+            int todayActivitySize = todayActivityIds.size();
+            int activitySize = activityIds.size();
+
+            // 秒杀活动每次场次和时间配置应该是一致的
+            if (arrayLength != todayActivitySize) {
+                logger.error("当前活动场次和时间配置不一致，请检查");
+                return H5CommonResponse.getNewInstance(false, "当前活动场次和时间配置不一致", "", "").toString();
+            }
+
+            // 第一天第一场前展示第一场
+            if (StringUtils.equals(activityIds.get(0), todayActivityIds.get(0)) && currentHour < Integer.parseInt(activityStartHourArray[0])) {
                 activityId = activityIds.get(0);
                 nextActivityId = activityIds.get(1);
             } else {
-                Calendar calendar = Calendar.getInstance();
-                int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-
-                String startHourKey = CacheConstants.CACHE_KEY_ACTIVITY_START_HOUR_ARRAY + activityName;
-                String[] activityStartHourArray = (String[]) bizCacheUtil.getObject(startHourKey);
-                if (null == activityStartHourArray) {
-                    AfResourceDo activityStartHour = afResourceService.getSingleResourceBytype(Constants.TAC_SEC_KILL_ACTIVITY_START_TIME);
-                    if (null != activityStartHour) {
-                        activityStartHourArray = activityStartHour.getValue().split(",");
-                        bizCacheUtil.saveObject(startHourKey, activityStartHourArray, Constants.SECOND_OF_ONE_DAY);
-                    } else {
-                        activityStartHourArray = new String[]{"10", "14", "18"};
-                    }
-                }
-
-                int arrayLength = activityStartHourArray.length;
-                int todayActivitySize = todayActivityIds.size();
-                int activitySize = activityIds.size();
                 if (currentHour < Integer.parseInt(activityStartHourArray[0])) {
                     nextActivityId = todayActivityIds.get(0);
                     int index = activityIds.indexOf(nextActivityId);
                     activityId = activityIds.get(index - 1);
-                }
-                else if(currentHour >= Integer.parseInt(activityStartHourArray[arrayLength - 1])){
+                } else if (currentHour >= Integer.parseInt(activityStartHourArray[arrayLength - 1])) {
                     activityId = todayActivityIds.get(todayActivitySize - 1);
                     int index = activityIds.indexOf(activityId);
-                    if(index < 0){
-                        activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
-                        bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
-                    }
                     if (index < activitySize - 1) {
                         nextActivityId = activityIds.get(index + 1);
                     } else {
                         nextActivityId = "";
                     }
-                }else {
+                } else {
                     for (int i = 0; i < arrayLength - 1; i++) {
                         if ((currentHour >= Integer.parseInt(activityStartHourArray[i])) && (currentHour < Integer.parseInt(activityStartHourArray[i + 1]))) {
-                            if (todayActivitySize < (i + 1)) {
-                                logger.error("活动配置异常，请查看");
-                                return H5CommonResponse.getNewInstance(false, "当前没有活动了", "", "").toString();
-                            } else {
-                                activityId = todayActivityIds.get(i);
-                                int index = activityIds.indexOf(activityId);
-                                if(index < 0){
-                                    activityIds = afSeckillActivityService.getActivityListByName(activityName, null, null);
-                                    bizCacheUtil.saveListByTime(CacheConstants.THIRD_ANNIV_CELEBRATION_ACT.GET_THIRD_ANNIV_CELEBRATION_ACT_LIST.getCode(), activityIds, Constants.SECOND_OF_FIVE_MINITS);
-                                }
-                                if (index < activitySize - 1) {
-                                    nextActivityId = activityIds.get(index + 1);
-                                } else {
-                                    nextActivityId = "";
-                                }
-                            }
+                            activityId = todayActivityIds.get(i);
+                            int index = activityIds.indexOf(activityId);
+                            nextActivityId = activityIds.get(index + 1);
                         }
                     }
                 }
@@ -261,20 +247,19 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         List<AfSeckillActivityDo> afSeckillActivityDos1 = afSeckillActivityService.getActivityGoodsCountList(Long.parseLong(activityId));
         List<AfSeckillActivityDo> afSeckillActivityDos2 = afSeckillActivityService.getActivitySaleCountList(Long.parseLong(activityId));
         int size = goodsList.size();
-        for(int i =0;i<size;i++){
+        for (int i = 0; i < size; i++) {
             Map<String, Object> afActGoodsDto = goodsList.get(i);
             Long goodsId = Long.valueOf(String.valueOf(afActGoodsDto.get("goodsId")));
-            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos1){
-                if(afSeckillActivityDo.getRid().equals(goodsId)){
-                    afActGoodsDto.put("goodsCount",afSeckillActivityDo.getGoodsCount());
+            for (AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos1) {
+                if (afSeckillActivityDo.getRid().equals(goodsId)) {
+                    afActGoodsDto.put("goodsCount", afSeckillActivityDo.getGoodsCount());
                 }
             }
-            for(AfSeckillActivityDo afSeckillActivityDo:afSeckillActivityDos2){
-                if(afSeckillActivityDo.getRid().equals(goodsId)){
-                    afActGoodsDto.put("saleCount",afSeckillActivityDo.getSaleCount());
-                }
-                else{
-                    afActGoodsDto.put("saleCount",0);
+            for (AfSeckillActivityDo afSeckillActivityDo : afSeckillActivityDos2) {
+                if (afSeckillActivityDo.getRid().equals(goodsId)) {
+                    afActGoodsDto.put("saleCount", afSeckillActivityDo.getSaleCount());
+                } else {
+                    afActGoodsDto.put("saleCount", 0);
                 }
             }
         }
@@ -314,21 +299,22 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
 
     /**
      * 获取“活动管理-新增活动”活动商品列表
+     *
      * @param request
      * @param response
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getActivityGoodList", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String getActivityGoodList(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "getActivityGoodList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getActivityGoodList(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
-        if(0 == activityId){
+        if (0 == activityId) {
             return H5CommonResponse.getNewInstance(false, "活动不存在").toString();
         }
 
-        AfActivityDo activityInfo =afActivityService.getActivityById(activityId);
-        if(activityInfo == null) {
+        AfActivityDo activityInfo = afActivityService.getActivityById(activityId);
+        if (activityInfo == null) {
             return H5CommonResponse.getNewInstance(false, "活动信息不存在！id=" + activityId).toString();
         }
 
@@ -341,22 +327,23 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
 
     /**
      * 我的活动会场
+     *
      * @param request
      * @param response
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "mineActivityInfo", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String mineActivityInfo(HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "mineActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String mineActivityInfo(HttpServletRequest request, HttpServletResponse response) {
         FanbeiWebContext context = doWebCheck(request, false);
         AfUserDo afUserDo = null;
         String userName = context.getUserName();
-        if(StringUtils.isNotEmpty(userName)){
+        if (StringUtils.isNotEmpty(userName)) {
             afUserDo = afUserService.getUserByUserName(userName);
         }
 
         Map<String, Object> data = Maps.newHashMap();
-        if(null == afUserDo){
+        if (null == afUserDo) {
             String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
                     + H5OpenNativeType.AppLogin.getCode();
             data.put("loginUrl", loginUrl);
@@ -369,12 +356,12 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         int couponCount = afUserCouponService.getUserCouponByUserNouse(afUserDo.getRid());
         data.put("couponCount", couponCount);
 
-        return H5CommonResponse.getNewInstance(true, "","",data).toString();
+        return H5CommonResponse.getNewInstance(true, "", "", data).toString();
     }
 
     @ResponseBody
     @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
         FanbeiWebContext context = new FanbeiWebContext();
 
         Calendar calStart = Calendar.getInstance();
@@ -382,7 +369,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         try {
             context = doWebCheck(request, false);
             String modelId = org.apache.commons.lang.ObjectUtils.toString(request.getParameter("modelId"), null);
-            if(modelId == null || "".equals(modelId)) {
+            if (modelId == null || "".equals(modelId)) {
                 resp = H5CommonResponse.getNewInstance(false, "模版id不能为空！");
                 return resp.toString();
             }
@@ -395,31 +382,30 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             if (null != activity) {
                 activityName = StringUtils.trim(activity.getValue2());
                 activityStartTime = activity.getValue().split(",")[0];
-                if(StringUtils.isEmpty(activityName)){
+                if (StringUtils.isEmpty(activityName)) {
                     activityName = "三周年庆典";
                 }
-                if(StringUtils.isEmpty(activityStartTime)){
+                if (StringUtils.isEmpty(activityStartTime)) {
                     activityStartTime = "2018-05-08 00:00:00";
                 }
             }
 
-            JSONObject data = appActivityGoodListUtil.partActivityInfoV2(modelId, context.getUserName(),activityName,activityStartTime);
+            JSONObject data = appActivityGoodListUtil.partActivityInfoV2(modelId, context.getUserName(), activityName, activityStartTime);
             String error = data.getString("error");
-            if(StringUtils.isNotEmpty(error)){
+            if (StringUtils.isNotEmpty(error)) {
                 resp = H5CommonResponse.getNewInstance(false, error);
-            }
-            else{
+            } else {
                 resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
             }
-        }catch(FanbeiException e){
+        } catch (FanbeiException e) {
             resp = H5CommonResponse.getNewInstance(false, "请求失败", "", e.getErrorCode().getDesc());
-            logger.error("请求失败"+context,e);
-        }catch(Exception e){
+            logger.error("请求失败" + context, e);
+        } catch (Exception e) {
             resp = H5CommonResponse.getNewInstance(false, "请求失败", "", "");
-            logger.error("请求失败"+context,e);
-        }finally{
+            logger.error("请求失败" + context, e);
+        } finally {
             Calendar calEnd = Calendar.getInstance();
-            doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+            doLog(request, resp, context.getAppInfo(), calEnd.getTimeInMillis() - calStart.getTimeInMillis(), context.getUserName());
         }
         return resp.toString();
     }

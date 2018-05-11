@@ -261,8 +261,9 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
 						logger.info("upsPaySuccess bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-						orderInfo.setIagentStatus("A");
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("A");
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),orderInfo.getIagentStatus());
 					}
 				}catch (Exception e){
 					logger.error("upsPaySuccess bklUtils submitBklInfo error",e);

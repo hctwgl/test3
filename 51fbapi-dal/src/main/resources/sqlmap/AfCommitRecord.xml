@@ -6,14 +6,16 @@
 	</sql>
 	
 	<insert id="addRecord" parameterType="AfCommitRecordDo" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO af_commit_record(type, relate_id, content, url, commit_time, commit_num)
+		INSERT INTO af_commit_record(type, relate_id, content, url, commit_time, commit_num,gmt_create,gmt_modified)
 		VALUES (
 		#{type},
 		#{relate_id},
 		#{content},
 		#{url},
 		#{commit_time},
-		#{commit_num}
+		#{commit_num},
+		#{gmtCreate},
+		#{gmtModified}
 		)
 	</insert>
 	

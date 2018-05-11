@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowPushDo;
  */
 public interface AfBorrowPushService extends ParentService<AfBorrowPushDo, Long>{
 
+	void saveOrUpdate(AfBorrowPushDo borrowPush);
+
 }
