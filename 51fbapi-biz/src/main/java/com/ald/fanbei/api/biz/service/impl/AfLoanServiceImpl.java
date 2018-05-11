@@ -488,7 +488,7 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		loanDo.setRemark("UPS打款失败，"+msg);
 		loanDo.setGmtClose(cur);
 		loanDo.setGmtModified(cur);
-		
+		logger.info("--->close loan UPS打款失败:loanId="+loanDo.getRid());
 		// 关闭分期记录
 		closePeriods(periodDos);
 		
@@ -774,5 +774,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			afLoanPeriodsDo.setGmtModified(new Date());
 			afLoanPeriodsDao.updateById(afLoanPeriodsDo);
 		}
+		logger.info("--->close periods");
 	}
 }
