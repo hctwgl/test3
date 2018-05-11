@@ -4,13 +4,17 @@ package com.ald.fanbei.api.web.h5.api.reward;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSignRewardExtService;
 import com.ald.fanbei.api.biz.service.AfSignRewardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
@@ -22,6 +26,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -44,6 +49,8 @@ public class GetSignRewardApi implements H5Handle {
     AfSignRewardExtService afSignRewardExtService;
     @Resource
     TransactionTemplate transactionTemplate;
+    @Resource
+    AfUserCouponService afUserCouponService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -86,40 +93,93 @@ public class GetSignRewardApi implements H5Handle {
      * @param afSignRewardDo
      * @return
      */
-    private boolean userSign(final AfSignRewardDo afSignRewardDo, AfResourceDo afResourceDo){
+    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
+        boolean result =true;
+        String status = "success";
         if(flag){//多次签到
             //判断是当前周期的第几天
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
+            int count = signDays(afSignRewardExtDo,0);
+            final BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(afResourceDo.getValue3()) - Double.parseDouble(afResourceDo.getValue4())) + afResourceDo.getValue3()).setScale(2, RoundingMode.HALF_EVEN);
+            afSignRewardDo.setAmount(rewardAmount);
+            final AfSignRewardDo rewardDo = afSignRewardDo;
+            if(count == 3){
+                afSignRewardExtDo.setAmount(rewardAmount);
+                final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
+                status = transactionTemplate.execute(new TransactionCallback<String>() {
+                    @Override
+                    public String doInTransaction(TransactionStatus status) {
+                        try{
+                            afSignRewardService.saveRecord(rewardDo);
+                            AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                            afUserCouponDo.setUserId(rewardDo.getUserId());
+                            afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+                            afUserCouponDo.setGmtCreate(new Date());
+                            afUserCouponDo.setGmtModified(new Date());
+                            afUserCouponDo.setSourceType("SIGN_REWARD");
+                            afUserCouponDo.setSourceRef("SYS");
+                            afUserCouponDo.setStatus("NOUSE");
+                            afUserCouponService.addUserCoupon(afUserCouponDo);
+                            afSignRewardExtService.increaseMoney(signRewardExtDo);
+                            return "success";
+                        }catch (Exception e){
+                            status.setRollbackOnly();
+                            return "fail";
+                        }
+                    }
+                });
+            }else {
+                if(count == 6){
+                    afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
 
-
-
+                }else if(count == 10){
+                    afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(3)).setScale(2,RoundingMode.HALF_EVEN));
+                }
+                final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
+                status = transactionTemplate.execute(new TransactionCallback<String>() {
+                    @Override
+                    public String doInTransaction(TransactionStatus status) {
+                        try{
+                            afSignRewardService.saveRecord(rewardDo);
+                            afSignRewardExtService.increaseMoney(signRewardExtDo);
+                            return "success";
+                        }catch (Exception e){
+                            status.setRollbackOnly();
+                            return "fail";
+                        }
+                    }
+                });
+            }
         }else {//第一次签到
             BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(afResourceDo.getValue1()) - Double.parseDouble(afResourceDo.getValue2())) + afResourceDo.getValue2()).setScale(2, RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
-
-
-            String status = transactionTemplate.execute(new TransactionCallback<String>() {
+            final AfSignRewardDo rewardDo = afSignRewardDo;
+            status = transactionTemplate.execute(new TransactionCallback<String>() {
                 @Override
                 public String doInTransaction(TransactionStatus status) {
                     try{
-                        AfSignRewardDo reward = new AfSignRewardDo();
-                        reward = afSignRewardDo;
-                        if(afSignRewardService.saveRecord(afSignRewardDo)<1 && afSignRewardExtService.updateSignRewardExt() ){
-                            return "fail";
-                        }
+                        AfSignRewardExtDo afSignRewardExtDo = new AfSignRewardExtDo();
+                        afSignRewardExtDo.setUserId(rewardDo.getUserId());
+                        afSignRewardExtDo.setGmtModified(new Date());
+                        afSignRewardExtDo.setFirstDayParticipation(new Date());
+                        afSignRewardExtDo.setAmount(rewardDo.getAmount());
+                        afSignRewardService.saveRecord(rewardDo);
+                        afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
                         return "success";
                     }catch (Exception e){
                         status.setRollbackOnly();
                         return "fail";
                     }
-
                 }
-
             });
         }
-
-        return true;
+        if(StringUtil.equals(status,"success")){
+            result =true;
+        }else {
+            result =false;
+        }
+        return result;
     }
 
     /**
@@ -139,6 +199,37 @@ public class GetSignRewardApi implements H5Handle {
      */
     private boolean supplementSign(AfSignRewardDo afSignRewardDo){
         return true;
+    }
+
+
+    private int signDays(AfSignRewardExtDo afSignRewardExtDo,int num){
+        int countDays = 0;
+        boolean flag = true;
+        Date date = afSignRewardExtDo.getFirstDayParticipation();
+        int cycle = afSignRewardExtDo.getCycleDays();
+        Date startTime;
+        Date endTime;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(DateUtil.formatDateToYYYYMMdd(date));
+        while(flag){
+            num ++;
+            calendar.add(Calendar.DAY_OF_MONTH,(new BigDecimal(num-1).multiply(new BigDecimal(cycle))).intValue());
+            startTime = calendar.getTime();
+            calendar.add(Calendar.DAY_OF_MONTH,cycle-1);
+            endTime = calendar.getTime();
+            if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
+                if(startTime.getTime() == DateUtil.formatDateToYYYYMMdd(new Date()).getTime()){
+                    afSignRewardExtDo.setFirstDayParticipation(new Date());
+                    afSignRewardExtDo.setGmtModified(new Date());
+                    afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
+                }
+                flag = false;
+                countDays = afSignRewardService.sumSignDays(afSignRewardExtDo.getUserId(),startTime);
+            }else{
+                signDays(afSignRewardExtDo,num);
+            }
+        }
+        return countDays;
     }
 
 }

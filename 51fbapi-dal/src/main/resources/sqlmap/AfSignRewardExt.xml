@@ -135,7 +135,11 @@
     </select>
 
     <update id="extractMoney">
-        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount - #{amount} where user_id = #{userId} and is_delete = 0
+        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount - #{amount} where user_id = #{userId} and is_delete = 0 HAVING amount - #{amount} > 0
+    </update>
+
+    <update id="increaseMoney">
+        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount + #{amount} where user_id = #{userId} and is_delete = 0 HAVING amount + #{amount} > 0
     </update>
     
 </mapper>

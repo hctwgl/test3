@@ -21,4 +21,8 @@ public interface AfSignRewardExtDao  {
 
     int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo);
 
+    int increaseMoney(AfSignRewardExtDo afSignRewardExtDo);
+
+    int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
+
 }

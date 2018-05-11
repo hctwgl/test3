@@ -45,5 +45,14 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
         return afSignRewardExtDao.updateSignRewardExt(afSignRewardExtDo);
     }
 
+    @Override
+    public int saveRecord(AfSignRewardExtDo afSignRewardExtDo){
+        return afSignRewardExtDao.saveRecord(afSignRewardExtDo);
+    }
+
+    @Override
+    public int increaseMoney(AfSignRewardExtDo afSignRewardExtDo){
+        return afSignRewardExtDao.increaseMoney(afSignRewardExtDo);
+    }
 
 }
