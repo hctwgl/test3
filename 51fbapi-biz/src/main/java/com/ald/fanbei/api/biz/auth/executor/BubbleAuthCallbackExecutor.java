@@ -124,43 +124,6 @@ public class BubbleAuthCallbackExecutor implements Executor {
                     }
                 }
             }
-            // 获取白领贷强风控状态
-            AfUserAuthStatusDo bldAuthDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, LoanType.BLD_LOAN.getCode());
-            // 如果白领贷强风控通过，调起白领贷款提额度场景
-            if (bldAuthDo != null && StringUtils.equals("Y", bldAuthDo.getStatus())) {
-                try {
-                    afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.LOAN_TOTAL.getName(), AuthType.BUBBLE.getCode(), userId);
-                    if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.CASH.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
-                        RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { RiskScene.BUBBLE_BLD.getCode() }, RiskSceneType.BLD.getCode());
-                        // 提额成功
-                        if (respBo != null && respBo.isSuccess()) {
-                            // 获取提额结果
-                            String raiseStatus = respBo.getData().getBldResults()[0].getResult();
-                            if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-                                String bldAmount = respBo.getData().getBldAmount();
-                                String totalAmount = respBo.getData().getTotalAmount();
-                                AfUserAccountSenceDo bldAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, LoanType.BLD_LOAN.getCode(), bldAmount);
-                                AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
-
-                                afUserAccountSenceService.saveOrUpdateAccountSence(bldAccountSenceDo);
-                                afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
-
-                                AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.BUBBLE.getCode(), LoanType.BLD_LOAN.getCode(), "Y", new BigDecimal(bldAmount), new Date());
-                                // 提额成功，记录提额状态
-                                afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-                            } else {
-                                AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.BUBBLE.getCode(), LoanType.BLD_LOAN.getCode(), "F", BigDecimal.ZERO, new Date());
-                                // 提额成功，记录提额状态
-                                afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-                            }
-
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("raise amount fail =>{}", e.getMessage());
-                }
-            }
-
             afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), userId);
             if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
                 // 线上分期提额
