@@ -124,10 +124,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		return afRedPacketSelfOpenDao;
 	}
 
-	private boolean hadSelfOpenedRedPacket(Long redPacketTotalId) {
+	// 判断是否已拆过某个来源的红包
+	private boolean isHaveOpened(Long redPacketTotalId, String sourceType) {
 		AfRedPacketSelfOpenDo query = new AfRedPacketSelfOpenDo();
 		query.setRedPacketTotalId(redPacketTotalId);
-		query.setSourceType(SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
+		query.setSourceType(sourceType);
 		AfRedPacketSelfOpenDo e = getByCommonCondition(query);
 		return e != null;
 	}
@@ -146,10 +147,16 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 			}
 		}
 
-		if (StringUtil.isNotBlank(sourceType) && sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SELF.getCode())) {
-			boolean isOpened= hadSelfOpenedRedPacket(theOpening.getRid());
+		if (StringUtil.isNotBlank(sourceType)) {
+			boolean isOpened= isHaveOpened(theOpening.getRid(), sourceType);
 			if (isOpened) {
-				throw new FanbeiException("您已拆过自己的红包了，继续分享可以再拆红包");
+				if (sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SHARE_MOMENTS.getCode())) {
+					throw new FanbeiException("分享微信好友可再获得一个红包哦");
+				} else if (sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SHARE_FRIEND.getCode())) {
+					throw new FanbeiException("分享朋友圈可再获得一个红包哦");
+				} else {
+					throw new FanbeiException("您已拆过红包了，继续分享可以再拆红包");
+				}
 			}
 		}
 

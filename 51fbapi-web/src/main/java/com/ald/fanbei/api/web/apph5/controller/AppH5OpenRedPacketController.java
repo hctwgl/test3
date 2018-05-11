@@ -327,7 +327,7 @@ public class AppH5OpenRedPacketController extends BaseController {
             throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
         }
         // 判断验证码是否过期
-        if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
+        if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), 5))) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is overdue");
             throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }

@@ -85,8 +85,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 			result.setWithdrawList(findWithdrawListOfHome(userId, 2));
 			if (result.getRedPacket() != null) {
 				Long id = Long.valueOf(result.getRedPacket().get("id"));
-				// TODO:queryNum传null，测试使用，记得改回2
-				result.setOpenList(findOpenListOfHome(id, null));
+				result.setOpenList(findOpenListOfHome(id, 2));
 			}
 		}
 

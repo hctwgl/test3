@@ -148,11 +148,11 @@ public class WxUtil {
 	 */
 	public static JSONObject getUserInfoWithCache(String code) {
         /*String key = "WxUtil:userInfo:" + code;
-        JSONObject userWxInfo = (JSONObject) bizCacheUtil.getObject(key);
+        JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
         if (userWxInfo == null) {
-            userWxInfo = WxUtil.getUserInfo(WxUtil.getWxAppId(), WxUtil.getWxSecret(), code);
+            userWxInfo = getUserInfo(getWxAppId(), getWxSecret(), code);
             if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
-                bizCacheUtil.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
+				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
             } else {
                 String errmsg = userWxInfo.getString("errmsg");
                 throw new FanbeiException(StringUtil.isBlank(errmsg) ? "未获取到用户微信信息" : errmsg);
