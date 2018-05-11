@@ -226,7 +226,6 @@ public class ArbitrationController {
             arbitrationDo=new AfArbitrationDo();
             arbitrationDo.setGmtCreate(new Date());
         }
-        arbitrationDo.setGmtCreate(new Date());
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
         //借款协议
         if(StringUtil.isEmpty(arbitrationDo.getValue1()) ){
