@@ -494,7 +494,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
@@ -648,7 +648,7 @@ class GetActivityListThread implements Runnable {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
                         Map nperMap = nperList.get(nperList.size() - 1);
