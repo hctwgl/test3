@@ -118,7 +118,7 @@ public class ArbitrationController {
      */
     @ResponseBody
     @RequestMapping(value = "/lenderTest", method = RequestMethod.GET)
-    public String createLender(String loanBillNo) throws  Exception {
+    public String createLender(String loanBillNo,Date date) throws  Exception {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日");
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
         AfContractPdfDo afContractPdfDo= afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(),(byte)1);
@@ -158,12 +158,13 @@ public class ArbitrationController {
         if(lenderAmountInfo.contains("，")){
             lenderAmountInfo= lenderAmountInfo.substring(0,lenderAmountInfo.lastIndexOf("，"));
         }
+
         lenderAmountInfo=lenderAmountInfo+"。";
         map.put("lender",lender);
         map.put("borrowUserInfo","<span style=\"color:red;\">"+afUserDo.getRealName()+"</span>（身份证号：<span style=\"color:red;\">"+accountDo.getIdNumber()+"</span>）");
         map.put("amount",afBorrowCashDo.getAmount());
         map.put("cnAmount",NumberUtil.number2CNMontrayUnit(afBorrowCashDo.getAmount()));
-        map.put("receptDate",simpleDateFormat.format(afBorrowCashDo.getGmtCreate()));
+        map.put("receptDate",simpleDateFormat.format(date));
         map.put("lenderAmountInfo",lenderAmountInfo);
         AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
         map.put("personUserSeal", afUserSealDo.getUserSeal());
@@ -184,7 +185,9 @@ public class ArbitrationController {
         AfArbitrationDo arbitrationDo=  arbitrationService.getByBorrowNo(loanBillNo);
         if(arbitrationDo==null){
             arbitrationDo=new AfArbitrationDo();
+            arbitrationDo.setGmtCreate(new Date());
         }
+        arbitrationDo.setGmtCreate(new Date());
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(loanBillNo);
         //借款协议
         if(StringUtil.isEmpty(arbitrationDo.getValue1()) ){
@@ -216,7 +219,7 @@ public class ArbitrationController {
         //收据
         //if(StringUtil.isEmpty(arbitrationDo.getValue3())){
             try{
-                String lenderUrl= createLender(loanBillNo);
+                String lenderUrl= createLender(loanBillNo,arbitrationDo.getGmtCreate());
                 arbitrationDo.setValue3(lenderUrl);
             }catch (Exception ex){
                 logger.info("create lender error：",ex);
