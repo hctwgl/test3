@@ -848,19 +848,14 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		// 本期需还金额
 		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
-		if(repayAmount.compareTo(calculateRestAmount) >= 0){
-			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(calculateRestAmount));
-			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getAmount());
-		}else {
-			if(repaymentDo.getRepayAmount().compareTo(sumAmount) >= 0){	// 针对多期已出账 的部分还款
-				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getRepaidServiceFee(),
-						loanPeriodsDo.getRepaidOverdueAmount(),repayAmount));
-			}else{
-				loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
-			}
+
+		if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getRepayAmount());
+		}else{
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
-		
 		
 		// 所有已还金额
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
@@ -1211,6 +1206,23 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		
 		return restAmount;
 	}
+    
+    /**
+     * 计算本期需还金额
+     */
+    private BigDecimal calculateRestAmount(AfLoanPeriodsDo loanPeriodsDo) {
+    	BigDecimal restAmount = BigDecimal.ZERO;
+    	
+    	if(loanPeriodsDo!=null){
+    		restAmount = BigDecimalUtil.add(restAmount,loanPeriodsDo.getAmount(),
+    				loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+    				loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+    				loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+    				.subtract(loanPeriodsDo.getRepayAmount());
+    	}
+    	
+    	return restAmount;
+    }
 
 	/**
 	 * 计算已出账需还金额
