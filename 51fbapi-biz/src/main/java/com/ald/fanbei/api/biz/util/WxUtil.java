@@ -123,14 +123,14 @@ public class WxUtil {
 	String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code";
 	JSONObject access_token = httpsRequest(url, "POST", null);
 
-	logger.info(JSON.toJSONString(access_token));
+	logger.info("WxUtil.getOpenidByCode:" + JSON.toJSONString(access_token));
 	// 获取refresh_token
 	String refreshToken = (String) access_token.get("refresh_token");
 
 	url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid + "&grant_type=refresh_token&refresh_token=" + refreshToken;
 	JSONObject refresh_token = httpsRequest(url, "POST", null);
 
-	logger.info(JSON.toJSONString(refresh_token));
+	logger.info("WxUtil.getOpenidByCode:" + JSON.toJSONString(refresh_token));
 
 	// 获取用户信息
 	String openid = (String) refresh_token.get("openid");
