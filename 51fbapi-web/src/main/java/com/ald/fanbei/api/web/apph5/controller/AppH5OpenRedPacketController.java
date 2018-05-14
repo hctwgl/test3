@@ -15,6 +15,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -29,7 +30,9 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -106,6 +109,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String getHomeInfoOutSite(OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(param.getCode(), param.getShareId());
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -294,7 +298,11 @@ public class AppH5OpenRedPacketController extends BaseController {
             throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
         }
 
-        validateVerifyCode(verifyCode, mobile);
+        // TODO:上预发环境删掉
+        if (!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+                Constants.INVELOMENT_TYPE_TEST)) {
+            validateVerifyCode(verifyCode, mobile);
+        }
 
         AfUserDo userDo = afUserService.getUserByUserName(mobile);
         if (userDo == null) {
