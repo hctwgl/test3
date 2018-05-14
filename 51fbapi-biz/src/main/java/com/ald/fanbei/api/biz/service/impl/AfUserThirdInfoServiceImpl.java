@@ -76,6 +76,9 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 
 	@Override
 	public AfUserThirdInfoDo bindUserWxInfo(final JSONObject userWxInfo, final Long userId, final String modifier) {
+		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
+		if (thirdInfo != null) return thirdInfo;
+
 		return transactionTemplate.execute(new TransactionCallback<AfUserThirdInfoDo>() {
 			@Override
 			public AfUserThirdInfoDo doInTransaction(TransactionStatus transactionStatus) {
