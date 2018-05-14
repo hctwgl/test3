@@ -23,6 +23,7 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.OpenRedPacketParamVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -103,12 +104,10 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/getHomeInfoOutSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getHomeInfoOutSite(@RequestBody String requestBody) {
+    public String getHomeInfoOutSite(OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-            Long shareId = param.getLongValue("shareId");
-            OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(code, shareId);
+            logger.info("getHomeInfoOutSite:" + param);
+            OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(param.getCode(), param.getShareId());
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
             return handleFanbeiException(e);
