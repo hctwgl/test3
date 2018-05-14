@@ -853,7 +853,12 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
 			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
 		}else{
-			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
+			if(loanPeriodsDo.getRepayAmount() == BigDecimal.ZERO) {
+				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(),
+						loanPeriodsDo.getRepaidOverdueAmount(),loanPeriodsDo.getRepaidServiceFee(),repayAmount));
+			}else {
+				loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
+			}
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		
