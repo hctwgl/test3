@@ -12,13 +12,13 @@ import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -43,9 +43,8 @@ import java.util.Date;
  * @version ：2017年10月30日 下午16:00:28
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Controller
-@RequestMapping("/signRewardSupplement")
-public class H5SignRegisterRewardSupplementController extends BaseController {
+@Component("getSignRegisterRewardSupplementApi")
+public class GetSignRegisterRewardSupplementApi implements H5ApiHandle {
 
     @Resource
     AfUserService afUserService;
@@ -70,11 +69,11 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 
 
 
-    // 提交活动注册并登陆
-    @ResponseBody
-    @RequestMapping(value = "/commitRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String commitActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
-	 	String resultStr = "";
+
+    // 注册
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request, HttpServletResponse response) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 	 	try {
 			String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -94,30 +93,30 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 				afSignRewardDo.setFriendUserId(eUserDo.getRid());
 				afSignRewardDo.setAmount(BigDecimal.ZERO);
 				afSignRewardService.saveRecord(afSignRewardDo);
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST);
 			}
 			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
 			if (smsDo == null) {
 				logger.error("sms record is empty");
-				return H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
 			}
 			String realCode = smsDo.getVerifyCode();
 			if (!StringUtils.equals(verifyCode, realCode)) {
 				logger.error("verifyCode is invalid");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
 			}
 			if (smsDo.getIsCheck() == 1) {
 				logger.error("verifyCode is already invalid");
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
 			}
 			// 判断验证码是否过期
 			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
 			}
 			try {
 				tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
 			} catch (Exception e) {
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR);
 			}
 			try {
 				baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),moblie,"","","","");
@@ -149,7 +148,6 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 			afUserService.updateUser(userDo);
 			// 获取邀请分享地址
 			String appDownLoadUrl = "";
-			resultStr = H5CommonResponse.getNewInstance(true, "补签成功", appDownLoadUrl, null).toString();
 			// save token to cache 记住登录状态
 			String  newtoken = UserUtil.generateToken(moblie);
 			String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
@@ -157,15 +155,15 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 			CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 			bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
 			if(!signReward(request,userId)){
-				return  H5CommonResponse.getNewInstance(true, "补签失败").toString();
+				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 			}
-			return resultStr;
+			return resp;
 		} catch (FanbeiException e) {
 			logger.error("commitRegister fanbei exception" + e.getMessage());
-			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 		} catch (Exception e) {
 			logger.error("commitRegister exception", e);
-			return H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
+			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 		}
 
     }
@@ -223,26 +221,7 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 
 	}
 
-	@Override
-	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		try {
-			RequestDataVo reqVo = new RequestDataVo();
 
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
-	}
-
-    @Override
-    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		return null;
-    }
-
-    @Override
-    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		return null;
-    }
 
 
 	
