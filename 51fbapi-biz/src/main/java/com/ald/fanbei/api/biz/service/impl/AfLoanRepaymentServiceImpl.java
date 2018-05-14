@@ -851,9 +851,9 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 
 		if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
 			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
-			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(loanPeriodsDo.getRepayAmount());
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
 		}else{
-			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
+			loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repayAmount));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 		
@@ -1206,23 +1206,6 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		
 		return restAmount;
 	}
-    
-    /**
-     * 计算本期需还金额
-     */
-    private BigDecimal calculateRestAmount(AfLoanPeriodsDo loanPeriodsDo) {
-    	BigDecimal restAmount = BigDecimal.ZERO;
-    	
-    	if(loanPeriodsDo!=null){
-    		restAmount = BigDecimalUtil.add(restAmount,loanPeriodsDo.getAmount(),
-    				loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
-    				loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
-    				loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
-    				.subtract(loanPeriodsDo.getRepayAmount());
-    	}
-    	
-    	return restAmount;
-    }
 
 	/**
 	 * 计算已出账需还金额
@@ -1351,7 +1334,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
 		int mostNper = BigDecimalUtil.divHalfUp(repaymentAmount, BigDecimalUtil.add(loanPeriodDo.getAmount(),
 				loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
-				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()), 0).intValue();
+				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()).subtract(loanPeriodDo.getRepayAmount()), 0).intValue();
 
 		BigDecimal restAmount = BigDecimal.ZERO;
 		Integer nper = loanPeriodDo.getNper();
