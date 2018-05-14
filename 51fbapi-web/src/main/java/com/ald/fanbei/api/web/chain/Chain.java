@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.chain;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.context.Context;
@@ -11,5 +12,7 @@ public interface Chain {
 	public void execute(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request);
 	
 	public void execute(Context context);
+
+	public void execute(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request, HttpServletResponse response);
 
 }
