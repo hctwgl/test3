@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.util;
 
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -147,7 +148,7 @@ public class WxUtil {
 	 * @date 2018/5/10 10:44
 	 */
 	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
-        /*String key = "WxUtil:userInfo:" + code;
+        String key = "WxUtil:userInfo:" + code;
         JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
         if (userWxInfo == null) {
             userWxInfo = getUserInfo(appid, secret, code);
@@ -158,10 +159,9 @@ public class WxUtil {
                 throw new FanbeiException(StringUtil.isBlank(errmsg) ? "未获取到用户微信信息" : errmsg);
             }
         }
-        return userWxInfo;*/
-		// TODO:测试数据，部署记得修改
-		String jsonStr = "{\"openid\": \"OPENID\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
-		return JSONObject.parseObject(jsonStr);
+        return userWxInfo;
+		/*String jsonStr = "{\"openid\": \"OPENID\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
+		return JSONObject.parseObject(jsonStr);*/
 	}
 
     /**
