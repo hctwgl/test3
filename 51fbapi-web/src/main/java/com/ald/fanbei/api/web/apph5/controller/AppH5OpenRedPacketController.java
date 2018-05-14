@@ -28,10 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -106,8 +103,11 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/getHomeInfoOutSite", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getHomeInfoOutSite(@RequestParam("code") String code, @RequestParam("shareId") Long shareId) {
+    public String getHomeInfoOutSite(@RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+            Long shareId = param.getLongValue("shareId");
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(code, shareId);
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -125,7 +125,10 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/findOpenList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findOpenList(@RequestParam("id") Long id) {
+    public String findOpenList(@RequestBody String requestBody) {
+        JSONObject param = JSONObject.parseObject(requestBody);
+        Long id = param.getLongValue("id");
+
         Map<String, Object> data = new HashMap<>();
 
         Map<String, String> redPacket = new HashMap<>();
@@ -153,9 +156,11 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/findWithdrawList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findWithdrawList(HttpServletRequest request,
-                                   @RequestParam(value = "code", required = false) String code) {
+    public String findWithdrawList(HttpServletRequest request, @RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+
             AfUserDo userDo = getUserInfo(code, request);
             List<Map<String, String>> data = afRedPacketTotalService
                     .findWithdrawListOfHome(userDo.getRid(), null);
@@ -176,9 +181,12 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String selfOpen(HttpServletRequest request, @RequestParam(value = "code", required = false) String code,
-                       @RequestParam("sourceType") String sourceType) {
+    public String selfOpen(HttpServletRequest request, @RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+            String sourceType = param.getString("sourceType");
+
             AfUserDo userDo = getUserInfo(code, request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
                     .open(userDo.getRid(), userDo.getUserName(), sourceType);
@@ -200,8 +208,12 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/helpOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String helpOpen(@RequestParam("code") String code, @RequestParam("shareId") Long shareId) {
+    public String helpOpen(@RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+            Long shareId = param.getLongValue("shareId");
+
             AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(code, shareId);
 
             Map<String, String> data = new HashMap<>();
@@ -225,10 +237,15 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/bindPhoneAndOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String bindPhoneAndOpen(HttpServletRequest request, @RequestParam("code") String code,
-                                   @RequestParam("verifyCode") String verifyCode, @RequestParam("token") String token,
-                                   @RequestParam("bsqToken") String bsqToken, @RequestParam("mobile") String mobile) {
+    public String bindPhoneAndOpen(HttpServletRequest request,  @RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+            String verifyCode = param.getString("verifyCode");
+            String token = param.getString("token");
+            String bsqToken = param.getString("bsqToken");
+            String mobile = param.getString("mobile");
+
             AfUserDo userDo = getOrRegisterUser(request, verifyCode, token, bsqToken, mobile);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
                     userDo.getUserName(), code, SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
@@ -251,9 +268,12 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String withdraw(HttpServletRequest request, @RequestParam(value = "code", required = false) String code,
-                           @RequestParam("id") Long id) {
+    public String withdraw(HttpServletRequest request, @RequestBody String requestBody) {
         try {
+            JSONObject param = JSONObject.parseObject(requestBody);
+            String code = param.getString("code");
+            Long id = param.getLongValue("id");
+
             AfUserDo userDo = getUserInfo(code, request);
             afRedPacketTotalService.withdraw(id, userDo.getUserName());
 
