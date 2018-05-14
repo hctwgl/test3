@@ -106,7 +106,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String getHomeInfoOutSite(OpenRedPacketParamVo param) {
         try {
-            logger.info("getHomeInfoOutSite:" + param);
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(param.getCode(), param.getShareId());
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -124,14 +123,11 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/findOpenList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findOpenList(@RequestBody String requestBody) {
-        JSONObject param = JSONObject.parseObject(requestBody);
-        Long id = param.getLongValue("id");
-
+    public String findOpenList(OpenRedPacketParamVo param) {
         Map<String, Object> data = new HashMap<>();
 
         Map<String, String> redPacket = new HashMap<>();
-        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(id);
+        AfRedPacketTotalDo redPacketTotalDo = afRedPacketTotalService.getById(param.getId());
         redPacket.put("id", redPacketTotalDo.getRid().toString());
         redPacket.put("amount", redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
 
@@ -142,7 +138,7 @@ public class AppH5OpenRedPacketController extends BaseController {
         redPacket.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
 
         data.put("redPacket", redPacket);
-        data.put("openList", afRedPacketTotalService.findOpenListOfHome(id, null));
+        data.put("openList", afRedPacketTotalService.findOpenListOfHome(param.getId(), null));
 
         return H5CommonResponse.getNewInstance(true, "", "", data).toString();
     }
@@ -155,12 +151,9 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/findWithdrawList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String findWithdrawList(HttpServletRequest request, @RequestBody String requestBody) {
+    public String findWithdrawList(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-
-            AfUserDo userDo = getUserInfo(code, request);
+            AfUserDo userDo = getUserInfo(param.getCode(), request);
             List<Map<String, String>> data = afRedPacketTotalService
                     .findWithdrawListOfHome(userDo.getRid(), null);
 
@@ -180,15 +173,11 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String selfOpen(HttpServletRequest request, @RequestBody String requestBody) {
+    public String selfOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-            String sourceType = param.getString("sourceType");
-
-            AfUserDo userDo = getUserInfo(code, request);
+            AfUserDo userDo = getUserInfo(param.getCode(), request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
-                    .open(userDo.getRid(), userDo.getUserName(), sourceType);
+                    .open(userDo.getRid(), userDo.getUserName(), param.getSourceType());
             Map<String, String> data = buildSelfOpenResult(selfOpenDo);
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
@@ -207,13 +196,9 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/helpOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String helpOpen(@RequestBody String requestBody) {
+    public String helpOpen(OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-            Long shareId = param.getLongValue("shareId");
-
-            AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(code, shareId);
+            AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(param.getCode(), param.getShareId());
 
             Map<String, String> data = new HashMap<>();
             UserWxInfoDto userWxInfoDto = afUserThirdInfoService.getWxOrLocalUserInfo(helpOpenDo.getUserId());
@@ -236,18 +221,12 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/bindPhoneAndOpen", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String bindPhoneAndOpen(HttpServletRequest request,  @RequestBody String requestBody) {
+    public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-            String verifyCode = param.getString("verifyCode");
-            String token = param.getString("token");
-            String bsqToken = param.getString("bsqToken");
-            String mobile = param.getString("mobile");
-
-            AfUserDo userDo = getOrRegisterUser(request, verifyCode, token, bsqToken, mobile);
+            AfUserDo userDo = getOrRegisterUser(request, param.getVerifyCode(), param.getToken(),
+                    param.getBsqToken(), param.getMobile());
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
-                    userDo.getUserName(), code, SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
+                    userDo.getUserName(), param.getCode(), SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
 
             Map<String, String> data = buildSelfOpenResult(selfOpenDo);
 
@@ -267,14 +246,10 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String withdraw(HttpServletRequest request, @RequestBody String requestBody) {
+    public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            JSONObject param = JSONObject.parseObject(requestBody);
-            String code = param.getString("code");
-            Long id = param.getLongValue("id");
-
-            AfUserDo userDo = getUserInfo(code, request);
-            afRedPacketTotalService.withdraw(id, userDo.getUserName());
+            AfUserDo userDo = getUserInfo(param.getCode(), request);
+            afRedPacketTotalService.withdraw(param.getId(), userDo.getUserName());
 
             return H5CommonResponse.getNewInstance(true, "").toString();
         } catch (FanbeiException e) {
