@@ -157,6 +157,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String findWithdrawList(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             List<Map<String, String>> data = afRedPacketTotalService
                     .findWithdrawListOfHome(userDo.getRid(), null);
@@ -179,6 +180,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String selfOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
                     .open(userDo.getRid(), userDo.getUserName(), param.getSourceType());
@@ -202,6 +204,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String helpOpen(OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(param.getCode(), param.getShareId());
 
             Map<String, String> data = new HashMap<>();
@@ -227,6 +230,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             AfUserDo userDo = getOrRegisterUser(request, param.getVerifyCode(), param.getToken(),
                     param.getBsqToken(), param.getMobile());
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
@@ -252,6 +256,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/getHomeInfoOutSite, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             afRedPacketTotalService.withdraw(param.getId(), userDo.getUserName());
 
