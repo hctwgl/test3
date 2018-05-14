@@ -2209,7 +2209,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
 						orderDao.updateOrder(orderInfo);
 
-
 						if (BankCardType.DEBIT.getCode().equals(orderInfo.getCardType())) {
 							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(),
 									card.getCardNumber(), userId + "", card.getMobile(), card.getBankName(),
