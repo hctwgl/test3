@@ -150,9 +150,11 @@ public class WxUtil {
 	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
         String key = "WxUtil:userInfo:" + code;
         JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
+        logger.info("getUserInfoWithCache,userWxInfo=" + userWxInfo + "  缓存中获取");
         if (userWxInfo == null) {
             userWxInfo = getUserInfo(appid, secret, code);
             if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
+				logger.info("getUserInfoWithCache,userWxInfo=" + userWxInfo + "  微信获取");
 				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
             } else {
                 String errmsg = userWxInfo.getString("errmsg");
