@@ -146,11 +146,11 @@ public class WxUtil {
 	 * @author wangli
 	 * @date 2018/5/10 10:44
 	 */
-	public static JSONObject getUserInfoWithCache(String code) {
+	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
         /*String key = "WxUtil:userInfo:" + code;
         JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
         if (userWxInfo == null) {
-            userWxInfo = getUserInfo(getWxAppId(), getWxSecret(), code);
+            userWxInfo = getUserInfo(appid, secret, code);
             if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
 				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
             } else {

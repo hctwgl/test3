@@ -101,7 +101,10 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		OpenRedPacketHomeBo result = new OpenRedPacketHomeBo();
 		result.setWithdrawTotalNum(getWithdrawTotalNum(redPacketConfig));
 
-		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
+		AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+		String appid = afResourceDo.getValue();
+		String secret = afResourceDo.getValue1();
+		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 		Long userId = afUserThirdInfoService.getUserIdByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
 		if (userId != null) {
 			result.setIsBindMobile(YesNoStatus.YES.getCode());

@@ -380,7 +380,10 @@ public class AppH5OpenRedPacketController extends BaseController {
             FanbeiWebContext context = doWebCheck(request, true);
             return afUserService.getUserByUserName(context.getUserName());
         } else {
-            JSONObject userWxInfo = WxUtil.getUserInfoWithCache(code);
+            AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+            String appid = afResourceDo.getValue();
+            String secret = afResourceDo.getValue1();
+            JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, code);
             UserWxInfoDto localUserInfo = afUserThirdInfoService
                     .getLocalUserInfoByWxOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
             if (localUserInfo != null) {

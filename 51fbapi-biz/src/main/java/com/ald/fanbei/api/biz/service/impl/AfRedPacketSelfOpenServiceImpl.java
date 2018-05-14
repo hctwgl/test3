@@ -113,7 +113,10 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 	@Override
 	public AfRedPacketSelfOpenDo bindPhoneAndOpen(Long userId, String modifier, String wxCode, String sourceType) {
-		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
+		AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+		String appid = afResourceDo.getValue();
+		String secret = afResourceDo.getValue1();
+		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 		afUserThirdInfoService.bindUserWxInfo(userWxInfo, userId, modifier);
 
 		return open(userId, modifier, sourceType);

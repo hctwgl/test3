@@ -78,7 +78,10 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
 			@Override
 			public AfRedPacketHelpOpenDo doInTransaction(TransactionStatus transactionStatus) {
-				JSONObject userWxInfo = WxUtil.getUserInfoWithCache(wxCode);
+				AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+				String appid = afResourceDo.getValue();
+				String secret = afResourceDo.getValue1();
+				JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 				AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
 				checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
