@@ -179,6 +179,7 @@
 				<value>/user/getMineInfoV1</value>
 				<value>/user/home</value>
 				<value>/coupon/getDetailCouponList</value>
+				<value>/coupon/getSaleServiceInfo</value>
 			</list>
 		</constructor-arg>
 	</bean>
