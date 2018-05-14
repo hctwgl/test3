@@ -245,7 +245,7 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 	try {
 	    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
 	    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
-		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
+		RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
 		// 提额成功
 		if (respBo != null && respBo.isSuccess()) {
 		    // 获取提额结果

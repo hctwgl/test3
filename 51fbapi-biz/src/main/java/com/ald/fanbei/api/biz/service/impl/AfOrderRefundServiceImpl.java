@@ -1,33 +1,23 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.util.Date;
-
-import javax.annotation.Resource;
-
+import com.ald.fanbei.api.biz.service.AfOrderRefundService;
+import com.ald.fanbei.api.biz.service.AfTradeSettleOrderService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
-
+import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfTradeSettleOrderDo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfTradeSettleOrderService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
-import com.ald.fanbei.api.common.enums.AfTradeSettleOrderStatus;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PushStatus;
-import com.ald.fanbei.api.common.enums.TradeOrderStatus;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
-import com.ald.fanbei.api.dal.domain.AfTradeSettleOrderDo;
+import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  *@类描述：
@@ -125,9 +115,9 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 		});
 		if (isBoluome) {
 			if (result == 1) {
-				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
+				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_SUC, orderInfo.getUserId(), orderRefundInfo.getAmount(), orderRefundInfo.getRefundNo());
 			} else {
-				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderRefundInfo.getRefundNo());
+				boluomeUtil.pushRefundStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.REFUND_FAIL, orderInfo.getUserId(), orderRefundInfo.getAmount(), orderRefundInfo.getRefundNo());
 			}
 		}
 		return result;
