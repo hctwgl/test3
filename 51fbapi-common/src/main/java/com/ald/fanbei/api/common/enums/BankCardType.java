@@ -4,7 +4,8 @@ public enum BankCardType {
 
     DEBIT(1, "借记卡"),
     CREDIT(2, "借贷卡"),
-    OTHER(0, "其它");
+    OTHER(0, "其它"),
+    ALL(3,"所有");
 
     private Integer code;
     private String name;

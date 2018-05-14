@@ -32,7 +32,7 @@ public interface AfUserBankcardDao {
 	 * @param userId
 	 * @return
 	 */
-	List<AfBankUserBankDto> getUserBankcardByUserId(@Param("userId") Long userId);
+	List<AfBankUserBankDto> getUserBankcardByUserId(@Param("userId") Long userId, @Param("cardType")String cardType);
 
 	/**
 	 * 删除银行卡

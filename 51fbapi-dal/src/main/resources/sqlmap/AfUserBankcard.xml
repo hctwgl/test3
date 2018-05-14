@@ -100,10 +100,23 @@
 		LEFT JOIN af_user_bankcard_type t on u.id = t.user_bankcard_id
 
 		WHERE
-			
 		    u.status = 'B'
 		AND 
-			u.user_id = #{userId} 
+			u.user_id = #{userId}
+        <if test="cardType != null and cardType != ''">
+            <if test="cardType == '1'">
+                and (t.type is null or t.type = 1)
+            </if>
+            <if test="cardType == '2'">
+                and t.type = 2
+            </if>
+            <if test="cardType == '0'">
+                and t.type = 0
+            </if>
+        </if>
+        <if test="cardType == null or cardType == ''">
+                and (t.type is null or t.type = 1)
+        </if>
 		ORDER BY
 			b.is_valid DESC,u.is_main desc,u.gmt_create desc
 	</select>
@@ -196,6 +209,7 @@
 			and a.is_delete = 0 and a.is_valid = 'Y'
 		AND
 			b.id 	<![CDATA[>]]> 369053
+        and (t.type is null or t.type = 1)
 	</select>
 	
 	
@@ -213,6 +227,7 @@
 			b.user_id=#{userId}
 		AND
 			b.status="B"
+        and (t.type is null or t.type = 1)
 		ORDER BY b.gmt_create asc LIMIT 5
 	</select>
 	

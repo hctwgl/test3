@@ -51,8 +51,8 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     }
 
     @Override
-    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion) {
-		List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
+    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion,BankCardType bankCardType) {
+		List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId,bankCardType.getCode().toString());
 		if (CollectionUtil.isNotEmpty(list)) {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 			for (AfBankUserBankDto item : list) {
