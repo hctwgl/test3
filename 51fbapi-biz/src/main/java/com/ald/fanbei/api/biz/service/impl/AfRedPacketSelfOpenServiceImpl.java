@@ -158,7 +158,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				} else if (sourceType.equals(SelfOpenRedPacketSourceType.OPEN_SHARE_FRIEND.getCode())) {
 					throw new FanbeiException("分享朋友圈可再获得一个红包哦");
 				} else {
-					throw new FanbeiException("您已拆过红包了，继续分享可以再拆红包");
+					throw new FanbeiException("您已拆过红包了，请刷新页面查看");
 				}
 			}
 		}
