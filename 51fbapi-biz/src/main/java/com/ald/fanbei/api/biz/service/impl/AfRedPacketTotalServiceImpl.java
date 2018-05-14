@@ -109,10 +109,10 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		if (userId != null) {
 			result.setIsBindMobile(YesNoStatus.YES.getCode());
 			result.setRedPacket(getRedPacketInfoOfHome(userId, redPacketConfig));
-			result.setWithdrawList(findWithdrawListOfHome(userId, 2));
+			result.setWithdrawList(findWithdrawListOfHome(userId, null));
 			if (result.getRedPacket() != null) {
 				Long id = Long.valueOf(result.getRedPacket().get("id"));
-				result.setOpenList(findOpenListOfHome(id, 2));
+				result.setOpenList(findOpenListOfHome(id, null));
 			}
 		} else {
 			result.setIsBindMobile(YesNoStatus.NO.getCode());
