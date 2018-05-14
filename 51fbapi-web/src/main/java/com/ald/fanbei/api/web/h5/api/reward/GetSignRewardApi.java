@@ -81,8 +81,6 @@ public class GetSignRewardApi implements H5Handle {
             if(friendSign(afSignRewardDo,context,friendUserId)){
                 return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
             }
-        }else if(signType == 2){//新用户补签
-
         }else {
             resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
@@ -266,28 +264,6 @@ public class GetSignRewardApi implements H5Handle {
         }
         return result;
     }
-
-    /**
-     * 补签
-     * @param afSignRewardDo
-     * @return
-     */
-    private boolean supplementSign(AfSignRewardDo afSignRewardDo, final Long friendUserId){
-        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(friendUserId);
-        if(null == userAuthDo){
-            throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-        }
-        if(!(userAuthDo.getGmtFaces() == null && StringUtil.equals("N",userAuthDo.getBankcardStatus())
-                && userAuthDo.getGmtRealname() == null && StringUtil.equals("N",userAuthDo.getRealnameStatus())
-                && StringUtil.equals("N",userAuthDo.getFacesStatus()))){//检查是否是新用户，避免刷
-            throw new FanbeiException("no new user", FanbeiExceptionCode.NO_NEW_USER);
-        }
-        if(afSignRewardService.checkUserSign(friendUserId) || afSignRewardService.friendUserSign(friendUserId)){
-            throw new FanbeiException("no new user", FanbeiExceptionCode.NO_NEW_USER);
-        }
-        return true;
-    }
-
 
     /**
      * 得到这一期签到的天数
