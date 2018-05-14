@@ -619,7 +619,10 @@
 				<entry key="/h5/reward/getFinishedTask" value-ref="getFinishedTaskApi" />
 				<entry key="/h5/reward/getRewardDetail" value-ref="getRewardDetailApi" />
 				<entry key="/h5/reward/getWithdrawDetail" value-ref="getWithdrawDetailApi" />
-
+				<entry key="/h5/reward/getExtractMoney" value-ref="getExtractMoneyApi" />
+				<entry key="/h5/reward/getReceiveReward" value-ref="getReceiveRewardApi" />
+				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
+				<entry key="/h5/reward/getSignReward" value-ref="getSignRewardApi" />
 			</map>
 		</constructor-arg>
 	</bean>

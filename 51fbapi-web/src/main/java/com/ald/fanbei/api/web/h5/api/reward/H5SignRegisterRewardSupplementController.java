@@ -1,7 +1,6 @@
-package com.ald.fanbei.api.web.h5.controller;
+package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -9,9 +8,7 @@ import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.SmsType;
-import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
@@ -20,8 +17,6 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -39,12 +34,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Date;
 
 /**
  * @类描述：
  * 
- * @author :chenqiwei
+ * @author :cfp
  * @version ：2017年10月30日 下午16:00:28
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -146,6 +141,8 @@ public class H5SignRegisterRewardSupplementController extends BaseController {
 			userDo.setPassword(password);
 			userDo.setRecommendId(0l);
 			final long userId = afUserService.addUser(userDo);
+			//绑定微信的唯一标识open_id
+
 			Long invteLong = Constants.INVITE_START_VALUE + userId;
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);

@@ -30,7 +30,7 @@ import java.util.Date;
  * @类描述：签到领金币
  */
 @NeedLogin
-@Component("getExtractMoneyApi")
+@Component("getReceiveRewardApi")
 public class GetReceiveRewardApi implements H5Handle {
 
     @Resource
