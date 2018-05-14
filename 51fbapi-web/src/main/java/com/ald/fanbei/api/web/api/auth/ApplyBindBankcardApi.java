@@ -107,7 +107,7 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		
 		String isMain = YesNoStatus.NO.getCode();
 		AfUserBankcardDo bank = afUserBankcardDao.getUserMainBankcardByUserId(userId);
-		if(null == bank){ isMain = YesNoStatus.YES.getCode(); }
+		if(null == bank && cardType.equals("00")){ isMain = YesNoStatus.YES.getCode(); }
 		
 		AfUserBankcardDo bankDo = genUserBankcardDo(upsResult.getBankCode(), param.bankName, param.cardNumber, param.mobile, userId, isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);

@@ -5,7 +5,6 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankCardType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -49,7 +48,10 @@ public class GetBankCardListApi implements ApiHandle {
 	if (userId == null) {
 	    throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 	}
-	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(), BankCardType.ALL);
+
+	String cardType = requestDataVo.getParams().get("cardType").toString();
+
+	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(), cardType);
 
 	resp.addResponseData("bankCardList", list);
 	String bankcardStatus = "N";
