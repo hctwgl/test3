@@ -116,7 +116,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);// 获取主卡信息
 		
-		applyLegalBorrowCashService.checkBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
+		applyLegalBorrowCashService.checkRecycleBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
 		
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
 		try {
