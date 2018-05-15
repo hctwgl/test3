@@ -1453,6 +1453,6 @@
 		SELECT
 		date_format(min(gmt_create),'%Y-%m-%d %H:%i:%s')
 		FROM af_order
-		WHERE user_id=#{userId} and actal_amount >= #{amount}
+		WHERE user_id=#{userId} and actual_amount >= #{amount}
 	</select>
 </mapper>
