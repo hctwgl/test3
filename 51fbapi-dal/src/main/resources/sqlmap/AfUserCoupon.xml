@@ -215,6 +215,30 @@
 		    u.status = 'NOUSE'
 		order by c.amount desc
 	</select>
+
+	<select id="getUserBillCouponByUserIdAndType" resultType="AfUserCouponDto">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_user_coupon u
+		LEFT JOIN
+		af_coupon c
+		ON
+		c.is_delete = 0 and u.coupon_id = c.id
+		WHERE
+		u.is_delete = 0
+		AND
+		u.user_id = #{userId}
+		AND (NOW() BETWEEN u.gmt_start AND u.gmt_end)
+		AND
+		c.limit_amount<![CDATA[ <=#{amount}  ]]>
+		AND
+		(c.type = #{type} or c.type='REPAYMENT')
+		AND
+		u.status = 'NOUSE'
+		order by c.amount desc
+	</select>
+
 	<select id="getUserCouponByType" resultType="AfUserCouponDto">
 		SELECT 
 			<include refid="queryAllFields" />

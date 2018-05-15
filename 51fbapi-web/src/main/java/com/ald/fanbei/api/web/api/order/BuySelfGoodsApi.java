@@ -180,10 +180,22 @@ public class BuySelfGoodsApi implements ApiHandle {
 		BigDecimal couponAmount=BigDecimal.ZERO;
 		if(couponId!=0){
 			AfUserCouponDto afUserCouponDto=afUserCouponService.getUserCouponById(couponId);
-			couponAmount=afUserCouponDto.getAmount();
+			String type = afUserCouponDto.getType();
+			if(StringUtil.isNotBlank(type)&&StringUtil.equals("DISCOUNT",type)){
+				BigDecimal amount = afUserCouponDto.getAmount();
+				BigDecimal discount = afUserCouponDto.getDiscount();
+				discount = BigDecimal.ONE.subtract(discount);
+				couponAmount=afGoodsPriceDo.getActualAmount().multiply(new BigDecimal(count)).multiply(discount).setScale(2, BigDecimal.ROUND_HALF_UP);
+				if(couponAmount.compareTo(amount)>0){
+					couponAmount = amount;
+				}
+			}else{
+				couponAmount=afUserCouponDto.getAmount();
+			}
 		}
 		actualAmount=afGoodsPriceDo.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
 		afOrder.setActualAmount(actualAmount);
+		afOrder.setCouponAmount(couponAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
 		//新增下单时，记录ip和同盾设备指纹锁 cxk
 		afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址

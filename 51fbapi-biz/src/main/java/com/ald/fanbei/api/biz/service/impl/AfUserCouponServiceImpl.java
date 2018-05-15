@@ -460,4 +460,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		return afUserCouponDao.getUserCouponByTypeV1(userId,type,repaymentType);
 	}
 
+	@Override
+	public List<AfUserCouponDto> getUserBillCouponByUserIdAndType(Long userId, String code, BigDecimal repayAmount) {
+		return afUserCouponDao.getUserBillCouponByUserIdAndType(userId,code,repayAmount);
+	}
+
 }

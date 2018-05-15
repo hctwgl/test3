@@ -152,4 +152,6 @@ public interface AfUserCouponDao {
 	AfUserCouponDto getUserCouponAfterPaidSuccess(@Param("userId") Long userId);
 
     List<AfUserCouponDto> getUserCouponByTypeV1(@Param("userId") Long userId, @Param("type") String type, @Param("repaymentType") String repaymentType);
+
+    List<AfUserCouponDto> getUserBillCouponByUserIdAndType(@Param("userId")Long userId,@Param("type")String type,@Param("amount")BigDecimal amount);
 }
