@@ -659,24 +659,24 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     }
 
     private boolean checkUserAuthDay(Map<String, Object> data, AfResourceDo userAuthDay, String auth_type, Date authDate) {
-	Integer day = 0;
-	JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
-	for (int i = 0; i < userAuthDayArray.size(); i++) {
-	    JSONObject obj = userAuthDayArray.getJSONObject(i);
-	    if (obj.getString("type").equals(auth_type)) {
-		day = obj.getInteger("day");
-		break;
-	    }
-	}
-	Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
-	long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date()), afterTenDay);
-	data.put("title", "");
-	logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
-	if (between < 0) {
-	    data.put("status", "N");
-	    return false;
-	}
-	return true;
+		Integer day = 0;
+		JSONArray userAuthDayArray = JSON.parseArray(userAuthDay.getValue());
+		for (int i = 0; i < userAuthDayArray.size(); i++) {
+		    JSONObject obj = userAuthDayArray.getJSONObject(i);
+		    if (obj.getString("type").equals(auth_type)) {
+			day = obj.getInteger("day");
+			break;
+		    }
+		}
+		Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDate), day);
+		long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date()), afterTenDay);
+		data.put("title", "");
+		logger.info("验证有效期:" + auth_type+",afterTenDay:"+afterTenDay+",between:"+between);
+		if (between < 0) {
+		    data.put("status", "N");
+		    return false;
+		}
+		return true;
     }
 
 
