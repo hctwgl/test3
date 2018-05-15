@@ -109,7 +109,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String getHomeInfoOutSite(OpenRedPacketParamVo param) {
         try {
-            logger.info("/getHomeInfoOutSite, param=" + param);
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(param.getCode(), param.getShareId());
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -157,7 +156,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String findWithdrawList(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            logger.info("/findWithdrawList, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             List<Map<String, String>> data = afRedPacketTotalService
                     .findWithdrawListOfHome(userDo.getRid(), null);
@@ -180,7 +178,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String selfOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            logger.info("/open, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
                     .open(userDo.getRid(), userDo.getUserName(), param.getSourceType());
@@ -204,7 +201,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String helpOpen(OpenRedPacketParamVo param) {
         try {
-            logger.info("/helpOpen, param=" + param);
             AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(param.getCode(), param.getShareId());
 
             Map<String, String> data = new HashMap<>();
@@ -230,7 +226,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            logger.info("/bindPhoneAndOpen, param=" + param);
             AfUserDo userDo = getOrRegisterUser(request, param.getVerifyCode(), param.getToken(),
                     param.getBsqToken(), param.getMobile());
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
@@ -256,7 +251,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            logger.info("/withdraw, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             afRedPacketTotalService.withdraw(param.getId(), userDo.getUserName());
 
@@ -371,6 +365,11 @@ public class AppH5OpenRedPacketController extends BaseController {
         if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
                 || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
             return H5CommonResponse.getNewInstance(false, "没有登录").toString();
+        }
+        if (e.getErrorCode().equals(FanbeiExceptionCode.WX_CODE_INVALID)) {
+            Map<String, String> data = new HashMap<>();
+            data.put("isCodeInvalid", YesNoStatus.YES.getCode());
+            return H5CommonResponse.getNewInstance(false, "", "", data).toString();
         }
         return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();
     }

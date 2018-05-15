@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.util;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -150,15 +151,12 @@ public class WxUtil {
 	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
         String key = "WxUtil:userInfo:" + code;
         JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
-        logger.info("getUserInfoWithCache,userWxInfo=" + userWxInfo + "  缓存中获取");
         if (userWxInfo == null) {
             userWxInfo = getUserInfo(appid, secret, code);
             if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
-				logger.info("getUserInfoWithCache,userWxInfo=" + userWxInfo + "  微信获取");
 				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
             } else {
-                String errmsg = userWxInfo.getString("errmsg");
-                throw new FanbeiException(StringUtil.isBlank(errmsg) ? "未获取到用户微信信息" : errmsg);
+                throw new FanbeiException(userWxInfo.getString("errmsg"), FanbeiExceptionCode.WX_CODE_INVALID);
             }
         }
         return userWxInfo;
