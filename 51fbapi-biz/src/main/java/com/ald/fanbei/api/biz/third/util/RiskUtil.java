@@ -941,7 +941,7 @@ public class RiskUtil extends AbstractThird {
 		}
 
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("WEAK_RISK","FIRST_ORDER_THRESHOLD");
-		String firstBigOrderDate = afOrderService.getUserFirstBigOrderDate(orderDo.getUserId(),Integer.parseInt(afResourceDo.getValue()));
+		String firstBigOrderDate = afOrderService.getUserFirstBigOrderDate(Long.parseLong(consumerNo),Integer.parseInt(afResourceDo.getValue()));
 		summaryOrderData.put("firstBigStrong",firstBigOrderDate);
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
 		reqBo.setReqExt("");
