@@ -64,12 +64,12 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		}else {
 			resp.addResponseData("rewardRule","");
 		}
-
-		AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(context.getUserId());
+		Long userId = context.getUserId();
+		AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
 		if(null == afSignRewardExtDo){
 			//新增SignRewardExt
 			afSignRewardExtDo.setIsOpenRemind(0);
-			afSignRewardExtDo.setUserId(context.getUserId());
+			afSignRewardExtDo.setUserId(userId);
 			afSignRewardExtDo.setGmtModified(new Date());
 			afSignRewardExtDo.setGmtCreate(new Date());
 			afSignRewardExtDo.setAmount(BigDecimal.ZERO);
@@ -106,10 +106,10 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		resp.addResponseData("rewardBannerList",rewardBannerList);
 
 		//今天是否签到
-		resp.addResponseData("rewardStatus",afSignRewardService.isExist(context.getUserId())==false?"N":"Y");
+		resp.addResponseData("rewardStatus",afSignRewardService.isExist(userId)==false?"N":"Y");
 
 		//任务列表
-		resp.addResponseData("taskList",taskList(context));
+		resp.addResponseData("taskList",taskList(context,userId));
 
 		return resp;
 	}
@@ -158,7 +158,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		return countDays;
 	}
 
-	private List<AfTaskDto> taskList(Context context){
+	private List<AfTaskDto> taskList(Context context,Long userId){
 		List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
 		List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
 		List<Long> isDailyList = new ArrayList<Long>();
@@ -172,7 +172,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		String specialUser;
 		String newUser;
 		//用户层级
-		int count = afOrderService.getFinishOrderCount(context.getUserId());
+		int count = afOrderService.getFinishOrderCount(userId);
 		//是否是忠实用户(count超过二次)
 		if(count>1){
 			loyalUsers = "Y";
@@ -187,7 +187,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		}
 
 		//消费分期强风控是否通过用户
-		String onLicneStatus = riskOnline(context.getUserId());
+		String onLicneStatus = riskOnline(userId);
 
 		//消费分期强风控是否通过用户而且未购物
 		if(StringUtil.equals("Y",onLicneStatus) && count == 0){
@@ -200,7 +200,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		if(count>0 || StringUtil.equals("Y",onLicneStatus)){
 			newUser = "N";
 		}else{
-			AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+			AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 			if(userAuthDo != null){
 				if(userAuthDo.getGmtFaces() == null && StringUtil.equals("N",userAuthDo.getBankcardStatus())
 						&& userAuthDo.getGmtRealname() == null && StringUtil.equals("N",userAuthDo.getRealnameStatus())
@@ -242,10 +242,10 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			}
 		}
 		if(isDailyList != null){
-			isDailyTaskList = afTaskUserService.isDailyTaskList(context.getUserId(),isDailyList);
+			isDailyTaskList = afTaskUserService.isDailyTaskList(userId,isDailyList);
 		}
 		if(isNotDailyList != null){
-			isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(context.getUserId(),isNotDailyList);
+			isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId,isNotDailyList);
 		}
 		isDailyTaskList.addAll(isNotDailyTaskList);
 		for(AfTaskUserDo taskUserDo : isDailyTaskList){
