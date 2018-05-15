@@ -1748,6 +1748,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		couponVo.setType(afUserCouponDto.getType());
 		couponVo.setUseRange(afUserCouponDto.getUseRange());
 		couponVo.setShopUrl(afUserCouponDto.getShopUrl());
+		couponVo.setRid(afUserCouponDto.getCouponId());
 		return couponVo;
 	}
 
