@@ -127,7 +127,7 @@ public class BubbleAuthCallbackExecutor implements Executor {
             afAuthRaiseStatusDo = afAuthRaiseStatusService.getByPrdTypeAndAuthType(SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), userId);
             if (afUserAuthService.getAuthRaiseStatus(afAuthRaiseStatusDo, SceneType.ONLINE.getName(), AuthType.BUBBLE.getCode(), afUserAuthDo.getGmtBubble())) {
                 // 线上分期提额
-                afUserAccountSenceService.raiseOnlineQuato(userId, SceneType.ONLINE.getName(), RiskScene.BUBBLE_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.BUBBLE.getCode());
+                afUserAccountSenceService.raiseOnlineQuatoForBuddle(userId, SceneType.ONLINE.getName(), RiskScene.BUBBLE_ONLINE.getCode(), RiskSceneType.ONLINE.getCode(), AuthType.BUBBLE.getCode());
             }
         } else {
             // 更新认证状态为失败

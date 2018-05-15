@@ -3919,7 +3919,7 @@ public class RiskUtil extends AbstractThird {
 		String url = getUrl()+ "/modules/api/thrid/userReplenishQuota.htm";
 
 		String reqResult = requestProxy.post(url, reqBo);
-		logThird(reqResult, "userSupplementQuota", reqBo);
+		logThird(reqResult, "userReplenishQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_AMOUNT_ERROR);
 		}
