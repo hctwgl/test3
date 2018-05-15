@@ -41,8 +41,6 @@ public class SupplementSignInfoApi implements H5Handle {
     @Resource
     AfSignRewardExtService afSignRewardExtService;
     @Resource
-    TransactionTemplate transactionTemplate;
-    @Resource
     AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     AfUserAuthService afUserAuthService;
