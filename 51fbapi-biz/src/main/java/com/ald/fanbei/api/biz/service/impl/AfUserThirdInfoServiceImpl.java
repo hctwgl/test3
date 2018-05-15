@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
 import com.ald.fanbei.api.common.enums.UserThirdType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.dao.AfUserThirdInfoDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -77,7 +78,13 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	@Override
 	public AfUserThirdInfoDo bindUserWxInfo(final JSONObject userWxInfo, final Long userId, final String modifier) {
 		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
-		if (thirdInfo != null) return thirdInfo;
+		if (thirdInfo != null) {
+			if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
+				throw new FanbeiException("您已经有微信号绑定过此手机号了，不能再绑定了");
+			} else {
+				return thirdInfo;
+			}
+		}
 
 		return transactionTemplate.execute(new TransactionCallback<AfUserThirdInfoDo>() {
 			@Override

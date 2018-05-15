@@ -371,6 +371,12 @@ public class AppH5OpenRedPacketController extends BaseController {
             data.put("isCodeInvalid", YesNoStatus.YES.getCode());
             return H5CommonResponse.getNewInstance(false, "", "", data).toString();
         }
+        if (e.getErrorCode().equals(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER)) {
+            Map<String, String> data = new HashMap<>();
+            data.put("isOver", YesNoStatus.YES.getCode());
+            return H5CommonResponse.getNewInstance(false, "", "", data).toString();
+        }
+
         return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();
     }
 

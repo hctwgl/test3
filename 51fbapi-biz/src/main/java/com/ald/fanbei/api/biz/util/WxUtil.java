@@ -160,7 +160,7 @@ public class WxUtil {
             }
         }
         return userWxInfo;
-		/*String jsonStr = "{\"openid\": \"OPENID\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
+		/*String jsonStr = "{\"openid\": \"ole2v1CVYk43cjFDodZ87Nm2AKbM\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
 		return JSONObject.parseObject(jsonStr);*/
 	}
 

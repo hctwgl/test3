@@ -82,10 +82,10 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		if (context.isLogin()) {
 			Long userId = afUserService.getUserByUserName(context.getUserName()).getRid();
 			result.setRedPacket(getRedPacketInfoOfHome(userId, redPacketConfig));
-			result.setWithdrawList(findWithdrawListOfHome(userId, 2));
+			result.setWithdrawList(findWithdrawListOfHome(userId, null));
 			if (result.getRedPacket() != null) {
 				Long id = Long.valueOf(result.getRedPacket().get("id"));
-				result.setOpenList(findOpenListOfHome(id, 2));
+				result.setOpenList(findOpenListOfHome(id, null));
 			}
 		}
 
@@ -297,7 +297,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 	@Override
 	public BigDecimal calcWithdrawRestAmount(AfRedPacketTotalDo redPacketTotalDo, BigDecimal thresholdAmount) {
-		BigDecimal restAmount = thresholdAmount.subtract(redPacketTotalDo.getAmount());
+		BigDecimal amount = redPacketTotalDo.getAmount().setScale(2, RoundingMode.HALF_UP);
+		BigDecimal restAmount = thresholdAmount.subtract(amount);
 		return restAmount.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restAmount;
 	}
 
@@ -309,7 +310,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	// 检查活动是否停止
 	private void checkActivityIsStop(AfResourceDo config) {
 		if (config.getValue().trim().equals(YesNoStatus.NO.getCode())) {
-			throw new FanbeiException("活动已结束");
+			throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
 		}
 	}
 
