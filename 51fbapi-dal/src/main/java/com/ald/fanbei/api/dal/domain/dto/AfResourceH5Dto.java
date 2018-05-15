@@ -20,5 +20,46 @@ private static final long serialVersionUID = -9058221367468975525L;
 
 	private List itemList;
 
+	/**
+	 * 主键Id
+	 */
+	private Long rid;
+
+
+	/**
+	 * 创建时间
+	 */
+	private Date gmtCreate;
+
+	/**
+	 * 最后修改时间
+	 */
+	private Date gmtModified;
+
+	/**
+	 * 创建者
+	 */
+	private String creator;
+
+	/**
+	 * 最后修改者
+	 */
+	private String modifier;
+
+	/**
+	 * 模板名称, H5页面名称
+	 */
+	private String name;
+
+	/**
+	 * 排序
+	 */
+	private Integer sort;
+	/**
+	 * 启用状态 0启用 1关闭
+	 */
+	private Long status;
+	private String tag;
+
 
 }
