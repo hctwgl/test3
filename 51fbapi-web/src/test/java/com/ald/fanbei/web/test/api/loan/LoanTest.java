@@ -208,9 +208,9 @@ public class LoanTest  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018051509464200798";
+		String orderNo = "hq2018051510143800802";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "1805151611049967";
+		String tradeNo = "xianFenghq2018051510143800802";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
