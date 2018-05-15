@@ -256,6 +256,11 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 
 	@Override
+	public List<Long> getGoodsisGlobal3(List<Long> goodsIdList) {
+		return afGoodsDao.getGoodsisGlobal3(goodsIdList);
+	}
+
+	@Override
 	public List<HashMap> getVisualGoodsByGoodsId(List<String> ids) {
 		return afGoodsDao.getVisualGoodsByGoodsId(ids);
 	}

@@ -13,10 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
+import com.ald.fanbei.api.dal.domain.supplier.AfSolrSearchResultDo;
+import com.ald.fanbei.api.web.vo.AfSearchGoodsVo;
 import com.ald.fanbei.api.web.vo.AfUserCouponVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -36,12 +41,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -1580,6 +1579,163 @@ public class AppH5FanBeiWebController extends BaseController {
 			return H5CommonResponse.getNewInstance(false, "预约失败").toString();
 		}
 	}
+
+	/**
+	 * @author hqj
+	 * @说明：我的优惠券点击跳转商品列表-h5接口
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             model
+	 * @param: @return
+	 * @param: @throws
+	 *             IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getCouponGoodsList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String getCouponGoodsList(HttpServletRequest request, ModelMap model) throws IOException {
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();FanbeiWebContext context = new FanbeiWebContext();
+		try{
+			context = doWebCheck(request,false);
+			//userName = "18314896619";
+			Map<String, Object> data = new HashMap<String, Object>();
+			Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("pageNo")), 1);
+			Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("couponId")), 0);
+			String sort = ObjectUtils.toString(request.getParameter("sort"), null);
+			AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
+			if(afCouponDo==null){
+				return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+			}
+			int isGlobal = afCouponDo.getIsGlobal();
+			String goodsIds = "";
+			if(StringUtil.isNotBlank(afCouponDo.getGoodsIds())){
+				goodsIds = afCouponDo.getGoodsIds();
+				String[] goodsIdStr = goodsIds.replace("，",",").split(",");
+				List<Long> goodsIdsList = CollectionConverterUtil.convertToListFromArray(goodsIds.split(","), new Converter<String, Long>() {
+					@Override
+					public Long convert(String source) {
+						return Long.parseLong(source);
+					}
+				});
+				AfGoodsDoQuery query = new AfGoodsDoQuery();
+				List<Long> goodsIdList = new ArrayList<>();
+				List<AfGoodsDo> afGoodsDos = new ArrayList<AfGoodsDo>();
+				if(StringUtil.isNotBlank(goodsIds)){
+					if(isGlobal==2){//按照商品
+						goodsIdList = goodsIdsList;
+						query.setGoodsIds(goodsIdList);
+					}else if(isGlobal==3){
+						goodsIdList = afGoodsService.getGoodsisGlobal3(goodsIdsList);
+						query.setGoodsIds(goodsIdList);
+					}else if(isGlobal==4){
+						query.setCategoryIds(goodsIdsList);
+					}else if(isGlobal==5){
+						query.setBrandIds(goodsIdsList);
+					}
+				}
+
+				if (StringUtil.isNotBlank(sort)) {
+					// set query.sort
+					if (sort.contains("des")) {
+						query.setSort("desc");
+					} else {
+						query.setSort("asc");
+					}
+					// get sortword
+					if (sort.contains("price")) {
+						query.setSortword("sale_amount");
+					} else {
+						query.setSortword("sale_count");
+					}
+				}
+				query.setFull(true);
+				query.setPageSize(20);
+				List<AfSearchGoodsVo> goodsList = new ArrayList<AfSearchGoodsVo>();
+				// get selfSupport goods
+				List<AfGoodsDo> orgSelfGoodlist = new ArrayList<AfGoodsDo>();
+				Integer totalCount = null;
+				Integer totalPage = null;
+				query.setPageNo(pageNo);
+				orgSelfGoodlist = afGoodsService.getAvaliableSelfGoods(query);
+				totalCount = query.getTotalCount();
+				totalPage = query.getTotalPage();
+
+				logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
+				List<AfSeckillActivityGoodsDo> activityGoodsDos = new ArrayList<>();
+
+				if(goodsIdList.size()==0){
+					for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+						goodsIdList.add(goodsDo.getRid());
+					}
+				}
+				if(CollectionUtils.isNotEmpty(goodsIdList)){
+					activityGoodsDos =afSeckillActivityService.getActivityGoodsByGoodsIds(goodsIdList);
+				}
+				for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+					AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo,activityGoodsDos);
+					goodsList.add(vo);
+				}
+
+				data.put("goodsList", goodsList);
+				data.put("totalCount", totalCount);
+				data.put("totalPage", totalPage);
+			}
+			return H5CommonResponse.getNewInstance(true, "", "", data).toString();
+		}catch (Exception e){
+			logger.error("getCouponGoodsList error", e);
+			return H5CommonResponse.getNewInstance(false, "操作失败").toString();
+		}
+	}
+
+	private AfSearchGoodsVo convertFromSelfToVo(AfGoodsDo goodsDo,List<AfSeckillActivityGoodsDo> activityGoodsDos) {
+		AfSearchGoodsVo goodsVo = new AfSearchGoodsVo();
+		if (goodsDo != null) {
+			for (AfSeckillActivityGoodsDo activityGoodsDo : activityGoodsDos) {
+				if(activityGoodsDo.getGoodsId().equals(goodsDo.getRid())){
+					goodsDo.setSaleAmount(activityGoodsDo.getSpecialPrice());
+					BigDecimal secKillRebAmount = goodsDo.getSaleAmount().multiply(goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+					if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+						goodsDo.setRebateAmount(secKillRebAmount);
+					}
+					break;
+				}
+			}
+			goodsVo.setGoodsIcon(goodsDo.getGoodsIcon());
+			goodsVo.setGoodsName(goodsDo.getName());
+			goodsVo.setGoodsUrl(goodsDo.getGoodsUrl());
+			goodsVo.setSource("SELFSUPPORT");
+
+			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount(),goodsDo.getRid()));
+
+			goodsVo.setNumId(goodsDo.getRid().toString());
+			goodsVo.setRealAmount(goodsDo.getSaleAmount().toString());
+			goodsVo.setRebateAmount(goodsDo.getRebateAmount().toString());
+			goodsVo.setThumbnailIcon(goodsDo.getThumbnailIcon());
+
+		}
+		return goodsVo;
+	}
+
+	public Map<String, Object> getNper(BigDecimal saleAmount,Long goodsid) {
+		Map<String, Object> result = new HashMap<>();
+		// 获取借款分期配置信息
+		AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+				Constants.RES_BORROW_CONSUME);
+		JSONArray array = JSON.parseArray(res.getValue());
+		if (goodsid != null && goodsid >0l) {
+			array = afResourceService.checkNper(goodsid,"0",array);
+		}
+		final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
+		List<Map<String, Object>> nperList = com.ald.fanbei.api.common.util.InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
+				saleAmount, resource.getValue1(), resource.getValue2());
+		if (nperList != null) {
+			Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+			return nperMap;
+		}
+		return result;
+	}
+
 	private AfUserCouponVo getUserCouponVo(AfUserCouponDto afUserCouponDto){
 		AfUserCouponVo couponVo = new AfUserCouponVo();
 		couponVo.setAmount(afUserCouponDto.getAmount());

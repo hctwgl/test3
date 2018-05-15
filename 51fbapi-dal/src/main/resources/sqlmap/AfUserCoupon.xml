@@ -434,6 +434,7 @@
 		AND uc.status = 'NOUSE'
 		AND uc.is_delete = 0
 		AND c.is_delete = 0
+		AND c.status='O'
 		AND (NOW() BETWEEN uc.gmt_start
 		AND uc.gmt_end)
 		AND #{amount} >=  c.limit_amount
@@ -450,6 +451,7 @@
 		af_coupon c
 		WHERE c.type IN ('FULLVOUCHER','DISCOUNT')
 		AND c.is_delete = 0 AND c.is_show = 1
+		AND c.status='O'
 		ORDER BY c.amount DESC
 	</select>
 	<!--所有优惠券(商品详情)-->
@@ -463,6 +465,7 @@
 		af_user_coupon uc ON (uc.coupon_id = c.id AND uc.user_id = #{userId})
 		WHERE c.type IN ('FULLVOUCHER','DISCOUNT')
 		AND c.is_delete = 0 AND c.is_show = 1
+		AND c.status='O'
 		GROUP BY c.id
 		ORDER BY c.amount DESC
 	</select>
