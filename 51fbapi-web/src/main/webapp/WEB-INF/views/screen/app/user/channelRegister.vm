@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
         <title>注册</title>
-    #elseif($!{style}==20)
+    #elseif($!{style}==20 || $!{style}==21 )
         <title>下载</title>
     #else
         <title>注册</title>
@@ -85,7 +85,7 @@
         </div>
     #end
 
-    #if($!{style}==20)
+    #if($!{style}==20 || $!{style}==21 )
     <div class="form">
         <div id="register_codeBtn" style="display: none;"></div>
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
@@ -164,7 +164,7 @@
             版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
             <br>
         </div>
-    #elseif($!{style}==20)
+    #elseif($!{style}==20|| $!{style}==21 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
         <div class="copyright_20">
             <p>浙江阿拉丁电子商务有限公司版权所有</p>
