@@ -76,6 +76,7 @@ public class AfBklServiceImpl implements AfBklService {
 		AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
 		if (userSeedDo != null){
 			result = "v1";
+			orderInfo.setIagentStatus("I");
 			return result;
 		}
         AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());

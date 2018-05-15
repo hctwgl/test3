@@ -18,6 +18,7 @@ public enum FanbeiExceptionCode {
 
     ZFB_NOT_USERD("PARAM_ERROR", 1145, "param error", "支付宝支付正在维护中,请用其它支付方式"),
     WEBCHAT_NOT_USERD("PARAM_ERROR", 1142, "param error", "微信支付正在维护中,请用其它支付方式"),
+    BANK_REPAY_ERROR("BANK_REPAY_ERROR", 1152, "param error", "还款方式只支持银行卡"),
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
@@ -245,6 +246,7 @@ public enum FanbeiExceptionCode {
     //1901-1999
     RISK_REGISTER_ERROR("RISK_REGISTER_ERROR",1901,"risk register error","用户信息同步失败"),
     RISK_VERIFY_ERROR("RISK_VERIFY_ERROR",1902,"risk verify error","风控审核拒绝"),
+    RISK_REFUSE_ERROR("RISK_REFUSE_ERROR",1950,"risk refuse error","您上次的审核未通过，请过几天后 再试吧"),
     RISK_MODIFY_ERROR("RISK_VERIFY_ERROR",1903,"risk modify error","用户信息修改失败"),
     RISK_OPERATOR_ERROR("RISK_OPERATOR_ERROR",1904,"risk operator error","上树运营商数据查询失败"),
     AUTH_MOBILE_ERROR("AUTH_MOBILE_ERROR",1905,"auth mobile error","手机运营商认证失败，请稍后重试。若一直认证失败，请联系客服电话400-002-5151"),
@@ -279,6 +281,8 @@ public enum FanbeiExceptionCode {
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","版本过低，无法申请借钱，请稍后查看短信提示，重新下载最新版本"),
     BORROW_CASH_STATUS_ERROR("BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
+    BORROW_CASH_RECYCLE_STATUS_ERROR("BORROW_CASH_RECYCLE_STATUS_ERROR",2023,"borrow cash amount status","您有一笔未回收成功订单"),
+    JSD_BORROW_CASH_STATUS_ERROR("JSD_BORROW_CASH_STATUS_ERROR",2022,"jsd borrow cash amount status","您有一笔未结清极速贷借款"),
     BORROW_ERROR("BORROW_ERROR",7001,"borrow_errow","借款回调修改异常"),
 
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
@@ -306,6 +310,8 @@ public enum FanbeiExceptionCode {
     ADD_BORROW_CASH_INFO_FAIL("ADD_BORROW_CASH_INFO_FAIL",2011,"add borrow cash info fail","生成借款信息失败"),
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
     BORROW_CASH_REPAY_REBATE_ERROR("BORROW_CASH_REPAY_REBATE_ERROR",2016,"borrow cash repay rebate error","余额还款失败，请检查您的输入或重试"),
+    BORROW_CASH_MAJIABAO_STOP_ERROR("BORROW_CASH_MAJIABAO_STOP_ERROR",2020,"borrow cash majiabao stop error","本应用已暂停更新，请搜索\"爱上街\"app，使用相同账号借款"),
+    BORROW_CASH_STOP_ERROR("BORROW_CASH_STOP_ERROR",2021,"borrow cash stop error","本服务已暂停，请移步\"生活\"页面，\"回收拿钱\"业务将继续为您提供资金服务"),
 
     /* 2100-2200 贷款相关！！！！！！！ */
     LOAN_NO_AUTHZ("",2101,"", "您还未认证"),

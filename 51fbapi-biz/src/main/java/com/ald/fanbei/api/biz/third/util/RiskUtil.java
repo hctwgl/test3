@@ -331,6 +331,8 @@ public class RiskUtil extends AbstractThird {
 	JdbcTemplate loanJdbcTemplate;
 	@Resource
 	AfInterimAuService afInterimAuService;
+	@Resource
+	AfBorrowPushService afBorrowPushService;
 
 	public static String getUrl() {
 		if (url == null) {
@@ -1310,6 +1312,9 @@ public class RiskUtil extends AbstractThird {
 					boolean resp = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (resp) {
 						logger.info("borrowCurPush suceess,debtType=trade/boluome,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+						//记录push表
+						AfBorrowPushDo borrowPush = buildBorrowPush(borrow.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
+						afBorrowPushService.saveOrUpdate(borrowPush);
 					}
 				}
 			} else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
@@ -1339,8 +1344,11 @@ public class RiskUtil extends AbstractThird {
 							orderInfo.setIagentStatus("C");
 					}else if (bklResult.equals("v1")){//不需电核
 						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"A");
-						orderInfo.setIagentStatus("A");
+
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("A");
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),orderInfo.getIagentStatus());
+
 					}
 				}catch (Exception e){
 					logger.error("payOrder bklUtils submitBklInfo error",e);
@@ -3763,7 +3771,7 @@ public class RiskUtil extends AbstractThird {
 	 * @param userId
 	 * @return
 	 */
-	public RiskQuotaRespBo newFundInfoNotify(String data, String userId) {
+	public RiskQuotaRespBo newFundInfoNotify(String data, String userId,String orderSn) {
 		RiskQuotaRespBo riskResp = null;
 		newFundNotifyReqBo reqBo = new newFundNotifyReqBo();
 		reqBo.setConsumerNo(userId);
@@ -3777,6 +3785,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setDetails(detailsBase64);
 		String temp = String.valueOf(System.currentTimeMillis());
 		reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
+		reqBo.setOrderSn(orderSn);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		String url = getUrl() +  "/modules/api/thrid/receiveData.htm";
 //		String url = "http://122.224.88.51:18080" +  "/modules/api/thrid/receiveData.htm";
@@ -3797,6 +3806,7 @@ public class RiskUtil extends AbstractThird {
 		}
 		return riskResp;
 	}
+
 
 	/**
 	 * 网银通知推送
@@ -3895,6 +3905,43 @@ public class RiskUtil extends AbstractThird {
 		return riskResp;
 	}
 
+	/**
+	 * 冒泡补充认证提额接口
+	 *
+	 * @param consumerNo
+	 *            用户ID
+	 * @return
+	 */
+	public RiskQuotaRespBo userReplenishQuota(String consumerNo, String[] scenes, String sceneType) {
+		RiskQuotaReqBo reqBo = new RiskQuotaReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		Map<String, Object> detailsMap = Maps.newHashMap();
+		detailsMap.put("sceneType", sceneType);
+		detailsMap.put("scenes", scenes);
+		String details = JSONObject.toJSONString(detailsMap);
+		// 生成Base64编码
+		String detailsBase64 = Base64.encodeString(details);
+		reqBo.setDetails(detailsBase64);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		String url = getUrl()+ "/modules/api/thrid/userReplenishQuota.htm";
+
+		String reqResult = requestProxy.post(url, reqBo);
+		logThird(reqResult, "userSupplementQuota", reqBo);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_AMOUNT_ERROR);
+		}
+
+		RiskQuotaRespBo riskResp = null;
+		try {
+			riskResp = JSON.parseObject(reqResult, RiskQuotaRespBo.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FanbeiException(FanbeiExceptionCode.RISK_RESPONSE_DATA_ERROR);
+		}
+		return riskResp;
+	}
+
 	private Boolean bankIsMaintaining(AfResourceDo assetPushResource) {
 		Boolean bankIsMaintaining=false;
 		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
@@ -3907,5 +3954,16 @@ public class RiskUtil extends AbstractThird {
 
 		}
 		return bankIsMaintaining;
+	}
+
+	private AfBorrowPushDo buildBorrowPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfBorrowPushDo borrowPush =new AfBorrowPushDo();
+		Date now = new Date();
+		borrowPush.setGmtCreate(now);
+		borrowPush.setGmtModified(now);
+		borrowPush.setBorrowId(rid);
+		borrowPush.setBorrowRate(apr);
+		borrowPush.setProfitRate(manageFee);
+		return borrowPush;
 	}
 }

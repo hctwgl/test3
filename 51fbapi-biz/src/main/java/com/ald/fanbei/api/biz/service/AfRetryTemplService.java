@@ -21,4 +21,6 @@ public interface AfRetryTemplService extends ParentService<AfRetryTemplDo, Long>
 
 	List<AfRetryTemplDo> getByBusId(String busId);
 
+	AfRetryTemplDo getCurPushDebt(String busId, String eventType);
+
 }

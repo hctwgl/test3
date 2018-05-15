@@ -56,4 +56,6 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 */
 	List<EdspayGetCreditRespBo> getBorrowBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo, BigDecimal money,Date startTime, Date endTime);
 
+	List<EdspayGetCreditRespBo> getLoanBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo, BigDecimal money,Date startTime, Date endTime);
+
 }

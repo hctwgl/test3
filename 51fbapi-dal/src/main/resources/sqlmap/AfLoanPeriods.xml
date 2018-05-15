@@ -416,4 +416,14 @@
         ORDER BY nper ASC
         LIMIT 1
     </select>
+    
+    <select id="getAllLoanPeriodsByLoanId" resultType="AfLoanPeriodsDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_loan_periods
+		WHERE is_delete = 0
+		AND loan_id = #{loanId}
+		ORDER BY nper ASC
+	</select>
 </mapper>
