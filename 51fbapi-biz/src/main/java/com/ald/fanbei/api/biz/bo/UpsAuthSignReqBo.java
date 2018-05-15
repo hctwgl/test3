@@ -30,6 +30,7 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
+		this.put("cardType", cardType);
 	}
 
 	public String getCvv2() {
@@ -38,6 +39,7 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 
 	public void setCvv2(String cvv2) {
 		this.cvv2 = cvv2;
+		this.put("cvv2", cvv2);
 	}
 
 	public String getValidDate() {
@@ -46,6 +48,7 @@ public class UpsAuthSignReqBo extends UpsReqBo{
 
 	public void setValidDate(String validDate) {
 		this.validDate = validDate;
+		this.put("validDate", validDate);
 	}
 
 	public String getBankCode() {
