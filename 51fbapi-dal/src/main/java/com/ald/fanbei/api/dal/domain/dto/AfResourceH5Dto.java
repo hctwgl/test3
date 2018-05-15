@@ -4,185 +4,62 @@ import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfResourceH5Do;
-
+import lombok.Getter;
+import lombok.Setter;
 
 
 /**
  * @author Jingru
  * @version 创建时间：2018年3月21日 下午5:39:58
  */
+@Setter
+@Getter
 public class AfResourceH5Dto extends AfResourceH5Do{
 
 private static final long serialVersionUID = -9058221367468975525L;
 
-private Long id;
+	private List itemList;
 
-private Date gmtCreate;
-
-private Date gmtModified;
-
-private String creator;
-
-private String modifier;
-
-private String name;
-
-private String url;
-
-private Long status;
-private Long sort;
-
-/**
- * @return the id
- */
-public Long getId() {
-	return id;
-}
-
-/**
- * @param id the id to set
- */
-public void setId(Long id) {
-	this.id = id;
-}
-
-/**
- * @return the gmtCreate
- */
-public Date getGmtCreate() {
-	return gmtCreate;
-}
-
-/**
- * @param gmtCreate the gmtCreate to set
- */
-public void setGmtCreate(Date gmtCreate) {
-	this.gmtCreate = gmtCreate;
-}
-
-/**
- * @return the gmtModified
- */
-public Date getGmtModified() {
-	return gmtModified;
-}
-
-/**
- * @param gmtModified the gmtModified to set
- */
-public void setGmtModified(Date gmtModified) {
-	this.gmtModified = gmtModified;
-}
-
-/**
- * @return the creator
- */
-public String getCreator() {
-	return creator;
-}
-
-/**
- * @param creator the creator to set
- */
-public void setCreator(String creator) {
-	this.creator = creator;
-}
-
-/**
- * @return the modifier
- */
-public String getModifier() {
-	return modifier;
-}
-
-/**
- * @param modifier the modifier to set
- */
-public void setModifier(String modifier) {
-	this.modifier = modifier;
-}
-
-/**
- * @return the name
- */
-public String getName() {
-	return name;
-}
-
-/**
- * @param name the name to set
- */
-public void setName(String name) {
-	this.name = name;
-}
+	/**
+	 * 主键Id
+	 */
+	private Long rid;
 
 
-/**
- * @return the url
- */
-public String getUrl() {
-	return url;
-}
+	/**
+	 * 创建时间
+	 */
+	private Date gmtCreate;
 
-/**
- * @param url the url to set
- */
-public void setUrl(String url) {
-	this.url = url;
-}
+	/**
+	 * 最后修改时间
+	 */
+	private Date gmtModified;
 
+	/**
+	 * 创建者
+	 */
+	private String creator;
 
-/**
- * @return the status
- */
-public Long getStatus() {
-	return status;
-}
+	/**
+	 * 最后修改者
+	 */
+	private String modifier;
 
-/**
- * @param status the status to set
- */
-public void setStatus(Long status) {
-	this.status = status;
-}
+	/**
+	 * 模板名称, H5页面名称
+	 */
+	private String name;
 
-/**
- * 
- */
-public AfResourceH5Dto() {
-	super();
-	// TODO Auto-generated constructor stub
-}
+	/**
+	 * 排序
+	 */
+	private Integer sort;
+	/**
+	 * 启用状态 0启用 1关闭
+	 */
+	private Long status;
+	private String tag;
 
-/**
- * @param id
- * @param gmtCreate
- * @param gmtModified
- * @param creator
- * @param modifier
- * @param name
- * @param url
- * @param status
- * @param sort
- */
-public AfResourceH5Dto(Long id, Date gmtCreate, Date gmtModified,
-		String creator, String modifier, String name, String url,
-		Long status, Long sort) {
-	super();
-	this.id = id;
-	this.gmtCreate = gmtCreate;
-	this.gmtModified = gmtModified;
-	this.creator = creator;
-	this.modifier = modifier;
-	this.name = name;
-	this.url = url;
-	this.status = status;
-	this.sort = sort;
-}
-
-public void setItemList(List<AfResourceH5ItemDto> itemList) {
-	// TODO Auto-generated method stub
-	
-}
 
 }

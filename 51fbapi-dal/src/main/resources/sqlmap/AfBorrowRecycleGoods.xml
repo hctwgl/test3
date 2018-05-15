@@ -49,7 +49,7 @@
         is_delete = 0
         and status = 'OPEN'
         ORDER BY
-        gmt_create DESC
+        gmt_create
     </select>
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowRecycleGoodsDo" keyProperty="rid">

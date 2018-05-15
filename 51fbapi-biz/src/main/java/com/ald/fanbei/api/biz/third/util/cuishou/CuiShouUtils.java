@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.third.util.cuishou;
 
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedRepaymentPlan;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleRepaymentServiceImpl;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -14,6 +17,7 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +25,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -74,14 +80,27 @@ public class CuiShouUtils {
 
     @Resource
     AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
-
     @Resource
     private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+    
+    @Resource
+    AfAssetPackageDetailDao afAssetPackageDetailDao;
+    @Resource
+    AfRetryTemplService afRetryTemplService;
+    @Resource
+    AfLoanPeriodsService afLoanPeriodsService;
+    @Resource
+    AssetSideEdspayUtil assetSideEdspayUtil;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfCommitRecordService afCommitRecordService;
 
     @Resource
     private AfBorrowRecycleRepaymentServiceImpl afBorrowRecycleRepaymentService;
 
-    AfBorrowRecycleService afBorrowRecycleService;
+    @Resource
+    private AfBorrowRecycleService afBorrowRecycleService;
 
     /**
      * 线下还款
@@ -624,8 +643,7 @@ public class CuiShouUtils {
      * @param sign
      * @return
      */
-    public String
-    finishBorrow(String data, String sign) {
+    public String finishBorrow(String data, String sign) {
         try {
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
@@ -670,6 +688,7 @@ public class CuiShouUtils {
                 return JSONObject.toJSONString(cuiShouBackMoney);
             } else if (type.equals("BORROW_CASH")) {
                 Long borrowId = jsonObject.getLong("ref_id");
+                AfBorrowCashDo borrowCashExist = afBorrowCashService.getBorrowCashByrid(borrowId);
                 thirdLog.info("direct finish borrow cash "+borrowId);
                 AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
@@ -679,6 +698,22 @@ public class CuiShouUtils {
                 afBorrowCashDo.setSumRebate(null);
                 afBorrowCashDo.setSumJfb(null);
                 afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
+                try {
+        			boolean isBefore = DateUtil.isBefore(new Date(), DateUtil.addDays(borrowCashExist.getGmtPlanRepayment(), -1));
+        			if (isBefore) {
+        				if (assetSideEdspayUtil.isPush(borrowCashExist)) {
+        					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(borrowCashExist,1);
+        					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+        					if (result) {
+        						thirdLog.info("trans modified loan Info success,loanId="+borrowCashExist.getRid());
+        					}else{
+        						assetSideEdspayUtil.transFailRecord(borrowCashExist, modifiedLoanInfo);
+        					}
+        				}
+        			}
+        		} catch (Exception e) {
+        			thirdLog.error("preFinishNotifyEds error="+e);
+        		}
 
                 Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
@@ -711,6 +746,23 @@ public class CuiShouUtils {
                     loanDo.setRid(periodsDo.getLoanId());
                     loanDo.setStatus(AfLoanStatus.FINISHED.name());
                     loanDao.updateById(loanDo);
+                    try {
+                    	boolean isBefore = DateUtil.isBefore(new Date(), periodsDo.getGmtPlanRepay());
+                    	if (isBefore) {
+                    		if (assetSideEdspayUtil.isPush(loanDo)) {
+                    			List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanDo,1);
+                    			boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+                    			if (result) {
+                    				thirdLog.info("trans modified loan Info success,loanId="+loanDo.getRid());
+                    			}else{
+                    				assetSideEdspayUtil.transFailRecord(loanDo, modifiedLoanInfo);
+                    			}
+                    		}
+                    	}
+					} catch (Exception e) {
+						thirdLog.error("preFinishNotifyEds error="+e);
+					}
+                    
                 }
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
@@ -736,6 +788,58 @@ public class CuiShouUtils {
 
         }
     }
+
+
+	private void transFailRecord(AfLoanDo loanDo,List<ModifiedBorrowInfoVo> modifiedLoanInfo) {
+		thirdLog.error("trans modified loan Info fail,loanId ="+loanDo.getRid());
+		Date cur = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		String commitTime = sdf.format(cur);
+		AfCommitRecordDo afCommitRecordDo = new AfCommitRecordDo();
+		afCommitRecordDo.setGmtCreate(cur);
+		afCommitRecordDo.setGmtModified(cur);
+		afCommitRecordDo.setType(AfRepeatAssetSideType.REFUND_ASSETSIDE.getCode());
+		afCommitRecordDo.setRelate_id(loanDo.getRid()+"");
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), Constants.ASSET_SIDE_EDSPAY_FLAG);
+		String borrowJson = "";
+		if (modifiedLoanInfo == null || modifiedLoanInfo.isEmpty()) {
+			borrowJson = JSON.toJSONString("");
+		}else{
+			borrowJson = JSON.toJSONString(modifiedLoanInfo);
+		}
+		afCommitRecordDo.setContent(borrowJson);
+		afCommitRecordDo.setUrl(afResourceDo.getValue1()+"/p2p/fanbei/debtOrderInfoPush");
+		afCommitRecordDo.setCommit_time(commitTime);
+		afCommitRecordDo.setCommit_num(1);
+		afCommitRecordService.addRecord(afCommitRecordDo);
+	}
+
+
+	private List<ModifiedBorrowInfoVo> buildModifiedLoanInfo(AfLoanDo loanDo) {
+		List<ModifiedBorrowInfoVo> modifiedDebtList= new ArrayList<ModifiedBorrowInfoVo>();
+		 ModifiedBorrowInfoVo modifiedDebt = new ModifiedBorrowInfoVo();
+		 modifiedDebt.setUserId(loanDo.getUserId());
+		 modifiedDebt.setOrderNo(loanDo.getLoanNo());
+		 modifiedDebt.setIsPeriod(1);
+		 List<ModifiedRepaymentPlan> repaymentPlanList=new ArrayList<ModifiedRepaymentPlan>();
+		 List<AfLoanPeriodsDo> loanPeriodsList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
+		 for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriodsList) {
+			 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
+			 modifiedRepaymentPlan.setRepaymentNo(afLoanPeriodsDo.getRid()+"");
+			 modifiedRepaymentPlan.setRepaymentAmount(afLoanPeriodsDo.getAmount());
+			 modifiedRepaymentPlan.setRepaymentInterest(afLoanPeriodsDo.getInterestFee());
+			 modifiedRepaymentPlan.setRepaymentStatus(1);
+			 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
+			 modifiedRepaymentPlan.setIsOverdue(0);
+			 modifiedRepaymentPlan.setIsPrepayment(1);
+			 modifiedRepaymentPlan.setRepaymentPeriod(afLoanPeriodsDo.getNper());
+			 repaymentPlanList.add(modifiedRepaymentPlan);
+		}
+		modifiedDebt.setRepaymentPlans(repaymentPlanList);
+		modifiedDebtList.add(modifiedDebt);
+		return modifiedDebtList;
+	}
+
 
     private Boolean checkHasNoPayBill(List<AfBorrowBillDo> list) {
         if (list == null) {

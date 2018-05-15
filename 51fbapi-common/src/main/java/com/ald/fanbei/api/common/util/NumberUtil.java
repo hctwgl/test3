@@ -548,5 +548,18 @@ public class NumberUtil {
         String s = number2CNMontrayUnit(numberOfMoney);
         System.out.println("你输入的金额为：【"+ money +"】   #--# [" +s.toString()+"]");
 	}
+    
+    /**
+     * 方法说明: 判断输入的数值是否为空
+     * @param num
+     * @return
+     */
+    public static boolean isNull(BigDecimal num){
+    	if(num==null){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
 
 }

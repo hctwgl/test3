@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.impl.AfResourceServiceImpl.BorrowLegalCfgBean;
@@ -54,6 +55,8 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfBorrowRecycleService afBorrowRecycleService;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -107,6 +110,12 @@ public class AfBorrowLegalServiceImpl extends ParentServiceImpl<AfBorrowCashDo, 
 
 	private void dealBorrow(BorrowLegalHomeInfoBo bo, AfUserAccountDo userAccount, AfBorrowCashDo lastBorrowCash) {
 		if(lastBorrowCash == null) {
+			bo.hasBorrow = false;
+			return;
+		}
+		
+		// 屏蔽回收借款 20180511 By ZJF
+		if(afBorrowRecycleService.isRecycleBorrow(lastBorrowCash.getRid())) {
 			bo.hasBorrow = false;
 			return;
 		}

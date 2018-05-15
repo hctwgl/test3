@@ -10,7 +10,7 @@
     
     <select id="selectByStatus" resultType="AfResourceH5Dto">
         SELECT
-          id id,gmt_create,gmt_modified,creator,modifier,name,status,sort
+          id rid,gmt_create,gmt_modified,creator,modifier,name,status,sort
         FROM
           af_resource_h5
         where is_delete = 0 AND status = 0

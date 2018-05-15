@@ -116,7 +116,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);// 获取主卡信息
 		
-		applyLegalBorrowCashService.checkBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
+		applyLegalBorrowCashService.checkRecycleBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
 		
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
 		try {
@@ -147,7 +147,7 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 						|| afResourceService.getBorrowCashWhiteList().contains(context.getUserName()) ) {
 					afBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
 				} else {
-					if (verifyBo.getRejectCode().equals(104) && verifyBo.getResult().equals("30")){
+					if (verifyBo.getRejectCode().equals("104") && verifyBo.getResult().equals("30")){
 						throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
 					}
 					throw new FanbeiException("weak risk direct fail, msg=" + verifyBo.getMsg());
