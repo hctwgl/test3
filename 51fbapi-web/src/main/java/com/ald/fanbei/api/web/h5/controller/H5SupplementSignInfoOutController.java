@@ -15,8 +15,8 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -39,7 +39,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value = "/signReward/")
-public class H5FriendSignInfoOutController extends H5Controller {
+public class H5SupplementSignInfoOutController extends H5Controller {
 
     @Resource
     AfUserService afUserService;
@@ -72,6 +72,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
     @Resource
     AfTaskService afTaskService;
 
+
     /**
      * 朋友帮签
      * @param request
@@ -80,26 +81,29 @@ public class H5FriendSignInfoOutController extends H5Controller {
      */
     @RequestMapping(value = "/friendSign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
+        String resultStr = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc() ).toString();
         try {
             String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
             String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
-            Map<String, Object> data = new HashMap<String, Object>();
             final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
-            final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
-            if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
-                throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
-            }
+            Map<String, Object> data = new HashMap<String, Object>();
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
-                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-                if(!signReward(request,eUserDo.getRid(),rewardAmount)){
-                    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
-                }
+                AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
+                afSignRewardDo.setIsDelete(0);
+                afSignRewardDo.setUserId(rewardUserId);
+                afSignRewardDo.setGmtCreate(new Date());
+                afSignRewardDo.setGmtModified(new Date());
+                afSignRewardDo.setType(3);
+                afSignRewardDo.setStatus(0);
+                afSignRewardDo.setFriendUserId(eUserDo.getRid());
+                afSignRewardDo.setAmount(BigDecimal.ZERO);
+                afSignRewardService.saveRecord(afSignRewardDo);
                 homeInfo(eUserDo.getRid(),data);
-                return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
             if (smsDo == null) {
@@ -160,13 +164,11 @@ public class H5FriendSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
-            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signReward(request,userId,rewardAmount)){
+            if(!signReward(request,userId)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
-            //首页信息
             homeInfo(userId,data);
-            return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
+            return resultStr;
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
@@ -176,10 +178,15 @@ public class H5FriendSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount){
+    private boolean signReward(HttpServletRequest request,final Long userId){
         boolean result ;
         final Integer type = NumberUtil.objToIntDefault(request.getParameter("type"),null);
         final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
+        final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
+        if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
+            throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
+        }
+        final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -456,8 +463,4 @@ public class H5FriendSignInfoOutController extends H5Controller {
         }
         return countDays;
     }
-
-
-
-
 }
