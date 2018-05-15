@@ -849,9 +849,14 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo.getRid());
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
 
-		if(repayAmount.compareTo(loanPeriodsDo.getAmount()) >= 0){	// 针对多期已出账 的部分还款
-			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
-			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+		if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
+			if(repayAmount.compareTo(calculateRestAmount) >= 0){
+				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
+				loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+			}else {
+				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),repayAmount));
+				loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+			}
 		}else{
 			if(loanPeriodsDo.getRepayAmount().compareTo(BigDecimal.ZERO) == 0) {
 				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(),
