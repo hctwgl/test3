@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleRepaymentService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
@@ -150,6 +152,9 @@ public class PayRoutController {
 
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	
+	@Resource
+	AfBorrowRecycleRepaymentService afBorrowRecycleRepaymentService;
 
 	//贷款
 	@Resource
@@ -465,8 +470,20 @@ public class PayRoutController {
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv) || OrderType.LEASE.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+
+
 					if (result <= 0) {
 						return "ERROR";
+					}else {
+						if (OrderType.SELFSUPPORT.getCode().equals(merPriv)){
+							AfOrderDo orderInfo = afOrderService.getOrderInfoByPayOrderNo(outTradeNo);
+							logger.info("bank bkl orderInfo="+JSON.toJSONString(orderInfo));
+							if (orderInfo !=null){
+								//在这里加入电核直接通过代码
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),"H");
+							}
+
+						}
 					}
 				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
 					int result = afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo,
@@ -506,6 +523,8 @@ public class PayRoutController {
 					afRenewalLegalDetailV2Service.dealLegalRenewalSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
 					afLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.BORROW_RECYCLE_REPAY.getCode().equals(merPriv)) { // 回收 取消订单
+					afBorrowRecycleRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
@@ -520,6 +539,16 @@ public class PayRoutController {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
 					if (result <= 0) {
 						return "ERROR";
+					}else {
+						if (OrderType.SELFSUPPORT.getCode().equals(merPriv)){
+							AfOrderDo orderInfo = afOrderService.getOrderInfoByPayOrderNo(outTradeNo);
+							logger.info("bank bkl orderInfo="+JSON.toJSONString(orderInfo));
+							if (orderInfo !=null){
+								//在这里加入电核
+								afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),null);
+							}
+
+						}
 					}
 				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORTCP.getCode().equals(merPriv)
@@ -539,6 +568,8 @@ public class PayRoutController {
 					afRenewalLegalDetailV2Service.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
 					afLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+				} else if (PayOrderSource.BORROW_RECYCLE_REPAY.getCode().equals(merPriv)) { // 回收 取消订单 失败
+					afBorrowRecycleRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				}
 			}
 			return "SUCCESS";

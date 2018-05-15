@@ -8,7 +8,7 @@ public class RiskVerifyRespBo extends RiskRespBo {
 	
 	private boolean isPassWeakRisk;
 	
-	private String result;
+	private String result;//10：成功 20：人审 30：失败
 
 	private String data;
 

@@ -16,6 +16,7 @@ public class newFundNotifyReqBo extends HashMap<String, String>{
 	private String consumerNo;
 	private String details;
 	private String orderNo;
+	private String orderSn;
 	private String signInfo;
 	
 	public String getConsumerNo() {
@@ -46,7 +47,18 @@ public class newFundNotifyReqBo extends HashMap<String, String>{
 		this.orderNo = orderNo;
 		this.put("orderNo", orderNo);
 	}
-	
-	
+	/**
+	 * @return the orderSn
+	 */
+	public String getOrderSn() {
+		return orderSn;
+	}
+	/**
+	 * @param orderSn the orderSn to set
+	 */
+	public void setOrderSn(String orderSn) {
+		this.orderSn = orderSn;
+		this.put("orderSn", orderSn);
+	}
 
 }

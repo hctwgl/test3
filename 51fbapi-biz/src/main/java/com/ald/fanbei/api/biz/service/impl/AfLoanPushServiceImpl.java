@@ -33,8 +33,8 @@ public class AfLoanPushServiceImpl extends ParentServiceImpl<AfLoanPushDo, Long>
 	}
 
 	@Override
-	public void saveOrUpdateLoanPush(AfLoanPushDo loanPushDo) {
-		AfLoanPushDo loanPushTemp = afLoanPushDao.getById(loanPushDo.getRid());
+	public void saveOrUpdate(AfLoanPushDo loanPushDo) {
+		AfLoanPushDo loanPushTemp = afLoanPushDao.getByLoanId(loanPushDo.getLoanId());
 		if (loanPushTemp == null) {
 			afLoanPushDao.saveRecord(loanPushDo);
 		} else {
