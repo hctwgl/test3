@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.WithdrawTypeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -53,16 +54,16 @@ public class GetExtractMoneyApi implements H5Handle {
                 public String doInTransaction(TransactionStatus status) {
                     try{
                         BigDecimal amount = BigDecimal.ZERO;
-                        if(StringUtil.equals("0",withdrawType)){
-                            amount = new BigDecimal(10);
-                        }else if(StringUtil.equals("1",withdrawType)){
-                            amount = new BigDecimal(30);
-                        }else if(StringUtil.equals("2",withdrawType)){
-                            amount = new BigDecimal(50);
-                        }else if(StringUtil.equals("3",withdrawType)){
-                            amount = new BigDecimal(100);
+                        if(StringUtil.equals(WithdrawTypeType.ZERO.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawTypeType.ZERO.getName());
+                        }else if(StringUtil.equals(WithdrawTypeType.ONE.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawTypeType.ONE.getName());
+                        }else if(StringUtil.equals(WithdrawTypeType.TWO.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawTypeType.TWO.getName());
+                        }else if(StringUtil.equals(WithdrawTypeType.THREE.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawTypeType.THREE.getName());
                         }
-                        if(StringUtil.equals("0",withdrawType)){//送10元无门槛优惠券
+                        if(StringUtil.equals(WithdrawTypeType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                             AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
                             afUserCouponDo.setUserId(userId);
                             afUserCouponDo.setCouponId(500l);
