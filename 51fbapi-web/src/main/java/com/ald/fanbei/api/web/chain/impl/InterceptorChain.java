@@ -34,12 +34,6 @@ public class InterceptorChain  implements Chain{
 		}
 	}
 
-	@Override
-	public void execute(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request,HttpServletResponse response) {
-		for(Interceptor interceptor : interceptors) {
-			interceptor.intercept(requestDataVo,context,request,response);
-		}
-	}
 
 	public List<Interceptor> getInterceptors() {
 		return interceptors;

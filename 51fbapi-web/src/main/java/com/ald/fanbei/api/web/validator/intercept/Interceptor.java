@@ -17,5 +17,4 @@ public interface Interceptor {
 	
 	void intercept(Context context);
 
-	void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request, HttpServletResponse response);
 }
