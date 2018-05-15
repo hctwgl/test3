@@ -192,30 +192,8 @@ public class GetOrderDetailInfoApi implements ApiHandle {
 		vo.setCardType(order.getCardType());
 		//实付金额需要加上信用卡手续费
 		vo.setActualAmount(vo.getActualAmount().add(vo.getFeeAmount()));
-		vo.setRefundMsg(getRefundMsg(order));
+		vo.setRefundMsg(afOrderService.getRefundMsg(order));
 		return vo;
-	}
-
-	private String getRefundMsg(AfOrderDo order) {
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("REFUNDSERVICE", "MESSAGE");
-
-		if (PayType.BANK.getCode().equals(order.getPayType())) {
-			if (BankCardType.CREDIT.getCode().equals(order.getCardType())) {
-				return afResourceDo.getValue1();
-			} else if (BankCardType.DEBIT.getCode().equals(order.getCardType())) {
-				return afResourceDo.getValue();
-			}
-		} else if (PayType.COMBINATION_PAY.getCode().equals(order.getPayType())) {
-			if (BankCardType.CREDIT.getCode().equals(order.getCardType())) {
-				return afResourceDo.getValue3();
-			} else if (BankCardType.DEBIT.getCode().equals(order.getCardType())) {
-				return afResourceDo.getValue2();
-			}
-		} else if (PayType.AGENT_PAY.getCode().equals(order.getCardType())) {
-			return StringUtils.isBlank(afResourceDo.getValue4()) ? "" : afResourceDo.getValue4();
-		}
-
-		return "";
 	}
 
 }

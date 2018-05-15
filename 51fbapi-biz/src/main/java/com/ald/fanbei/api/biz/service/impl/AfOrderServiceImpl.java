@@ -3211,4 +3211,27 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		}
 	}
 
+
+	@Override
+	public String getRefundMsg(AfOrderDo order) {
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("REFUNDSERVICE", "MESSAGE");
+
+		if (PayType.BANK.getCode().equals(order.getPayType())) {
+			if (BankCardType.CREDIT.getCode().equals(order.getCardType())) {
+				return afResourceDo.getValue1();
+			} else if (BankCardType.DEBIT.getCode().equals(order.getCardType())) {
+				return afResourceDo.getValue();
+			}
+		} else if (PayType.COMBINATION_PAY.getCode().equals(order.getPayType())) {
+			if (BankCardType.CREDIT.getCode().equals(order.getCardType())) {
+				return afResourceDo.getValue3();
+			} else if (BankCardType.DEBIT.getCode().equals(order.getCardType())) {
+				return afResourceDo.getValue2();
+			}
+		} else if (PayType.AGENT_PAY.getCode().equals(order.getCardType())) {
+			return StringUtils.isBlank(afResourceDo.getValue4()) ? "" : afResourceDo.getValue4();
+		}
+
+		return "";
+	}
 }

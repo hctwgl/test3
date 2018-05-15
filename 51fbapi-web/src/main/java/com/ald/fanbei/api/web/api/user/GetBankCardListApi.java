@@ -49,9 +49,9 @@ public class GetBankCardListApi implements ApiHandle {
 	    throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 	}
 
-	String cardType = requestDataVo.getParams().get("cardType").toString();
+	Object cardType = requestDataVo.getParams().get("cardType");
 
-	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(), cardType);
+	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(), cardType==null?null:cardType.toString());
 
 	resp.addResponseData("bankCardList", list);
 	String bankcardStatus = "N";

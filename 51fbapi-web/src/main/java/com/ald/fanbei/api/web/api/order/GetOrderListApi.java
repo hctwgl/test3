@@ -1,52 +1,31 @@
 package com.ald.fanbei.api.web.api.order;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfShopService;
-import com.ald.fanbei.api.biz.service.AfSupGameService;
-import com.ald.fanbei.api.biz.service.AfSupOrderService;
-import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
-import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
-import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
-import com.ald.fanbei.api.common.enums.OrderSecType;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StatusConvertUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfSupGameDo;
-import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfOrderListVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -228,6 +207,8 @@ public class GetOrderListApi implements ApiHandle{
 				vo.setGoodsName(dto.getName());
 			}
 		}
+
+		vo.setRefundMsg(afOrderService.getRefundMsg(order));
 		return vo;
 	}
 }

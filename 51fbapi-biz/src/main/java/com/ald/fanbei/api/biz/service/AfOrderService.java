@@ -477,4 +477,5 @@ public interface AfOrderService {
 
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
 
+	String getRefundMsg(AfOrderDo order);
 }
