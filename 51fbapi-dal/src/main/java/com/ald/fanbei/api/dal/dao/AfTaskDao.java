@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface AfTaskDao {
 
-    List<AfTaskDto> getTaskListByUserIdAndUserLevel(@Param("userId") Long userId, @Param("userLevel")String userLevel);
+    List<AfTaskDto> getTaskListByUserIdAndUserLevel(@Param("userLevel")String userLevel);
 
     AfTaskDo getTaskByTaskId(@Param("taskId")Long taskId);
 

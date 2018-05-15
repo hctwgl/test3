@@ -261,8 +261,7 @@
         select
           <include refid="taskDto" />
         from af_task
-        WHERE user_id = #{userId}
-        AND user_level in (#{userLevel})
+        WHERE user_level in (#{userLevel})
         ORDER BY gmt_create
     </select>
     

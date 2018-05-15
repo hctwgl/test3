@@ -232,7 +232,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			sb.append("'").append("5").append("',");
 		}
 		sb.deleteCharAt(sb.length()-1);
-		List<AfTaskDto> taskList = afTaskService.getTaskListByUserIdAndUserLevel(context.getUserId(),sb.toString());
+		List<AfTaskDto> taskList = afTaskService.getTaskListByUserIdAndUserLevel(sb.toString());
 
 		for(AfTaskDo afTaskDo : taskList){
 			if(afTaskDo.getIsDailyUpdate().equals("1")){

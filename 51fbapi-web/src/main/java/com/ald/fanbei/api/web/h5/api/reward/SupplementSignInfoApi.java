@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.h5.api.reward;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -14,9 +13,9 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
-import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.H5Handle;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -24,22 +23,20 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
 
 /**
- * 帮签
+ * 补签
  * @author cfp
  * @类描述：签到领金币
  */
 
-@Component("friendSignInfoApi")
-@Validator("friendSignInfoParam")
-public class FriendSignInfoApi implements H5Handle {
+@Component("supplementSignInfoApi")
+@Validator("supplementSignInfoParam")
+public class SupplementSignInfoApi implements H5Handle {
 
     @Resource
     AfSignRewardExtService afSignRewardExtService;
@@ -61,8 +58,6 @@ public class FriendSignInfoApi implements H5Handle {
     AfTaskUserService afTaskUserService;
     @Resource
     AfOrderService afOrderService;
-    @Resource
-    NumberWordFormat numberWordFormat;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -89,12 +84,9 @@ public class FriendSignInfoApi implements H5Handle {
             afSignRewardDo.setUserId(userId);
             afSignRewardDo.setGmtCreate(new Date());
             afSignRewardDo.setGmtModified(new Date());
-            afSignRewardDo.setType(1);
+            afSignRewardDo.setType(3);
             afSignRewardDo.setStatus(0);
             afSignRewardDo.setFriendUserId(afUserDo.getRid());
-            if(friendSign(afSignRewardDo,userId,afUserDo.getRid(),resp)){
-                return  new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
-            }
             resp.addResponseData("openType","1");
         }else {//未绑定
             resp.addResponseData("openType","2");
@@ -102,49 +94,7 @@ public class FriendSignInfoApi implements H5Handle {
         return resp;
     }
 
-    private boolean friendSign(AfSignRewardDo afSignRewardDo,final Long userId, final Long friendUserId,H5HandleResponse resp){
-        boolean result;
-        final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
-        if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
-            throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
-        }
-        //帮签次数
-        if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
-            throw new FanbeiException("friend user sign exist", FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
-        }
-        int count = afSignRewardService.frienddUserSignCount(userId,friendUserId);
-        BigDecimal rewardAmount ;
-        if(count<1){//第一次帮签
-            rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
-        }else{//多次帮签
-            rewardAmount = randomNum(afResourceDo.getPic2(),afResourceDo.getPic1());
-        }
-        final BigDecimal resultAmount = rewardAmount;
-        resp.addResponseData("rewardAmount",rewardAmount);
-        afSignRewardDo.setAmount(resultAmount);
-        final AfSignRewardDo signRewardDo = afSignRewardDo;
-        String status = transactionTemplate.execute(new TransactionCallback<String>() {
-            @Override
-            public String doInTransaction(TransactionStatus status) {
-                try{
-                    AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
-                    afSignRewardService.saveRecord(signRewardDo);
-                    afSignRewardExtDo.setAmount(resultAmount);
-                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                    return "success";
-                }catch (Exception e){
-                    status.setRollbackOnly();
-                    return "fail";
-                }
-            }
-        });
-        if(StringUtil.equals(status,"success")){
-            result =true;
-        }else {
-            result =false;
-        }
-        return result;
-    }
+
 
 
     private H5HandleResponse homeInfo (Long userId,H5HandleResponse resp){
@@ -383,16 +333,6 @@ public class FriendSignInfoApi implements H5Handle {
         return flag;
     }
 
-    /**
-     * 随机获取min 与 max 之间的值
-     * @param min
-     * @param max
-     * @return
-     */
-    private BigDecimal randomNum(String min,String max){
-        BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(max) - Double.parseDouble(min)) + min).setScale(2, RoundingMode.HALF_EVEN);
-        return rewardAmount;
 
-    }
 
 }

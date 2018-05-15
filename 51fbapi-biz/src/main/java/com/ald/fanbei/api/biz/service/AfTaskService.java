@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface AfTaskService {
 
-    List<AfTaskDto> getTaskListByUserIdAndUserLevel(Long userId, String userLevel);
+    List<AfTaskDto> getTaskListByUserIdAndUserLevel(String userLevel);
 
     AfTaskDo getTaskByTaskId(Long taskId);
 
