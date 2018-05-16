@@ -336,6 +336,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		result.put("id", theOpening.getRid().toString());
 		result.put("amount", theOpening.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
 		result.put("withdrawLimitAmount", redPacketConfig.getString("thresholdAmount"));
+		BigDecimal restAmount = calcWithdrawRestAmount(theOpening, new BigDecimal(redPacketConfig.getString("thresholdAmount")));
+		result.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
 		result.put("gmtOverdue",
 				DateUtil.formatDateTime(DateUtil.addHoures(theOpening.getGmtCreate(), overdueIntervalHour)));
 		result.put("isCanGainOne", isCanGainOne(theOpening.getRid(), redPacketConfig.getInteger("shareTime"))
