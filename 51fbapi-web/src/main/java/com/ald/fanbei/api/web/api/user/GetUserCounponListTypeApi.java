@@ -74,6 +74,11 @@ public class GetUserCounponListTypeApi implements ApiHandle {
 		couponVo.setName(afUserCouponDto.getName());
 		couponVo.setStatus(afUserCouponDto.getStatus());
 		couponVo.setUseRule(afUserCouponDto.getUseRule());
+		if(StringUtil.isNotBlank(afUserCouponDto.getType())){
+			if(StringUtil.equals("LOAN",afUserCouponDto.getType())||StringUtil.equals("BORROWCASH",afUserCouponDto.getType())){
+				afUserCouponDto.setType("REPAYMENT");
+			}
+		}
 		couponVo.setType(afUserCouponDto.getType());
 		couponVo.setUseRange(afUserCouponDto.getUseRange());
 		return couponVo;
