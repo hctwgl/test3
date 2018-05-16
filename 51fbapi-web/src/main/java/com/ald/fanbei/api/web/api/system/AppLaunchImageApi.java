@@ -82,7 +82,7 @@ public class AppLaunchImageApi implements ApiHandle{
 			logger.error("appLaunchImageApi activeOperate error",e);
 		}
 		//头条激活处理
-		//ToutiaoAdOpen(requestDataVo,context);
+		ToutiaoAdOpen(requestDataVo,context);
 	/*	try {
 			//畅效广告平台回调处理
 			ChangXiaoAdOpen(requestDataVo, context);
