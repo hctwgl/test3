@@ -259,7 +259,7 @@
 
     <select id="getTaskListByUserIdAndUserLevel" resultType="AfTaskDto">
         select
-          <include refid="queryFields" />
+          <include refid="taskDto" />
         from af_task
         WHERE user_level in (#{userLevel})
         ORDER BY gmt_create
