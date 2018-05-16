@@ -60,44 +60,16 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			resp.addResponseData("rewardRule","");
 		}
 		Long userId = context.getUserId();
-		AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
-		if(null == afSignRewardExtDo){
-			//新增SignRewardExt
-			afSignRewardExtDo.setIsOpenRemind(0);
-			afSignRewardExtDo.setUserId(userId);
-			afSignRewardExtDo.setGmtModified(new Date());
-			afSignRewardExtDo.setGmtCreate(new Date());
-			afSignRewardExtDo.setAmount(BigDecimal.ZERO);
-			afSignRewardExtDo.setCycleDays(10);
-			afSignRewardExtDo.setFirstDayParticipation(null);
-			afSignRewardExtService.saveRecord(afSignRewardExtDo);
-			//签到提醒
-			resp.addResponseData("isOpenRemind","N");
-			//是否有余额
-			resp.addResponseData("rewardAmount",BigDecimal.ZERO);
-			//是否有补签
-			resp.addResponseData("supplementSignDays",0);
-		}else if(null != afSignRewardExtDo){
-			//签到提醒
-			resp.addResponseData("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
-			//是否有余额
-			resp.addResponseData("rewardAmount",afSignRewardExtDo.getAmount());
-			//是否有补签
-			int count = afSignRewardService.supplementSign(afSignRewardExtDo,0);
-			resp.addResponseData("supplementSignDays",count);
-		}
+		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId);
+		resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
+		resp.addResponseData("rewardAmount",map.get("rewardAmount"));
+		resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
 
 		//banner
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		List<Object> rewardBannerList = new ArrayList<Object>();
 		String homeBanner = AfResourceType.RewardHomeBanner.getCode();
 		// 正式环境和预发布环境区分
-		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-			rewardBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(homeBanner));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
-			rewardBannerList = getObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
-		}
-		resp.addResponseData("rewardBannerList",rewardBannerList);
+		resp.addResponseData("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
 
 		//今天是否签到
 		resp.addResponseData("rewardStatus",afSignRewardService.isExist(userId)==false?"N":"Y");
@@ -110,18 +82,5 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	}
 
 
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
-		List<Object> bannerList = new ArrayList<Object>();
-		for (AfResourceDo afResourceDo : bannerResclist) {
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("imageUrl", afResourceDo.getValue());
-			data.put("titleName", afResourceDo.getName());
-			data.put("type", afResourceDo.getSecType());
-			data.put("content", afResourceDo.getValue2());
-			data.put("sort", afResourceDo.getSort());
-			bannerList.add(data);
-		}
-		return bannerList;
-	}
 
 }

@@ -97,7 +97,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
             endTime = calendar.getTime();
             if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
                 flag = false;
-                int count = afSignRewardService.sumSignDays(afSignRewardExtDo.getUserId(),startTime);
+                int count = sumSignDays(afSignRewardExtDo.getUserId(),startTime);
                 Long days = DateUtil.getNumberOfDatesBetween(startTime,new Date());
                 if(days.intValue()>=count){
                     countDays = days.intValue()-count;

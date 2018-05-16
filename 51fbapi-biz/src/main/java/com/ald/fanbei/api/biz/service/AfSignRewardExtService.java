@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 分类运营位配置Service
@@ -23,6 +24,8 @@ public interface AfSignRewardExtService {
     int increaseMoney(AfSignRewardExtDo afSignRewardExtDo);
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
+
+    Map<String,Object> getHomeInfo(Long userId);
 
 
 }

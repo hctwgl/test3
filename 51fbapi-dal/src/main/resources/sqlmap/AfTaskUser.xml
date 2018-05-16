@@ -196,6 +196,9 @@
             <if test="couponId != null and couponId != '' ">
                 coupon_id = #{couponId,jdbcType=INTEGER}
             </if>
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=INTEGER}
+            </if>
         </set>
         WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}
         AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
@@ -215,6 +218,9 @@
             </if>
             <if test="couponId != null and couponId != '' ">
                 coupon_id = #{couponId,jdbcType=INTEGER}
+            </if>
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=INTEGER}
             </if>
         </set>
         WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}

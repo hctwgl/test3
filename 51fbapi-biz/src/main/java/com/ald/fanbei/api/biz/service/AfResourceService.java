@@ -316,4 +316,6 @@ public interface AfResourceService {
 	List<String> getBorrowCashWhiteList();
 
 	Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag,String secType);
+
+	List<Object> rewardBannerList(String type,String homeBanner);
 }
