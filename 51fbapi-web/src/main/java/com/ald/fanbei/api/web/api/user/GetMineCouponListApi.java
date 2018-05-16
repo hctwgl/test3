@@ -75,6 +75,9 @@ public class GetMineCouponListApi implements ApiHandle{
         List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
         List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
         for (AfUserCouponDto afUserCouponDto : couponList) {
+        	if(StringUtil.isNotBlank(afUserCouponDto.getType())&&StringUtil.equals("DISCOUNT",afUserCouponDto.getType())){
+        		continue;
+			}
         	AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
         	Date gmtEnd = couponVo.getGmtEnd();
         	// 如果当前时间离到期时间小于48小时,则显示即将过期
