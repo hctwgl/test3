@@ -61,12 +61,6 @@ public class H5FriendSignInfoOutController extends H5Controller {
     @Resource
     AfSignRewardExtService afSignRewardExtService;
     @Resource
-    AfUserAuthStatusService afUserAuthStatusService;
-    @Resource
-    AfOrderService afOrderService;
-    @Resource
-    AfTaskUserService afTaskUserService;
-    @Resource
     AfUserAuthService afUserAuthService;
     @Resource
     AfTaskService afTaskService;
