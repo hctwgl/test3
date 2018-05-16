@@ -61,9 +61,6 @@ public class AfTaskServiceImpl  implements AfTaskService {
 	public List<AfTaskDto> getTaskListByUserIdAndUserLevel( String userLevel){
 		return afTaskDao.getTaskListByUserIdAndUserLevel(userLevel);
 	}
-    public List<AfTaskDto> getTaskListByUserIdAndUserLevel(Long userId, String userLevel) {
-        return afTaskDao.getTaskListByUserIdAndUserLevel(userId, userLevel);
-    }
 
     @Override
     public AfTaskDo getTaskByTaskId(Long taskId) {
