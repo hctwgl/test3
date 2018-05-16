@@ -83,11 +83,9 @@ public class H5FriendSignInfoOutController extends H5Controller {
         try {
             String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
-            String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             Map<String, Object> data = new HashMap<String, Object>();
-            final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
             if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
                 throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
@@ -132,18 +130,12 @@ public class H5FriendSignInfoOutController extends H5Controller {
             // 更新为已经验证
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
             String salt = UserUtil.getSalt();
-            // modify by luoxiao 避免passwordSrc 为空出现NullPointerException异常
-            String password = "";
-            if(StringUtils.isNotEmpty(passwordSrc)){
-                password = UserUtil.getPassword(passwordSrc, salt);
-            }
-            // end by luoxiao
             AfUserDo userDo = new AfUserDo();
             userDo.setSalt(salt);
             userDo.setUserName(moblie);
             userDo.setMobile(moblie);
             userDo.setNick("");
-            userDo.setPassword(password);
+            userDo.setPassword("");
             userDo.setRecommendId(0l);
             final long userId = afUserService.addUser(userDo);
             //绑定微信的唯一标识open_id
@@ -178,7 +170,6 @@ public class H5FriendSignInfoOutController extends H5Controller {
 
     private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount){
         boolean result ;
-        final Integer type = NumberUtil.objToIntDefault(request.getParameter("type"),null);
         final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
@@ -189,7 +180,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     afSignRewardDo.setUserId(rewardUserId);
                     afSignRewardDo.setGmtCreate(new Date());
                     afSignRewardDo.setGmtModified(new Date());
-                    afSignRewardDo.setType(type);
+                    afSignRewardDo.setType(2);
                     afSignRewardDo.setStatus(0);
                     afSignRewardDo.setFriendUserId(userId);
                     afSignRewardDo.setAmount(rewardAmount);
