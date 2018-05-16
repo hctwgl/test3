@@ -48,7 +48,7 @@ public class GetUserCounponListTypeApi implements ApiHandle {
         }
 
         List<AfUserCouponDto> couponList = new ArrayList<AfUserCouponDto>();
-		if(context.getAppVersion()>=414&& StringUtil.isNotBlank(repaymentType)){
+		if(context.getAppVersion()>=415&& StringUtil.isNotBlank(repaymentType)){
 			couponList = afUserCouponService.getUserCouponByTypeV1(userId, type,repaymentType);
 		}else{
 			couponList = afUserCouponService.getUserCouponByType(userId, type);

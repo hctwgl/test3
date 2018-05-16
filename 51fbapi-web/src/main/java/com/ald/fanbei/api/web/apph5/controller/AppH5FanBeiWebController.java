@@ -1745,6 +1745,12 @@ public class AppH5FanBeiWebController extends BaseController {
 		couponVo.setName(afUserCouponDto.getName());
 		couponVo.setStatus(afUserCouponDto.getStatus());
 		couponVo.setUseRule(afUserCouponDto.getUseRule());
+		if(StringUtil.isNotBlank(afUserCouponDto.getType())){
+			if(StringUtil.equals("LOAN",afUserCouponDto.getType())
+					||StringUtil.equals("BORROWCASH",afUserCouponDto.getType())||StringUtil.equals("BORROWBILL",afUserCouponDto.getType())){
+				afUserCouponDto.setType("REPAYMENT");
+			}
+		}
 		couponVo.setType(afUserCouponDto.getType());
 		couponVo.setUseRange(afUserCouponDto.getUseRange());
 		couponVo.setShopUrl(afUserCouponDto.getShopUrl());
