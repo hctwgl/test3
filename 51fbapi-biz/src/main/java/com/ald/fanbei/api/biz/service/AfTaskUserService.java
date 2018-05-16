@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 
 import java.util.List;
@@ -21,5 +22,13 @@ public interface AfTaskUserService {
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
+    List<AfTaskUserDo> getNotDailyTaskListByUserId(Long userId, String afTaskType);
 
+    List<AfTaskUserDo> getDailyTaskListByUserId(Long userId, String afTaskType);
+
+    int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
+
+    void shoppingTaskHandler(AfOrderDo orderInfo, String afTaskType);
+
+    void taskHandler(Long userId, String afTaskType, String taskCondition);
 }

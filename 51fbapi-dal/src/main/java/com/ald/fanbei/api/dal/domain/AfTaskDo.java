@@ -47,7 +47,7 @@ import java.math.BigDecimal;
     private String iconUrl;
 
     /**
-     * 任务类型
+     * 任务类型：browse:浏览；shopping：购物；share：分享；verified：实名；strong_risk：强风控通过;loan_market_access：借贷超市注册
      */
     private String taskType;
 
@@ -91,6 +91,10 @@ import java.math.BigDecimal;
      */
     private Long couponId;
 
+   /**
+    * 优惠券名称
+    */
+   private String couponName;
 
     /**
      * 是否启用：0：禁用；1：启用
@@ -109,6 +113,14 @@ import java.math.BigDecimal;
      */
     private String modifier;
 
+   /**
+    * 任务有效期：开始时间
+    */
+   private Date taskBeginTime;
 
+   /**
+    * 任务有效期：结束时间
+    */
+   private Date taskEndTime;
 
 }

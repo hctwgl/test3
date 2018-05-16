@@ -14,6 +14,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -43,6 +44,9 @@ public class addRecommendShared implements ApiHandle {
         Map<String, Object> params = requestDataVo.getParams();
         Integer type = Integer.parseInt(ObjectUtils.toString(params.get("type"), "0").toString());
         String uuid = ObjectUtils.toString(params.get("uuid"), "").toString();
+        String source = ObjectUtils.toString(params.get("source"), "").toString();
+        String sourceType= ObjectUtils.toString(params.get("sourceType"), "").toString();
+        String shareUrl = ObjectUtils.toString(params.get("shareUrl"), "").toString();
 
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
@@ -53,6 +57,10 @@ public class addRecommendShared implements ApiHandle {
         if(uuid !=null && !uuid.equals("")){
             afRecommendShareDo.setId(uuid);
         }
+
+        afRecommendShareDo.setSource(StringUtils.isEmpty(source) ? null : source);
+        afRecommendShareDo.setSourceType(StringUtils.isEmpty(sourceType) ? null : Integer.parseInt(sourceType));
+        afRecommendShareDo.setShareUrl(StringUtils.isEmpty(shareUrl) ? null : StringUtils.trim(shareUrl));
 
         //RECOMMEND_SHARED_IMG
         //RECOMMEND_SHARED_TITLE
@@ -75,11 +83,19 @@ public class addRecommendShared implements ApiHandle {
         }
 
 
-
         String url = notifyHost +"/fanbei-web/app/inviteShare?sharedId="+afRecommendShareDo.getId();
 
         HashMap ret = new HashMap();
-        int i= afRecommendUserService.addRecommendShared(afRecommendShareDo);
+        afRecommendUserService.addRecommendShared(afRecommendShareDo);
+
+        try{
+            if(StringUtils.isNotEmpty(shareUrl)){
+
+            }
+        }catch(Exception e){
+
+        }
+
         ret.put("url",url);
         ret.put("title",sharedTitle);
         ret.put("img",sharedImg);

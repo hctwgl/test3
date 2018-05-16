@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,task_id,coin_amount,cash_amount,coupon_id 
+        id rid,gmt_create,gmt_modified,user_id,task_id,coin_amount,cash_amount,coupon_id,status
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -35,10 +35,13 @@
         <if test="couponId != null and couponId != ''">
             AND coupon_id = #{couponId,jdbcType=INTEGER}
         </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
+    <insert id="batchInsertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
@@ -66,31 +69,37 @@
 	        <if test="couponId != null">        
 	            coupon_id,
 	        </if>
+            <if test="status != null">
+                status
+            </if>
         </trim>
-        
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
+        values
+        <foreach collection="taskUserDoList" item='taskUserDo' separator=','>
 		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
+		       #{taskUserDo.gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
+		       #{taskUserDo.gmtModified,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
+		       #{taskUserDo.userId,jdbcType=INTEGER},
 		    </if>
 		    <if test="taskId != null" >
-		       #{taskId,jdbcType=INTEGER},
+		       #{taskUserDo.taskId,jdbcType=INTEGER},
 		    </if>
 		    <if test="coinAmount != null" >
-		       #{coinAmount,jdbcType=INTEGER},
+		       #{taskUserDo.coinAmount,jdbcType=INTEGER},
 		    </if>
 		    <if test="cashAmount != null" >
-		       #{cashAmount,jdbcType=DECIMAL},
+		       #{taskUserDo.cashAmount,jdbcType=DECIMAL},
 		    </if>
 		    <if test="couponId != null" >
-		       #{couponId,jdbcType=INTEGER},
+		       #{taskUserDo.couponId,jdbcType=INTEGER},
 		    </if>
-        </trim>
+            <if test="status != null" >
+                #{taskUserDo.status,jdbcType=INTEGER}
+            </if>
+        </foreach>
     </insert>
     
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
@@ -115,8 +124,11 @@
                 cash_amount = #{cashAmount,jdbcType=DECIMAL},                
             </if>
             <if test="couponId != null and couponId != '' ">        
-                coupon_id = #{couponId,jdbcType=INTEGER}                
+                coupon_id = #{couponId,jdbcType=INTEGER},
             </if>
+              <if test="status != null and status != '' ">
+                  status = #{status,jdbcType=INTEGER}
+              </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
@@ -220,5 +232,29 @@
         WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}
     </update>
 
-    
+    <select id="getNotDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND is_open = 1
+        AND is_daily_update = 0
+        AND user_id = #{userId}
+        AND task_type = #{taskType}
+        ORDER BY gmt_create
+    </select>
+
+    <select id="getDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND is_open = 1
+        AND is_daily_update = 1
+        AND user_id = #{userId}
+        AND task_type = #{taskType}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        ORDER BY gmt_create
+    </select>
+
 </mapper>

@@ -583,5 +583,11 @@ public class Constants {
 
     public static final String BORROW_FINANCE = "borrow";
 
+    public static final String BROWSE = "browse";
+    public static final String SHOPPING = "shopping";
+    public static final String SHARE = "share";
+    public static final String VERIFIED = "verified";
+    public static final String STRONG_RISK = "strong_risk";
+    public static final String LOAN_MARKET_ACCESS = "loan_market_access";
 
 }

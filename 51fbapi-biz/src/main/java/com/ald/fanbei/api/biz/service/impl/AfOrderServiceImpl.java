@@ -22,6 +22,7 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
 import org.apache.commons.collections.CollectionUtils;
@@ -305,6 +306,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 	@Autowired
 	AfOrderCombinationPayService afOrderCombinationPayService;
+
+	@Resource
+	AfTaskService afTaskService;
+
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Resource
 	AfBklService afBklService;
@@ -1271,6 +1278,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
 					// end by luoxiao
+
+					// add by luoxiao for 边逛边赚,满足任务就给与奖励
+					afTaskUserService.shoppingTaskHandler(orderInfo, AfTaskType.SHOPPING.getCode());
+					// end by luoxiao
 				}
 				return riskReturnMap;
 			}
@@ -1842,6 +1853,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 		}
+		// end by luoxiao
+
+		// add by luoxiao for 边逛边赚,满足任务就给与奖励
+		afTaskUserService.shoppingTaskHandler(orderInfo, AfTaskType.SHOPPING.getCode());
 		// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger
@@ -3256,5 +3271,4 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	public int getFinishOrderCount(Long userId){
 		return orderDao.getFinishOrderCount(userId);
 	}
-
 }

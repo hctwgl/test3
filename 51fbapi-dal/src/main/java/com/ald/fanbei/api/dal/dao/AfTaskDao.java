@@ -20,4 +20,6 @@ public interface AfTaskDao {
 
     AfTaskDo getTaskByTaskId(@Param("taskId")Long taskId);
 
+    List<AfTaskDto> getTaskListByTaskTypeAndUserLevel(@Param("taskType") String taskType, @Param("userLevelList") List<Integer> userLevelList, @Param("taskContition") String taskContition);
+
 }

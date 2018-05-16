@@ -13,6 +13,21 @@ public class AfRecommendShareDo {
      */
     private int type;
 
+    /**
+     * 分享来源
+     */
+    private String source;
+
+    /**
+     * 分享来源类型
+     */
+    private Integer sourceType;
+
+    /**
+     * 分享链接内容
+     */
+    private String shareUrl;
+
     public String getId() {
         return id;
     }
@@ -51,5 +66,29 @@ public class AfRecommendShareDo {
 
     public void setRecommend_code(String recommend_code) {
         this.recommend_code = recommend_code;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Integer getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(Integer sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
     }
 }

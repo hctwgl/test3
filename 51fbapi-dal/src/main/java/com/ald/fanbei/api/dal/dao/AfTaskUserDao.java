@@ -23,4 +23,10 @@ public interface AfTaskUserDao  {
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
+    List<AfTaskUserDo> getNotDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
+
+    List<AfTaskUserDo> getDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
+
+    int batchInsertTaskUserDo(@Param("taskUserDoList") List<AfTaskUserDo> taskUserDoList);
+
 }

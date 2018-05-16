@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 
 import java.util.List;
@@ -19,4 +20,18 @@ public interface AfTaskService {
 
     AfTaskDo getTaskByTaskId(Long taskId);
 
+    /**
+     * 根据用户ID获取用户层级
+     * @param userId
+     * @return
+     */
+    List<Integer> getUserLevelByUserId(Long userId);
+
+    /**
+     * 根据任务类型与用户层级获取任务集合
+     * @param taskType
+     * @param userLevelList
+     * @return
+     */
+    List<AfTaskDto> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
 }

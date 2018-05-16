@@ -56,6 +56,11 @@ import java.math.BigDecimal;
      */
     private Long couponId;
 
+    /**
+     * 任务奖励领取状态
+     */
+    private Integer status;
+
 
     /**
      * 获取主键Id
@@ -201,4 +206,11 @@ import java.math.BigDecimal;
       this.couponId = couponId;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }
