@@ -109,6 +109,12 @@ import java.math.BigDecimal;
      */
     private String modifier;
 
+    private String couponName;
+
+    private Date taskBeginTime;
+
+    private Date taskEndTime;
+
 
 
 }

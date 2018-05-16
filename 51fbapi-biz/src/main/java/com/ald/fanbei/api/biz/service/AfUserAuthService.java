@@ -111,4 +111,11 @@ public interface AfUserAuthService {
 	 * @param dataObj
 	 */
 	void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj);
+
+	/**
+	 * 签到领金币 获取用户层级
+	 * @param userId
+	 * @return
+	 */
+	String signRewardUserLevel(Long userId);
 }

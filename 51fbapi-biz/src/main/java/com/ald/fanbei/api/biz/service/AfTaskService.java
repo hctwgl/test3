@@ -19,4 +19,6 @@ public interface AfTaskService {
 
     AfTaskDo getTaskByTaskId(Long taskId);
 
+    List<AfTaskDto> getTaskInfo(String level, Long userId);
+
 }

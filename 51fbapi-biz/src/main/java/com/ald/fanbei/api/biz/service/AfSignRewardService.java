@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 
 import java.util.Date;
@@ -32,5 +33,7 @@ public interface AfSignRewardService {
     int frienddUserSignCount(Long userId,Long friendUserId);
 
     boolean frienddUserSignCountToDay(Long userId,Long friendUserId);
+
+    int supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num);
 
 }

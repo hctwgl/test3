@@ -24,4 +24,5 @@ public interface AfSignRewardExtService {
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
 
+
 }
