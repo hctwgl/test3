@@ -555,9 +555,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setProductName(productName);
 		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));		
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPay", reqBo);

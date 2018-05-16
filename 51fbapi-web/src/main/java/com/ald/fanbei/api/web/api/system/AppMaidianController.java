@@ -40,7 +40,7 @@ public class AppMaidianController{
             //logger.info("fanbei-app postMaidianInfo:"+appMaidianDto.toString()+", request:" + request.toString());
 
             String maidianInfo = ObjectUtils.toString(appMaidianDto.getMaidianInfo(), "").toString();
-            String maidianInfo1 = ObjectUtils.toString(request.getHeader("appVersion"), "").toString();
+            String maidianInfo1 = ObjectUtils.toString(request.getHeader("platform"), "").toString();
             String maidianInfo2 = ObjectUtils.toString(appMaidianDto.getMaidianInfo2(), "").toString();
             String maidianInfo3 = ObjectUtils.toString(appMaidianDto.getMaidianInfo3(), "").toString();
 

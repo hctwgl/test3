@@ -31,6 +31,7 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 
 	public void setCvv2(String cvv2) {
 		this.cvv2 = cvv2;
+		this.put("cvv2", cvv2);
 	}
 
 	public String getValidDate() {
@@ -39,6 +40,7 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 
 	public void setValidDate(String validDate) {
 		this.validDate = validDate;
+		this.put("validDate", validDate);
 	}
 
 	public String getAmount() {
