@@ -383,7 +383,7 @@ public class LoginApi implements ApiHandle {
 	/**
 	 * 用于获取一个String的md5值
 	 * 
-	 * @param string
+	 * @param str
 	 * @return
 	 */
 	public static String getMd5(String str) throws Exception {
