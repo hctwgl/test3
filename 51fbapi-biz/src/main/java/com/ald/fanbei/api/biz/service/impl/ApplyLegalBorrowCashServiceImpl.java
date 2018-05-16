@@ -360,7 +360,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				|| !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
+				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getRiskStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getBasicStatus(), YesNoStatus.YES.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
 
