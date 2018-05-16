@@ -61,13 +61,10 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	public List<AfRedPacketSelfOpenDto> findOpenRecordList(Long redPacketTotalId) {
 		List<AfRedPacketSelfOpenDto> result = afRedPacketSelfOpenDao.findOpenRecordList(redPacketTotalId);
 		if (CollectionUtil.isNotEmpty(result)) {
-			// 用户有微信头像和昵称，优先使用微信的
-			UserWxInfoDto userWxInfo = afUserThirdInfoService.getUserWxInfo(result.get(0).getUserId());
-			if (userWxInfo != null) {
-				for (AfRedPacketSelfOpenDto e : result) {
-					e.setUserAvatar(userWxInfo.getAvatar());
-					e.setUserNick(userWxInfo.getNick());
-				}
+			UserWxInfoDto userWxInfo = afUserThirdInfoService.getWxOrLocalUserInfo(result.get(0).getUserId());
+			for (AfRedPacketSelfOpenDto e : result) {
+				e.setUserAvatar(userWxInfo.getAvatar());
+				e.setUserNick(userWxInfo.getNick());
 			}
 		}
 		return result;

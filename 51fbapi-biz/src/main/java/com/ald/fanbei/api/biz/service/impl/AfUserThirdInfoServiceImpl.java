@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
 import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserThirdInfoDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -31,6 +32,9 @@ import java.util.List;
 @Service("afUserThirdInfoService")
 public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInfoDo, Long>
 		implements AfUserThirdInfoService {
+
+	// 默认头像
+	private static final String DEFAULT_AVATAR = "https://f.51fanbei.com/h5/app/activity/2018/05/openred_head.png";
 	
     @Autowired
     private AfUserThirdInfoDao afUserThirdInfoDao;
@@ -56,7 +60,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 		if (result == null) {
 			result = new UserWxInfoDto();
 			AfUserDo userDo = afUserService.getUserById(userId);
-			result.setAvatar(userDo.getAvatar());
+			result.setAvatar(StringUtil.isBlank(userDo.getAvatar()) ? DEFAULT_AVATAR : userDo.getAvatar());
 			result.setNick(userDo.getNick());
 		}
 		return result;

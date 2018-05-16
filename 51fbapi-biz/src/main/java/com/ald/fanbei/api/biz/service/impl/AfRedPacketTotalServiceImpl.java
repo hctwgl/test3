@@ -119,6 +119,10 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		}
 
 		AfRedPacketTotalDo shareRedPacket = getById(shareId);
+		if (shareRedPacket == null) {
+			result.setIsCanHelpOpen(YesNoStatus.NO.getCode());
+			return result;
+		}
 		String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
 		if (afRedPacketHelpOpenService.isCanOpen(shareRedPacket, openId)) {
 			result.setIsCanHelpOpen(YesNoStatus.YES.getCode());
