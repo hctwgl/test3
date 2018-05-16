@@ -636,7 +636,6 @@
 				<entry key="/h5/reward/getReceiveReward" value-ref="getReceiveRewardApi" />
 				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
 				<entry key="/h5/reward/getSignReward" value-ref="getSignRewardApi" />
-				<entry key="/h5/reward/getSignRegisterRewardSupplement" value-ref="getSignRegisterRewardSupplementApi" />
 				<entry key="/h5/reward/friendSignInfo" value-ref="friendSignInfoApi" />
 			</map>
 		</constructor-arg>

@@ -259,10 +259,9 @@
 
     <select id="getTaskListByUserIdAndUserLevel" resultType="AfTaskDto">
         select
-          <include refid="taskDto" />
+          <include refid="queryFields" />
         from af_task
-        WHERE user_id = #{userId}
-        AND user_level in (#{userLevel})
+        WHERE user_level in (#{userLevel})
         ORDER BY gmt_create
     </select>
 
@@ -286,5 +285,5 @@
         order by gmt_create DESC
     </select>
 
-    
+
 </mapper>

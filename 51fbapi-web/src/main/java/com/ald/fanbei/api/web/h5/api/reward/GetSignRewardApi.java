@@ -47,44 +47,27 @@ public class GetSignRewardApi implements H5Handle {
     TransactionTemplate transactionTemplate;
     @Resource
     AfUserCouponService afUserCouponService;
-    @Resource
-    AfUserAuthService afUserAuthService;
 
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        Integer signType = NumberUtil.objToIntDefault(context.getData("signType"),null);
-        Long friendUserId = NumberUtil.objToLongDefault(context.getData("friendUserId"),null);
         AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
         afSignRewardDo.setIsDelete(0);
         afSignRewardDo.setUserId(context.getUserId());
         afSignRewardDo.setGmtCreate(new Date());
         afSignRewardDo.setGmtModified(new Date());
-        afSignRewardDo.setType(signType);
+        afSignRewardDo.setType(1);
         afSignRewardDo.setStatus(0);
-        afSignRewardDo.setFriendUserId(friendUserId);
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
         if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
             return new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-        if(signType == 0){//自己签到领奖励
-            if(afSignRewardService.isExist(afSignRewardDo.getUserId())){
-                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_EXIST);
-            }
-            if(userSign(afSignRewardDo,afResourceDo)){
-                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
-            }
-        }else if(signType == 1){//朋友帮签
-            if(null == friendUserId){
-                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
-            }
-            if(friendSign(afSignRewardDo,context,friendUserId)){
-                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
-            }
-        }else {
-            resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        if(afSignRewardService.isExist(afSignRewardDo.getUserId())){
+            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_EXIST);
         }
-
+        if(userSign(afSignRewardDo,afResourceDo,resp)){
+            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
+        }
         return resp;
     }
 
@@ -93,7 +76,7 @@ public class GetSignRewardApi implements H5Handle {
      * @param afSignRewardDo
      * @return
      */
-    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo){
+    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,H5HandleResponse resp){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         boolean result;
         String status ;
@@ -150,6 +133,7 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 });
             }
+            resp.addResponseData("amount",afSignRewardExtDo.getAmount());
         }else {//第一次签到
             BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
             afSignRewardDo.setAmount(rewardAmount);
@@ -172,7 +156,9 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 }
             });
+            resp.addResponseData("amount",rewardAmount);
         }
+
         if(StringUtil.equals(status,"success")){
             result =true;
         }else {
@@ -181,89 +167,6 @@ public class GetSignRewardApi implements H5Handle {
         return result;
     }
 
-    /**
-     * 帮签
-     * @param afSignRewardDo
-     * @return
-     */
-    private boolean friendSign(AfSignRewardDo afSignRewardDo, Context context, final Long friendUserId){
-        String status;
-        boolean result ;
-        final Long userId = context.getUserId();
-        String newUser = ObjectUtils.toString(context.getData("newUser"),null);
-        final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
-        if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
-            throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
-        }
-        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(friendUserId);
-        if(null == userAuthDo){
-            throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-        }
-        if(StringUtil.equals(newUser,"Y")){//新用户帮签
-            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            afSignRewardDo.setAmount(rewardAmount);
-            final AfSignRewardDo signRewardDo = afSignRewardDo;
-            if(!(userAuthDo.getGmtFaces() == null && StringUtil.equals("N",userAuthDo.getBankcardStatus())
-                    && userAuthDo.getGmtRealname() == null && StringUtil.equals("N",userAuthDo.getRealnameStatus())
-                    && StringUtil.equals("N",userAuthDo.getFacesStatus()))){//检查是否是新用户，避免刷
-                throw new FanbeiException("no new user", FanbeiExceptionCode.NO_NEW_USER);
-            }
-            if(afSignRewardService.checkUserSign(friendUserId) || afSignRewardService.friendUserSign(friendUserId)){
-                throw new FanbeiException("no new user", FanbeiExceptionCode.NO_NEW_USER);
-            }
-            status = transactionTemplate.execute(new TransactionCallback<String>() {
-                @Override
-                public String doInTransaction(TransactionStatus status) {
-                    try{
-                        AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
-                        afSignRewardService.saveRecord(signRewardDo);
-                        afSignRewardExtDo.setAmount(rewardAmount);
-                        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                        return "success";
-                    }catch (Exception e){
-                        status.setRollbackOnly();
-                        return "fail";
-                    }
-                }
-            });
-        }else{//老用户帮签
-            //帮签次数
-            if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
-                throw new FanbeiException("friend user sign exist", FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
-            }
-            int count = afSignRewardService.frienddUserSignCount(userId,friendUserId);
-            BigDecimal rewardAmount ;
-            if(count<1){//第一次帮签
-                rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
-            }else{//多次帮签
-                rewardAmount = randomNum(afResourceDo.getPic2(),afResourceDo.getPic1());
-            }
-            final BigDecimal resultAmount = rewardAmount;
-            afSignRewardDo.setAmount(resultAmount);
-            final AfSignRewardDo signRewardDo = afSignRewardDo;
-            status = transactionTemplate.execute(new TransactionCallback<String>() {
-                @Override
-                public String doInTransaction(TransactionStatus status) {
-                    try{
-                        AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
-                        afSignRewardService.saveRecord(signRewardDo);
-                        afSignRewardExtDo.setAmount(resultAmount);
-                        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                        return "success";
-                    }catch (Exception e){
-                        status.setRollbackOnly();
-                        return "fail";
-                    }
-                }
-            });
-        }
-        if(StringUtil.equals(status,"success")){
-            result =true;
-        }else {
-            result =false;
-        }
-        return result;
-    }
 
     /**
      * 得到这一期签到的天数

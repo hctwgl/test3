@@ -56,6 +56,7 @@ public class GetReceiveRewardApi implements H5Handle {
         afTaskUserDo.setTaskId(taskId);
         afTaskUserDo.setUserId(userId);
         afTaskUserDo.setGmtModified(new Date());
+        afTaskUserDo.setStatus(1);
         if(isDailyTask != null){
             if(StringUtil.equals(isDailyTask,"1")){//每日任务
                 count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);

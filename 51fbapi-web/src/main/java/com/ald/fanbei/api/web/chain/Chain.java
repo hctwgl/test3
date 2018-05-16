@@ -13,6 +13,5 @@ public interface Chain {
 	
 	public void execute(Context context);
 
-	public void execute(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request, HttpServletResponse response);
 
 }

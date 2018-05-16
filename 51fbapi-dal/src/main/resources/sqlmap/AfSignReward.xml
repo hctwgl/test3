@@ -164,7 +164,7 @@
     </select>
 
     <select id="checkUserSign" resultType="int" parameterType="Long">
-        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type != 3
     </select>
 
     <select id="friendUserSign" resultType="int" parameterType="Long">
