@@ -1454,4 +1454,11 @@
 		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(#{gmtCreate,jdbcType=TIMESTAMP},'%Y-%m-%d')
 		and iagent_status ='C'
 	</select>
+
+	<select id="getUserFirstBigOrderDate" resultType="java.lang.String" >
+		SELECT
+		date_format(min(gmt_create),'%Y-%m-%d %H:%i:%s')
+		FROM af_order
+		WHERE user_id=#{userId} and actual_amount >= #{amount}
+	</select>
 </mapper>

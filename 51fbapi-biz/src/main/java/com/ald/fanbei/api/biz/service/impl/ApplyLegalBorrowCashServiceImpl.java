@@ -191,6 +191,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				.multiply(new BigDecimal(day)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+		afBorrowCashDo.setGmtCreate(new Date());
 		afBorrowCashDo.setAmount(borrowAmount);
 		afBorrowCashDo.setCardName(afUserBankcardDo.getBankName());
 		afBorrowCashDo.setCardNumber(afUserBankcardDo.getCardNumber());
@@ -359,7 +360,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				|| !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
+				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getRiskStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getBasicStatus(), YesNoStatus.YES.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
 
@@ -391,6 +394,20 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	@Override
 	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo,
 						  AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param) {
+		this.checkAccount(accountDo, authDo);
+		this.checkAmount(param, rateInfoDo);
+		this.checkPassword(accountDo, param);
+		this.checkBindCard(authDo);
+		this.checkAuth(authDo);
+		this.checkCanBorrow(accountDo, param);
+		this.checkBorrowFinish(accountDo.getUserId());
+		this.checkRiskRefused(accountDo.getUserId());
+		this.checkCardNotEmpty(bankCard);
+		this.checkBorrowType(param,rateInfoDo);
+	}
+
+	@Override
+	public void checkRecycleBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo, AfUserBankcardDo bankCard, ApplyLegalBorrowCashBo param) {
 		this.checkAccount(accountDo, authDo);
 		this.checkAmount(param, rateInfoDo);
 		this.checkPassword(accountDo, param);

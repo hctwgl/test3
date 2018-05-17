@@ -3224,6 +3224,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	}
 
 	@Override
+	public String getUserFirstBigOrderDate(Long userId, Integer amount) {
+		return orderDao.getUserFirstBigOrderDate(userId,amount);
+	}
+
+	@Override
 	public AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount){
 		return orderDao.selectTodayIagentStatus(userId, amount);
 	}

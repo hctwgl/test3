@@ -77,7 +77,7 @@ public class BrandChannelsApi implements ApiHandle {
 	//		List<AfBrandListVo> allBrandInfo2 = new ArrayList<AfBrandListVo>();
 			if (CollectionUtil.isNotEmpty(list)){
 				AfResourceH5Dto afResourceH5Dto = list.get(0);
-				Long modelId = afResourceH5Dto.getId();
+				Long modelId = afResourceH5Dto.getRid();
 				List<AfResourceH5ItemDto> configList = afResourceH5ItemService.selectByModelId(modelId);
 				if (CollectionUtil.isNotEmpty(configList)){
 					for (AfResourceH5ItemDto afResourceH5ItemDto : configList) {

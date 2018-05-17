@@ -33,8 +33,9 @@ public interface ApplyLegalBorrowCashService {
 
 	public void checkCanBorrow(AfUserAccountDo accountDo, ApplyLegalBorrowCashBo param);
 
-	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo,
-						  AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param);
+	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo, AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param);
+
+	public void checkRecycleBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo, AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param);
 
 	public void addTodayTotalAmount(int day, BigDecimal amount);
 

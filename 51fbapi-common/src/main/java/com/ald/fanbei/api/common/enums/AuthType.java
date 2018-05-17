@@ -14,7 +14,8 @@ public enum AuthType {
 	ZHENGXIN("zhengxin","人行征信"),
 	BANK("bank","网银"),
 	CARDEMAIL("cardEmail","信用卡邮箱"),
-	CHSI("chsi","学信");
+	CHSI("chsi","学信"),
+	BUBBLE("bubble","冒泡");
     private String code;
     private String name;
     

@@ -321,4 +321,6 @@ public interface AfOrderDao {
 	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId,@Param("gmtCreate")Date gmtCreate);
 
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
+
+	String getUserFirstBigOrderDate(@Param("userId") Long userId,@Param("amount") Integer amount);
 }
