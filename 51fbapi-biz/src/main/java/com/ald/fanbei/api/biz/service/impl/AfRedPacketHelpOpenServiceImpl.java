@@ -16,6 +16,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -47,8 +49,13 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
     @Autowired
     private AfResourceService afResourceService;
 
-    @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    public AfRedPacketHelpOpenServiceImpl(PlatformTransactionManager transactionManager) {
+    	transactionTemplate = new TransactionTemplate(transactionManager);
+    	transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+	}
 
 	@Override
 	public List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum) {
@@ -84,6 +91,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 				AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
+				// TODO:待删除
 				checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
 
 				AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
