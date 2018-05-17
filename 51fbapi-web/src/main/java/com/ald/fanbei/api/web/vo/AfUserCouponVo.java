@@ -44,6 +44,8 @@ public class AfUserCouponVo extends AbstractSerial{
 
 	private Integer isGlobal;
 
+	private BigDecimal discount;
+
 	public String getName() {
 		return name;
 	}
