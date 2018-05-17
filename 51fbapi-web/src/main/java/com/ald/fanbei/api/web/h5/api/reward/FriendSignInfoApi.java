@@ -124,23 +124,24 @@ public class FriendSignInfoApi implements H5Handle {
                 try{
                     //好友帮签成功 分享者获取相应的奖励
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
-                    afSignRewardService.saveRecord(signRewardDo);
                     afSignRewardExtDo.setAmount(resultAmount);
                     afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                     //打开者 帮签成功 获取相应的奖励
+                    BigDecimal amount;
                     if(flag){
-                        BigDecimal amount = randomNum(afResource.getValue1(),afResource.getValue2());
-                        AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount);
-                        afSignRewardService.saveRecord(rewardDo);
+                        amount = randomNum(afResource.getValue1(),afResource.getValue2());
                         AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
                         afSignRewardExtService.saveRecord(afSignRewardExt);
                     }else{
-                        BigDecimal amount = randomNum(afResource.getValue3(),afResource.getValue4());
-                        AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount);
-                        afSignRewardService.saveRecord(rewardDo);
+                        amount = randomNum(afResource.getValue3(),afResource.getValue4());
                         AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
                         afSignRewardExtService.increaseMoney(afSignRewardExt);
                     }
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount);
+                    List<AfSignRewardDo> list = new ArrayList<>();
+                    list.add(rewardDo);
+                    list.add(signRewardDo);
+                    afSignRewardService.saveRecordBatch(list);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
