@@ -54,7 +54,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
     @Autowired
     public AfRedPacketHelpOpenServiceImpl(PlatformTransactionManager transactionManager) {
     	transactionTemplate = new TransactionTemplate(transactionManager);
-    	transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+    	transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
 	}
 
 	@Override
@@ -82,34 +82,37 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 	@Override
 	public AfRedPacketHelpOpenDo open(final String wxCode, final Long shareId) {
-		return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
-			@Override
-			public AfRedPacketHelpOpenDo doInTransaction(TransactionStatus transactionStatus) {
-				AfResourceDo afResourceDo = afResourceService.getWechatConfig();
-				String appid = afResourceDo.getValue();
-				String secret = afResourceDo.getValue1();
-				JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
-				AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
+        AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+        String appid = afResourceDo.getValue();
+        String secret = afResourceDo.getValue1();
+        final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 
-				// TODO:待删除
-				checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+//        synchronized (shareId) {
+            return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
+                @Override
+                public AfRedPacketHelpOpenDo doInTransaction(TransactionStatus transactionStatus) {
+                    AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
-				AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
-				helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-				helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
-				helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));
-				helpOpenDo.setRedPacketTotalId(shareId);
-				helpOpenDo.setUserId(shareRedPacket.getUserId());
+                    // TODO:待删除
+				    checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
 
-				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-				fillAmountAndDiscountInfo(config, helpOpenDo, shareRedPacket);
-				saveRecord(helpOpenDo);
+                    AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
+                    helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+                    helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
+                    helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));
+                    helpOpenDo.setRedPacketTotalId(shareId);
+                    helpOpenDo.setUserId(shareRedPacket.getUserId());
 
-				afRedPacketTotalService.updateAmount(shareRedPacket, helpOpenDo.getAmount(), "");
+                    AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+                    fillAmountAndDiscountInfo(config, helpOpenDo, shareRedPacket);
+                    saveRecord(helpOpenDo);
 
-				return helpOpenDo;
-			}
-		});
+                    afRedPacketTotalService.updateAmount(shareRedPacket, helpOpenDo.getAmount(), "");
+
+                    return helpOpenDo;
+                }
+            });
+//        }
 	}
 
 	@Override

@@ -234,12 +234,16 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            Map<String, String> data = new HashMap<>();
+            data.put("isRegister", YesNoStatus.NO.getCode());
+
             AfUserDo userDo = getOrRegisterUser(request, param.getVerifyCode(), param.getToken(),
-                    param.getBsqToken(), param.getMobile());
+                    param.getBsqToken(), param.getMobile(), data);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
                     userDo.getUserName(), param.getCode(), SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
 
-            Map<String, String> data = buildSelfOpenResult(selfOpenDo);
+            Map<String, String> selfOpenResult = buildSelfOpenResult(selfOpenDo);
+            data.putAll(selfOpenResult);
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -322,7 +326,7 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     // 获取或注册用户
     private AfUserDo getOrRegisterUser(HttpServletRequest request, String verifyCode, String token,
-                                       String bsqToken, String mobile) {
+                                       String bsqToken, String mobile, Map<String, String> data) {
         try {
             tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
                     mobile, mobile, "");
@@ -339,6 +343,7 @@ public class AppH5OpenRedPacketController extends BaseController {
         AfUserDo userDo = afUserService.getUserByUserName(mobile);
         if (userDo == null) {
             userDo = registerUser(request, mobile, bsqToken);
+            data.put("isRegister", YesNoStatus.YES.getCode());
         }
 
         return userDo;

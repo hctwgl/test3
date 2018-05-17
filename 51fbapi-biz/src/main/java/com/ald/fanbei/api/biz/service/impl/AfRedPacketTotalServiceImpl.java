@@ -22,8 +22,6 @@ import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -68,23 +66,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
     @Autowired
     private AfUserThirdInfoService afUserThirdInfoService;
 
+    @Autowired
 	private TransactionTemplate transactionTemplate;
-
-	@Autowired
-	public AfRedPacketTotalServiceImpl(PlatformTransactionManager transactionManager) {
-		transactionTemplate = new TransactionTemplate(transactionManager);
-		transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
-	}
-
-	@Override
-	public AfRedPacketTotalDo getById(final Long id) {
-		return transactionTemplate.execute(new TransactionCallback<AfRedPacketTotalDo>() {
-			@Override
-			public AfRedPacketTotalDo doInTransaction(TransactionStatus transactionStatus) {
-				return AfRedPacketTotalServiceImpl.super.getById(id);
-			}
-		});
-	}
 
 	@Override
 	public OpenRedPacketHomeBo getHomeInfoInSite(FanbeiWebContext context) {
