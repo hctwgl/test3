@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashPushDo;
  */
 public interface AfBorrowCashPushDao extends BaseDao<AfBorrowCashPushDo, Long> {
 
+	AfBorrowCashPushDo getByBorrowCashId(Long borrowCashId);
+
     
 
 }

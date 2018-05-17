@@ -10,6 +10,8 @@ import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
  */
 public interface AfLoanPushDao extends BaseDao<AfLoanPushDo, Long> {
 
+	AfLoanPushDo getByLoanId(Long loanId);
+
     
 
 }

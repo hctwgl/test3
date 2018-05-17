@@ -9,7 +9,7 @@ console.log(style);
 var channelCode = getUrl('channelCode');
 var pointCode = getUrl('pointCode');
 
-var protocolRegisterName = '《51返呗用户注册协议》';
+var protocolRegisterName = '《爱上街用户注册协议》';
 if(style == 19){
     protocolRegisterName = '《爱上街用户注册协议》';
 };
@@ -339,11 +339,27 @@ $(function(){
 (function (root) {
         $("#toLoadAppBtn").on('click',function(){
             let ua = navigator.userAgent.toLowerCase();
-            if (os==1 && ua.match(/MicroMessenger/i)!="micromessenger" && ua.match(/QQ/i) != "qq"){
-                root.location.href='http://sftp.51fanbei.com/51fanbei_app_' + channelCode + '.apk';//安卓除了腾讯系，直接下载apk
+
+            // if (os==1 && ua.match(/MicroMessenger/i)!="micromessenger" && ua.match(/QQ/i) != "qq"){
+            //     root.location.href='http://sftp.51fanbei.com/51fanbei_app_' + channelCode + '.apk';
+            //     return;
+            // };
+            // root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            
+            // 在IOS
+            if(os == 2){
+                root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                 return;
             };
-            root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+
+            // 在安卓腾讯系
+            if(os == 1 && ua.match(/MicroMessenger/i) == "micromessenger" && ua.match(/QQ/i) == "qq"){
+                root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+                return;
+            }
+
+            root.location.href='http://sftp.51fanbei.com/51fanbei_app_' + channelCode + '.apk';
+            
         })
    
 })(window);

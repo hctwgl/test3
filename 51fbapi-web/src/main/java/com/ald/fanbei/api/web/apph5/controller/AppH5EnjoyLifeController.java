@@ -12,12 +12,14 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.web.common.*;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -373,11 +374,11 @@ public class AppH5EnjoyLifeController extends BaseController {
     @RequestMapping(value = "/reserveGoodsV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
         H5CommonResponse resp = H5CommonResponse.getNewInstance();FanbeiWebContext context = new FanbeiWebContext();
         try{
             context = doWebCheck(request,true);
             String userName = context.getUserName();
-            //userName = "18314896619";
             AfUserDo userDo = afUserService.getUserByUserName(userName);
             Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
             Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"),0l);
@@ -462,12 +463,12 @@ public class AppH5EnjoyLifeController extends BaseController {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    activityGoodsInfo.put("saleAmount",  goodsDo.getActivityPrice());
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
                     activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
                     activityGoodsInfo.put("source", goodsDo.getSource());
-                    activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                    activityGoodsInfo.put("priceAmount", goodsDo.getSaleAmount());
                     activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
@@ -493,7 +494,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
@@ -616,12 +617,12 @@ class GetActivityListThread implements Runnable {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    activityGoodsInfo.put("saleAmount", goodsDo.getActivityPrice());
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
                     activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
                     activityGoodsInfo.put("source", goodsDo.getSource());
-                    activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                    activityGoodsInfo.put("priceAmount", goodsDo.getSaleAmount());
                     activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
@@ -647,7 +648,7 @@ class GetActivityListThread implements Runnable {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
                         Map nperMap = nperList.get(nperList.size() - 1);

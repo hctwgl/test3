@@ -25,8 +25,11 @@ public enum PayOrderSource {
 	REPAY_CASH_LEGAL_V2("REPAY_CASH_LEGAL_V2", "合规借钱还款V2"),
 	RENEW_CASH_LEGAL_V2("RENEW_CASH_LEGAL_V2", "合规续期还款V2"),
 	
-	REPAY_LOAN("REPAY_LOAN", "贷款还款");
+	REPAY_LOAN("REPAY_LOAN", "贷款还款"),
 
+	// 手机回收
+	BORROW_RECYCLE_REPAY("BORROW_RECYCLE_REPAY", "手机回收取消订单");
+	
 	public String code;
 	public String name;
 

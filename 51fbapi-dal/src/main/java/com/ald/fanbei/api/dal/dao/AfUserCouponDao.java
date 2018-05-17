@@ -45,21 +45,21 @@ public interface AfUserCouponDao {
 	BigDecimal getUserCouponByInvite(@Param("userId")Long userId);
 	/**
 	 * 获取用户优惠券
-	 * @param id
+	 * @param rid
 	 * @return
 	 */
 	AfUserCouponDto getUserCouponById(@Param("rid")Long rid);
 	
 	/**
 	 * 修改优惠券状态
-	 * @param id
+	 * @param rid
 	 * @return
 	 */
 	int updateUserCouponSatusUsedById(@Param("rid")Long rid);
 	
 	/**
 	 * 修改优惠券状态
-	 * @param id
+	 * @param rid
 	 * @return
 	 */
 	int updateUserCouponSatusNouseById(@Param("rid")Long rid);
@@ -140,4 +140,6 @@ public interface AfUserCouponDao {
 			@Param("activityId")Long activityId, @Param("activityType")String activityType);
 
 	Integer getUserCouponByUserIdAndCouponCource(@Param("userId")Long userId,@Param("sourceType")String sourceType);
+
+	AfUserCouponDto getUserCouponAfterPaidSuccess(@Param("userId") Long userId);
 }

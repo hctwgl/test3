@@ -70,6 +70,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		}
 		
 		Map<String, Object> data = afUserAuthService.getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion(),scene,zmConfigResourceDo);
+
 		resp.setResponseData(data);
 
 		return resp;

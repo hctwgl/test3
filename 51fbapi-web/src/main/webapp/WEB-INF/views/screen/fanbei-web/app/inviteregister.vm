@@ -3,7 +3,7 @@
 <head>
     #set($version="201803061430")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
-    <title>51返呗注册</title>
+    <title>爱上街注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteregister.css?version=$version">
 </head>
 <body>
@@ -34,7 +34,7 @@
         <div class="reg"></div>
         <div class="agree">
           <div class="checkbox checked"></div>
-          <span>已阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
+          <span>已阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《爱上街用户注册协议》</a>
         </div>
         <p class="registered clearfix">
           <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="maidianFn('toLogin')">已有账号登录</a>

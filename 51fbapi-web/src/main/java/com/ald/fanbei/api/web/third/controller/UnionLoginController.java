@@ -277,7 +277,7 @@ public class UnionLoginController extends BaseController {
     }
 
     /**
-     * 返呗统一联合登录
+     * 爱上街统一联合登录
      *
      * @param channel 渠道 明文
      * @param phone   手机号 加密
@@ -373,7 +373,7 @@ public class UnionLoginController extends BaseController {
      * 获取/设置用户信息
      *
      * @param mobile        手机号
-     * @param channelCode   返呗提供的渠道信息
+     * @param channelCode   爱上街提供的渠道信息
      * @param paramsJsonStr 参数原样保存
      * @return 1:新用户 2:当前渠道的老用户 3:其他渠道的老用户
      * @throws Exception
@@ -402,7 +402,7 @@ public class UnionLoginController extends BaseController {
     /**
      * 获取并设置第三方渠道信息
      *
-     * @param fanbeiChannelCode 返呗的渠道code
+     * @param fanbeiChannelCode 爱上街的渠道code
      * @param thridChannelCode  第三方渠道code
      * @return 渠道信息
      */
@@ -449,7 +449,7 @@ public class UnionLoginController extends BaseController {
     /**
      * 添加日志
      *
-     * @param channel       返呗渠道号
+     * @param channel       爱上街渠道号
      * @param paramsJsonStr 参数信息
      */
     private void addLogs(String channel, String paramsJsonStr) {

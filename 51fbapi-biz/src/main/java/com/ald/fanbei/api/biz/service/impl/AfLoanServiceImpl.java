@@ -29,6 +29,7 @@ import com.ald.fanbei.api.biz.bo.loan.LoanHomeInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.AfLoanProductService;
+import com.ald.fanbei.api.biz.service.AfLoanPushService;
 import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.AfLoanService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -87,6 +88,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfLoanDo;
 import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.AfLoanProductDo;
+import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRateDo;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -178,6 +180,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 	AssetSideEdspayUtil assetSideEdspayUtil;
 	@Resource
 	AfAssetSideInfoService afAssetSideInfoService;
+	@Resource
+	AfLoanPushService afLoanPushService;
 	
 	@Override
 	public List<LoanHomeInfoBo> getHomeInfo(Long userId){
@@ -254,6 +258,8 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 						afUserAccountSenceService.syncLoanUsedAmount(loanDo.getUserId(), SceneType.valueOf(loanDo.getPrdType()), loanDo.getAmount());
 						// 增加日志
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
+						AfLoanPushDo loanPush = buildLoanPush(loanDo.getRid(),whiteCollarBorrowInfo.get(0).getApr(), whiteCollarBorrowInfo.get(0).getManageFee());
+						afLoanPushService.saveOrUpdate(loanPush);
 					}
 				}else{
 					// 调用UPS打款
@@ -278,6 +284,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			}catch(Exception e) {
 				loanDo.setStatus(AfLoanStatus.CLOSED.name());
 				afLoanDao.updateById(loanDo);
+				
+				// 关闭分期记录
+				closePeriods(periodDos);
+				
 				throw e;
 			}
 			
@@ -294,6 +304,18 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			this.unlockLoan(userId);
 		}
 	}
+	private AfLoanPushDo buildLoanPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfLoanPushDo loanPushDo =new AfLoanPushDo();
+		Date now = new Date();
+		loanPushDo.setGmtCreate(now);
+		loanPushDo.setGmtModified(now);
+		loanPushDo.setLoanId(rid);
+		loanPushDo.setBorrowRate(apr);
+		loanPushDo.setProfitRate(manageFee);
+		return loanPushDo;
+		
+	}
+
 	private void doLoanCheck(ApplyLoanBo bo){
 		String prdType = bo.reqParam.prdType;
 		Long userId = bo.userId;
@@ -411,6 +433,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			tarLoanDo.setStatus(AfLoanStatus.CLOSED.name());
 			tarLoanDo.setReviewStatus(AfLoanReviewStatus.REFUSE.name());
 			afLoanDao.updateById(tarLoanDo);
+			
+			// 关闭分期记录
+			closePeriods(afLoanPeriodsDao.listByLoanId(tarLoanDo.getRid()));
+			
 			//审核失败
 			jpushService.dealBorrowCashApplyFail(bo.userName, new Date());
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_RISK_REFUSE);
@@ -462,6 +488,10 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		loanDo.setRemark("UPS打款失败，"+msg);
 		loanDo.setGmtClose(cur);
 		loanDo.setGmtModified(cur);
+		logger.info("--->close loan UPS打款失败:loanId="+loanDo.getRid());
+		// 关闭分期记录
+		closePeriods(periodDos);
+		
 		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
             try {
             	afLoanDao.updateById(loanDo);
@@ -735,4 +765,15 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 		return afLoanDao.getLastByUserIdAndPrdType(userId, prdType);
 	}
 
+	/**
+	 * 关闭 借款分期记录
+	 */
+	private void closePeriods(List<AfLoanPeriodsDo> periodDos) {
+		for (AfLoanPeriodsDo afLoanPeriodsDo : periodDos) {
+			afLoanPeriodsDo.setStatus(AfLoanPeriodStatus.CLOSED.name());
+			afLoanPeriodsDo.setGmtModified(new Date());
+			afLoanPeriodsDao.updateById(afLoanPeriodsDo);
+		}
+		logger.info("--->close periods");
+	}
 }

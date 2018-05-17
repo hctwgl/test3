@@ -59,6 +59,9 @@ public class MineHomeApi implements ApiHandle {
     private AfUserCouponService afUserCouponService;
 
     @Autowired
+    private AfBorrowRecycleService afBorrowRecycleService;
+    
+    @Autowired
     private AfBorrowBillService afBorrowBillService;
 
     @Autowired
@@ -380,6 +383,12 @@ public class MineHomeApi implements ApiHandle {
             // 没有最早的待还，查询最后一笔借款信息
             borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
         }
+        
+        // 回收业务 屏蔽逻辑 - 2018.05.07 By ZJF
+        if(borrowCashDo != null && afBorrowRecycleService.isRecycleBorrow(borrowCashDo.getRid())) {
+        	borrowCashDo = null;
+        }
+        
         if (borrowCashDo != null && borrowCashDo.getStatus().equals(AfBorrowCashStatus.transed.getCode())) {
             return afBorrowCashService.calculateLegalRestAmount(borrowCashDo);
         }

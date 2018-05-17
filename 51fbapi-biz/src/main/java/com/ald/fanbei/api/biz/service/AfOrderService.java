@@ -1,23 +1,16 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.*;
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.data.annotation.Id;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderLeaseDo;
-import com.ald.fanbei.api.dal.domain.AfOrderSceneAmountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.dto.*;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -464,7 +457,7 @@ public interface AfOrderService {
 
 	void updateIagentStatusByOrderId(Long orderId,String iagentStatus);
 	AfOrderDo selectTodayIagentStatus(Long userId,BigDecimal amount);
-	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(Long userId,Date gmtCreate);
 
 	/**
 	 * 统计用户各个状态的订单数
@@ -474,7 +467,8 @@ public interface AfOrderService {
 	 */
 	AfOrderCountDto countStatusNum(Long userId);
 
-
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
+
+	String getUserFirstBigOrderDate(Long userId, Integer amount);
 
 }

@@ -126,11 +126,18 @@ public class AppActivityGoodListUtil {
             }
 
             goodList = Lists.newArrayList();
+            BigDecimal saleAmount = null;
             for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
                 Map<String, Object> goodsInfo = new HashMap<String, Object>();
                 goodsInfo.put("goodName", goodsDo.getName());
                 goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                if(null != goodsDo.getActivityPrice()){
+                    saleAmount = goodsDo.getActivityPrice();
+                }
+                else{
+                    saleAmount = goodsDo.getSaleAmount();
+                }
+                goodsInfo.put("saleAmount", saleAmount);
                 goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
                 goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                 goodsInfo.put("goodsId", goodsDo.getRid());
@@ -158,7 +165,7 @@ public class AppActivityGoodListUtil {
                     }
                 }
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(), goodsId, "0");
+                        saleAmount, resource.getValue1(), resource.getValue2(), goodsId, "0");
 
                 if (nperList != null) {
                     goodsInfo.put("goodsType", "1");
@@ -210,9 +217,10 @@ public class AppActivityGoodListUtil {
             goodsInfo.put("goodsType", "0");
             goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
             goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-            goodsInfo.put("total", homePageSecKillGoods.getTotal());
+            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());
             goodsInfo.put("source", homePageSecKillGoods.getSource());
             goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
+            goodsInfo.put("saleCount", 0);
             // 如果是分期免息商品，则计算分期
             Long goodsId = homePageSecKillGoods.getGoodsId();
             JSONArray interestFreeArray = null;
@@ -237,6 +245,8 @@ public class AppActivityGoodListUtil {
             }
             goodsList.add(goodsInfo);
         }
+
+
 
         data.put("goodsList", goodsList);
     }
@@ -278,39 +288,39 @@ public class AppActivityGoodListUtil {
         jsonObj.put("nowDate", new Date());
         jsonObj.put("couponList", couponList);
 
-        //获取可用额度
-        AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
-        try {
-            if (userDo != null) {
-                userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
-                if (userAccountInfo == null) {
-                    userAccountInfo = new AfUserAccountSenceDo();
-                    userAccountInfo.setAuAmount(new BigDecimal(5000));
-                    userAccountInfo.setUsedAmount(new BigDecimal(0));
-                } else {
-                    // 通过强风控审核
-                    // 授予的额度
-                    BigDecimal onlineAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount());
-                    // 临时额度
-                    AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userDo.getRid());
-                    if (interimAuDo != null
-                            && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
-                        onlineAmount = onlineAmount.add(interimAuDo.getInterimAmount()).subtract(interimAuDo.getInterimUsed());
-                    }
-                    if (onlineAmount.compareTo(BigDecimal.ZERO) < 0) {
-                        onlineAmount = BigDecimal.ZERO;
-                    }
-                    userAccountInfo.setAuAmount(onlineAmount.setScale(2, BigDecimal.ROUND_HALF_UP));
-                    userAccountInfo.setUsedAmount(new BigDecimal(0));
-                }
-            } else {
-                userAccountInfo.setAuAmount(new BigDecimal(5000));
-                userAccountInfo.setUsedAmount(new BigDecimal(0));
-            }
-        } catch (Exception e) {
-            logger.error("partActivityInfoV2 get account error for:" + e);
-        }
-        jsonObj.put("userAccountInfo", userAccountInfo);
+//        //获取可用额度
+//        AfUserAccountSenceDo userAccountInfo = new AfUserAccountSenceDo();
+//        try {
+//            if (userDo != null) {
+//                userAccountInfo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userDo.getRid());
+//                if (userAccountInfo == null) {
+//                    userAccountInfo = new AfUserAccountSenceDo();
+//                    userAccountInfo.setAuAmount(new BigDecimal(5000));
+//                    userAccountInfo.setUsedAmount(new BigDecimal(0));
+//                } else {
+//                    // 通过强风控审核
+//                    // 授予的额度
+//                    BigDecimal onlineAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount());
+//                    // 临时额度
+//                    AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userDo.getRid());
+//                    if (interimAuDo != null
+//                            && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
+//                        onlineAmount = onlineAmount.add(interimAuDo.getInterimAmount()).subtract(interimAuDo.getInterimUsed());
+//                    }
+//                    if (onlineAmount.compareTo(BigDecimal.ZERO) < 0) {
+//                        onlineAmount = BigDecimal.ZERO;
+//                    }
+//                    userAccountInfo.setAuAmount(onlineAmount.setScale(2, BigDecimal.ROUND_HALF_UP));
+//                    userAccountInfo.setUsedAmount(new BigDecimal(0));
+//                }
+//            } else {
+//                userAccountInfo.setAuAmount(new BigDecimal(5000));
+//                userAccountInfo.setUsedAmount(new BigDecimal(0));
+//            }
+//        } catch (Exception e) {
+//            logger.error("partActivityInfoV2 get account error for:" + e);
+//        }
+//        jsonObj.put("userAccountInfo", userAccountInfo);
         AfSeckillActivityQuery query = new AfSeckillActivityQuery();
         query.setName(activityName);
         query.setGmtStart(DateUtil.parseDate(activityStartTime));
@@ -380,11 +390,18 @@ public class AppActivityGoodListUtil {
                 // 查询会场下所有商品信息
                 List<AfGoodsDo> subjectGoodsList = afSubjectGoodsService.listAllSubjectGoodsV1(subjectId);
                 List<Map> activityGoodsList  = new ArrayList<Map>();
+                BigDecimal saleAmount = null;
                 for(AfGoodsDo goodsDo : subjectGoodsList) {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    if(null != goodsDo.getActivityPrice()){
+                        saleAmount = goodsDo.getActivityPrice();
+                    }
+                    else{
+                        saleAmount = goodsDo.getSaleAmount();
+                    }
+                    activityGoodsInfo.put("saleAmount", saleAmount);
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
                     activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
@@ -415,7 +432,7 @@ public class AppActivityGoodListUtil {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            saleAmount, resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");

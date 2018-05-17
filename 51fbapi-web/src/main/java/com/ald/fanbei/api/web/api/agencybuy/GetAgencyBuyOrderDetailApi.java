@@ -111,12 +111,12 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		String capture = afAgentOrderDo.getCapture();
 		String remark = afAgentOrderDo.getRemark(); // 用户留言
 		String gmtCreate = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtCreate());
-		String payType =  afOrderDo.getPayType().equals("AP")?"返呗支付":"其他支付方式";
+		String payType =  afOrderDo.getPayType().equals("AP")?"爱上街支付":"其他支付方式";
 		// 取出一共分几期
 		AfBorrowDo borrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
 		if(borrowDo != null){
 			String nper = borrowDo.getNper().toString(); // 分几期	
-			payType =  afOrderDo.getPayType().equals("AP")?"返呗支付"+nper+"期":"其他支付方式";
+			payType =  afOrderDo.getPayType().equals("AP")?"爱上街支付"+nper+"期":"其他支付方式";
 		}
 		String gmtPay = DateUtil.convertDateToString(DateUtil.DATE_TIME_SHORT,afOrderDo.getGmtPay());
 		/**

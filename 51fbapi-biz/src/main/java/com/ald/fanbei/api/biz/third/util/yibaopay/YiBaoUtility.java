@@ -94,7 +94,7 @@ public class YiBaoUtility  implements ThirdInterface{
         String redirectUrl ="http://www.baidu.com";         //同步回调地止
         String notifyUrl =baseUrl+"/third/ups/yibaoback";   //异步
         HashMap<String,String> goods = new HashMap<>();
-        goods.put("goodsName","51返呗");
+        goods.put("goodsName","爱上街");
         goods.put("goodsDesc","");
         String goodsParamExt= JSON.toJSONString(goods);
         String csUr =baseUrl+"/third/ups/yibaoqsback";        //清算成功回调地止

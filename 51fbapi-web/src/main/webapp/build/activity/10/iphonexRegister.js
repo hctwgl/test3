@@ -195,7 +195,7 @@ var vm=new Vue({
                                 requestMsg("请获取验证码");
                             }
                         } else {
-                            requestMsg("请阅读并同意《51返呗用户注册协议》");
+                            requestMsg("请阅读并同意《爱上街用户注册协议》");
                         }
                     }else{
                         requestMsg("请填写6-18位的数字、字母、字符组成的密码");

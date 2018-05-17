@@ -155,26 +155,24 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public BigDecimal getLoanMaxPermitQuota(Long userId, SceneType scene, BigDecimal cfgAmount) {
-	BigDecimal maxPermitQuota = BigDecimal.ZERO;
-	BigDecimal auAmount = BigDecimal.ZERO;
-
-	AfUserAccountDo xdAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-	AfUserAccountSenceDo bldAccount = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userId);// 后面新增的贷款产品要依次查出
-	BigDecimal totalUsableAmount = getTotalUsableAmount(xdAccount, bldAccount);
-
-	AfUserAccountSenceDo tarSenceDo = afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
-	if (SceneType.CASH.equals(scene)) {
-	    auAmount = xdAccount.getAuAmount();
-	} else {
-	    if (tarSenceDo != null) {
-		auAmount = tarSenceDo.getAuAmount();
-	    }
-	}
-
-	maxPermitQuota = auAmount.compareTo(totalUsableAmount) > 0 ? totalUsableAmount : auAmount;
-	maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0 ? cfgAmount : maxPermitQuota;
-
-	return maxPermitQuota;
+		BigDecimal maxPermitQuota = BigDecimal.ZERO;
+		BigDecimal tarUsableAmount = BigDecimal.ZERO; //当前场景剩余可借额度
+	
+		AfUserAccountDo xdAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		AfUserAccountSenceDo bldAccount = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userId);// 后面新增的贷款产品要依次查出
+		BigDecimal totalUsableAmount = getTotalUsableAmount(xdAccount, bldAccount);
+	
+		AfUserAccountSenceDo tarSenceDo = afUserAccountSenceDao.getByUserIdAndScene(scene.getName(), userId);
+		if (SceneType.CASH.equals(scene)) {
+			tarUsableAmount = xdAccount.getAuAmount().subtract(xdAccount.getUsedAmount());
+		} else if (tarSenceDo != null) {
+	    	tarUsableAmount = tarSenceDo.getAuAmount().subtract(tarSenceDo.getUsedAmount());
+		}
+	
+		maxPermitQuota = tarUsableAmount.compareTo(totalUsableAmount) > 0 ? totalUsableAmount : tarUsableAmount;
+		maxPermitQuota = maxPermitQuota.compareTo(cfgAmount) > 0 ? cfgAmount : maxPermitQuota;
+	
+		return maxPermitQuota;
     }
 
     @Override
@@ -202,8 +200,8 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public BigDecimal getTotalUsableAmount(AfUserAccountDo userAccount) {
-	AfUserAccountSenceDo bldAccount = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userAccount.getUserId());// 后面新增的贷款产品要依次查出
-	return getTotalUsableAmount(userAccount, bldAccount);
+		AfUserAccountSenceDo bldAccount = afUserAccountSenceDao.getByUserIdAndScene(SceneType.BLD_LOAN.getName(), userAccount.getUserId());// 后面新增的贷款产品要依次查出
+		return this.getTotalUsableAmount(userAccount, bldAccount);
     }
 
     @Override
@@ -244,31 +242,60 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType) {
-	try {
-	    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
-	    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
-		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
-		// 提额成功
-		if (respBo != null && respBo.isSuccess()) {
-		    // 获取提额结果
-		    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
-		    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-			String fqAmount = respBo.getData().getFqAmount();
-			AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
-			saveOrUpdateAccountSence(bldAccountSenceDo);
-
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		    } else {
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "F", BigDecimal.ZERO, new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+		try {
+		    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+		    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
+		    	RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
+		    	// 提额成功
+				if (respBo != null && respBo.isSuccess()) {
+				    // 获取提额结果
+				    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
+				    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+					String fqAmount = respBo.getData().getFqAmount();
+					AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
+					saveOrUpdateAccountSence(bldAccountSenceDo);
+		
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    } else {
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "F", BigDecimal.ZERO, new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    }
+				}
 		    }
+		} catch (Exception e) {
+		    logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
 		}
-	    }
-	} catch (Exception e) {
-	    logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
-	}
     }
+    
+	@Override
+	public void raiseOnlineQuatoForBuddle(Long userId, String scene, String riskScene, String riskSceneType,
+			String authType) {
+		try {
+			AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+			if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
+				RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
+				// 提额成功
+				if (respBo != null && respBo.isSuccess()) {
+					// 获取提额结果
+					String raiseStatus = respBo.getData().getFqResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String fqAmount = respBo.getData().getFqAmount();
+						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
+						saveOrUpdateAccountSence(bldAccountSenceDo);
+
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId,authType, scene, "F", BigDecimal.ZERO, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
+		}
+	}
 }

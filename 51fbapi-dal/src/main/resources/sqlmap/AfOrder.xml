@@ -1382,7 +1382,7 @@
 			AND a.id = #{orderId}
 	</select>
 	<update id="updateIagentStatusByOrderId">
-		UPDATE af_order SET iagent_status=#{iagentStatus} ,gmt_modified=NOW() WHERE id=#{orderId}
+		UPDATE af_order SET iagent_status=#{iagentStatus,jdbcType=VARCHAR} ,gmt_modified=NOW() WHERE id=#{orderId}
 	</update>
 
 	<select id="getLeaseProtocol" resultType="HashMap">
@@ -1445,7 +1445,14 @@
 		<include refid="queryAllFields" />
 		FROM af_order
 		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND status='PAID'
-		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+		and DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(#{gmtCreate,jdbcType=TIMESTAMP},'%Y-%m-%d')
 		and iagent_status ='C'
+	</select>
+
+	<select id="getUserFirstBigOrderDate" resultType="java.lang.String" >
+		SELECT
+		date_format(min(gmt_create),'%Y-%m-%d %H:%i:%s')
+		FROM af_order
+		WHERE user_id=#{userId} and actual_amount >= #{amount}
 	</select>
 </mapper>

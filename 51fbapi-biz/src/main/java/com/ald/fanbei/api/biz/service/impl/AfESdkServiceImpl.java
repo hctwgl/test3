@@ -8,7 +8,6 @@ import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserSealDo;
-import com.alibaba.fastjson.JSON;
 import com.timevale.esign.sdk.tech.bean.PersonBean;
 import com.timevale.esign.sdk.tech.bean.PosBean;
 import com.timevale.esign.sdk.tech.bean.SignPDFFileBean;
@@ -103,7 +102,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
@@ -140,7 +139,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         // 待签署文 档路径
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
@@ -183,7 +182,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();
         SignType signType = null;
         String type = ObjectUtils.toString(map.get("signType"), "Multi").toString();
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
@@ -226,7 +225,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Multi").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("secondSeal"), "").toString();// 签章数据
@@ -275,7 +274,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
-        fileName = "反呗合同";
+        fileName = "爱上街合同";
         type = "Multi";
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
@@ -319,7 +318,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
@@ -358,7 +357,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("companySelfSeal"), "");// 签章数据
@@ -409,7 +408,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
 
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
@@ -452,7 +451,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("selfPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         String sealData = ObjectUtils.toString(map.get("secondSeal"), "").toString();// 签章数据
         String accountId = ObjectUtils.toString(map.get("secondAccoundId"), "").toString();
@@ -499,7 +498,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("secondPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("thirdPath"), "");// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");
         int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
@@ -536,7 +535,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream) {//钱包字节流签章
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();// 文档显示名字
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
         float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
@@ -570,7 +569,7 @@ public class AfESdkServiceImpl implements AfESdkService {
     @Override
     public FileDigestSignResult selfStreamSign(String fileName,String type,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream) {//钱包字节流签章
         SignType signType = null;
-//        fileName = "反呗合同";
+//        fileName = "爱上街合同";
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -595,7 +594,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     public FileDigestSignResult streamSign(String fileName,String type,String sealData,String accountId,int posType,float width,String key,String posPage,boolean isQrcodeSign,byte[] stream) {//钱包字节流签章
         SignType signType = null;
-//        fileName = "反呗合同";
+//        fileName = "爱上街合同";
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -705,7 +704,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         String srcFile = ObjectUtils.toString(map.get("userPath"), "").toString();
         logger.info("sign doc: " + srcFile);
         String dstFile = ObjectUtils.toString(map.get("selfPath"), "").toString();
-        String fileName = ObjectUtils.toString(map.get("fileName"), "反呗合同").toString();
+        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();
         SignType signType = null;
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();
         String accountId = ObjectUtils.toString(map.get("accountId"), "").toString();
@@ -812,7 +811,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         }
         if (null == afUserSealDo) {// 第一次创建个人印章
             Map<String, String> map = new HashMap<>();
-            map.put("name", accountDo.getRealName());
+            map.put("name", accountDo.getRealName() == null ? afUserDo.getRealName():accountDo.getRealName());
             map.put("idno", accountDo.getIdNumber());
             map.put("email", afUserDo.getEmail());
             map.put("mobile", afUserDo.getMobile());
@@ -827,9 +826,9 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
             afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());
             if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())) {
-                afUserSealDo1.setUserType("3");
+                afUserSealDo1.setUserType("3");//钱包用户
             } else {
-                afUserSealDo1.setUserType("2");
+                afUserSealDo1.setUserType("2");//反呗用户
             }
             AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");
             if (!addSealResult.isErrShow()) {
@@ -844,7 +843,9 @@ public class AfESdkServiceImpl implements AfESdkService {
             }
             int num = insertUserSeal(afUserSealDo1);
             return afUserSealDo1;
-        } else if (null != afUserSealDo.getUserAccountId() && null == afUserSealDo.getUserSeal()) {// 有账户没印章
+        }
+
+        if (null != afUserSealDo.getUserAccountId() && null == afUserSealDo.getUserSeal()) {// 有账户没印章
             AddSealResult addSealResult = createSealPersonal(afUserSealDo.getUserAccountId().toString(), "SQUARE",
                     "RED");
             if (!addSealResult.isErrShow()) {
@@ -855,8 +856,7 @@ public class AfESdkServiceImpl implements AfESdkService {
                     afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
                     afUserSealDo1.setUserName(afUserDo.getRealName());
                 }
-                // userSeal = addSealResult.getSealData();
-                int num = afUserSealDao.updateByUserId(afUserSealDo1);
+                afUserSealDao.updateByUserId(afUserSealDo1);
             }
             return afUserSealDo1;
         }
