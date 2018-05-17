@@ -288,6 +288,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	public void checkLock(String lockKey) {
 		// boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
 		boolean isGetLock = bizCacheUtil.getLock30Minute(lockKey, "1");
+		logger.info("borrowCash checkLock,key="+lockKey+",isGetLock="+isGetLock);
 		if (!isGetLock) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
