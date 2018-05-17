@@ -23,7 +23,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -140,23 +139,17 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	public AfRedPacketTotalDo getTheOpeningMust(final Long userId, final String modifier,
-												final Integer overdueIntervalHour) {
-		return transactionTemplate.execute(new TransactionCallback<AfRedPacketTotalDo>() {
-			@Override
-			public AfRedPacketTotalDo doInTransaction(TransactionStatus transactionStatus) {
-				AfRedPacketTotalDo theOpening = getTheOpening(userId, overdueIntervalHour);
-				if (theOpening == null) {
-					theOpening = new AfRedPacketTotalDo();
-					theOpening.setUserId(userId);
-					theOpening.setCreator(modifier);
-					theOpening.setModifier(modifier);
-					theOpening.setAmount(BigDecimal.ZERO);
-					saveRecord(theOpening);
-				}
-				return theOpening;
-			}
-		});
+	public AfRedPacketTotalDo getTheOpeningMust(Long userId, String modifier, Integer overdueIntervalHour) {
+		AfRedPacketTotalDo theOpening = getTheOpening(userId, overdueIntervalHour);
+		if (theOpening == null) {
+			theOpening = new AfRedPacketTotalDo();
+			theOpening.setUserId(userId);
+			theOpening.setCreator(modifier);
+			theOpening.setModifier(modifier);
+			theOpening.setAmount(BigDecimal.ZERO);
+			saveRecord(theOpening);
+		}
+		return theOpening;
 	}
 
 	@Override
@@ -281,16 +274,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	public void updateAmount(final AfRedPacketTotalDo theOpening, final BigDecimal openAmount,
-							 final String modifier) {
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				theOpening.setAmount(theOpening.getAmount().add(openAmount));
-				theOpening.setModifier(modifier);
-				updateById(theOpening);
-			}
-		});
+	public void updateAmount(Long id, BigDecimal openAmount, String modifier) {
+		afRedPacketTotalDao.updateAmount(id, openAmount, modifier);
 	}
 
 	@Override

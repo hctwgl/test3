@@ -113,7 +113,7 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      * @author wangli
      * @date 2018/5/10 10:14
      */
-    void updateAmount(AfRedPacketTotalDo theOpening, BigDecimal openAmount, String modifier);
+    void updateAmount(Long id, BigDecimal openAmount, String modifier);
 
     /**
      * 计算红包提现剩余金额

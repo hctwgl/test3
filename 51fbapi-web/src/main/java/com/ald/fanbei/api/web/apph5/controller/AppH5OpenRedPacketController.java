@@ -205,10 +205,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String helpOpen(OpenRedPacketParamVo param) {
         try {
-            // TODO:待删除
-            /*param.setCode("1234");
-            param.setShareId(75L);*/
-
             AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(param.getCode(), param.getShareId());
 
             Map<String, String> data = new HashMap<>();

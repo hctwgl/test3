@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
 import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -48,4 +49,13 @@ public interface AfRedPacketTotalDao extends BaseDao<AfRedPacketTotalDo, Long> {
      * @date 2018/5/10 16:06
      */
     int countByQuery(AfRedPacketTotalQueryNoPage query);
+
+    /**
+     * 更新红包金额
+     *
+     * @author wangli
+     * @date 2018/5/17 18:00
+     */
+    void updateAmount(@Param("id") Long id, @Param("openAmount") BigDecimal openAmount,
+                      @Param("modifier") String modifier);
 }

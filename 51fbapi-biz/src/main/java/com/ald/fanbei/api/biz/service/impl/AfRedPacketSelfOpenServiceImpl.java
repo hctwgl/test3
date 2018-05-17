@@ -101,7 +101,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 				saveRecord(selfOpenDo);
 
-				afRedPacketTotalService.updateAmount(theOpening, selfOpenDo.getAmount(), modifier);
+				afRedPacketTotalService.updateAmount(theOpening.getRid(), selfOpenDo.getAmount(), modifier);
 
 				return selfOpenDo;
 			}
