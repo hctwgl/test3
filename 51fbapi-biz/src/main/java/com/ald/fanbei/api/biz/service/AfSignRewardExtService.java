@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +27,12 @@ public interface AfSignRewardExtService {
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
 
     Map<String,Object> getHomeInfo(Long userId);
+
+    List<AfSignRewardExtDo> selectByUserIds(List<Long> userIds);
+
+    int saveRecordBatch(List<AfSignRewardExtDo> list );
+
+    int increaseMoneyBtach(List<AfSignRewardExtDo> list );
 
 
 }

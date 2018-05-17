@@ -141,5 +141,45 @@
     <update id="increaseMoney">
         UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount + #{amount} where user_id = #{userId} and is_delete = 0 HAVING amount + #{amount} > 0
     </update>
+
+    <select id="selectByUserIds" resultType="AfSignRewardExtDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_ext
+        WHERE is_delete = 0
+        AND user_id IN
+        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <update id="increaseMoneyBtach" parameterType="java.util.List" >
+        update af_sign_reward_ext
+        <trim prefix="set" suffixOverrides=",">
+            gmt_modified = now(),
+            <trim prefix="amount = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.userId !=null and item.amount != null">
+                        when user_id=#{item.userId} then (#{item.amount} + amount)
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        user_id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.userId}
+        </foreach>
+
+    </update>
+
+    <insert id="saveRecordBatch" parameterType="java.util.List">
+        INSERT  INTO af_sign_reward_ext(gmt_create,gmt_modified,user_id,first_day_participation,cycle_days,is_open_remind,amount)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (now(),now(),#{item.userId},#{item.firstDayParticipation},#{item.cycleDays},#{item.isOpenRemind},#{item.amount})
+        </foreach>
+    </insert>
     
 </mapper>

@@ -10,46 +10,47 @@ import org.apache.commons.lang.StringUtils;
  * @author suweili 2017年3月25日上午10:30:21
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum WithdrawTypeType {
-	//zero 10代表金额 500 是优惠券id
-	ZERO("0","10", "500"),
-	ONE("1", "30","提现金额"),
-	TWO("2", "50","提现金额"),
-	THREE("3", "100","提现金额");
+public enum SignRewardType {
+	ZERO(0,"自己签到", "自己签到"),
+	ONE(1, "朋友帮签(分享者)","朋友帮签(分享者)"),
+	TWO(2, "补签成功(分享者)","补签成功(分享者)"),
+	THREE(3, "补签失败","补签失败"),
+	FOUR(4, "朋友帮签(好友)","朋友帮签(好友)"),
+	FIVE(5, "补签成功(好友)","补签成功(好友)");
 
 
-	private String code;
+	private Integer code;
     private String name;
     private String dec;
 
 
-    WithdrawTypeType(String code, String name, String dec) {
+    SignRewardType(Integer code, String name, String dec) {
         this.code = code;
         this.name = name;
         this.setDec(dec);
 
     }
-    public static WithdrawTypeType findRoleTypeByCode(String code) {
-        for (WithdrawTypeType roleType : WithdrawTypeType.values()) {
-            if (StringUtils.equals(code, roleType.getCode())) {
+    public static SignRewardType findRoleTypeByCode(Integer code) {
+        for (SignRewardType roleType : SignRewardType.values()) {
+            if (StringUtils.equals(code.toString(), roleType.getCode().toString())) {
                 return roleType;
             }
         }
         return null;
     }
-    public static WithdrawTypeType findRoleTypeByName(String name) {
-        for (WithdrawTypeType roleType : WithdrawTypeType.values()) {
+    public static SignRewardType findRoleTypeByName(String name) {
+        for (SignRewardType roleType : SignRewardType.values()) {
             if (StringUtils.equals(name, roleType.getName())) {
                 return roleType;
             }
         }
         return null;
     }
-	public String getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(Integer code) {
 		this.code = code;
 	}
 

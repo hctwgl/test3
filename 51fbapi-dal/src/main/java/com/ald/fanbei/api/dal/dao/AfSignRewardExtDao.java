@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 分类运营位配置Dao
@@ -24,5 +25,12 @@ public interface AfSignRewardExtDao  {
     int increaseMoney(AfSignRewardExtDo afSignRewardExtDo);
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
+
+    List<AfSignRewardExtDo> selectByUserIds(List<Long> userIds);
+
+    int saveRecordBatch(List<AfSignRewardExtDo> list );
+
+    int increaseMoneyBtach(List<AfSignRewardExtDo> list );
+
 
 }
