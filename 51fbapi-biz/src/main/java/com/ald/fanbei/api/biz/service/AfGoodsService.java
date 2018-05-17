@@ -156,5 +156,7 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query);
 
 	List<Map<String, Object>> getGoodsByIds(List<Long> goodList);
+
+	List<AfGoodsDo> getAfGoodsListByBrandId(AfGoodsQuery goodsQuery);
 }
 
