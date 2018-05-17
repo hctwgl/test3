@@ -26,9 +26,11 @@ public interface AfTaskUserService {
 
     List<AfTaskUserDo> getDailyTaskListByUserId(Long userId, String afTaskType);
 
+    int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
+
     int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
 
-    void shoppingTaskHandler(AfOrderDo orderInfo, String afTaskType);
+    boolean browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType);
 
-    void taskHandler(Long userId, String afTaskType, String taskCondition);
+    boolean taskHandler(Long userId, String afTaskType, String taskCondition);
 }

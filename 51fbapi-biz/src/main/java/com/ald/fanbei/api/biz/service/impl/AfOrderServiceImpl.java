@@ -1280,7 +1280,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					// end by luoxiao
 
 					// add by luoxiao for 边逛边赚,满足任务就给与奖励
-					afTaskUserService.shoppingTaskHandler(orderInfo, AfTaskType.SHOPPING.getCode());
+					afTaskUserService.browerAndShoppingHandler(orderInfo.getUserId(), orderInfo.getGoodsId(), AfTaskType.SHOPPING.getCode());
 					// end by luoxiao
 				}
 				return riskReturnMap;
@@ -1856,7 +1856,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		// end by luoxiao
 
 		// add by luoxiao for 边逛边赚,满足任务就给与奖励
-		afTaskUserService.shoppingTaskHandler(orderInfo, AfTaskType.SHOPPING.getCode());
+		afTaskUserService.browerAndShoppingHandler(orderInfo.getUserId(), orderInfo.getGoodsId(), AfTaskType.SHOPPING.getCode());
 		// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger

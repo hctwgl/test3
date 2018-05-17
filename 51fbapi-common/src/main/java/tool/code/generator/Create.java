@@ -20,11 +20,11 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_notify_record";
+		String tables = "af_task_browse_goods_days";
 
 		// 配置作者及Domain说明
-		String classAuthor = "wujun";
-		String functionName = "提前结清通知钱包记录表";
+		String classAuthor = "luoxiao";
+		String functionName = "持续完成浏览商品数量的天数";
 
 
 //		String tables = "af_facescore_img";

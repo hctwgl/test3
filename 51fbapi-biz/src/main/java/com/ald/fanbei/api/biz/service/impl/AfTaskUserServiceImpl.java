@@ -81,30 +81,35 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
+	public int insertTaskUserDo(AfTaskUserDo afTaskUserDo){
+		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+	}
+
+	@Override
 	public int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList){
 		return afTaskUserDao.batchInsertTaskUserDo(taskUserDoList);
 	}
 
 	@Override
-	public void shoppingTaskHandler(AfOrderDo orderInfo, String afTaskType){
+	public boolean browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType){
 		logger.info("afTaskUser start..");
+		boolean result = false;
 		try {
 			// 获取用户能参加的活动
-			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(orderInfo.getUserId());
+			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
 			List<AfTaskDto> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
-				Long goodsId = orderInfo.getGoodsId();
 				AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 				Long brandId = goodsDo.getBrandId();
 				Long categoryId = goodsDo.getCategoryId();
 
 				// 非每日更新,用户已完成任务
-				List<AfTaskUserDo> notDailyTaskUserList = getNotDailyTaskListByUserId(orderInfo.getUserId(), afTaskType);
+				List<AfTaskUserDo> notDailyTaskUserList = getNotDailyTaskListByUserId(userId, afTaskType);
 
 				// 每日更新任务，用户今日完成任务
-				List<AfTaskUserDo> dailyTaskUserList = getDailyTaskListByUserId(orderInfo.getUserId(), afTaskType);
+				List<AfTaskUserDo> dailyTaskUserList = getDailyTaskListByUserId(userId, afTaskType);
 
 				// 用户完成的任务
 				List<AfTaskUserDo> taskUserCompleteList = Lists.newArrayList();
@@ -135,18 +140,18 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					for (AfTaskDo taskDo : taskList) {
 						if (StringUtils.equals(AfTaskSecType.CATEGORY.getCode(), taskDo.getTaskSecType())) {
 							if (isMatchedId(taskDo.getTaskCondition(), goodsId)) {
-								taskUserDo = buildTaskUserDo(taskDo, orderInfo.getUserId());
+								taskUserDo = buildTaskUserDo(taskDo, userId);
 								taskUserDoList.add(taskUserDo);
 							}
 						} else if (StringUtils.equals(AfTaskSecType.BRAND.getCode(), taskDo.getTaskSecType())) {
 							if (isMatchedId(taskDo.getTaskCondition(), brandId)) {
-								taskUserDo = buildTaskUserDo(taskDo, orderInfo.getUserId());
+								taskUserDo = buildTaskUserDo(taskDo, userId);
 								taskUserDoList.add(taskUserDo);
 							}
 
 						} else if (StringUtils.equals(AfTaskSecType.COMMODITY.getCode(), taskDo.getTaskSecType())) {
 							if (isMatchedId(taskDo.getTaskCondition(), categoryId)) {
-								taskUserDo = buildTaskUserDo(taskDo, orderInfo.getUserId());
+								taskUserDo = buildTaskUserDo(taskDo, userId);
 								taskUserDoList.add(taskUserDo);
 							}
 						}
@@ -154,18 +159,26 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 					if (!taskUserDoList.isEmpty()) {
 						batchInsertTaskUserDo(taskUserDoList);
+						result = true;
 					}
 				}
 			}
-			logger.info("afTaskUser end..");
 		} catch (Exception e) {
 			logger.error("afTaskUser failed, ", e);
 		}
+
+		logger.info("afTaskUser end..");
+		return result;
 	}
 
+	public void browseTaskHandler(Long userId, Long goodsId, String taskContition){
+
+    }
+
 	@Override
-	public void taskHandler(Long userId, String afTaskType, String taskCondition) {
+	public boolean taskHandler(Long userId, String afTaskType, String taskCondition) {
 		logger.info("afTaskUser start..");
+		boolean result = false;
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
@@ -175,7 +188,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				List<AfTaskUserDo> dailyTaskUserList = null;
 
 				// 实名认证、强风控通过没有每日更新任务
-				if (StringUtils.equals(AfTaskType.SHARE.getCode(), afTaskType) || StringUtils.equals(AfTaskType.LOAN_MARKET_ACCESS.getCode(), afTaskType)) {
+				if (!StringUtils.equals(AfTaskType.VERIFIED.getCode(), afTaskType) || !StringUtils.equals(AfTaskType.STRONG_RISK.getCode(), afTaskType)) {
 					dailyTaskUserList = getDailyTaskListByUserId(userId, afTaskType);
 				}
 
@@ -211,6 +224,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 					if (!taskUserDoList.isEmpty()) {
 						batchInsertTaskUserDo(taskUserDoList);
+						result = true;
 					}
 				}
 			}
@@ -218,6 +232,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			logger.error("afTaskUser failed, ", e);
 		}
 		logger.info("afTaskUser end..");
+		return result;
 	}
 
 	/**
@@ -245,15 +260,15 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		AfTaskUserDo taskUserDo = new AfTaskUserDo();
 
         int rewardType = taskDo.getRewardType();
-        if(0 == rewardType){
-            taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-        }
-        else if(1 == rewardType){
-            taskUserDo.setCashAmount(taskDo.getCashAmount());
-        }
-        else{
-            taskUserDo.setCouponId(taskDo.getCouponId());
-        }
+//        if(0 == rewardType){
+//            taskUserDo.setCoinAmount(taskDo.getCoinAmount());
+//        }
+//        else if(1 == rewardType){
+//            taskUserDo.setCashAmount(taskDo.getCashAmount());
+//        }
+//        else{
+//            taskUserDo.setCouponId(taskDo.getCouponId());
+//        }
 		taskUserDo.setTaskId(taskDo.getRid());
 		taskUserDo.setUserId(userId);
 		taskUserDo.setGmtCreate(new Date());

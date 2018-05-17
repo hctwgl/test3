@@ -590,4 +590,24 @@ public class Constants {
     public static final String STRONG_RISK = "strong_risk";
     public static final String LOAN_MARKET_ACCESS = "loan_market_access";
 
+	/**
+	 * 未领取
+	 */
+	public static final Integer TASK_USER_REWARD_STATUS_0 = 0;
+
+	/**
+	 * 主动领取
+	 */
+    public static final Integer TASK_USER_REWARD_STATUS_1 = 1;
+
+	/**
+	 * 自动领取
+	 */
+    public static final Integer TASK_USER_REWARD_STATUS_2 = 2;
+
+	/**
+	 * 浏览商品数量任务的配置
+	 */
+	public static final String BROWSE_TASK = "BROWSE_TASK";
+
 }

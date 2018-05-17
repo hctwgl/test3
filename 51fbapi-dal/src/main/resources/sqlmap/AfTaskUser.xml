@@ -40,7 +40,66 @@
         </if>
     </sql>
 
-    
+    <insert id="insertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
+        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+        INSERT INTO af_task_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="coinAmount != null">
+                coin_amount,
+            </if>
+            <if test="cashAmount != null">
+                cash_amount,
+            </if>
+            <if test="couponId != null">
+                coupon_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="taskId != null" >
+                #{taskUserDo.taskId,jdbcType=INTEGER},
+            </if>
+            <if test="coinAmount != null" >
+                #{coinAmount,jdbcType=INTEGER},
+            </if>
+            <if test="cashAmount != null" >
+                #{cashAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="couponId != null" >
+                #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
     <insert id="batchInsertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
@@ -70,7 +129,7 @@
 	            coupon_id,
 	        </if>
             <if test="status != null">
-                status
+                status,
             </if>
         </trim>
         values
@@ -97,7 +156,7 @@
 		       #{taskUserDo.couponId,jdbcType=INTEGER},
 		    </if>
             <if test="status != null" >
-                #{taskUserDo.status,jdbcType=INTEGER}
+                #{taskUserDo.status,jdbcType=INTEGER},
             </if>
         </foreach>
     </insert>
