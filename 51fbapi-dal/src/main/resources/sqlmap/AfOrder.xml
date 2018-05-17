@@ -1449,6 +1449,13 @@
 		and iagent_status ='C'
 	</select>
 
+	<select id="getUserFirstBigOrderDate" resultType="java.lang.String" >
+		SELECT
+		date_format(min(gmt_create),'%Y-%m-%d %H:%i:%s')
+		FROM af_order
+		WHERE user_id=#{userId} and actual_amount >= #{amount}
+	</select>
+
 	<select id="getFinishOrderCount" resultType="java.lang.Integer" parameterType="java.lang.Long">
 		SELECT count(id) FROM af_order where is_delete = 0 AND order_type = 'SELFBUILD' AND status in ('FINISHED','REBATED') AND user_id = #{userId}
 	</select>

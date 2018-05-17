@@ -37,6 +37,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dbunit.util.Base64;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -951,6 +952,10 @@ public class RiskUtil extends AbstractThird {
 			summaryOrderData.put("gpsUnanimous",(summaryOrderData.get("gpsUnanimous")==null||"".equals(summaryOrderData.get("gpsUnanimous")))?"true":((String)summaryOrderData.get("gpsUnanimous")).contains(orderDo.getProvince())?"true":"false");
 
 		}
+
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("WEAK_RISK","FIRST_ORDER_THRESHOLD");
+		String firstBigOrderDate = afOrderService.getUserFirstBigOrderDate(Long.parseLong(consumerNo),Integer.parseInt(afResourceDo.getValue()));
+		summaryOrderData.put("firstBigStrong",firstBigOrderDate);
 		reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
 		reqBo.setReqExt("");
 
@@ -1013,7 +1018,7 @@ public class RiskUtil extends AbstractThird {
 			if(riskResp!=null){
 				try{
 					String risk_error_type="risk_error_type_"+riskResp.getCode();
-					AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype(risk_error_type);
+					afResourceDo= afResourceService.getSingleResourceBytype(risk_error_type);
 
 					if(afResourceDo!=null){
 						throw new FanbeiException(afResourceDo.getValue(),true);
@@ -1185,8 +1190,6 @@ public class RiskUtil extends AbstractThird {
 	 *            订单编号
 	 * @param verifybo
 	 *            风控返回结果
-	 * @param virtualCode
-	 *            虚拟值 虚拟值
 	 * @return
 	 */
 	public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow,
@@ -2640,11 +2643,6 @@ public class RiskUtil extends AbstractThird {
 
 	/**
 	 * 51公积金认证风控异步通知
-	 * 
-	 * @param consumerNo
-	 *            --用户唯一标识
-	 * @param userName
-	 *            --用户名
 	 * @return
 	 */
 	public int newFundNotify(String code, String data, String msg, String signInfo) {
@@ -3159,13 +3157,10 @@ public class RiskUtil extends AbstractThird {
 	 * @param phone
 	 * @param blackBox
 	 * @param deviceUuid
-	 * @param loginType
-	 * @param loginTime
 	 * @param ip
 	 * @param phoneType
 	 * @param networkType
 	 * @param osType
-	 * @param result
 	 * @param event
 	 */
 	public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid,
@@ -3544,7 +3539,6 @@ public class RiskUtil extends AbstractThird {
 	 * 获取用户分层利率
 	 * 
 	 * @param userId
-	 * @param rate
 	 * @return
 	 */
 	public BigDecimal getRiskOriRate(Long userId, JSONObject param) {
@@ -3584,7 +3578,6 @@ public class RiskUtil extends AbstractThird {
 	 * 获取用户分层利率
 	 * 
 	 * @param userId
-	 * @param rate
 	 * @return
 	 */
 	public BigDecimal getRiskOriRate(Long userId, JSONObject param, String borrowType) {
@@ -3750,7 +3743,6 @@ public class RiskUtil extends AbstractThird {
 	/**
 	 * 借款时间
 	 *
-	 * @param afBorrowCashDo
 	 * @return
 	 */
 	public int borrowTime(final String type) {
@@ -3940,7 +3932,7 @@ public class RiskUtil extends AbstractThird {
 		String url = getUrl()+ "/modules/api/thrid/userReplenishQuota.htm";
 
 		String reqResult = requestProxy.post(url, reqBo);
-		logThird(reqResult, "userSupplementQuota", reqBo);
+		logThird(reqResult, "userReplenishQuota", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_AMOUNT_ERROR);
 		}
