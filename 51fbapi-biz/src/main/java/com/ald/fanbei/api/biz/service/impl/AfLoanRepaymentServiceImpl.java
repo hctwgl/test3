@@ -1354,9 +1354,6 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		AfLoanPeriodsDo loanPeriodDo = afLoanPeriodsDao.getLastActivePeriodByLoanId(loanId);
 		logger.info("AfLoanRepaymentServiceImpl getLoanPeriodsIds loanPeriodDo =>{}",JSONObject.toJSONString(loanPeriodDo)+",loanId="+loanId+",repaymentAmount="+repaymentAmount);
 		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
-		int mostNper = BigDecimalUtil.divHalfUp(repaymentAmount, BigDecimalUtil.add(loanPeriodDo.getAmount(),
-				loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
-				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()).subtract(loanPeriodDo.getRepayAmount()), 0).intValue();
 		BigDecimal restAmount = BigDecimal.ZERO;
 		Integer nper = loanPeriodDo.getNper();
 		
