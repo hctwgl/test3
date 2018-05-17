@@ -82,6 +82,9 @@ public class MineHomeApi implements ApiHandle {
     @Autowired
     private AfLoanPeriodsService afLoanPeriodsService;
 
+    @Autowired
+    private AfResourceH5ItemService afResourceH5ItemService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -221,6 +224,13 @@ public class MineHomeApi implements ApiHandle {
             }
         }
 
+        // 信用中心（爱花）跳转链接配置
+        List<AfResourceH5ItemDo> itemList = afResourceH5ItemService
+                .findListByModelTagAndSort(H5ResourceType.MINE_HOME_LOVE_SHOP.getTag(),
+                        H5ResourceType.MINE_HOME_LOVE_SHOP.getSort());
+        if (CollectionUtil.isNotEmpty(itemList)) {
+            data.setLoveShopSkipUrl(itemList.get(0).getValue1());
+        }
     }
 
     // 填充账户信息
@@ -301,7 +311,7 @@ public class MineHomeApi implements ApiHandle {
         int nrSize = navigationResources.size();
         for (int i =0; i < nrSize; i++) {
             // 如果配置大于4个，小于8个，则只显示4个
-            if (nrSize >= 4 && nrSize < 8) {
+            /*if (nrSize >= 4 && nrSize < 8) {
                 if (i >= 4) {
                     break;
                 }
@@ -312,7 +322,7 @@ public class MineHomeApi implements ApiHandle {
                 }
             }else if(nrSize < 4 ){
                 break;
-            }
+            }*/
 
             AfResourceDo nr = navigationResources.get(i);
             Map<String, Object> dataMap = new HashMap<String, Object>();
