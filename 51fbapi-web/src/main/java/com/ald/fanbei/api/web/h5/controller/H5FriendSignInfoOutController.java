@@ -37,7 +37,7 @@ import java.util.*;
  *签到领金币朋友帮签
  */
 @RestController
-@RequestMapping(value = "/signReward/")
+@RequestMapping(value = "/friendSignReward/")
 public class H5FriendSignInfoOutController extends H5Controller {
 
     @Resource
