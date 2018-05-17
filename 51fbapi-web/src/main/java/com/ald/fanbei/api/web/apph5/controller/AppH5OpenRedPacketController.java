@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.bo.OpenRedPacketHomeBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.WxUtil;
@@ -78,6 +79,9 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     @Autowired
     private BaiQiShiUtils baiQiShiUtils;
+
+    @Autowired
+    private SmsUtil smsUtil;
 
     /**
      * 获取红包主页信息（站内）
@@ -262,6 +266,31 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String sendVerifyCode(String mobile) {
+        try {
+            if (StringUtils.isBlank(mobile)) {
+                return H5CommonResponse.getNewInstance(false, "手机号不能未空").toString();
+            }
+
+            //查看短信60秒内是否发过
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.MOBILE_BIND.getCode());
+            if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
+                if (!DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
+                    return H5CommonResponse.getNewInstance(false, "验证码60秒内已获取过").toString();
+                }
+            }
+
+            boolean isSucess = smsUtil.sendMobileBindVerifyCode(mobile,SmsType.MOBILE_BIND,1L);
+            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();
+        } catch (FanbeiException e) {
+            return handleFanbeiException(e);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
@@ -313,7 +342,7 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     // 验证验证码
     private void validateVerifyCode(String verifyCode, String mobile) {
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.MOBILE_BIND.getCode());
         if (smsDo == null) {
             logger.error("/redPacket/bindPhoneAndOpen, error=sms record is empty");
             throw new FanbeiException("手机号与验证码不匹配");
