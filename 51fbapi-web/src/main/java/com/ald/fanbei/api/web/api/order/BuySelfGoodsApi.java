@@ -194,6 +194,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 		}
 		actualAmount=afGoodsPriceDo.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
+		if(actualAmount.compareTo(BigDecimal.ZERO)<=0){
+			actualAmount = new BigDecimal(0.01);
+		}
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setCouponAmount(couponAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
