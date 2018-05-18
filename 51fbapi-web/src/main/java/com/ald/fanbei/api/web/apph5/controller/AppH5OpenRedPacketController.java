@@ -182,6 +182,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String selfOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/open:" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
                     .open(userDo.getRid(), userDo.getUserName(), param.getSourceType());
