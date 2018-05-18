@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * 分类运营位配置实体
@@ -123,4 +124,18 @@ import java.math.BigDecimal;
     */
    private Date taskEndTime;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AfTaskDo afTaskDo = (AfTaskDo) o;
+        return Objects.equals(rid, afTaskDo.rid) &&
+                Objects.equals(taskName, afTaskDo.taskName);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(rid, taskName);
+    }
 }

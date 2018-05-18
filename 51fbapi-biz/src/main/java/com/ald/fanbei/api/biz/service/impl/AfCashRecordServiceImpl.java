@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -112,6 +113,11 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public AfCashRecordDo getCashRecordById(Long id){
+		return afCashRecordDao.getCashRecordById(id);
 	}
 
 }

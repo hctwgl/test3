@@ -476,4 +476,11 @@ public interface AfOrderService {
 	 */
 	int getFinishOrderCount(Long userId);
 
+	/**
+	 * 查询前days天支付完成的自营商城订单（PAID/DELIVERED）
+	 * @param days
+	 * @return
+	 */
+	int getPaidOrderBeforeDays(Integer days);
+
 }

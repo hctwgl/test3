@@ -606,8 +606,28 @@ public class Constants {
     public static final Integer TASK_USER_REWARD_STATUS_2 = 2;
 
 	/**
+	 * 金币已经自动兑换成零钱
+	 */
+	public static final Integer TASK_USER_REWARD_STATUS_3 = 3;
+
+	/**
+	 * 零钱类型
+	 */
+	public static final String VALLET_DETAIL_TYPE_CASH = "cash";
+
+	/**
+	 * 金币类型
+	 */
+	public static final String VALLET_DETAIL_TYPE_COIN = "coin";
+
+	/**
 	 * 浏览商品数量任务的配置
 	 */
 	public static final String BROWSE_TASK = "BROWSE_TASK";
+
+	/**
+	 * 金币兑换余额最大比例配置
+	 */
+	public static final String COIN_EXCHENGE_CASH_MAX_PROPORTION = "COIN_EXCHENGE_CASH_MAX_PROPORTION";
 
 }

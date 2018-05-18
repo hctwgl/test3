@@ -265,7 +265,7 @@
         ORDER BY gmt_create
     </select>
 
-    <select id="getTaskListByTaskTypeAndUserLevel" resultType="AfTaskDto">
+    <select id="getTaskListByTaskTypeAndUserLevel" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
         select
         <include refid="taskDto" />
         from af_task
@@ -283,6 +283,44 @@
             #{item}
         </foreach>
         order by gmt_create DESC
+    </select>
+
+    <select id="getNotDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task t
+        LEFT JOIN (
+            SELECT u.task_id, u.user_id, u.gmt_modified
+            FROM af_task_user u
+            WHERE u.is_delete = 0
+              AND u.user_id = #(userId)
+        ) a ON t.id = a.task_id
+        WHERE t.is_delete = 0
+        AND t.is_open = 1
+        AND t.task_type = #{taskType}
+        AND t.task_begin_time <![CDATA[   <=  ]]> now()
+        And t.task_end_time <![CDATA[   >  ]]> now()
+        ORDER BY t.gmt_create DESC
+    </select>
+
+    <select id="getDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task t
+        LEFT JOIN (
+            SELECT u.task_id, u.user_id, u.gmt_modified
+            FROM af_task_user u
+            WHERE u.is_delete = 0
+              AND u.user_id = #(userId)
+              AND date(u.gmt_create) = CURDATE()
+        ) a ON t.id = a.task_id
+        WHERE t.is_delete = 0
+        AND t.is_open = 1
+        AND t.is_daily_update = 1
+        AND t.task_type = #{taskType}
+        AND t.task_begin_time <![CDATA[   <=  ]]> now()
+        And t.task_end_time <![CDATA[   >  ]]> now()
+        ORDER BY t.gmt_create DESC
     </select>
 
 

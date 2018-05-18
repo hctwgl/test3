@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 分类运营位配置Dao
@@ -23,12 +24,14 @@ public interface AfTaskUserDao  {
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
-    List<AfTaskUserDo> getNotDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
-
-    List<AfTaskUserDo> getDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
-
     int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
     int batchInsertTaskUserDo(@Param("taskUserDoList") List<AfTaskUserDo> taskUserDoList);
+
+    Long getAvailableCoinAmount(@Param("userId") Long userId);
+
+    List<Map<String, Object>> getIncomeOfNearlySevenDays(@Param("userId") Long userId);
+
+    List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("detailType") String detailType);
 
 }

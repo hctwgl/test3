@@ -5,7 +5,6 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTaskBrowseGoodsDaysDao;
 import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo;
 import com.ald.fanbei.api.biz.service.AfTaskBrowseGoodsDaysService;
@@ -41,7 +40,12 @@ public class AfTaskBrowseGoodsDaysServiceImpl implements AfTaskBrowseGoodsDaysSe
 	}
 
 	@Override
-	public AfTaskBrowseGoodsDaysDo getByUserId(Long userId){
-		return afTaskBrowseGoodsDaysDao.getByUserId(userId);
+	public AfTaskBrowseGoodsDaysDo isUserAttend(Long userId){
+		return afTaskBrowseGoodsDaysDao.isUserAttend(userId);
+	}
+
+	@Override
+	public AfTaskBrowseGoodsDaysDo isCompletedTaskYestaday(Long userId){
+		return afTaskBrowseGoodsDaysDao.isCompletedTaskYestaday(userId);
 	}
 }

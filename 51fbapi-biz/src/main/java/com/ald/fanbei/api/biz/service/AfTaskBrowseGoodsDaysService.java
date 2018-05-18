@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * 持续完成浏览商品数量的天数Service
@@ -16,5 +15,12 @@ public interface AfTaskBrowseGoodsDaysService{
 
     int updateTaskBrowseGoodsDays(Long userId, Integer continueDays);
 
-    AfTaskBrowseGoodsDaysDo getByUserId(Long userId);
+    AfTaskBrowseGoodsDaysDo isUserAttend(Long userId);
+
+    /**
+     * 用户昨天是否完成任务
+     * @param userId
+     * @return
+     */
+    AfTaskBrowseGoodsDaysDo isCompletedTaskYestaday(Long userId);
 }

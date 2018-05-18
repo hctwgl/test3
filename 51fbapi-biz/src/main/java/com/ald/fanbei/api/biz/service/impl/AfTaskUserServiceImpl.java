@@ -2,28 +2,23 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfTaskService;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfTaskSecType;
 import com.ald.fanbei.api.common.enums.AfTaskType;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfTaskDo;
-import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
+import com.ald.fanbei.api.dal.domain.*;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTaskUserDao;
-import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
-import com.ald.fanbei.api.biz.service.AfTaskUserService;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -49,6 +44,15 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     @Resource
     private AfGoodsService afGoodsService;
 
+    @Resource
+    private AfOrderService afOrderService;
+
+    @Resource
+    private AfResourceService afResourceService;
+
+    @Resource
+    private BizCacheUtil bizCacheUtil;
+
 
     @Override
 	public List<AfTaskUserDo> isDailyTaskList(Long userId, List<Long> list){
@@ -71,16 +75,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
-	public List<AfTaskUserDo> getNotDailyTaskListByUserId(Long userId, String afTaskType){
-		return afTaskUserDao.getNotDailyTaskListByUserId(userId, afTaskType);
-	}
-
-	@Override
-	public List<AfTaskUserDo> getDailyTaskListByUserId(Long userId, String afTaskType){
-		return afTaskUserDao.getDailyTaskListByUserId(userId, afTaskType);
-	}
-
-	@Override
 	public int insertTaskUserDo(AfTaskUserDo afTaskUserDo){
 		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
 	}
@@ -97,7 +91,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
-			List<AfTaskDto> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
+			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
@@ -106,13 +100,13 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				Long categoryId = goodsDo.getCategoryId();
 
 				// 非每日更新,用户已完成任务
-				List<AfTaskUserDo> notDailyTaskUserList = getNotDailyTaskListByUserId(userId, afTaskType);
+				List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, afTaskType);
 
 				// 每日更新任务，用户今日完成任务
-				List<AfTaskUserDo> dailyTaskUserList = getDailyTaskListByUserId(userId, afTaskType);
+				List<AfTaskDo> dailyTaskUserList = afTaskService.getDailyTaskListByUserId(userId, afTaskType);
 
 				// 用户完成的任务
-				List<AfTaskUserDo> taskUserCompleteList = Lists.newArrayList();
+				List<AfTaskDo> taskUserCompleteList = Lists.newArrayList();
 				if (null != notDailyTaskUserList && !notDailyTaskUserList.isEmpty()) {
 					taskUserCompleteList.addAll(notDailyTaskUserList);
 				}
@@ -122,16 +116,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				}
 
 				if (!taskUserCompleteList.isEmpty()) {
-					AfTaskDto taskDto;
-					Iterator<AfTaskDto> iter = taskList.iterator();
-					while(iter.hasNext()){
-						taskDto = iter.next();
-						for(AfTaskUserDo taskUserDo: taskUserCompleteList){
-							if(taskDto.getRid().equals(taskUserDo.getTaskId())){
-								iter.remove();
-							}
-						}
-					}
+					taskList.removeAll(taskUserCompleteList);
 				}
 
 				List<AfTaskUserDo> taskUserDoList = Lists.newArrayList();
@@ -171,10 +156,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return result;
 	}
 
-	public void browseTaskHandler(Long userId, Long goodsId, String taskContition){
-
-    }
-
 	@Override
 	public boolean taskHandler(Long userId, String afTaskType, String taskCondition) {
 		logger.info("afTaskUser start..");
@@ -182,17 +163,17 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
-			List<AfTaskDto> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, taskCondition);
+			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, taskCondition);
 			if (null != taskList && !taskList.isEmpty()) {
-				List<AfTaskUserDo> notDailyTaskUserList = getNotDailyTaskListByUserId(userId, afTaskType);
-				List<AfTaskUserDo> dailyTaskUserList = null;
+				List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, afTaskType);
+				List<AfTaskDo> dailyTaskUserList = null;
 
 				// 实名认证、强风控通过没有每日更新任务
 				if (!StringUtils.equals(AfTaskType.VERIFIED.getCode(), afTaskType) || !StringUtils.equals(AfTaskType.STRONG_RISK.getCode(), afTaskType)) {
-					dailyTaskUserList = getDailyTaskListByUserId(userId, afTaskType);
+					dailyTaskUserList = afTaskService.getDailyTaskListByUserId(userId, afTaskType);
 				}
 
-				List<AfTaskUserDo> taskUserCompleteList = Lists.newArrayList();
+				List<AfTaskDo> taskUserCompleteList = Lists.newArrayList();
 				if (null != notDailyTaskUserList && !notDailyTaskUserList.isEmpty()) {
 					taskUserCompleteList.addAll(notDailyTaskUserList);
 				}
@@ -202,16 +183,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				}
 
 				if (!taskUserCompleteList.isEmpty()) {
-					AfTaskDto taskDto;
-					Iterator<AfTaskDto> iter = taskList.iterator();
-					while (iter.hasNext()) {
-						taskDto = iter.next();
-						for (AfTaskUserDo taskUserDo : taskUserCompleteList) {
-							if (taskDto.getRid().equals(taskUserDo.getTaskId())) {
-								iter.remove();
-							}
-						}
-					}
+					taskList.removeAll(taskUserCompleteList);
 				}
 
 				if (!taskList.isEmpty()) {
@@ -233,6 +205,42 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		}
 		logger.info("afTaskUser end..");
 		return result;
+	}
+
+	@Override
+	public Long getAvailableCoinAmount(Long userId){
+    	return afTaskUserDao.getAvailableCoinAmount(userId);
+	}
+
+	@Override
+	public double getExchangeProportion(){
+		Double exchangeProportion = (Double) bizCacheUtil.getObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION);
+		if(null == exchangeProportion || exchangeProportion.doubleValue() == 0l){
+			int paidOrderCountWithinTwoDays = afOrderService.getPaidOrderBeforeDays(2);
+			int paidOrderCountWithinOneDays = afOrderService.getPaidOrderBeforeDays(1);
+			exchangeProportion = (double)paidOrderCountWithinOneDays / (paidOrderCountWithinTwoDays - paidOrderCountWithinOneDays);
+
+			// 配置的最大兑换比例
+			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.COIN_EXCHENGE_CASH_MAX_PROPORTION);
+			String value = resourceDo.getValue();
+			Double maxExchangeProportion = StringUtils.isEmpty(value) ? 2l : Double.parseDouble(value);
+			if(exchangeProportion > maxExchangeProportion){
+				exchangeProportion = maxExchangeProportion;
+			}
+
+			bizCacheUtil.saveObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION, exchangeProportion, Constants.SECOND_OF_AN_HOUR_INT);
+		}
+
+		return exchangeProportion;
+	}
+
+	@Override
+	public List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId){
+    	return afTaskUserDao.getIncomeOfNearlySevenDays(userId);
+	}
+
+	public List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType){
+		return afTaskUserDao.getDetailsByUserId(userId,detailType);
 	}
 
 	/**
@@ -260,16 +268,17 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		AfTaskUserDo taskUserDo = new AfTaskUserDo();
 
         int rewardType = taskDo.getRewardType();
-//        if(0 == rewardType){
-//            taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-//        }
-//        else if(1 == rewardType){
-//            taskUserDo.setCashAmount(taskDo.getCashAmount());
-//        }
-//        else{
-//            taskUserDo.setCouponId(taskDo.getCouponId());
-//        }
+        if(0 == rewardType){
+            taskUserDo.setCoinAmount(taskDo.getCoinAmount());
+        }
+        else if(1 == rewardType){
+            taskUserDo.setCashAmount(taskDo.getCashAmount());
+        }
+        else{
+            taskUserDo.setCouponId(taskDo.getCouponId());
+        }
 		taskUserDo.setTaskId(taskDo.getRid());
+        taskUserDo.setTaskName(taskDo.getTaskName());
 		taskUserDo.setUserId(userId);
 		taskUserDo.setGmtCreate(new Date());
 

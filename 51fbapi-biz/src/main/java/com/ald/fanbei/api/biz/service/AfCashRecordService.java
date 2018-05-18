@@ -20,4 +20,11 @@ public interface AfCashRecordService {
 	
 	int addCashRecord(AfCashRecordDo afCashRecordDo,AfUserBankcardDo card);
 
+	/**
+	 * 查询提现详情
+	 * @param id
+	 * @return
+	 */
+	AfCashRecordDo getCashRecordById(Long id);
+
 }

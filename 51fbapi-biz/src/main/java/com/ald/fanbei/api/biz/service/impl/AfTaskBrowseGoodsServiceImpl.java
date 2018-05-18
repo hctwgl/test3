@@ -12,14 +12,10 @@ import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTaskBrowseGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDo;
 import com.ald.fanbei.api.biz.service.AfTaskBrowseGoodsService;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Date;
 
@@ -80,43 +76,74 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
 
         String value1 = resourceDo.getValue1();
         String[] coinAmountArray = value1.split(",");
-        AfTaskBrowseGoodsDaysDo taskBrowseGoodsDaysDo = afTaskBrowseGoodsDaysService.getByUserId(userId);
+        AfTaskBrowseGoodsDaysDo taskBrowseGoodsDaysDo;
         int continueDays = 0;
-        if(null != taskBrowseGoodsDaysDo){
-            continueDays = taskBrowseGoodsDaysDo.getContinueDays();
-        }
-
         Long coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+        if(null == afTaskBrowseGoodsDaysService.isUserAttend(userId)){
+            addBrowseGoodsTaskUser(userId, goodsId);
 
-        if(null == isExisted(userId, goodsId)){
-            int countToday = countBrowseGoodsToday(userId);
-            if(setCount > countToday){
-                int addFlag = addBrowseGoodsTaskUser(userId, goodsId);
-                if(0 < addFlag){
-                    countToday = countToday + 1;
-                }
-            }
+            taskBrowseGoodsDaysDo = new AfTaskBrowseGoodsDaysDo();
+            taskBrowseGoodsDaysDo.setContinueDays(continueDays + 1);
+            taskBrowseGoodsDaysDo.setGmtCreate(new Date());
+            taskBrowseGoodsDaysDo.setLastCompleteTaskDate(new Date());
+            taskBrowseGoodsDaysDo.setUserId(userId);
+            afTaskBrowseGoodsDaysService.addTaskBrowseGoodsDays(taskBrowseGoodsDaysDo);
 
-            if(setCount == countToday){
-                String value2 = resourceDo.getValue2();
-                Integer setCoutinueDays = Integer.parseInt(value2);
-                if(continueDays < setCoutinueDays - 1) {
-                    afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays + 1);
-                }
-                else{
-                    afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays);
-                }
+            AfTaskUserDo taskUserDo = new AfTaskUserDo();
+            taskUserDo.setGmtCreate(new Date());
+            taskUserDo.setCoinAmount(coinAmount);
+            taskUserDo.setUserId(userId);
+            taskUserDo.setTaskName("浏览商品数量任务");
+            taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
 
-                AfTaskUserDo taskUserDo = new AfTaskUserDo();
-                taskUserDo.setGmtCreate(new Date());
-                taskUserDo.setCoinAmount(coinAmount);
-                taskUserDo.setUserId(userId);
-                taskUserDo.setTaskId(0l);
-                taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
-
-                result = afTaskUserService.insertTaskUserDo(taskUserDo);
-            }
+            result = afTaskUserService.insertTaskUserDo(taskUserDo);
         }
+        else{
+            taskBrowseGoodsDaysDo = afTaskBrowseGoodsDaysService.isCompletedTaskYestaday(userId);
+            if(null != taskBrowseGoodsDaysDo){
+                continueDays = taskBrowseGoodsDaysDo.getContinueDays();
+            }
+
+            coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+
+            if(null == isExisted(userId, goodsId)){
+                int countToday = countBrowseGoodsToday(userId);
+                if(setCount > countToday){
+                    int addFlag = addBrowseGoodsTaskUser(userId, goodsId);
+                    if(0 < addFlag){
+                        countToday = countToday + 1;
+                    }
+                }
+
+                if(setCount == countToday){
+                    String value2 = resourceDo.getValue2();
+                    Integer setCoutinueDays = Integer.parseInt(value2);
+                    if(continueDays < setCoutinueDays - 1) {
+                        afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays + 1);
+                    }
+                    else{
+                        afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays);
+                    }
+
+                    AfTaskUserDo taskUserDo = new AfTaskUserDo();
+                    taskUserDo.setGmtCreate(new Date());
+                    taskUserDo.setCoinAmount(coinAmount);
+                    taskUserDo.setUserId(userId);
+                    taskUserDo.setTaskName("浏览商品数量任务");
+                    taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
+
+                    result = afTaskUserService.insertTaskUserDo(taskUserDo);
+                }
+            }
+
+        }
+
+
+
+
+
+
+
 
         return result;
     }

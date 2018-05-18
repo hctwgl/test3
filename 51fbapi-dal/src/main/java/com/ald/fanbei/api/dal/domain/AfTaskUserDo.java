@@ -46,6 +46,11 @@ import java.math.BigDecimal;
      */
     private Long taskId;
 
+   /**
+    * 任务名称
+    */
+   private String taskName;
+
     /**
      * 金币数量
      */
@@ -61,6 +66,9 @@ import java.math.BigDecimal;
      */
     private Long couponId;
 
+    /**
+     * 奖励是否领取:0：未领取；1：主动领取；2：自动领取；3：金币已经兑换
+     */
     private Integer status;
 
 }

@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,task_id,coin_amount,cash_amount,coupon_id,status
+        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -59,6 +59,9 @@
             <if test="taskId != null">
                 task_id,
             </if>
+            <if test="taskName != null">
+                task_name,
+            </if>
             <if test="coinAmount != null">
                 coin_amount,
             </if>
@@ -83,7 +86,10 @@
                 #{userId,jdbcType=INTEGER},
             </if>
             <if test="taskId != null" >
-                #{taskUserDo.taskId,jdbcType=INTEGER},
+                #{taskId,jdbcType=INTEGER},
+            </if>
+            <if test="taskName != null">
+                #{taskName,jdbcType=VARCHAR},
             </if>
             <if test="coinAmount != null" >
                 #{coinAmount,jdbcType=INTEGER},
@@ -119,6 +125,9 @@
 	        <if test="taskId != null">        
 	            task_id,
 	        </if>
+            <if test="taskName != null">
+                task_name,
+            </if>
 	        <if test="coinAmount != null">        
 	            coin_amount,
 	        </if>
@@ -146,6 +155,9 @@
 		    <if test="taskId != null" >
 		       #{taskUserDo.taskId,jdbcType=INTEGER},
 		    </if>
+            <if test="taskName != null">
+                #{taskUserDo.taskName,jdbcType=VARCHAR},
+            </if>
 		    <if test="coinAmount != null" >
 		       #{taskUserDo.coinAmount,jdbcType=INTEGER},
 		    </if>
@@ -297,29 +309,58 @@
         WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}
     </update>
 
-    <select id="getNotDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+    <select id="getAvailableCoinAmount" resultType="java.lang.Long">
         SELECT
-        <include refid="queryFields" />
+        count(1)
         FROM af_task_user
-        WHERE is_delete = 0
-        AND is_open = 1
-        AND is_daily_update = 0
-        AND user_id = #{userId}
-        AND task_type = #{taskType}
-        ORDER BY gmt_create
+        WHERE user_id = #{userId}
+        AND status in ('1','2')
     </select>
 
-    <select id="getDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+    <select id="getIncomeOfNearlySevenDays" resultType="java.util.HashMap">
+        SELECT a.rewardDate AS rewardDate, IFNULL(b.cashAmount, 0) AS cashAmount
+        FROM (
+            SELECT curdate() AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 1 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 2 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 3 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 4 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 5 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 6 DAY) AS rewardDate
+        ) a
+        LEFT JOIN (
+            SELECT date(gmt_modified) AS rewardDate, SUM(cash_amount) AS cashAmount
+            FROM af_task_user where user_id = #{user_id} and status in ('1','2')
+            GROUP BY rewardDate
+        ) b ON a.rewardDate = b.rewardDate
+        ORDER BY a.rewardDate DESC
+    </select>
+
+    <select id="getDetailsByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
         <include refid="queryFields" />
         FROM af_task_user
         WHERE is_delete = 0
-        AND is_open = 1
-        AND is_daily_update = 1
         AND user_id = #{userId}
-        AND task_type = #{taskType}
-        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
-        ORDER BY gmt_create
+        <if test="detailType==coin">
+            AND coin_amount != 0
+            AND status in ('1','2','3')
+        </if>
+        <if test="detailType==cash">
+            AND cash_amount != 0
+            AND status in ('1','2')
+        </if>
+        and user_id = #{userId,jdbcType=INTEGER}
+        ORDER BY gmt_create desc
     </select>
+
+
+
 
 </mapper>

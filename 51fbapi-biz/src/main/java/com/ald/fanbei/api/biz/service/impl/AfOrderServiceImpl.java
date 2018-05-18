@@ -3276,4 +3276,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	public int getFinishOrderCount(Long userId){
 		return orderDao.getFinishOrderCount(userId);
 	}
+
+	@Override
+	public int getPaidOrderBeforeDays(Integer days){
+		return orderDao.getPaidOrderBeforeDays(days);
+	}
 }

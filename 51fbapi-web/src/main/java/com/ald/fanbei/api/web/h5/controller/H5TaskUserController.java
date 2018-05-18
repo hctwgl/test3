@@ -6,7 +6,6 @@ import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.AfTaskType;
-import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;

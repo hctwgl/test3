@@ -8,8 +8,6 @@ import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
@@ -18,13 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTaskDao;
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
 import com.ald.fanbei.api.biz.service.AfTaskService;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Date;
 import java.util.List;
 
@@ -133,6 +129,16 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
+    public List<AfTaskDo> getNotDailyTaskListByUserId(Long userId, String afTaskType) {
+        return afTaskDao.getNotDailyTaskListByUserId(userId, afTaskType);
+    }
+
+    @Override
+    public List<AfTaskDo> getDailyTaskListByUserId(Long userId, String afTaskType) {
+        return afTaskDao.getDailyTaskListByUserId(userId, afTaskType);
+    }
+
+    @Override
     public List<Integer> getUserLevelByUserId(Long userId){
         List<Integer> userLevelList = Lists.newArrayList();
         // 所有用户
@@ -174,7 +180,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
-    public List<AfTaskDto> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition){
+    public List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition){
         return afTaskDao.getTaskListByTaskTypeAndUserLevel(taskType, userLevelList, taskContition);
     }
 

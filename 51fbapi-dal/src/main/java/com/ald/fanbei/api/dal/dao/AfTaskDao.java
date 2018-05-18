@@ -20,6 +20,10 @@ public interface AfTaskDao {
 
     AfTaskDo getTaskByTaskId(@Param("taskId")Long taskId);
 
-    List<AfTaskDto> getTaskListByTaskTypeAndUserLevel(@Param("taskType") String taskType, @Param("userLevelList") List<Integer> userLevelList, @Param("taskContition") String taskContition);
+    List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(@Param("taskType") String taskType, @Param("userLevelList") List<Integer> userLevelList, @Param("taskContition") String taskContition);
+
+    List<AfTaskDo> getNotDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
+
+    List<AfTaskDo> getDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
 
 }

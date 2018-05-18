@@ -1,9 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 分类运营位配置Service
@@ -22,10 +22,6 @@ public interface AfTaskUserService {
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
-    List<AfTaskUserDo> getNotDailyTaskListByUserId(Long userId, String afTaskType);
-
-    List<AfTaskUserDo> getDailyTaskListByUserId(Long userId, String afTaskType);
-
     int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
     int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
@@ -33,4 +29,12 @@ public interface AfTaskUserService {
     boolean browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType);
 
     boolean taskHandler(Long userId, String afTaskType, String taskCondition);
+
+    Long getAvailableCoinAmount(Long userId);
+
+    double getExchangeProportion();
+
+    List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
+
+    List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType);
 }

@@ -15,10 +15,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
- public class AfTaskDto extends AfTaskDo {
+ public class AfTaskDto extends AfTaskDo{
 
 
       private String receiveReward;
-
-
 }

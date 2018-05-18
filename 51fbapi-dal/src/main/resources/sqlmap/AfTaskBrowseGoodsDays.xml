@@ -61,13 +61,21 @@
         WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
     </update>
 
-	<select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo">
+	<select id="isUserAttend" resultType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo">
         SELECT
         <include refid="queryFields" />
         FROM af_task_browse_goods_days
         WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
-		AND TO_DAYS( NOW( ) ) - TO_DAYS(last_complete_task_date) <![CDATA[  <=  ]]> 1
         LIMIT 0,1
     </select>
+
+	<select id="isCompletedTaskYestaday" resultType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_task_browse_goods_days
+		WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
+		AND TO_DAYS( NOW( ) ) - TO_DAYS(last_complete_task_date) <![CDATA[  <  ]]> 1
+		LIMIT 0,1
+	</select>
 
 </mapper>
