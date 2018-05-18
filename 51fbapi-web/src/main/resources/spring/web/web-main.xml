@@ -637,6 +637,9 @@
 				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
 				<entry key="/h5/reward/getSignReward" value-ref="getSignRewardApi" />
 				<entry key="/h5/reward/friendSignInfo" value-ref="friendSignInfoApi" />
+				<entry key="/h5/reward/doFinishTask" value-ref="doFinishTaskApi" />
+				<entry key="/h5/reward/supplementSignInfo" value-ref="supplementSignInfoApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>

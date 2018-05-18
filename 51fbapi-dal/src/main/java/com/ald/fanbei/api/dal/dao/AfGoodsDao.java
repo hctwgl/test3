@@ -150,4 +150,6 @@ public interface AfGoodsDao {
 	List<Map<String, Object>> getGoodsByIds(@Param("list") List<Long> goodList);
 
 	List<AfGoodsDo> getAfGoodsListByBrandId(AfGoodsQuery goodsQuery);
+
+	List<HashMap> getTaskGoodsList(AfGoodsQuery goodsQuery);
 }

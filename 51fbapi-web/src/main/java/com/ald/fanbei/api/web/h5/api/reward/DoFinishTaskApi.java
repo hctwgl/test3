@@ -60,7 +60,7 @@ public class DoFinishTaskApi implements H5Handle {
         String taskCondition = ObjectUtils.toString(context.getData("taskCondition"),null);
         Integer pageNo = NumberUtil.objToPageIntDefault(context.getData("pageNo").toString(), 1);
         Integer pageSize = NumberUtil.objToPageIntDefault(context.getData("pageSize").toString(), 10);
-        List<AfGoodsDo> goodsList = new ArrayList<AfGoodsDo>();
+        List<HashMap> goodsList = new ArrayList<HashMap>();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if(StringUtil.equals(taskType, TaskType.browse.getCode()) || StringUtil.equals(taskType, TaskType.shopping.getCode()) ){
             if(StringUtil.equals(taskSecType, TaskSecType.brand.getCode())){
@@ -68,13 +68,13 @@ public class DoFinishTaskApi implements H5Handle {
                 query.setBrandId(Long.parseLong(taskCondition));
                 query.setPageNo(pageNo);
                 query.setPageSize(pageSize);
-                goodsList = afGoodsService.getAfGoodsListByBrandId(query);
+                goodsList = afGoodsService.getTaskGoodsList(query);
             }else if(StringUtil.equals(taskSecType, TaskSecType.category.getCode())){
                 AfGoodsQuery query = new AfGoodsQuery();
                 query.setCategoryId(Long.parseLong(taskCondition));
                 query.setPageNo(pageNo);
                 query.setPageSize(pageSize);
-                goodsList = afGoodsService.getGoodsVerifyByCategoryId(query);
+                goodsList = afGoodsService.getTaskGoodsList(query);
             }
         }
         //获取借款分期配置信息
@@ -83,29 +83,25 @@ public class DoFinishTaskApi implements H5Handle {
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        for (AfGoodsDo goods : goodsList) {
+        for (HashMap goods : goodsList) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
-            goodsInfo.put("goodName", goods.getName());
-            goodsInfo.put("rebateAmount", goods.getRebateAmount());
-            goodsInfo.put("priceAmount", goods.getPriceAmount());
-            goodsInfo.put("saleAmount", goods.getPriceAmount());
-            goodsInfo.put("goodsIcon", goods.getGoodsIcon());
-            goodsInfo.put("goodsId", goods.getRid());
+            goodsInfo.put("goodName", goods.get("name"));
+            goodsInfo.put("rebateAmount", goods.get("rebate_amount"));
+            goodsInfo.put("priceAmount", goods.get("price_amount"));
+            goodsInfo.put("saleAmount", goods.get("sale_amount"));
+            goodsInfo.put("goodsIcon", goods.get("goods_icon"));
+            goodsInfo.put("goodsId", goods.get("id"));
             // 如果是分期免息商品，则计算分期
-            Long goodsId = goods.getRid();
-            HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
-            if (afActivityGoods != null) {
-                goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
-            }
-            AfSchemeGoodsDo schemeGoodsDo = null;
-            try {
-                schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-            } catch (Exception e) {
-                logger.error(e.toString());
+            Long goodsId = Long.parseLong(goods.get("id").toString());
+            if(!StringUtil.isEmpty(goods.get("special_price").toString())){
+                if(Double.parseDouble(goods.get("special_price").toString()) < Double.parseDouble(goods.get("sale_amount").toString())){
+                    goodsInfo.put("saleAmount", goods.get("special_price"));
+                }
             }
             JSONArray interestFreeArray = null;
-            if (schemeGoodsDo != null) {
-                AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+            if (goods.get("interest_free_id") != null) {
+                Long interestFreeId= Long.parseLong(goods.get("interest_free_id").toString());
+                AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
                 String interestFreeJson = interestFreeRulesDo.getRuleJson();
                 if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
                     interestFreeArray = JSON.parseArray(interestFreeJson);
