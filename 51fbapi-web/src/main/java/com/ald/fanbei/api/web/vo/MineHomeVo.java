@@ -103,6 +103,12 @@ public class MineHomeVo extends AbstractSerial {
     // 待返利订单数
     private Integer finishedOrderNum = 0;
 
+    // 爱花跳转url
+    private String loveShopSkipUrl;
+
+    // 签到图爿
+    private String signImgUrl = "";
+
     // banner列表
     private List<Map<String, Object>> bannerList = new ArrayList<>();
 
