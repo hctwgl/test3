@@ -11,7 +11,8 @@ import lombok.Getter;
 @Getter
 public enum H5ResourceType {
 
-    MINE_HOME_LOVE_SHOP("MINE_HOME", 1, "个人中心爱花")
+    MINE_HOME_LOVE_SHOP("MINE_HOME", 1, "个人中心爱花"),
+    MINE_HOME_SIGN_IMG("MINE_HOME", 2, "签到图片")
     ;
 
     // h5资源标签
