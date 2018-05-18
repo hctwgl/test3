@@ -274,8 +274,9 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String sendVerifyCode(OpenRedPacketParamVo param) {
         try {
+            logger.info("/sendVerifyCode：" + param);
             if (StringUtils.isBlank(param.getMobile())) {
-                return H5CommonResponse.getNewInstance(false, "手机号不能未空").toString();
+                return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
 
             //查看短信60秒内是否发过
