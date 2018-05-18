@@ -206,7 +206,6 @@ public class AfLoanServiceImpl extends ParentServiceImpl<AfLoanDo, Long> impleme
 			// 解析分期
 			final ReqParam reqParam = bo.reqParam;
 			String loanNo = generatorClusterNo.getLoanNo(new Date());
-			logger.info("afLoanService doLoan loanNo="+loanNo);
 			final List<Object> objs = afLoanPeriodsService.resolvePeriods(reqParam.amount, userId, reqParam.periods, loanNo, bo.reqParam.prdType);
 			final AfLoanDo loanDo = (AfLoanDo)objs.remove(0);
 			final List<AfLoanPeriodsDo> periodDos = new ArrayList<>();
