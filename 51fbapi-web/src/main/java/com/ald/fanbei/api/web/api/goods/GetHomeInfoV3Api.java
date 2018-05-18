@@ -10,8 +10,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.util.StringUtil;
-
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +19,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
+import com.ald.fanbei.api.biz.service.AfAdvertiseService;
 import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfHomePageChannelService;
@@ -40,6 +39,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAdvertisePositionCode;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
@@ -53,11 +54,13 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfAdvertiseDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -125,7 +128,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	JpushService jpushService;
 	@Resource
 	AfUserCouponService afUserCouponService;
-	
+	@Resource
+	AfAdvertiseService afAdvertiseService;
 	
 
 	private static final String TABBAR =		              HomePageType.TABBAR.getCode(); 
@@ -161,6 +165,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		 cacheResult = null;
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else 
@@ -233,7 +238,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
 					
 				}
-		
+				if(userId != null){
+				 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+				}
+				 
 				   String sloganImage = "";
 				   List<AfResourceH5ItemDo> sloganList = new ArrayList<AfResourceH5ItemDo>();
 						  sloganList =    afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_IAMGE_SLOGAN);
@@ -243,7 +251,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				// 快速导航信息
 				Map<String, Object> navigationInfo =  new  HashMap<String, Object>();
 				
-					  navigationInfo = getNavigationInfoWithResourceDolist(
+			    navigationInfo = getNavigationInfoWithResourceDolist(
 								afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()),navigationBackground);
 //				
 				// 新增运营位1,快捷导航上方活动专场
@@ -251,12 +259,19 @@ public class GetHomeInfoV3Api implements ApiHandle {
 //				  if(navigationUpOne == null || navigationUpOne.size()<1){
 					  navigationUpOne = 	getNavigationUpOneResourceDoList(
 								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
-		
+				if(userId != null){
+				  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+			    }
+					  
 				// 新增运营位2,快捷导航下方活动专场
 					List<Object> navigationDownOne = new  ArrayList<Object>();
 						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
 									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
-//				
+				if(userId != null){
+				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+				}
+								
+						  
 				
 				
 				// 获取金融服务入口
@@ -629,6 +644,44 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		logger.info("getHomeInfoV3data = " + data);
 		resp.setResponseData(data);
 		return resp;
+	}
+
+	private void toAddImage(List<Object> topBannerList, String code, Long userId) {
+		// TODO Auto-generated method stub
+		try {
+			
+			AfAdvertiseDto  afAdvertiseDto  = afAdvertiseService.getDirectionalRecommendInfo(code,userId); 
+		   	 if(afAdvertiseDto != null){
+		   		 Integer appendMode = afAdvertiseDto.getAppendMode();
+		   		 String imageUrl = afAdvertiseDto.getImage();
+		   		 String type = afAdvertiseDto.getUrlType();
+		   		 String content = afAdvertiseDto.getUrl();
+		   		 if(appendMode != null && imageUrl != null && content != null && type!= null ){
+		   			 if(appendMode.intValue() == 1 || appendMode.intValue() == 2){
+		   					
+		   			    Map<String, Object> dataMap = new HashMap<String, Object>();
+	   					dataMap.put("imageUrl", imageUrl);
+	   					dataMap.put("type",type);
+	   					dataMap.put("content", content);
+	   					Integer sort = 0;
+		   				if(appendMode.intValue() == 1 ){
+		   					sort = 9999;
+		   					dataMap.put("sort", sort);
+		   					topBannerList.add(0, dataMap);
+		   				}
+		   				if(appendMode.intValue() == 2){
+		   					sort = -1;
+		   					dataMap.put("sort", sort);
+		   					topBannerList.add(dataMap);
+		   				}
+		   				
+		   			 }
+		   		 }
+		   	 }
+			
+			} catch (Exception e) {
+				logger.error("toAddImage  error =>" + e.getMessage());
+			}
 	}
 
 	private void doStrongRiseAndCoupon(Long userId, String userName,
