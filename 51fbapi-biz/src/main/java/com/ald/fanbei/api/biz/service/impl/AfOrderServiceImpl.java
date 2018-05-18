@@ -2165,7 +2165,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							//计算信用卡手续费
 							BigDecimal feeAmount = BigDecimal.ZERO;
 							if(BankCardType.CREDIT.getCode().equals(orderInfo.getCardType()))
-								feeAmount = getCreditCardRefundFee();
+								feeAmount = getCreditCardRefundFee(backAmount.abs());
 							AfUserAccountDo account = new AfUserAccountDo();
 							account.setRebateAmount(backAmount.abs().subtract(feeAmount));
 							account.setUserId(afUserAccountDo.getUserId());
@@ -2226,7 +2226,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							}
 						}
 						else if(BankCardType.CREDIT.getCode().equals(orderInfo.getCardType())){
-							userAccount.setRebateAmount(userAccount.getRebateAmount().add(refundAmount).subtract(getCreditCardRefundFee()));
+							userAccount.setRebateAmount(userAccount.getRebateAmount().add(refundAmount).subtract(getCreditCardRefundFee(refundAmount)));
 							afUserAccountDao.updateOriginalUserAccount(userAccount);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CREDIT_CARD_REFUND, refundAmount, userId, orderInfo.getRid()));
 
@@ -2262,10 +2262,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		return result;
 	}
 
-	private BigDecimal getCreditCardRefundFee()
+	private BigDecimal getCreditCardRefundFee(BigDecimal refundAmount)
 	{
 		AfResourceDo afResourceDo = afResourceDao.getConfigByTypesAndSecType("CREDIT_CARD","REFUND_FEE");
-		return  BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue()));
+		BigDecimal refundFee =  BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue()));
+		if(refundAmount.compareTo(refundFee)>=0){
+			return refundFee;
+		}
+		else
+		{
+			return BigDecimal.ZERO;
+		}
 	}
 
 	private void updateUsedAmount(Long userId, BigDecimal onlineAmount, Long orderId) {
