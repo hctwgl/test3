@@ -232,6 +232,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         afSignRewardExtDo.setCycleDays(10);
         afSignRewardExtDo.setGmtCreate(new Date());
         afSignRewardExtDo.setIsOpenRemind(0);
+        afSignRewardExtDo.setIsDelete(0);
         return afSignRewardExtDo;
     }
 

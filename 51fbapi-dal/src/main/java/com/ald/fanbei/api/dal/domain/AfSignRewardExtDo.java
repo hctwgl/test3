@@ -59,4 +59,6 @@ import java.math.BigDecimal;
 
     private BigDecimal amount;
 
+    private Integer isDelete;
+
 }

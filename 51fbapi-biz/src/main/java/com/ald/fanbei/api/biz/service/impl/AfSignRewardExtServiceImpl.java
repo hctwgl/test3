@@ -90,6 +90,7 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
             afSignRewardExtDo.setAmount(BigDecimal.ZERO);
             afSignRewardExtDo.setCycleDays(10);
             afSignRewardExtDo.setFirstDayParticipation(null);
+            afSignRewardExtDo.setIsDelete(0);
             saveRecord(afSignRewardExtDo);
             //签到提醒
             map.put("isOpenRemind","N");
