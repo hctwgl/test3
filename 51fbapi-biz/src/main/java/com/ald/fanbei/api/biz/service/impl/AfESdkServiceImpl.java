@@ -728,9 +728,21 @@ public class AfESdkServiceImpl implements AfESdkService {
         pos.setWidth(width);
         pos.setKey(key);
         pos.setQrcodeSign(isQrcodeSign);
-        SignPDFStreamBean streamBean = new SignPDFStreamBean();
+        FileDigestSignResult r;
+        if (stream != null && stream.length > 0) {
+            SignPDFStreamBean signPDFStreamBean = new SignPDFStreamBean();
+            signPDFStreamBean.setStream(stream);
+            r = selfSign.localSignPdf(signPDFStreamBean, pos, 0, signType);
+        } else {
+            SignPDFFileBean fileBean = new SignPDFFileBean();
+            fileBean.setSrcPdfFile(srcFile);
+            fileBean.setDstPdfFile(dstFile);
+            fileBean.setFileName(fileName);
+            r = selfSign.localSignPdf(fileBean, pos, 0, signType);
+        }
+        /*SignPDFStreamBean streamBean = new SignPDFStreamBean();
         streamBean.setStream(stream);
-        FileDigestSignResult r = selfSign.localSignPdf(streamBean, pos, sealId, signType);
+        FileDigestSignResult r = selfSign.localSignPdf(streamBean, pos, sealId, signType);*/
         return r;
     }
 
