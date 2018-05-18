@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.AfSignRewardExtService;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -59,6 +60,21 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     @Override
     public int increaseMoney(AfSignRewardExtDo afSignRewardExtDo){
         return afSignRewardExtDao.increaseMoney(afSignRewardExtDo);
+    }
+
+    @Override
+    public List<AfSignRewardExtDo> selectByUserIds(List<Long> userIds){
+        return afSignRewardExtDao.selectByUserIds(userIds);
+    }
+
+    @Override
+    public int saveRecordBatch(List<AfSignRewardExtDo> list ){
+        return afSignRewardExtDao.saveRecordBatch(list);
+    }
+
+    @Override
+    public int increaseMoneyBtach(List<AfSignRewardExtDo> list ){
+        return afSignRewardExtDao.increaseMoneyBtach(list);
     }
 
     @Override

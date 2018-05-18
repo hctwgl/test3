@@ -7,15 +7,14 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @类描述：
- * @author suweili 2017年3月25日上午10:30:21
+ * @author cfp 2017年3月25日上午10:30:21
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum WithdrawTypeType {
-	//zero 10代表金额 500 是优惠券id
-	ZERO("0","10", "500"),
-	ONE("1", "30","提现金额"),
-	TWO("2", "50","提现金额"),
-	THREE("3", "100","提现金额");
+public enum TaskSecType {
+	commodity("commodity","商品", ""),
+	brand("brand", "品牌",""),
+	category("category", "分类",""),
+	activity("activity", "活动","");
 
 
 	private String code;
@@ -23,22 +22,22 @@ public enum WithdrawTypeType {
     private String dec;
 
 
-    WithdrawTypeType(String code, String name, String dec) {
+    TaskSecType(String code, String name, String dec) {
         this.code = code;
         this.name = name;
         this.setDec(dec);
 
     }
-    public static WithdrawTypeType findRoleTypeByCode(String code) {
-        for (WithdrawTypeType roleType : WithdrawTypeType.values()) {
+    public static TaskSecType findRoleTypeByCode(String code) {
+        for (TaskSecType roleType : TaskSecType.values()) {
             if (StringUtils.equals(code, roleType.getCode())) {
                 return roleType;
             }
         }
         return null;
     }
-    public static WithdrawTypeType findRoleTypeByName(String name) {
-        for (WithdrawTypeType roleType : WithdrawTypeType.values()) {
+    public static TaskSecType findRoleTypeByName(String name) {
+        for (TaskSecType roleType : TaskSecType.values()) {
             if (StringUtils.equals(name, roleType.getName())) {
                 return roleType;
             }

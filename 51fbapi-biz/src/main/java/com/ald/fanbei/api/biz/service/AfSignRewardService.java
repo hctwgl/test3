@@ -36,4 +36,6 @@ public interface AfSignRewardService {
 
     int supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num);
 
+    int saveRecordBatch(List<AfSignRewardDo> list);
+
 }

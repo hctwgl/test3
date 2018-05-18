@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.reward;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -69,7 +70,7 @@ public class SupplementSignInfoApi implements H5Handle {
             afSignRewardDo.setUserId(userId);
             afSignRewardDo.setGmtCreate(new Date());
             afSignRewardDo.setGmtModified(new Date());
-            afSignRewardDo.setType(3);
+            afSignRewardDo.setType(SignRewardType.THREE.getCode());
             afSignRewardDo.setStatus(0);
             afSignRewardDo.setFriendUserId(afUserDo.getRid());
             resp.addResponseData("openType","1");

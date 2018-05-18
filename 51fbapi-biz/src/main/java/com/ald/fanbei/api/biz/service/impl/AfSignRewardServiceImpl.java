@@ -80,6 +80,11 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     }
 
     @Override
+    public int saveRecordBatch(List<AfSignRewardDo> list){
+        return afSignRewardDao.saveRecordBatch(list);
+    }
+
+    @Override
     public int supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num){
         int countDays = 0;
         boolean flag = true;

@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -86,7 +87,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
                 final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-                if(!signReward(request,eUserDo.getRid(),rewardAmount)){
+                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old")){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
                 homeInfo(eUserDo.getRid(),data);
@@ -146,7 +147,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signReward(request,userId,rewardAmount)){
+            if(!signReward(request,userId,rewardAmount,"new")){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
@@ -161,26 +162,71 @@ public class H5FriendSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount){
+    private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount,final String user){
         boolean result ;
-        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
+        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);//分享者的userId
+        final boolean flag = afSignRewardService.checkUserSign(userId);
+        final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
-                    AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
-                    afSignRewardDo.setIsDelete(0);
-                    afSignRewardDo.setUserId(rewardUserId);
-                    afSignRewardDo.setGmtCreate(new Date());
-                    afSignRewardDo.setGmtModified(new Date());
-                    afSignRewardDo.setType(2);
-                    afSignRewardDo.setStatus(0);
-                    afSignRewardDo.setFriendUserId(userId);
-                    afSignRewardDo.setAmount(rewardAmount);
-                    AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
-                    afSignRewardService.saveRecord(afSignRewardDo);
-                    afSignRewardExtDo.setAmount(rewardAmount);
-                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                    //帮签成功 打开者获取相应的奖励金额
+                    BigDecimal amount;
+                    if(StringUtil.equals("new",user)){
+                        amount = randomNum(afResource.getValue1(),afResource.getValue2());
+                    }else{
+                        if(flag){
+                            amount = randomNum(afResource.getValue1(),afResource.getValue2());
+                        }else{
+                            amount = randomNum(afResource.getValue3(),afResource.getValue4());
+                        }
+                    }
+                    List<AfSignRewardDo> signRewardList = new ArrayList<AfSignRewardDo>();
+                    //帮签成功 分享者获取相应的奖励
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(rewardUserId, SignRewardType.TWO.getCode(),userId,rewardAmount);
+                    //帮签成功 打开者获取相应的奖励
+                    AfSignRewardDo afSignRewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount);
+                    signRewardList.add(afSignRewardDo);
+                    signRewardList.add(rewardDo);
+                    afSignRewardService.saveRecordBatch(signRewardList);
+                    List<Long> list = new ArrayList<>();
+                    list.add(userId);
+                    list.add(rewardUserId);
+                    List<AfSignRewardExtDo> signList = afSignRewardExtService.selectByUserIds(list);
+                    if(signList.size()>0){
+                        if(signList.size() == 2){
+                            for(AfSignRewardExtDo signRewardExt : signList){
+                                if(signRewardExt.getUserId() == userId){
+                                    signRewardExt.setAmount(amount);
+                                }else if(signRewardExt.getUserId() == rewardUserId){
+                                    signRewardExt.setAmount(rewardAmount);
+                                }
+                            }
+                            afSignRewardExtService.increaseMoneyBtach(signList);
+                        }else {
+                            if(signList.get(0).getUserId() == userId){
+                                signList.get(0).setAmount(amount);
+                                afSignRewardExtService.increaseMoney(signList.get(0));
+                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardAmount);
+                                afSignRewardExtService.saveRecord(signRewardExt);
+                            }else{
+                                signList.get(0).setAmount(rewardAmount);
+                                afSignRewardExtService.increaseMoney(signList.get(0));
+                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                                afSignRewardExtService.saveRecord(signRewardExt);
+                            }
+                        }
+                    }else{
+                        //帮签成功 打开者增加余额
+                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                        //帮签成功 分享者增加余额
+                        AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardAmount);
+                        List<AfSignRewardExtDo> signExtlist = new ArrayList<>();
+                        signExtlist.add(afSignRewardExt);
+                        signExtlist.add(signRewardExt);
+                        afSignRewardExtService.saveRecordBatch(signExtlist);
+                    }
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();

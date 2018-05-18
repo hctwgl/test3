@@ -32,4 +32,6 @@ public interface AfSignRewardDao  {
     int frienddUserSignCount(@Param("userId")Long userId,@Param("friendUserId")Long friendUserId);
 
     int frienddUserSignCountToDay(@Param("userId")Long userId,@Param("friendUserId")Long friendUserId);
+
+    int saveRecordBatch(List<AfSignRewardDo> list);
 }

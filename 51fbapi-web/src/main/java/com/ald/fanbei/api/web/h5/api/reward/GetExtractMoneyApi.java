@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.WithdrawTypeType;
+import com.ald.fanbei.api.common.enums.WithdrawType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
@@ -49,16 +49,16 @@ public class GetExtractMoneyApi implements H5Handle {
                 public String doInTransaction(TransactionStatus status) {
                     try{
                         BigDecimal amount = BigDecimal.ZERO;
-                        if(StringUtil.equals(WithdrawTypeType.ZERO.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawTypeType.ZERO.getName());
-                        }else if(StringUtil.equals(WithdrawTypeType.ONE.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawTypeType.ONE.getName());
-                        }else if(StringUtil.equals(WithdrawTypeType.TWO.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawTypeType.TWO.getName());
-                        }else if(StringUtil.equals(WithdrawTypeType.THREE.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawTypeType.THREE.getName());
+                        if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawType.ZERO.getName());
+                        }else if(StringUtil.equals(WithdrawType.ONE.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawType.ONE.getName());
+                        }else if(StringUtil.equals(WithdrawType.TWO.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawType.TWO.getName());
+                        }else if(StringUtil.equals(WithdrawType.THREE.getCode(),withdrawType)){
+                            amount = new BigDecimal(WithdrawType.THREE.getName());
                         }
-                        if(StringUtil.equals(WithdrawTypeType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
+                        if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                             AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
                             afUserCouponDo.setUserId(userId);
                             afUserCouponDo.setCouponId(500l);

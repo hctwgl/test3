@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -56,7 +57,7 @@ public class GetSignRewardApi implements H5Handle {
         afSignRewardDo.setUserId(context.getUserId());
         afSignRewardDo.setGmtCreate(new Date());
         afSignRewardDo.setGmtModified(new Date());
-        afSignRewardDo.setType(1);
+        afSignRewardDo.setType(SignRewardType.ZERO.getCode());
         afSignRewardDo.setStatus(0);
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
         if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
@@ -83,27 +84,32 @@ public class GetSignRewardApi implements H5Handle {
         if(flag){//多次签到
             //判断是当前周期的第几天
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
-            int count = signDays(afSignRewardExtDo,0);
+            final int count = signDays(afSignRewardExtDo,0);
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
-            if(count == 3){
+            if(count == 3 || count == 1){
                 afSignRewardExtDo.setAmount(rewardAmount);
                 final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
+                if(count == 1){
+                    afSignRewardExtDo.setFirstDayParticipation(new Date());
+                }
                 status = transactionTemplate.execute(new TransactionCallback<String>() {
                     @Override
                     public String doInTransaction(TransactionStatus status) {
                         try{
                             afSignRewardService.saveRecord(rewardDo);
-                            AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
-                            afUserCouponDo.setUserId(rewardDo.getUserId());
-                            afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
-                            afUserCouponDo.setGmtCreate(new Date());
-                            afUserCouponDo.setGmtModified(new Date());
-                            afUserCouponDo.setSourceType("SIGN_REWARD");
-                            afUserCouponDo.setSourceRef("SYS");
-                            afUserCouponDo.setStatus("NOUSE");
-                            afUserCouponService.addUserCoupon(afUserCouponDo);
+                            if(count == 3){
+                                AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                                afUserCouponDo.setUserId(rewardDo.getUserId());
+                                afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+                                afUserCouponDo.setGmtCreate(new Date());
+                                afUserCouponDo.setGmtModified(new Date());
+                                afUserCouponDo.setSourceType("SIGN_REWARD");
+                                afUserCouponDo.setSourceRef("SYS");
+                                afUserCouponDo.setStatus("NOUSE");
+                                afUserCouponService.addUserCoupon(afUserCouponDo);
+                            }
                             afSignRewardExtService.increaseMoney(signRewardExtDo);
                             return "success";
                         }catch (Exception e){
