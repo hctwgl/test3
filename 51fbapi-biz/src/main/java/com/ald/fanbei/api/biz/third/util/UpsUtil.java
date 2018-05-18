@@ -885,13 +885,15 @@ public class UpsUtil extends AbstractThird {
 
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
-            String value = params.get(key);
-            prestr = prestr+value;
+            if(params.get(key)!=null) {
+				String value = params.get(key);
+				prestr = prestr + value;
             /*if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
                 prestr = prestr + key + "=" + value;
             } else {
                 prestr = prestr + key + "=" + value + "&";
             }*/
+			}
         }
 
         return prestr;

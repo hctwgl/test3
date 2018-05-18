@@ -135,7 +135,7 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
 
-        if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
+        if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())|| orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
         if (orderInfo == null) {
@@ -201,14 +201,14 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
 
-        if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
-            String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
-            if (bizCacheUtil.getObject(lockKey) == null) {
-                bizCacheUtil.saveObject(lockKey, lockKey, 45);
-            } else {
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-            }
-        }
+	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+	    if (bizCacheUtil.getObject(lockKey) == null) {
+		bizCacheUtil.saveObject(lockKey, lockKey, 60);
+	    } else {
+		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+	    }
+	}
 
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {

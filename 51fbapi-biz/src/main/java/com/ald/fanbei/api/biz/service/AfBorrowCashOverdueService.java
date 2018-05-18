@@ -54,4 +54,13 @@ public interface AfBorrowCashOverdueService {
 	     * **/
 	    
 	    BigDecimal getAfBorrowCashOverdueDoByBorrowId(long borrowId,long days);
+	    
+	    
+	    /**
+	     * 根据borrowId查询逾期金額
+	     * 
+	     * @param borrowId
+	     * @return 
+	     * **/
+	    BigDecimal getOverdueAmountByBorrowId(long borrowId);
 }
