@@ -4,7 +4,9 @@ import com.ald.fanbei.api.biz.service.AfRedPacketSelfOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.SelfOpenRedPacketSourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -57,6 +59,9 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	@Autowired
 	private TransactionTemplate transactionTemplate;
 
+	@Autowired
+	private BizCacheUtil bizCacheUtil;
+
 	@Override
 	public List<AfRedPacketSelfOpenDto> findOpenRecordList(Long redPacketTotalId) {
 		List<AfRedPacketSelfOpenDto> result = afRedPacketSelfOpenDao.findOpenRecordList(redPacketTotalId);
@@ -77,35 +82,45 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 	@Override
 	public AfRedPacketSelfOpenDo open(final Long userId, final String modifier, final String sourceType) {
-		return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {
-			@Override
-			public AfRedPacketSelfOpenDo doInTransaction(TransactionStatus transactionStatus) {
+		String lock = "AfRedPacketSelfOpenServiceImpl_open_lock";
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,10, Constants.SECOND_OF_TEN_MINITS);
+		if (isLock) {
+			try {
 				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-				JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
-				AfRedPacketTotalDo theOpening = afRedPacketTotalService
+				final JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+				final JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
+				final AfRedPacketTotalDo theOpening = afRedPacketTotalService
 						.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
 
 				checkIsCanOpen(sourceType, theOpening, redPacketConfig);
 
-				AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
-				selfOpenDo.setRedPacketTotalId(theOpening.getRid());
-				selfOpenDo.setSourceType(sourceType);
-				selfOpenDo.setCreator(modifier);
-				selfOpenDo.setModifier(modifier);
-				selfOpenDo.setDiscountRate(calcDiscountRate(selfOpenRateConfig, sourceType));
+				return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {
+					@Override
+					public AfRedPacketSelfOpenDo doInTransaction(TransactionStatus transactionStatus) {
+						AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
+						selfOpenDo.setRedPacketTotalId(theOpening.getRid());
+						selfOpenDo.setSourceType(sourceType);
+						selfOpenDo.setCreator(modifier);
+						selfOpenDo.setModifier(modifier);
+						selfOpenDo.setDiscountRate(calcDiscountRate(selfOpenRateConfig, sourceType));
 
-				BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
-				BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(theOpening, thresholdAmount);
-				selfOpenDo.setAmount(withdrawRestAmount.multiply(selfOpenDo.getDiscountRate()));
+						BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
+						BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(theOpening, thresholdAmount);
+						selfOpenDo.setAmount(withdrawRestAmount.multiply(selfOpenDo.getDiscountRate()));
 
-				saveRecord(selfOpenDo);
+						saveRecord(selfOpenDo);
 
-				afRedPacketTotalService.updateAmount(theOpening.getRid(), selfOpenDo.getAmount(), modifier);
+						afRedPacketTotalService.updateAmount(theOpening.getRid(), selfOpenDo.getAmount(), modifier);
 
-				return selfOpenDo;
+						return selfOpenDo;
+					}
+				});
+			} finally {
+				bizCacheUtil.delCache(lock);
 			}
-		});
+		} else {
+			throw new RuntimeException("open:" + "没有获取到锁");
+		}
 	}
 
 	@Override
