@@ -93,6 +93,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
         Date startTime;
         Date endTime;
         Calendar calendar = Calendar.getInstance();
+        Date aa =  DateUtil.formatDateToYYYYMMdd(date);
         calendar.setTime(DateUtil.formatDateToYYYYMMdd(date));
         while(flag){
             num ++;

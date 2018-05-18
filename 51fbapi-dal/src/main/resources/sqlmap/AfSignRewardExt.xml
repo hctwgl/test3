@@ -60,6 +60,9 @@
 	        <if test="isOpenRemind != null">        
 	            is_open_remind,
 	        </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -81,6 +84,9 @@
 		    <if test="isOpenRemind != null" >
 		       #{isOpenRemind,jdbcType=INTEGER},
 		    </if>
+            <if test="isDelete != null" >
+                #{isDelete,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
     

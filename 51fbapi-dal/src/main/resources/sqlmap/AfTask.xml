@@ -259,7 +259,7 @@
 
     <select id="getTaskListByUserIdAndUserLevel" resultType="AfTaskDto">
         select
-          <include refid="taskDto" />
+          <include refid="queryFields" />
         from af_task
         WHERE user_level in (#{userLevel})
         ORDER BY gmt_create
@@ -267,7 +267,7 @@
 
     <select id="getTaskListByTaskTypeAndUserLevel" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
         select
-        <include refid="taskDto" />
+        <include refid="queryFields" />
         from af_task
         WHERE is_delete = 0
         and is_open = 1

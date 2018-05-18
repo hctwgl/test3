@@ -82,16 +82,17 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
         Map<String,Object> map = new HashMap<>();
         AfSignRewardExtDo afSignRewardExtDo = selectByUserId(userId);
         if(null == afSignRewardExtDo){
+            AfSignRewardExtDo rewardExtDo = new AfSignRewardExtDo();
             //新增SignRewardExt
-            afSignRewardExtDo.setIsOpenRemind(0);
-            afSignRewardExtDo.setUserId(userId);
-            afSignRewardExtDo.setGmtModified(new Date());
-            afSignRewardExtDo.setGmtCreate(new Date());
-            afSignRewardExtDo.setAmount(BigDecimal.ZERO);
-            afSignRewardExtDo.setCycleDays(10);
-            afSignRewardExtDo.setFirstDayParticipation(null);
-            afSignRewardExtDo.setIsDelete(0);
-            saveRecord(afSignRewardExtDo);
+            rewardExtDo.setIsOpenRemind(0);
+            rewardExtDo.setUserId(userId);
+            rewardExtDo.setGmtModified(new Date());
+            rewardExtDo.setGmtCreate(new Date());
+            rewardExtDo.setAmount(BigDecimal.ZERO);
+            rewardExtDo.setCycleDays(10);
+            rewardExtDo.setFirstDayParticipation(null);
+            rewardExtDo.setIsDelete(0);
+            saveRecord(rewardExtDo);
             //签到提醒
             map.put("isOpenRemind","N");
             //是否有余额
