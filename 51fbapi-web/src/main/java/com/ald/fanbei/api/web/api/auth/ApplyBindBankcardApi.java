@@ -119,8 +119,8 @@ public class ApplyBindBankcardApi implements ApiHandle {
 			if(BankCardType.CREDIT.getCode().equals(param.cardType)){
 				afUserBankcardTypeDo.setSafeCode(param.safeCode);
 				afUserBankcardTypeDo.setValidDate(param.validDate);
-				afUserBankcardTypeDo.setUserBankcardId(bankDo.getRid());
 			}
+			afUserBankcardTypeDo.setUserBankcardId(bankDo.getRid());
 			afUserBankcardTypeDao.saveRecord(afUserBankcardTypeDo);
 		}
 
