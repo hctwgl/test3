@@ -11,7 +11,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,8 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 	AfCouponDao afCouponDao;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 	@Resource
 	private TransactionTemplate transactionTemplate;
 	
@@ -134,6 +138,10 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 							accountLog.setRefId(gameDo.getRid().toString());
 							accountLog.setUserId(user.getRid());
 							afUserAccountLogDao.addUserAccountLog(accountLog);
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(user.getRid(), UserAccountLogType.SIGN.getName(), couponDo.getAmount());
+							// end by luoxiao
 						}
 					}else{
 						Long couponId = Long.valueOf(prize.getPrizeId());

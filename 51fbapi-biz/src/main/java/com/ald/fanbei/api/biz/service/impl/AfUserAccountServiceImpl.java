@@ -5,17 +5,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
@@ -91,6 +86,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	
 	@Resource
 	SmsUtil smsUtil;
+
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
@@ -172,6 +170,10 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 						updateAccountDo.setRebateAmount(record.getAmount());
 						updateAccountDo.setUserId(record.getUserId());
 						afUserAccountDao.updateUserAccount(updateAccountDo);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(record.getUserId(),UserAccountLogType.CASH_FAILD_REFUND.getName(), record.getAmount());
+                        // end by luoxiao
 					} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 						AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());

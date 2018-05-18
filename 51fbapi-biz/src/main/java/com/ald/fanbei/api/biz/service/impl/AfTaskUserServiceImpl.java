@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.AfTaskUserDao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -241,6 +242,21 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 	public List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType){
 		return afTaskUserDao.getDetailsByUserId(userId,detailType);
+	}
+
+	@Override
+	public int addTaskUser(Long userId, String taskName, BigDecimal cashAmount){
+    	AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
+		afTaskUserDo.setTaskName(taskName);
+		afTaskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
+		afTaskUserDo.setTaskId(-1l);
+		afTaskUserDo.setUserId(userId);
+		afTaskUserDo.setRewardType(1);
+		afTaskUserDo.setCashAmount(cashAmount);
+		afTaskUserDo.setGmtCreate(new Date());
+		afTaskUserDo.setRewardTime(new Date());
+
+		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WithdrawType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -37,6 +38,8 @@ public class GetExtractMoneyApi implements H5Handle {
     AfUserCouponService afUserCouponService;
     @Resource
     AfUserAccountService afUserAccountService;
+    @Resource
+    AfTaskUserService afTaskUserService;
 
     @Override
     public H5HandleResponse process(final Context context) {
@@ -73,6 +76,10 @@ public class GetExtractMoneyApi implements H5Handle {
                             afUserAccountDo.setUserId(userId);
                             afUserAccountDo.setRebateAmount(amount);
                             afUserAccountService.updateRebateAmount(afUserAccountDo);
+
+                            // add by luoxiao for 边逛边赚，增加零钱明细
+                            afTaskUserService.addTaskUser(userId, UserAccountLogType.WITHDRAW_TO_REBATE.getName(), amount);
+                            // end by luoxiao
                         }
                         //除去相应的金额amount
                         afSignRewardExtService.extractMoney(userId,amount);

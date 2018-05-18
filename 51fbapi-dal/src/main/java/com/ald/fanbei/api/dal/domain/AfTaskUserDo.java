@@ -52,6 +52,11 @@ import java.math.BigDecimal;
    private String taskName;
 
     /**
+     * 奖励类型：0:金币；1：现金；2：优惠券
+     */
+   private Integer rewardType;
+
+    /**
      * 金币数量
      */
     private Long coinAmount;
@@ -70,5 +75,10 @@ import java.math.BigDecimal;
      * 奖励是否领取:0：未领取；1：主动领取；2：自动领取；3：金币已经兑换
      */
     private Integer status;
+
+    /**
+     * 奖励领取时间
+     */
+    private Date rewardTime;
 
 }

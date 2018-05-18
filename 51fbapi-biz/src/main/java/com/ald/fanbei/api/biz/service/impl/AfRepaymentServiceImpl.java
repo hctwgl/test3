@@ -218,6 +218,9 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
     @Autowired
     KafkaSync kafkaSync;
 
+    @Resource
+    AfTaskUserService afTaskUserService;
+
     public void testbackDetail() {
         AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentById(94901l);
         afUserAmountService.addUseAmountDetail(afRepaymentDo);
@@ -690,6 +693,10 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
                     // billDo.getPrincipleAmount(), repayment.getUserId(),
                     // repayment.getRid()));
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, backAmount, repayment.getUserId(), repayment.getRid()));
+
+                    // add by luoxiao for 边逛边赚，增加零钱明细
+                    afTaskUserService.addTaskUser(repayment.getUserId(),UserAccountLogType.REPAYMENT.getName(), repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+                    // end by luoxiao
 
                     afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.SUCCESS, repayment);
 

@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfTaskUserService;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +78,9 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 //	protected PushService        pushService;
 //	@Resource
 //	protected HoaUserAccountDao hoaUserAccountDao;
+
+	@Resource
+	AfTaskUserService afTaskUserService;
 	
 	@Override
 	public void executeRule(Map<String,Object> inputData) {
@@ -154,7 +159,12 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			afUserAccountDo.setUserId(userId);
 			afUserAccountDo.setRebateAmount(new BigDecimal(afResourceDo.getValue())  );
 			afUserAccountDao.updateUserAccount(afUserAccountDo);
-			
+
+			// add by luoxiao for 边逛边赚，增加零钱明细
+			afTaskUserService.addTaskUser(userId, UserAccountLogType.SEND_CASH_COUPON.getName(), new BigDecimal(afResourceDo.getValue()));
+			// end by luoxiao
+
+
 			//增加account变更日志
 			AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
 			accountLog.setAmount(new BigDecimal(afResourceDo.getValue()));

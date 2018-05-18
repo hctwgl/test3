@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ public abstract class BaseRebateService {
     AfRecommendUserService afRecommendUserService;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    AfTaskUserService afTaskUserService;
     /**
      * 是否可以进行返利的前置数据验证
      *
@@ -179,6 +182,10 @@ public abstract class BaseRebateService {
                             afUserAccountLogDao.addUserAccountLog(accountLog);
                             //修改账户表
                             afUserAccountDao.updateRebateAmount(accountInfo);
+
+                            // add by luoxiao for 边逛边赚，增加零钱明细
+                            afTaskUserService.addTaskUser(orderInfo.getUserId(), UserAccountLogType.DOUBLE_REBATE_CASH.getName(), doubleAmount);
+                            // end by luoxiao
                     
                             AfUserAccountDo userInfo =afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId()) ;
                            //返利已经到账通知
@@ -196,6 +203,10 @@ public abstract class BaseRebateService {
 	       afUserAccountLogDao.addUserAccountLog(accountLog);
 	        //修改账户表
 	       afUserAccountDao.updateRebateAmount(accountInfo);
+
+            // add by luoxiao for 边逛边赚，增加零钱明细
+            afTaskUserService.addTaskUser(orderInfo.getUserId(), UserAccountLogType.REBATE_CASH.getName(), orderInfo.getRebateAmount());
+            // end by luoxiao
 	            
 	       AfUserAccountDo userInfo =afUserAccountDao.getUserAccountInfoByUserId( orderInfo.getUserId()) ;
 	       //返利已经到账通知
