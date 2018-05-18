@@ -308,9 +308,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	AfOrderCombinationPayService afOrderCombinationPayService;
 
 	@Resource
-	AfTaskService afTaskService;
-
-	@Resource
 	AfTaskUserService afTaskUserService;
 
 	@Resource
@@ -474,6 +471,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					account.setUserId(order.getUserId());
 					account.setRebateAmount(order.getRebateAmount());
 					afUserAccountDao.updateUserAccount(account);
+
+                    // add by luoxiao for 边逛边赚，增加零钱明细
+                    afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REBATE_CASH.getName(), order.getRebateAmount());
+                    // end by luoxiao
+
 					// 获取用户信息
 					AfUserDo userDo = afUserDao.getUserById(order.getUserId());
 					String msg = kaixinUtil.charge(order.getOrderNo(), order.getMobile(),
@@ -488,6 +490,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						// 返利金额
 						account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
 						afUserAccountDao.updateUserAccount(account);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REFUND.getName(), order.getRebateAmount().multiply(new BigDecimal(-1)));
+						// end by luoxiao
+
 						if (order.getBankId() < 0) {// 微信退款
 							try {
 								String refundNo = generatorClusterNo.getRefundNo(new Date());
@@ -568,6 +575,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							account.setUserId(order.getUserId());
 							account.setRebateAmount(order.getRebateAmount());
 							afUserAccountDao.updateUserAccount(account);
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REBATE_CASH.getName(), order.getRebateAmount());
+							// end by luoxiao
+
 							pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 						} else if (!"SUCCESS".equals(orderStatus)
 								&& OrderStatus.REBATED.getCode().equals(order.getStatus())) {
@@ -579,6 +591,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							account.setUserId(order.getUserId());
 							account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
 							afUserAccountDao.updateUserAccount(account);
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REFUND.getName(), order.getRebateAmount().multiply(new BigDecimal(-1)));
+							// end by luoxiao
+
 							String refundNo = generatorClusterNo.getRefundNo(new Date());
 							if (order.getBankId() < 0) {// 微信退款
 								try {
@@ -911,6 +928,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afOrder.getRid(), AccountLogType.REBATE);
 					afUserAccountDao.updateOriginalUserAccount(accountInfo);
 					afUserAccountLogDao.addUserAccountLog(accountLog);
+
+					// add by luoxiao for 边逛边赚，增加零钱明细
+					afTaskUserService.addTaskUser(userId, UserAccountLogType.REBATE.getName(), afOrder.getRebateAmount());
+					// end by luoxiao
+
 					orderDao.updateOrder(afOrder);
 					try {
 						doboluomeActivityRebate(afOrder, userId, key);
@@ -1014,6 +1036,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId,
 								afOrder.getRid(), AccountLogType.REBATE);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(userId,UserAccountLogType.REBATE.getName(), afOrder.getRebateAmount());
+						// end by luoxiao
+
 						orderDao.updateOrder(afOrder);
 
 						// ----------------------------------------------mqp add
@@ -2244,6 +2271,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afUserAccountDao.updateUserAccount(account);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 									UserAccountLogType.CP_REFUND, backAmount.abs(), userId, orderInfo.getRid()));
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(afUserAccountDo.getUserId(),UserAccountLogType.CP_REFUND.getName(), backAmount.abs());
+							// end by luoxiao
+
 						} else if (backAmount.compareTo(BigDecimal.ZERO) < 0) {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,

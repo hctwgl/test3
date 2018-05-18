@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,15 +19,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -138,6 +130,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+    @Resource
+    AfTaskUserService afTaskUserService;
     
 	@Override
 	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address,String bankPayType) {
@@ -463,6 +457,11 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						afUserAccountDao.updateUserAccount(account);
 	
 						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(afRenewalDetailDo.getUserId(),UserAccountLogType.RENEWAL_PAY.getName(), afRenewalDetailDo.getRebateAmount().multiply(new BigDecimal(-1)));
+						// end by luoxiao
+
 						//续借成功发送短信和消息通知
 						AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_SUCCESS.getCode());
 						if(null != resourceDo){

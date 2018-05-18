@@ -59,4 +59,10 @@ public class AfBorrowCashOverdueServiceIImpl implements AfBorrowCashOverdueServi
 	public BigDecimal getAfBorrowCashOverdueDoByBorrowId(long borrowId, long days) {
 		return afBorrowCashOverdueDao.getAfBorrowCashOverdueDoByBorrowId(borrowId, days);
 	}
+
+
+	@Override
+	public BigDecimal getOverdueAmountByBorrowId(long borrowId) {
+	    return afBorrowCashOverdueDao.getOverdueAmountByBorrowId(borrowId);
+	}
 }

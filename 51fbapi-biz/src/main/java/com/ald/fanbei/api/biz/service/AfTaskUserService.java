@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,6 @@ public interface AfTaskUserService {
     List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
 
     List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType);
+
+    int addTaskUser(Long userId, String taskName, BigDecimal cashAmount);
 }
