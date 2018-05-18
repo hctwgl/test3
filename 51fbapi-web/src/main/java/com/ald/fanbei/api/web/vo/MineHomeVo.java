@@ -104,7 +104,7 @@ public class MineHomeVo extends AbstractSerial {
     private Integer finishedOrderNum = 0;
 
     // 爱花跳转url
-    private String loveShopSkipUrl;
+    private String loveShopSkipUrl = "";
 
     // 签到图爿
     private String signImgUrl = "";
