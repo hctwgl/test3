@@ -276,7 +276,7 @@
 	      AND   a.click_count <![CDATA[ < ]]> a.day_count
 	      and   b.is_delete = 0
 	      and   b.status = 'Y'
-      ORDER BY a.priority DESC
+      ORDER BY a.priority DESC,a.id asc
     </select>
       <update id="updateClickCountById" >
        UPDATE  af_advertise
