@@ -275,9 +275,9 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String sendVerifyCode(OpenRedPacketParamVo param) {
         try {
-            String s = param.getMobile();
+            String s = param.getPhone();
             logger.info("/redPacket/sendVerifyCode：" + s);
-            if (StringUtils.isBlank(param.getMobile())) {
+            if (StringUtils.isBlank(param.getPhone())) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
 
