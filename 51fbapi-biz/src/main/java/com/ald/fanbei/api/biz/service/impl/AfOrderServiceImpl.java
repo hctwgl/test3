@@ -2230,6 +2230,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afUserAccountDao.updateOriginalUserAccount(userAccount);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CREDIT_CARD_REFUND, refundAmount, userId, orderInfo.getRid()));
 
+							//修改订单状态
+							AfOrderDo tempOrderInfoCredit = new AfOrderDo();
+							tempOrderInfoCredit.setRid(orderId);
+							tempOrderInfoCredit.setStatus(OrderStatus.CLOSED.getCode());
+							tempOrderInfoCredit.setGmtClosed(new Date());
+							orderDao.updateOrder(tempOrderInfoCredit);
 						}
 
 						break;
