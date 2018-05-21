@@ -259,8 +259,8 @@ public class PayRoutController {
 		String merPriv = request.getParameter("merPriv");
 		String tradeState = request.getParameter("tradeState");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-		logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result
-				+ ",outTradeNo=" + outTradeNo);
+		String upsResponse = " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo;
+		logger.info("delegatePay begin " + upsResponse);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
 				if (UserAccountLogType.CASH.getCode().equals(merPriv)) {// 现金借款
@@ -329,12 +329,14 @@ public class PayRoutController {
 				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//自营商城结算单划账回调(对公，对私)
 					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
 					afSupDo.setRid(result);
+					afSupDo.setUpsResponse(upsResponse);
 					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
 				}
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
 				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
 					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setUpsResponse(upsResponse);
 					afSupDo.setRid(result);
 					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
 				} else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
