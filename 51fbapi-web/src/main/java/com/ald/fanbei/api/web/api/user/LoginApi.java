@@ -139,7 +139,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		ToutiaoAdActive(requestDataVo, context, afUserDo);
+//		ToutiaoAdActive(requestDataVo, context, afUserDo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
