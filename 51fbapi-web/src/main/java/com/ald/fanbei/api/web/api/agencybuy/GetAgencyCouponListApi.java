@@ -122,6 +122,8 @@ public class GetAgencyCouponListApi implements ApiHandle {
 			AfCouponCategoryDo  couponCategory  = null;
 			AfCouponCategoryDo fCouponCategory = null;
 			List<AfModelH5ItemDo> afModelH5ItemList = null;
+			List<AfSubjectGoodsDo> subjectGoodsList = null;
+			List<AfModelH5ItemDo> modelH5ItemList = null;
 			int goodsCount = 0;
 			boolean shareFlag = false;
 			List<AfUserCouponDto> userCouponList = afUserCouponService.getUserAllAcgencyCouponByAmount(userId,actualAmount);
@@ -196,21 +198,29 @@ public class GetAgencyCouponListApi implements ApiHandle {
 								}
 							}
 						}else if(StringUtil.equals("ACTIVITY_TEMPLATE",activityType)){
-							List<AfSubjectGoodsDo> subjectGoodsList = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
-							for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoodsList) {
-								String subjectId = afSubjectGoodsDo.getSubjectId();
-								if(subjectId.equals(String.valueOf(activityId))){
-									newList.add(afUserCouponDto);
-									break;
+							if(subjectGoodsList==null){
+								subjectGoodsList = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
+							}
+							if(subjectGoodsList!=null&&subjectGoodsList.size()>0){
+								for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoodsList) {
+									String subjectId = afSubjectGoodsDo.getSubjectId();
+									if(subjectId.equals(String.valueOf(activityId))){
+										newList.add(afUserCouponDto);
+										break;
+									}
 								}
 							}
 						}else if(StringUtil.equals("H5_TEMPLATE",activityType)){
-							List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemByGoodsId(goodsId);
-							for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
-								Long modelId = afModelH5ItemDo.getModelId();
-								if(modelId.equals(activityId)){
-									newList.add(afUserCouponDto);
-									break;
+							if(modelH5ItemList == null){
+								modelH5ItemList = afModelH5ItemService.getModelH5ItemByGoodsId(goodsId);
+							}
+							if(modelH5ItemList!=null&&modelH5ItemList.size()>0){
+								for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+									Long modelId = afModelH5ItemDo.getModelId();
+									if(modelId.equals(activityId)){
+										newList.add(afUserCouponDto);
+										break;
+									}
 								}
 							}
 						}
@@ -226,12 +236,16 @@ public class GetAgencyCouponListApi implements ApiHandle {
 						String goodsIds = afUserCouponDto.getGoodsIds();//当券信息为会场专用时，goods_ids存放的信息二级会场的id集合
 						if(StringUtils.isNotBlank(goodsIds)){//当前券信息中的goodsId不为空
 							goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
-							List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
-							for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoods){
-								String subjectId = afSubjectGoodsDo.getSubjectId();
-								if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(subjectId))){//当前会场id被包含在券信息的会场id集合里面
-									newList.add(afUserCouponDto);
-									break;
+							if(subjectGoodsList==null){
+								subjectGoodsList = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
+							}
+							if(subjectGoodsList!=null&&subjectGoodsList.size()>0){
+								for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoodsList){
+									String subjectId = afSubjectGoodsDo.getSubjectId();
+									if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(subjectId))){//当前会场id被包含在券信息的会场id集合里面
+										newList.add(afUserCouponDto);
+										break;
+									}
 								}
 							}
 						}
