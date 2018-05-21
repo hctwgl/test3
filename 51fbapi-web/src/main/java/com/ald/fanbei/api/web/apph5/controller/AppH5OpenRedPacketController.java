@@ -29,12 +29,12 @@ import com.ald.fanbei.api.web.vo.OpenRedPacketParamVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,38 +49,38 @@ import java.util.Map;
  * @author wangli
  * @date 2018/4/11 14:24
  */
-@RestController
+@Controller
 @RequestMapping("/fanbei-web/redPacket")
 public class AppH5OpenRedPacketController extends BaseController {
 
-    @Autowired
+    @Resource
     private AfUserService afUserService;
 
-    @Autowired
+    @Resource
     private AfResourceService afResourceService;
 
-    @Autowired
+    @Resource
     private AfRedPacketTotalService afRedPacketTotalService;
 
-    @Autowired
+    @Resource
     private AfRedPacketSelfOpenService afRedPacketSelfOpenService;
 
-    @Autowired
+    @Resource
     private AfRedPacketHelpOpenService afRedPacketHelpOpenService;
 
-    @Autowired
+    @Resource
     private AfUserThirdInfoService afUserThirdInfoService;
 
-    @Autowired
+    @Resource
     private AfSmsRecordService afSmsRecordService;
 
-    @Autowired
+    @Resource
     private TongdunUtil tongdunUtil;
 
-    @Autowired
+    @Resource
     private BaiQiShiUtils baiQiShiUtils;
 
-    @Autowired
+    @Resource
     private SmsUtil smsUtil;
 
     /**
@@ -273,7 +273,7 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String sendVerifyCode(HttpServletRequest request) {
         try {
             String mobile = request.getParameter("mobile");
