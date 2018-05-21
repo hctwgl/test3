@@ -77,6 +77,16 @@ public class AfOrderVo extends AbstractSerial {
 
 	private String refundMsg;
 
+	private String goodsStatus;
+
+	public String getGoodsStatus() {
+		return goodsStatus;
+	}
+
+	public void setGoodsStatus(String goodsStatus) {
+		this.goodsStatus = goodsStatus;
+	}
+
 	public String getRefundMsg() {
 		return refundMsg;
 	}

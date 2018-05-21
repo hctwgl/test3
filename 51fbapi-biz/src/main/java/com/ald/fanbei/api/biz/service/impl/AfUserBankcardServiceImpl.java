@@ -56,9 +56,15 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
 		if (CollectionUtil.isNotEmpty(list)) {
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
 			for (AfBankUserBankDto item : list) {
-				UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode(), item.getBankChannel());
+				UpsBankStatusDto bankStatus;
+				if(BankCardType.CREDIT.getCode().equals(item.getCardType()))
+				{
+					bankStatus = getUpsBankStatus(item.getBankCode(), BankPayChannel.KUAIJIE.getCode());
+				}
+				else {
+					bankStatus = getUpsBankStatus(item.getBankCode(), item.getBankChannel());
+				}
 				item.setBankStatus(bankStatus);
-
 				if (bankStatus.getIsMaintain() == 1) {
 					item.setMessage(afResourceDo.getValue1());
 					item.setIsValid("N");

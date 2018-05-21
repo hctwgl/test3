@@ -624,15 +624,16 @@
 	<select id="getOrderInfoById" resultType="AfOrderDo">
 		SELECT
 			o.id rid,o.gmt_create,o.gmt_modified,o.user_id,order_no,third_order_no,third_detail_url,
-			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
-			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+			o.status,user_coupon_id,order_type,sec_type,goods_id,o.open_id,o.num_id,goods_name,o.goods_icon,o.count,
+			o.price_amount,o.sale_amount,o.actual_amount,o.shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			gmt_rebated,mobile,gmt_finished,o.rebate_amount,o.commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
+			LEFT JOIN af_goods g on o.goods_id = g.id
 		WHERE
 			o.is_delete=0 AND o.id = #{rid} AND o.user_id = #{userId}
 			order by c.gmt_create desc

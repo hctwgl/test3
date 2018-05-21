@@ -97,6 +97,16 @@ public class AfOrderDo extends AbstractSerial{
 	private Integer cardType;
 	private BigDecimal feeAmount =BigDecimal.ZERO;
 
+	private String goodsStatus;
+
+	public String getGoodsStatus() {
+		return goodsStatus;
+	}
+
+	public void setGoodsStatus(String goodsStatus) {
+		this.goodsStatus = goodsStatus;
+	}
+
 	public Integer getCardType() {
 		return cardType;
 	}

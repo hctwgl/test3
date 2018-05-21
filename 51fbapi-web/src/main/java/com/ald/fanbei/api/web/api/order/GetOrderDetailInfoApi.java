@@ -193,6 +193,7 @@ public class GetOrderDetailInfoApi implements ApiHandle {
 		//实付金额需要加上信用卡手续费
 		vo.setActualAmount(vo.getActualAmount().add(vo.getFeeAmount()));
 		vo.setRefundMsg(afOrderService.getRefundMsg(order));
+		vo.setGoodsStatus(order.getGoodsStatus());
 		return vo;
 	}
 
