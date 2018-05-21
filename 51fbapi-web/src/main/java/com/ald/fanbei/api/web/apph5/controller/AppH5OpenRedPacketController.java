@@ -273,10 +273,8 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String sendVerifyCode(HttpServletRequest request) {
+    public String sendVerifyCode(String phone) {
         try {
-            String phone = request.getParameter("phone");
-
             logger.info("/redPacket/sendVerifyCode：" + phone);
             if (StringUtils.isBlank(phone)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
