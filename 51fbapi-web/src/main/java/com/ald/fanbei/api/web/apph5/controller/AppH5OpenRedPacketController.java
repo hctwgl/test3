@@ -272,12 +272,13 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String sendVerifyCode(@RequestBody String requestBody) {
         try {
 
-            logger.info("/redPacket/sendVerifyCode：" + requestBody);
+            JSONObject data = JSONObject.parseObject(requestBody);
+            logger.info("/redPacket/sendVerifyCode：" + data.getString("phone"));
             if (StringUtils.isBlank(requestBody)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
