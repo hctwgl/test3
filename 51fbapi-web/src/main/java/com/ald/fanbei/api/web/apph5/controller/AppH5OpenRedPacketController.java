@@ -231,8 +231,6 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
-            String s = param.getMobile();
-            logger.info("bindPhoneAndOpen:" + s);
             Map<String, String> data = new HashMap<>();
             data.put("isRegister", YesNoStatus.NO.getCode());
 
@@ -277,7 +275,8 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String sendVerifyCode(OpenRedPacketParamVo param) {
         try {
-            logger.info("/sendVerifyCode：" + param);
+            String s = param.getMobile();
+            logger.info("/redPacket/sendVerifyCode：" + s);
             if (StringUtils.isBlank(param.getMobile())) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
