@@ -178,7 +178,7 @@ public class AppH5OpenRedPacketController extends BaseController {
      * @author wangli
      * @date 2018/5/7 9:37
      */
-    @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String selfOpen(HttpServletRequest request) {
         try {
