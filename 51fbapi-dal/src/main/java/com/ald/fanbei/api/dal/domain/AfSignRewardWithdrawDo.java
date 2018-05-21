@@ -46,10 +46,8 @@ import java.math.BigDecimal;
      */
     private Long userId;
 
-    /**
-     * 周期
-     */
-    private Long cycleId;
+
+
 
 
     /**
@@ -64,7 +62,7 @@ import java.math.BigDecimal;
     /**
      * 设置主键Id
      * 
-     * @param 要设置的主键Id
+     * @param
      */
     public void setRid(Long rid){
       this.rid = rid;
@@ -160,22 +158,6 @@ import java.math.BigDecimal;
       this.userId = userId;
     }
 
-    /**
-     * 获取周期
-     *
-     * @return 周期
-     */
-    public Long getCycleId(){
-      return cycleId;
-    }
 
-    /**
-     * 设置周期
-     * 
-     * @param cycleId 要设置的周期
-     */
-    public void setCycleId(Long cycleId){
-      this.cycleId = cycleId;
-    }
 
 }

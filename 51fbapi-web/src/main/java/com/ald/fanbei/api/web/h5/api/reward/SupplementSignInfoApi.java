@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
+import com.ald.fanbei.api.common.enums.ThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -43,13 +44,16 @@ public class SupplementSignInfoApi implements H5Handle {
     AfResourceService afResourceService;
     @Resource
     AfTaskService afTaskService;
-
+    @Resource
+    AfUserThirdInfoService afUserThirdInfoService;
 
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
         String userName = ObjectUtils.toString(context.getData("userName"),null);//打开者手机号码
         Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
+        String thirdId = ObjectUtils.toString(context.getData("third_id"),null);//打开者的微信openId
+        String thirdInfo = ObjectUtils.toString(context.getData("third_info"),null);//打开者的微信信息
         //判断用户和openId是否在爱上街绑定
         boolean flag = checkInfo(userName);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -61,6 +65,9 @@ public class SupplementSignInfoApi implements H5Handle {
             resp.addResponseData("rewardRule","");
         }
         if(afUserDo.getRid() == userId){//自己打开
+            if(!flag){
+                saveUserThirdInfo(userName,thirdId,thirdInfo,afUserDo);
+            }
             homeInfo(userId,resp);
             resp.addResponseData("openType","0");
         } else if(flag){//已绑定
@@ -76,6 +83,7 @@ public class SupplementSignInfoApi implements H5Handle {
             resp.addResponseData("openType","1");
         }else {//未绑定
             resp.addResponseData("openType","2");
+            saveUserThirdInfo(userName,thirdId,thirdInfo,afUserDo);
         }
         return resp;
     }
@@ -96,6 +104,22 @@ public class SupplementSignInfoApi implements H5Handle {
         resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId));
         return resp;
     }
+
+    private boolean saveUserThirdInfo(String userName,String thirdId,String thirdInfo ,AfUserDo eUserDo) {
+        AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
+        afUserThirdInfoDo.setCreator(userName);
+        afUserThirdInfoDo.setGmtCreate(new Date());
+        afUserThirdInfoDo.setGmtModified(new Date());
+        afUserThirdInfoDo.setModifier(userName);
+        afUserThirdInfoDo.setThirdId(thirdId);
+        afUserThirdInfoDo.setThirdType(ThirdType.WX.getCode());
+        afUserThirdInfoDo.setThirdInfo(thirdInfo);
+        if(null != eUserDo){
+            afUserThirdInfoDo.setUserId(eUserDo.getRid());
+        }
+        return afUserThirdInfoService.saveRecord(afUserThirdInfoDo)>0 ?true:false;
+    }
+
 
     private boolean checkInfo(String userName){
         return true;

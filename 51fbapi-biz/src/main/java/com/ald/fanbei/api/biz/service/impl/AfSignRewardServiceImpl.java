@@ -89,6 +89,9 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
         int countDays = 0;
         boolean flag = true;
         Date date = afSignRewardExtDo.getFirstDayParticipation();
+        if(date ==null){
+            return  0;
+        }
         int cycle = afSignRewardExtDo.getCycleDays();
         Date startTime;
         Date endTime;

@@ -82,10 +82,10 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 isNotDailyList.add(afTaskDo.getRid());
             }
         }
-        if(isDailyList != null){
+        if(isDailyList.size() > 0){
             isDailyTaskList = afTaskUserService.isDailyTaskList(userId,isDailyList);
         }
-        if(isNotDailyList != null){
+        if(isDailyList.size() > 0){
             isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId,isNotDailyList);
         }
         isDailyTaskList.addAll(isNotDailyTaskList);

@@ -33,7 +33,7 @@ import java.util.*;
  * @author cfp
  * @类描述：签到领金币
  */
-@NeedLogin
+
 @Component("getRewardHomeInfoApi")
 public class GetRewardHomeInfoApi implements H5Handle {
 

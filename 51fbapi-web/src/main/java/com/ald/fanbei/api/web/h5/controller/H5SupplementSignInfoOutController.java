@@ -65,6 +65,8 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     AfUserAuthService afUserAuthService;
     @Resource
     AfTaskService afTaskService;
+    @Resource
+    AfUserThirdInfoService afUserThirdInfoService;
 
 
     /**
@@ -151,7 +153,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
-            if(!signReward(request,userId)){
+            if(!signReward(request,userId,moblie)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             homeInfo(userId,data);
@@ -165,7 +167,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie){
         boolean result ;
         final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
@@ -194,6 +196,13 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
                     afSignRewardExtService.saveRecord(afSignRewardExt);
+                    //绑定openId
+                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
+                    afUserThirdInfoDo.setUserId(userId);
+                    afUserThirdInfoDo.setGmtModified(new Date());
+                    afUserThirdInfoDo.setModifier(moblie);
+                    afUserThirdInfoDo.setUserName(moblie);
+                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
@@ -232,6 +241,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         afSignRewardExtDo.setCycleDays(10);
         afSignRewardExtDo.setGmtCreate(new Date());
         afSignRewardExtDo.setIsOpenRemind(0);
+        afSignRewardExtDo.setIsDelete(0);
         return afSignRewardExtDo;
     }
 
