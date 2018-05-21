@@ -24,7 +24,7 @@ public class SignTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
     String urlBase = "http://localhost:8080";
-    String userName = "13656640521";
+    String userName = "17612158083";
 
     @Resource
     private OSSClient ossClient;
@@ -57,6 +57,22 @@ public class SignTest extends BaseTest {
 //        String result = HttpClientUtil.doPostJson(protocolSignUrl, encodsStr);
 //        testApi(url, encodsStr, userName,true);
     }
+
+    @Test
+    public void  testGiveBackSealInfoApi() {
+        String url = urlBase + "/third/eProtocol/giveBackSealInfo";
+        Map<String,Object> params = new HashMap<>();
+        String mapStr="[{\"realName\":\"习伟成\",\"edspayUserCardId\":\"33112119920330641x\",\"userType\":\"3\",\"mobile\":\"18911110017\"}]";
+        List<Map<String, Object>> matchUserList = JSON.parseObject(mapStr,ArrayList.class);
+        params.put("investorList", matchUserList);
+//        String protocolSignUrl = "https://yapp.51fanbei.com/third/eProtocol/giveBackPdfInfo";
+        System.out.println("加密之前的参数："+params);
+        String encodsStr = encode(matchUserList);
+//        httpPost(url, JSONObject.toJSONString(encodsStr), null);
+        String respResult= HttpUtil.doHttpPostJsonParam(url, encodsStr);
+//        String result = HttpClientUtil.doPostJson(protocolSignUrl, encodsStr);
+//        testApi(url, encodsStr, userName,true);
+    }
     public String encode(Object data) {
         AssetSideReqBo transport = new AssetSideReqBo();
         long time = new Date().getTime();
@@ -65,8 +81,8 @@ public class SignTest extends BaseTest {
         transport.setAppId("edspay");
         transport.setSendTime(time);
 
-        String encryptData = AesUtil.encryptToBase64(JSON.toJSONString(data),"R8SIRR7HGMOMO2A4");
-//        String encryptData = AesUtil.encryptToBase64(JSON.toJSONString(data),"2KA4WGA857FFCC65");
+//        String encryptData = AesUtil.encryptToBase64(JSON.toJSONString(data),"R8SIRR7HGMOMO2A4");
+        String encryptData = AesUtil.encryptToBase64(JSON.toJSONString(data),"2KA4WGA857FFCC65");
         transport.setData(encryptData);
         return JSON.toJSONString(transport);
     }
@@ -106,13 +122,15 @@ public class SignTest extends BaseTest {
 
     @Test
     public void  testGetRedRainRoundsApi2() {
-        String url = urlBase + "/user/getBorrowCashProtocol";
+        String url = urlBase + "/borrowCash/getConfirmBorrowInfo";
         Map<String,String> params = new HashMap<>();
         params.put("userName", "15968109556");
-        params.put("borrowId", "531");
-        params.put("protocolCashType", "2");
-        params.put("nper", "3");
+        params.put("borrowId", "33399634");
+        params.put("protocolCashType", "4");
+        params.put("userId", "13989456652");
+        params.put("poundage", "10");
         params.put("amount", "500");
+        params.put("type", "10");
         testApi(url, params, userName,true);
     }
 

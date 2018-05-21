@@ -1,4 +1,4 @@
-package com.ald.fanbei.web.test.risk;
+package com.ald.fanbei.web.risk.test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

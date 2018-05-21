@@ -10,6 +10,6 @@ import com.ald.fanbei.api.dal.domain.AfLoanPushDo;
  */
 public interface AfLoanPushService extends ParentService<AfLoanPushDo, Long>{
 
-	void saveOrUpdateLoanPush(AfLoanPushDo loanPushDo);
+	void saveOrUpdate(AfLoanPushDo loanPushDo);
 
 }

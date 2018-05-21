@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
@@ -18,6 +19,9 @@ public class AfRedRainPoolDo extends AbstractSerial{
 	private String creator;
 	private String modifier;
 	private Boolean isDelete;
+
+	private String couponEffectiveTime;
+	private BigDecimal couponLimitAmount;
 	
 	public Integer getId() {
 		return id;
@@ -85,5 +89,20 @@ public class AfRedRainPoolDo extends AbstractSerial{
 	public void setAmount(Integer amount) {
 		this.amount = amount;
 	}
-	
+
+	public String getCouponEffectiveTime() {
+		return couponEffectiveTime;
+	}
+
+	public void setCouponEffectiveTime(String couponEffectiveTime) {
+		this.couponEffectiveTime = couponEffectiveTime;
+	}
+
+	public BigDecimal getCouponLimitAmount() {
+		return couponLimitAmount;
+	}
+
+	public void setCouponLimitAmount(BigDecimal couponLimitAmount) {
+		this.couponLimitAmount = couponLimitAmount;
+	}
 }

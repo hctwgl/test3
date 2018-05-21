@@ -102,7 +102,6 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
     		if (j != 1){
     			gmtPlanRepay = DateUtil.setDayZeroTime(new Date());//非第一期时间修改为23:59:59
 			}
-			logger.info("afLoanPeriodsService resolvePeriods gmtPlanRepay="+gmtPlanRepay);
     		gmtPlanRepay = DateUtil.addMonths(gmtPlanRepay, j);
     		int today = DateUtil.getTodayNoInMonth(gmtPlanRepay);
     		if(today > MAX_DAY_NO) {
@@ -153,6 +152,10 @@ public class AfLoanPeriodsServiceImpl extends ParentServiceImpl<AfLoanPeriodsDo,
 	}
 
 	@Override
+	public List<AfLoanPeriodsDo> getAllLoanPeriodsByLoanId(Long loanId) {
+		return afLoanPeriodsDao.getAllLoanPeriodsByLoanId(loanId);
+	}
+	
 	public List<AfLoanPeriodsDo> listUnChargeRepayPeriods(Long loanId) {
 		return afLoanPeriodsDao.listUnChargeRepayPeriods(loanId);
 	}

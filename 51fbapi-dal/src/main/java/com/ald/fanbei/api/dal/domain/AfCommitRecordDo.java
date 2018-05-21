@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.domain;
 
+import java.util.Date;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
@@ -18,6 +20,9 @@ public class AfCommitRecordDo extends AbstractSerial {
 	private String url;// 提交的url
 	private String commit_time;// 提交的时间，每次累加，以逗号隔开
 	private int commit_num;// 累计提交次数
+	
+	private Date gmtCreate;//创建时间
+	private Date gmtModified;//最后修改时间
 
 	public Long getId() {
 		return id;
@@ -74,5 +79,34 @@ public class AfCommitRecordDo extends AbstractSerial {
 	public void setCommit_num(int commit_num) {
 		this.commit_num = commit_num;
 	}
+
+	/**
+	 * @return the gmtCreate
+	 */
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
+
+	/**
+	 * @param gmtCreate the gmtCreate to set
+	 */
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
+
+	/**
+	 * @return the gmtModified
+	 */
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	/**
+	 * @param gmtModified the gmtModified to set
+	 */
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+
 
 }

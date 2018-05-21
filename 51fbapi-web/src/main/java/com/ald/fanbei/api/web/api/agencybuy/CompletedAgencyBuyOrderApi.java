@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,6 +17,7 @@ import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowPushService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfRetryTemplService;
@@ -84,6 +86,8 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	RedisTemplate redisTemplate;
+	@Resource
+	AfBorrowPushService afBorrowPushService;
 	@Autowired
 	KafkaSync kafkaSync;
 	
@@ -162,6 +166,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 								boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 								if (result) {
 									logger.info("borrowCurPush suceess,debtType=selfsupport,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+									//记录push表
+									AfBorrowPushDo borrowPush = buildBorrowPush(afBorrowDo.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
+									afBorrowPushService.saveOrUpdate(borrowPush);
 								}
 							}
 						}
@@ -194,6 +201,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 										boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
 										if (result) {
 											logger.info("borrowCurPush suceess,debtType=agencyBuy,orderNo="+pushEdsPayBorrowInfos.get(0).getOrderNo());
+											//记录push表
+											AfBorrowPushDo borrowPush = buildBorrowPush(afBorrowDo.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
+											afBorrowPushService.saveOrUpdate(borrowPush);
 										}
 									}
 								}
@@ -219,6 +229,17 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+	}
+
+	private AfBorrowPushDo buildBorrowPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		AfBorrowPushDo borrowPush =new AfBorrowPushDo();
+		Date now = new Date();
+		borrowPush.setGmtCreate(now);
+		borrowPush.setGmtModified(now);
+		borrowPush.setBorrowId(rid);
+		borrowPush.setBorrowRate(apr);
+		borrowPush.setProfitRate(manageFee);
+		return borrowPush;
 	}
 
 	private void addBorrowBill_1(AfOrderDo afOrderDo){

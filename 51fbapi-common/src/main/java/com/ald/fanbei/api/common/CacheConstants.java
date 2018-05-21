@@ -204,35 +204,6 @@ public static enum ASJ_HOME_PAGE{
 		}
 
 	}
-	public static enum THIRD_ANNIV_CELEBRATION_ACT{
-
-		GET_THIRD_ANNIV_CELEBRATION_ACT_LIST("GET_THIRD_ANNIV_CELEBRATION_ACT_LIST","三周年庆典所有秒杀活动"),
-		GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST("GET_THIRD_ANNIV_CELEBRATION_TODAY_ACT_LIST","三周年庆典今日秒杀活动");
-
-		private String code;
-		private String name;
-
-		private THIRD_ANNIV_CELEBRATION_ACT(String code, String name) {
-			this.code = code;
-			this.name = name;
-		}
-
-		public String getCode() {
-			return code;
-		}
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
 
 	/**
 	 * 保存活动对应商品信息的前缀

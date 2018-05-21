@@ -747,7 +747,7 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
                 return pdf.getContractPdfUrl();
             }
             return getPdfInfoWithOutLender(protocolUrl, map, afBorrowDo.getUserId(), afBorrowDo.getRid(), "instalment", "2", investorList);
-        } else if (debtType == 5){//白领贷借款
+        } else if (debtType == 2){//白领贷借款
             AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
             if (loanDo == null) {
                 logger.error("白领贷借款信息不存在 => {}", orderNo);
@@ -842,7 +842,45 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         return getLeaseContractPdf(data,userId,outFilePath,orderId);
 
     }
+    @Override
+    public String receptProtocolPdf(Map<String,Object> data)throws IOException{
+        long time = new Date().getTime();
+        String html = null;
+        try {
+            html = VelocityUtil.getHtml(protocolRecept(data,"protocolReceptWithoutSealTemplate.vm"));
+            logger.info("recept html ="+html);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        String outFilePath = src + data.get("userName") + "recept" + time + 1 + ".pdf";
+        HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
+        return getReceptContractPdf(data,outFilePath);
 
+    }
+    private String getReceptContractPdf(Map<String, Object> data,String outFilePath) throws IOException {
+        long time = new Date().getTime();
+        data.put("userPath", outFilePath);
+        String dstFile = String.valueOf(src + data.get("userName") + "recept" + time + 2 + ".pdf");
+        data.put("selfPath", dstFile);
+        boolean result = true;
+        byte[] stream = null;
+        logger.info("lease data ="+data);
+//        stream = borrowerCreateSeal(result,stream,data);//借款人签章
+//
+        stream = aldLeaseCreateSeal(result,stream,data);//阿拉丁签章
+
+        File file = new File(src + data.get("userName") + "recept" + time +3 + ".pdf");
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(stream);
+        outputStream.flush();
+        outputStream.close();
+        InputStream input = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
+        OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+        logger.info("ossUploadResult="+ossUploadResult.getUrl());
+        logger.info("lease url="+ossUploadResult.getUrl());
+        return ossUploadResult.getUrl();
+    }
     public Map protocolLease(Map<String,Object> data,String pdfTemplate) throws IOException {
         AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
         if (afUserDo == null) {
@@ -873,13 +911,34 @@ public class AfLegalContractPdfCreateServiceV2Impl implements AfLegalContractPdf
         data.put("gmtLeaseEnd",c.get(Calendar.YEAR)+"年"+c.get(Calendar.MONTH) + 1+"月"+c.get(Calendar.DATE)+"日");
         return data;
     }
+    public Map protocolRecept(Map<String,Object> data,String pdfTemplate) throws IOException {
+        AfUserDo afUserDo = afUserService.getUserByUserName(data.get("userName").toString());
+        if (afUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        Long userId = afUserDo.getRid();
+        AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if (accountDo == null) {
+            logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        data.put("templateSrc",pdfTemplate);
+        data.put("personKey","recept");
+        data.put("selfKey","ald");
+        Calendar c = Calendar.getInstance();
+        c.setTime((Date) data.get("gmtCreate"));
 
+        logger.info(JSON.toJSONString(data));
+        return data;
+    }
     private String getLeaseContractPdf(Map<String, Object> data,Long userId,String outFilePath,Long orderId) throws IOException {
         long time = new Date().getTime();
         AfUserAccountDo accountDo = getUserInfo(userId, data, null);
         data.put("PDFPath", outFilePath);
         String dstFile = String.valueOf(src + data.get("userName") + "lease" + time + 2 + ".pdf");
-        data.put("userPath", dstFile);
+        data.put("PDFPath", dstFile);
         boolean result = true;
         byte[] stream = new byte[1024];
         stream = borrowerCreateSeal(result,stream,data);//借款人签章

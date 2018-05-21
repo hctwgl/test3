@@ -318,7 +318,9 @@ public interface AfOrderDao {
 	int updatepdfUrlByOrderId(@Param("orderId") Long orderId,@Param("url")String url);
 
 	AfOrderDo selectTodayIagentStatus(@Param("userId") Long userId,@Param("amount") BigDecimal amount);
-	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId);
+	List<AfOrderDo> selectTodayIagentStatusCOrders(@Param("userId") Long userId,@Param("gmtCreate")Date gmtCreate);
 
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
+
+	String getUserFirstBigOrderDate(@Param("userId") Long userId,@Param("amount") Integer amount);
 }

@@ -54,9 +54,11 @@ public enum AfResourceSecType {
 		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
 		BORROW_CASH_COMPANY_NAME("BORROW_CASH_COMPANY_NAME","借款公司名称"),
 		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
-		BORROW_CASH_INFO_LEGAL_NEW("BORROW_CASH_INFO_LEGAL_NEW","新借款利率信息"),
+	    BORROW_RECYCLE_INFO_LEGAL_NEW("BORROW_RECYCLE_INFO_LEGAL_NEW","新回收利率信息"),
+	    BORROW_CASH_INFO_LEGAL_NEW("BORROW_CASH_INFO_LEGAL_NEW","新借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
 		AUTH_FUND_SWITCH("AUTH_FUND_SWITCH","公积金认证开关"),
+		BORROW_CASH_SWITCH("BORROW_CASH_SWITCH","极速贷开关"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
 		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),
@@ -73,7 +75,7 @@ public enum AfResourceSecType {
 		SMS_LIMIT("SMS_LIMIT","短信限制"),
 		IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
 		ASJ_IS_USE_IMG("ASJ_IS_USE_IMG","底部菜单栏是否使用图片"),
-		
+
 		SMS_REPAYMENT_BORROWCASH_FAIL("SMS_REPAYMENT_BORROWCASH_FAIL","用户发起现金借贷还款失败通知用户"),
 		SMS_RENEWAL_DETAIL_FAIL("SMS_RENEWAL_DETAIL_FAIL","用户发起续借失败通知用户"),
 		SMS_RENEWAL_DETAIL_SUCCESS("SMS_RENEWAL_DETAIL_SUCCESS","用户发起续借成功通知用户"),
@@ -91,13 +93,16 @@ public enum AfResourceSecType {
 		YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询限制配置"),
 		RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 		SMS_BANK_PAY_ORDER_FAIL("SMS_BANK_PAY_ORDER_FAIL","下单涉及银行卡支付失败短信提示"),
+
+		BORROW_CASH_OVERDUE_POUNDAGE("BORROW_CASH_OVERDUE_POUNDAGE","借钱逾期手续费率（日）"),
+
 		BORROW_CASH_AMOUNT_CHANNEL_ERROR("BORROW_CASH_AMOUNT_CHANNEL_ERROR","用户借钱时渠道包问题给用户的短信内容"),
 		//芝麻信用认证相关配置 芝麻信用认证相关控制
 		//v:开放Y/N v1:展示 0文字1数 v2:Y严格认证 N默认通过v3:分界app版本v4:老用户重认时间界限
 		ZHIMA_VERIFY_RULE_CONFIG("ZHIMA_VERIFY_RULE_CONFIG","芝麻信用认证相关配置"),
-		//val:弹窗图片地址 val2:打开开关Y/N val3:弹窗间隔时间ms
+		BUBBLE_AUTH_RULE_CONFIG("BUBBLE_AUTH_RULE_CONFIG","芝麻信用认证相关配置"),
 		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
-		
+
 	 	private String code;
 		private String name;
 	

@@ -51,6 +51,16 @@ public class AfGoodsDo extends AbstractSerial{
 	private Long primaryCategoryId;
 	private Long brandId;
 
+	private BigDecimal activityPrice;
+
+	public BigDecimal getActivityPrice() {
+		return activityPrice;
+	}
+
+	public void setActivityPrice(BigDecimal activityPrice) {
+		this.activityPrice = activityPrice;
+	}
+
 	public Long getBrandId() {
 		return brandId;
 	}

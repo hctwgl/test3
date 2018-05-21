@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
         <title>注册</title>
-    #elseif($!{style}==20)
+    #elseif($!{style}==20 || $!{style}==21 )
         <title>下载</title>
     #else
         <title>注册</title>
@@ -85,7 +85,7 @@
         </div>
     #end
 
-    #if($!{style}==20)
+    #if($!{style}==20 || $!{style}==21 )
     <div class="form">
         <div id="register_codeBtn" style="display: none;"></div>
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
