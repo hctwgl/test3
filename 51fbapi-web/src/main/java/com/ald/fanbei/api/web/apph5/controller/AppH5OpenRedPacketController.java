@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -181,12 +180,14 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/open", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String selfOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
+    public String selfOpen(HttpServletRequest request) {
         try {
-            logger.info("/open:" + param);
-            AfUserDo userDo = getUserInfo(param.getCode(), request);
+            String code = request.getParameter("code");
+            String sourceType = request.getParameter("sourceType");
+            logger.info("/open:code=" + code + ", sourceType=" + sourceType);
+            AfUserDo userDo = getUserInfo(code, request);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService
-                    .open(userDo.getRid(), userDo.getUserName(), param.getSourceType());
+                    .open(userDo.getRid(), userDo.getUserName(), sourceType);
             Map<String, String> data = buildSelfOpenResult(selfOpenDo);
 
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
@@ -273,28 +274,23 @@ public class AppH5OpenRedPacketController extends BaseController {
     }
 
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String sendVerifyCode(OpenRedPacketParamVo param, HttpServletRequest request) {
+    public String sendVerifyCode(HttpServletRequest request) {
         try {
-            logger.info("/redPacket/sendVerifyCode：" + param.getMobile());
-            BufferedReader br = request.getReader();
-            String str, wholeStr = "";
-            while((str = br.readLine()) != null){
-                wholeStr += str;
-            }
-            logger.info("/redPacket/sendVerifyCode wholeStr：" + wholeStr);
+            String mobile = request.getParameter("mobile");
+            logger.info("/redPacket/sendVerifyCode：" + mobile);
 
-            if (StringUtils.isBlank(param.getMobile())) {
+            if (StringUtils.isBlank(mobile)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
             //查看短信60秒内是否发过
-            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(param.getMobile(), SmsType.MOBILE_BIND.getCode());
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.MOBILE_BIND.getCode());
             if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
                 if (!DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
                     return H5CommonResponse.getNewInstance(false, "验证码60秒内已获取过").toString();
                 }
             }
 
-            boolean isSucess = smsUtil.sendMobileBindVerifyCode(param.getMobile(),SmsType.MOBILE_BIND,1L);
+            boolean isSucess = smsUtil.sendMobileBindVerifyCode(mobile, SmsType.MOBILE_BIND,1L);
             return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();
         } catch (FanbeiException e) {
             return handleFanbeiException(e);
