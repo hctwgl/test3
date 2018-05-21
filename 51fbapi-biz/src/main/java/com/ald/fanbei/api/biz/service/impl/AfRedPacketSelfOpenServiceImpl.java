@@ -180,6 +180,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 			int todayWithdrawedNum = afRedPacketTotalService.getTodayWithdrawedNum(theOpening.getUserId());
 			if (todayWithdrawedNum >= everydayWithdrawNum) {
 				throw new FanbeiException("今日已不能再拆红包，请明天再来哦");
+
 			}
 		}
 	}
