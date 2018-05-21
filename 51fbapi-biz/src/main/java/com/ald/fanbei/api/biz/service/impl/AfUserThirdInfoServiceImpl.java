@@ -90,6 +90,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 			}
 		}
 
+		final AfUserDo userDo = afUserService.getUserById(userId);
 		return transactionTemplate.execute(new TransactionCallback<AfUserThirdInfoDo>() {
 			@Override
 			public AfUserThirdInfoDo doInTransaction(TransactionStatus transactionStatus) {
@@ -101,6 +102,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 				userThirdInfoDo.setCreator(modifier);
 				userThirdInfoDo.setModifier(modifier);
 				userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
+				userThirdInfoDo.setUserName(userDo.getUserName());
 				saveRecord(userThirdInfoDo);
 				return userThirdInfoDo;
 			}

@@ -273,22 +273,21 @@ public class AppH5OpenRedPacketController extends BaseController {
     }
 
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String sendVerifyCode(String phone, HttpServletRequest request) {
+    public String sendVerifyCode(OpenRedPacketParamVo param, HttpServletRequest request) {
         try {
-            logger.info("/redPacket/sendVerifyCode：" + phone);
+            logger.info("/redPacket/sendVerifyCode：" + param.getMobile());
             BufferedReader br = request.getReader();
             String str, wholeStr = "";
             while((str = br.readLine()) != null){
                 wholeStr += str;
             }
-            System.out.println("/redPacket/sendVerifyCode wholeStr：" + wholeStr);
+            logger.info("/redPacket/sendVerifyCode wholeStr：" + wholeStr);
 
-            if (StringUtils.isBlank(phone)) {
+            if (StringUtils.isBlank(param.getMobile())) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
-            return H5CommonResponse.getNewInstance(true, "有手机号").toString();
             //查看短信60秒内是否发过
-            /*AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(param.getMobile(), SmsType.MOBILE_BIND.getCode());
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(param.getMobile(), SmsType.MOBILE_BIND.getCode());
             if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
                 if (!DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
                     return H5CommonResponse.getNewInstance(false, "验证码60秒内已获取过").toString();
@@ -296,7 +295,7 @@ public class AppH5OpenRedPacketController extends BaseController {
             }
 
             boolean isSucess = smsUtil.sendMobileBindVerifyCode(param.getMobile(),SmsType.MOBILE_BIND,1L);
-            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();*/
+            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();
         } catch (FanbeiException e) {
             return handleFanbeiException(e);
         } catch (Exception e) {
