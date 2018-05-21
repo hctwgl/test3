@@ -161,11 +161,16 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		    	userId = userDo.getRid();
 		    }
 		}
-		doStrongRiseAndCoupon(userId,userName,appVersion);
+		  doStrongRiseAndCoupon(userId,userName,appVersion);
+	     //  List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
+		   List<Object> navigationUpOne = new  ArrayList<Object>();
+		   List<Object> navigationDownOne = new  ArrayList<Object>();
+			List<Object> topBannerList = new ArrayList<Object>();
+
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
-		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		 cacheResult = null;
+		 //Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		 Object  cacheResult = null;
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else 
@@ -227,7 +232,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				  tabbarList = afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
 				 
 				// 顶部导航信息
-				List<Object> topBannerList = new ArrayList<Object>();
+	
 		
 				String topBanner = AfResourceType.HomeBannerV401.getCode();
 				// 正式环境和预发布环境区分
@@ -238,9 +243,9 @@ public class GetHomeInfoV3Api implements ApiHandle {
 						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
 					
 				}
-				if(userId != null){
-				 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
-				}
+//				if(userId != null){
+//				 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+//				}
 				 
 				   String sloganImage = "";
 				   List<AfResourceH5ItemDo> sloganList = new ArrayList<AfResourceH5ItemDo>();
@@ -255,21 +260,20 @@ public class GetHomeInfoV3Api implements ApiHandle {
 								afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()),navigationBackground);
 //				
 				// 新增运营位1,快捷导航上方活动专场
-				List<Object> navigationUpOne = new  ArrayList<Object>();
+				
 //				  if(navigationUpOne == null || navigationUpOne.size()<1){
 					  navigationUpOne = 	getNavigationUpOneResourceDoList(
 								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
-				if(userId != null){
-				  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
-			    }
+//				if(userId != null){
+//				  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+//			    }
 					  
 				// 新增运营位2,快捷导航下方活动专场
-					List<Object> navigationDownOne = new  ArrayList<Object>();
 						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
 									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
-				if(userId != null){
-				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
-				}
+//				if(userId != null){
+//				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+//				}
 								
 						  
 				
@@ -545,10 +549,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!ecommerceAreaInfo.isEmpty()) {
 					data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 				}
-				// 顶部轮播
-				if (!topBannerList.isEmpty()) {
-					data.put("topBannerList", topBannerList);
-				}
+				
 				// 快速导航
 				if (!navigationInfo.isEmpty()) {
 						if(navigationBackground != null){
@@ -561,14 +562,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!sloganImage.isEmpty()) {
 					data.put("sloganImage", sloganImage);
 				}
-				// 新增运营位1,快捷导航上方活动专场
-				if (!navigationUpOne.isEmpty()) {
-					data.put("navigationUpOneList", navigationUpOne);
-				}
-		
-				// 新增运营位2,快捷导航下方活动专场
-				if (!navigationDownOne.isEmpty()) {
-					data.put("navigationDownOneList", navigationDownOne);
+				if (!backgroundList.isEmpty()) {
+					data.put("backgroundList", backgroundList);
 				}
 				// 常驻运营位
 				if (!homeNomalPositionList.isEmpty()) {
@@ -578,10 +573,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!ecommerceAreaInfo.isEmpty()) {
 					data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 				}
-				// 首页背景图
-				if (!backgroundList.isEmpty()) {
-					data.put("backgroundList", backgroundList);
-				}
+			
 				// 金融服务入口
 				if (!financialEntranceInfo.isEmpty()) {
 					data.put("financialEntranceInfo", financialEntranceInfo);
@@ -636,6 +628,31 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					     	}
 					 }
 	      }
+           //
+		    if(userId != null){
+			  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+		    }
+			
+             if(userId != null){
+				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+				}
+         	if(userId != null){
+				  toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+				}
+         	// 首页背景图
+         // 顶部轮播
+				if (!topBannerList.isEmpty()) {
+					data.put("topBannerList", topBannerList);
+				}
+				// 新增运营位1,快捷导航上方活动专场
+				if (!navigationUpOne.isEmpty()) {
+					data.put("navigationUpOneList", navigationUpOne);
+				}
+		
+				// 新增运营位2,快捷导航下方活动专场
+				if (!navigationDownOne.isEmpty()) {
+					data.put("navigationDownOneList", navigationDownOne);
+				}
          }catch(Exception  e){
         	 logger.error("getHomeInfoV3 newExclusive error = " + e);
          }
