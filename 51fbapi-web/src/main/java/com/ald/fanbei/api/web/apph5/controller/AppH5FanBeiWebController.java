@@ -1622,7 +1622,14 @@ public class AppH5FanBeiWebController extends BaseController {
 				List<Long> goodsIdList = new ArrayList<>();
 				List<AfGoodsDo> afGoodsDos = new ArrayList<AfGoodsDo>();
 				if(StringUtil.isNotBlank(goodsIds)){
-					if(isGlobal==2){//按照商品
+					if(isGlobal==1){//H5模板
+						Long activityId = afCouponDo.getActivityId();
+						String activityType = afCouponDo.getActivityType();
+						if(StringUtil.equals("H5_TEMPLATE",activityType)&&activityId!=null){
+							goodsIdList = afGoodsService.getGoodsisGlobal1(activityId);
+						}
+						query.setGoodsIds(goodsIdList);
+					}else if(isGlobal==2){//按照商品
 						goodsIdList = goodsIdsList;
 						query.setGoodsIds(goodsIdList);
 					}else if(isGlobal==3){

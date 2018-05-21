@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.coupon;
 
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -9,6 +10,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -33,6 +35,8 @@ public class GetDetailCouponListApi implements ApiHandle {
     AfSubjectGoodsService afSubjectGoodsService;
     @Resource
     AfUserDao afUserDao;
+    @Resource
+    AfModelH5ItemService afModelH5ItemService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -73,6 +77,18 @@ public class GetDetailCouponListApi implements ApiHandle {
                     }
                     if(is_global==0){
                         list.add(afUserCouponDto);
+                    }else if(is_global==1&&StringUtil.equals("H5_TEMPLATE",afUserCouponDto.getActivityType())&&afUserCouponDto.getActivityId()!=null){
+                        Long activityId = afUserCouponDto.getActivityId();
+                        List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemByGoodsId(goodsId);
+                        if(modelH5ItemList!=null&&modelH5ItemList.size()>0){
+                            for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+                                Long modelId = afModelH5ItemDo.getModelId();
+                                if(modelId.equals(activityId)){
+                                    list.add(afUserCouponDto);
+                                    break;
+                                }
+                            }
+                        }
                     }else if(is_global==2&&StringUtil.isNotBlank(goodsIds)){
                         goodsIds = goodsIds.replaceAll("，",",");//将字符串中中文的逗号替换成英文的逗号
                         if(Arrays.asList(goodsIds.split(",")).contains(String.valueOf(goodsId))){//当前商品id被包含在券信息的商品id集合里面

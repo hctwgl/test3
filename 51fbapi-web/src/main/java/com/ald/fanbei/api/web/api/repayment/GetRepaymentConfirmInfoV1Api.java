@@ -105,6 +105,11 @@ public class GetRepaymentConfirmInfoV1Api implements ApiHandle {
                 userCoupon.setName(afUserCouponDto.getName());
                 userCoupon.setStatus(afUserCouponDto.getStatus());
                 userCoupon.setUseRule(afUserCouponDto.getUseRule());
+                if(StringUtil.isNotBlank(afUserCouponDto.getType())){
+                    if(StringUtil.equals("BORROWBILL",afUserCouponDto.getType())){
+                        afUserCouponDto.setType("REPAYMENT");
+                    }
+                }
                 userCoupon.setType(afUserCouponDto.getType());
                 couponList.add(userCoupon);
             }

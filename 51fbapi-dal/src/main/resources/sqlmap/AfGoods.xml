@@ -695,4 +695,17 @@
 			#{item, jdbcType=BIGINT}
 		</foreach>
 	</select>
+
+	<select id="getGoodsisGlobal1" parameterType="java.lang.Long" resultType="java.lang.Long">
+		SELECT
+		item_value
+		FROM
+		af_model_h5_item
+		WHERE
+		item_type = 'GOODS_ID'
+		AND
+		model_id=#{modelId}
+		AND
+		is_delete = 0
+	</select>
 </mapper>
