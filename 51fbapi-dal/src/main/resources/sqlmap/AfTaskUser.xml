@@ -235,7 +235,7 @@
         AND user_id = #{userId}
         AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
         AND task_id IN
-        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
         ORDER BY gmt_create
@@ -248,7 +248,7 @@
         WHERE is_delete = 0
         AND user_id = #{userId}
         AND task_id IN
-        <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
         ORDER BY gmt_create

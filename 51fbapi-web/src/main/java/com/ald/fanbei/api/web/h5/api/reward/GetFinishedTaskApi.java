@@ -56,10 +56,10 @@ public class GetFinishedTaskApi implements H5Handle {
                 isNotDailyList.add(afTaskDo.getRid());
             }
         }
-        if(isDailyList != null){
+        if(isDailyList.size()>0){
             isDailyTaskList = afTaskUserService.isDailyTaskList(context.getUserId(),isDailyList);
         }
-        if(isNotDailyList != null){
+        if(isNotDailyList.size()>0){
             isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(context.getUserId(),isNotDailyList);
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
