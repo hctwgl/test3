@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -273,11 +274,11 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String sendVerifyCode(OpenRedPacketParamVo param) {
+    public String sendVerifyCode(@RequestBody String requestBody) {
         try {
-            String s = param.getPhone();
-            logger.info("/redPacket/sendVerifyCode：" + s);
-            if (StringUtils.isBlank(param.getPhone())) {
+
+            logger.info("/redPacket/sendVerifyCode：" + requestBody);
+            if (StringUtils.isBlank(requestBody)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
             return H5CommonResponse.getNewInstance(true, "有手机号").toString();
