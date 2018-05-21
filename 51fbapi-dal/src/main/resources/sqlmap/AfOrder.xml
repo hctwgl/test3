@@ -1460,13 +1460,4 @@
 		SELECT count(id) FROM af_order where is_delete = 0 AND order_type = 'SELFBUILD' AND status in ('FINISHED','REBATED') AND user_id = #{userId}
 	</select>
 
-	<select id="getPaidOrderBeforeDays" resultType="java.lang.Integer" parameterType="java.lang.Long">
-		SELECT count(1) FROM af_order
-        WHERE
-	        is_delete = 0
-        AND order_type = 'SELFSUPPORT'
-        AND STATUS IN ('PAID', 'DELIVERED')
-        AND TO_DAYS(NOW()) - TO_DAYS(gmt_pay) <![CDATA[ < ]]>  #{days}
-	</select>
-
 </mapper>

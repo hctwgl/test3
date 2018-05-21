@@ -33,11 +33,13 @@ public interface AfTaskUserService {
 
     Long getAvailableCoinAmount(Long userId);
 
-    double getExchangeProportion();
+    Long getYestadayChangedCoinAmountList(Long userId);
 
     List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
 
-    List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType);
+    List<AfTaskUserDo> getDetailsByUserId(Long userId, Integer rewardType);
 
     int addTaskUser(Long userId, String taskName, BigDecimal cashAmount);
+
+    AfTaskUserDo getYestadayTaskUserDoByTaskName(String taskName);
 }

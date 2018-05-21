@@ -62,6 +62,9 @@
             <if test="taskName != null">
                 task_name,
             </if>
+            <if test="rewardType != null">
+                reward_type,
+            </if>
             <if test="coinAmount != null">
                 coin_amount,
             </if>
@@ -73,6 +76,9 @@
             </if>
             <if test="status != null">
                 status,
+            </if>
+            <if test="rewardTime != null">
+                reward_time,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -91,6 +97,9 @@
             <if test="taskName != null">
                 #{taskName,jdbcType=VARCHAR},
             </if>
+            <if test="rewardType != null">
+                #{rewardType,jdbcType=INTEGER},
+            </if>
             <if test="coinAmount != null" >
                 #{coinAmount,jdbcType=INTEGER},
             </if>
@@ -103,72 +112,87 @@
             <if test="status != null" >
                 #{status,jdbcType=INTEGER},
             </if>
+            <if test="rewardTime != null">
+                #{rewardTime,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
 
     <insert id="batchInsertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
         INSERT INTO af_task_user
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="taskId != null">        
-	            task_id,
-	        </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
             <if test="taskName != null">
                 task_name,
             </if>
-	        <if test="coinAmount != null">        
-	            coin_amount,
-	        </if>
-	        <if test="cashAmount != null">        
-	            cash_amount,
-	        </if>
-	        <if test="couponId != null">        
-	            coupon_id,
-	        </if>
+            <if test="rewardType != null">
+                reward_type,
+            </if>
+            <if test="coinAmount != null">
+                coin_amount,
+            </if>
+            <if test="cashAmount != null">
+                cash_amount,
+            </if>
+            <if test="couponId != null">
+                coupon_id,
+            </if>
             <if test="status != null">
                 status,
+            </if>
+            <if test="rewardTime != null">
+                reward_time,
             </if>
         </trim>
         values
         <foreach collection="taskUserDoList" item='taskUserDo' separator=','>
-		    <if test="gmtCreate != null" >
-		       #{taskUserDo.gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{taskUserDo.gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="userId != null" >
-		       #{taskUserDo.userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="taskId != null" >
-		       #{taskUserDo.taskId,jdbcType=INTEGER},
-		    </if>
+            <if test="gmtCreate != null" >
+                #{taskUserDo.gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{taskUserDo.gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                #{taskUserDo.userId,jdbcType=INTEGER},
+            </if>
+            <if test="taskId != null" >
+                #{taskUserDo.taskId,jdbcType=INTEGER},
+            </if>
             <if test="taskName != null">
                 #{taskUserDo.taskName,jdbcType=VARCHAR},
             </if>
-		    <if test="coinAmount != null" >
-		       #{taskUserDo.coinAmount,jdbcType=INTEGER},
-		    </if>
-		    <if test="cashAmount != null" >
-		       #{taskUserDo.cashAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="couponId != null" >
-		       #{taskUserDo.couponId,jdbcType=INTEGER},
-		    </if>
+            <if test="rewardType != null">
+                #{taskUserDo.rewardType,jdbcType=INTEGER},
+            </if>
+            <if test="coinAmount != null" >
+                #{taskUserDo.coinAmount,jdbcType=INTEGER},
+            </if>
+            <if test="cashAmount != null" >
+                #{taskUserDo.cashAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="couponId != null" >
+                #{taskUserDo.couponId,jdbcType=INTEGER},
+            </if>
             <if test="status != null" >
                 #{taskUserDo.status,jdbcType=INTEGER},
+            </if>
+            <if test="rewardTime != null">
+                #{taskUserDo.rewardTime,jdbcType=TIMESTAMP},
             </if>
         </foreach>
     </insert>
@@ -204,11 +228,12 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+	<select id="getYestadayTaskUserDoByTaskName" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
         <include refid="queryFields" />
         FROM af_task_user
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND taskName = #{taskName}
+        AND date(reward_time) <![CDATA[ < ]]>  date(now())
         LIMIT 0,1
     </select>
 
@@ -238,7 +263,7 @@
         <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
-        ORDER BY gmt_create
+        ORDER BY gmt_create desc
     </select>
 
     <select id="isNotDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
@@ -251,7 +276,7 @@
         <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
-        ORDER BY gmt_create
+        ORDER BY gmt_create desc
     </select>
 
     <select id="getIsDailyTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
@@ -311,10 +336,19 @@
 
     <select id="getAvailableCoinAmount" resultType="java.lang.Long">
         SELECT
-        count(1)
+        sum(coin_amount)
         FROM af_task_user
         WHERE user_id = #{userId}
         AND status in ('1','2')
+    </select>
+
+    <select id="getYestadayChangedCoinAmountList" resultType="java.lang.Long">
+        SELECT
+        sum(coin_amount)
+        FROM af_task_user
+        WHERE status = '3'
+        AND user_id = #{userId}
+        AND to_days(now()) - to_days(reward_time) = 1
     </select>
 
     <select id="getIncomeOfNearlySevenDays" resultType="java.util.HashMap">
@@ -335,7 +369,7 @@
             SELECT date_sub(curdate(), INTERVAL 6 DAY) AS rewardDate
         ) a
         LEFT JOIN (
-            SELECT date(gmt_modified) AS rewardDate, SUM(cash_amount) AS cashAmount
+            SELECT date(reward_time) AS rewardDate, SUM(cash_amount) AS cashAmount
             FROM af_task_user where user_id = #{user_id} and status in ('1','2')
             GROUP BY rewardDate
         ) b ON a.rewardDate = b.rewardDate
@@ -348,16 +382,9 @@
         FROM af_task_user
         WHERE is_delete = 0
         AND user_id = #{userId}
-        <if test="detailType==coin">
-            AND coin_amount != 0
-            AND status in ('1','2','3')
-        </if>
-        <if test="detailType==cash">
-            AND cash_amount != 0
-            AND status in ('1','2')
-        </if>
-        and user_id = #{userId,jdbcType=INTEGER}
-        ORDER BY gmt_create desc
+        AND reward_type = #{rewardType}
+        AND status in ('1','2','3')
+        ORDER BY reward_time desc
     </select>
 
 

@@ -218,6 +218,7 @@ public static enum ASJ_HOME_PAGE{
 	/**
 	 * 金币兑换比例
 	 */
-	public static final String CACHE_KEY_COIN_EXCHANGE_PROPORTION = "CACHE_KEY_COIN_EXCHANGE_PROPORTION";
+	public static final String CACHE_KEY_COIN_EXCHANGE_PROPORTION = "CACHE_KEY_COIN_EXCHANGE_PROPORTION:";
+
 
 }

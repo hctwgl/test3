@@ -28,10 +28,14 @@ public interface AfTaskUserDao  {
 
     int batchInsertTaskUserDo(@Param("taskUserDoList") List<AfTaskUserDo> taskUserDoList);
 
+    Long getYestadayChangedCoinAmountList(@Param("userId") Long userId);
+
     Long getAvailableCoinAmount(@Param("userId") Long userId);
 
     List<Map<String, Object>> getIncomeOfNearlySevenDays(@Param("userId") Long userId);
 
-    List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("detailType") String detailType);
+    List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("rewardType") Integer rewardType);
+
+    AfTaskUserDo getYestadayTaskUserDoByTaskName(@Param("taskName") String taskName);
 
 }

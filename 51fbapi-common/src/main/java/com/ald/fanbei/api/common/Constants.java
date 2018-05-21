@@ -626,8 +626,12 @@ public class Constants {
 	public static final String BROWSE_TASK = "BROWSE_TASK";
 
 	/**
-	 * 金币兑换余额最大比例配置
+	 * 浏览商品数量任务的名称
 	 */
-	public static final String COIN_EXCHENGE_CASH_MAX_PROPORTION = "COIN_EXCHENGE_CASH_MAX_PROPORTION";
+	public static final String BROWSE_TASK_NAME = "浏览任务";
 
+	/**
+	 * 金币兑换任务名称
+	 */
+	public static final String TASK_COIN_CHANGE_TO_CASH_NAME = "金币兑换零钱";
 }
