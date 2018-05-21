@@ -399,7 +399,7 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     // 处理FanbeiException
     private String handleFanbeiException(FanbeiException e) {
-        logger.error("/redPacket/getHomeInfoInSite, error={}", e);
+        logger.error("/fanbei-web/redPacket, error:", e);
         if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
                 || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
             return H5CommonResponse.getNewInstance(false, "没有登录").toString();
@@ -420,7 +420,7 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     // 处理异常
     private String handleException(Exception e) {
-        logger.error("/redPacket/getHomeInfoInSite, error:", e);
+        logger.error("/fanbei-web/redPacket, error:", e);
         return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getDesc()).toString();
     }
 
