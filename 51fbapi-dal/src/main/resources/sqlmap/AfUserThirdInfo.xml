@@ -73,6 +73,9 @@
 	        <if test="modifier != null">        
 	            modifier,
 	        </if>
+            <if test="userName != null">
+                user_name,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -100,6 +103,9 @@
 		    <if test="modifier != null" >
 		       #{modifier,jdbcType=VARCHAR},
 		    </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
         </trim>
     </insert>
     
