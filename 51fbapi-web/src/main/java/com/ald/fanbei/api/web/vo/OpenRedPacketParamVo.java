@@ -30,8 +30,6 @@ public class OpenRedPacketParamVo extends AbstractSerial {
 
     private String bsqToken;
 
-    private String phone;
-
     @Override
     public String toString() {
         return "OpenRedPacketParamVo{" +
@@ -43,7 +41,6 @@ public class OpenRedPacketParamVo extends AbstractSerial {
                 ", verifyCode='" + verifyCode + '\'' +
                 ", token='" + token + '\'' +
                 ", bsqToken='" + bsqToken + '\'' +
-                ", phone='" + phone + '\'' +
                 '}';
     }
 }
