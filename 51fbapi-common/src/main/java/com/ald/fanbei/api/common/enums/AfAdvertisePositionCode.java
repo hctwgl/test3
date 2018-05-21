@@ -11,8 +11,8 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfAdvertisePositionCode {
 	   HOME_TOP_BANNER("HOME_TOP_BANNER", "首页顶部轮播"),
-	   HOME_NAVIGATION_UP_ONE("INSERT", "中部轮播1"),
-	   HOME_NAVIGATION_DOWN_ONE("HOME_NAVIGATION_DOWN_ONE","中部轮播1");
+	   HOME_NAVIGATION_UP_ONE("HOME_NAVIGATION_UP_ONE", "中部轮播1"),
+	   HOME_NAVIGATION_DOWN_ONE("HOME_NAVIGATION_DOWN_ONE","中部轮播2");
 		
 
 	 	private String code;
