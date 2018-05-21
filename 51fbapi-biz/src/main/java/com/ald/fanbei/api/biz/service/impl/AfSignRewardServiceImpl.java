@@ -89,11 +89,13 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
         int countDays = 0;
         boolean flag = true;
         Date date = afSignRewardExtDo.getFirstDayParticipation();
+        if(date ==null){
+            return  0;
+        }
         int cycle = afSignRewardExtDo.getCycleDays();
         Date startTime;
         Date endTime;
         Calendar calendar = Calendar.getInstance();
-        Date aa =  DateUtil.formatDateToYYYYMMdd(date);
         calendar.setTime(DateUtil.formatDateToYYYYMMdd(date));
         while(flag){
             num ++;

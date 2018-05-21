@@ -29,5 +29,19 @@ public class AfUserThirdInfoServiceImpl  implements AfUserThirdInfoService {
     @Resource
     private AfUserThirdInfoDao afUserThirdInfoDao;
 
+    @Override
+    public int saveRecord(AfUserThirdInfoDo afUserThirdInfoDo){
+        return afUserThirdInfoDao.saveRecord(afUserThirdInfoDo);
+    }
+
+    @Override
+    public int selectUserThirdInfoByUserName(String userName){
+        return afUserThirdInfoDao.selectUserThirdInfoByUserName(userName);
+    }
+
+    @Override
+    public int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo){
+        return afUserThirdInfoDao.updateByUserName(afUserThirdInfoDo);
+    }
 
 }

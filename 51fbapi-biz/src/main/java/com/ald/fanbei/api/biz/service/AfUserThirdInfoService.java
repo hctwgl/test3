@@ -12,4 +12,10 @@ import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
  */
 public interface AfUserThirdInfoService {
 
+    int saveRecord(AfUserThirdInfoDo afUserThirdInfoDo);
+
+    int selectUserThirdInfoByUserName(String userName);
+
+    int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo);
+
 }

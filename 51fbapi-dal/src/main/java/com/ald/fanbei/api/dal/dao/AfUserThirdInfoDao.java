@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户第三方信息表(与微信绑定)Dao
@@ -12,6 +13,10 @@ import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
  */
 public interface AfUserThirdInfoDao  {
 
-    
+    int saveRecord(AfUserThirdInfoDo afUserThirdInfoDo);
+
+    int selectUserThirdInfoByUserName(@Param("userName") String userName);
+
+    int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo);
 
 }

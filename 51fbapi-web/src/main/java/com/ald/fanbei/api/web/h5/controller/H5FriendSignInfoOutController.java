@@ -65,7 +65,8 @@ public class H5FriendSignInfoOutController extends H5Controller {
     AfUserAuthService afUserAuthService;
     @Resource
     AfTaskService afTaskService;
-
+    @Resource
+    AfUserThirdInfoService afUserThirdInfoService;
     /**
      * 朋友帮签
      * @param request
@@ -87,7 +88,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
                 final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old")){
+                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
                 homeInfo(eUserDo.getRid(),data);
@@ -147,7 +148,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signReward(request,userId,rewardAmount,"new")){
+            if(!signReward(request,userId,rewardAmount,"new",moblie)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
@@ -162,7 +163,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount,final String user){
+    private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount,final String user,final String moblie){
         boolean result ;
         final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);//分享者的userId
         final boolean flag = afSignRewardService.checkUserSign(userId);
@@ -175,6 +176,13 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     BigDecimal amount;
                     if(StringUtil.equals("new",user)){
                         amount = randomNum(afResource.getValue1(),afResource.getValue2());
+                        //绑定openId
+                        AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
+                        afUserThirdInfoDo.setUserId(userId);
+                        afUserThirdInfoDo.setGmtModified(new Date());
+                        afUserThirdInfoDo.setModifier(moblie);
+                        afUserThirdInfoDo.setUserName(moblie);
+                        afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
                     }else{
                         if(flag){
                             amount = randomNum(afResource.getValue1(),afResource.getValue2());
