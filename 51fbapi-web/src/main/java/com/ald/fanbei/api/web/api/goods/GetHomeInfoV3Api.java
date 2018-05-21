@@ -165,7 +165,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		 cacheResult = null;
+		// cacheResult = null;
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else 
