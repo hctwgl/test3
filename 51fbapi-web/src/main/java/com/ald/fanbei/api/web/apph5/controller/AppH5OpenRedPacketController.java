@@ -231,6 +231,8 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            String s = param.getMobile();
+            logger.info("bindPhoneAndOpen:" + s);
             Map<String, String> data = new HashMap<>();
             data.put("isRegister", YesNoStatus.NO.getCode());
 
