@@ -30,9 +30,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -269,9 +273,16 @@ public class AppH5OpenRedPacketController extends BaseController {
     }
 
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String sendVerifyCode(@RequestBody String phone, HttpServletRequest request) {
+    public String sendVerifyCode(String phone, HttpServletRequest request) {
         try {
             logger.info("/redPacket/sendVerifyCode：" + phone);
+            BufferedReader br = request.getReader();
+            String str, wholeStr = "";
+            while((str = br.readLine()) != null){
+                wholeStr += str;
+            }
+            System.out.println("/redPacket/sendVerifyCode wholeStr：" + wholeStr);
+
             if (StringUtils.isBlank(phone)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
