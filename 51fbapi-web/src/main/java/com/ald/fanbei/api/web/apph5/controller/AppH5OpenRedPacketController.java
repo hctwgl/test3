@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -273,11 +274,14 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String sendVerifyCode(HttpServletRequest request) {
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String sendVerifyCode(HttpServletRequest request, OpenRedPacketParamVo param,
+                                 @RequestParam(value = "mobile") String mobile) {
         try {
-            String mobile = request.getParameter("mobile");
+//            String mobile = request.getParameter("mobile");
             logger.info("/redPacket/sendVerifyCode：" + mobile);
+            logger.info("");
 
             if (StringUtils.isBlank(mobile)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();

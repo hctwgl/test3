@@ -83,20 +83,21 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 	@Override
 	public AfRedPacketSelfOpenDo open(final Long userId, final String modifier, final String sourceType) {
 		String lock = "AfRedPacketSelfOpenServiceImpl_open_lock";
-		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,10, Constants.SECOND_OF_TEN_MINITS);
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
 		if (isLock) {
 			try {
 				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 				final JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
 				final JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
-				final AfRedPacketTotalDo theOpening = afRedPacketTotalService
-						.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
-
-				checkIsCanOpen(sourceType, theOpening, redPacketConfig);
 
 				return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {
 					@Override
 					public AfRedPacketSelfOpenDo doInTransaction(TransactionStatus transactionStatus) {
+						AfRedPacketTotalDo theOpening = afRedPacketTotalService
+								.getTheOpeningMust(userId, modifier, redPacketConfig.getInteger("overdueIntervalHour"));
+
+						checkIsCanOpen(sourceType, theOpening, redPacketConfig);
+
 						AfRedPacketSelfOpenDo selfOpenDo = new AfRedPacketSelfOpenDo();
 						selfOpenDo.setRedPacketTotalId(theOpening.getRid());
 						selfOpenDo.setSourceType(sourceType);
