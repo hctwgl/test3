@@ -126,7 +126,12 @@ public class GetAgencyCouponListApi implements ApiHandle {
 			List<AfModelH5ItemDo> modelH5ItemList = null;
 			int goodsCount = 0;
 			boolean shareFlag = false;
-			List<AfUserCouponDto> userCouponList = afUserCouponService.getUserAllAcgencyCouponByAmount(userId,actualAmount);
+			List<AfUserCouponDto> userCouponList = new ArrayList<AfUserCouponDto>();
+			if(context.getAppVersion()>414){
+				userCouponList = afUserCouponService.getUserAllAcgencyCouponByAmount(userId,actualAmount);
+			}else{
+				userCouponList = afUserCouponService.getUserOldAllAcgencyCouponByAmount(userId,actualAmount);
+			}
 			for(AfUserCouponDto afUserCouponDto : userCouponList){
 				try{
 					Integer isGlobal = afUserCouponDto.getIsGlobal();

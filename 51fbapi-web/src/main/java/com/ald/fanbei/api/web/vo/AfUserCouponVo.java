@@ -46,6 +46,8 @@ public class AfUserCouponVo extends AbstractSerial{
 
 	private BigDecimal discount;
 
+	private String activityType;
+
 	public String getName() {
 		return name;
 	}

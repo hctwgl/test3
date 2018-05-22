@@ -1764,6 +1764,7 @@ public class AppH5FanBeiWebController extends BaseController {
 		couponVo.setRid(afUserCouponDto.getCouponId());
 		couponVo.setIsGlobal(afUserCouponDto.getIsGlobal());
 		couponVo.setDiscount(afUserCouponDto.getDiscount());
+		couponVo.setActivityType(afUserCouponDto.getActivityType());
 		return couponVo;
 	}
 

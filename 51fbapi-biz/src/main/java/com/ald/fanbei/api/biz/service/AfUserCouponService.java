@@ -167,6 +167,8 @@ public interface AfUserCouponService {
 	List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType);
 
     List<AfUserCouponDto> getUserBillCouponByUserIdAndType(Long userId, String code, BigDecimal repayAmount);
+
+    List<AfUserCouponDto> getUserOldAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
 }
 
 
