@@ -384,6 +384,7 @@ public class AfBorrowRecycleRepaymentServiceImpl implements AfBorrowRecycleRepay
 			
 			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
+				afRepaymentBorrowCashDao.status2Process(respBo.getTradeNo(), repayment.getRid());
 				changBorrowRepaymentStatus(respBo.getTradeNo(), AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
 			}
 			if (!respBo.isSuccess()) {
