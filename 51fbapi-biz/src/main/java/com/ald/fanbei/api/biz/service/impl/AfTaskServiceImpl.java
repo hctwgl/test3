@@ -85,13 +85,12 @@ public class AfTaskServiceImpl  implements AfTaskService {
         if(isDailyList.size() > 0){
             isDailyTaskList = afTaskUserService.isDailyTaskList(userId,isDailyList);
         }
-        if(isDailyList.size() > 0){
+        if(isNotDailyList.size() > 0){
             isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId,isNotDailyList);
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
         for(AfTaskUserDo taskUserDo : isDailyTaskList){
-            if(StringUtil.isBlank(taskUserDo.getCashAmount().toString()) && StringUtil.isBlank(taskUserDo.getCoinAmount().toString())
-                    && StringUtil.isBlank(taskUserDo.getCouponId().toString())){
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
                 notFinishedList.add(taskUserDo.getTaskId());
             }else{
                 finishedList.add(taskUserDo.getTaskId());
@@ -102,8 +101,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 if(id == afTaskDo.getRid()){
                     taskDto.setReceiveReward("N");
                     finalTaskList.add(afTaskDo);
+                    break;
                 }
-                break;
             }
         }
         for(AfTaskDto afTaskDo : taskList){
@@ -113,8 +112,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 if(afTaskUserDo.getTaskId() == afTaskDo.getRid()
                         || (StringUtil.equals(afTaskDo.getIsOpen().toString(),"1") && StringUtil.equals(afTaskDo.getIsDelete(),"0"))){
                     flag = false;
+                    break;
                 }
-                break;
             }
             if(StringUtil.equals(afTaskDo.getIsOpen().toString(),"0") || StringUtil.equals(afTaskDo.getIsDelete().toString(),"1")
                     || afTaskDo.getTaskBeginTime().getTime() > new Date().getTime() || afTaskDo.getTaskEndTime().getTime() < new Date().getTime() ){
