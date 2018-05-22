@@ -2196,6 +2196,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								refundAmount, refundNo);
 						break;
 					case BANK:
+						orderInfo = orderDao.getOrderById(orderId);
 						// 银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfoRefund(bankId);
@@ -2204,12 +2205,13 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING, PayType.BANK,
 								card.getCardNumber(), card.getBankName(), "api银行卡退款", refundSource, StringUtils.EMPTY);
 						afOrderRefundDao.addOrderRefund(refundInfo);
-						orderInfo = new AfOrderDo();
-						orderInfo.setRid(orderId);
-						orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
-						orderDao.updateOrder(orderInfo);
 
 						if (BankCardType.DEBIT.getCode().equals(orderInfo.getCardType())) {
+							orderInfo = new AfOrderDo();
+							orderInfo.setRid(orderId);
+							orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
+							orderDao.updateOrder(orderInfo);
+
 							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(),
 									card.getCardNumber(), userId + "", card.getMobile(), card.getBankName(),
 									card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",
