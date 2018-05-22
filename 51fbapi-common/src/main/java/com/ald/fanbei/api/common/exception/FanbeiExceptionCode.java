@@ -340,6 +340,7 @@ public enum FanbeiExceptionCode {
     BORROW_CASH_RATE_ERROR("BORROW_CASH_RATE_ERROR",3003,"borrow cash rate not exist","获取利率失败，请联系客服"),
     BORROW_CASH_GOOD_NOT_EXIST_ERROR("BORROW_CASH_GOOD_NOT_EXIST_ERROR",3004,"borrow cash goods not exist","商品信息不存在"),
     BORROW_CASH_COUPON_NOT_EXIST_ERROR("BORROW_CASH_COUPON_NOT_EXIST_ERROR",3005,"borrow cash coupon not exist","优惠券信息不存在"),
+    AUTH_GOOD_CAN_NOT_REFUND("AUTH_GOOD_CAN_NOT_REFUND",3006,"auth good can not apply refund","权限包商品不可退款"),
 
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),

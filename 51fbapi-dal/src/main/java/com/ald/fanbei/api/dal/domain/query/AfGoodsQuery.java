@@ -29,6 +29,8 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 	
 	private String sort;
 	
+	private Long excludeGoodsId;//列表需要排除的商品id
+	
 	public Long getCategoryId() {
 		return categoryId;
 	}
@@ -89,6 +91,14 @@ public class AfGoodsQuery extends Page<AfGoodsDo>{
 	 */
 	public void setAppVersion(Integer appVersion) {
 		this.appVersion = appVersion;
+	}
+
+	public Long getExcludeGoodsId() {
+		return excludeGoodsId;
+	}
+
+	public void setExcludeGoodsId(Long excludeGoodsId) {
+		this.excludeGoodsId = excludeGoodsId;
 	}
 	
 }

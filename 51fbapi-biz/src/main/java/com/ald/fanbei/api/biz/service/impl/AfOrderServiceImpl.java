@@ -2448,6 +2448,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					DateUtil.getToday()) < 0) {
 				isCanApply = YesNoStatus.YES.getCode();
 			}
+			
+			//对权限包商品进行处理，如果为配置的权限包商品，则不支持申请售后
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+			if(resourceDo!=null && order.getGoodsId().equals(NumberUtil.objToLongDefault(resourceDo.getValue(), 0L))){
+				isCanApply = YesNoStatus.NO.getCode();
+			}
 		} catch (Exception e) {
 			logger.error("isCanApplyAfterSale request error,orderId:" + orderId, e);
 		}

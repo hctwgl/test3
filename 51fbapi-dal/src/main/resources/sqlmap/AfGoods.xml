@@ -100,6 +100,9 @@
 				AND
 					id <![CDATA[  >  ]]> 10552
 			</if>
+			<if test="excludeGoodsId != null and excludeGoodsId !=0">
+				and g.id != #{excludeGoodsId}
+			</if>
 		order by g.gmt_modified desc
 	</select>
 	
@@ -117,6 +120,9 @@
 			</if>
 			<if test="categoryId == null or categoryId ==0">
 				and exists(select 1 from af_category c where c.is_delete=0 and c.level=1 and g.primary_category_id=c.id) 
+			</if>
+			<if test="excludeGoodsId != null and excludeGoodsId !=0">
+				and g.id != #{excludeGoodsId}
 			</if>
 		order by g.gmt_modified desc
 	</select>
@@ -286,6 +292,9 @@
 		WHERE
 			g.is_delete = 0
 		AND g.status = 'PUBLISH'
+		<if test="excludeGoodsId != null and excludeGoodsId !=0">
+			and g.id != #{excludeGoodsId}
+		</if>
 		ORDER BY s.gmt_create desc
 	</select>
 
@@ -318,6 +327,9 @@
 		WHERE
 			g.is_delete = 0
 		AND g.status = 'PUBLISH'
+		<if test="excludeGoodsId != null and excludeGoodsId !=0">
+			and g.id != #{excludeGoodsId}
+		</if>
 		ORDER BY g.gmt_create desc
 	</select>
 
@@ -369,7 +381,7 @@
 			id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
 
 	</select>
-	<select id="getHomeGoodsByModelId" resultType="AfGoodsDo">
+	<select id="getHomeGoodsByModelId" resultType="AfGoodsDo" >
 		SELECT
 		<include refid="queryAllFields"/>
 		FROM
@@ -423,6 +435,9 @@
             AND g.category_id =#{categoryId}
             AND g.is_delete = 0
             AND  g.status = 'PUBLISH' AND g.source = 'SELFSUPPORT' AND g.stock_count > 0
+            <if test="excludeGoodsId != null and excludeGoodsId !=0">
+				and g.id != #{excludeGoodsId}
+			</if>
             GROUP BY g.id
 		    ORDER BY g.sale_count desc
 	</select>
@@ -438,6 +453,9 @@
 		AND source = 'SELFSUPPORT'
 		<if test="keyword != null and keyword != ''">
 		AND name LIKE CONCAT('%',#{keyword},'%')
+		</if>
+		<if test="excludeGoodsId != null and excludeGoodsId !=0">
+			and id != #{excludeGoodsId}
 		</if>
 		<if test="sortword != null and sortword != ''">
 		order by ${sortword}
@@ -580,6 +598,9 @@
             AND g.category_id =#{categoryId}
             AND g.is_delete = 0
             AND  g.status = 'PUBLISH' AND g.source = 'SELFSUPPORT' AND g.stock_count > 0
+            <if test="excludeGoodsId != null and excludeGoodsId !=0">
+				and g.id != #{excludeGoodsId}
+			</if>
             GROUP BY g.id
 		    ORDER BY ifnull(MIN(a.special_price),g.sale_amount) ${sort}
 
@@ -597,6 +618,9 @@
 		<if test="goodsId != null">
             AND id =#{goodsId}
   		</if>
+  		<if test="excludeGoodsId != null and excludeGoodsId !=0">
+			and id != #{excludeGoodsId}
+		</if>
 	</select>
 	<select id="getAvaliableSelfGoodsForSort" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo">
 		SELECT
@@ -613,6 +637,9 @@
 				#{goodsIds[${index}],jdbcType=BIGINT}
 			</foreach>
   		</if>
+  		<if test="excludeGoodsId != null and excludeGoodsId !=0">
+			and id != #{excludeGoodsId}
+		</if>
 		<if test="sortword != null and sortword != ''">
 		order by ${sortword}
 		</if>

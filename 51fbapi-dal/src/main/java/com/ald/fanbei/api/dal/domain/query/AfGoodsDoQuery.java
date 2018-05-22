@@ -2,7 +2,6 @@ package com.ald.fanbei.api.dal.domain.query;
 
 import java.util.List;
 
-
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 
@@ -24,6 +23,7 @@ public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 	private String sort;
 	private Long goodsId;
 	private List<Long> goodsIds;
+	private Long excludeGoodsId;//列表需要排除的商品id
 	
 	public List<Long> getGoodsIds() {
 		return goodsIds;
@@ -63,6 +63,14 @@ public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 
 	public void setSort(String sort) {
 		this.sort = sort;
+	}
+
+	public Long getExcludeGoodsId() {
+		return excludeGoodsId;
+	}
+
+	public void setExcludeGoodsId(Long excludeGoodsId) {
+		this.excludeGoodsId = excludeGoodsId;
 	}
 
 	@Override

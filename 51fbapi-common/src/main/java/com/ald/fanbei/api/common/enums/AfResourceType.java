@@ -139,7 +139,9 @@ public enum AfResourceType {
 
 	ZHIMA_VERIFY_CONFIG("ZHIMA_VERIFY_CONFIG","芝麻信用认证相关配置"),
 
-	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置");
+	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
+
+	WEAK_VERIFY_VIP_CONFIG("WEAK_VERIFY_VIP_CONFIG","弱风控权限包配置");
 
 
 	private String code;

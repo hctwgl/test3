@@ -5,7 +5,7 @@
 		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
 		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
 		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status,gmt_chsi,chsi_status,gmt_zhengxin,zhengxin_status,gmt_basic,
-gmt_onlinebank,onlinebank_status,bubble_status,gmt_bubble
+gmt_onlinebank,onlinebank_status,bubble_status,gmt_bubble,order_weak_risk_status,gmt_order_weak_risk
 	</sql>
  
 
@@ -168,6 +168,12 @@ gmt_onlinebank,onlinebank_status,bubble_status,gmt_bubble
 		</if>
 		<if test="gmtBubble != null">
 			,gmt_bubble=#{gmtBubble}
+		</if>
+		<if test="orderWeakRiskStatus != null">
+			,order_weak_risk_status=#{orderWeakRiskStatus}
+		</if>
+		<if test="gmtOrderWeakRisk != null">
+			,gmt_order_weak_risk=#{gmtOrderWeakRisk}
 		</if>
 		WHERE user_id = #{userId}
 	</update>

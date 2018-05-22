@@ -66,7 +66,10 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String ecommerceStatus;//公信宝电商认证
 	private String bubbleStatus;
 	private Date gmtBubble;
-
+	private String orderWeakRiskStatus;
+	private Date gmtOrderWeakRisk;
+	
+	
 	public String getBubbleStatus() {
 		return bubbleStatus;
 	}
@@ -427,4 +430,22 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setEcommerceStatus(String ecommerceStatus) {
 		this.ecommerceStatus = ecommerceStatus;
 	}
+
+	public String getOrderWeakRiskStatus() {
+		return orderWeakRiskStatus;
+	}
+
+	public void setOrderWeakRiskStatus(String orderWeakRiskStatus) {
+		this.orderWeakRiskStatus = orderWeakRiskStatus;
+	}
+
+	public Date getGmtOrderWeakRisk() {
+		return gmtOrderWeakRisk;
+	}
+
+	public void setGmtOrderWeakRisk(Date gmtOrderWeakRisk) {
+		this.gmtOrderWeakRisk = gmtOrderWeakRisk;
+	}
+	
+	
 }

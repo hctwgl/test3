@@ -17,15 +17,19 @@ import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.RefundSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -33,6 +37,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -58,6 +63,8 @@ public class RefundOrderApplyApi implements ApiHandle{
 	AfGoodsService afGoodsService;
 	@Resource 
 	AfGoodsPriceService afGoodsPriceService;
+	@Resource 
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -89,6 +96,11 @@ public class RefundOrderApplyApi implements ApiHandle{
 		supportOrderTypes.add(OrderType.AGENTBUY.getCode());
 		if(!supportOrderTypes.contains(orderInfo.getOrderType())){
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_REFUND_TYPE_ERROR);
+		}
+		//权限包商品不可退款
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		if(resourceDo!=null && orderInfo.getGoodsId().equals(NumberUtil.objToLongDefault(resourceDo.getValue(), 0L))){
+			throw new FanbeiException(FanbeiExceptionCode.AUTH_GOOD_CAN_NOT_REFUND);
 		}
 		
 		if(StringUtil.isNotBlank(contactsMobile)){

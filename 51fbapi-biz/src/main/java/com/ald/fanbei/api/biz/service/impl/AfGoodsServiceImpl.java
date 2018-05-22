@@ -10,7 +10,11 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
@@ -25,7 +29,9 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.alibaba.fastjson.JSONObject;
@@ -42,11 +48,15 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Resource
 	AfGoodsDao afGoodsDao;
 	@Resource
+	AfResourceDao afResourceDao;
+	@Resource
 	private BizCacheUtil bizCacheUtil;
 	@Override
 	public List<AfGoodsDo> getCateGoodsList(AfGoodsQuery query) {
-		return afGoodsDao.getCateGoodsList(query);
+		return afGoodsDao.getCateGoodsList(specProcessGoodsQuery(query));
 	}
+	
+	
 	@Override
 	public AfGoodsDo getGoodsById(Long rid) {
 		return afGoodsDao.getGoodsById(rid);
@@ -132,7 +142,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 	@Override
 	public List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query) {
-		return afGoodsDao.getHomeCategoryGoodsList(query);
+		return afGoodsDao.getHomeCategoryGoodsList(specProcessGoodsQuery(query));
 	}
 	@Override
 	public List<AfGoodsDo> getGoodsByModelId (Long categoryId){
@@ -141,12 +151,12 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Override
 	public List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query){
-		return afGoodsDao.selectFlashSaleGoods(query);
+		return afGoodsDao.selectFlashSaleGoods(specProcessGoodsQuery(query));
 	}
 
 	@Override
 	public List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query){
-		return afGoodsDao.selectBookingRushGoods(query);
+		return afGoodsDao.selectBookingRushGoods(specProcessGoodsQuery(query));
 	}
 	@Override
 	public List<AfGoodsDo> getHomeGoodsByModelId(AfGoodsQuery query){
@@ -170,7 +180,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query) {
 
-		return afGoodsDao.getAvaliableSelfGoods(query);
+		return afGoodsDao.getAvaliableSelfGoods(specProcessGoodsQuery(query));
 	}
 
 	@Override
@@ -179,7 +189,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	}
 	@Override
 	public AfGoodsDo getAvaliableSelfGoodsBySolr(AfGoodsDoQuery query) {
-		return afGoodsDao.getAvaliableSelfGoodsBySolr(query);
+		return afGoodsDao.getAvaliableSelfGoodsBySolr(specProcessGoodsQuery(query));
 	}
 	@Override
 	public List<AfGoodsDo> getGoodsListByGoodsId(List goodsId){
@@ -210,7 +220,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		String key = CacheConstants.ASJ_CATEGORY.ASJ_CATEGORY_DETAIL_GET_GOODS_BY_CATEGORYID_AND_VOLUME.getCode()+ goodsQuery.getCategoryId() +"DESC"+ goodsQuery.getPageNo();
 		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
 		if (CollectionUtil.isEmpty(goodsList)){
-			goodsList = afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(goodsQuery);
+			goodsList = afGoodsDao.getGoodsVerifyByCategoryIdAndVolume(specProcessGoodsQuery(goodsQuery));
 			if (CollectionUtil.isNotEmpty(goodsList)){
 				bizCacheUtil.saveObjectList(key, goodsList);
 			}
@@ -237,7 +247,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	//  String key = "categoryDetailPrice"+goodsQuery.getCategoryId() + goodsQuery.getPageNo()+goodsQuery.getSort();
 		List<HomePageSecKillGoods> goodsList = bizCacheUtil.getObjectList(key);
 		if (CollectionUtil.isEmpty(goodsList)){
-			goodsList = afGoodsDao.getGoodsByCategoryIdAndPrice(goodsQuery);
+			goodsList = afGoodsDao.getGoodsByCategoryIdAndPrice(specProcessGoodsQuery(goodsQuery));
 			if (CollectionUtil.isNotEmpty(goodsList)){
 				bizCacheUtil.saveObjectList(key, goodsList);
 			}
@@ -247,7 +257,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 
 	@Override
 	public List<AfGoodsDo> getAvaliableSelfGoodsForSort(AfGoodsDoQuery query) {
-		return afGoodsDao.getAvaliableSelfGoodsForSort(query);
+		return afGoodsDao.getAvaliableSelfGoodsForSort(specProcessGoodsQuery(query));
 	}
 
 	@Override
@@ -260,4 +270,34 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		return afGoodsDao.getVisualGoodsByGoodsId(ids);
 	}
 
+	/**
+	 * 对商品查询进行全局过滤处理，对特殊的商品不予查询
+	 * @param query
+	 * @return
+	 */
+	private AfGoodsQuery specProcessGoodsQuery(AfGoodsQuery query) {
+		//对特殊商品进行过滤，不在列表项中展示
+	    //对权限包商品进行处理
+		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
+		if(resourceDo!=null && excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
+			query.setExcludeGoodsId(excludeGoodsId);
+		}
+		return query;
+	}
+	/**
+	 * 对商品查询进行全局过滤处理，对特殊的商品不予查询
+	 * @param query
+	 * @return
+	 */
+	private AfGoodsDoQuery specProcessGoodsQuery(AfGoodsDoQuery query) {
+		//对特殊商品进行过滤，不在列表项中展示
+		//对权限包商品进行处理
+		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
+		if(resourceDo!=null && excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
+			query.setExcludeGoodsId(excludeGoodsId);
+		}
+		return query;
+	}
 }
