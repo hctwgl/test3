@@ -1,19 +1,24 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import com.ald.fanbei.api.biz.service.AfCashRecordService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfTaskCoinChangeProportionService;
 import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfTaskCoinChangeProportionDo;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,12 +45,12 @@ public class H5WalletController extends BaseController{
     @Resource
     private AfTaskUserService afTaskUserService;
     @Resource
-    private AfOrderService afOrderService;
-    @Resource
     private AfCashRecordService afCashRecordService;
+    @Resource
+    private AfTaskCoinChangeProportionService afTaskCoinChangeProportionService;
 
     @ResponseBody
-    @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
@@ -66,6 +71,20 @@ public class H5WalletController extends BaseController{
             Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
             data.put("availableCoinAmount", availableCoinAmount);
 
+            // 我的金币兑换，是否昨天已经兑换过
+            AfTaskUserDo taskUserDo = afTaskUserService.getYestadayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME);
+            if(null == taskUserDo){
+                data.put("changeCoinFlag", false);
+            }
+            else{
+                BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
+                Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmountList(userId);
+
+                data.put("changeCoinFlag", true);
+                data.put("yesterdayProportion", yesterdayProportion);
+                data.put("changedCoinAmount", changedCoinAmount);
+            }
+
             // 近七天的收益情况
             List<Map<String, Object>> IncomeList = afTaskUserService.getIncomeOfNearlySevenDays(userId);
             data.put("IncomeList", IncomeList);
@@ -79,14 +98,14 @@ public class H5WalletController extends BaseController{
     }
 
     @ResponseBody
-    @RequestMapping(value = "getIncomeDetails", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "getIncomeDetails", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getIncomeDetails(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
             FanbeiH5Context context = doH5Check(request, true);
             Long userId = context.getUserId();
-            String detailType = request.getParameter("detailType");
-            List<AfTaskUserDo> taskUserList = afTaskUserService.getDetailsByUserId(userId,detailType);
+            String rewardType = request.getParameter("rewardType");
+            List<AfTaskUserDo> taskUserList = afTaskUserService.getDetailsByUserId(userId, Integer.parseInt(rewardType));
             data.put("taskUserList",taskUserList);
 
             return H5CommonResponse.getNewInstance(true,"", "", data).toString();
@@ -98,7 +117,7 @@ public class H5WalletController extends BaseController{
     }
 
     @ResponseBody
-    @RequestMapping(value = "getWithDrawDetail", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "getWithDrawDetail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getWithDrawDetail(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
@@ -122,7 +141,18 @@ public class H5WalletController extends BaseController{
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+
     }
 
     @Override

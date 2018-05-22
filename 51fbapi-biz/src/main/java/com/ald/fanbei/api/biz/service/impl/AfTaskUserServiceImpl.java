@@ -3,8 +3,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfTaskSecType;
 import com.ald.fanbei.api.common.enums.AfTaskType;
@@ -44,16 +42,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
     @Resource
     private AfGoodsService afGoodsService;
-
-    @Resource
-    private AfOrderService afOrderService;
-
-    @Resource
-    private AfResourceService afResourceService;
-
-    @Resource
-    private BizCacheUtil bizCacheUtil;
-
 
     @Override
 	public List<AfTaskUserDo> isDailyTaskList(Long userId, List<Long> list){
@@ -214,25 +202,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
-	public double getExchangeProportion(){
-		Double exchangeProportion = (Double) bizCacheUtil.getObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION);
-		if(null == exchangeProportion || exchangeProportion.doubleValue() == 0l){
-			int paidOrderCountWithinTwoDays = afOrderService.getPaidOrderBeforeDays(2);
-			int paidOrderCountWithinOneDays = afOrderService.getPaidOrderBeforeDays(1);
-			exchangeProportion = (double)paidOrderCountWithinOneDays / (paidOrderCountWithinTwoDays - paidOrderCountWithinOneDays);
-
-			// 配置的最大兑换比例
-			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.COIN_EXCHENGE_CASH_MAX_PROPORTION);
-			String value = resourceDo.getValue();
-			Double maxExchangeProportion = StringUtils.isEmpty(value) ? 2l : Double.parseDouble(value);
-			if(exchangeProportion > maxExchangeProportion){
-				exchangeProportion = maxExchangeProportion;
-			}
-
-			bizCacheUtil.saveObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION, exchangeProportion, Constants.SECOND_OF_AN_HOUR_INT);
-		}
-
-		return exchangeProportion;
+	public Long getYestadayChangedCoinAmountList(Long userId) {
+		return afTaskUserDao.getYestadayChangedCoinAmountList(userId);
 	}
 
 	@Override
@@ -240,8 +211,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     	return afTaskUserDao.getIncomeOfNearlySevenDays(userId);
 	}
 
-	public List<AfTaskUserDo> getDetailsByUserId(Long userId, String detailType){
-		return afTaskUserDao.getDetailsByUserId(userId,detailType);
+	public List<AfTaskUserDo> getDetailsByUserId(Long userId, Integer rewardType){
+		return afTaskUserDao.getDetailsByUserId(userId,rewardType);
 	}
 
 	@Override
@@ -257,6 +228,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		afTaskUserDo.setRewardTime(new Date());
 
 		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+	}
+
+	@Override
+	public AfTaskUserDo getYestadayTaskUserDoByTaskName(String taskName) {
+		return afTaskUserDao.getYestadayTaskUserDoByTaskName(taskName);
 	}
 
 	/**
@@ -284,6 +260,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		AfTaskUserDo taskUserDo = new AfTaskUserDo();
 
         int rewardType = taskDo.getRewardType();
+		taskUserDo.setRewardType(rewardType);
         if(0 == rewardType){
             taskUserDo.setCoinAmount(taskDo.getCoinAmount());
         }
@@ -297,6 +274,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
         taskUserDo.setTaskName(taskDo.getTaskName());
 		taskUserDo.setUserId(userId);
 		taskUserDo.setGmtCreate(new Date());
+		taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
 
 		return taskUserDo;
 	}

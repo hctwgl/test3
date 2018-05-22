@@ -91,10 +91,12 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
 
             AfTaskUserDo taskUserDo = new AfTaskUserDo();
             taskUserDo.setGmtCreate(new Date());
+            taskUserDo.setRewardType(0);
             taskUserDo.setCoinAmount(coinAmount);
             taskUserDo.setUserId(userId);
-            taskUserDo.setTaskName("浏览商品数量任务");
+            taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
             taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
+            taskUserDo.setRewardTime(new Date());
 
             result = afTaskUserService.insertTaskUserDo(taskUserDo);
         }
@@ -127,10 +129,12 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
 
                     AfTaskUserDo taskUserDo = new AfTaskUserDo();
                     taskUserDo.setGmtCreate(new Date());
+                    taskUserDo.setRewardType(0);
                     taskUserDo.setCoinAmount(coinAmount);
                     taskUserDo.setUserId(userId);
-                    taskUserDo.setTaskName("浏览商品数量任务");
+                    taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
                     taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
+                    taskUserDo.setRewardTime(new Date());
 
                     result = afTaskUserService.insertTaskUserDo(taskUserDo);
                 }
