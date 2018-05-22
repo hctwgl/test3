@@ -262,7 +262,7 @@ public class AppH5OpenRedPacketController extends BaseController {
      */
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String withdraw(HttpServletRequest request,@RequestBody OpenRedPacketParamVo param) {
+    public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
             logger.info("/redPacket/withdraw, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
@@ -280,6 +280,8 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String sendVerifyCode(HttpServletRequest request, @RequestBody String requestBody) {
         try {
+            logger.info("/redPacket/sendVerifyCode：requestBody=" + requestBody);
+
             if (StringUtil.isBlank(requestBody)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
