@@ -169,8 +169,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
-		 //Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		 Object  cacheResult = null;
+		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		// Object  cacheResult = null;
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else 
@@ -234,15 +234,15 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				// 顶部导航信息
 	
 		
-				String topBanner = AfResourceType.HomeBannerV401.getCode();
-				// 正式环境和预发布环境区分
-				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
-					
-				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
-					
-				}
+//				String topBanner = AfResourceType.HomeBannerV401.getCode();
+//				// 正式环境和预发布环境区分
+//				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+//						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
+//					
+//				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+//						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
+//					
+//				}
 //				if(userId != null){
 //				 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
 //				}
@@ -262,15 +262,15 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				// 新增运营位1,快捷导航上方活动专场
 				
 //				  if(navigationUpOne == null || navigationUpOne.size()<1){
-					  navigationUpOne = 	getNavigationUpOneResourceDoList(
-								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
+//					  navigationUpOne = 	getNavigationUpOneResourceDoList(
+//								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
 //				if(userId != null){
 //				  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
 //			    }
 					  
 				// 新增运营位2,快捷导航下方活动专场
-						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
-									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
+//						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
+//									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
 //				if(userId != null){
 //				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
 //				}
@@ -629,16 +629,62 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					 }
 	      }
            //
-		    if(userId != null){
-			  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
-		    }
-			
-             if(userId != null){
-				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
-				}
-         	if(userId != null){
-				  toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
-				}
+		   
+		   	      String navigationUpOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_UP_ONE +":"+userId;
+		   	      String navigationDownOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_DOWN_ONE +":"+userId;
+		   	      String topBannerCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_TOP_BANNER +":"+userId;
+		   	     
+//		   	    navigationUpOne = null;
+//		   	    navigationDownOne = null;
+//		   	    topBannerList = null;  
+		   	    navigationUpOne = bizCacheUtil.getObjectList(navigationUpOneCacheKey);
+		   	    navigationDownOne = bizCacheUtil.getObjectList(navigationDownOneCacheKey);
+		   	    topBannerList = bizCacheUtil.getObjectList(topBannerCacheKey);
+		   	         
+		   	    if(navigationUpOne == null || navigationUpOne.size()<1){
+			   	    navigationUpOne = 	getNavigationUpOneResourceDoList(
+				            afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
+			   	   if(userId != null){
+			   	    toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+			   	   }
+			        if(navigationUpOne!= null && navigationUpOne.size()>0){
+			        	navigationUpOne =  navigationUpOne.subList(0, 1);
+			        	 bizCacheUtil.saveObjectListExpire(navigationUpOneCacheKey, navigationUpOne, Constants.MINITS_OF_TWO);
+			        }
+			       
+		   	    }
+		   	   if(navigationDownOne == null || navigationDownOne.size()<1){
+				   navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
+							.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
+				   if(userId != null){
+					   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+				   }
+				    if(navigationDownOne!= null && navigationDownOne.size()>0){
+				    	navigationDownOne = navigationDownOne.subList(0, 1);
+				    	bizCacheUtil.saveObjectListExpire(navigationDownOneCacheKey, navigationDownOne, Constants.MINITS_OF_TWO);
+				    }
+		   	  
+		   	   
+		   	   }
+			   	if(topBannerList == null || topBannerList.size()<1){
+					String topBanner = AfResourceType.HomeBannerV401.getCode();
+					// 正式环境和预发布环境区分
+					if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+							  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
+						
+					} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+							  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
+						
+					}
+					 if(userId != null){
+						 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+					 }
+			   	  if(topBannerList!= null && topBannerList.size()>0){
+					bizCacheUtil.saveObjectListExpire(topBannerCacheKey, topBannerList, Constants.MINITS_OF_TWO);
+			   	  }
+			   	}
+         	
+				    
          	// 首页背景图
          // 顶部轮播
 				if (!topBannerList.isEmpty()) {
