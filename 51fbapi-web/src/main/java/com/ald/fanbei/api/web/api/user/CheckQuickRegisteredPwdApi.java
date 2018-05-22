@@ -40,7 +40,7 @@ public class CheckQuickRegisteredPwdApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String mobile = ObjectUtils.toString(params.get("mobile"), "");
-		Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
+		Pattern numPattern = Pattern.compile("^1[3|4|5|6|7|8|9][0-9]{9}$");
 		Matcher matcher = numPattern.matcher(mobile);
 		if(StringUtils.isEmpty(mobile)){
 			throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
