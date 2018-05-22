@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.service.AfRedPacketHelpOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -39,8 +38,6 @@ import java.util.List;
 public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacketHelpOpenDo, Long>
 		implements AfRedPacketHelpOpenService {
 
-	private static int CALL_NUM = 0;
-
     @Autowired
     private AfRedPacketHelpOpenDao afRedPacketHelpOpenDao;
 
@@ -52,9 +49,6 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
     @Autowired
     private TransactionTemplate transactionTemplate;
-
-    @Autowired
-    private BizCacheUtil bizCacheUtil;
 
 	@Override
 	public List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum) {
@@ -124,8 +118,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 		AfRedPacketHelpOpenDo helpOpenDo = getHelpOpenRecord(openId, shareRedPacket.getUserId());
 		if (helpOpenDo != null) {
-			CALL_NUM += 1;
-			throw new FanbeiException("您已帮此用户拆过红包了, callNum=" + CALL_NUM);
+			throw new FanbeiException("您已帮此用户拆过红包了");
 		}
 	}
 

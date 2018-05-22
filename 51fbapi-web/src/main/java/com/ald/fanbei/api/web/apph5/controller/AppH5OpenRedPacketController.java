@@ -276,28 +276,15 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
-    /*@RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String sendVerifyCode(HttpServletRequest request, @RequestBody String requestBody) {
+    public String sendVerifyCode(OpenRedPacketParamVo param) {
         try {
-            logger.info("/redPacket/sendVerifyCode：requestBody=" + requestBody);
-
-            if (StringUtil.isBlank(requestBody)) {
+            logger.info("/redPacket/sendVerifyCode, param=" + param);
+            if (StringUtils.isBlank(param.getMobile())) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
             }
-            JSONObject data = JSONObject.parseObject(requestBody);
-            String mobile = data.getString("mobile");
-//            String mobile = request.getParameter("mobile");
-            //logger.info("/redPacket/sendVerifyCode：mobile=" + mobile);
-            String mobile2 = request.getParameter("mobile");
-            logger.info("/redPacket/sendVerifyCode：request.getParameter(mobile)=" + mobile2);
-            logger.info("/redPacket/sendVerifyCode：param.getMobile=" + mobile);
-            return H5CommonResponse.getNewInstance(true, "发送成功").toString();
 
-
-            *//*if (StringUtils.isBlank(param.getMobile())) {
-                return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
-            }
             //查看短信60秒内是否发过
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(param.getMobile(), SmsType.MOBILE_BIND.getCode());
             if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
@@ -307,34 +294,7 @@ public class AppH5OpenRedPacketController extends BaseController {
             }
 
             boolean isSucess = smsUtil.sendMobileBindVerifyCode(param.getMobile(), SmsType.MOBILE_BIND,1L);
-            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();*//*
-        } catch (FanbeiException e) {
-            return handleFanbeiException(e);
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }*/
-
-    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String sendVerifyCode(HttpServletRequest request, OpenRedPacketParamVo param) {
-        try {
-
-            if (StringUtils.isBlank(param.getMobile())) {
-                return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
-            }
-
-            return H5CommonResponse.getNewInstance(true, "有手机号").toString();
-            //查看短信60秒内是否发过
-            /*AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(param.getMobile(), SmsType.MOBILE_BIND.getCode());
-            if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
-                if (!DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
-                    return H5CommonResponse.getNewInstance(false, "验证码60秒内已获取过").toString();
-                }
-            }
-
-            boolean isSucess = smsUtil.sendMobileBindVerifyCode(param.getMobile(), SmsType.MOBILE_BIND,1L);
-            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();*/
+            return H5CommonResponse.getNewInstance(isSucess, isSucess ? "发送成功" : "发送失败").toString();
         } catch (FanbeiException e) {
             return handleFanbeiException(e);
         } catch (Exception e) {
@@ -377,7 +337,6 @@ public class AppH5OpenRedPacketController extends BaseController {
             throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
         }
 
-        // TODO:上预发环境删掉
         if (!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                 Constants.INVELOMENT_TYPE_TEST)) {
             validateVerifyCode(verifyCode, mobile);
@@ -459,15 +418,12 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
 
         return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();
-//        return H5CommonResponse.getNewInstance(false, "aaa").toString();
     }
 
     // 处理异常
     private String handleException(Exception e) {
         logger.error("/fanbei-web/redPacket, error:", e);
         return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getDesc()).toString();
-
-//        return H5CommonResponse.getNewInstance(false, "bbb").toString();
     }
 
     // 获取用户信息，如果传code了，就利用绑定的openId获取用户信息，否则从登录信息中获取
