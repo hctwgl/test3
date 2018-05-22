@@ -39,6 +39,8 @@ import java.util.List;
 public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacketHelpOpenDo, Long>
 		implements AfRedPacketHelpOpenService {
 
+	private static int CALL_NUM = 0;
+
     @Autowired
     private AfRedPacketHelpOpenDao afRedPacketHelpOpenDao;
 
@@ -122,7 +124,8 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 		AfRedPacketHelpOpenDo helpOpenDo = getHelpOpenRecord(openId, shareRedPacket.getUserId());
 		if (helpOpenDo != null) {
-			throw new FanbeiException("您已帮此用户拆过红包了");
+			CALL_NUM += 1;
+			throw new FanbeiException("您已帮此用户拆过红包了, callNum=" + CALL_NUM);
 		}
 	}
 

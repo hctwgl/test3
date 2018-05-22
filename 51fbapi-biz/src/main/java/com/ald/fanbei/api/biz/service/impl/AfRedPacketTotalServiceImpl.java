@@ -43,6 +43,8 @@ import java.util.*;
 @Service("afRedPacketTotalService")
 public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTotalDo, Long>
 		implements AfRedPacketTotalService {
+
+	private static int CALL_NUM = 0;
 	
     @Autowired
     private AfRedPacketTotalDao afRedPacketTotalDao;
@@ -373,7 +375,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		BigDecimal thresholdAmount =  redPacketConfig.getBigDecimal("thresholdAmount");
 		if (redPacketTotalDo.getAmount().compareTo(thresholdAmount) < 0) {
 			BigDecimal restAmount = calcWithdrawRestAmount(redPacketTotalDo, thresholdAmount);
-			throw new FanbeiException("您还剩" + restAmount.setScale(2, RoundingMode.HALF_UP) + "元才能提现");
+			CALL_NUM += 1;
+			throw new FanbeiException("您还剩" + restAmount.setScale(2, RoundingMode.HALF_UP) + "元才能提现, callNum=" + CALL_NUM);
 		}
 	}
 
