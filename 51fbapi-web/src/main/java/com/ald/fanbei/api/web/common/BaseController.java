@@ -17,7 +17,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.dal.domain.AfAppUpgradeDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -246,14 +245,17 @@ public abstract class BaseController {
 
 	protected BaseResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
 		FanbeiExceptionCode exceptionCode = e.getErrorCode();
+		logger.info("buildErrorResult e:" + e.toString());
 		ApiHandleResponse resp = new ApiHandleResponse();
 		resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
 		if (exceptionCode == null) {
 			exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
 		}
 		if (e.getDynamicMsg() != null && e.getDynamicMsg()) {
+			logger.info("buildErrorResult getDynamicMsg:" + e.getDynamicMsg());
 			resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode, e.getMessage());
 		} else if (!StringUtil.isEmpty(e.getResourceType())) {
+			logger.info("buildErrorResult getResourceType:" + e.getResourceType());
 			AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(e.getResourceType());
 			String msgTemplate = afResourceDo.getValue();
 			for (String paramsKey : e.paramsMap.keySet()) {
@@ -261,9 +263,11 @@ public abstract class BaseController {
 			}
 			resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode, msgTemplate);
 		} else {
+			logger.info("buildErrorResult exceptionCode:" + exceptionCode.toString());
 			resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
 		}
 
+		logger.info("buildErrorResult resp:" + resp);
 		return resp;
 	}
 
