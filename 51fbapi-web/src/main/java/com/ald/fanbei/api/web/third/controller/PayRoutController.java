@@ -51,16 +51,12 @@ import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAmountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
-import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
@@ -72,13 +68,10 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
-import com.ald.fanbei.api.dal.dao.AfBankDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -107,10 +100,9 @@ public class PayRoutController {
 	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	@Resource
-	BoluomeUtil boluomeUtil;
-	@Resource
-	AfUpsLogDao afUpsLogDao;
+	private static String TRADE_STATUE_SUCC = "00";
+	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
+
 	@Resource
 	private AfOrderDao afOrderDao;
 	@Resource
@@ -119,8 +111,6 @@ public class PayRoutController {
 	private AfBorrowService afBorrowService;
 	@Resource
 	private AfCashRecordDao afCashRecordDao;
-	@Resource
-	AfUserBankcardService afUserBankcardService;
 	@Resource
 	private AfRepaymentService afRepaymentService;
 	@Resource
@@ -149,62 +139,36 @@ public class PayRoutController {
 	ContractPdfThreadPool contractPdfThreadPool;
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
-
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	
 	@Resource
 	AfBorrowRecycleRepaymentService afBorrowRecycleRepaymentService;
-
-	//贷款
 	@Resource
-	AfLoanService afLoanService;
+	AfLoanService afLoanService;//贷款
 	@Resource
 	AfLoanRepaymentService afLoanRepaymentService;
-
 	@Resource
 	private HuichaoUtility huichaoUtility;
-
 	@Resource
 	private AfHuicaoOrderDao afHuicaoOrderDao;
 	@Resource
-	private YiBaoUtility yiBaoUtility;
-	@Resource
 	private RedisTemplate redisTemplate;
-
 	@Resource
 	private ThirdPayUtility thirdPayUtility;
 	@Resource
 	private AfUserAmountService afUserAmountService;
-
-
-
 	@Resource
 	private AfUserAccountDao afUserAccountDao;
-
-	@Resource
-	private AfBorrowDao afBorrowDao;
-
 	@Resource
 	private AfTradeCodeInfoService afTradeCodeInfoService;
-
-	@Resource
-	private AfBankDao afBankDao;
-
 	@Resource
 	private AfBorrowExtendDao afBorrowExtendDao;
-
-	@Autowired
-	private UpsUtil upsUtil;
-	
 	@Autowired
 	KafkaSync kafkaSync;
-
-	private static String TRADE_STATUE_SUCC = "00";
-	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
-
 	@Resource
 	private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+
+
 
 	@RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
 	@ResponseBody
