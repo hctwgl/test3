@@ -347,6 +347,39 @@ public class BizCacheUtil extends AbstractThird {
 	}
 
 	/**
+	 * 锁住某个key值30min，需要解锁时删除即可
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public boolean getLock30Minute(final String key, final String value) {
+		if (!BIZ_CACHE_SWITCH) {
+			return false;
+		}
+		try {
+			Boolean flag = (Boolean) redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+					return connection.setNX(redisTemplate.getStringSerializer().serialize(key), value.getBytes());
+				}
+			});
+			if (flag) {
+				redisTemplate.execute(new RedisCallback<Object>() {
+					@Override
+					public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+						return connection.expire(redisTemplate.getStringSerializer().serialize(key), Constants.SECOND_OF_HALF_HOUR);
+					}
+				});
+			}
+			return flag;
+		} catch (Exception e) {
+			logger.error("getLock error", e);
+			return false;
+		}
+	}
+	
+	/**
 	 * 重试多次来获取锁，重试times次
 	 * 
 	 * @param key
