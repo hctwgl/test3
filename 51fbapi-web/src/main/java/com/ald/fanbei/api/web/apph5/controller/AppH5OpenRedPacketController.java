@@ -443,7 +443,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     // 处理FanbeiException
     private String handleFanbeiException(FanbeiException e) {
         logger.error("/fanbei-web/redPacket, error:", e);
-        /*if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+        if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
                 || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
             return H5CommonResponse.getNewInstance(false, "没有登录").toString();
         }
@@ -458,16 +458,16 @@ public class AppH5OpenRedPacketController extends BaseController {
             return H5CommonResponse.getNewInstance(false, "", "", data).toString();
         }
 
-        return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();*/
-        return H5CommonResponse.getNewInstance(false, "aaa").toString();
+        return H5CommonResponse.getNewInstance(false, e.getMessage()).toString();
+//        return H5CommonResponse.getNewInstance(false, "aaa").toString();
     }
 
     // 处理异常
     private String handleException(Exception e) {
         logger.error("/fanbei-web/redPacket, error:", e);
-//        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getDesc()).toString();
+        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SYSTEM_ERROR.getDesc()).toString();
 
-        return H5CommonResponse.getNewInstance(false, "bbb").toString();
+//        return H5CommonResponse.getNewInstance(false, "bbb").toString();
     }
 
     // 获取用户信息，如果传code了，就利用绑定的openId获取用户信息，否则从登录信息中获取
