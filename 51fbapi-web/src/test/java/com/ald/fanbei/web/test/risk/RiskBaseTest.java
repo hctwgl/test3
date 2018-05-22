@@ -1,4 +1,4 @@
-package com.ald.fanbei.web.risk.test;
+package com.ald.fanbei.web.test.risk;
 
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
