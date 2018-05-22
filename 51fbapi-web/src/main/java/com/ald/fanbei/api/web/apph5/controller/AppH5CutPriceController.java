@@ -393,16 +393,6 @@ public class AppH5CutPriceController extends BaseController {
 	String resultStr = "";
 	FanbeiWebContext context = new FanbeiWebContext();
 	try {
-		String mobile2 = request.getParameter("mobile");
-		logger.info("/friend：request.getParameter(mobile)=" + mobile2);
-		//logger.info("/redPacket/sendVerifyCode：param.getMobile=" + param.getMobile());
-
-		if(StringUtils.isBlank(mobile2))
-			resultStr = H5CommonResponse.getNewInstance(false, "mobile is null.", "", null).toString();
-
-
-		return H5CommonResponse.getNewInstance(true, "获取商品砍价详情用户列表成功", null, null).toString();
-		/*
 	    context = doWebCheck(request, true);
 	    String userName = context.getUserName();
 	    Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
@@ -443,7 +433,6 @@ public class AppH5CutPriceController extends BaseController {
 	    map.put("friendList", friendList);
 	    map.put("pageNo", pageNo);
 	    resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情用户列表成功", null, map).toString();
-*/
 	} catch (FanbeiException e) {
 	    if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
 		Map<String, Object> data = new HashMap<>();
