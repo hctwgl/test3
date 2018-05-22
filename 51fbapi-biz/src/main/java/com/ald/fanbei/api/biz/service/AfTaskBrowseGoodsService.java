@@ -17,5 +17,5 @@ public interface AfTaskBrowseGoodsService{
 
     int addBrowseGoodsTaskUser(Long userId, Long goodsId);
 
-    Integer addBrowseGoodsTaskUserRecord(Long userId, Long goodsId);
+    Long addBrowseGoodsTaskUserRecord(Long userId, Long goodsId);
 }

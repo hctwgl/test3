@@ -219,7 +219,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	public int addTaskUser(Long userId, String taskName, BigDecimal cashAmount){
     	AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
 		afTaskUserDo.setTaskName(taskName);
-		afTaskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_2);
+		afTaskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_1);
 		afTaskUserDo.setTaskId(-1l);
 		afTaskUserDo.setUserId(userId);
 		afTaskUserDo.setRewardType(1);
