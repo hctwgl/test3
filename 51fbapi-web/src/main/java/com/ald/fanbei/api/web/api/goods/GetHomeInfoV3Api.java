@@ -634,12 +634,13 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		   	      String navigationDownOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_DOWN_ONE +":"+userId;
 		   	      String topBannerCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_TOP_BANNER +":"+userId;
 		   	     
-//		   	    navigationUpOne = null;
-//		   	    navigationDownOne = null;
-//		   	    topBannerList = null;  
-		   	    navigationUpOne = bizCacheUtil.getObjectList(navigationUpOneCacheKey);
-		   	    navigationDownOne = bizCacheUtil.getObjectList(navigationDownOneCacheKey);
-		   	    topBannerList = bizCacheUtil.getObjectList(topBannerCacheKey);
+		   	    navigationUpOne = null;
+		   	    navigationDownOne = null;
+		   	    topBannerList = null;  
+		   	    // 去掉缓存
+//		   	    navigationUpOne = bizCacheUtil.getObjectList(navigationUpOneCacheKey);
+//		   	    navigationDownOne = bizCacheUtil.getObjectList(navigationDownOneCacheKey);
+//		   	    topBannerList = bizCacheUtil.getObjectList(topBannerCacheKey);
 		   	         
 		   	    if(navigationUpOne == null || navigationUpOne.size()<1){
 			   	    navigationUpOne = 	getNavigationUpOneResourceDoList(
@@ -649,7 +650,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			   	   }
 			        if(navigationUpOne!= null && navigationUpOne.size()>0){
 			        	navigationUpOne =  navigationUpOne.subList(0, 1);
-			        	 bizCacheUtil.saveObjectListExpire(navigationUpOneCacheKey, navigationUpOne, Constants.MINITS_OF_TWO);
+			        	// bizCacheUtil.saveObjectListExpire(navigationUpOneCacheKey, navigationUpOne, Constants.MINITS_OF_TWO);
 			        }
 			       
 		   	    }
@@ -661,7 +662,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				   }
 				    if(navigationDownOne!= null && navigationDownOne.size()>0){
 				    	navigationDownOne = navigationDownOne.subList(0, 1);
-				    	bizCacheUtil.saveObjectListExpire(navigationDownOneCacheKey, navigationDownOne, Constants.MINITS_OF_TWO);
+				    	//bizCacheUtil.saveObjectListExpire(navigationDownOneCacheKey, navigationDownOne, Constants.MINITS_OF_TWO);
 				    }
 		   	  
 		   	   
@@ -680,7 +681,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 						 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
 					 }
 			   	  if(topBannerList!= null && topBannerList.size()>0){
-					bizCacheUtil.saveObjectListExpire(topBannerCacheKey, topBannerList, Constants.MINITS_OF_TWO);
+					//bizCacheUtil.saveObjectListExpire(topBannerCacheKey, topBannerList, Constants.MINITS_OF_TWO);
 			   	  }
 			   	}
          	
