@@ -94,6 +94,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String getHomeInfoInSite(HttpServletRequest request) {
         try {
+            logger.info("/redPakcet/getHomeInfoInSite");
             FanbeiWebContext context = doWebCheck(request, false);
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoInSite(context);
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
@@ -114,6 +115,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String getHomeInfoOutSite(OpenRedPacketParamVo param) {
         try {
+            logger.info("/redPakcet/getHomeInfoOutSite, param=" + param);
             OpenRedPacketHomeBo data = afRedPacketTotalService.getHomeInfoOutSite(param.getCode(), param.getShareId());
             return H5CommonResponse.getNewInstance(true, "", "", data).toString();
         } catch (FanbeiException e) {
@@ -209,6 +211,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String helpOpen(OpenRedPacketParamVo param) {
         try {
+            logger.info("/redPacket/helpOpen, param=" + param);
             AfRedPacketHelpOpenDo helpOpenDo = afRedPacketHelpOpenService.open(param.getCode(), param.getShareId());
 
             Map<String, String> data = new HashMap<>();
@@ -234,6 +237,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/redPacket/bindPhoneAndOpen, param=" + param);
             Map<String, String> data = new HashMap<>();
             data.put("isRegister", YesNoStatus.NO.getCode());
 
@@ -263,6 +267,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("/redPacket/withdraw, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             afRedPacketTotalService.withdraw(param.getId(), userDo.getUserName());
 
@@ -280,8 +285,10 @@ public class AppH5OpenRedPacketController extends BaseController {
                                  @RequestParam(value = "mobile") String mobile) {
         try {
 //            String mobile = request.getParameter("mobile");
-            logger.info("/redPacket/sendVerifyCode：" + mobile);
-            logger.info("");
+            logger.info("/redPacket/sendVerifyCode：mobile=" + mobile);
+            String mobile2 = request.getParameter("mobile");
+            logger.info("/redPacket/sendVerifyCode：request.getParameter(mobile)=" + mobile2);
+            logger.info("/redPacket/sendVerifyCode：param.getMobile=" + param.getMobile());
 
             if (StringUtils.isBlank(mobile)) {
                 return H5CommonResponse.getNewInstance(false, "手机号不能为空").toString();
