@@ -279,7 +279,7 @@ public class AppH5OpenRedPacketController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String sendVerifyCode(HttpServletRequest request, OpenRedPacketParamVo param,
                                  @RequestParam(value = "mobile", required = false) String mobile) {
