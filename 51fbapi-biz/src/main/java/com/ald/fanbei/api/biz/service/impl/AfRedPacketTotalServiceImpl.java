@@ -43,7 +43,7 @@ import java.util.*;
 @Service("afRedPacketTotalService")
 public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTotalDo, Long>
 		implements AfRedPacketTotalService {
-	
+
     @Autowired
     private AfRedPacketTotalDao afRedPacketTotalDao;
 

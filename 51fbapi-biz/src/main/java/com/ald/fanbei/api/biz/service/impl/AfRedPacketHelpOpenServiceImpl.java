@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.service.AfRedPacketHelpOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -50,9 +49,6 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
     @Autowired
     private TransactionTemplate transactionTemplate;
-
-    @Autowired
-    private BizCacheUtil bizCacheUtil;
 
 	@Override
 	public List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum) {
