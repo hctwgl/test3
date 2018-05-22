@@ -79,16 +79,30 @@ public class RefundOrderApplyApi implements ApiHandle{
 		if(!supportOrderTypes.contains(orderInfo.getOrderType())){
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_REFUND_TYPE_ERROR);
 		}
-		
+
+		AfAftersaleApplyDo saleDo = null;
 		if(StringUtil.isNotBlank(contactsMobile)){
 			//联系人手机号方式售后
 			refundApply(userId, orderId, contactsMobile, orderInfo);
 		}else{
 			//退款原因及退款图片凭证方式 
-			afterSaleApply(userId, orderId, userReason, picVouchers, orderInfo);
+			saleDo = afterSaleApply(userId, orderId, userReason, picVouchers, orderInfo);
 		}
 
 		//根据售后状态判断是否自动退款
+		if(PayType.BANK.getCode().equals(orderInfo.getPayType())&&BankCardType.CREDIT.getCode().equals(orderInfo.getCardType()))
+		{
+			if(orderInfo.getSupStatus()==0|| orderInfo.getSupStatus()==2||orderInfo.getSupStatus()==5){
+				//自动退款
+				afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(),orderInfo.getThirdOrderNo() ,
+						orderInfo.getActualAmount(), orderInfo.getActualAmount(),
+						orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), RefundSource.USER.getCode());
+
+				//修改售后订单状态
+				saleDo.setStatus("FINISH");
+				afAftersaleApplyService.updateById(saleDo);
+			}
+		}
 
 		return resp;
 	}
@@ -128,7 +142,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 		}
 	}
 
-	private void afterSaleApply(Long userId, Long orderId, String userReason,
+	private AfAftersaleApplyDo afterSaleApply(Long userId, Long orderId, String userReason,
 			String picVouchers, AfOrderDo orderInfo) {
 		if(StringUtil.isBlank(userReason)){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
@@ -172,6 +186,8 @@ public class RefundOrderApplyApi implements ApiHandle{
 			}
 		}
 		logger.info("refundOrderApply success,userReason and picVouchers. orderId="+orderId+",userId="+userId+",preStatus="+orderInfo.getPreStatus()+",currStatus="+orderInfo.getStatus());
+
+		return afAftersaleApplyDo;
 	}
 	
 }

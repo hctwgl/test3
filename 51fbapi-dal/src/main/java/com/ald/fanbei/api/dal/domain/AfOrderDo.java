@@ -98,6 +98,15 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal feeAmount =BigDecimal.ZERO;
 
 	private String goodsStatus;
+	private Integer supStatus;
+
+	public Integer getSupStatus() {
+		return supStatus;
+	}
+
+	public void setSupStatus(Integer supStatus) {
+		this.supStatus = supStatus;
+	}
 
 	public String getGoodsStatus() {
 		return goodsStatus;

@@ -2010,12 +2010,12 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						if (!"SUCCESS".equals(refundResult)) {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									refundAmount, userId, orderId, orderNo, OrderRefundStatus.FAIL, PayType.WECHAT,
-									StringUtils.EMPTY, null, "菠萝觅微信退款", refundSource, payTradeNo));
+									StringUtils.EMPTY, null, "api微信退款", refundSource, payTradeNo));
 							throw new FanbeiException("reund error", FanbeiExceptionCode.REFUND_ERR);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									refundAmount, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.WECHAT,
-									StringUtils.EMPTY, null, "菠萝觅微信退款", refundSource, payTradeNo));
+									StringUtils.EMPTY, null, "api微信退款", refundSource, payTradeNo));
 							boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId,
 									refundAmount, refundNo);
 						}
@@ -2067,7 +2067,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									borrowAmount.abs(), userId, orderId, orderNo, OrderRefundStatus.REFUNDING,
 									PayType.BANK, cardInfo.getCardNumber(), cardInfo.getBankName(),
-									"菠萝觅代付多余还款退款" + borrowAmount.abs(), refundSource, StringUtils.EMPTY);
+									"api代付多余还款退款" + borrowAmount.abs(), refundSource, StringUtils.EMPTY);
 							afOrderRefundDao.addOrderRefund(refundInfo);
 							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(borrowAmount.abs(),
 									accountInfo.getRealName(), cardInfo.getCardNumber(), userId + "",
@@ -2087,7 +2087,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						} else if (borrowAmount.compareTo(BigDecimal.ZERO) > 0) {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,
-									PayType.AGENT_PAY, StringUtils.EMPTY, null, "菠萝觅代付退款生成新账单" + borrowAmount.abs(),
+									PayType.AGENT_PAY, StringUtils.EMPTY, null, "api代付退款生成新账单" + borrowAmount.abs(),
 									refundSource, StringUtils.EMPTY));
 							// 修改用户账户信息
 							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),
@@ -2101,7 +2101,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afOrderRefundDao.addOrderRefund(
 									BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId,
 											orderId, orderNo, OrderRefundStatus.FINISH, PayType.AGENT_PAY,
-											StringUtils.EMPTY, null, "菠萝觅代付退款", refundSource, StringUtils.EMPTY));
+											StringUtils.EMPTY, null, "api代付退款", refundSource, StringUtils.EMPTY));
 						}
 						// 如果成功推送退款成功状态给菠萝觅
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId,
@@ -2158,7 +2158,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									backAmount.abs(), userId, orderId, orderNo, OrderRefundStatus.FINISH,
 									PayType.COMBINATION_PAY, afUserBankcardDo.getCardNumber(),
-									afUserBankcardDo.getBankName(), "组合支付多余还款退款" + backAmount.abs(), refundSource,
+									afUserBankcardDo.getBankName(), "api组合支付多余还款退款" + backAmount.abs(), refundSource,
 									StringUtils.EMPTY);
 							afOrderRefundDao.addOrderRefund(refundInfo);
 
@@ -2175,7 +2175,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						} else if (backAmount.compareTo(BigDecimal.ZERO) < 0) {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,
-									PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "组合支付退款生成新账单" + backAmount.abs(),
+									PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "api组合支付退款生成新账单" + backAmount.abs(),
 									refundSource, StringUtils.EMPTY));
 							// 修改用户账户信息
 							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),
@@ -2189,7 +2189,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afOrderRefundDao.addOrderRefund(
 									BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId,
 											orderId, orderNo, OrderRefundStatus.FINISH, PayType.COMBINATION_PAY,
-											StringUtils.EMPTY, null, "组合支付退款", refundSource, StringUtils.EMPTY));
+											StringUtils.EMPTY, null, "api组合支付退款", refundSource, StringUtils.EMPTY));
 						}
 						// 如果成功推送退款成功状态给菠萝觅
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId,
@@ -2202,7 +2202,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 						AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 								refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING, PayType.BANK,
-								card.getCardNumber(), card.getBankName(), "菠萝觅银行卡退款", refundSource, StringUtils.EMPTY);
+								card.getCardNumber(), card.getBankName(), "api银行卡退款", refundSource, StringUtils.EMPTY);
 						afOrderRefundDao.addOrderRefund(refundInfo);
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
