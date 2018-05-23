@@ -17,7 +17,7 @@ import lombok.Setter;
 public class AfUserCouponDo extends AbstractSerial{
 
 	private static final long serialVersionUID = 105301942297258703L;
-	private	Long	rid;
+	private	 Long	rid;
 	private Date 	gmtCreate;
 	private Date 	gmtModified;
 	private Long	userId;
