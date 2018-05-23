@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 
 /**
  * 每日浏览商品数量的任务Service
@@ -17,5 +18,5 @@ public interface AfTaskBrowseGoodsService{
 
     int addBrowseGoodsTaskUser(Long userId, Long goodsId);
 
-    Long addBrowseGoodsTaskUserRecord(Long userId, Long goodsId);
+    AfTaskUserDo addBrowseGoodsTaskUserRecord(Long userId, Long goodsId);
 }

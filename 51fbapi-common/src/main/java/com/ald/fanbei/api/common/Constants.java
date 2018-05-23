@@ -613,7 +613,7 @@ public class Constants {
 	/**
 	 * 浏览商品数量任务的名称
 	 */
-	public static final String BROWSE_TASK_NAME = "浏览任务";
+	public static final String BROWSE_TASK_NAME = "每日浏览商品赚金币";
 
 	/**
 	 * 金币兑换任务名称

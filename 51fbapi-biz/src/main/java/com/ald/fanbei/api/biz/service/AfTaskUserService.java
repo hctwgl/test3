@@ -23,23 +23,116 @@ public interface AfTaskUserService {
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
+    /**
+     * 新增
+     * @param afTaskUserDo
+     * @return
+     */
     int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
-    int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
+    /**
+     * 批量新增，返回带有主键ID的列表
+     * @param taskUserDoList
+     * @return
+     */
+    List<AfTaskUserDo> batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
 
-    boolean browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType);
+    /**
+     * 处理浏览/购物等任务
+     * @param userId
+     * @param goodsId
+     * @param afTaskType
+     * @return
+     */
+    List<AfTaskUserDo> browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType);
 
-    boolean taskHandler(Long userId, String afTaskType, String taskCondition);
+    /**
+     * 处理其他任务，链接类任务
+     * @param userId
+     * @param afTaskType
+     * @param taskCondition
+     * @return
+     */
+    List<AfTaskUserDo> taskHandler(Long userId, String afTaskType, String taskCondition);
 
+    /**
+     * 获取可用的金币数量
+     * @param userId
+     * @return
+     */
     Long getAvailableCoinAmount(Long userId);
 
-    Long getYestadayChangedCoinAmountList(Long userId);
+    /**
+     * 获取昨天金币兑换数量
+     * @param userId
+     * @return
+     */
+    Long getYestadayChangedCoinAmount(Long userId);
 
+    /**
+     * 获取最近7天收益
+     * @param userId
+     * @return
+     */
     List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
 
+    /**
+     * 查询零钱/金币明细
+     * @param userId
+     * @param rewardType
+     * @return
+     */
     List<AfTaskUserDo> getDetailsByUserId(Long userId, Integer rewardType);
 
+    /**
+     * 增加零钱明细
+     * @param userId
+     * @param taskName
+     * @param cashAmount
+     * @return
+     */
     int addTaskUser(Long userId, String taskName, BigDecimal cashAmount);
 
-    AfTaskUserDo getYestadayTaskUserDoByTaskName(String taskName);
+    /**
+     * 判断今日是否已经进行过金币兑换任务
+     * @param taskName
+     * @return
+     */
+    AfTaskUserDo getTodayTaskUserDoByTaskName(String taskName);
+
+    /**
+     * 判断用户完成的任务类型是否一致
+     * -1:没有完成的任务；-2：任务不一致；0：金币；1：现金；2：优惠券
+     * @param taskUserDoList
+     * @return
+     */
+    Integer isSameRewardType(List<AfTaskUserDo> taskUserDoList);
+
+    /**
+     * 主键ID查询用户任务
+     * @param taskUserIdList
+     * @return
+     */
+    List<AfTaskUserDo> getTaskUserListByIds(List<Long> taskUserIdList);
+
+    /**
+     * 奖励求和
+     * @param taskUserDoList
+     * @return
+     */
+    BigDecimal getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType);
+
+    /**
+     * 获取优惠券金额
+     * @param couponIdList
+     * @return
+     */
+    BigDecimal getCouponAmountByIds(List<Long> couponIdList);
+
+    /**
+     * 批量更新用户状态
+     * @return
+     */
+    int batchUpdateTaskUserStatus(List<Long> taskUserIdList);
+
 }

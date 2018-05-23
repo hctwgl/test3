@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,9 @@ public interface AfTaskUserDao  {
 
     int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
-    int batchInsertTaskUserDo(@Param("taskUserDoList") List<AfTaskUserDo> taskUserDoList);
+    int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
 
-    Long getYestadayChangedCoinAmountList(@Param("userId") Long userId);
+    Long getYestadayChangedCoinAmount(@Param("userId") Long userId);
 
     Long getAvailableCoinAmount(@Param("userId") Long userId);
 
@@ -36,6 +37,12 @@ public interface AfTaskUserDao  {
 
     List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("rewardType") Integer rewardType);
 
-    AfTaskUserDo getYestadayTaskUserDoByTaskName(@Param("taskName") String taskName);
+    AfTaskUserDo getTodayTaskUserDoByTaskName(@Param("taskName") String taskName);
+
+    List<AfTaskUserDo> getTaskUserListByIds(@Param("taskUserIdList") List<Long> taskUserIdList);
+
+    BigDecimal getCouponAmountByIds(@Param("couponIdList") List<Long> couponIdList);
+
+    int batchUpdateTaskUserStatus(@Param("taskUserIdList") List<Long> taskUserIdList);
 
 }

@@ -118,10 +118,7 @@
         </trim>
     </insert>
 
-    <insert id="batchInsertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
-        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+    <insert id="batchInsertTaskUserDo" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="rid">
 
         INSERT INTO af_task_user
         <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -137,17 +134,17 @@
             reward_time,
         </trim>
         values
-        <foreach collection="taskUserDoList" item='taskUserDo' separator=','>
-            (#{taskUserDo.gmtCreate,jdbcType=TIMESTAMP},
-            #{taskUserDo.userId,jdbcType=INTEGER},
-            #{taskUserDo.taskId,jdbcType=INTEGER},
-            #{taskUserDo.taskName,jdbcType=VARCHAR},
-            #{taskUserDo.rewardType,jdbcType=INTEGER},
-            #{taskUserDo.coinAmount,jdbcType=INTEGER},
-            #{taskUserDo.cashAmount,jdbcType=DECIMAL},
-            #{taskUserDo.couponId,jdbcType=INTEGER},
-            #{taskUserDo.status,jdbcType=INTEGER},
-            #{taskUserDo.rewardTime,jdbcType=TIMESTAMP})
+        <foreach collection="list" item='item' index="index" separator=','>
+            (#{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.taskId,jdbcType=INTEGER},
+            #{item.taskName,jdbcType=VARCHAR},
+            #{item.rewardType,jdbcType=INTEGER},
+            #{item.coinAmount,jdbcType=INTEGER},
+            #{item.cashAmount,jdbcType=DECIMAL},
+            #{item.couponId,jdbcType=INTEGER},
+            #{item.status,jdbcType=INTEGER},
+            #{item.rewardTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
     
@@ -182,12 +179,12 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getYestadayTaskUserDoByTaskName" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+	<select id="getTodayTaskUserDoByTaskName" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
         <include refid="queryFields" />
         FROM af_task_user
         WHERE is_delete = 0 AND task_name = #{taskName}
-        AND date(reward_time) <![CDATA[ < ]]>  date(now())
+        AND date(reward_time) = date(now())
         LIMIT 0,1
     </select>
 
@@ -293,10 +290,10 @@
         sum(coin_amount)
         FROM af_task_user
         WHERE user_id = #{userId}
-        AND status in ('1','2')
+        AND status = 1
     </select>
 
-    <select id="getYestadayChangedCoinAmountList" resultType="java.lang.Long">
+    <select id="getYestadayChangedCoinAmount" resultType="java.lang.Long">
         SELECT
         sum(coin_amount)
         FROM af_task_user
@@ -324,7 +321,7 @@
         ) a
         LEFT JOIN (
             SELECT date(reward_time) AS rewardDate, SUM(cash_amount) AS cashAmount
-            FROM af_task_user where user_id = #{userId} and status in ('1','2')
+            FROM af_task_user where user_id = #{userId} and status = 1
             GROUP BY rewardDate
         ) b ON a.rewardDate = b.rewardDate
         ORDER BY a.rewardDate DESC
@@ -337,11 +334,41 @@
         WHERE is_delete = 0
         AND user_id = #{userId}
         AND reward_type = #{rewardType}
-        AND status in ('1','2','3')
+        AND status in ('1','3')
         ORDER BY reward_time desc
     </select>
 
+    <select id="getTaskUserListByIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND id IN
+        <foreach collection="taskUserIdList" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
 
+    <select id="getCouponAmountByIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        sum(amount)
+        FROM af_coupon
+        WHERE is_delete = 0
+        AND id IN
+        <foreach collection="couponIdList" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
 
+    <update id="batchUpdateTaskUserStatus">
+        update
+        af_task_user set status = 1,reward_time = now()
+        WHERE status = 0
+        and id IN
+        <foreach collection="taskUserIdList" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
 
 </mapper>

@@ -72,10 +72,10 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
     }
 
     @Override
-    public Long addBrowseGoodsTaskUserRecord(final Long userId, final Long goodsId){
-        return transactionTemplate.execute(new TransactionCallback<Long>() {
+    public AfTaskUserDo addBrowseGoodsTaskUserRecord(final Long userId, final Long goodsId){
+        return transactionTemplate.execute(new TransactionCallback<AfTaskUserDo>() {
             @Override
-            public Long doInTransaction(TransactionStatus status) {
+            public AfTaskUserDo doInTransaction(TransactionStatus status) {
                 try{
                     // 当前商品没有浏览过
                     if(null == isExisted(userId, goodsId)){
@@ -135,7 +135,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                             taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
                             afTaskUserService.insertTaskUserDo(taskUserDo);
 
-                            return coinAmount;
+                            return taskUserDo;
                         }
                     }
                 }catch(Exception e){

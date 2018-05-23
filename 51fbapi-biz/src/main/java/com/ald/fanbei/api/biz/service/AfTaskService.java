@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,8 +36,19 @@ public interface AfTaskService {
     List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
     List<AfTaskDto> getTaskInfo(String level, Long userId);
 
+    /**
+     * 获取用户已完成的非每日任务
+     * @param userId
+     * @param afTaskType
+     * @return
+     */
     List<AfTaskDo> getNotDailyTaskListByUserId(Long userId, String afTaskType);
 
+    /**
+     * 获取用户已完成的每日任务
+     * @param userId
+     * @param afTaskType
+     * @return
+     */
     List<AfTaskDo> getDailyTaskListByUserId(Long userId, String afTaskType);
-
 }

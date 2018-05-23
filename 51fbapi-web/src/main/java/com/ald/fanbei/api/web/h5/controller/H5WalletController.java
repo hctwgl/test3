@@ -67,13 +67,13 @@ public class H5WalletController extends BaseController{
             data.put("availableCoinAmount", availableCoinAmount);
 
             // 我的金币兑换，是否昨天已经兑换过
-            AfTaskUserDo taskUserDo = afTaskUserService.getYestadayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME);
+            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
             }
             else{
                 BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
-                Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmountList(userId);
+                Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmount(userId);
 
                 data.put("changeCoinFlag", true);
                 data.put("yesterdayProportion", yesterdayProportion);

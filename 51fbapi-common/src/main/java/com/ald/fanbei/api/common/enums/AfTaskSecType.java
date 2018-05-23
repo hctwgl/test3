@@ -13,7 +13,8 @@ public enum AfTaskSecType {
     COMMODITY("commodity","商品"),
     BRAND("brand","品牌"),
     CATEGORY("category","分类"),
-    ACTIVITY("activity","活动");
+    ACTIVITY("activity","活动"),
+    QUANTITY("quantity","数量");
 
     private String code;
 
