@@ -85,7 +85,7 @@ public class ArbitrationController {
     //private static final String MERCHANTCODE = "15254170930";
     //线上地址:https://api.arbexpress.cn/arbinter/v1/third.htm
     //测试地址:http://test.arbexpress.cn/arbinter/v1/third.htm
-    private static final String URL = "https://api.arbexpress.cn/arbinter/v1/third.htm";
+    private static final String URL = "http://api.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
     //分页查询返回结果
     public static final String MAP_VALUE_COUNT = "count";
