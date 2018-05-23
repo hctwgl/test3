@@ -178,6 +178,8 @@
 
 				<value>/user/getMineInfoV1</value>
 				<value>/user/home</value>
+				<value>/coupon/getDetailCouponList</value>
+				<value>/coupon/getSaleServiceInfo</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -590,7 +592,10 @@
 				<!-- 支付相关接口 -->
 				<entry key="/pay/quickPaymentResendCode" value-ref="quickPaymentResendCodeApi" />
 				<entry key="/pay/confirmPayment" value-ref="confirmPaymentApi" />
-
+				<!--商品详情优惠券接口-->
+				<entry key="/coupon/getDetailCouponList" value-ref="getDetailCouponListApi" />
+				<entry key="/coupon/getPickCoupon" value-ref="getPickCouponApi" />
+				<entry key="/coupon/getSaleServiceInfo" value-ref="getSaleServiceInfoApi" />
 			</map>
 		</constructor-arg>
 	</bean>

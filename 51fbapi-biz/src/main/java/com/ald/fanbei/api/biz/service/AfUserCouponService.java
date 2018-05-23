@@ -153,10 +153,22 @@ public interface AfUserCouponService {
 
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
+    List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
+
+    List<AfUserCouponDto> getUserAllCoupon();
+
+	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
+
+    List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status);
 	AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo);
 
 	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
 
+	List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType);
+
+    List<AfUserCouponDto> getUserBillCouponByUserIdAndType(Long userId, String code, BigDecimal repayAmount);
+
+    List<AfUserCouponDto> getUserOldAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
 }
 
 
