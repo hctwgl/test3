@@ -3,18 +3,6 @@
  */
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -22,6 +10,16 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @类描述：
@@ -40,7 +38,7 @@ public class CheckMobileRegisteredApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String mobile = ObjectUtils.toString(params.get("mobile"), "");
-		Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
+		Pattern numPattern = Pattern.compile("^1[3|4|5|6|7|8|9][0-9]{9}$");
 		Matcher matcher = numPattern.matcher(mobile);
 		if(StringUtils.isEmpty(mobile)){
 			throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);

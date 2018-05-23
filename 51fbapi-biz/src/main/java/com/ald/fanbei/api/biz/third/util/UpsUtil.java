@@ -36,7 +36,6 @@ import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryTradeReqBo;
 import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
-import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmRespBo;
 import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
@@ -45,7 +44,6 @@ import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
-import com.ald.fanbei.api.biz.bo.newFundNotifyReqBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
@@ -155,7 +153,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param bankName 银行名称
 	 * @param bankCode 银行编号
 	 * @param purpose 用途
-	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
 	public UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
@@ -215,7 +212,7 @@ public class UpsUtil extends AbstractThird {
 	 * @param bankName 银行名称
 	 * @param bankCode 银行编号
 	 * @param purpose 用途
-	 * @param notifyUrl 异步通知url
+	 * @param merPriv
 	 * @param clientType 客户端类型
 	 */
 	public UpsDelegatePayRespBo delegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
@@ -271,7 +268,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param realName 真实姓名
 	 * @param cardNo 银行卡号
 	 * @param idNumber 身份证号
-	 * @param notifyUrl 异步回调地址
 	 * @param clientType 客户端类型
 	 */
 	public UpsAuthPayRespBo authPay(BigDecimal amount,String userNo,String realName,String cardNo,String idNumber,String clientType,String clientIp){
@@ -314,7 +310,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param userNo 第三方唯一标识
 	 * @param smsCode 短信验证码
 	 * @param tradeNo 原认证支付交易订单号
-	 * @param notifyUrl 异步通知url
 	 * @param clientType 客户端类型
 	 */
 	public UpsAuthPayConfirmRespBo authPayConfirm(String payOrderNo,String cardNo,String userNo,
@@ -429,9 +424,9 @@ public class UpsUtil extends AbstractThird {
 	
 	/**
 	 * 签约短信验证
-	 * @param tradeNo 交易号
+	 * @param userNo 交易号
 	 * @param verifyCode 短信验证
-	 * @param notifyUrl
+	 * @param cardNo
 	 * @param clientType
 	 */
 	public UpsAuthSignValidRespBo authSignValid(String userNo,String cardNo,String verifyCode,String clientType){
@@ -626,13 +621,8 @@ public class UpsUtil extends AbstractThird {
 	/**
 	 * 短信重发
 	 * 
-	 * @param userNo --用户唯一标识
-	 * @param bankCode --银行代码
-	 * @param cardNo --银行卡号
+	 * @param payTradeNo --银行卡号
 	 * @param orderNo -- 订单编号  
-	 * @param returnUrl
-	 * @param notifyUrl
-	 * @param clientType  客户端类型
 	 */
         public UpsResendSmsRespBo quickPayResendSms(String payTradeNo,String orderNo) {
         	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
