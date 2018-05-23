@@ -93,7 +93,7 @@ import java.util.Objects;
     private Long couponId;
 
    /**
-    * 优惠券名称
+    * 优惠券类型
     */
    private String couponType;
 
@@ -102,6 +102,9 @@ import java.util.Objects;
      */
     private Integer isOpen;
 
+    /**
+     * 是否删除
+     */
     private String isDelete;
 
     /**

@@ -74,8 +74,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 				
 				this.sign(userId);
 
-				// add by luoxiao 边逛边赚，点击借贷超市链接送奖励
-				afTaskUserService.taskHandler(context.getUserId(), AfTaskType.VERIFIED.getCode(), null);
+				// add by luoxiao 边逛边赚，点击借贷超市链接送奖励，此需求删除
+				// afTaskUserService.taskHandler(context.getUserId(), AfTaskType.VERIFIED.getCode(), null);
 				// end by luoxiao
 			} catch (Exception e) {
 				logger.error("贷款超市访问入库异常-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);

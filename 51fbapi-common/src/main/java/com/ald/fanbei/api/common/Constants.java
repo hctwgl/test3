@@ -596,29 +596,14 @@ public class Constants {
 	public static final Integer TASK_USER_REWARD_STATUS_0 = 0;
 
 	/**
-	 * 主动领取
+	 * 已领取，明细中默认领取状态
 	 */
     public static final Integer TASK_USER_REWARD_STATUS_1 = 1;
-
-	/**
-	 * 自动领取
-	 */
-    public static final Integer TASK_USER_REWARD_STATUS_2 = 2;
 
 	/**
 	 * 金币已经自动兑换成零钱
 	 */
 	public static final Integer TASK_USER_REWARD_STATUS_3 = 3;
-
-	/**
-	 * 零钱类型
-	 */
-	public static final String VALLET_DETAIL_TYPE_CASH = "cash";
-
-	/**
-	 * 金币类型
-	 */
-	public static final String VALLET_DETAIL_TYPE_COIN = "coin";
 
 	/**
 	 * 浏览商品数量任务的配置
