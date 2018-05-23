@@ -67,6 +67,8 @@ public class H5FriendSignInfoOutController extends H5Controller {
     AfTaskService afTaskService;
     @Resource
     AfUserThirdInfoService afUserThirdInfoService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
     /**
      * 朋友帮签
      * @param request
@@ -80,6 +82,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
+            String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Map<String, Object> data = new HashMap<String, Object>();
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
             if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
@@ -91,7 +94,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
-                homeInfo(eUserDo.getRid(),data);
+                homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
@@ -152,7 +155,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
-            homeInfo(userId,data);
+            homeInfo(userId,data,push);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -263,15 +266,17 @@ public class H5FriendSignInfoOutController extends H5Controller {
 
     }
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push){
         resp = afSignRewardExtService.getHomeInfo(userId);
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();
         resp.put("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
         //任务列表
-        String level = afUserAuthService.signRewardUserLevel(userId);
-        resp.put("taskList",afTaskService.getTaskInfo(level,userId));
+        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+        String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }
 

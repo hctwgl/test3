@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public interface AfTaskService {
      * @return
      */
     List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
-    List<AfTaskDto> getTaskInfo(String level, Long userId);
+    List<AfTaskDto> getTaskInfo(String level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo);
 
     List<AfTaskDo> getNotDailyTaskListByUserId(Long userId, String afTaskType);
 

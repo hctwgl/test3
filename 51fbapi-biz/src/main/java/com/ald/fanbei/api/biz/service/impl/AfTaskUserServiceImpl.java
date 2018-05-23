@@ -44,13 +44,13 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     private AfGoodsService afGoodsService;
 
     @Override
-	public List<AfTaskUserDo> isDailyTaskList(Long userId, List<Long> list){
-    	return afTaskUserDao.isDailyTaskList(userId,list);
+	public List<AfTaskUserDo> isDailyTaskList(Long userId){
+    	return afTaskUserDao.isDailyTaskList(userId);
 	}
 
 	@Override
-	public List<AfTaskUserDo> isNotDailyTaskList(Long userId, List<Long> list){
-		return afTaskUserDao.isNotDailyTaskList(userId,list);
+	public List<AfTaskUserDo> isNotDailyTaskList(Long userId){
+		return afTaskUserDao.isNotDailyTaskList(userId);
 	}
 
 	@Override

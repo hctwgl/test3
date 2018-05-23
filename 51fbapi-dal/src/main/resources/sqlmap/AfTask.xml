@@ -323,5 +323,15 @@
         ORDER BY t.gmt_create DESC
     </select>
 
+    <select id="getTaskByTaskIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskDto">
+        SELECT
+        <include refid="taskDto" />
+        FROM af_task
+        WHERE  id in
+        <foreach collection="taskIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
 
 </mapper>

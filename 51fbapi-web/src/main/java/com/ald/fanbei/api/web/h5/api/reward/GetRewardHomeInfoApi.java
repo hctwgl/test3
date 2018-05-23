@@ -19,6 +19,7 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyLoanParam;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -47,11 +48,14 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfTaskService afTaskService;
+	@Resource
+	AfUserAuthStatusService afUserAuthStatusService;
 
 
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
+		String push = ObjectUtils.toString(context.getData("push"),"N");
 		//活动规则
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
 		if(null != afResourceDo){
@@ -75,8 +79,10 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		resp.addResponseData("rewardStatus",afSignRewardService.isExist(userId)==false?"N":"Y");
 
 		//任务列表
-		String level = afUserAuthService.signRewardUserLevel(userId);
-		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId));
+		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+		String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
 
 		return resp;
 	}

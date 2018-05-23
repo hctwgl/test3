@@ -26,4 +26,6 @@ public interface AfTaskDao {
 
     List<AfTaskDo> getDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
 
+    List<AfTaskDto> getTaskByTaskIds(List<Long> taskIds);
+
 }

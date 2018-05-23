@@ -1047,7 +1047,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
      * @param userId
      * @return
      */
-    public String signRewardUserLevel(Long userId) {
+    public String signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo) {
         String loyalUsers;
         String ordinaryUser;
         String specialUser;
@@ -1078,7 +1078,6 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
         if (count > 0 || StringUtil.equals("Y", onLicneStatus)) {
             newUser = "N";
         } else {
-            AfUserAuthDo userAuthDo = afUserAuthDao.getUserAuthInfoByUserId(userId);
             if (userAuthDo != null) {
                 if (userAuthDo.getGmtFaces() == null && StringUtil.equals("N", userAuthDo.getBankcardStatus()) && userAuthDo.getGmtRealname() == null && StringUtil.equals("N", userAuthDo.getRealnameStatus()) && StringUtil.equals("N", userAuthDo.getFacesStatus())) {
                     newUser = "Y";

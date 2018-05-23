@@ -16,9 +16,9 @@ import java.util.Map;
  */
 public interface AfTaskUserDao  {
 
-    List<AfTaskUserDo> isDailyTaskList(@Param("userId") Long userId, @Param("list")List<Long> list);
+    List<AfTaskUserDo> isDailyTaskList(@Param("userId") Long userId);
 
-    List<AfTaskUserDo> isNotDailyTaskList(@Param("userId")Long userId,@Param("list")List<Long> list);
+    List<AfTaskUserDo> isNotDailyTaskList(@Param("userId")Long userId);
 
     int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
