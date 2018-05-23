@@ -93,6 +93,7 @@ public class AfOrderDo extends AbstractSerial{
     private Integer isHide;//前端是否隐藏
 
 	private String iagentStatus;//智能电核状态
+	
 
 	public String getIagentStatus() {
 		return iagentStatus;

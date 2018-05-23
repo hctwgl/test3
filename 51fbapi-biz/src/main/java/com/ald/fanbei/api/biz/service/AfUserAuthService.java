@@ -111,4 +111,9 @@ public interface AfUserAuthService {
 	 * @param dataObj
 	 */
 	void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj);
+	/**
+	 * 查询用户的权限包状态
+	 * @param userId
+	 */
+	String getOrderWeakRiskStatus(Long userId);
 }

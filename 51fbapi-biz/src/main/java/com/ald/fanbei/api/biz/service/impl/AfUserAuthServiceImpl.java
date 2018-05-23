@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.RiskQuotaRespBo;
 import com.ald.fanbei.api.common.enums.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
@@ -1059,5 +1060,11 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 	/* ---------------------------------
 	 * end 此区域内处理风控主动调用   		|
 	 * --------------------------------- */
+
+	@Override
+	public String getOrderWeakRiskStatus(Long userId) {
+		return afUserAuthDao.getOrderWeakRiskStatus(userId);
+	}
+
 
 }

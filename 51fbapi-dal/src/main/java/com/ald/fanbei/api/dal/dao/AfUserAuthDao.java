@@ -51,4 +51,10 @@ public interface AfUserAuthDao {
 	 * @return
 	 */
 	List<AfUserAuthDo> getUserAuthListWithIvs_statusIsY(AfUserAuthQuery query);
+	/**
+	 * 获取用户权限包的状态
+	 * @param userId
+	 * @return
+	 */
+	String getOrderWeakRiskStatus(Long userId);
 }

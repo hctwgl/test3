@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -128,6 +129,7 @@ import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -144,7 +146,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
+
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -265,6 +269,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	AfCheckoutCounterService afCheckoutCounterService;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfUserAuthService   afUserAuthService;
 
 	@Autowired
 	private AfShopDao afShopDao;
@@ -1162,6 +1168,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		    orderInfo.setGmtPay(currentDate);
 		    orderInfo.setActualAmount(saleAmount);
 		    orderInfo.setBankId(payId);
+		    AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		    // 租赁逻辑
 		    BigDecimal actualAmount = saleAmount;
 		    AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderId);
@@ -1204,6 +1211,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			// 活动返利
 			return resultMap;
 		    } else if (payType.equals(PayType.AGENT_PAY.getCode())) {
+		    	
 			// 先做判断
 			AfUserAccountSenceDo userAccountInfo = afUserAccountSenceDao.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);// afUserAccountService.getUserAccountByUserId(userId);
 			Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
@@ -1255,9 +1263,21 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    str = String.valueOf(result.getBusinessId());
 			    _vcode = "99";
 			}
-			logger.info("verify userId" + userId);
-			RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-			logger.info("verybo=" + verybo);
+			
+			// modify by liutengyuan start
+	    	    // 如果用户有权限包，无需调用风控
+			RiskVerifyRespBo verybo;
+			 if ( ! "Y" .equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
+				 logger.info("verify userId" + userId);
+					verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+					logger.info("verybo=" + verybo);
+			 }else{
+				 verybo = new RiskVerifyRespBo();
+				 verybo.setSuccess(true);
+				 verybo.setResult("10");
+			 }
+	    	// end
+			
 			if (verybo.isSuccess()) {
 			    logger.info("pay result is true");
 			    // #region add by honghzengpei
@@ -1271,6 +1291,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
 					// end by luoxiao
+				}else{
+					// 信用支付失败
+					// orderInfo
 				}
 				return riskReturnMap;
 			}
