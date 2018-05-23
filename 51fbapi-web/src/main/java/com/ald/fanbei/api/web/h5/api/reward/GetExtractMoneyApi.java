@@ -40,10 +40,13 @@ public class GetExtractMoneyApi implements H5Handle {
     AfUserAccountService afUserAccountService;
     @Resource
     AfTaskUserService afTaskUserService;
+    @Resource
+    AfResourceService afResourceService;
 
     @Override
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+        final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
         final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(),null);
         final Long userId = context.getUserId();
         if(withdrawType != null){
@@ -53,18 +56,18 @@ public class GetExtractMoneyApi implements H5Handle {
                     try{
                         BigDecimal amount = BigDecimal.ZERO;
                         if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawType.ZERO.getName());
+                            amount = new BigDecimal(afResourceDo.getValue1());
                         }else if(StringUtil.equals(WithdrawType.ONE.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawType.ONE.getName());
+                            amount = new BigDecimal(afResourceDo.getValue2());
                         }else if(StringUtil.equals(WithdrawType.TWO.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawType.TWO.getName());
+                            amount = new BigDecimal(afResourceDo.getValue3());
                         }else if(StringUtil.equals(WithdrawType.THREE.getCode(),withdrawType)){
-                            amount = new BigDecimal(WithdrawType.THREE.getName());
+                            amount = new BigDecimal(afResourceDo.getValue4());
                         }
                         if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                             AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
                             afUserCouponDo.setUserId(userId);
-                            afUserCouponDo.setCouponId(500l);
+                            afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
                             afUserCouponDo.setGmtCreate(new Date());
                             afUserCouponDo.setGmtModified(new Date());
                             afUserCouponDo.setSourceType("SIGN_REWARD");

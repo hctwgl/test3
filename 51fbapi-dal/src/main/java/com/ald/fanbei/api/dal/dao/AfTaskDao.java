@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,5 +26,8 @@ public interface AfTaskDao {
     List<AfTaskDo> getNotDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
 
     List<AfTaskDo> getDailyTaskListByUserId(@Param("userId") Long userId, @Param("taskType") String afTaskType);
+
+    List<AfTaskDto> getTaskByTaskIds(@Param("taskIds")List<Long> taskIds);
+
 
 }

@@ -117,5 +117,5 @@ public interface AfUserAuthService {
 	 * @param userId
 	 * @return
 	 */
-	String signRewardUserLevel(Long userId);
+	String signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo);
 }

@@ -39,7 +39,7 @@ public class GetSignRemindApi implements H5Handle {
                 afSignRewardExtDo.setGmtModified(new Date());
                 afSignRewardExtDo.setUserId(context.getUserId());
                 afSignRewardExtDo.setIsOpenRemind(isOpenRemind);
-                if(afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo) < 1){
+                if(afSignRewardExtService.updateSignRemind(afSignRewardExtDo) < 1){
                     resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SIGN_REMIND_FAIL);
                 }
             }else{

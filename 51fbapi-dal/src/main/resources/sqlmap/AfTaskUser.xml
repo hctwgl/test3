@@ -205,29 +205,24 @@
 
     <select id="isDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
-        <include refid="queryFields" />
-        FROM af_task_user
-        WHERE is_delete = 0
-        AND user_id = #{userId}
-        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
-        AND task_id IN
-        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-            #{item}
-        </foreach>
-        ORDER BY gmt_create desc
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 1
+        WHERE a.is_delete = 0
+        AND a.user_id = #{userId}
+        AND date_format(a.gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND a.status = 0
+        ORDER BY a.gmt_create desc
     </select>
 
     <select id="isNotDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
-        <include refid="queryFields" />
-        FROM af_task_user
-        WHERE is_delete = 0
-        AND user_id = #{userId}
-        AND task_id IN
-        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-            #{item}
-        </foreach>
-        ORDER BY gmt_create desc
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 0
+        WHERE a.is_delete = 0
+        AND a.user_id = #{userId}
+        ORDER BY a.gmt_create desc
     </select>
 
     <select id="getIsDailyTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
@@ -336,6 +331,29 @@
         AND reward_type = #{rewardType}
         AND status in ('1','3')
         ORDER BY reward_time desc
+    </select>
+
+    <select id="isDailyFinishTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 1
+        WHERE a.is_delete = 0
+        AND a.user_id = #{userId}
+        AND date_format(a.gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND a.status = 1
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="isNotDailyFinishTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 0
+        WHERE a.is_delete = 0
+        and a.status = 1
+        AND a.user_id = #{userId}
+        ORDER BY a.gmt_create desc
     </select>
 
     <select id="getTaskUserListByIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">

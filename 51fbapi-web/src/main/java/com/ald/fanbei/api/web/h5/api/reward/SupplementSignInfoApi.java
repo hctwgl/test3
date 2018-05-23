@@ -46,6 +46,8 @@ public class SupplementSignInfoApi implements H5Handle {
     AfTaskService afTaskService;
     @Resource
     AfUserThirdInfoService afUserThirdInfoService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     @Override
     public H5HandleResponse process(Context context) {
@@ -54,6 +56,7 @@ public class SupplementSignInfoApi implements H5Handle {
         Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
         String thirdId = ObjectUtils.toString(context.getData("third_id"),null);//打开者的微信openId
         String thirdInfo = ObjectUtils.toString(context.getData("third_info"),null);//打开者的微信信息
+        String push = ObjectUtils.toString(context.getData("push"),null);//用户是否打开手机推送权限
         //判断用户和openId是否在爱上街绑定
         boolean flag = checkInfo(userName);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -68,10 +71,10 @@ public class SupplementSignInfoApi implements H5Handle {
             if(!flag){
                 saveUserThirdInfo(userName,thirdId,thirdInfo,afUserDo);
             }
-            homeInfo(userId,resp);
+            homeInfo(userId,resp,push);
             resp.addResponseData("openType","0");
         } else if(flag){//已绑定
-            homeInfo(afUserDo.getRid(),resp);
+            homeInfo(afUserDo.getRid(),resp,push);
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
             afSignRewardDo.setUserId(userId);
@@ -88,7 +91,7 @@ public class SupplementSignInfoApi implements H5Handle {
         return resp;
     }
 
-    private H5HandleResponse homeInfo (Long userId,H5HandleResponse resp){
+    private H5HandleResponse homeInfo (Long userId,H5HandleResponse resp,String push){
         Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId);
         resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
         resp.addResponseData("rewardAmount",map.get("rewardAmount"));
@@ -100,8 +103,10 @@ public class SupplementSignInfoApi implements H5Handle {
         resp.addResponseData("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
 
         //任务列表
-        String level = afUserAuthService.signRewardUserLevel(userId);
-        resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId));
+        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+        String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }
 

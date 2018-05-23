@@ -15,7 +15,8 @@ public enum TaskType {
 	shopping("shopping", "购物",""),
 	share("share", "分享",""),
 	verified("verified", "实名",""),
-	strong_risk("strong_risk", "强风控通过",""),
+	strong_risk("strong_risk", "分期强风控通过",""),
+	push("push","打开手机推送权限",""),
 	loan_market_access("loan_market_access","借贷超市注册","");
 
 

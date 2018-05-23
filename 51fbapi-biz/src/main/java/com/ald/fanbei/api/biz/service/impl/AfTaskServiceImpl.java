@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfTaskUserService;
+import com.ald.fanbei.api.common.enums.TaskType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -64,15 +65,13 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
-    public List<AfTaskDto> getTaskInfo(String level, Long userId){
+    public List<AfTaskDto> getTaskInfo(String level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo){
         List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
         List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
         List<Long> isDailyList = new ArrayList<Long>();
         List<Long> isNotDailyList = new ArrayList<Long>();
-        List<Long> finishedList = new ArrayList<Long>();
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
-        AfTaskDto taskDto = new AfTaskDto();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
 
         for(AfTaskDo afTaskDo : taskList){
@@ -83,34 +82,27 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
         if(isDailyList.size() > 0){
-            isDailyTaskList = afTaskUserService.isDailyTaskList(userId,isDailyList);
+            isDailyTaskList = afTaskUserService.isDailyTaskList(userId);
         }
         if(isNotDailyList.size() > 0){
-            isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId,isNotDailyList);
+            isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId);
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
         for(AfTaskUserDo taskUserDo : isDailyTaskList){
-            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
-                notFinishedList.add(taskUserDo.getTaskId());
-            }else{
-                finishedList.add(taskUserDo.getTaskId());
-            }
+            notFinishedList.add(taskUserDo.getTaskId());
         }
-        for(Long id : notFinishedList){
-            for(AfTaskDto afTaskDo : taskList){
-                if(id == afTaskDo.getRid()){
-                    taskDto.setReceiveReward("N");
-                    finalTaskList.add(afTaskDo);
-                    break;
-                }
-            }
+
+        List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
+        for (AfTaskDto afTaskDto : afTaskDtos){
+            afTaskDto.setReceiveReward("N");
+            finalTaskList.add(afTaskDto);
         }
+
         for(AfTaskDto afTaskDo : taskList){
             boolean flag = true;
             boolean taskFlag = true;
             for(AfTaskUserDo afTaskUserDo : isDailyTaskList){
-                if(afTaskUserDo.getTaskId() == afTaskDo.getRid()
-                        || (StringUtil.equals(afTaskDo.getIsOpen().toString(),"1") && StringUtil.equals(afTaskDo.getIsDelete(),"0"))){
+                if(afTaskUserDo.getTaskId() == afTaskDo.getRid()){
                     flag = false;
                     break;
                 }
@@ -120,6 +112,21 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 taskFlag = false;
             }
             if(flag && taskFlag){
+                if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.verified.getCode())){
+                    if(StringUtil.equals(userAuthDo.getRealnameStatus(),"Y")){
+                        break;
+                    }
+                }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.strong_risk.getCode())){
+                    if (authStatusDo != null) {
+                        if (StringUtils.equals("Y", authStatusDo.getStatus())) {
+                            break;
+                        }
+                    }
+                }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.push.getCode())){
+                    if(StringUtil.equals(push, "Y")){
+                        break;
+                    }
+                }
                 finalTaskList.add(afTaskDo);
             }
         }
@@ -181,6 +188,12 @@ public class AfTaskServiceImpl  implements AfTaskService {
     @Override
     public List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition){
         return afTaskDao.getTaskListByTaskTypeAndUserLevel(taskType, userLevelList, taskContition);
+    }
+
+
+    @Override
+    public List<AfTaskDto> getTaskByTaskIds(List<Long> taskIds){
+        return afTaskDao.getTaskByTaskIds(taskIds);
     }
 
 }

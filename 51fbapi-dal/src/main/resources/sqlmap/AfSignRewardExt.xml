@@ -21,7 +21,7 @@
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
         <if test="userId != null and userId != ''">
-            AND user_id = #{userId,jdbcType=INTEGER}
+            AND user_id = #{userId,jdbcType=BIGINT}
         </if>
         <if test="firstDayParticipation !=null">
             AND first_day_participation = #{firstDayParticipation,jdbcType=TIMESTAMP}
@@ -73,7 +73,7 @@
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
+		       #{userId,jdbcType=BIGINT},
 		    </if>
 		    <if test="firstDayParticipation != null" >
 		       #{firstDayParticipation,jdbcType=TIMESTAMP},
@@ -90,22 +90,22 @@
         </trim>
     </insert>
     
-    <update id="updateSignRewardExt"  parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
-        UPDATE af_sign_reward_ext
-          <set>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
+    <update id="updateSignRewardExt"  parameterType="AfSignRewardExtDo">
+        UPDATE af_sign_reward_ext SET gmt_modified = now()
             <if test="firstDayParticipation != null and firstDayParticipation != '' ">        
-                first_day_participation = #{firstDayParticipation,jdbcType=TIMESTAMP},                
+                ,first_day_participation = #{firstDayParticipation}
             </if>
             <if test="cycleDays != null and cycleDays != '' ">        
-                cycle_days = #{cycleDays,jdbcType=INTEGER},                
+                ,cycle_days = #{cycleDays}
             </if>
             <if test="isOpenRemind != null and isOpenRemind != '' ">        
-                is_open_remind = #{isOpenRemind,jdbcType=INTEGER}                
+                ,is_open_remind = #{isOpenRemind}
             </if>
-        </set>    
+        WHERE is_delete = 0 AND user_id = #{userId}
+    </update>
+
+    <update id="updateSignRemind"  parameterType="AfSignRewardExtDo">
+        UPDATE af_sign_reward_ext SET gmt_modified = now() ,is_open_remind = #{isOpenRemind}
         WHERE is_delete = 0 AND user_id = #{userId}
     </update>
 
