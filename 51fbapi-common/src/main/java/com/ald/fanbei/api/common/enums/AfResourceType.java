@@ -133,7 +133,17 @@ public enum AfResourceType {
 	//芝麻信用认证相关配置
 	ZHIMA_VERIFY_CONFIG("ZHIMA_VERIFY_CONFIG","芝麻信用认证相关配置"),
 
-	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置");
+	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
+
+	APP_SEARCH_BACK_COLOR("APP_SEARCH_BACK_COLOR","app搜索栏背景色"),
+	APP_SEARCH_FONT_COLOR("APP_SEARCH_FONT_COLOR","app搜索栏文字颜色"),
+	APP_SEARCH_GLASS("APP_SEARCH_GLASS","app搜索栏放大镜"),
+	APP_MESSAGE_ICON("APP_MESSAGE_ICON","app消息图标"),
+	APP_NAVIGATION_BAR("APP_NAVIGATION_BAR","app导航栏文字及下划线选中颜色"),
+	APP_NAVIGATION_BAR_REMAIN("APP_NAVIGATION_BAR_REMAIN","app导航栏文字未选中颜色"),
+	APP_NAVIGATION_OPEN("APP_NAVIGATION_OPEN","app导航栏展开控件"),
+	APP_NAVIGATION_CLOSE("APP_NAVIGATION_CLOSE","app导航栏关闭控件"),
+	BANNER_BACKIMG("BANNER_BACKIMG","Banner背景图片");
 
 	private String code;
     private String name;

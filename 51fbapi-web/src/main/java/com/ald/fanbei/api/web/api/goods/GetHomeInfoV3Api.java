@@ -161,17 +161,17 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-         if (cacheResult != null) {
-             data =  (Map<String, Object>) cacheResult;
-         }else 
+		if (cacheResult != null) {
+			data =  (Map<String, Object>) cacheResult;
+		}else
           {
-		
-		         AfResourceDo   searchBackground = new  AfResourceDo();
-		         AfResourceDo   nineBackground   =   new  AfResourceDo();
-		         AfResourceDo   navigationBackground = new  AfResourceDo();
-				// 背景图配置
-		         List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
-		     	 backgroundList = afResourceService
+
+			  AfResourceDo   searchBackground = new  AfResourceDo();
+			  AfResourceDo   nineBackground   =   new  AfResourceDo();
+			  AfResourceDo   navigationBackground = new  AfResourceDo();
+			  // 背景图配置
+			  List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
+			  backgroundList = afResourceService
 						.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
 
 				// 背景图
@@ -584,8 +584,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!brandInfo.isEmpty()) {
 					data.put("brandInfo", brandInfo);
 				}
-				
-				 bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);	 	
+			  bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);
          }
            try{
 
@@ -624,7 +623,73 @@ public class GetHomeInfoV3Api implements ApiHandle {
          }catch(Exception  e){
         	 logger.error("getHomeInfoV3 newExclusive error = " + e);
          }
-         
+
+		//首页搜索栏位等优化为可配置 cxk 2018年5月23日13:49:18
+		try{
+			HashMap<String, Object> newConfigInfo =  (HashMap<String, Object>)bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.NEW_CONFIG_INFO.getCode());
+			if (newConfigInfo == null || newConfigInfo.size()<1) {
+				List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
+				backgroundList = afResourceService
+						.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
+				newConfigInfo = new HashMap<String, Object>();
+				for (AfResourceDo afResourceDo :	backgroundList) {
+					if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_BACK_COLOR.getCode())) {
+						//app搜索栏背景色
+						Map<String, Object> searchBackColor = new HashMap<String, Object>();
+						searchBackColor.put("color",afResourceDo.getValue3());
+						newConfigInfo.put("searchBackColor",searchBackColor);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_FONT_COLOR.getCode())) {
+						//app搜索栏文字颜色
+						Map<String, Object> searchFontColor = new HashMap<String, Object>();
+						searchFontColor.put("color",afResourceDo.getValue3());
+						newConfigInfo.put("searchFontColor",searchFontColor);
+					}else if(StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_GLASS.getCode())) {
+						//app搜索栏放大镜
+						Map<String, Object> searchGlass = new HashMap<String, Object>();
+						searchGlass.put("imageUrl",afResourceDo.getValue());
+						newConfigInfo.put("searchGlass",searchGlass);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_MESSAGE_ICON.getCode())) {
+						//app消息图标
+						Map<String, Object> messageIcon = new HashMap<String, Object>();
+						messageIcon.put("imageUrl",afResourceDo.getValue());
+						newConfigInfo.put("messageIcon",messageIcon);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_BAR.getCode())) {
+						//app导航栏文字及下划线选中颜色
+						Map<String, Object> fontColor = new HashMap<String, Object>();
+						fontColor.put("color",afResourceDo.getValue3());
+						newConfigInfo.put("fontColor",fontColor);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_BAR_REMAIN.getCode())) {
+						//app导航栏文字未选中颜色
+						Map<String, Object> remainFontColor = new HashMap<String, Object>();
+						remainFontColor.put("color",afResourceDo.getValue3());
+						newConfigInfo.put("remainFontColor",remainFontColor);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_OPEN.getCode())) {
+						//app导航栏展开控件
+						Map<String, Object> navigationOpen = new HashMap<String, Object>();
+						navigationOpen.put("imageUrl",afResourceDo.getValue());
+						newConfigInfo.put("navigationOpen",navigationOpen);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_CLOSE.getCode())) {
+						//app导航栏关闭控件
+						Map<String, Object> navigationClose = new HashMap<String, Object>();
+						navigationClose.put("imageUrl",afResourceDo.getValue());
+						newConfigInfo.put("navigationClose",navigationClose);
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.BANNER_BACKIMG.getCode())) {
+						//Banner背景图片
+						Map<String, Object> bannerBackImg = new HashMap<String, Object>();
+						bannerBackImg.put("imageUrl",afResourceDo.getValue());
+						newConfigInfo.put("bannerBackImg",bannerBackImg);
+					}else {
+						continue;
+					}
+				}
+				//添加缓存
+				bizCacheUtil.saveMap(CacheConstants.ASJ_HOME_PAGE.NEW_CONFIG_INFO.getCode(), newConfigInfo, Constants.MINITS_OF_TWO);
+			}
+			data.put("newConfigInfo",newConfigInfo);
+		}catch(Exception  e){
+			logger.error("getHomeInfoV3 newConfigInfo error = " + e);
+		}
+
          //新人运营位查库
 		logger.info("getHomeInfoV3data = " + data);
 		resp.setResponseData(data);
