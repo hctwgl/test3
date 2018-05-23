@@ -590,6 +590,8 @@
 				<!-- 支付相关接口 -->
 				<entry key="/pay/quickPaymentResendCode" value-ref="quickPaymentResendCodeApi" />
 				<entry key="/pay/confirmPayment" value-ref="confirmPaymentApi" />
+				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
+				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />
 
 			</map>
 		</constructor-arg>
