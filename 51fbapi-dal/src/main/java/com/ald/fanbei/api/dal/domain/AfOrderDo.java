@@ -93,7 +93,7 @@ public class AfOrderDo extends AbstractSerial{
     private Integer isHide;//前端是否隐藏
 
 	private String iagentStatus;//智能电核状态
-	
+	private String supportCreditStatus;//是否支持信用支付 Y：是 N：否
 
 	public String getIagentStatus() {
 		return iagentStatus;
@@ -644,5 +644,14 @@ public class AfOrderDo extends AbstractSerial{
 	public void setIsHide(Integer isHide) {
 		this.isHide = isHide;
 	}
+
+	public String getSupportCreditStatus() {
+		return supportCreditStatus;
+	}
+
+	public void setSupportCreditStatus(String supportCreditStatus) {
+		this.supportCreditStatus = supportCreditStatus;
+	}
+	
 }
 

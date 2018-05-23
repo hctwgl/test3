@@ -14,7 +14,9 @@ public enum CashierReasonType {
     CASHIER("CASHIER", "收银台限制"),
     OVERDUE_BORROW("OVERDUE_BORROW", "消费分期逾期"),
     RISK_CREDIT_PAYMENT("RISK_CREDIT_PAYMENT", "风控限制使用信用支付"),
-    OVERDUE_BORROW_CASH("OVERDUE_BORROW_CASH", "现金借逾期");
+    OVERDUE_BORROW_CASH("OVERDUE_BORROW_CASH", "现金借逾期"),
+    WEAK_VERIFY_ORDER_CREDIT("WEAK_VERIFY_ORDER_CREDIT", "弱风控对订单的信用支付限制"),
+    SPEC_GOODS_CREDIT_LIMIT("SPEC_GOODS_CREDIT_LIMIT", "特殊商品信用支付限制");
 
     private String code;
     private String name;
