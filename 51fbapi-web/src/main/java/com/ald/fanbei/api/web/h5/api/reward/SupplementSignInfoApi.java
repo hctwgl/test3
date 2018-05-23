@@ -56,7 +56,7 @@ public class SupplementSignInfoApi implements H5Handle {
         Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
         String thirdId = ObjectUtils.toString(context.getData("third_id"),null);//打开者的微信openId
         String thirdInfo = ObjectUtils.toString(context.getData("third_info"),null);//打开者的微信信息
-        String push = ObjectUtils.toString(context.getData("push"),null);//打开者的微信信息
+        String push = ObjectUtils.toString(context.getData("push"),null);//用户是否打开手机推送权限
         //判断用户和openId是否在爱上街绑定
         boolean flag = checkInfo(userName);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);

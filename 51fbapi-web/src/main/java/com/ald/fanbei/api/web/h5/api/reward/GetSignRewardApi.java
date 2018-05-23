@@ -88,7 +88,7 @@ public class GetSignRewardApi implements H5Handle {
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
-            if(count == 3 || count == 1){
+            if(count == 5 || count == 1){
                 afSignRewardExtDo.setAmount(rewardAmount);
                 final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
                 if(count == 1){
@@ -119,7 +119,7 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 });
             }else {
-                if(count == 6){
+                if(count == 7){
                     afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
                 }else if(count == 10){
                     afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(3)).setScale(2,RoundingMode.HALF_EVEN));
