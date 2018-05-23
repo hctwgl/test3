@@ -110,7 +110,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             boolean taskFlag = true;
             for(AfTaskUserDo afTaskUserDo : isDailyTaskList){
                 if(afTaskUserDo.getTaskId() == afTaskDo.getRid()
-                        || (StringUtil.equals(afTaskDo.getIsOpen().toString(),"1") && StringUtil.equals(afTaskDo.getIsDelete(),"0"))){
+                        || (StringUtil.equals(afTaskDo.getIsOpen().toString(),"0") && StringUtil.equals(afTaskDo.getIsDelete(),"1"))){
                     flag = false;
                     break;
                 }

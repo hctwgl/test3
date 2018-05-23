@@ -22,6 +22,8 @@ public interface AfSignRewardExtService {
 
     int updateSignRewardExt(AfSignRewardExtDo afSignRewardExtDo);
 
+    int updateSignRemind(AfSignRewardExtDo afSignRewardExtDo);
+
     int increaseMoney(AfSignRewardExtDo afSignRewardExtDo);
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
@@ -33,6 +35,8 @@ public interface AfSignRewardExtService {
     int saveRecordBatch(List<AfSignRewardExtDo> list );
 
     int increaseMoneyBtach(List<AfSignRewardExtDo> list );
+
+
 
 
 }

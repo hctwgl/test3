@@ -95,7 +95,7 @@ import java.util.Objects;
    /**
     * 优惠券名称
     */
-   private String couponName;
+   private String couponType;
 
     /**
      * 是否启用：0：禁用；1：启用

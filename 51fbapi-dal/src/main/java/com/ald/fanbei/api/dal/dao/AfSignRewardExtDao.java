@@ -32,5 +32,7 @@ public interface AfSignRewardExtDao  {
 
     int increaseMoneyBtach(List<AfSignRewardExtDo> list );
 
+    int updateSignRemind(AfSignRewardExtDo afSignRewardExtDo);
+
 
 }

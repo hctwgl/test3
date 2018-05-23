@@ -53,6 +53,11 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     }
 
     @Override
+    public int updateSignRemind(AfSignRewardExtDo afSignRewardExtDo){
+        return afSignRewardExtDao.updateSignRemind(afSignRewardExtDo);
+    }
+
+    @Override
     public int saveRecord(AfSignRewardExtDo afSignRewardExtDo){
         return afSignRewardExtDao.saveRecord(afSignRewardExtDo);
     }
