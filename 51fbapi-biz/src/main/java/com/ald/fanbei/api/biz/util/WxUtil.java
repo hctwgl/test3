@@ -1,5 +1,21 @@
 package com.ald.fanbei.api.biz.util;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,28 +24,6 @@ import java.net.ConnectException;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @说明： 对接微信的工具类
@@ -130,14 +124,14 @@ public class WxUtil {
 	String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code";
 	JSONObject access_token = httpsRequest(url, "POST", null);
 
-	logger.info(JSON.toJSONString(access_token));
+	logger.info("WxUtil.getOpenidByCode:" + JSON.toJSONString(access_token));
 	// 获取refresh_token
 	String refreshToken = (String) access_token.get("refresh_token");
 
 	url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid + "&grant_type=refresh_token&refresh_token=" + refreshToken;
 	JSONObject refresh_token = httpsRequest(url, "POST", null);
 
-	logger.info(JSON.toJSONString(refresh_token));
+	logger.info("WxUtil.getOpenidByCode:" + JSON.toJSONString(refresh_token));
 
 	// 获取用户信息
 	String openid = (String) refresh_token.get("openid");
@@ -147,6 +141,29 @@ public class WxUtil {
 
 	return userInfo;
     }
+
+	/**
+	 * 获取用户信息，并进行缓存
+	 *
+	 * @author wangli
+	 * @date 2018/5/10 10:44
+	 */
+	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
+        String key = "WxUtil:userInfo:" + code;
+        JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
+        if (userWxInfo == null) {
+            userWxInfo = getUserInfo(appid, secret, code);
+            if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
+				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
+            } else {
+                throw new FanbeiException(userWxInfo.getString("errmsg"), FanbeiExceptionCode.WX_CODE_INVALID);
+            }
+        }
+        return userWxInfo;
+		/*// TODO:待注释
+		String jsonStr = "{\"openid\": \"CS\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
+		return JSONObject.parseObject(jsonStr);*/
+	}
 
     /**
      * 发送https请求
