@@ -30,4 +30,5 @@ public class AfUserCouponDto extends AfUserCouponDo {
     private Integer quotaAlready;
     private Integer limitCount;
     private Integer userAlready;
+    private String couponStatus;
 }

@@ -147,7 +147,7 @@
 	
 	<select id="getUserCouponById" resultType="AfUserCouponDto">
 		SELECT 
-			<include refid="queryAllFields" />
+			<include refid="queryAllFields" />,c.status couponStatus
 		FROM 
 			af_user_coupon u
 		LEFT JOIN

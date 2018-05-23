@@ -1528,7 +1528,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			String status = ObjectUtils.toString(request.getParameter("status"),"");
 			Map<String, Object> data = new HashMap<String, Object>();
 			// 获取领券中心URL add by jrb
-			List<AfResourceDo>  resourceList = afResourceService.getConfigByTypes(ResourceType.COUPON_CENTER_URL.getCode());
+			List<AfResourceDo>  resourceList = afResourceService.getConfigByTypes(ResourceType.NEWCOUPON_CENTER_URL.getCode());
 			if(resourceList != null && !resourceList.isEmpty()) {
 				AfResourceDo resourceDo = resourceList.get(0);
 				String couponCenterUrl = resourceDo.getValue();
