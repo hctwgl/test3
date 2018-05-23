@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
@@ -40,5 +41,7 @@ public interface AfTaskService {
     List<AfTaskDo> getNotDailyTaskListByUserId(Long userId, String afTaskType);
 
     List<AfTaskDo> getDailyTaskListByUserId(Long userId, String afTaskType);
+
+    List<AfTaskDto> getTaskByTaskIds(List<Long> taskIds);
 
 }

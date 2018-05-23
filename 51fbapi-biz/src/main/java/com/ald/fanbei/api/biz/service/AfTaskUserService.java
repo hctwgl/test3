@@ -19,6 +19,10 @@ public interface AfTaskUserService {
 
     List<AfTaskUserDo> isNotDailyTaskList(Long userId);
 
+    List<AfTaskUserDo> isDailyFinishTaskList(Long userId);
+
+    List<AfTaskUserDo> isNotDailyFinishTaskList(Long userId);
+
     int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
     int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);

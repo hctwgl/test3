@@ -190,4 +190,10 @@ public class AfTaskServiceImpl  implements AfTaskService {
         return afTaskDao.getTaskListByTaskTypeAndUserLevel(taskType, userLevelList, taskContition);
     }
 
+
+    @Override
+    public List<AfTaskDto> getTaskByTaskIds(List<Long> taskIds){
+        return afTaskDao.getTaskByTaskIds(taskIds);
+    }
+
 }

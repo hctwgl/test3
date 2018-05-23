@@ -42,42 +42,25 @@ public class GetFinishedTaskApi implements H5Handle {
         List<Long> isNotDailyList = new ArrayList<Long>();
         List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
         List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
-        List<Long> finishedList = new ArrayList<Long>();
-        List<Long> notFinishedList = new ArrayList<Long>();
-        List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
+        Long userId = context.getUserId();
+        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        List<Long> taskIds = new ArrayList<Long>();
 
-        String level = afUserAuthService.signRewardUserLevel(context.getUserId());
-
-        List<AfTaskDto> taskList = afTaskService.getTaskListByUserIdAndUserLevel(level);
-        for(AfTaskDo afTaskDo : taskList){
-            if(afTaskDo.getIsDailyUpdate().equals("1")){
-                isDailyList.add(afTaskDo.getRid());
-            }else{
-                isNotDailyList.add(afTaskDo.getRid());
-            }
-        }
         if(isDailyList.size()>0){
-            isDailyTaskList = afTaskUserService.isDailyTaskList(context.getUserId());
+            isDailyTaskList = afTaskUserService.isDailyFinishTaskList(userId);
         }
         if(isNotDailyList.size()>0){
-            isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(context.getUserId());
+            isNotDailyTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
-        for(AfTaskUserDo taskUserDo : isDailyTaskList){
-            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
-                notFinishedList.add(taskUserDo.getTaskId());
-            }else{
-                finishedList.add(taskUserDo.getTaskId());
-            }
+
+        for (AfTaskUserDo afTaskUserDo : isDailyTaskList){
+            taskIds.add(afTaskUserDo.getTaskId());
         }
-        for(Long id : finishedList){
-            for(AfTaskDto afTaskDo : taskList){
-                if(id == afTaskDo.getRid()){
-                    finalTaskList.add(afTaskDo);
-                }
-                break;
-            }
-        }
+
+        List<AfTaskDto> finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
+
         resp.addResponseData("taskList",finalTaskList);
         return resp;
     }
