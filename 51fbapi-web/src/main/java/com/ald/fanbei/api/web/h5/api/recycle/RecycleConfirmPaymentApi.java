@@ -32,32 +32,7 @@ public class RecycleConfirmPaymentApi implements H5Handle {
 
     @Resource
     AfUserBankcardDao afUserBankcardDao;
-
-    @Autowired
-    @Qualifier("afRepaymentService")
-    UpsPayKuaijieServiceAbstract afRepaymentAbstract;
-
-    @Autowired
-    @Qualifier("afBorrowLegalRepaymentV2Service")
-    UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentV2Abstract;
-
-    @Autowired
-    @Qualifier("afBorrowLegalRepaymentService")
-    UpsPayKuaijieServiceAbstract afBorrowLegalRepaymentService;
-
-    //loanAllRepayDoApi 相同逻辑处理（业务数据不同，从redis获取）
-    @Autowired
-    @Qualifier("afLoanRepaymentService")
-    UpsPayKuaijieServiceAbstract afLoanRepaymentService;
-
-    @Autowired
-    @Qualifier("afRenewalLegalDetailV2Service")
-    UpsPayKuaijieServiceAbstract afRenewalLegalDetailV2Service;
-
-    @Autowired
-    @Qualifier("afOrderService")
-    UpsPayKuaijieServiceAbstract afOrderService;
-
+    
     @Autowired
     @Qualifier("afBorrowRecycleRepaymentService")
     UpsPayKuaijieServiceAbstract afBorrowRecycleRepaymentService;

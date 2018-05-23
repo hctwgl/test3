@@ -50,6 +50,7 @@ public class GetUserBankListApi implements H5Handle  {
 			resMap.put("status", bankcardDo.getStatus());
 			resMap.put("bankIcon", bankcardDo.getBankIcon());
 			resMap.put("bankChannel", bankcardDo.getBankChannel());
+			resMap.put("mobile", bankcardDo.getMobile());
 			
 			UpsBankStatusDto upsBankStatus = afUserBankcardService.getUpsBankStatus(bankcardDo.getBankCode(), bankcardDo.getBankChannel());
 			resMap.put("limitUp", upsBankStatus.getLimitUp());
