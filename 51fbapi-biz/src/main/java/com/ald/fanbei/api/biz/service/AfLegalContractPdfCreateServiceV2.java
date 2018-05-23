@@ -32,4 +32,6 @@ public interface AfLegalContractPdfCreateServiceV2 {
 
     String leaseProtocolPdf(Map<String,Object> data,Long userId ,Long orderId) throws IOException;
 
+    String receptProtocolPdf(Map<String,Object> data)throws IOException;
+
 }

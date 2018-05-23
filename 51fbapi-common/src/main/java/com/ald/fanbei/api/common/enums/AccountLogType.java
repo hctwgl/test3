@@ -17,7 +17,10 @@ public enum AccountLogType {
 	FREEZE("FREEZE", "冻结金额"),
 	REBATE("REBATE", "返利"),
 	SIGNIN("SIGNIN", "签到"),
-	REGIST("REGIST", "新注册款");
+	REGIST("REGIST", "新注册款"),
+    OPEN_REDPACKET("OPEN_REDPACKET", "拆红包")
+
+    ;
 
     private String code;
     private String name;
