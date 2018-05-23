@@ -1,6 +1,50 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.bo.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmReqBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthPayConfirmRespBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthPayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthPayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthSignReqBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthSignValidReqBo;
+import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsBatchDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectReqBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignReqBo;
+import com.ald.fanbei.api.biz.bo.UpsQueryAuthSignRespBo;
+import com.ald.fanbei.api.biz.bo.UpsQueryTradeReqBo;
+import com.ald.fanbei.api.biz.bo.UpsQueryTradeRespBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayConfirmReqBo;
+import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsReqBo;
+import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
+import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
+import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
+import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
+import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
+import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
