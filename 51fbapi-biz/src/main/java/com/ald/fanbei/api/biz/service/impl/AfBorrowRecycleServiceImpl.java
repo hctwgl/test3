@@ -417,4 +417,10 @@ public class AfBorrowRecycleServiceImpl extends ParentServiceImpl<AfBorrowCashDo
         });
     }
 
+    public static class ApplyCheckBo{
+		public AfBorrowCashDo afBorrowCashDo;
+		public AfBorrowLegalOrderDo afBorrowLegalOrderDo;
+		public Long borrowId;
+	}
+    
 }
