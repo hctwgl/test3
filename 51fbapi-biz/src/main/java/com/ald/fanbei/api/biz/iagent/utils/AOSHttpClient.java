@@ -1,19 +1,15 @@
 package com.ald.fanbei.api.biz.iagent.utils;
 
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -30,7 +26,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -77,89 +72,6 @@ public class AOSHttpClient {
 		// 在提交请求之前 测试连接是否可用
 		configBuilder.setStaleConnectionCheckEnabled(true);
 		requestConfig = configBuilder.build();
-	}
-
-	/**
-	 * 发起请求（兼容Get和Post）
-	 * <p>
-	 * 兼容参数以K-V表单方式提交和以JSON方式提交(设置"Content-type", "application/json"即可)
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("all")
-	public static HttpResponseVO execute(HttpRequestVO httpRequestVO) {
-		HttpResponseVO httpResponseVO = new HttpResponseVO();
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		try {
-			RequestBuilder requestBuilder = null;
-			if (StringUtils.equalsIgnoreCase(httpRequestVO.getRequestMethod(), REQUEST_METHOD.POST)) {
-				requestBuilder = RequestBuilder.post().setUri(new URI(httpRequestVO.getUri()));
-			} else {
-				requestBuilder = RequestBuilder.get().setUri(new URI(httpRequestVO.getUri()));
-			}
-			Map<String, String> paramMap = httpRequestVO.getParamMap();
-			if (AOSUtils.isNotEmpty(paramMap)) {
-				Iterator<String> keyIterator = (Iterator) paramMap.keySet().iterator();
-				while (keyIterator.hasNext()) {
-					String key = (String) keyIterator.next();
-					String value = paramMap.get(key);
-					requestBuilder.addParameter(key, value);
-				}
-			}
-
-			// 提交JSON
-			if (httpRequestVO.getJsonEntityData() != null) {
-				HttpEntity entity = new StringEntity(httpRequestVO.getJsonEntityData(), "utf-8");
-				requestBuilder.setEntity(entity);
-			}
-
-			// 创建连接超时时间(缺省值：3s)
-			int connectionTimeout = httpRequestVO.getConnectionTimeout() == 0 ? 3 * 1000 : httpRequestVO.getConnectionTimeout();
-			// 等待响应超时时间(缺省值：30s)
-			int readTimeout = httpRequestVO.getReadTimeout() == 0 ? 30 * 1000 : httpRequestVO.getReadTimeout();
-			RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout)
-					.setConnectTimeout(connectionTimeout).build();
-			HttpUriRequest httpUriRequest = requestBuilder.setConfig(requestConfig).build();
-			Map<String, String> headMap = httpRequestVO.getHeadMap();
-			if (AOSUtils.isNotEmpty(headMap)) {
-				Iterator<String> headIterator = (Iterator) headMap.keySet().iterator();
-				while (headIterator.hasNext()) {
-					String key = (String) headIterator.next();
-					String value = headMap.get(key);
-					httpUriRequest.addHeader(key, value);
-				}
-			}
-
-			CloseableHttpResponse httpResponse = null;
-			try {
-				httpResponse = httpclient.execute(httpUriRequest);
-				int status = httpResponse.getStatusLine().getStatusCode();
-				httpResponseVO.setStatus(String.valueOf(status));
-				HttpEntity entity = httpResponse.getEntity();
-				String outString = entity != null ? EntityUtils.toString(entity, "utf-8") : null;
-				httpResponseVO.setOut(outString);
-				if (entity != null) {
-					EntityUtils.consume(entity);
-				}
-			} finally {
-				if (httpResponse != null) {
-					httpResponse.close();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				if (httpclient != null) {
-					httpclient.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-		}
-		return httpResponseVO;
 	}
 
 	/**
