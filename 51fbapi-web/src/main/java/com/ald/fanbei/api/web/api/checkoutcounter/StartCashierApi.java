@@ -450,37 +450,37 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, FanbeiContext context) {
-	String status = YesNoStatus.NO.getCode();
-	if (context.getAppVersion() >= 406) {
-	    // 获取不同场景的强风控认证
-	    if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-		// 商圈认证
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
-		if (afUserAuthStatusDo == null) {
-		    authDo.setRiskStatus(YesNoStatus.NO.getCode());
-		} else {
-		    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+		String status = YesNoStatus.NO.getCode();
+		if (context.getAppVersion() >= 406) {
+			// 获取不同场景的强风控认证
+			if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+				// 商圈认证
+				AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
+				if (afUserAuthStatusDo == null) {
+					authDo.setRiskStatus(YesNoStatus.NO.getCode());
+				} else {
+					authDo.setRiskStatus(YesNoStatus.YES.getCode());
+				}
+			} else {
+				// 线上分期认证
+				AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+				if (afUserAuthStatusDo == null) {
+					authDo.setRiskStatus(YesNoStatus.NO.getCode());
+				} else {
+					authDo.setRiskStatus(YesNoStatus.YES.getCode());
+				}
+			}
 		}
-	    } else {
-		// 线上分期认证
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
-		if (afUserAuthStatusDo == null) {
-		    authDo.setRiskStatus(YesNoStatus.NO.getCode());
-		} else {
-		    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+		if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
+			if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
+				status = YesNoStatus.YES.getCode();
+			}
 		}
-	    }
+		return status;
 	}
-	if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
-	    if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
-		status = YesNoStatus.YES.getCode();
-	    }
-	}
-	return status;
-    }
 
     /**
      * 风控处理
