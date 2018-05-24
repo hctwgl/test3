@@ -372,11 +372,11 @@ public class PayOrderV1Api implements ApiHandle {
             String  relaCreditPay = "N";
             Integer toPayOrderNums ;
             String  goodsBanner = "";
-            List<AfResourceDo> VipCardList = afResourceService.getResourceListByType(ResourceType.WEAK_VERIFY_VIP_CONFIG.getCode());
-            if (CollectionUtil.isNotEmpty(VipCardList)){
-            	String authGoodsId = VipCardList.get(0).getValue();
+            AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+            if (vipGoodsResourceDo != null){
+            	String authGoodsId = vipGoodsResourceDo.getValue();
             	goodsId = NumberUtil.objToLong(authGoodsId);
-            	goodsBanner = VipCardList.get(0).getValue3();
+            	goodsBanner = vipGoodsResourceDo.getValue3();
             	if (orderInfo.getGoodsId() == goodsId){
             		goodsType = "auth";
             	}else{
