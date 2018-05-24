@@ -19,6 +19,8 @@ public interface AfActivityReservationGoodsUserDao extends BaseDao<AfActivityRes
 
     List<AfActivityReservationGoodsUserDo> getUserActivityReservationGoodsList( @Param("userId") long userId, @Param("activityId") Long activityId);
 
+    List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList( @Param("userId") long userId, @Param("activityId") Long activityId);
+
     /*
      * 更新预约商品数量
      */

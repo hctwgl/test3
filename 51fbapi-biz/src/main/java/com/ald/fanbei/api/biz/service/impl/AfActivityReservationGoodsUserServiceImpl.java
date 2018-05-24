@@ -39,4 +39,9 @@ public class AfActivityReservationGoodsUserServiceImpl extends ParentServiceImpl
 	public List<AfActivityReservationGoodsUserDo> getUserActivityReservationGoodsList(Long userId, Long activityId) {
 		return afActivityReservationGoodsUserDao.getUserActivityReservationGoodsList(userId, activityId);
 	}
+
+	@Override
+	public List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList(Long userId, Long activityId) {
+		return afActivityReservationGoodsUserDao.getActivityReservationGoodsList(userId, activityId);
+	}
 }

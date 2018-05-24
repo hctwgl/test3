@@ -17,4 +17,6 @@ public interface AfActivityReservationGoodsUserService extends ParentService<AfA
      * 用户预售商品列表
      */
     List<AfActivityReservationGoodsUserDo> getUserActivityReservationGoodsList(Long userId, Long activityId);
+
+    List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList(Long userId, Long activityId);
 }

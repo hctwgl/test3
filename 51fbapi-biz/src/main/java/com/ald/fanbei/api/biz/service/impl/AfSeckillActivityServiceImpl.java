@@ -319,7 +319,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 							if(Integer.valueOf(afActivityReservationGoodsDo.getLimitCount()) > afActivityReservationGoodsUserDo1.getGoodsCount()){
 								afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsDo.getRid(), orderInfo.getUserId(), 1);
 
-								//修改订单状态已完成
+								//修改订单状态为已完成
 								logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
 								orderDao.updateOrderStatus(orderInfo.getRid());
 								//获取资源信息

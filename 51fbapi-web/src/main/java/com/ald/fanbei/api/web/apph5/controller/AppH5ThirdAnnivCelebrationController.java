@@ -420,7 +420,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             if(null != resourceInfo) {
                 Long activityId = Long.valueOf(resourceInfo.getValue());
                 //用户预售商品列表
-                userReservationGoodsList = afActivityReservationGoodsUserService.getUserActivityReservationGoodsList(userId, activityId);
+                userReservationGoodsList = afActivityReservationGoodsUserService.getActivityReservationGoodsList(userId, activityId);
 
             }
         }
