@@ -137,28 +137,6 @@ public class H5TaskUserController extends BaseController {
     }
 
     /**
-     * 是否完成今日浏览数量的任务
-     * @param request
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "isCompletedBrowseQuantityTask", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String isCompletedBrowseQuantityTask(HttpServletRequest request, HttpServletResponse response) {
-        try{
-            Map<String, Object> data = Maps.newHashMap();
-            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME);
-            if(null != taskUserDo){
-                data.put("status", taskUserDo.getStatus());
-                return H5CommonResponse.getNewInstance(true,"","",data).toString();
-            }
-        }catch (Exception e){
-            logger.error("isCompletedBrowseQuantityTask error", e);
-        }
-
-        return H5CommonResponse.getNewInstance(false, "").toString();
-    }
-    /**
      * 生成完成任务IDs
      * @param taskUserDoList
      * @return
