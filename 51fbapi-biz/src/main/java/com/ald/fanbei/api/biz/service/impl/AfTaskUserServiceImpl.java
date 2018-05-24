@@ -260,8 +260,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
-	public AfTaskUserDo getTodayTaskUserDoByTaskName(String taskName) {
-		return afTaskUserDao.getTodayTaskUserDoByTaskName(taskName);
+	public AfTaskUserDo getTodayTaskUserDoByTaskName(String taskName, Long userId) {
+		return afTaskUserDao.getTodayTaskUserDoByTaskName(taskName, userId);
 	}
 
 	@Override

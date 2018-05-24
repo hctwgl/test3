@@ -102,7 +102,7 @@ public interface AfTaskUserService {
      * @param taskName
      * @return
      */
-    AfTaskUserDo getTodayTaskUserDoByTaskName(String taskName);
+    AfTaskUserDo getTodayTaskUserDoByTaskName(String taskName, Long userId);
 
     /**
      * 判断用户完成的任务类型是否一致

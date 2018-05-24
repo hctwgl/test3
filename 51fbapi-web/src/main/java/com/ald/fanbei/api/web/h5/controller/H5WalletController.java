@@ -67,7 +67,7 @@ public class H5WalletController extends BaseController{
             data.put("availableCoinAmount", availableCoinAmount);
 
             // 我的金币兑换，是否昨天已经兑换过
-            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME);
+            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
             }

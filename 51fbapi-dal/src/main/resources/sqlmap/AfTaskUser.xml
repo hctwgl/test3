@@ -183,8 +183,8 @@
         SELECT
         <include refid="queryFields" />
         FROM af_task_user
-        WHERE is_delete = 0 AND task_name = #{taskName}
-        AND date(reward_time) = date(now())
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_name = #{taskName}
+        AND date(gmt_create) = date(now())
         LIMIT 0,1
     </select>
 
