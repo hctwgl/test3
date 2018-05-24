@@ -258,15 +258,15 @@
 
 	<select id="getVisualActivityGoodsByGoodsId" resultType="HashMap">
 		SELECT
-		goods_id,special_price
+		a.goods_id,a.special_price,b.gmt_create
 		FROM
-		af_seckill_activity_goods as a INNER JOIN af_seckill_activity as b
+		af_seckill_activity_goods as a INNER JOIN af_seckill_activity as b on a.`activity_id` = b.`id`
 		WHERE
 		a.is_delete = 0 AND b.is_delete = 0 AND b.`status` = 1 AND b.`is_disable` =0
 		AND now() > b.gmt_start
 		AND b.gmt_end > now()
 		AND
 		goods_id = #{goodsId}
-		ORDER BY a.`special_price` LIMIT 1
-	</select>
+		ORDER BY b.`gmt_create` desc LIMIT 1
+  </select>
 </mapper>
