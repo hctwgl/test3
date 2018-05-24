@@ -94,6 +94,7 @@ public class AfOrderDo extends AbstractSerial{
 
 	private String iagentStatus;//智能电核状态
 	private String supportCreditStatus;//是否支持信用支付 Y：是 N：否
+	private String weakRiskOrderNo;//软弱风控编号
 
 	public String getIagentStatus() {
 		return iagentStatus;
@@ -651,6 +652,14 @@ public class AfOrderDo extends AbstractSerial{
 
 	public void setSupportCreditStatus(String supportCreditStatus) {
 		this.supportCreditStatus = supportCreditStatus;
+	}
+
+	public String getWeakRiskOrderNo() {
+		return weakRiskOrderNo;
+	}
+
+	public void setWeakRiskOrderNo(String weakRiskOrderNo) {
+		this.weakRiskOrderNo = weakRiskOrderNo;
 	}
 	
 }
