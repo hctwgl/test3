@@ -16,7 +16,6 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -30,7 +29,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -86,7 +84,7 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     /**
      * 获取红包主页信息（站内）
-     * 
+     *
      * @author wangli
      * @date 2018/5/4 11:12
      */
@@ -121,13 +119,13 @@ public class AppH5OpenRedPacketController extends BaseController {
         } catch (FanbeiException e) {
             return handleFanbeiException(e);
         } catch (Exception e) {
-           return handleException(e);
+            return handleException(e);
         }
     }
 
     /**
      * 获取所有拆红包记录
-     * 
+     *
      * @author wangli
      * @date 2018/5/4 17:27
      */
@@ -238,11 +236,14 @@ public class AppH5OpenRedPacketController extends BaseController {
     public String bindPhoneAndOpen(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
             logger.info("/redPacket/bindPhoneAndOpen, param=" + param);
+
+            validateVerifyCode(param.getVerifyCode(), param.getMobile());
+
             Map<String, String> data = new HashMap<>();
             data.put("isRegister", YesNoStatus.NO.getCode());
 
-            AfUserDo userDo = getOrRegisterUser(request, param.getVerifyCode(), param.getToken(),
-                    param.getBsqToken(), param.getMobile(), data);
+            AfUserDo userDo = getOrRegisterUser(request, param.getToken(), param.getBsqToken(),
+                    param.getMobile(), data);
             AfRedPacketSelfOpenDo selfOpenDo = afRedPacketSelfOpenService.bindPhoneAndOpen(userDo.getRid(),
                     userDo.getUserName(), param.getCode(), SelfOpenRedPacketSourceType.OPEN_SELF.getCode());
 
@@ -331,23 +332,11 @@ public class AppH5OpenRedPacketController extends BaseController {
     }
 
     // 获取或注册用户
-    private AfUserDo getOrRegisterUser(HttpServletRequest request, String verifyCode, String token,
-                                       String bsqToken, String mobile, Map<String, String> data) {
-        try {
-            tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
-                    mobile, mobile, "");
-        } catch (Exception e) {
-            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR);
-        }
-
-        if (!StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-                Constants.INVELOMENT_TYPE_TEST)) {
-            validateVerifyCode(verifyCode, mobile);
-        }
-
+    private AfUserDo getOrRegisterUser(HttpServletRequest request, String token, String bsqToken,
+                                       String mobile, Map<String, String> data) {
         AfUserDo userDo = afUserService.getUserByUserName(mobile);
         if (userDo == null) {
-            userDo = registerUser(request, mobile, bsqToken);
+            userDo = registerUser(request, mobile, token, bsqToken);
             data.put("isRegister", YesNoStatus.YES.getCode());
         }
 
@@ -364,26 +353,32 @@ public class AppH5OpenRedPacketController extends BaseController {
         String realCode = smsDo.getVerifyCode();
         if (!StringUtils.equals(verifyCode, realCode)) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is invalid");
-            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc());
         }
         if (smsDo.getIsCheck() == 1) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is already invalid");
-            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc());
         }
         // 判断验证码是否过期
         if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), 5))) {
             logger.error("/redPacket/bindPhoneAndOpen, error=verifyCode is overdue");
-            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
+            throw new FanbeiException(FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc());
         }
         afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
     }
 
     // 注册用户
-    private AfUserDo registerUser(HttpServletRequest request, String mobile, String bsqToken) {
+    private AfUserDo registerUser(HttpServletRequest request, String mobile, String token, String bsqToken) {
+        try {
+            tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
+                    mobile, mobile, "");
+        } catch (Exception e) {
+            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc());
+        }
         try {
             baiQiShiUtils.getRegistResult("h5", bsqToken, CommonUtil.getIpAddr(request), mobile,
                     "","","","");
-        } catch (Exception e){
+        }catch (Exception e){
             logger.error("/redPacket/bindPhoneAndOpen baiQiShiUtils getRegistResult error => {}",e.getMessage());
         }
 

@@ -96,7 +96,7 @@ public class MineHomeApi implements ApiHandle {
         fillCreditInfo(data, userId);
         fillAccountInfo(data, userId);
         fillOrderInfo(data, userId);
-        fillBannerAndNavigationInfo(data, requestDataVo.getId());
+        fillBannerAndNavigationInfo(data, requestDataVo.getId(), context.getAppVersion());
         fillConfigInfo(data);
         resp.setResponseData(data);
 
@@ -272,7 +272,7 @@ public class MineHomeApi implements ApiHandle {
     }
 
     // 填充banner和快速导航信息
-    private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
+    private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel, Integer appVersion) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 
@@ -302,8 +302,7 @@ public class MineHomeApi implements ApiHandle {
         // navigation
         List<AfResourceDo> navigationResources = afResourceService
                 .getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode());
-        int nrSize = navigationResources.size();
-        for (int i =0; i < nrSize; i++) {
+        for (AfResourceDo nr : navigationResources) {
             // 如果配置大于4个，小于8个，则只显示4个
             /*if (nrSize >= 4 && nrSize < 8) {
                 if (i >= 4) {
@@ -318,7 +317,9 @@ public class MineHomeApi implements ApiHandle {
                 break;
             }*/
 
-            AfResourceDo nr = navigationResources.get(i);
+            if (isIgnoreNavigation(nr, appVersion))
+                continue;
+
             HashMap<String, Object> dataMap = new HashMap<>();
             dataMap.put("imageUrl", nr.getValue());
             dataMap.put("type", nr.getSecType());
@@ -428,5 +429,10 @@ public class MineHomeApi implements ApiHandle {
             }
         }
         return result;
+    }
+
+    // 是否忽略某个导航
+    private boolean isIgnoreNavigation(AfResourceDo nr, Integer appVersion) {
+        return appVersion < 415 && (nr.getName().equals("帮助中心") || nr.getName().equals("银行卡"));
     }
 }

@@ -80,12 +80,12 @@ public class ArbitrationController {
     AfUserAccountService afUserAccountService;
     public static final String Y_M_D_H_M_S = "yyyy-MM-dd HH:mm:ss";
     //线上客户号
-    private static final String MERCHANTCODE = "150778004447";
+    private static final String MERCHANTCODE = "152090914419";
     //测试客户号
     //private static final String MERCHANTCODE = "15254170930";
     //线上地址:https://api.arbexpress.cn/arbinter/v1/third.htm
     //测试地址:http://test.arbexpress.cn/arbinter/v1/third.htm
-    private static final String URL = "https://api.arbexpress.cn/arbinter/v1/third.htm";
+    private static final String URL = "http://api.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
     //分页查询返回结果
     public static final String MAP_VALUE_COUNT = "count";

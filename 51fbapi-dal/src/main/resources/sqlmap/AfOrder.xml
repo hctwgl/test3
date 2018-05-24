@@ -28,6 +28,9 @@
 			<if test="userCouponId != null">
 		    	user_coupon_id, 
 			</if>
+			<if test="couponAmount != null">
+				coupon_amount,
+			</if>
 			<if test="payTradeNo != null">
 		    	pay_trade_no, 
 			</if>
@@ -159,6 +162,9 @@
 		    #{orderNo},
 		    <if test="userCouponId != null">
 		    	 #{userCouponId},
+			</if>
+			<if test="couponAmount != null">
+				#{couponAmount},
 			</if>
 			<if test="payTradeNo != null">
 		    	 #{payTradeNo},
