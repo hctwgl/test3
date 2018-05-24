@@ -1340,19 +1340,19 @@ public class RiskUtil extends AbstractThird {
 			try {
 				try {
 					String bklResult = afBklService.isBklResult(orderInfo);
-//					if (bklResult.equals("v2")){//需电核
+					if (bklResult.equals("v2")){//需电核
 						logger.info("payOrder bklUtils submitBklInfo result isBklResult v2 orderInfo ="+JSON.toJSONString(orderInfo));
 						afBklService.submitBklInfo(orderInfo,"分期付款",orderInfo.getActualAmount());
 						if (orderInfo.getIagentStatus()==null)
 							orderInfo.setIagentStatus("C");
-//					}else if (bklResult.equals("v1")){//不需电核
-//						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
-//
-//						if (orderInfo.getIagentStatus()==null)
-//							orderInfo.setIagentStatus("A");
-//						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),orderInfo.getIagentStatus());
-//
-//					}
+					}else if (bklResult.equals("v1")){//不需电核
+						logger.info("payOrder bklUtils submitBklInfo result isBklResult v1 orderInfo ="+JSON.toJSONString(orderInfo));
+
+						if (orderInfo.getIagentStatus()==null)
+							orderInfo.setIagentStatus("A");
+						afOrderService.updateIagentStatusByOrderId(orderInfo.getRid(),orderInfo.getIagentStatus());
+
+					}
 				}catch (Exception e){
 					logger.error("payOrder bklUtils submitBklInfo error",e);
 				}
