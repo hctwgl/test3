@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,12 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfGoodsStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
@@ -124,7 +128,26 @@ public class BuySelfGoodsApi implements ApiHandle {
 		//BigDecimal clientActualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
-
+		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
+		
+		//alter by chengkang 权限包商品校验，不可重复购买 begin
+		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		if(vipGoodsResourceDo!=null){
+			Long vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+			if(vipGoodsId>0 && vipGoodsId.equals(goodsId)){
+				//已下单数量
+				Integer countNums = afOrderService.countSpecGoodsBuyNums(goodsId,userId);
+				if(countNums!=null && countNums>0){
+					throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
+				}
+				//本单下单个数，只允许购买一个
+				if(count>1){
+					throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_BUY_NUMS_OVER);
+				}
+			}
+		}
+		//alter by chengkang 权限包商品校验，不可重复购买 end
+		
         String lc = ObjectUtils.toString(requestDataVo.getParams().get("lc"));//订单来源地址
         logger.info("add self order 1,lc=" + lc);
         if(StringUtils.isBlank(lc)){
@@ -149,7 +172,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 			logger.error("resource config error:",e);
 		}
 		Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
-		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 //		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
 //			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);

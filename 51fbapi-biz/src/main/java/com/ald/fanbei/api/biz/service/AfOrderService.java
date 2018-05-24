@@ -4,6 +4,7 @@ import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
 import com.alibaba.fastjson.JSONObject;
+
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
@@ -470,5 +471,13 @@ public interface AfOrderService {
 	int getSelfsupportPaySuccessOrderByUserId(Long userId);
 
 	String getUserFirstBigOrderDate(Long userId, Integer amount);
+
+	/**
+	 * 获取指定用户，指定商品有效下单的记录（待支付、已支付、已收货、已返利等非close状态）
+	 * @param goodsId
+	 * @param userId
+	 * @return
+	 */
+	Integer countSpecGoodsBuyNums(Long goodsId,Long userId);
 
 }

@@ -323,4 +323,12 @@ public interface AfOrderDao {
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
 
 	String getUserFirstBigOrderDate(@Param("userId") Long userId,@Param("amount") Integer amount);
+
+	/**
+	 * 获取指定用户，指定商品有效下单的记录（待支付、已支付、已收货、已返利等非close状态）
+	 * @param goodsId
+	 * @param userId
+	 * @return
+	 */
+	Integer countSpecGoodsBuyNums(@Param("goodsId") Long goodsId,@Param("userId") Long userId);
 }

@@ -279,10 +279,13 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		//对特殊商品进行过滤，不在列表项中展示
 	    //对权限包商品进行处理
 		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
-		Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
-		if(resourceDo!=null && excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
-			query.setExcludeGoodsId(excludeGoodsId);
+		if(resourceDo!=null ){
+			Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
+			if(excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
+				query.setExcludeGoodsId(excludeGoodsId);
+			}
 		}
+		
 		return query;
 	}
 	/**
@@ -294,9 +297,11 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		//对特殊商品进行过滤，不在列表项中展示
 		//对权限包商品进行处理
 		AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
-		Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
-		if(resourceDo!=null && excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
-			query.setExcludeGoodsId(excludeGoodsId);
+		if(resourceDo!=null ){
+			Long excludeGoodsId = NumberUtil.objToLongDefault(resourceDo.getValue(), 0L);
+			if(excludeGoodsId>0 && YesNoStatus.NO.getCode().equals(resourceDo.getValue2())){
+				query.setExcludeGoodsId(excludeGoodsId);
+			}
 		}
 		return query;
 	}
