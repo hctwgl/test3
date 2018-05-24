@@ -7,6 +7,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,11 +25,8 @@ import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.dao.AfSeckillActivityGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfSeckillActivityOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfSeckillActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
@@ -62,6 +66,25 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	private AfSeckillActivityOrderDao afSeckillActivityOrderDao;
 	@Resource
 	AfGoodsPriceDao afGoodsPriceDao;
+
+	@Resource
+	private AfActivityReservationGoodsDao afActivityReservationGoodsDao;
+
+	@Resource
+	private AfActivityReservationGoodsUserDao afActivityReservationGoodsUserDao;
+
+	@Resource
+	private AfResourceService afResourceService;
+
+	@Resource
+	private AfUserCouponService afUserCouponService;
+
+	@Resource
+	private AfOrderDao orderDao;
+
+	@Resource
+	private SmsUtil smsUtil;
+
 	@Override
 	public BaseDao<AfSeckillActivityDo, Long> getDao() {
 		return afSeckillActivityDao;
@@ -264,5 +287,74 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 	@Override
 	public List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId) {
 		return afSeckillActivityOrderDao.getActivitySaleCountList(activityId);
+	}
+
+	@Override
+	public void updateUserActivityGoodsInfo(AfOrderDo orderInfo) {
+		logger.info("updateUserActivityGoodsInfo UserId: " + orderInfo.getUserId() + " goodsId: " + orderInfo.getGoodsId());
+		//获取资源信息
+		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.ACTIVITY_RESERVATION_GOODS);
+
+		if(null != resourceInfo){
+			Long activityId = Long.valueOf(resourceInfo.getValue());
+			//获取活动信息
+			AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityDao.getActivityById( activityId);
+
+			if(null != afSeckillActivityDo){
+				AfActivityReservationGoodsDo afActivityReservationGoodsDo = new AfActivityReservationGoodsDo();
+				long date = System.currentTimeMillis();
+				AfActivityReservationGoodsUserDo  afActivityReservationGoodsUserDo = new AfActivityReservationGoodsUserDo();
+				afActivityReservationGoodsUserDo.setUserId(orderInfo.getUserId());
+				//付定金
+				if(afSeckillActivityDo.getGmtStart().getTime() <= date  && date <= afSeckillActivityDo.getGmtEnd().getTime()){
+
+					//查询预售活动商品
+					afActivityReservationGoodsDo = afActivityReservationGoodsDao.getActivityReservationGoodsInfo(activityId, orderInfo.getGoodsId());
+					if(null != afActivityReservationGoodsDo ){
+						logger.info("updateUserActivityGoodsInfo payReservationAmount userId: " + orderInfo.getUserId() );
+						//查询是否已经购买， 未购买时添加，购买时更新购买数量
+						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsDo.getRid());
+						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = afActivityReservationGoodsUserDao.getByCommonCondition(afActivityReservationGoodsUserDo);
+						if(null != afActivityReservationGoodsUserDo1){
+							if(Integer.valueOf(afActivityReservationGoodsDo.getLimitCount()) > afActivityReservationGoodsUserDo1.getGoodsCount()){
+								afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsDo.getRid(), orderInfo.getUserId(), 1);
+
+								//修改订单状态已完成
+								logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
+								orderDao.updateOrderStatus(orderInfo.getRid());
+								//获取资源信息
+								AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
+								if(resourceInfo1 != null){
+									String content = resourceInfo1.getValue();
+									//发送短信
+									String mobile = orderInfo.getMobile();
+									smsUtil.sendSmsToDhstAishangjie(mobile, content);
+								}
+								}
+						}else{
+							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(afActivityReservationGoodsDo.getCouponId()));
+							afActivityReservationGoodsUserDo.setGoodsCount(1);
+							Date nowTime = new Date();
+							afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
+							afActivityReservationGoodsUserDo.setGmtModified(nowTime);
+							afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
+						}
+					}
+					//付售价
+				}else{
+					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
+					//查询预售活动商品
+					afActivityReservationGoodsDo = afActivityReservationGoodsDao.getActivityReservationGoodsInfo(activityId, orderInfo.getGoodsId());
+					if(null != afActivityReservationGoodsDo ){
+						//查询是否已经购买, 当购买数量大于0时 更新购买数量
+						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsDo.getRid());
+						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = afActivityReservationGoodsUserDao.getByCommonCondition(afActivityReservationGoodsUserDo);
+						if(null != afActivityReservationGoodsUserDo1 && afActivityReservationGoodsUserDo1.getGoodsCount() > 0){
+							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsDo.getRid(), orderInfo.getUserId(), 2);
+						}
+					}
+				}
+			}
+		}
 	}
 }

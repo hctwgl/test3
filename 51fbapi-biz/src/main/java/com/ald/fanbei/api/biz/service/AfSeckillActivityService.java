@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSeckillActivityOrderDo;
@@ -91,5 +92,8 @@ public interface AfSeckillActivityService extends ParentService<AfSeckillActivit
 
     List<AfSeckillActivityDo> getActivitySaleCountList(Long activityId);
 
-
+    /*
+     * 618 活动回调 处理 预售商品处理
+     */
+    void updateUserActivityGoodsInfo(AfOrderDo orderInfo);
 }

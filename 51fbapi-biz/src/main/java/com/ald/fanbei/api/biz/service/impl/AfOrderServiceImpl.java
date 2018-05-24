@@ -308,6 +308,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 	@Resource
 	AfBklService afBklService;
+
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
+
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:" + content);
@@ -1267,6 +1271,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
 					// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 					if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+
+						// 预售商品回调 处理
+						afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+
 						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
@@ -1839,8 +1847,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	if (result == 1) {
 		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+
+			// 预售商品回调 处理
+			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+
+			//送优惠券
 			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+
 		}
 		// end by luoxiao
 

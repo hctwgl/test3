@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -10,6 +11,9 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsDao;
+import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsUserDao;
+import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
@@ -72,6 +76,20 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @Resource
     private AppActivityGoodListUtil appActivityGoodListUtil;
 
+    @Resource
+    private AfActivityReservationGoodsUserService afActivityReservationGoodsUserService;
+
+    @Resource
+    private AfSeckillActivityDao afSeckillActivityDao;
+
+    @Resource
+    private AfActivityReservationGoodsDao afActivityReservationGoodsDao;
+
+    @Resource
+    private AfActivityReservationGoodsUserDao afActivityReservationGoodsUserDao;
+
+    @Resource
+    private SmsUtil smsUtil ;
     /**
      * 每天首次分享成功，随机赠送优惠券（优惠券类型不限定领取数量）
      *
@@ -102,6 +120,15 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                         Long couponId = Long.parseLong(couponsArray.getString(index));
 
                         AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+                      //  System.out.println(couponDo.getRid());
+                        if (couponDo == null) {
+                            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(),
+                                    "", data).toString();
+                        }else{
+                            if(couponDo.getQuota() != -1 && couponDo.getQuota() <= couponDo.getQuotaAlready()){
+                                return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", "").toString();
+                            }
+                        }
 //                        Date gmtStartTime = couponDo.getGmtStart();
 //                        Date gmtEndTime = couponDo.getGmtEnd();
 //                        Date now = new Date();
@@ -277,6 +304,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getSecKillGoodListByActivityId", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSecKillGoodListByActivityId(HttpServletRequest request, HttpServletResponse response) {
+      //  System.out.println("****************************************");
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
@@ -341,7 +369,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         if (StringUtils.isNotEmpty(userName)) {
             afUserDo = afUserService.getUserByUserName(userName);
         }
-
         Map<String, Object> data = Maps.newHashMap();
         if (null == afUserDo) {
             String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -356,9 +383,54 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         int couponCount = afUserCouponService.getUserCouponByUserNouse(afUserDo.getRid());
         data.put("couponCount", couponCount);
 
+        //用户预售商品列表
+        //获取资源信息
+        AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.ACTIVITY_RESERVATION_GOODS);
+        if(null != resourceInfo) {
+            Long activityId = Long.valueOf(resourceInfo.getValue());
+            List<AfActivityReservationGoodsUserDo> userReservationGoodsList = afActivityReservationGoodsUserService.getUserActivityReservationGoodsList(afUserDo.getRid(), activityId);
+            data.put("reservationGoodsList", userReservationGoodsList);
+        }
+
         return H5CommonResponse.getNewInstance(true, "", "", data).toString();
     }
 
+    /**
+     * 活动预售商品列表
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getReservationGoodsList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getReservationGoodsList(HttpServletRequest request, HttpServletResponse response) {
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+       FanbeiWebContext context = doWebCheck(request, false);
+        Map<String, Object> data = Maps.newHashMap();
+        List<AfActivityReservationGoodsUserDo> userReservationGoodsList = null;
+        // 商品展示
+        Long userId = null;
+        if (context.getUserName() != null) {
+            AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+            if (userDo != null)
+                userId = userDo.getRid();
+
+            //资源信息
+            AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.ACTIVITY_RESERVATION_GOODS);
+            if(null != resourceInfo) {
+                Long activityId = Long.valueOf(resourceInfo.getValue());
+                //用户预售商品列表
+                userReservationGoodsList = afActivityReservationGoodsUserService.getUserActivityReservationGoodsList(userId, activityId);
+
+            }
+        }
+        data.put("reservationGoodsList", userReservationGoodsList);
+        return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+    }
+
+    /*
+     * 会场
+     */
     @ResponseBody
     @RequestMapping(value = "partActivityInfoV2", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String partActivityInfoV2(HttpServletRequest request, HttpServletResponse response) throws IOException {

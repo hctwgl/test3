@@ -207,24 +207,24 @@ public class AppActivityGoodListUtil {
         for (HomePageSecKillGoods homePageSecKillGoods : list) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             goodsInfo.put("goodsName", homePageSecKillGoods.getGoodName());
-            goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());
-            goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());
-            goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());
-            goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
-            goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());
-            goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());
-            goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());
-            goodsInfo.put("goodsType", "0");
-            goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
-            goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());
+            goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());//返利金额
+            goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());//折后价
+            goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());//商品原价
+            goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());//活动价
+            goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());//商品图标
+            goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());//
+            goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());//商品链接
+            goodsInfo.put("goodsType", "0");//（0:不分期;1:分期）
+            goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());//是否秒杀（1：已秒杀）
+            goodsInfo.put("volume", homePageSecKillGoods.getVolume());//售出数量
+            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());//商品限购数量
             goodsInfo.put("source", homePageSecKillGoods.getSource());
             goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
             goodsInfo.put("saleCount", 0);
             // 如果是分期免息商品，则计算分期
             Long goodsId = homePageSecKillGoods.getGoodsId();
             JSONArray interestFreeArray = null;
-            if (homePageSecKillGoods.getInterestFreeId() != null) {
+            if (homePageSecKillGoods.getInterestFreeId() != null) {//interestFreeId : 免息规则id
                 AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(homePageSecKillGoods.getInterestFreeId().longValue());
                 String interestFreeJson = interestFreeRulesDo.getRuleJson();
                 if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
@@ -329,6 +329,7 @@ public class AppActivityGoodListUtil {
         final List<AfModelH5ItemDo> subjectList = afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
         if (subjectList == null || subjectList.size() == 0) {
             jsonObj.put("error", "分会场信息为空");
+            return jsonObj;
         }
         AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
         String secSubjectId = subjectH5ItemDo.getItemValue();
