@@ -373,12 +373,13 @@ public class AppH5OpenRedPacketController extends BaseController {
             tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request),
                     mobile, mobile, "");
         } catch (Exception e) {
-            try {
-                baiQiShiUtils.getRegistResult("h5", bsqToken, CommonUtil.getIpAddr(request), mobile,
-                        "","","","");
-            }catch (Exception ex){
-                logger.error("/redPacket/bindPhoneAndOpen baiQiShiUtils getRegistResult error => {}",e.getMessage());
-            }
+            throw new FanbeiException(FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc());
+        }
+        try {
+            baiQiShiUtils.getRegistResult("h5", bsqToken, CommonUtil.getIpAddr(request), mobile,
+                    "","","","");
+        }catch (Exception e){
+            logger.error("/redPacket/bindPhoneAndOpen baiQiShiUtils getRegistResult error => {}",e.getMessage());
         }
 
         AfUserDo userDo = new AfUserDo();
