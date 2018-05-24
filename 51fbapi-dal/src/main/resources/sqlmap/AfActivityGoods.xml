@@ -267,6 +267,6 @@
 		AND b.gmt_end > now()
 		AND
 		goods_id = #{goodsId}
-		ORDER BY b.`gmt_create` desc LIMIT 1
+		ORDER BY b.`gmt_create` desc , a.special_price LIMIT 1
   </select>
 </mapper>
