@@ -162,15 +162,10 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		    }
 		}
 		  doStrongRiseAndCoupon(userId,userName,appVersion);
-	     //  List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
-		   List<Object> navigationUpOne = new  ArrayList<Object>();
-		   List<Object> navigationDownOne = new  ArrayList<Object>();
-			List<Object> topBannerList = new ArrayList<Object>();
-
+	
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		// Object  cacheResult = null;
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else 
@@ -275,8 +270,6 @@ public class GetHomeInfoV3Api implements ApiHandle {
 //				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
 //				}
 								
-						  
-				
 				
 				// 获取金融服务入口
 				
@@ -629,24 +622,28 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					 }
 	      }
            //
-		   
-		   	      String navigationUpOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_UP_ONE +":"+userId;
-		   	      String navigationDownOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_DOWN_ONE +":"+userId;
-		   	      String topBannerCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_TOP_BANNER +":"+userId;
-		   	     
-		   	    navigationUpOne = null;
-		   	    navigationDownOne = null;
-		   	    topBannerList = null;  
-		   	    // 去掉缓存
+           }catch(Exception  e){
+          	 logger.error("getHomeInfoV3 newExclusive error = " + e);
+           }
+		        List<Object> navigationUpOne = new  ArrayList<Object>();
+		 		List<Object> navigationDownOne = new  ArrayList<Object>();
+		 		List<Object> topBannerList = new ArrayList<Object>();
+           
+//               // 去掉缓存
+//		   	    String navigationUpOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_UP_ONE +":"+userId;
+//		   	    String navigationDownOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_DOWN_ONE +":"+userId;
+//		   	    String topBannerCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_TOP_BANNER +":"+userId;
+//		   	    navigationUpOne = null;
+//		   	    navigationDownOne = null;
+//		   	    topBannerList = null;  
 //		   	    navigationUpOne = bizCacheUtil.getObjectList(navigationUpOneCacheKey);
 //		   	    navigationDownOne = bizCacheUtil.getObjectList(navigationDownOneCacheKey);
 //		   	    topBannerList = bizCacheUtil.getObjectList(topBannerCacheKey);
-		   	         
 		   	    if(navigationUpOne == null || navigationUpOne.size()<1){
 			   	    navigationUpOne = 	getNavigationUpOneResourceDoList(
 				            afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
 			   	   if(userId != null){
-			   	    toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+			   	      toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
 			   	   }
 			        if(navigationUpOne!= null && navigationUpOne.size()>0){
 			        	navigationUpOne =  navigationUpOne.subList(0, 1);
@@ -700,9 +697,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!navigationDownOne.isEmpty()) {
 					data.put("navigationDownOneList", navigationDownOne);
 				}
-         }catch(Exception  e){
-        	 logger.error("getHomeInfoV3 newExclusive error = " + e);
-         }
+       
          
          //新人运营位查库
 		logger.info("getHomeInfoV3data = " + data);
@@ -715,6 +710,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		try {
 			
 			AfAdvertiseDto  afAdvertiseDto  = afAdvertiseService.getDirectionalRecommendInfo(code,userId); 
+			logger.info("getDirectionalRecommendInfo = "+JSONObject.toJSONString(afAdvertiseDto)+"userId = "+userId);
 		   	 if(afAdvertiseDto != null){
 		   		 Integer appendMode = afAdvertiseDto.getAppendMode();
 		   		 String imageUrl = afAdvertiseDto.getImage();

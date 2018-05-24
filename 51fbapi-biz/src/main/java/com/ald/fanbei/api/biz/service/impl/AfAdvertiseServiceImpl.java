@@ -70,7 +70,7 @@ public class AfAdvertiseServiceImpl extends ParentServiceImpl<AfAdvertiseDo, Lon
 					     if(count > 0){
 					    	 //更新次数+1；
 					       int clickCount = afAdvertiseDao.updateClickCountById(afAdvertiseDto.getRid());
-					       logger.info("getDirectionalRecommendInfo clickCount++ by userId"+userId+"clickCount = "+clickCount);
+					       logger.info("getDirectionalRecommendInfo clickCount++ by userId"+userId+"clickCount = "+clickCount+"count = "+count);
 					       return	 afAdvertiseDto;
 					     }
 					}
