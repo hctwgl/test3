@@ -261,7 +261,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
      * @return
      */
     private BigDecimal randomNum(String min,String max){
-        BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(max) - Double.parseDouble(min)) + min).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal rewardAmount = new BigDecimal(Math.random()).multiply(new BigDecimal(Integer.parseInt(max)).divide(new BigDecimal(Integer.parseInt(min)))).add(new BigDecimal(Integer.parseInt(min))).setScale(2, RoundingMode.HALF_EVEN);
         return rewardAmount;
 
     }

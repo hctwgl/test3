@@ -75,7 +75,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
-        if(StringUtil.isBlank((String) bizCacheUtil.getObject(userId+Constants.SIGN_DATE))){
+        if(null == bizCacheUtil.getObject(userId+Constants.SIGN_DATE)){
             bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
         }
         for(AfTaskDo afTaskDo : taskList){
