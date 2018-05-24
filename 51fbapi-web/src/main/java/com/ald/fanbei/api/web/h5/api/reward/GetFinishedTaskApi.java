@@ -65,9 +65,9 @@ public class GetFinishedTaskApi implements H5Handle {
         for (AfTaskUserDo afTaskUserDo : isDailyTaskList){
             taskIds.add(afTaskUserDo.getTaskId());
         }
-
-        finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
-
+        if(taskIds.size()>0){
+            finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
+        }
         resp.addResponseData("taskList",finalTaskList);
         return resp;
     }
