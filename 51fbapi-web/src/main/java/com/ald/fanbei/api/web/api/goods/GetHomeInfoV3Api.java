@@ -635,49 +635,31 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				for (AfResourceDo afResourceDo :	backgroundList) {
 					if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_BACK_COLOR.getCode())) {
 						//app搜索栏背景色
-						Map<String, Object> searchBackColor = new HashMap<String, Object>();
-						searchBackColor.put("color",afResourceDo.getValue3());
-						newConfigInfo.put("searchBackColor",searchBackColor);
+						newConfigInfo.put("searchBackColor",afResourceDo.getValue3());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_FONT_COLOR.getCode())) {
 						//app搜索栏文字颜色
-						Map<String, Object> searchFontColor = new HashMap<String, Object>();
-						searchFontColor.put("color",afResourceDo.getValue3());
-						newConfigInfo.put("searchFontColor",searchFontColor);
+						newConfigInfo.put("searchFontColor",afResourceDo.getValue3());
 					}else if(StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_GLASS.getCode())) {
 						//app搜索栏放大镜
-						Map<String, Object> searchGlass = new HashMap<String, Object>();
-						searchGlass.put("imageUrl",afResourceDo.getValue());
-						newConfigInfo.put("searchGlass",searchGlass);
+						newConfigInfo.put("searchGlass",afResourceDo.getValue());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_MESSAGE_ICON.getCode())) {
 						//app消息图标
-						Map<String, Object> messageIcon = new HashMap<String, Object>();
-						messageIcon.put("imageUrl",afResourceDo.getValue());
-						newConfigInfo.put("messageIcon",messageIcon);
+						newConfigInfo.put("messageIcon",afResourceDo.getValue());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_BAR.getCode())) {
 						//app导航栏文字及下划线选中颜色
-						Map<String, Object> fontColor = new HashMap<String, Object>();
-						fontColor.put("color",afResourceDo.getValue3());
-						newConfigInfo.put("fontColor",fontColor);
+						newConfigInfo.put("fontColor",afResourceDo.getValue3());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_BAR_REMAIN.getCode())) {
 						//app导航栏文字未选中颜色
-						Map<String, Object> remainFontColor = new HashMap<String, Object>();
-						remainFontColor.put("color",afResourceDo.getValue3());
-						newConfigInfo.put("remainFontColor",remainFontColor);
+						newConfigInfo.put("remainFontColor",afResourceDo.getValue3());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_OPEN.getCode())) {
 						//app导航栏展开控件
-						Map<String, Object> navigationOpen = new HashMap<String, Object>();
-						navigationOpen.put("imageUrl",afResourceDo.getValue());
-						newConfigInfo.put("navigationOpen",navigationOpen);
+						newConfigInfo.put("navigationOpen",afResourceDo.getValue());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_NAVIGATION_CLOSE.getCode())) {
 						//app导航栏关闭控件
-						Map<String, Object> navigationClose = new HashMap<String, Object>();
-						navigationClose.put("imageUrl",afResourceDo.getValue());
-						newConfigInfo.put("navigationClose",navigationClose);
+						newConfigInfo.put("navigationClose",afResourceDo.getValue());
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.BANNER_BACKIMG.getCode())) {
 						//Banner背景图片
-						Map<String, Object> bannerBackImg = new HashMap<String, Object>();
-						bannerBackImg.put("imageUrl",afResourceDo.getValue());
-						newConfigInfo.put("bannerBackImg",bannerBackImg);
+						newConfigInfo.put("bannerBackImg",afResourceDo.getValue());
 					}else {
 						continue;
 					}
