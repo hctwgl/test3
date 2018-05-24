@@ -21,4 +21,14 @@ public class AfUserCouponDto extends AfUserCouponDo {
     private String useRange;
     private String shopUrl;
     private String goodsIds;
+    private Integer isGlobal;//对应场景
+    private Long activityId;
+    private String activityType;
+    private String expiryType;
+    private BigDecimal discount;
+    private Integer quota;
+    private Integer quotaAlready;
+    private Integer limitCount;
+    private Integer userAlready;
+    private String couponStatus;
 }

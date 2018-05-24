@@ -5,6 +5,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -44,4 +45,5 @@ public interface AfCouponDao {
 	AfCouponDo getCouponByName(@Param("name") String name);//根据名称查找券信息
 
 	List<AfCouponDo> getCouponByIds(@Param("ids")List<String> ids);//根据名称查找券信息
+
 }

@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Http客户端
- * 
+ *
  * @author chailongjie
  *
  */
@@ -46,7 +46,7 @@ public class AOSHttpClient {
 	 * 发起请求（兼容Get和Post）
 	 * <p>
 	 * 兼容参数以K-V表单方式提交和以JSON方式提交(设置"Content-type", "application/json"即可)
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("all")
@@ -127,7 +127,7 @@ public class AOSHttpClient {
 
 	/**
 	 * 发起文件上传请求
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("all")
