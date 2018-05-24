@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 
 
@@ -214,8 +215,11 @@ public class FriendSignInfoApi implements H5Handle {
      * @return
      */
     private BigDecimal randomNum(String min,String max){
-        BigDecimal rewardAmount = new BigDecimal(Math.random()).multiply(new BigDecimal(Integer.parseInt(max)).divide(new BigDecimal(Integer.parseInt(min)))).add(new BigDecimal(Integer.parseInt(min))).setScale(2, RoundingMode.HALF_EVEN);
-        return rewardAmount;
+        Double amount = new BigDecimal(Math.random() * (Double.parseDouble(max) - Double.parseDouble(min)) + Double.parseDouble(min)).doubleValue();
+        DecimalFormat dFormat=new DecimalFormat("#.00");
+        String yearString=dFormat.format(amount);
+        Double temp= Double.valueOf(yearString);
+        return new BigDecimal(temp);
     }
 
 
