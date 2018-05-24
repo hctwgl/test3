@@ -1,48 +1,39 @@
 package com.ald.fanbei.api.biz.iagent.utils;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.Charset;
-import java.security.GeneralSecurityException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.Map;
 
 
 /**
  * Http客户端
- * 
+ *
  * @author chailongjie
  *
  */
 public class AOSHttpClient {
 
-	private static Logger logger = Logger.getLogger(AOSHttpClient.class);
 	/**
 	 * 请求类型
 	 */
@@ -51,45 +42,100 @@ public class AOSHttpClient {
 		public static final String GET = "GET";
 	}
 
-	private static PoolingHttpClientConnectionManager connMgr;
-	private static RequestConfig requestConfig;
-	private static final int MAX_TIMEOUT = 7000;
+	/**
+	 * 发起请求（兼容Get和Post）
+	 * <p>
+	 * 兼容参数以K-V表单方式提交和以JSON方式提交(设置"Content-type", "application/json"即可)
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("all")
+	public static HttpResponseVO execute(HttpRequestVO httpRequestVO) {
+		HttpResponseVO httpResponseVO = new HttpResponseVO();
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			RequestBuilder requestBuilder = null;
+			if (StringUtils.equalsIgnoreCase(httpRequestVO.getRequestMethod(), REQUEST_METHOD.POST)) {
+				requestBuilder = RequestBuilder.post().setUri(new URI(httpRequestVO.getUri()));
+			} else {
+				requestBuilder = RequestBuilder.get().setUri(new URI(httpRequestVO.getUri()));
+			}
+			Map<String, String> paramMap = httpRequestVO.getParamMap();
+			if (AOSUtils.isNotEmpty(paramMap)) {
+				Iterator<String> keyIterator = (Iterator) paramMap.keySet().iterator();
+				while (keyIterator.hasNext()) {
+					String key = (String) keyIterator.next();
+					String value = paramMap.get(key);
+					requestBuilder.addParameter(key, value);
+				}
+			}
 
-	static {
-		// 设置连接池
-		connMgr = new PoolingHttpClientConnectionManager();
-		// 设置连接池大小
-		connMgr.setMaxTotal(100);
-		connMgr.setDefaultMaxPerRoute(connMgr.getMaxTotal());
+			// 提交JSON
+			if (httpRequestVO.getJsonEntityData() != null) {
+				HttpEntity entity = new StringEntity(httpRequestVO.getJsonEntityData(), "utf-8");
+				requestBuilder.setEntity(entity);
+			}
 
-		RequestConfig.Builder configBuilder = RequestConfig.custom();
-		// 设置连接超时
-		configBuilder.setConnectTimeout(MAX_TIMEOUT);
-		// 设置读取超时
-		configBuilder.setSocketTimeout(MAX_TIMEOUT);
-		// 设置从连接池获取连接实例的超时
-		configBuilder.setConnectionRequestTimeout(MAX_TIMEOUT);
-		// 在提交请求之前 测试连接是否可用
-		configBuilder.setStaleConnectionCheckEnabled(true);
-		requestConfig = configBuilder.build();
+			// 创建连接超时时间(缺省值：3s)
+			int connectionTimeout = httpRequestVO.getConnectionTimeout() == 0 ? 3 * 1000 : httpRequestVO.getConnectionTimeout();
+			// 等待响应超时时间(缺省值：30s)
+			int readTimeout = httpRequestVO.getReadTimeout() == 0 ? 30 * 1000 : httpRequestVO.getReadTimeout();
+			RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout)
+					.setConnectTimeout(connectionTimeout).build();
+			HttpUriRequest httpUriRequest = requestBuilder.setConfig(requestConfig).build();
+			Map<String, String> headMap = httpRequestVO.getHeadMap();
+			if (AOSUtils.isNotEmpty(headMap)) {
+				Iterator<String> headIterator = (Iterator) headMap.keySet().iterator();
+				while (headIterator.hasNext()) {
+					String key = (String) headIterator.next();
+					String value = headMap.get(key);
+					httpUriRequest.addHeader(key, value);
+				}
+			}
+
+			CloseableHttpResponse httpResponse = null;
+			try {
+				httpResponse = httpclient.execute(httpUriRequest);
+				int status = httpResponse.getStatusLine().getStatusCode();
+				httpResponseVO.setStatus(String.valueOf(status));
+				HttpEntity entity = httpResponse.getEntity();
+				String outString = entity != null ? EntityUtils.toString(entity, "utf-8") : null;
+				httpResponseVO.setOut(outString);
+				if (entity != null) {
+					EntityUtils.consume(entity);
+				}
+			} finally {
+				if (httpResponse != null) {
+					httpResponse.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (httpclient != null) {
+					httpclient.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+		return httpResponseVO;
 	}
 
 	/**
 	 * 发起文件上传请求
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("all")
 	public static HttpResponseVO upload(HttpRequestVO httpRequestVO) {
 		HttpResponseVO httpResponseVO = new HttpResponseVO();
-		//CloseableHttpClient httpclient = HttpClients.createDefault();
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory()).
-				setConnectionManager(connMgr).
-				setDefaultRequestConfig(requestConfig).build();
+		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpPost httppost = new HttpPost(httpRequestVO.getUri());
-			httppost.setConfig(requestConfig);
-
 			MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
 			// mode 和 charset组合解决上传文件名中文乱码问题
 			multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE).setCharset(Charset.forName("UTF-8"));
@@ -116,9 +162,8 @@ public class AOSHttpClient {
 			httppost.setEntity(httpEntity);
 			CloseableHttpResponse httpResponse = null;
 			try {
-				httpResponse = httpClient.execute(httppost);
+				httpResponse = httpclient.execute(httppost);
 				int status = httpResponse.getStatusLine().getStatusCode();
-				logger.info("bkl httpResponse status:" + status);
 				httpResponseVO.setStatus(String.valueOf(status));
 				HttpEntity entity = httpResponse.getEntity();
 				String outString = entity != null ? EntityUtils.toString(entity, "utf-8") : null;
@@ -133,50 +178,11 @@ public class AOSHttpClient {
 			e.printStackTrace();
 		} finally {
 			try {
-				httpClient.close();
+				httpclient.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		return httpResponseVO;
-	}
-
-	/**
-	 * 创建SSL安全连接
-	 *
-	 * @return
-	 */
-	private static SSLConnectionSocketFactory createSSLConnSocketFactory() {
-		SSLConnectionSocketFactory sslsf = null;
-		try {
-			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-				public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-					return true;
-				}
-			}).build();
-			sslsf = new SSLConnectionSocketFactory(sslContext, new X509HostnameVerifier() {
-
-				@Override
-				public boolean verify(String arg0, SSLSession arg1) {
-					return true;
-				}
-
-				@Override
-				public void verify(String host, SSLSocket ssl) throws IOException {
-				}
-
-				@Override
-				public void verify(String host, X509Certificate cert) throws SSLException {
-				}
-
-				@Override
-				public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
-				}
-			});
-		} catch (GeneralSecurityException e) {
-			e.printStackTrace();
-		}
-		return sslsf;
 	}
 }
