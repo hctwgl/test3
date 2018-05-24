@@ -8,7 +8,7 @@
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,
-		lat,lng,support_credit_status
+		lat,lng,support_credit_status,weak_risk_order_no
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
@@ -16,7 +16,8 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,support_credit_status
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
+		support_credit_status,weak_risk_order_no
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -150,6 +151,9 @@
 	        </if>
 	        <if test="supportCreditStatus != null and '' != supportCreditStatus">
 	            support_credit_status,
+	        </if>
+	        <if test="weakRiskOrderNo != null and '' != weakRiskOrderNo">
+	            weak_risk_order_no,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -285,6 +289,9 @@
 			</if>
 			<if test="supportCreditStatus != null and '' != supportCreditStatus">
 	            #{supportCreditStatus},
+	        </if>
+	        <if test="weakRiskOrderNo != null and '' != weakRiskOrderNo">
+	            #{weakRiskOrderNo},
 	        </if>
 			NOW(),
 			NOW()
@@ -506,6 +513,9 @@
 		<if test="supportCreditStatus != null">
 			,support_credit_status=#{supportCreditStatus}
 		</if>
+		<if test="weakRiskOrderNo != null">
+			,weak_risk_order_no=#{weakRiskOrderNo}
+		</if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
@@ -625,6 +635,9 @@
 		<if test="supportCreditStatus != null">
 		    ,support_credit_status=#{supportCreditStatus}
 		</if>	
+		<if test="weakRiskOrderNo != null">
+		    ,weak_risk_order_no=#{weakRiskOrderNo}
+		</if>	
 		where is_delete=0 and order_no = #{orderNo} 
 	</update>
 	
@@ -728,7 +741,7 @@
 			id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,logistics_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark,goods_price_name,bank_amount,borrow_amount,support_credit_status
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark,goods_price_name,bank_amount,borrow_amount,support_credit_status,weak_risk_order_no
 		FROM
 			af_order
 		WHERE
@@ -984,6 +997,9 @@
 			</if>
 			<if test="supportCreditStatus != null">
 				,support_credit_status=#{supportCreditStatus}
+			</if>
+			<if test="weakRiskOrderNo != null">
+				,weak_risk_order_no=#{weakRiskOrderNo}
 			</if>
 		WHERE id = #{rid}
 	</update>
