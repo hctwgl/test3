@@ -21,9 +21,14 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfOrderDao {
-
 	/**
-	 * 获取用户未支付订单数
+	 * 获取用户所有未支付的订单
+	 * @param userId
+	 * @return
+	 */
+	int getALLNoFinishOrderCount(Long userId);
+	/**
+	 * 获取用户未支付订单数(新建)
 	 */
 	int getNoFinishOrderCount(Long userId);
 
@@ -323,4 +328,6 @@ public interface AfOrderDao {
 	int getSelfsupportPaySuccessOrderByUserId(@Param("userId")Long userId);
 
 	String getUserFirstBigOrderDate(@Param("userId") Long userId,@Param("amount") Integer amount);
+
+	
 }

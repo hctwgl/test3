@@ -18,6 +18,7 @@ import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +99,8 @@ public class PayOrderV1Api implements ApiHandle {
 	BizCacheUtil bizCacheUtil;
     @Resource
     AfSeckillActivityService afSeckillActivityService;
+    @Resource
+    AfUserAuthService  userAuthService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -362,6 +367,33 @@ public class PayOrderV1Api implements ApiHandle {
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
+            String goodsType = "";
+            Long goodsId = 0L;
+            String  relaCreditPay = "N";
+            Integer toPayOrderNums ;
+            String  goodsBanner = "";
+            List<AfResourceDo> VipCardList = afResourceService.getResourceListByType(ResourceType.WEAK_VERIFY_VIP_CONFIG.getCode());
+            if (CollectionUtil.isNotEmpty(VipCardList)){
+            	String authGoodsId = VipCardList.get(0).getValue();
+            	goodsId = NumberUtil.objToLong(authGoodsId);
+            	goodsBanner = VipCardList.get(0).getValue3();
+            	if (orderInfo.getGoodsId() == goodsId){
+            		goodsType = "auth";
+            	}else{
+            		goodsType = "common";
+            	}
+            }
+            if (PayType.COMBINATION_PAY.getCode().equals(payType) || PayType.AGENT_PAY.getCode().equals(payType)){
+            	relaCreditPay = "Y";
+            }
+            // 查询当前用户待支付的订单数
+            toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId);
+            result.put("goodsType", goodsType);
+            result.put("goodsId", goodsId);
+            result.put("relaCreditPay", relaCreditPay);
+            result.put("toPayOrderNums", toPayOrderNums);
+            result.put("goodsBanner", goodsBanner);
+            
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
 /*                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------

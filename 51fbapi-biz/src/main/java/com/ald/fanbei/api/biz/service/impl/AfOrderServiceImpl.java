@@ -40,6 +40,7 @@ import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.KuaijieOrderPayBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRenewalPayBo;
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
@@ -1264,19 +1265,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    _vcode = "99";
 			}
 			
-			// modify by liutengyuan start
+			// ****** modify by liutengyuan start  *****
 	    	    // 如果用户有权限包，无需调用风控
 			RiskVerifyRespBo verybo;
-			 if ( ! "Y" .equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
+			 if ( ! "Y".equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
 				 logger.info("verify userId" + userId);
-					verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-					logger.info("verybo=" + verybo);
+				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+				 logger.info("verybo=" + verybo);
 			 }else{
-				 verybo = new RiskVerifyRespBo();
-				 verybo.setSuccess(true);
-				 verybo.setResult("10");
+				 verybo = skipRisk();
 			 }
-	    	// end
+	    	// ******* end *******
 			
 			if (verybo.isSuccess()) {
 			    logger.info("pay result is true");
@@ -1293,7 +1292,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					// end by luoxiao
 				}else{
 					// 信用支付失败
-					// orderInfo
+					orderInfo.setSupportCreditStatus("N");
+					orderDao.updateOrder(orderInfo);
 				}
 				return riskReturnMap;
 			}
@@ -1330,8 +1330,15 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			String codeForThird = null;
 			codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
 			codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
+			RiskVerifyRespBo verybo;
+			 if ( ! "Y".equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
+				 logger.info("verify userId" + userId);
+				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+				 logger.info("verybo=" + verybo);
+			 }else{
+				 verybo = skipRisk();
+			 }
 			// 通过弱风控后才进行后续操作
-			RiskVerifyRespBo verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 			if (verybo.isSuccess()) {
 			    logger.info("combination_pay result is true");
 			    orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
@@ -1348,6 +1355,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap,
 				    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
 			    return result;
+			}else{
+				orderInfo.setSupportCreditStatus("N");
+				orderDao.updateOrder(orderInfo);
 			}
 		    } else {
 			orderInfo.setPayType(PayType.BANK.getCode());
@@ -1439,6 +1449,13 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		    throw e;
 		}
 	    }
+
+		private RiskVerifyRespBo skipRisk() {
+			RiskVerifyRespBo verybo = new RiskVerifyRespBo();
+			verybo.setSuccess(true);
+			verybo.setResult("10");
+			return verybo;
+		}
 
 	});
     }
@@ -3284,6 +3301,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		} catch (Exception e) {
 			logger.error("preFinishNotifyEds error="+e);
 		}
+	}
+
+	@Override
+	public int getALLNoFinishOrderCount(Long userId) {
+		return orderDao.getALLNoFinishOrderCount(userId);
 	}
 
 }
